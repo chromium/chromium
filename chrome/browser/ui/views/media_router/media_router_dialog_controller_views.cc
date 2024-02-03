@@ -259,7 +259,7 @@ MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
   // Show the |media_button| before opening the dialog so that when the bubble
   // dialog is opened, it has an anchor.
   media_button->media_toolbar_button_controller()->ShowToolbarButton();
-  toolbar_view->Layout();
+  toolbar_view->DeprecatedLayoutImmediately();
 
   return media_button;
 }

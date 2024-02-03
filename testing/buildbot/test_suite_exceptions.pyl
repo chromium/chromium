@@ -305,6 +305,7 @@
   'blink_web_tests': {
     'remove_from': [
       'Win10 Tests x64 (dbg)',
+      'win11-arm64-dbg-tests',
     ],
     'modifications': {
       'Linux Tests': {
@@ -494,15 +495,6 @@
           'shards': 1,
         },
       },
-      'fuchsia-x64-rel': {
-        'args': [
-          '--platform=fuchsia',
-          '--jobs=1',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
       'linux-blink-animation-use-time-delta': {
         'args': [
           '--debug',
@@ -535,8 +527,7 @@
       },
       'linux-code-coverage': {
         'args': [
-          '--additional-driver-flag=--no-sandbox',
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
+          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw',
         ],
         'swarming': {
           'shards': 8,
@@ -661,6 +652,7 @@
       'linux-rel-cft',
       'mac-rel-cft',
       'win-rel-cft',
+      'win11-arm64-dbg-tests',
     ],
     'modifications': {
       'Linux Tests': {
@@ -828,15 +820,6 @@
           'shards': 1,
         },
       },
-      'fuchsia-x64-rel': {
-        'args': [
-          '--platform=fuchsia',
-          '--jobs=1',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
       'linux-bfcache-rel': {
         'args': [
           # TODO(crbug.com/1255537): Re-enable the test.
@@ -865,8 +848,7 @@
       },
       'linux-code-coverage': {
         'args': [
-          '--additional-driver-flag=--no-sandbox',
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
+          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw',
         ],
       },
       'linux-layout-tests-edit-ng': {
@@ -993,6 +975,7 @@
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-exp-tsan-fyi-rel',  # https://crbug.com/368525
       'Win10 Tests x64 (dbg)',
+      'win11-arm64-dbg-tests',
     ],
     'modifications': {
       'CrWinAsan': {
@@ -1272,14 +1255,6 @@
           'shards': 20,  # crbug.com/1361887
         },
       },
-      'win-arm64-rel': {
-        # Some Win Arm64 bots aren't using 100% scaling, which some browser
-        # tests rely on. They also have touch enabled, which we need to disable.
-        'args': [
-          '--force-device-scale-factor=1',
-          '--top-chrome-touch-ui=disabled',
-        ],
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -1321,12 +1296,19 @@
           'shards': 15,
         }
       },
+      'win11-arm64-rel-tests': {
+        'swarming': {
+          # This is for slow test execution that often becomes a critical path of
+          # swarming jobs. crbug.com/868114
+          'shards': 15,
+        }
+      },
     },
   },
   'browser_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win-arm64-rel',
+      'win11-arm64-rel-tests',
       'win-rel-cft',
       'Win11 Tests x64',
     ],
@@ -1384,6 +1366,14 @@
       },
       'linux-lacros-tester-rel': {
         'ci_only': True, # https://crbug.com/1509554
+      },
+    },
+  },
+  'check_network_annotations': {
+    'modifications': {
+      'linux-chromeos-rel': {
+        # TODO(crbug.com/1521126): Re-enable.
+        'ci_only': True,
       },
     },
   },
@@ -1481,8 +1471,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter',
         ],
-        # TODO(crbug.com/1439624): Remove ci_only once the test suite is stable.
-        'ci_only': True,
       },
       'android-12l-x64-fyi-dbg': {
         'args': [
@@ -1652,7 +1640,7 @@
         'swarming': {
           'dimensions': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
           },
         },
       },
@@ -1660,7 +1648,7 @@
         'swarming': {
           'dimensions': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
           },
         },
       },
@@ -1668,7 +1656,7 @@
         'swarming': {
           'dimensions': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
           },
         },
       },
@@ -1676,10 +1664,6 @@
   },
   'chrome_wpt_tests': {
     'modifications': {
-      # make this experimental for now and reenable it once we switch to the new headless mode
-      'Linux Tests': {
-        'experiment_percentage': 100,
-      },
       'linux-wpt-chromium-rel': {
         'args': [
           '--additional-driver-flag=--headless=new'
@@ -1747,7 +1731,7 @@
   'components_browsertests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win-arm64-rel',
+      'win11-arm64-rel-tests',
       'win-rel-cft',
       'Win11 Tests x64',
     ],
@@ -2070,13 +2054,6 @@
         # lower.
         'ci_only': True,
       },
-      'fuchsia-arm64-rel': {
-        # Temporarily only run this on CI due to resource and naming
-        # constraints.
-        # TODO(crbug.com/1371630): Remove this when resource requirements are
-        # lower.
-        'ci_only': True,
-      },
       'fuchsia-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter',
@@ -2090,16 +2067,6 @@
         # Temporarily only run this on CI due to resource requirements.
         # TODO(crbug.com/1374125): Remove this once resources are available.
         'ci_only': True,
-        'swarming': {
-          'shards': 41,
-        },
-        'args': [
-          # TODO(crbug.com/1406693): Remove this when the kernal panic in
-          # fuchsia has been resolved.
-          '--test-arg=--test-launcher-jobs=1',
-        ],
-      },
-      'fuchsia-x64-rel': {
         'swarming': {
           'shards': 41,
         },
@@ -2302,13 +2269,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.content_unittests.filter',
         ],
       },
-      'linux-rel-dev': {
-        'swarming': {
-          'dimensions': {
-            'cores': '8',
-          },
-        },
-      },
       'win10-code-coverage': {
         'swarming': {
           'shards': 2,
@@ -2330,7 +2290,7 @@
   },
   'context_lost_passthrough_tests': {
     'modifications': {
-      'win-arm64-rel': {
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': [
           # These devices have issues running these tests in parallel.
           '--jobs=1',
@@ -2338,7 +2298,7 @@
       },
     },
     'replacements': {
-      'win-arm64-rel': {
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': {
           # Magic substitution happens after regular replacement, so remove it
           # now since we are manually applying the number of jobs above.
@@ -2363,6 +2323,7 @@
     'remove_from': [
       'Win11 Tests x64',
       'win-rel-cft',
+      'win11-arm64-rel-tests',
     ],
     'modifications': {
       'win-rel-cft': {
@@ -3010,6 +2971,12 @@
           '--gtest_filter=-DelegatedInkPointRendererGpuTest.DrawPointsAsTheyArrive:DelegatedInkPointRendererGpuTest.MaximumPointerIds:DelegatedInkPointRendererGpuTest.MultiplePointerIds:DelegatedInkPointRendererGpuTest.StoreAndRemovePointsAndTokens',
         ],
       },
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
+        'args': [
+          # crbug.com/1523061
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.gl_unittests.filter',
+        ],
+      },
       'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter',
@@ -3297,14 +3264,6 @@
           'shards': 6,
         },
       },
-      'win-arm64-rel': {
-        # Some Win Arm64 bots have touch turned on, which makes some tests fail.
-        # Similarly, some have a non 1.0 device scale factor.
-        'args': [
-          '--force-device-scale-factor=1',
-          '--top-chrome-touch-ui=disabled',
-        ],
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -3378,10 +3337,10 @@
       },
     },
     'remove_from': [
-      'win10-rel-no-external-ip',
-      'win-arm64-rel',
-      'win-rel-cft',
       'Win11 Tests x64',
+      'win10-rel-no-external-ip',
+      'win11-arm64-rel-tests',
+      'win-rel-cft',
     ],
   },
   'ipc_tests': {
@@ -3520,7 +3479,6 @@
     'remove_from': [
       # TODO(crbug.com/1372213): Remove these once tests are stable.
       'fuchsia-x64-cast-receiver-rel',
-      'fuchsia-x64-rel',
     ],
   },
   'model_validation_tests MODEL_VALIDATION_BASE': {
@@ -3559,7 +3517,6 @@
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'linux-exp-tsan-fyi-rel',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
-      'win-arm64-rel',  # Not available on arm64.
       'linux-arm64-rel-cft',  # Not available on arm64.
     ],
   },
@@ -3689,8 +3646,7 @@
       },
       'linux-code-coverage': {
         'args': [
-          '--additional-driver-flag=--no-sandbox',
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
+          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw',
         ],
         'swarming': {
           'shards': 20,
@@ -3832,6 +3788,7 @@
     'remove_from': [
       'Win11 Tests x64',
       'win-rel-cft',
+      'win11-arm64-rel-tests',
     ],
   },
   'pixel_skia_gold_gl_passthrough_ganesh_test': {
@@ -3952,7 +3909,6 @@
     'remove_from': [
       # TODO(https://crbug.com/1302427): Remove once tests pass.
       'fuchsia-x64-cast-receiver-rel',
-      'fuchsia-x64-rel',
     ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
@@ -3981,7 +3937,6 @@
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'linux-exp-tsan-fyi-rel',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
-      'win-arm64-rel',  # Not available on arm64.
     ],
   },
   'pthreadpool_unittests': {
@@ -4065,7 +4020,6 @@
     'remove_from': [
       # TODO(https://crbug.com/1302427): Remove once tests pass.
       'fuchsia-x64-cast-receiver-rel',
-      'fuchsia-x64-rel',
     ],
   },
   'services_unittests': {
@@ -4132,6 +4086,16 @@
         ],
       },
     }
+  },
+  'services_webnn_unittests': {
+    'modifications': {
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
+        'args': [
+          # crbug.com/1522972
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.services_webnn_unittests.filter',
+        ],
+      },
+    },
   },
   'snapshot_unittests': {
     'modifications': {
@@ -4257,7 +4221,7 @@
   'sync_integration_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win-arm64-rel',
+      'win11-arm64-rel-tests',
       'win-rel-cft',
       'Win11 Tests x64',
     ],
@@ -4371,6 +4335,8 @@
       'Win10 Tests x64 (dbg)',
       'Win11 Tests x64',
       'win10-rel-no-external-ip',
+      'win11-arm64-dbg-tests',
+      'win11-arm64-rel-tests',
       'win-rel-cft',
     ],
   },
@@ -4409,6 +4375,8 @@
       'Win10 Tests x64',
       'Win11 Tests x64',
       'win10-rel-no-external-ip',
+      'win11-arm64-dbg-tests',
+      'win11-arm64-rel-tests',
       'win-rel-cft',
 
       # TODO(https://crbug.com/1267161): Re-enable when platform is supported.
@@ -4465,7 +4433,7 @@
         # These are slow on the ASAN trybot for some reason.
         # crbug.com/1257927
         'swarming': {
-          'shards': 2,
+          'shards': 4,
         },
       },
       'Linux ChromiumOS MSan Tests': {
@@ -4552,22 +4520,10 @@
         # shards.
         'retry_only_failed_tests': True,
       },
-      'linux-rel-dev': {
-        'swarming': {
-          'dimensions': {
-            'cores': '8',
-          },
-        },
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 2,
         }
-      },
-      'win-arm64-rel': {
-        'args': [
-          '--top-chrome-touch-ui=disabled',
-        ],
       },
       'win-asan': {
         'swarming': {
@@ -4872,6 +4828,13 @@
       },
     },
   },
+  'webgl_conformance_d3d9_passthrough_tests': {
+    'remove_from': [
+      # Per discussion on crbug.com/1523698, we aren't interested in testing
+      # D3D9 on this newer hardware.
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
+    ],
+  },
   'webgl_conformance_gl_passthrough_ganesh_tests 1002:67ef': {
     'modifications': {
       'mac_optional_gpu_tests_rel': {
@@ -4934,6 +4897,12 @@
         },
       },
     },
+  },
+  'webgl_conformance_vulkan_passthrough_tests': {
+    'remove_from': [
+      # Vulkan is not supported on these devices.
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
+    ],
   },
   'webgpu_blink_web_tests': {
     'remove_from': [
@@ -5015,6 +4984,17 @@
       },
     },
   },
+  'webgpu_cts_fxc_with_validation_tests': {
+    'remove_from': [
+      # Disable testing with validation on x86 where they frequently OOM.
+      # See crbug.com/1444815.
+      'Dawn Win10 x86 DEPS Release (Intel)',
+      'Dawn Win10 x86 Release (Intel)',
+      'Dawn Win10 x86 Experimental Release (Intel)',
+      'Dawn Win10 x86 DEPS Release (NVIDIA)',
+      'Dawn Win10 x86 Release (NVIDIA)',
+    ],
+  },
   'webgpu_cts_tests': {
     'modifications': {
       'Dawn Android arm DEPS Release (Pixel 4)': {
@@ -5080,12 +5060,6 @@
       # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
-      # Disable testing with validation on x86 where they frequently OOM.
-      # See crbug.com/1444815.
-      'Dawn Win10 x86 DEPS Release (Intel)',
-      'Dawn Win10 x86 Release (Intel)',
-      'Dawn Win10 x86 DEPS Release (NVIDIA)',
-      'Dawn Win10 x86 Release (NVIDIA)',
       # Don't need validation layers on code coverage bots
       'linux-code-coverage',
       'mac-code-coverage',
@@ -5158,6 +5132,15 @@
       'win10-code-coverage': {
         'swarming': {
           'shards': 4,
+        },
+      },
+    },
+  },
+  'webkit_unit_tests_v2':{
+    'modifications': {
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 6,
         },
       },
     },
@@ -5324,5 +5307,12 @@
         ],
       },
     },
+  },
+  'xr_browser_tests': {
+    'remove_from': [
+      # No Windows arm64 devices currently support XR features, so don't bother
+      # running related tests.
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
+    ],
   },
 }

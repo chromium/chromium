@@ -781,8 +781,7 @@ void FastPairRepositoryImpl::RetryPendingDeletes(
       DCHECK(device.has_account_key());
 
       const std::string saved_account_key =
-          base::HexEncode(std::vector<uint8_t>(device.account_key().begin(),
-                                               device.account_key().end()));
+          base::HexEncode(device.account_key());
       found_in_saved_devices =
           saved_account_key == pending_delete.hex_account_key;
       if (found_in_saved_devices) {

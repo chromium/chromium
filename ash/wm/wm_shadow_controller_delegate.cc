@@ -13,7 +13,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
@@ -118,12 +117,6 @@ bool WmShadowControllerDelegate::ShouldShowShadowForWindow(
   }
 
   return ::wm::GetShadowElevationConvertDefault(window) > 0;
-}
-
-bool WmShadowControllerDelegate::ShouldHaveRoundedShadowForWindow(
-    const aura::Window* window) {
-  // Apply rounded corner to shadow, if the `window` has rounded corners.
-  return chromeos::ShouldWindowHaveRoundedCorners(window);
 }
 
 bool WmShadowControllerDelegate::ShouldUpdateShadowOnWindowPropertyChange(

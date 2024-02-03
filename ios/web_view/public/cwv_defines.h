@@ -97,4 +97,7 @@
 // Supports +[CWVWebView webInspectorEnabled].
 #define IOS_WEB_VIEW_SUPPORTS_WEB_INSPECTOR_API 1
 
+// Supports +[CWVWebView useOptimizedSessionStorage].
+#define IOS_WEB_VIEW_SUPPORTS_OPTIMIZED_STORAGE 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

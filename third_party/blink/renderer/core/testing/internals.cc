@@ -28,6 +28,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/function_ref.h"
@@ -37,7 +38,6 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
@@ -277,9 +277,9 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
    public:
     explicit Generator(int max_count) : max_count_(max_count) {}
 
-    absl::optional<int> Generate() {
+    std::optional<int> Generate() {
       if (count_ >= max_count_) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       ++count_;
       return current_++;
@@ -479,7 +479,7 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
       : type_(type),
         optimizer_flag_(
             base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
-                absl::in_place,
+                std::in_place,
                 false)) {}
 
   ScriptPromise start(ScriptState* script_state,
@@ -633,7 +633,7 @@ void OnLCPPredicted(ScriptPromiseResolver* resolver,
 
 }  // namespace
 
-static absl::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
+static std::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
     const String& marker_type) {
   if (EqualIgnoringASCIICase(marker_type, "Spelling"))
     return DocumentMarker::kSpelling;
@@ -647,16 +647,16 @@ static absl::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
     return DocumentMarker::kActiveSuggestion;
   if (EqualIgnoringASCIICase(marker_type, "Suggestion"))
     return DocumentMarker::kSuggestion;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-static absl::optional<DocumentMarker::MarkerTypes> MarkerTypesFrom(
+static std::optional<DocumentMarker::MarkerTypes> MarkerTypesFrom(
     const String& marker_type) {
   if (marker_type.empty() || EqualIgnoringASCIICase(marker_type, "all"))
     return DocumentMarker::MarkerTypes::All();
-  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  std::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type)
-    return absl::nullopt;
+    return std::nullopt;
   return DocumentMarker::MarkerTypes(type.value());
 }
 
@@ -1329,7 +1329,7 @@ void Internals::setMarker(Document* document,
     return;
   }
 
-  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  std::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -1363,7 +1363,7 @@ void Internals::removeMarker(Document* document,
     return;
   }
 
-  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  std::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -1394,7 +1394,7 @@ unsigned Internals::markerCountForNode(Text* text,
                                        const String& marker_type,
                                        ExceptionState& exception_state) {
   DCHECK(text);
-  absl::optional<DocumentMarker::MarkerTypes> marker_types =
+  std::optional<DocumentMarker::MarkerTypes> marker_types =
       MarkerTypesFrom(marker_type);
   if (!marker_types) {
     exception_state.ThrowDOMException(
@@ -1430,7 +1430,7 @@ DocumentMarker* Internals::MarkerAt(Text* text,
                                     unsigned index,
                                     ExceptionState& exception_state) {
   DCHECK(text);
-  absl::optional<DocumentMarker::MarkerTypes> marker_types =
+  std::optional<DocumentMarker::MarkerTypes> marker_types =
       MarkerTypesFrom(marker_type);
   if (!marker_types) {
     exception_state.ThrowDOMException(
@@ -1493,13 +1493,13 @@ unsigned Internals::markerUnderlineColorForNode(
   return style_marker->UnderlineColor().Rgb();
 }
 
-static absl::optional<TextMatchMarker::MatchStatus> MatchStatusFrom(
+static std::optional<TextMatchMarker::MatchStatus> MatchStatusFrom(
     const String& match_status) {
   if (EqualIgnoringASCIICase(match_status, "kActive"))
     return TextMatchMarker::MatchStatus::kActive;
   if (EqualIgnoringASCIICase(match_status, "kInactive"))
     return TextMatchMarker::MatchStatus::kInactive;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Internals::addTextMatchMarker(const Range* range,
@@ -1509,7 +1509,7 @@ void Internals::addTextMatchMarker(const Range* range,
   if (!range->OwnerDocument().View())
     return;
 
-  absl::optional<TextMatchMarker::MatchStatus> match_status_enum =
+  std::optional<TextMatchMarker::MatchStatus> match_status_enum =
       MatchStatusFrom(match_status);
   if (!match_status_enum) {
     exception_state.ThrowDOMException(
@@ -1539,7 +1539,7 @@ static bool ParseColor(const String& value,
   return true;
 }
 
-static absl::optional<ImeTextSpanThickness> ThicknessFrom(
+static std::optional<ImeTextSpanThickness> ThicknessFrom(
     const String& thickness) {
   if (EqualIgnoringASCIICase(thickness, "none"))
     return ImeTextSpanThickness::kNone;
@@ -1547,10 +1547,10 @@ static absl::optional<ImeTextSpanThickness> ThicknessFrom(
     return ImeTextSpanThickness::kThin;
   if (EqualIgnoringASCIICase(thickness, "thick"))
     return ImeTextSpanThickness::kThick;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-static absl::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
+static std::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
     const String& underline_style) {
   if (EqualIgnoringASCIICase(underline_style, "none"))
     return ImeTextSpanUnderlineStyle::kNone;
@@ -1562,7 +1562,7 @@ static absl::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
     return ImeTextSpanUnderlineStyle::kDash;
   if (EqualIgnoringASCIICase(underline_style, "squiggle"))
     return ImeTextSpanUnderlineStyle::kSquiggle;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 namespace {
@@ -1583,7 +1583,7 @@ void AddStyleableMarkerHelper(const Range* range,
   DCHECK(range);
   range->OwnerDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  absl::optional<ImeTextSpanThickness> thickness =
+  std::optional<ImeTextSpanThickness> thickness =
       ThicknessFrom(thickness_value);
   if (!thickness) {
     exception_state.ThrowDOMException(
@@ -1592,7 +1592,7 @@ void AddStyleableMarkerHelper(const Range* range,
     return;
   }
 
-  absl::optional<ImeTextSpanUnderlineStyle> underline_style =
+  std::optional<ImeTextSpanUnderlineStyle> underline_style =
       UnderlineStyleFrom(underline_style_value);
   if (!underline_style_value) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,

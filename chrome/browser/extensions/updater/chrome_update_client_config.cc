@@ -25,6 +25,7 @@
 #include "base/version.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "chrome/browser/extensions/updater/extension_update_client_command_line_config_policy.h"
+#include "chrome/browser/extensions/updater/extension_updater_switches.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/channel_info.h"
@@ -225,7 +226,7 @@ base::Version ChromeUpdateClientConfig::GetBrowserVersion() const {
 }
 
 std::string ChromeUpdateClientConfig::GetChannel() const {
-  return chrome::GetChannelName(chrome::WithExtendedStable(true));
+  return GetChannelForExtensionUpdates();
 }
 
 std::string ChromeUpdateClientConfig::GetLang() const {

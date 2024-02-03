@@ -27,8 +27,13 @@ class IbanSaveManager {
    public:
     virtual ~ObserverForTest() = default;
     virtual void OnOfferLocalSave() {}
+    virtual void OnOfferUploadSave() {}
     virtual void OnAcceptSaveIbanComplete() {}
     virtual void OnDeclineSaveIbanComplete() {}
+    virtual void OnReceivedGetUploadDetailsResponse() {}
+    virtual void OnSentUploadRequest() {}
+    virtual void OnAcceptUploadSaveIbanComplete() {}
+    virtual void OnAcceptUploadSaveIbanFailed() {}
   };
 
   // The type of save that should be offered for the IBAN candidate.

@@ -37,7 +37,8 @@ enum class UserSelectableType {
   kTabs,
   kSavedTabGroups,
   kPayments,
-  kLastType = kPayments
+  kSharedTabGroupData,
+  kLastType = kSharedTabGroupData
 };
 
 using UserSelectableTypeSet = base::EnumSet<UserSelectableType,

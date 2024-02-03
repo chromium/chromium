@@ -50,9 +50,9 @@ ui::ImageModel GetHeaderImageSkia(bool dark_mode) {
 }
 
 class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
- public:
-  METADATA_HEADER(SecurePaymentConfirmationIconView);
+  METADATA_HEADER(SecurePaymentConfirmationIconView, NonAccessibleImageView)
 
+ public:
   explicit SecurePaymentConfirmationIconView(bool use_cart_image = false)
       : use_cart_image_{use_cart_image} {
     const gfx::Size header_size(
@@ -79,7 +79,7 @@ class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
   bool use_cart_image_;
 };
 
-BEGIN_METADATA(SecurePaymentConfirmationIconView, NonAccessibleImageView)
+BEGIN_METADATA(SecurePaymentConfirmationIconView)
 END_METADATA
 
 }  // namespace

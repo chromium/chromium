@@ -55,6 +55,15 @@ class VIEWS_EXPORT LayoutManager {
   // View::CalculatePreferredSize() on each of the children of |host|.
   virtual gfx::Size GetPreferredSize(const View* host) const = 0;
 
+  // Returns the preferred size under `available_size`.
+  //
+  // In complex view models, using this method may be time-consuming. Calling
+  // this method may invalidate the subview's layout manager cache (it will not
+  // invalidate the current view's cache) if the subview does not use this
+  // method.
+  virtual gfx::Size GetPreferredSize(const View* host,
+                                     const SizeBounds& available_size) const;
+
   // Returns the minimum size, which defaults to the preferred size. Layout
   // managers with the ability to collapse or hide child views may override this
   // behavior.

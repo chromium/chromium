@@ -5,6 +5,7 @@
 import './icons.html.js';
 import './strings.m.js';
 import './textarea.js';
+import './result_text.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -27,6 +28,7 @@ import {getTemplate} from './app.html.js';
 import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ConfigurableParams, Length, PartialComposeResponse, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeStatus} from './compose_enums.mojom-webui.js';
+import {ComposeResultTextElement, TextInput} from './result_text.js';
 import {ComposeTextareaElement} from './textarea.js';
 
 // Struct with ComposeAppElement's properties that need to be saved to return
@@ -59,7 +61,7 @@ export interface ComposeAppElement {
     undoButton: CrButtonElement,
     refreshButton: HTMLElement,
     resultContainer: HTMLElement,
-    partialResultText: HTMLElement,
+    resultFooter: HTMLElement,
     submitButton: CrButtonElement,
     submitEditButton: CrButtonElement,
     submitFooter: HTMLElement,
@@ -67,6 +69,7 @@ export interface ComposeAppElement {
     textarea: ComposeTextareaElement,
     lengthMenu: HTMLSelectElement,
     toneMenu: HTMLSelectElement,
+    resultText: ComposeResultTextElement,
   };
 }
 
@@ -132,7 +135,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       loadingIndicatorShown_: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: 'isLoadingIndicatorShown_(loading_, partialResponse_)',
+        computed: 'isLoadingIndicatorShown_(loading_, hasOutput_)',
       },
       response_: {
         type: Object,
@@ -162,6 +165,19 @@ export class ComposeAppElement extends ComposeAppElementBase {
       undoEnabled_: {
         type: Boolean,
         value: false,
+      },
+      responseText_: {
+        type: String,
+        computed: 'getResponseText_(response_, partialResponse_)',
+      },
+      outputComplete_: {
+        type: Boolean,
+      },
+      hasOutput_: {
+        type: Boolean,
+      },
+      displayedText_: {
+        type: String,
       },
       lengthOptions_: {
         type: Array,
@@ -210,6 +226,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return [
       'debounceSaveComposeAppState_(input_, isEditingSubmittedInput_, ' +
           'editedInput_)',
+      'debounceUpdateResultComplete_(outputComplete_, response_)',
     ];
   }
 
@@ -236,6 +253,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private partialResponse_: PartialComposeResponse|undefined;
   private saveAppStateDebouncer_: Debouncer;
   private scrollCheckDebouncer_: Debouncer;
+  private updateResultCompleteDebouncer_: Debouncer;
   private selectedLength_: Length;
   private selectedTone_: Tone;
   private textSelected_: boolean;
@@ -244,6 +262,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private userHasModifiedState_: boolean = false;
   private lastTriggerElement_: TriggerElement;
   private savedStateNotificationTimeout_: number;
+  private outputComplete_: boolean = true;
+  private hasOutput_: boolean = false;
+  private displayedText_: string;
+  private responseText_: string;
 
   constructor() {
     super();
@@ -258,6 +280,26 @@ export class ComposeAppElement extends ComposeAppElementBase {
         (partialResponse: PartialComposeResponse) => {
           this.partialComposeResponseReceived_(partialResponse);
         });
+  }
+
+  private getResponseText_(): TextInput {
+    if (this.response_) {
+      return {
+        text: this.response_.status === ComposeStatus.kOk ?
+            this.response_.result.trim() :
+            '',
+        isPartial: false,
+        streamingEnabled: this.partialResponse_ !== undefined,
+      };
+    } else if (this.partialResponse_) {
+      return {
+        text: this.partialResponse_?.result.trim(),
+        isPartial: true,
+        streamingEnabled: true,
+      };
+    } else {
+      return {text: '', isPartial: false, streamingEnabled: false};
+    }
   }
 
   override connectedCallback() {
@@ -582,19 +624,38 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.animator_.transitionFromResultToLoading(bodyHeight, resultHeight);
   }
 
-  private composeResponseReceived_(response: ComposeResponse) {
-    this.response_ = response;
+  private debounceUpdateResultComplete_() {
+    this.updateResultCompleteDebouncer_ = Debouncer.debounce(
+        this.updateResultCompleteDebouncer_, microTask, () => {
+          return this.updateResultComplete_();
+        });
+  }
+
+  private updateResultComplete_() {
+    if (!this.response_) {
+      return;
+    }
+    if (this.response_.status === ComposeStatus.kOk) {
+      // Don't process OK status until outputComplete_ is true.
+      if (!this.outputComplete_) {
+        return;
+      }
+    }
+
     const loadingHeight = this.$.loading.offsetHeight;
     this.loading_ = false;
-    this.undoEnabled_ = response.undoAvailable;
+    this.undoEnabled_ = this.response_.undoAvailable;
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.$.textarea.transitionToEditable();
-    if (this.partialResponse_) {
-      this.animator_.transitionFromPartialToCompleteResult();
-    } else if (this.hasSuccessfulResponse_()) {
-      this.animator_.transitionFromLoadingToCompleteResult(loadingHeight);
+    if (!this.partialResponse_) {
+      if (this.response_.status === ComposeStatus.kOk) {
+        this.animator_.transitionFromLoadingToCompleteResult(loadingHeight);
+      }
+    } else {
+      if (this.outputComplete_ && this.response_.status === ComposeStatus.kOk) {
+        this.animator_.transitionFromPartialToCompleteResult();
+      }
     }
-    this.partialResponse_ = undefined;
 
     switch (this.lastTriggerElement_) {
       case TriggerElement.SUBMIT_INPUT:
@@ -611,6 +672,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
+  private composeResponseReceived_(response: ComposeResponse) {
+    this.response_ = response;
+  }
+
   private partialComposeResponseReceived_(partialResponse:
                                               PartialComposeResponse) {
     assert(!this.response_);
@@ -618,7 +683,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private isLoadingIndicatorShown_(): boolean {
-    return this.loading_ && !this.partialResponse_;
+    return this.loading_ && !this.hasOutput_;
   }
 
   private hasSuccessfulResponse_(): boolean {
@@ -628,7 +693,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private hasPartialResponse_(): boolean {
     return Boolean(this.partialResponse_);
   }
-
 
   private hasPartialOrCompleteResponse_(): boolean {
     return Boolean(this.partialResponse_) || this.hasSuccessfulResponse_();

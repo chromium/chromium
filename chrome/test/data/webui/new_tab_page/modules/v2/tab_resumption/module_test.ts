@@ -26,7 +26,8 @@ function createSampleTab(
         sessionName: 'Test Device',
         url: {url: 'https://www.foo.com'},
         title: 'Test Tab Title',
-        relativeTime: '0 seconds ago',
+        relativeTime: 0,
+        relativeTimeText: '0 seconds ago',
       },
       overrides);
 

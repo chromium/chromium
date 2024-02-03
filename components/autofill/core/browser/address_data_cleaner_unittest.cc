@@ -15,7 +15,9 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -29,22 +31,49 @@ class AddressDataCleanerTest : public testing::Test {
  public:
   AddressDataCleanerTest()
       : prefs_(test::PrefServiceForTesting()),
-        data_cleaner_(&test_pdm_,
-                      /*alternative_state_name_map_updater=*/nullptr,
-                      prefs_.get()) {}
+        data_cleaner_(test_pdm_,
+                      &sync_service_,
+                      *prefs_,
+                      /*alternative_state_name_map_updater=*/nullptr) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
+  syncer::TestSyncService sync_service_;
   TestPersonalDataManager test_pdm_;
   AddressDataCleaner data_cleaner_;
 };
 
+// Tests that for non-syncing users `MaybeCleanupAddressData()` immediately
+// performs clean-ups.
+TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncing) {
+  sync_service_.SetHasSyncConsent(false);
+  ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
+  data_cleaner_.MaybeCleanupAddressData();
+  EXPECT_FALSE(test_api(data_cleaner_).AreCleanupsPending());
+}
+
+// Tests that for syncing users `MaybeCleanupAddressData()` doesn't perform
+// clean-ups, since it's expecting another call once sync is ready.
+TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_Syncing) {
+  sync_service_.SetDownloadStatusFor(
+      {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
+      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+  ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
+  data_cleaner_.MaybeCleanupAddressData();
+  EXPECT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
+
+  sync_service_.SetDownloadStatusFor(
+      {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  data_cleaner_.MaybeCleanupAddressData();
+  EXPECT_FALSE(test_api(data_cleaner_).AreCleanupsPending());
+}
+
 // Tests that ApplyAddressDedupingRoutine merges the profile values correctly,
 // i.e. never lose information and keep the syntax of the profile with the
 // higher ranking score.
-TEST_F(AddressDataCleanerTest,
-       ApplyAddressDedupingRoutine_MergedProfileValues) {
+TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
   // Create three profiles with slightly different values and decreasing ranking
   // scores.
   AutofillProfile profile1(AddressCountryCode("US"));
@@ -71,7 +100,7 @@ TEST_F(AddressDataCleanerTest,
   test_pdm_.AddProfile(profile3);
 
   base::HistogramTester histogram_tester;
-  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
 
   // `profile1` should have been merged into `profile2` which should then have
   // been merged into `profile3`. Therefore there should only be 1 saved
@@ -109,9 +138,9 @@ TEST_F(AddressDataCleanerTest,
             deduped_profile.use_date());
 }
 
-// Tests that ApplyAddressDedupingRoutine doesn't affect profiles that shouldn't
+// Tests that ApplyDeduplicationRoutine doesn't affect profiles that shouldn't
 // get deduplicated.
-TEST_F(AddressDataCleanerTest, ApplyAddressDedupingRoutine_UnrelatedProfile) {
+TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_UnrelatedProfile) {
   // Expect that the `UpdateableStandardProfile()` is deduplicated into the
   // `StandardProfile()`, but the `UpdateableStandardProfile()` remains
   // unaffected.
@@ -121,38 +150,31 @@ TEST_F(AddressDataCleanerTest, ApplyAddressDedupingRoutine_UnrelatedProfile) {
   AutofillProfile different_profile = test::DifferentFromStandardProfile();
   test_pdm_.AddProfile(different_profile);
 
-  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
   EXPECT_THAT(test_pdm_.GetProfiles(),
               UnorderedElementsAre(Pointee(standard_profile),
                                    Pointee(different_profile)));
 }
 
-TEST_F(AddressDataCleanerTest, ApplyAddressDedupingRoutine_Metrics) {
+TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_Metrics) {
   test_pdm_.AddProfile(test::StandardProfile());
   test_pdm_.AddProfile(test::UpdateableStandardProfile());
 
   base::HistogramTester histogram_tester;
-  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
   histogram_tester.ExpectUniqueSample(
       "Autofill.NumberOfProfilesConsideredForDedupe", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.NumberOfProfilesRemovedDuringDedupe", 1, 1);
 }
 
-// Tests that ApplyAddressDedupingRoutine is not run a second time on the same
-// major version.
-TEST_F(AddressDataCleanerTest,
-       ApplyAddressDedupingRoutine_OncePerVersion) {
-  // The deduping routine should be run a first time and merge the
-  // `UpdateableStandardProfile()` (subset) into the `StandardProfile()`.
+// Tests that deduplication is not run a second time on the same major version.
+TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
   test_pdm_.AddProfile(test::StandardProfile());
   test_pdm_.AddProfile(test::UpdateableStandardProfile());
-  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
-  EXPECT_EQ(1U, test_pdm_.GetProfiles().size());
-
-  // Add another duplicate profile and expect that the routine isn't run again.
-  test_pdm_.AddProfile(test::StandardProfile());
-  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  // Pretend that deduplication was already run this milestone.
+  prefs_->SetInteger(prefs::kAutofillLastVersionDeduped, CHROME_VERSION_MAJOR);
+  data_cleaner_.MaybeCleanupAddressData();
   EXPECT_EQ(2U, test_pdm_.GetProfiles().size());
 }
 
@@ -165,7 +187,7 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountPairs) {
   account_profile2.set_source_for_testing(AutofillProfile::Source::kAccount);
   test_pdm_.AddProfile(account_profile2);
 
-  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
   EXPECT_THAT(test_pdm_.GetProfiles(),
               UnorderedElementsAre(Pointee(account_profile1),
                                    Pointee(account_profile2)));
@@ -186,7 +208,7 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
 
   // Expect that only the account profile remains and that it became a Chrome-
   // originating profile.
-  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
   std::vector<AutofillProfile*> deduped_profiles = test_pdm_.GetProfiles();
   ASSERT_THAT(deduped_profiles, UnorderedElementsAre(Pointee(account_profile)));
   EXPECT_EQ(deduped_profiles[0]->initial_creator_id(),
@@ -204,7 +226,7 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
   AutofillProfile local_profile = test::StandardProfile();
   test_pdm_.AddProfile(local_profile);
 
-  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
   EXPECT_THAT(
       test_pdm_.GetProfiles(),
       UnorderedElementsAre(Pointee(account_profile), Pointee(local_profile)));

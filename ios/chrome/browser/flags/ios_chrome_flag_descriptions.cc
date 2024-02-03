@@ -316,6 +316,12 @@ const char
         "security "
         "settings page.";
 
+const char kDisableLensCameraName[] = "Disable Lens camera experience";
+const char kDisableLensCameraDescription[] =
+    "When enabled, the option use Lens to search for images from your device "
+    "camera menu when Google is the selected search engine, accessible from "
+    "the home screen widget, new tab page, and keyboard, is disabled.";
+
 const char kEnableRedInterstitialFaceliftName[] = "Red interstitial facelift";
 const char kEnableRedInterstitialFaceliftDescription[] =
     "Enables red interstitial facelift UI changes, including icon, string, and "
@@ -536,10 +542,6 @@ const char kIOSPasswordSignInUffName[] = "Password sign-in uff";
 const char kIOSPasswordSignInUffDescription[] =
     "Enables filling the username in username-first sign-in flows.";
 
-const char kIOSPaymentsBottomSheetName[] = "IOS Payments Manager Bottom Sheet";
-const char kIOSPaymentsBottomSheetDescription[] =
-    "Enables the display of the payments bottom sheet on IOS.";
-
 const char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";
 const char kNewTabPageFieldTrialDescription[] =
@@ -599,6 +601,11 @@ const char kMixedContentAutoupgradeDescription[] =
 const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
+
+const char kMostVisitedTilesHorizontalRenderGroupName[] =
+    "MVTiles Horizontal Render Group";
+const char kMostVisitedTilesHorizontalRenderGroupDescription[] =
+    "When enabled, the MV tiles are represented as individual matches";
 
 const char kNativeFindInPageName[] = "Native Find in Page";
 const char kNativeFindInPageDescription[] =
@@ -948,6 +955,12 @@ const char kEnableSessionSerializationOptimizationsDescription[] =
     "Enables the use of multiple separate files to save the session state "
     "and the ability to load only the minimum amount of data when restoring "
     "the session from disk.";
+
+const char kTabGridAlwaysBounceName[] =
+    "Let the tab grid bounce even if the content fits the screen";
+const char kTabGridAlwaysBounceDescription[] =
+    "When enabled, the Tab Grid bounces (aka overscrolls) even if all tabs are "
+    "fully visible on screen.";
 
 const char kTabGridCompositionalLayoutName[] =
     "Enable tab grid with the new compositional layout";

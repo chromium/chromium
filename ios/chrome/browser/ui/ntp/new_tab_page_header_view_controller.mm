@@ -42,7 +42,6 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -307,9 +306,22 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 // Initialize and add a search field tap target and a voice search button.
 - (void)addFakeOmnibox {
   self.fakeOmnibox = [[UIButton alloc] init];
-  // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15 and refactor with UIButtonConfiguration.
-  SetAdjustsImageWhenHighlighted(self.fakeOmnibox, NO);
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  self.fakeOmnibox.configuration = buttonConfiguration;
+  self.fakeOmnibox.configurationUpdateHandler = ^(UIButton* incomingButton) {
+    UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+    switch (incomingButton.state) {
+      case UIControlStateHighlighted:
+      case UIControlStateNormal:
+        // This overrides default logic which would highlight the image. This
+        // effectively disables highlighting.
+        break;
+      default:
+        break;
+    }
+    incomingButton.configuration = updatedConfig;
+  };
 
   // Set isAccessibilityElement to NO so that Voice Search button is accessible.
   [self.fakeOmnibox setIsAccessibilityElement:NO];

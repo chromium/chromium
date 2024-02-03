@@ -411,8 +411,8 @@ TEST_F(WebNNGraphImplTest, ClampTest) {
 
 struct HardSigmoidTester {
   OperandInfo input;
-  absl::optional<float> alpha;
-  absl::optional<float> beta;
+  std::optional<float> alpha;
+  std::optional<float> beta;
   OperandInfo output;
   bool expected;
 
@@ -482,28 +482,28 @@ TEST_F(WebNNGraphImplTest, HardSigmoidTest) {
 
 struct Activation {
   mojom::Activation::Tag kind;
-  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
-  absl::optional<float> elu_alpha;
-  absl::optional<float> hard_sigmoid_alpha;
-  absl::optional<float> hard_sigmoid_beta;
-  absl::optional<float> leaky_relu_alpha;
-  absl::optional<float> linear_alpha;
-  absl::optional<float> linear_beta;
-  absl::optional<float> softplus_steepness;
+  std::optional<ClampTester::ClampAttributes> clamp_attributes;
+  std::optional<float> elu_alpha;
+  std::optional<float> hard_sigmoid_alpha;
+  std::optional<float> hard_sigmoid_beta;
+  std::optional<float> leaky_relu_alpha;
+  std::optional<float> linear_alpha;
+  std::optional<float> linear_beta;
+  std::optional<float> softplus_steepness;
 };
 
 struct BatchNormalizationTester {
   OperandInfo input;
   OperandInfo mean;
   OperandInfo variance;
-  absl::optional<OperandInfo> scale;
-  absl::optional<OperandInfo> bias;
+  std::optional<OperandInfo> scale;
+  std::optional<OperandInfo> bias;
   struct BatchNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     uint32_t axis = 1;
     float epsilon = 1e-5;
-    absl::optional<Activation> activation;
+    std::optional<Activation> activation;
   };
   BatchNormalizationAttributes attributes;
   OperandInfo output;
@@ -1161,8 +1161,8 @@ struct Conv2dTester {
     uint32_t groups = 1;
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
-    absl::optional<OperandInfo> bias;
-    absl::optional<Activation> activation;
+    std::optional<OperandInfo> bias;
+    std::optional<Activation> activation;
   };
   Conv2dAttributes attributes;
   OperandInfo output;
@@ -1176,7 +1176,7 @@ struct Conv2dTester {
     uint64_t filter_operand_id =
         builder.BuildInput("filter", filter.dimensions, filter.type);
 
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     if (attributes.bias) {
       bias_operand_id = builder.BuildInput("bias", attributes.bias->dimensions,
                                            attributes.bias->type);
@@ -1588,7 +1588,7 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
 
     builder.BuildConv2d(mojom::Conv2d_Type::kDirect, input_operand_id,
                         filter_operand_id, input_operand_id,
-                        Conv2dTester::Conv2dAttributes{}, absl::nullopt);
+                        Conv2dTester::Conv2dAttributes{}, std::nullopt);
 
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
@@ -1602,7 +1602,7 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
 
     builder.BuildConv2d(mojom::Conv2d_Type::kDirect, input_operand_id,
                         filter_operand_id, filter_operand_id,
-                        Conv2dTester::Conv2dAttributes{}, absl::nullopt);
+                        Conv2dTester::Conv2dAttributes{}, std::nullopt);
 
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
@@ -1925,7 +1925,7 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
 
     builder.BuildConv2d(mojom::Conv2d_Type::kTransposed, input_operand_id,
                         filter_operand_id, input_operand_id,
-                        Conv2dTester::Conv2dAttributes{}, absl::nullopt);
+                        Conv2dTester::Conv2dAttributes{}, std::nullopt);
 
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
@@ -1939,7 +1939,7 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
 
     builder.BuildConv2d(mojom::Conv2d_Type::kTransposed, input_operand_id,
                         filter_operand_id, filter_operand_id,
-                        Conv2dTester::Conv2dAttributes{}, absl::nullopt);
+                        Conv2dTester::Conv2dAttributes{}, std::nullopt);
 
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
@@ -2779,9 +2779,9 @@ TEST_F(WebNNGraphImplTest, GatherTest) {
 struct GemmTester {
   OperandInfo a;
   OperandInfo b;
-  absl::optional<OperandInfo> c;
+  std::optional<OperandInfo> c;
   struct GemmAttributes {
-    absl::optional<uint64_t> c_operand_id;
+    std::optional<uint64_t> c_operand_id;
     float alpha = 1.0;
     float beta = 1.0;
     bool a_transpose = false;
@@ -2923,11 +2923,11 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
 
 struct InstanceNormalizationTester {
   OperandInfo input;
-  absl::optional<OperandInfo> scale;
-  absl::optional<OperandInfo> bias;
+  std::optional<OperandInfo> scale;
+  std::optional<OperandInfo> bias;
   struct InstanceNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     mojom::InputOperandLayout layout =
         mojom::InputOperandLayout::kChannelsFirst;
     float epsilon = 1e-5;
@@ -3125,11 +3125,11 @@ TEST_F(WebNNGraphImplTest, InstanceNormalizationTest) {
 
 struct LayerNormalizationTester {
   OperandInfo input;
-  absl::optional<OperandInfo> scale;
-  absl::optional<OperandInfo> bias;
+  std::optional<OperandInfo> scale;
+  std::optional<OperandInfo> bias;
   struct LayerNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     std::vector<uint32_t> axes;
     float epsilon = 1e-5;
   };
@@ -3569,6 +3569,7 @@ struct Pool2dTester {
 
   void Test() {
     Test(mojom::Pool2d::Kind::kAveragePool2d);
+    Test(mojom::Pool2d::Kind::kL2Pool2d);
     Test(mojom::Pool2d::Kind::kMaxPool2d);
   }
 
@@ -4098,7 +4099,7 @@ struct Resample2dTester {
   struct Resample2dAttributes {
     mojom::Resample2d::InterpolationMode mode =
         mojom::Resample2d::InterpolationMode::kNearestNeighbor;
-    absl::optional<std::vector<float>> scales;
+    std::optional<std::vector<float>> scales;
     std::vector<uint32_t> axes = {2, 3};
   };
   Resample2dAttributes attributes;
@@ -4487,7 +4488,13 @@ TEST_F(WebNNGraphImplTest, SliceTest) {
   }
 }
 
-enum class FloatingPointUnaryKind { kLeakyRelu, kLinear, kSigmoid, kTanh };
+enum class FloatingPointUnaryKind {
+  kHardSwish,
+  kLeakyRelu,
+  kLinear,
+  kSigmoid,
+  kTanh
+};
 
 struct FloatingPointUnaryTester {
   OperandInfo input;
@@ -4495,6 +4502,7 @@ struct FloatingPointUnaryTester {
   bool expected;
 
   void Test() {
+    Test(FloatingPointUnaryKind::kHardSwish);
     Test(FloatingPointUnaryKind::kLeakyRelu);
     Test(FloatingPointUnaryKind::kLinear);
     Test(FloatingPointUnaryKind::kSigmoid);
@@ -4509,6 +4517,9 @@ struct FloatingPointUnaryTester {
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
     switch (kind) {
+      case FloatingPointUnaryKind::kHardSwish:
+        builder.BuildHardSwish(input_operand_id, output_operand_id);
+        break;
       case FloatingPointUnaryKind::kLeakyRelu:
         builder.BuildLeakyRelu(input_operand_id, output_operand_id,
                                /*alpha*/ 1.0);

@@ -47,9 +47,9 @@ class ASH_EXPORT AppListFolderView : public views::View,
                                      public AppListModelObserver,
                                      public views::ViewObserver,
                                      public AppsGridViewFolderDelegate {
- public:
-  METADATA_HEADER(AppListFolderView);
+  METADATA_HEADER(AppListFolderView, views::View)
 
+ public:
   // The maximum number of columns a folder can have.
   static constexpr int kMaxFolderColumns = 4;
 
@@ -108,7 +108,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   // views::View
   void AddedToWidget() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void ChildPreferredSizeChanged(View* child) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

@@ -1181,8 +1181,8 @@ void WebGL2RenderingContextBase::texImage2D(GLenum target,
   }
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
-  if (!ValidateTexFunc(params, kSourceUnpackBuffer, absl::nullopt,
-                       absl::nullopt)) {
+  if (!ValidateTexFunc(params, kSourceUnpackBuffer, std::nullopt,
+                       std::nullopt)) {
     return;
   }
   if (!ValidateValueFitNonNegInt32("texImage2D", "offset", offset))
@@ -1219,8 +1219,8 @@ void WebGL2RenderingContextBase::texSubImage2D(GLenum target,
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
-  if (!ValidateTexFunc(params, kSourceUnpackBuffer, absl::nullopt,
-                       absl::nullopt)) {
+  if (!ValidateTexFunc(params, kSourceUnpackBuffer, std::nullopt,
+                       std::nullopt)) {
     return;
   }
   if (!ValidateValueFitNonNegInt32("texSubImage2D", "offset", offset))
@@ -1992,8 +1992,8 @@ void WebGL2RenderingContextBase::texImage3D(GLenum target,
   }
   TexImageParams params;
   POPULATE_TEX_IMAGE_3D_PARAMS(params);
-  if (!ValidateTexFunc(params, kSourceUnpackBuffer, absl::nullopt,
-                       absl::nullopt)) {
+  if (!ValidateTexFunc(params, kSourceUnpackBuffer, std::nullopt,
+                       std::nullopt)) {
     return;
   }
   if (!ValidateValueFitNonNegInt32("texImage3D", "offset", offset))
@@ -2215,8 +2215,8 @@ void WebGL2RenderingContextBase::texSubImage3D(GLenum target,
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_3D_PARAMS(params);
-  if (!ValidateTexFunc(params, kSourceUnpackBuffer, absl::nullopt,
-                       absl::nullopt)) {
+  if (!ValidateTexFunc(params, kSourceUnpackBuffer, std::nullopt,
+                       std::nullopt)) {
     return;
   }
   if (!ValidateValueFitNonNegInt32("texSubImage3D", "offset", offset))
@@ -4962,10 +4962,10 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
   }
 }
 
-absl::optional<Vector<GLuint>> WebGL2RenderingContextBase::getUniformIndices(
+std::optional<Vector<GLuint>> WebGL2RenderingContextBase::getUniformIndices(
     WebGLProgram* program,
     const Vector<String>& uniform_names) {
-  // TODO(https://crbug.com/1465002): This should return absl::nullopt
+  // TODO(https://crbug.com/1465002): This should return std::nullopt
   // if there is an error.
   Vector<GLuint> result;
   if (!ValidateWebGLProgramOrShader("getUniformIndices", program))

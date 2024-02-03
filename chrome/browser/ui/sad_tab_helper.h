@@ -20,7 +20,7 @@ class SadTab;
 // these docs when that happens.
 //
 // If we are doing the early commit then the sad tab is removed when
-// WebContentsObserver::RenderFrameCreated is signalled and does not come back
+// WebContentsObserver::RenderViewReady is signalled and does not come back
 // unless the new frame also crashes.
 //
 // If we are not doing the early commit then the sad tab is removed when the new
@@ -54,6 +54,7 @@ class SadTabHelper : public content::WebContentsObserver,
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
+  void RenderViewReady() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 

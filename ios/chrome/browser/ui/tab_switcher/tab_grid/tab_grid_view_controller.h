@@ -25,6 +25,7 @@ class GURL;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
 @class LayoutGuideCenter;
+@class PinnedTabsViewController;
 @protocol PriceCardDataSource;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
@@ -124,16 +125,11 @@ enum class TabGridPageConfiguration {
 
 // Consumers send updates from the model layer to the UI layer.
 @property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
-@property(nonatomic, readonly) id<TabCollectionConsumer> pinnedTabsConsumer;
 
 // Delegates send updates from the UI layer to the model layer.
-@property(nonatomic, weak) id<GridCommands> regularTabsDelegate;
-@property(nonatomic, weak) id<GridCommands> inactiveTabsDelegate;
-@property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
-
-// Handles drag and drop interactions that require the model layer.
-@property(nonatomic, weak) id<TabCollectionDragDropHandler>
-    pinnedTabsDragDropHandler;
+@property(nonatomic, weak) id<GridCommands> regularGridHandler;
+@property(nonatomic, weak) id<GridCommands> inactiveGridHandler;
+@property(nonatomic, weak) id<GridCommands> incognitoGridHandler;
 
 // Data source for acquiring data which power the PriceCardView
 @property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;
@@ -146,6 +142,7 @@ enum class TabGridPageConfiguration {
 // Child view controllers.
 @property(nonatomic, strong)
     RegularGridViewController* regularTabsViewController;
+@property(nonatomic, strong) PinnedTabsViewController* pinnedTabsViewController;
 @property(nonatomic, strong)
     IncognitoGridViewController* incognitoTabsViewController;
 // The view controller for remote tabs.
@@ -154,10 +151,6 @@ enum class TabGridPageConfiguration {
 // model objects used in this view controller should be factored out.
 @property(nonatomic, readonly)
     RecentTabsTableViewController* remoteTabsViewController;
-
-// Provides the context menu for the tabs on the grid.
-@property(nonatomic, weak) id<TabContextMenuProvider>
-    regularTabsContextMenuProvider;
 
 // The layout guide center to use to refer to the bottom toolbar.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;

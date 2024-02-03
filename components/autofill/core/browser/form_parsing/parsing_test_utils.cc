@@ -61,7 +61,7 @@ void FormFieldParserTestBase::AddFormFieldDataWithLength(
   field_data.name = base::UTF8ToUTF16(name);
   field_data.label = base::UTF8ToUTF16(label);
   field_data.max_length = max_length;
-  field_data.unique_renderer_id = MakeFieldRendererId();
+  field_data.renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field_data));
   expected_classifications_.insert(
       std::make_pair(field_data.global_id(), expected_type));

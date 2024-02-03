@@ -20,7 +20,6 @@
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

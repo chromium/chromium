@@ -56,11 +56,11 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void RequestEncodingParametersChange(
       const VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
@@ -127,7 +127,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   void RequestEncodingParametersChangeTask(
       VideoBitrateAllocation bitrate_allocation,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size);
+      const std::optional<gfx::Size>& size);
 
   void DestroyTask();
   void FlushTask(FlushCallback flush_callback);
@@ -295,7 +295,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // VASurfaces already encoded and waiting for the bitstream buffer to
   // be downloaded.
-  base::queue<absl::optional<EncodeResult>> pending_encode_results_;
+  base::queue<std::optional<EncodeResult>> pending_encode_results_;
 
   // Task runner for interacting with the client, and its checker.
   const scoped_refptr<base::SequencedTaskRunner> child_task_runner_;

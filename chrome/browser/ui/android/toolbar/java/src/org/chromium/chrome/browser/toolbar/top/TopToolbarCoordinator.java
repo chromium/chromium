@@ -411,6 +411,14 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
+     * Overviews that are not owned by this class need to update this observer when they update
+     * their alpha during animations.
+     */
+    public ToolbarAlphaInOverviewObserver getToolbarAlphaInOverviewObserver() {
+        return mToolbarColorObserverManager;
+    }
+
+    /**
      * @see View#addOnAttachStateChangeListener(View.OnAttachStateChangeListener)
      */
     public void addOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
@@ -702,14 +710,22 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /**
      * @param provider The provider used to determine incognito state.
+     * @param overviewIncognitoSupplier Optional override for whether the overview is showing
+     *     incognito UI.
      */
-    public void setIncognitoStateProvider(IncognitoStateProvider provider) {
+    public void setIncognitoStateProvider(
+            IncognitoStateProvider provider, @Nullable BooleanSupplier overviewIncognitoSupplier) {
         if (mTabSwitcherModeCoordinator != null) {
             mTabSwitcherModeCoordinator.setIncognitoStateProvider(provider);
         } else if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.setIncognitoStateProvider(provider);
         }
-        mToolbarColorObserverManager.setIncognitoStateProvider(provider);
+
+        BooleanSupplier nonNullSupplier =
+                overviewIncognitoSupplier == null
+                        ? provider::isIncognitoSelected
+                        : overviewIncognitoSupplier;
+        mToolbarColorObserverManager.setIncognitoStateProvider(nonNullSupplier);
     }
 
     /**

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_check;
 
+import androidx.annotation.NonNull;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -14,19 +16,28 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * //components/safety_check.
  */
 public class SafetyCheckBridge {
+
+    private final Profile mProfile;
+
+    /** Constructs a SafetyCheckBridge for a given {@link Profile}. */
+    public SafetyCheckBridge(@NonNull Profile profile) {
+        mProfile = profile;
+    }
+
     /** Returns whether the user is signed in for the purposes of password check. */
-    static boolean userSignedIn() {
-        return SafetyCheckBridgeJni.get().userSignedIn(Profile.getLastUsedRegularProfile());
+    boolean userSignedIn() {
+        return SafetyCheckBridgeJni.get().userSignedIn(mProfile);
     }
 
     /**
      * Triggers the Safe Browsing check on the C++ side.
      *
-     * @return SafetyCheck::SafeBrowsingStatus enum value representing the Safe Browsing state
-     *     (see //components/safety_check/safety_check.h).
+     * @return SafetyCheck::SafeBrowsingStatus enum value representing the Safe Browsing state (see
+     *     //components/safety_check/safety_check.h).
      */
-    static @SafeBrowsingStatus int checkSafeBrowsing() {
-        return SafetyCheckBridgeJni.get().checkSafeBrowsing(Profile.getLastUsedRegularProfile());
+    @SafeBrowsingStatus
+    int checkSafeBrowsing() {
+        return SafetyCheckBridgeJni.get().checkSafeBrowsing(mProfile);
     }
 
     /** C++ method signatures. */

@@ -126,7 +126,7 @@ TCPSocket* TCPSocket::CreateFromAcceptedConnection(
   auto* socket = MakeGarbageCollected<TCPSocket>(script_state);
   // TODO(crbug.com/1417998): support local_addr for accepted sockets.
   socket->FinishOpenOrAccept(std::move(tcp_socket), std::move(socket_observer),
-                             peer_addr, /*local_addr=*/absl::nullopt,
+                             peer_addr, /*local_addr=*/std::nullopt,
                              std::move(receive_stream), std::move(send_stream));
   DCHECK_EQ(socket->GetState(), State::kOpen);
   return socket;
@@ -205,8 +205,8 @@ void TCPSocket::OnTCPSocketOpened(
     mojo::PendingReceiver<network::mojom::blink::SocketObserver>
         socket_observer,
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   if (result == net::OK) {
@@ -234,7 +234,7 @@ void TCPSocket::FinishOpenOrAccept(
     mojo::PendingReceiver<network::mojom::blink::SocketObserver>
         socket_observer,
     const net::IPEndPoint& peer_addr,
-    const absl::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   tcp_socket_.Bind(std::move(tcp_socket),
@@ -280,7 +280,7 @@ void TCPSocket::OnSocketConnectionError() {
 void TCPSocket::OnServiceConnectionError() {
   if (GetState() == State::kOpening) {
     OnTCPSocketOpened(mojo::NullRemote(), mojo::NullReceiver(),
-                      net::ERR_CONTEXT_SHUT_DOWN, absl::nullopt, absl::nullopt,
+                      net::ERR_CONTEXT_SHUT_DOWN, std::nullopt, std::nullopt,
                       mojo::ScopedDataPipeConsumerHandle(),
                       mojo::ScopedDataPipeProducerHandle());
   }

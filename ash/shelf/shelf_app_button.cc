@@ -649,7 +649,7 @@ void ShelfAppButton::AddState(State state) {
 void ShelfAppButton::ClearState(State state) {
   if (state_ & state) {
     state_ &= ~state;
-    Layout();
+    DeprecatedLayoutImmediately();
     if (state & STATE_ATTENTION)
       indicator_->ShowAttention(false);
     if (state & STATE_ACTIVE)
@@ -1048,7 +1048,7 @@ gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
                  scaled_icon_view_bounds.y() + padding, diameter, diameter));
 }
 
-void ShelfAppButton::Layout() {
+void ShelfAppButton::Layout(PassKey) {
   Shelf* shelf = shelf_view_->shelf();
   gfx::Rect icon_view_bounds =
       GetIconViewBounds(GetContentsBounds(), icon_scale_,
@@ -1091,12 +1091,12 @@ void ShelfAppButton::Layout() {
   indicator_->SetBoundsRect(indicator_bounds);
 
   UpdateState();
-  views::FocusRing::Get(this)->Layout();
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
   UpdateProgressRingBounds();
 }
 
 void ShelfAppButton::ChildPreferredSizeChanged(views::View* child) {
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ShelfAppButton::OnThemeChanged() {

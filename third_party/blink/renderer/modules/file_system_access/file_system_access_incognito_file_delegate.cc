@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_incognito_file_delegate.h"
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,7 +14,6 @@
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/string_data_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
@@ -108,7 +109,7 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
 
   base::File::Error file_error;
   int bytes_read;
-  absl::optional<mojo_base::BigBuffer> buffer;
+  std::optional<mojo_base::BigBuffer> buffer;
   int bytes_to_read = base::saturated_cast<int>(data.size());
   mojo_ptr_->Read(offset, bytes_to_read, &buffer, &file_error, &bytes_read);
 

@@ -28,7 +28,7 @@ const char kUploadCardRequestFormatWithoutCvc[] =
 }  // namespace
 
 UploadCardRequest::UploadCardRequest(
-    const PaymentsNetworkInterface::UploadRequestDetails& request_details,
+    const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
     const bool full_sync_enabled,
     base::OnceCallback<void(
         AutofillClient::PaymentsRpcResult,

@@ -35,32 +35,42 @@ class BookmarkLoadDetails {
   BookmarkLoadDetails(const BookmarkLoadDetails&) = delete;
   BookmarkLoadDetails& operator=(const BookmarkLoadDetails&) = delete;
 
-  BookmarkNode* root_node() { return root_node_ptr_; }
+  // Local-or-syncable permanent nodes (never null).
   BookmarkPermanentNode* bb_node() { return bb_node_; }
   BookmarkPermanentNode* mobile_folder_node() { return mobile_folder_node_; }
   BookmarkPermanentNode* other_folder_node() { return other_folder_node_; }
+
+  // Account permanent nodes (null unless `AddAccountPermanentNodes()` is
+  // called).
+  BookmarkPermanentNode* account_bb_node() { return account_bb_node_; }
+  BookmarkPermanentNode* account_mobile_folder_node() {
+    return account_mobile_folder_node_;
+  }
+  BookmarkPermanentNode* account_other_folder_node() {
+    return account_other_folder_node_;
+  }
 
   std::unique_ptr<TitledUrlIndex> owned_titled_url_index() {
     return std::move(titled_url_index_);
   }
 
-  UuidIndex owned_uuid_index() { return std::move(uuid_index_); }
+  UuidIndex owned_local_or_syncable_uuid_index() {
+    return std::move(local_or_syncable_uuid_index_);
+  }
+
+  UuidIndex owned_account_uuid_index() {
+    return std::move(account_uuid_index_);
+  }
 
   // Max id of the nodes.
   void set_max_id(int64_t max_id) { max_id_ = max_id; }
   int64_t max_id() const { return max_id_; }
 
-  // Computed checksum.
-  void set_computed_checksum(const std::string& value) {
-    computed_checksum_ = value;
-  }
-  const std::string& computed_checksum() const { return computed_checksum_; }
-
-  // Stored checksum.
-  void set_stored_checksum(const std::string& value) {
-    stored_checksum_ = value;
-  }
-  const std::string& stored_checksum() const { return stored_checksum_; }
+  // The required-recovery bit represents whether the on-disk state was corrupt
+  // and had to be recovered. Scenarios include ID or UUID collisions and
+  // checksum mismatches.
+  void set_required_recovery(bool value) { required_recovery_ = value; }
+  bool required_recovery() const { return required_recovery_; }
 
   // Whether ids were reassigned. IDs are reassigned during decoding if the
   // checksum of the file doesn't match, some IDs are missing or not
@@ -69,45 +79,66 @@ class BookmarkLoadDetails {
   void set_ids_reassigned(bool value) { ids_reassigned_ = value; }
   bool ids_reassigned() const { return ids_reassigned_; }
 
-  // Whether new UUIDs were assigned to Bookmarks that lacked them.
-  void set_uuids_reassigned(bool value) { uuids_reassigned_ = value; }
-  bool uuids_reassigned() const { return uuids_reassigned_; }
-
   // Returns the string blob representing the sync metadata in the json file.
   // The string blob is set during decode time upon the call to Bookmark::Load.
-  void set_sync_metadata_str(std::string sync_metadata_str) {
-    sync_metadata_str_ = std::move(sync_metadata_str);
+  void set_local_or_syncable_sync_metadata_str(std::string sync_metadata_str) {
+    local_or_syncable_sync_metadata_str_ = std::move(sync_metadata_str);
   }
-  const std::string& sync_metadata_str() const { return sync_metadata_str_; }
+
+  const std::string& local_or_syncable_sync_metadata_str() const {
+    return local_or_syncable_sync_metadata_str_;
+  }
+
+  // Same as above but for account bookmarks.
+  void set_account_sync_metadata_str(std::string sync_metadata_str) {
+    account_sync_metadata_str_ = std::move(sync_metadata_str);
+  }
+  const std::string& account_sync_metadata_str() const {
+    return account_sync_metadata_str_;
+  }
+
+  // Adds account bookmarks. May be called at most once.
+  void AddAccountPermanentNodes(
+      std::unique_ptr<BookmarkPermanentNode> account_bb_node,
+      std::unique_ptr<BookmarkPermanentNode> account_other_folder_node,
+      std::unique_ptr<BookmarkPermanentNode> account_mobile_folder_node);
+
+  // Adds managed nodes. May be called at most once.
+  void AddManagedNode(std::unique_ptr<BookmarkPermanentNode> managed_node);
 
   void CreateIndices();
 
   const scoped_refptr<UrlIndex>& url_index() { return url_index_; }
-  scoped_refptr<const UrlIndex> url_index() const { return url_index_; }
+  const UrlIndex* url_index() const { return url_index_.get(); }
 
   base::TimeTicks load_start() { return load_start_; }
 
+  const BookmarkNode* RootNodeForTest() const;
+
  private:
   // Adds node to the various indices, recursing through all children as well.
-  void AddNodeToIndexRecursive(BookmarkNode* node);
+  void AddNodeToIndexRecursive(BookmarkNode* node, UuidIndex& uuid_index);
 
   std::unique_ptr<BookmarkNode> root_node_;
-  raw_ptr<BookmarkNode, DanglingUntriaged> root_node_ptr_;
-  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> bb_node_ = nullptr;
-  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> other_folder_node_ =
-      nullptr;
-  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> mobile_folder_node_ =
-      nullptr;
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
-  UuidIndex uuid_index_;
+  UuidIndex local_or_syncable_uuid_index_;
+  UuidIndex account_uuid_index_;
   int64_t max_id_ = 1;
-  std::string computed_checksum_;
-  std::string stored_checksum_;
   bool ids_reassigned_ = false;
-  bool uuids_reassigned_ = false;
+  bool required_recovery_ = false;
   scoped_refptr<UrlIndex> url_index_;
-  // A string blob represetning the sync metadata stored in the json file.
-  std::string sync_metadata_str_;
+  raw_ptr<BookmarkPermanentNode> bb_node_;
+  raw_ptr<BookmarkPermanentNode> other_folder_node_;
+  raw_ptr<BookmarkPermanentNode> mobile_folder_node_;
+  raw_ptr<BookmarkPermanentNode> account_bb_node_;
+  raw_ptr<BookmarkPermanentNode> account_other_folder_node_;
+  raw_ptr<BookmarkPermanentNode> account_mobile_folder_node_;
+  bool has_managed_node_ = false;
+  // String blob representing the sync metadata stored in the json file, one
+  // per storage type (local-or-syncable or account bookmarks). In normal
+  // circumstances, only one of them may be non-empty.
+  std::string local_or_syncable_sync_metadata_str_;
+  std::string account_sync_metadata_str_;
   base::TimeTicks load_start_;
 };
 

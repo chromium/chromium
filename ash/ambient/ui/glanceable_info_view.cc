@@ -216,7 +216,7 @@ int GlanceableInfoView::GetTimeFontDescent() {
   return GetFontDescent(GetTimeFontList(time_font_size_dip_));
 }
 
-BEGIN_METADATA(GlanceableInfoView, views::View)
+BEGIN_METADATA(GlanceableInfoView)
 END_METADATA
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +22,7 @@ namespace extensions {
 class MimeHandlerServiceImplTest : public testing::Test {
  public:
   void SetUp() override {
-    const std::string extension_id =
+    const ExtensionId extension_id =
         extension_misc::kMimeHandlerPrivateTestExtensionId;
     auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
     transferrable_loader->url = GURL("stream://url");

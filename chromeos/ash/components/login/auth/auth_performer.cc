@@ -43,9 +43,9 @@ namespace ash {
 namespace {
 
 bool IsKioskUserType(user_manager::UserType type) {
-  return type == user_manager::USER_TYPE_KIOSK_APP ||
-         type == user_manager::USER_TYPE_ARC_KIOSK_APP ||
-         type == user_manager::USER_TYPE_WEB_KIOSK_APP;
+  return type == user_manager::UserType::kKioskApp ||
+         type == user_manager::UserType::kArcKioskApp ||
+         type == user_manager::UserType::kWebKioskApp;
 }
 
 user_data_auth::AuthIntent SerializeIntent(AuthSessionIntent intent) {

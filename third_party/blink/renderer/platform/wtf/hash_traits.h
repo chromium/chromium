@@ -178,15 +178,6 @@ struct GenericHashTraitsBase {
   static constexpr unsigned kMinimumTableSize = 8;
 #endif
 
-  // When a hash table backing store is traced, its elements will be
-  // traced if their class type has a trace method. However, weak-referenced
-  // elements should not be traced then, but handled by the weak processing
-  // phase that follows.
-  template <typename U = void>
-  struct IsTraceableInCollection {
-    static constexpr bool value = IsTraceable<T>::value && !IsWeak<T>::value;
-  };
-
   // The NeedsToForbidGCOnMove flag is used to make the hash table move
   // operations safe when GC is enabled: if a move constructor invokes
   // an allocation triggering the GC then it should be invoked within GC
@@ -528,11 +519,6 @@ struct OneFieldHashTraits : GenericHashTraits<T> {
   static constexpr unsigned kMinimumTableSize = FieldTraits::kMinimumTableSize;
 
   template <typename U = void>
-  struct IsTraceableInCollection {
-    static const bool value = IsTraceableInCollectionTrait<FieldTraits>::value;
-  };
-
-  template <typename U = void>
   struct NeedsToForbidGCOnMove {
     static const bool value =
         FieldTraits::template NeedsToForbidGCOnMove<>::value;
@@ -575,13 +561,6 @@ struct TwoFieldsHashTraits : OneFieldHashTraits<T, first_field, FirstTraits> {
 
   // ConstructDeletedValue(), IsDeletedValue(), kMinimumTableSize delegate to
   // the first field, inherited from OneFieldHashTraits.
-
-  template <typename U = void>
-  struct IsTraceableInCollection {
-    static const bool value =
-        IsTraceableInCollectionTrait<FirstTraits>::value ||
-        IsTraceableInCollectionTrait<SecondTraits>::value;
-  };
 
   template <typename U = void>
   struct NeedsToForbidGCOnMove {

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1021782183249308751">Halte das Chrome-Symbol gedrückt und klicke auf „Startbildschirm bearbeiten“</translation>
 <translation id="1066101356081285416">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Die Sendungsnummer und der Name der Website werden an Google gesendet, um diese Funktion bereitzustellen und die Google Shopping-Funktionen für alle zu verbessern. Du kannst dies jederzeit in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> aktualisieren.</translation>
 <translation id="1085696779717592361">Standardmäßig Chrome verwenden</translation>
 <translation id="1105362920864247682">Browserdaten in Chrome löschen.</translation>
@@ -96,6 +97,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3345341804167540816">Chrome überall nutzen</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Das passiert, wenn Chrome {THRESHOLD} Minute lang nicht verwendet wird}other{Das passiert, wenn Chrome {THRESHOLD} Minuten lang nicht verwendet wird}}</translation>
 <translation id="3399930248910934354">Chrome-Einstellungen öffnen</translation>
+<translation id="344736123700721678">Über das Startbildschirm-Dock schneller auf Chrome zugreifen</translation>
 <translation id="3472587960215700950">Chrome nutzt Google Maps, um dir Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>
 <translation id="3503014945441706099">Hol dir für dieses Chrome-Profil auch erweitertes Safe Browsing</translation>
 <translation id="3522659714780527202">Aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
@@ -177,12 +179,15 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="6054613632208573261">Standardmäßig Chrome verwenden</translation>
 <translation id="6063091872902370735">Anmeldung in Chrome zulassen</translation>
 <translation id="6110625574506755980">Einige Chrome-Funktionen sind dann nicht mehr verfügbar.</translation>
+<translation id="6132149203299792222">Melde dich mit deinem Google-Konto an, um z. B. deine Passwörter und Lesezeichen zu synchronisieren.</translation>
 <translation id="6177442314419606057">Suche in Chrome</translation>
 <translation id="6181930887571472871">Zu Chrome wechseln</translation>
 <translation id="6238746320622508509">Erlaube Chrome, deine Inkognitotabs zu sperren.</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
+<translation id="6272822675004864999">Wenn du Benachrichtigungen von Chrome erhalten möchtest, aktiviere Benachrichtigungen in deinen iOS-Einstellungen.</translation>
 <translation id="630693926528731525">Dein Passwort wurde nicht geteilt. Prüfe deine Internetverbindung und achte darauf, dass du in Chrome angemeldet bist. Versuche es dann noch einmal.</translation>
 <translation id="6348855835728304880">Du kannst in anderen Apps auf diesem Gerät auf deine Chrome-Passwörter und mehr zugreifen.</translation>
+<translation id="6389317667633680932">Entdecke neue Funktionen, mit denen du Chrome noch besser nutzen kannst.</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6427126399757991875">Deine Organisation richtet Chrome ein…</translation>
 <translation id="6484712497741564393">Angemeldet als <ph name="EMAIL" />.
@@ -214,8 +219,10 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
 <translation id="7161390184744336561">Google Chrome ist veraltet</translation>
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>
+<translation id="7175129790242719365">Chrome-Tipp: In Chrome anmelden</translation>
 <translation id="7187993566681480880">Schützt dich in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
 <translation id="7200524487407690471">Chrome führt jeden Tag automatisch einen Sicherheitscheck durch, um dich unter anderem vor Datenpannen und unsicheren Websites zu schützen. Weitere Informationen zum Sicherheitscheck findest du in den Einstellungen.</translation>
+<translation id="7203324561587388418">Bleib mit Inhalten und hilfreichen Chrome-Tipps auf dem Laufenden.</translation>
 <translation id="72119412072970160">Du kannst die im Google Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
 <translation id="723787869754590019">Chrome für Autofill verwenden</translation>
 <translation id="7254380941803999489">Chrome als Standardbrowser festlegen</translation>
@@ -244,6 +251,8 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7897703007638178753">Zuletzt geöffnete Chrome-Tabs ansehen</translation>
 <translation id="7925119591961387184">Wähle „Chrome“ aus.</translation>
 <translation id="7933491483529363150">Aktuellen Tab in Chrome öffnen.</translation>
+<translation id="7948283758957877064">Jetzt neu bei Chrome</translation>
+<translation id="8006014511203279255">Öffne Links immer in Chrome, wenn du sie in Messages oder anderen Apps antippst.</translation>
 <translation id="8022947259858476807">Verwende Chrome als deinen Standardbrowser, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="804638182476029347">Chrome-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
 <translation id="8065292699993359127">URLs in Chrome im Inkognitomodus öffnen</translation>
@@ -280,6 +289,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="8788269841521769222">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
+<translation id="878917453316810648">Chrome-Tipp: Standardmäßig Chrome verwenden</translation>
 <translation id="8808828119384186784">Chrome-Einstellungen</translation>
 <translation id="8855781063981781621">Um den Blockierungsmodus in Chrome zu deaktivieren, musst du ihn auf deinem iPad ausschalten.</translation>
 <translation id="8856877214925961642">Die Passphrasenverschlüsselung erstreckt sich nicht auf Zahlungsmethoden und Adressen.

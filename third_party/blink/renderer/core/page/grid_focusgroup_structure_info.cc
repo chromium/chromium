@@ -392,7 +392,7 @@ LayoutTableCell*
 AutomaticGridFocusgroupStructureInfo::TableCellAtIndexInRowRecursive(
     unsigned index,
     LayoutTableRow* row,
-    absl::optional<unsigned> expected_rowspan) {
+    std::optional<unsigned> expected_rowspan) {
   if (!row)
     return nullptr;
 

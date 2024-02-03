@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 namespace url {
@@ -62,7 +63,7 @@ std::string GetWebstoreItemDetailURLPrefix();
 
 // Returns the URL used to get webstore data (ratings, manifest, icon URL,
 // etc.) about an extension from the webstore as JSON.
-GURL GetWebstoreItemJsonDataURL(const std::string& extension_id);
+GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id);
 
 // Returns the compile-time constant webstore update url specific to
 // Chrome. Usually you should prefer using GetWebstoreUpdateUrl.
@@ -74,7 +75,7 @@ GURL GetWebstoreUpdateUrl();
 
 // Returns the url to visit to report abuse for the given |extension_id|
 // and |referrer_id|.
-GURL GetWebstoreReportAbuseUrl(const std::string& extension_id,
+GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
                                const std::string& referrer_id);
 
 // Returns whether the URL's host matches or is in the same domain as any of the

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -39,6 +40,8 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace content {
 struct FocusedNodeDetails;
@@ -355,7 +358,8 @@ class AccessibilityManager
   void HideFocusRing(std::string focus_ring_id);
 
   // Initializes the focus rings when a feature loads.
-  void InitializeFocusRings(ax::mojom::AssistiveTechnologyType at_type);
+  std::set<std::string>& GetFocusRingsForATType(
+      ax::mojom::AssistiveTechnologyType at_type);
 
   // Hides all focus rings for the `at_type`, and removes that `at_type` from
   // |focus_ring_names_for_at_type_|.
@@ -407,6 +411,12 @@ class AccessibilityManager
 
   // Called when Shimless RMA launches to enable accessibility features.
   void OnShimlessRmaLaunched();
+
+  // Generates and fires a synthetic mouse event.
+  void SendSyntheticMouseEvent(ui::EventType type,
+                               int flags,
+                               int changed_button_flags,
+                               gfx::Point location_in_screen);
 
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
@@ -465,6 +475,8 @@ class AccessibilityManager
       const language_packs::PackResult& pack_result);
   void SetDlcPathForTest(base::FilePath path);
 
+  void LoadEnhancedNetworkTtsForTest();
+
  protected:
   AccessibilityManager();
   ~AccessibilityManager() override;
@@ -477,10 +489,8 @@ class AccessibilityManager
   void PostLoadSelectToSpeak();
   void PostUnloadSelectToSpeak();
 
-  void PostLoadSwitchAccess();
   void PostUnloadSwitchAccess();
 
-  void PostLoadAccessibilityCommon();
   void PostUnloadAccessibilityCommon();
 
   void UpdateEnhancedNetworkTts();

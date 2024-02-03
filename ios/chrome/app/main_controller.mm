@@ -87,7 +87,7 @@
 #import "ios/chrome/browser/metrics/model/window_configuration_recorder.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
@@ -610,13 +610,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // start.
   tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
 
-  // Send "default_browser_video_promo_conditions_met" event to the
-  // feature_engagement::Tracker on cold start.
-  if (HasAppLaunchedOnColdStartAndRecordsLaunch()) {
-    tracker->NotifyEvent(
-        feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
-  }
-
   _spotlightManager =
       [SpotlightManager spotlightManagerWithBrowserState:chromeBrowserState];
 
@@ -695,9 +688,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(!browserState->IsOffTheRecord());
-  search_engines::UpdateSearchEnginesIfNeeded(
-      browserState->GetPrefs(),
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState));
+  search_engines::UpdateSearchEngineCountryCodeIfNeeded(
+      browserState->GetPrefs());
 }
 
 #pragma mark - AppStateObserver
@@ -1483,12 +1475,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           [handler hideActivityOverlay];
         }
       }
-      WebUsageEnablerBrowserAgent::FromBrowser(
-          browserProviderInterface.mainBrowserProvider.browser)
-          ->SetWebUsageEnabled(true);
-      WebUsageEnablerBrowserAgent::FromBrowser(
-          browserProviderInterface.incognitoBrowserProvider.browser)
-          ->SetWebUsageEnabled(true);
+      if (browserProviderInterface.mainBrowserProvider.browser) {
+        WebUsageEnablerBrowserAgent::FromBrowser(
+            browserProviderInterface.mainBrowserProvider.browser)
+            ->SetWebUsageEnabled(true);
+      }
+      if (browserProviderInterface.incognitoBrowserProvider.browser) {
+        WebUsageEnablerBrowserAgent::FromBrowser(
+            browserProviderInterface.incognitoBrowserProvider.browser)
+            ->SetWebUsageEnabled(true);
+      }
       [browserProviderInterface.currentBrowserProvider setPrimary:YES];
     }
     // `completionBlock` is run once, not once per scene.

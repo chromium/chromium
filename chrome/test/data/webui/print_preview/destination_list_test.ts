@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
+import type {PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

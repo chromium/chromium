@@ -24,6 +24,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -606,7 +607,9 @@ public class StatusMediator
     }
 
     public void onIncognitoStateChanged() {
-        boolean incognitoBadgeVisible = mLocationBarDataProvider.isIncognito() && !mIsTablet;
+        boolean showIncognitoStatus = !mIsTablet || OmniboxFeatures.showIncognitoStatusForTablet();
+        boolean incognitoBadgeVisible =
+                mLocationBarDataProvider.isIncognito() && showIncognitoStatus;
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, incognitoBadgeVisible);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
         setStatusIconAlpha(1f);

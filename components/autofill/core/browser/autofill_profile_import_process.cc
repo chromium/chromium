@@ -21,13 +21,6 @@ namespace {
 
 using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
 
-// Returns a unique import id.
-AutofillProfileImportId GetImportId() {
-  static AutofillProfileImportId next_import_id(0);
-  next_import_id.value()++;
-  return next_import_id;
-}
-
 // When the profile is observed without explicit country information, Autofill
 // guesses it's country. Detecting a profile as a duplicate can fail if we guess
 // incorrectly. This function checks if we have reason to believe that the
@@ -60,8 +53,7 @@ ProfileImportProcess::ProfileImportProcess(
     PersonalDataManager* personal_data_manager,
     bool allow_only_silent_updates,
     ProfileImportMetadata import_metadata)
-    : import_id_(GetImportId()),
-      observed_profile_(observed_profile),
+    : observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
       personal_data_manager_(personal_data_manager),

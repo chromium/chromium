@@ -123,7 +123,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     this.bubbles_.clear();
 
     const listItems = this.shadowRoot!.querySelectorAll(
-        'print-preview-advanced-settings-item')!;
+        'print-preview-advanced-settings-item');
     let hasMatch = false;
     listItems.forEach(item => {
       const matches = item.hasMatch(this.searchQuery_);

@@ -363,7 +363,7 @@ bool PPB_Graphics3D_Impl::InitRaw(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   auto result = command_buffer_->Initialize(
       gpu::kNullSurfaceHandle, share_buffer, kGpuStreamPriorityDefault,
-      attrib_helper, GURL::EmptyGURL());
+      attrib_helper, GURL());
   if (result != gpu::ContextResult::kSuccess)
     return false;
 

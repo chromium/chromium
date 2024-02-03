@@ -243,7 +243,7 @@ TEST(DecoderBufferTest, SideData) {
   EXPECT_EQ(buffer->side_data()->spatial_layers, kSpatialLayers);
   EXPECT_EQ(buffer->side_data()->alpha_data, kAlphaData);
 
-  buffer->set_side_data(absl::nullopt);
+  buffer->set_side_data(std::nullopt);
   EXPECT_FALSE(buffer->has_side_data());
 }
 

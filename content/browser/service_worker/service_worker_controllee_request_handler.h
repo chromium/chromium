@@ -135,6 +135,8 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       scoped_refptr<ServiceWorkerVersion> version);
 
   void CompleteWithoutLoader();
+  void CreateLoaderAndStartRequest(
+      base::TimeTicks find_registration_start_time);
 
   // Schedules a service worker update to occur shortly after the page and its
   // initial subresources load, if this handler was for a navigation.

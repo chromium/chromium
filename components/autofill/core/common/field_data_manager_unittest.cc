@@ -21,13 +21,13 @@ class FieldDataManagerTest : public testing::Test {
     field1.id_attribute = u"name1";
     field1.value = u"first";
     field1.form_control_type = FormControlType::kInputText;
-    field1.unique_renderer_id = FieldRendererId(1);
+    field1.renderer_id = FieldRendererId(1);
     control_elements_.push_back(field1);
 
     FormFieldData field2;
     field2.id_attribute = u"name2";
     field2.form_control_type = FormControlType::kInputPassword;
-    field2.unique_renderer_id = FieldRendererId(2);
+    field2.renderer_id = FieldRendererId(2);
     control_elements_.push_back(field2);
   }
 
@@ -39,29 +39,29 @@ class FieldDataManagerTest : public testing::Test {
 TEST_F(FieldDataManagerTest, UpdateFieldDataMap) {
   const scoped_refptr<FieldDataManager> field_data_manager =
       base::MakeRefCounted<FieldDataManager>();
-  field_data_manager->UpdateFieldDataMap(
-      control_elements_[0].unique_renderer_id, control_elements_[0].value,
-      FieldPropertiesFlags::kUserTyped);
-  const FieldRendererId id(control_elements_[0].unique_renderer_id);
+  field_data_manager->UpdateFieldDataMap(control_elements_[0].renderer_id,
+                                         control_elements_[0].value,
+                                         FieldPropertiesFlags::kUserTyped);
+  const FieldRendererId id(control_elements_[0].renderer_id);
   EXPECT_TRUE(field_data_manager->HasFieldData(id));
   EXPECT_EQ(u"first", field_data_manager->GetUserInput(id));
   EXPECT_EQ(FieldPropertiesFlags::kUserTyped,
             field_data_manager->GetFieldPropertiesMask(id));
 
-  field_data_manager->UpdateFieldDataMap(
-      control_elements_[0].unique_renderer_id, u"newvalue",
-      FieldPropertiesFlags::kAutofilled);
+  field_data_manager->UpdateFieldDataMap(control_elements_[0].renderer_id,
+                                         u"newvalue",
+                                         FieldPropertiesFlags::kAutofilled);
   EXPECT_EQ(u"newvalue", field_data_manager->GetUserInput(id));
   FieldPropertiesMask mask =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled;
   EXPECT_EQ(mask, field_data_manager->GetFieldPropertiesMask(id));
 
-  field_data_manager->UpdateFieldDataMap(
-      control_elements_[1].unique_renderer_id, control_elements_[1].value,
-      FieldPropertiesFlags::kAutofilled);
+  field_data_manager->UpdateFieldDataMap(control_elements_[1].renderer_id,
+                                         control_elements_[1].value,
+                                         FieldPropertiesFlags::kAutofilled);
   EXPECT_EQ(FieldPropertiesFlags::kNoFlags,
             field_data_manager->GetFieldPropertiesMask(
-                FieldRendererId(control_elements_[1].unique_renderer_id)));
+                FieldRendererId(control_elements_[1].renderer_id)));
 
   field_data_manager->ClearData();
   EXPECT_FALSE(field_data_manager->HasFieldData(id));
@@ -71,34 +71,32 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMapWithNullValue) {
   const scoped_refptr<FieldDataManager> field_data_manager =
       base::MakeRefCounted<FieldDataManager>();
   field_data_manager->UpdateFieldDataMapWithNullValue(
-      control_elements_[0].unique_renderer_id,
-      FieldPropertiesFlags::kUserTyped);
-  const FieldRendererId id(control_elements_[0].unique_renderer_id);
+      control_elements_[0].renderer_id, FieldPropertiesFlags::kUserTyped);
+  const FieldRendererId id(control_elements_[0].renderer_id);
   EXPECT_TRUE(field_data_manager->HasFieldData(id));
   EXPECT_EQ(std::u16string(), field_data_manager->GetUserInput(id));
   EXPECT_EQ(FieldPropertiesFlags::kUserTyped,
             field_data_manager->GetFieldPropertiesMask(id));
 
   field_data_manager->UpdateFieldDataMapWithNullValue(
-      control_elements_[0].unique_renderer_id,
-      FieldPropertiesFlags::kAutofilled);
+      control_elements_[0].renderer_id, FieldPropertiesFlags::kAutofilled);
   EXPECT_EQ(std::u16string(), field_data_manager->GetUserInput(id));
   FieldPropertiesMask mask =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled;
   EXPECT_EQ(mask, field_data_manager->GetFieldPropertiesMask(id));
 
-  field_data_manager->UpdateFieldDataMap(
-      control_elements_[0].unique_renderer_id, control_elements_[0].value,
-      FieldPropertiesFlags::kAutofilled);
+  field_data_manager->UpdateFieldDataMap(control_elements_[0].renderer_id,
+                                         control_elements_[0].value,
+                                         FieldPropertiesFlags::kAutofilled);
   EXPECT_EQ(u"first", field_data_manager->GetUserInput(id));
 }
 
 TEST_F(FieldDataManagerTest, FindMatchedValue) {
   const scoped_refptr<FieldDataManager> field_data_manager =
       base::MakeRefCounted<FieldDataManager>();
-  field_data_manager->UpdateFieldDataMap(
-      control_elements_[0].unique_renderer_id, control_elements_[0].value,
-      FieldPropertiesFlags::kUserTyped);
+  field_data_manager->UpdateFieldDataMap(control_elements_[0].renderer_id,
+                                         control_elements_[0].value,
+                                         FieldPropertiesFlags::kUserTyped);
   EXPECT_TRUE(field_data_manager->FindMatchedValue(u"first_element"));
   EXPECT_FALSE(field_data_manager->FindMatchedValue(u"second_element"));
 }

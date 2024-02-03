@@ -7,16 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-#include <set>
-#include <string>
-#include <vector>
+#import <memory>
+#import <set>
+#import <string>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/time/time.h"
-#include "base/uuid.h"
-#include "components/bookmarks/common/storage_type.h"
+#import "base/memory/weak_ptr.h"
+#import "base/time/time.h"
+#import "base/uuid.h"
 
+class AuthenticationService;
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
@@ -24,6 +25,7 @@ class GURL;
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
+enum class StorageType;
 }  // namespace bookmarks
 
 namespace syncer {
@@ -137,10 +139,13 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const bookmarks::BookmarkNode* node,
     NSString* title,
     const GURL& url,
+    const bookmarks::BookmarkNode* original_folder,
     const bookmarks::BookmarkNode* folder,
     bookmarks::BookmarkModel* local_or_syncable_model,
     bookmarks::BookmarkModel* account_model,
-    ChromeBrowserState* browser_state);
+    ChromeBrowserState* browser_state,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService);
 
 // Creates a new bookmark with `title`, `url`, at `position` under parent
 // `folder`. Returns a snackbar with an undo action. Returns nil if operation
@@ -187,7 +192,9 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     bookmarks::BookmarkModel* local_model,
     bookmarks::BookmarkModel* account_model,
     const bookmarks::BookmarkNode* destination_folder,
-    ChromeBrowserState* browser_state);
+    ChromeBrowserState* browser_state,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService);
 
 // Move all `bookmarks` to the given `folder`.
 // Returns whether this method actually moved bookmarks (for example, only
@@ -248,6 +255,28 @@ const bookmarks::BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
     const GURL& url,
     bookmarks::BookmarkModel* local_model,
     bookmarks::BookmarkModel* account_model);
+
+// The localized strings for adding bookmarks.
+// `folderTitle`:  The name of the folder. Assumed to be non-nil.
+// `chosenByUser`: whether this is the last folder in which the user moved a
+// bookmark since last time the set of model changed.
+// `storageType` whether it  is is on account storage, or local or syncable.
+// `count`: the number of bookmarks.
+NSString* messageForAddingBookmarksInFolder(
+    NSString* folderTitle,
+    bool chosenByUser,
+    bookmarks::StorageType storageType,
+    int count,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService);
+
+// The bookmark is saved in the account if either following condition is true:
+// * the saved folder is in the account model,
+// * the sync consent has been granted and the bookmark data type is enabled
+bool bookmarkSavedIntoAccountWithStorageType(
+    bookmarks::StorageType storageType,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService);
 
 }  // namespace bookmark_utils_ios
 

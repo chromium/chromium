@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -99,9 +100,9 @@ class MODULES_EXPORT ManifestParser {
   // Helper function to parse strings present on a given |dictionary| in a given
   // field identified by its |key|.
   // Returns the parsed string if any, a null optional if the parsing failed.
-  absl::optional<String> ParseString(const JSONObject* object,
-                                     const String& key,
-                                     Trim trim);
+  std::optional<String> ParseString(const JSONObject* object,
+                                    const String& key,
+                                    Trim trim);
 
   // Helper function to parse strings present in a member that itself is
   // a dictionary like 'shortcut' as defined in:
@@ -110,17 +111,16 @@ class MODULES_EXPORT ManifestParser {
   // ManifestError added while parsing. This helps disambiguate member property
   // names from top level member names. Returns the parsed string if any, a null
   // optional if the parsing failed.
-  absl::optional<String> ParseStringForMember(const JSONObject* object,
-                                              const String& member_name,
-                                              const String& key,
-                                              bool required,
-                                              Trim trim);
+  std::optional<String> ParseStringForMember(const JSONObject* object,
+                                             const String& member_name,
+                                             const String& key,
+                                             bool required,
+                                             Trim trim);
 
   // Helper function to parse colors present on a given |dictionary| in a given
   // field identified by its |key|. Returns a null optional if the value is not
   // present or is not a valid color.
-  absl::optional<RGBA32> ParseColor(const JSONObject* object,
-                                    const String& key);
+  std::optional<RGBA32> ParseColor(const JSONObject* object, const String& key);
 
   // Helper function to parse URLs present on a given |dictionary| in a given
   // field identified by its |key|. The URL is first parsed as a string then
@@ -223,7 +223,7 @@ class MODULES_EXPORT ManifestParser {
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-a-purpose-member-of-an-image
   // Returns a vector of ManifestImageResource::Purpose with the successfully
   // parsed icon purposes, and nullopt if the parsing failed.
-  absl::optional<Vector<mojom::blink::ManifestImageResource::Purpose>>
+  std::optional<Vector<mojom::blink::ManifestImageResource::Purpose>>
   ParseIconPurpose(const JSONObject* icon);
 
   // Parses the 'icons' field of a Manifest, as defined in:
@@ -254,7 +254,7 @@ class MODULES_EXPORT ManifestParser {
       const String& key,
       const JSONObject* object);
 
-  absl::optional<mojom::blink::ManifestImageResourcePtr> ParseImageResource(
+  std::optional<mojom::blink::ManifestImageResourcePtr> ParseImageResource(
       const JSONValue* object);
 
   // Parses the 'name' field of a shortcut, as defined in:
@@ -310,13 +310,13 @@ class MODULES_EXPORT ManifestParser {
   // Parses the method field of a Share Target, as defined in:
   // https://wicg.github.io/web-share-target/#sharetarget-and-its-members
   // Returns an optional share target method enum object.
-  absl::optional<mojom::blink::ManifestShareTarget::Method>
+  std::optional<mojom::blink::ManifestShareTarget::Method>
   ParseShareTargetMethod(const JSONObject* share_target_dict);
 
   // Parses the enctype field of a Share Target, as defined in:
   // https://wicg.github.io/web-share-target/#sharetarget-and-its-members
   // Returns an optional share target enctype enum object.
-  absl::optional<mojom::blink::ManifestShareTarget::Enctype>
+  std::optional<mojom::blink::ManifestShareTarget::Enctype>
   ParseShareTargetEnctype(const JSONObject* share_target_dict);
 
   // Parses the 'params' field of a Share Target, as defined in:
@@ -330,7 +330,7 @@ class MODULES_EXPORT ManifestParser {
   // https://wicg.github.io/web-share-target/#share_target-member
   // Returns the parsed Web Share target. The returned Share Target is null if
   // the field didn't exist, parsing failed, or it was empty.
-  absl::optional<mojom::blink::ManifestShareTargetPtr> ParseShareTarget(
+  std::optional<mojom::blink::ManifestShareTargetPtr> ParseShareTarget(
       const JSONObject* object);
 
   // Parses the 'url_handlers' field of a Manifest, as defined in:
@@ -345,11 +345,11 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses a single URL handler entry in 'url_handlers', as defined in:
   // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-  // Returns |absl::nullopt| if the UrlHandler was invalid, or a UrlHandler if
+  // Returns |std::nullopt| if the UrlHandler was invalid, or a UrlHandler if
   // parsing succeeded.
   // This feature is experimental and is only enabled by the blink feature flag:
   // blink::features::kWebAppEnableUrlHandlers.
-  absl::optional<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandler(
+  std::optional<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandler(
       const JSONObject* object);
 
   // Parses the 'scope_extensions' field of a Manifest, as defined in:
@@ -364,21 +364,21 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses a single scope extension entry in 'scope_extensions', as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
-  // Returns |absl::nullopt| if the ScopeExtension was invalid, or a
+  // Returns |std::nullopt| if the ScopeExtension was invalid, or a
   // ScopeExtension if parsing succeeded.
   // This feature is experimental and is only enabled by the blink feature flag:
   // blink::features::kWebAppEnableScopeExtensions.
-  absl::optional<mojom::blink::ManifestScopeExtensionPtr> ParseScopeExtension(
+  std::optional<mojom::blink::ManifestScopeExtensionPtr> ParseScopeExtension(
       const JSONObject* object);
 
   // Parses a single scope extension origin in 'scope_extensions', as defined
   // in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
-  // Returns |absl::nullopt| if the ScopeExtension origin was invalid, or a
+  // Returns |std::nullopt| if the ScopeExtension origin was invalid, or a
   // ScopeExtension if parsing succeeded.
   // This feature is experimental and is only enabled by the blink feature flag:
   // blink::features::kWebAppEnableScopeExtensions.
-  absl::optional<mojom::blink::ManifestScopeExtensionPtr>
+  std::optional<mojom::blink::ManifestScopeExtensionPtr>
   ParseScopeExtensionOrigin(const String& origin_string);
 
   // Parses the 'file_handlers' field of a Manifest, as defined in:
@@ -391,9 +391,9 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses a FileHandler from an entry in the 'file_handlers' list, as
   // defined in: https://github.com/WICG/file-handling/blob/main/explainer.md.
-  // Returns |absl::nullopt| if the FileHandler was invalid, or a
+  // Returns |std::nullopt| if the FileHandler was invalid, or a
   // FileHandler, if parsing succeeded.
-  absl::optional<mojom::blink::ManifestFileHandlerPtr> ParseFileHandler(
+  std::optional<mojom::blink::ManifestFileHandlerPtr> ParseFileHandler(
       const JSONObject* file_handler_entry);
 
   // Parses the 'accept' field of a FileHandler, as defined in:
@@ -419,9 +419,9 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses a single ProtocolHandle field of a Manifest, as defined in:
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
-  // Returns |absl::nullopt| if the ProtocolHandler was invalid, or a
+  // Returns |std::nullopt| if the ProtocolHandler was invalid, or a
   // ProtocolHandler if parsing succeeded.
-  absl::optional<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandler(
+  std::optional<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandler(
       const JSONObject* protocol_dictionary);
 
   // Parses the 'start_url' field of the 'lock_screen' field of a Manifest,
@@ -458,8 +458,7 @@ class MODULES_EXPORT ManifestParser {
   // Parses the 'url' field of a related application, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-url-member-of-an-application
   // Returns the parsed KURL if any, a null optional if the parsing failed.
-  absl::optional<KURL> ParseRelatedApplicationURL(
-      const JSONObject* application);
+  std::optional<KURL> ParseRelatedApplicationURL(const JSONObject* application);
 
   // Parses the 'id' field of a related application, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-id-member-of-an-application
@@ -483,12 +482,12 @@ class MODULES_EXPORT ManifestParser {
   // Parses the 'theme_color' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-theme_color-member
   // Returns the parsed theme color if any, or a null optional otherwise.
-  absl::optional<RGBA32> ParseThemeColor(const JSONObject* object);
+  std::optional<RGBA32> ParseThemeColor(const JSONObject* object);
 
   // Parses the 'background_color' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-background_color-member
   // Returns the parsed background color if any, or a null optional otherwise.
-  absl::optional<RGBA32> ParseBackgroundColor(const JSONObject* object);
+  std::optional<RGBA32> ParseBackgroundColor(const JSONObject* object);
 
   // Parses the 'gcm_sender_id' field of the manifest.
   // This is a proprietary extension of the Web Manifest specification.
@@ -530,8 +529,8 @@ class MODULES_EXPORT ManifestParser {
   // Parse the override fields for theme_color and background_color as defined
   // in: https://github.com/w3c/manifest/issues/1045
   // Returns the dark mode color if any, or a null optional otherwise.
-  absl::optional<RGBA32> ParseDarkColorOverride(const JSONObject* object,
-                                                const String& key);
+  std::optional<RGBA32> ParseDarkColorOverride(const JSONObject* object,
+                                               const String& key);
 
   // Parses the 'tab_strip' field of the manifest as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md

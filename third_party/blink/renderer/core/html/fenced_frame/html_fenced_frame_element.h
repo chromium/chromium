@@ -93,7 +93,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // The frozen state is kept in this element so that it can survive across
   // reattaches.
   // The size is in layout size (i.e., DSF multiplied.)
-  const absl::optional<PhysicalSize> FrozenFrameSize() const;
+  const std::optional<PhysicalSize> FrozenFrameSize() const;
   // True if the frame size should be frozen when the next resize completed.
   // When `config` is set but layout is not completed yet, the frame size is
   // frozen after the first layout.
@@ -122,12 +122,12 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
  private:
   // This method will only navigate the underlying frame if the element
   // `isConnected()`. It will be deferred if the page is currently prerendering.
-  void Navigate(const KURL& url,
-                absl::optional<bool> deprecated_should_freeze_initial_size =
-                    absl::nullopt,
-                absl::optional<gfx::Size> container_size = absl::nullopt,
-                absl::optional<gfx::Size> content_size = absl::nullopt,
-                String embedder_shared_storage_context = String());
+  void Navigate(
+      const KURL& url,
+      std::optional<bool> deprecated_should_freeze_initial_size = std::nullopt,
+      std::optional<gfx::Size> container_size = std::nullopt,
+      std::optional<gfx::Size> content_size = std::nullopt,
+      String embedder_shared_storage_context = String());
 
   // This method delegates to `Navigate()` above only if `this` has a non-null
   // `config_`. If that's the case, this method pulls the appropriate URL off of
@@ -199,8 +199,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   Member<ResizeObserver> resize_observer_;
   Member<FencedFrameConfig> config_;
   // See |FrozenFrameSize| above. Stored in CSS pixel (without DSF multiplied.)
-  absl::optional<PhysicalSize> frozen_frame_size_;
-  absl::optional<PhysicalRect> content_rect_;
+  std::optional<PhysicalSize> frozen_frame_size_;
+  std::optional<PhysicalRect> content_rect_;
   bool should_freeze_frame_size_on_next_layout_ = false;
   bool collapsed_by_client_ = false;
   // This represents the element's `mode` attribute. We store it here instead of

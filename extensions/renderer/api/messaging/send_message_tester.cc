@@ -89,9 +89,6 @@ void SendMessageTester::TestConnect(const std::string& args,
                                 script_context_.get(), expected_port_id,
                                 expected_target, mojom::ChannelType::kConnect,
                                 expected_channel, testing::_, testing::_))
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-      ;
-#else
       .WillOnce([](ScriptContext* script_context, const PortId& port_id,
                    const MessageTarget& target, mojom::ChannelType channel_type,
                    const std::string& channel_name,
@@ -101,7 +98,6 @@ void SendMessageTester::TestConnect(const std::string& args,
         port.EnableUnassociatedUsage();
         port_host.EnableUnassociatedUsage();
       });
-#endif
   v8::Local<v8::Function> add_port = FunctionFromString(
       v8_context, base::StringPrintf(kAddPortTemplate, api_namespace_.c_str(),
                                      args.c_str()));
@@ -156,18 +152,6 @@ void SendMessageTester::TestSendMessageOrRequest(
               SendOpenMessageChannel(script_context_.get(), expected_port_id,
                                      expected_target, channel_type,
                                      expected_channel, testing::_, testing::_))
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-      ;
-  if (expected_port_status == CLOSED) {
-    EXPECT_CALL(*ipc_sender_, SendPostMessageToPort(expected_port_id, message));
-    EXPECT_CALL(*ipc_sender_,
-                SendCloseMessagePort(MSG_ROUTING_NONE, expected_port_id, true))
-        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  } else {
-    EXPECT_CALL(*ipc_sender_, SendPostMessageToPort(expected_port_id, message))
-        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  }
-#else
       .WillOnce([&mock_message_port_host](
                     ScriptContext* script_context, const PortId& port_id,
                     const MessageTarget& target,
@@ -188,7 +172,6 @@ void SendMessageTester::TestSendMessageOrRequest(
     EXPECT_CALL(mock_message_port_host, PostMessage(message))
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   }
-#endif
 
   v8::Local<v8::Context> v8_context = script_context_->v8_context();
   v8::Local<v8::Function> send_message = FunctionFromString(

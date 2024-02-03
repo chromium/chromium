@@ -74,17 +74,6 @@ BASE_FEATURE(kAppShimNotificationAttribution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
-// Enables the built-in DNS resolver.
-BASE_FEATURE(kAsyncDns,
-             "AsyncDns",
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 // Enables or disables the Autofill survey triggered by opening a prompt to
@@ -560,14 +549,22 @@ BASE_FEATURE(kHaTSDesktopDevToolsIssuesCSP,
 BASE_FEATURE(kHappinessTrackingSurveysExtensionsSafetyHub,
              "HappinessTrackingSurveysExtensionsSafetyHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<ExtensionsSafetyHubHaTSArms>::Option survey_arms[] = {
+    {ExtensionsSafetyHubHaTSArms::kReviewPanelNotShown, "0"},
+    {ExtensionsSafetyHubHaTSArms::kReviewPanelShown, "1"},
+    {ExtensionsSafetyHubHaTSArms::kReviewPanelInteraction, "2"}};
 const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysExtensionsSafetyHubTime{
         &kHappinessTrackingSurveysExtensionsSafetyHub, "settings-time",
-        base::Seconds(10)};
+        base::Seconds(15)};
 extern const base::FeatureParam<std::string>
     kHappinessTrackingSurveysExtensionsSafetyHubTriggerId{
         &kHappinessTrackingSurveysExtensionsSafetyHub,
         "extension-page-trigger-id", ""};
+extern const base::FeatureParam<ExtensionsSafetyHubHaTSArms>
+    kHappinessTrackingSurveysExtensionsSurveyArm{
+        &kHappinessTrackingSurveysExtensionsSafetyHub, "extension-survey-arm",
+        ExtensionsSafetyHubHaTSArms::kReviewPanelNotShown, &survey_arms};
 
 // Enables or disables the Happiness Tracking System for Desktop Privacy Guide.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacyGuide,
@@ -1246,6 +1243,13 @@ BASE_FEATURE(kSitePerProcess,
 #endif
 );
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables the SkyVault (cloud-first) changes, some of which are also controlled
+// by policies: removing local storage, saving downloads and screen captures to
+// the cloud, and related UX changes, primarily in the Files App.
+BASE_FEATURE(kSkyVault, "SkyVault", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables SmartDim on Chrome OS.
 BASE_FEATURE(kSmartDim, "SmartDim", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1666,6 +1670,7 @@ BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUmaStorageDimensions,
              "UmaStorageDimensions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(b/319045572): Remove this feature flag.
 // Allow a Wilco DTC (diagnostics and telemetry controller) on Chrome OS.
 // More info about the project may be found here:
 // https://docs.google.com/document/d/18Ijj8YlC8Q3EWRzLspIi2dGxg4vIBVe5sJgMPt9SWYo

@@ -62,8 +62,12 @@
     padding-block-start: 4px;
   }
 
-  #footer {
+  .footer {
     padding: 16px var(--cr-section-padding);
+  }
+
+  #secondDescription {
+    padding: 0 var(--cr-section-padding) var(--cr-section-vertical-padding);
   }
 
   a {
@@ -78,6 +82,10 @@
     sub-label="$i18n{fledgePageToggleSubLabel}"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
+<div id="secondDescription" class="cr-secondary-text"
+    hidden="[[!shouldShowV2_]]">
+  $i18n{fledgePageSecondaryDescriptionV2}
+</div>
 <template is="dom-if" if="[[!isFledgePrefManaged_(
     prefs.privacy_sandbox.m1.fledge_enabled.enforcement)]]" restamp>
   <div id="currentSitesSection">
@@ -154,10 +162,14 @@
     </template>
   </div>
 </iron-collapse>
-<div id="footer" class="cr-secondary-text hr">
+<div id="footer" class="cr-secondary-text hr footer"
+    hidden="[[shouldShowV2_]]">
   $i18nRaw{fledgePageFooter}
 </div>
-
+<div id="footerV2" class="cr-secondary-text hr footer"
+    hidden="[[!shouldShowV2_]]">
+  $i18nRaw{fledgePageFooterV2}
+</div>
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
   <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>
     <div slot="title">$i18n{fledgePageLearnMoreHeading}</div>

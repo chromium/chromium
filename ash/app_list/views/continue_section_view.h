@@ -28,9 +28,9 @@ class ASH_EXPORT ContinueSectionView : public views::View,
                                        public views::FocusChangeListener,
                                        public AppListModelProvider::Observer,
                                        public AppListControllerObserver {
- public:
-  METADATA_HEADER(ContinueSectionView);
+  METADATA_HEADER(ContinueSectionView, views::View)
 
+ public:
   ContinueSectionView(AppListViewDelegate* view_delegate,
                       int columns,
                       bool tablet_mode);

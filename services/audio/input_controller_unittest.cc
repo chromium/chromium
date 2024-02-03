@@ -125,7 +125,7 @@ class MockAudioInputStream : public media::AudioInputStream {
     captured_callback_ = callback;
   }
 
-  absl::optional<AudioInputCallback*> captured_callback_;
+  std::optional<AudioInputCallback*> captured_callback_;
 };
 
 enum class AudioManagerType { MOCK, FAKE };

@@ -395,8 +395,10 @@ class WifiHotspotConnectorTest : public testing::Test,
     EXPECT_TRUE(network_state->tether_guid().empty());
   }
 
-  void WifiConnectionCallback(const std::string& wifi_guid) {
-    connection_callback_responses_.push_back(wifi_guid);
+  void WifiConnectionCallback(
+      base::expected<std::string,
+                     WifiHotspotConnector::WifiHotspotConnectionError> result) {
+    connection_callback_responses_.push_back(result);
   }
 
   void VerifyWifiScanRequested() {
@@ -456,7 +458,9 @@ class WifiHotspotConnectorTest : public testing::Test,
   int requested_failure_count_ = 0;
 
   std::string other_wifi_service_path_;
-  std::vector<std::string> connection_callback_responses_;
+  std::vector<base::expected<std::string,
+                             WifiHotspotConnector::WifiHotspotConnectionError>>
+      connection_callback_responses_;
   TestNetworkStateHandlerObserver scan_observer_;
 
   raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
@@ -491,7 +495,8 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_NetworkDoesNotBecomeVisible) {
   EXPECT_EQ(0u, connection_callback_responses_.size());
   InvokeTimerTask();
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_TRUE(connection_callback_responses_[0].empty());
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::kTimeout,
+            connection_callback_responses_[0].error());
 
   VerifyConnectionToHotspotDurationRecorded(false /* expected */);
   EXPECT_TRUE(disconnect_requested_service_paths_.empty());
@@ -527,7 +532,8 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_AnotherNetworkBecomesVisible) {
   EXPECT_EQ(0u, connection_callback_responses_.size());
   InvokeTimerTask();
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_TRUE(connection_callback_responses_[0].empty());
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::kTimeout,
+            connection_callback_responses_[0].error());
 
   VerifyConnectionToHotspotDurationRecorded(false /* expected */);
   EXPECT_TRUE(disconnect_requested_service_paths_.empty());
@@ -557,10 +563,11 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_CannotConnectToNetwork) {
 
   // Network connection failed.
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_TRUE(connection_callback_responses_[0].empty());
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::
+                kNetworkConnectionHandlerFailed,
+            connection_callback_responses_[0].error());
   EXPECT_EQ(1u, disconnect_requested_service_paths_.size());
   EXPECT_EQ(GetServicePath(wifi_guid), disconnect_requested_service_paths_[0]);
-
   VerifyConnectionToHotspotDurationRecorded(false /* expected */);
 }
 
@@ -594,7 +601,9 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_DeletedWhileConnectionPending) {
   EXPECT_EQ(1u, disconnect_requested_service_paths_.size());
   EXPECT_EQ(GetServicePath(wifi_guid), disconnect_requested_service_paths_[0]);
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_EQ(std::string(), connection_callback_responses_[0]);
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::
+                kWifiHotspotConnectorClassDestroyed,
+            connection_callback_responses_[0].error());
   VerifyConnectionToHotspotDurationRecorded(false /* expected */);
 }
 
@@ -688,7 +697,7 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_Success_EmptyPassword) {
 
   // Connection to network successful.
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_EQ(wifi_guid, connection_callback_responses_[0]);
+  EXPECT_EQ(wifi_guid, connection_callback_responses_[0].value());
   VerifyTimerStopped();
 
   VerifyConnectionToHotspotDurationRecorded(true /* expected */);
@@ -742,7 +751,9 @@ TEST_F(WifiHotspotConnectorTest,
 
   // The original connection attempt should have gotten an empty response.
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_TRUE(connection_callback_responses_[0].empty());
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::
+                kCancelledForNewerConnectionAttempt,
+            connection_callback_responses_[0].error());
 
   // First network becomes connectable.
   NotifyVisible(service_path_1);
@@ -816,7 +827,9 @@ TEST_F(WifiHotspotConnectorTest,
 
   // The original connection attempt should have gotten an empty response.
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_TRUE(connection_callback_responses_[0].empty());
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::
+                kCancelledForNewerConnectionAttempt,
+            connection_callback_responses_[0].error());
 
   // A disconnection attempt should have been initiated to the other network.
   EXPECT_EQ(1u, disconnect_requested_service_paths_.size());
@@ -845,7 +858,7 @@ TEST_F(WifiHotspotConnectorTest,
   EXPECT_EQ(GetServicePath(wifi_guid_2),
             requested_connection_service_paths_[1]);
   EXPECT_EQ(2u, connection_callback_responses_.size());
-  EXPECT_EQ(wifi_guid_2, connection_callback_responses_[1]);
+  EXPECT_EQ(wifi_guid_2, connection_callback_responses_[1].value());
   VerifyTimerStopped();
 
   VerifyConnectionToHotspotDurationRecorded(true /* expected */);
@@ -894,7 +907,7 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_Success) {
       wifi_guid, kTetherNetworkGuid, 1u /* expected_num_connection_attempts */);
   EXPECT_EQ(GetServicePath(wifi_guid), requested_connection_service_paths_[0]);
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_EQ(wifi_guid, connection_callback_responses_[0]);
+  EXPECT_EQ(wifi_guid, connection_callback_responses_[0].value());
   VerifyTimerStopped();
 
   VerifyConnectionToHotspotDurationRecorded(true /* expected */);
@@ -957,7 +970,7 @@ TEST_F(WifiHotspotConnectorTest,
   // Connection to network successful.
   NotifyConnected(test_network_connect_->last_service_path_created());
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_EQ(wifi_guid, connection_callback_responses_[0]);
+  EXPECT_EQ(wifi_guid, connection_callback_responses_[0].value());
   VerifyTimerStopped();
 
   VerifyConnectionToHotspotDurationRecorded(true /* expected */);
@@ -980,7 +993,8 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_AttemptTimesOut) {
   // Timeout timer fires.
   InvokeTimerTask();
   EXPECT_EQ(1u, connection_callback_responses_.size());
-  EXPECT_TRUE(connection_callback_responses_[0].empty());
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::kTimeout,
+            connection_callback_responses_[0].error());
 
   // Allow the asynchronous call to
   // TechnologyStateController::SetTechnologiesEnabled() within
@@ -1000,6 +1014,8 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_AttemptTimesOut) {
 
   VerifyConnectionToHotspotDurationRecorded(false /* expected */);
   EXPECT_TRUE(disconnect_requested_service_paths_.empty());
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::kTimeout,
+            connection_callback_responses_[0].error());
 }
 
 TEST_F(WifiHotspotConnectorTest,
@@ -1062,6 +1078,11 @@ TEST_F(WifiHotspotConnectorTest,
   // Connection to network successful.
   EXPECT_EQ(2u, connection_callback_responses_.size());
   EXPECT_EQ(wifi_guid_2, connection_callback_responses_[1]);
+  EXPECT_EQ(2u, connection_callback_responses_.size());
+  EXPECT_EQ(WifiHotspotConnector::WifiHotspotConnectionError::
+                kCancelledForNewerConnectionAttempt,
+            connection_callback_responses_[0].error());
+  EXPECT_EQ(wifi_guid_2, connection_callback_responses_[1].value());
   VerifyTimerStopped();
 
   VerifyConnectionToHotspotDurationRecorded(true /* expected */);

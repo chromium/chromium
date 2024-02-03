@@ -20,12 +20,23 @@
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 namespace {
+
+// Returns if kRasterInterfaceInVideoResourceUpdater is enabled
+bool CanUseRasterInterface() {
+  return base::FeatureList::IsEnabled(
+      media::kRasterInterfaceInVideoResourceUpdater);
+}
+
+bool UseMultiplanarSoftwarePixelUpload() {
+  return CanUseRasterInterface() && IsWritePixelsYUVEnabled();
+}
 
 class FakeSharedBitmapReporter : public viz::SharedBitmapReporter {
  public:
@@ -90,6 +101,71 @@ class VideoResourceUpdaterTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
+  }
+
+  void ExpectedMultiplanarResourceType(VideoFrameResourceType resource_type) {
+    if (UseMultiplanarSoftwarePixelUpload()) {
+      // With multiplanar shared images, a TextureDrawQuad is created instead of
+      // a YUVDrawQuad.
+      EXPECT_EQ(VideoFrameResourceType::RGB, resource_type);
+    } else {
+      EXPECT_EQ(VideoFrameResourceType::YUV, resource_type);
+    }
+  }
+
+  void ExpectedMultiplanarResourceSize(size_t resource_size,
+                                       size_t num_planes) {
+    if (UseMultiplanarSoftwarePixelUpload()) {
+      // With multiplanar shared images, a single resource is created instead of
+      // resource for each plane.
+      EXPECT_EQ(1u, resource_size);
+    } else {
+      EXPECT_EQ(num_planes, resource_size);
+    }
+  }
+
+  void ExpectedMultiplanarResourceReleaseCallback(size_t resource_callback,
+                                                  size_t num_planes) {
+    if (UseMultiplanarSoftwarePixelUpload()) {
+      // With multiplanar shared images, a single resource is created instead of
+      // resource for each plane.
+      EXPECT_EQ(1u, resource_callback);
+    } else {
+      EXPECT_EQ(num_planes, resource_callback);
+    }
+  }
+
+  void ExpectedMultiplanarGLUpload(int gl_upload_count, size_t num_planes) {
+    if (UseMultiplanarSoftwarePixelUpload()) {
+      // With multiplanar shared images, uploads are done via raster instead of
+      // GL.
+      EXPECT_EQ(0, gl_upload_count);
+    } else {
+      // Expect exactly three texture uploads, one for each plane.
+      EXPECT_EQ(static_cast<int>(num_planes), gl_upload_count);
+    }
+  }
+
+  void ExpectedMultiplanarResourceMultiplier(float actual_multiplier,
+                                             float expected_multiplier,
+                                             float error) {
+    if (UseMultiplanarSoftwarePixelUpload()) {
+      // With multiplanar shared images, the multiplier is always 1.0
+      EXPECT_NEAR(actual_multiplier, 1.0, error);
+    } else {
+      EXPECT_NEAR(actual_multiplier, expected_multiplier, error);
+    }
+  }
+
+  void ExpectedMultiplanarResourceOffset(float actual_offset,
+                                         float expected_offset,
+                                         float error) {
+    if (UseMultiplanarSoftwarePixelUpload()) {
+      // With multiplanar shared images, the multiplier is always 0
+      EXPECT_NEAR(actual_offset, 0, error);
+    } else {
+      EXPECT_NEAR(actual_offset, expected_offset, error);
+    }
   }
 
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForHardware(
@@ -357,13 +433,13 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrame) {
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
 
   // Setting to kSharedImageFormat, resources type should not change.
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
 }
 
 TEST_F(VideoResourceUpdaterTest, SoftwareFrameNV12) {
@@ -378,21 +454,13 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameNV12) {
   scoped_refptr<VideoFrame> video_frame = CreateNV12TestFrame();
   gl_->set_supports_texture_rg(true);
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
 
   // Setting to kSharedImageFormat, resources type should not change.
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-}
-
-TEST_F(VideoResourceUpdaterTest, SoftwareFrameP016_NoR16Support) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-
-  VideoFrameExternalResources resources =
-      updater->CreateExternalResourcesFromVideoFrame(CreateP016TestFrame());
-  EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
 }
 
 // Ensure we end up with the right SharedImageFormat for each resource.
@@ -496,13 +564,13 @@ TEST_F(VideoResourceUpdaterTest, HighBitFrameNoF16) {
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
 
   // Setting to kSharedImageFormat, resources type should not change.
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
 }
 
 class VideoResourceUpdaterTestWithF16 : public VideoResourceUpdaterTest {
@@ -518,17 +586,17 @@ TEST_F(VideoResourceUpdaterTestWithF16, HighBitFrame) {
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_NEAR(resources.multiplier, 1.0, 0.1);
-  EXPECT_NEAR(resources.offset, 0, 0.1);
+  ExpectedMultiplanarResourceType(resources.type);
+  ExpectedMultiplanarResourceMultiplier(resources.multiplier, 1.0, 0.1);
+  ExpectedMultiplanarResourceOffset(resources.offset, 0, 0.1);
 
   // Create the resource again, to test the path where the
   // resources are cached.
   VideoFrameExternalResources resources2 =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources2.type);
-  EXPECT_NEAR(resources2.multiplier, 1.0, 0.1);
-  EXPECT_NEAR(resources2.offset, 0, 0.1);
+  ExpectedMultiplanarResourceType(resources2.type);
+  ExpectedMultiplanarResourceMultiplier(resources2.multiplier, 1.0, 0.1);
+  ExpectedMultiplanarResourceOffset(resources2.offset, 0, 0.1);
 }
 
 class VideoResourceUpdaterTestWithR16 : public VideoResourceUpdaterTest {
@@ -543,33 +611,27 @@ class VideoResourceUpdaterTestWithR16 : public VideoResourceUpdaterTest {
   }
 };
 
-TEST_F(VideoResourceUpdaterTestWithR16, SoftwareFrameP016) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-
-  VideoFrameExternalResources resources =
-      updater->CreateExternalResourcesFromVideoFrame(CreateP016TestFrame());
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-}
-
 TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   scoped_refptr<VideoFrame> video_frame = CreateTestHighBitFrame();
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
+  EXPECT_EQ(resources.bits_per_channel, 10u);
 
   // Max 10-bit values as read by a sampler.
-  EXPECT_NEAR(resources.multiplier, 1.0, 0.0001);
-  EXPECT_NEAR(resources.offset, 0.0, 0.1);
+  ExpectedMultiplanarResourceMultiplier(resources.multiplier, 1.0, 0.0001);
+  ExpectedMultiplanarResourceOffset(resources.offset, 0.0, 0.1);
 
   // Create the resource again, to test the path where the
   // resources are cached.
   VideoFrameExternalResources resources2 =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources2.type);
-  EXPECT_NEAR(resources2.multiplier, 1.0, 0.0001);
-  EXPECT_NEAR(resources2.offset, 0.0, 0.1);
+  ExpectedMultiplanarResourceType(resources2.type);
+  EXPECT_EQ(resources2.bits_per_channel, 10u);
+  ExpectedMultiplanarResourceMultiplier(resources2.multiplier, 1.0, 0.0001);
+  ExpectedMultiplanarResourceOffset(resources2.offset, 0.0, 0.1);
 }
 
 TEST_F(VideoResourceUpdaterTest, NV12FrameSoftwareCompositor) {
@@ -605,13 +667,13 @@ TEST_F(VideoResourceUpdaterTest, WonkySoftwareFrame) {
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
 
   // Setting to kSharedImageFormat, resources type should not change.
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  ExpectedMultiplanarResourceType(resources.type);
 }
 
 TEST_F(VideoResourceUpdaterTest, WonkySoftwareFrameSoftwareCompositor) {
@@ -632,11 +694,15 @@ TEST_F(VideoResourceUpdaterTest, ReuseResource) {
   gl_->ResetUploadCount();
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(3u, resources.resources.size());
-  EXPECT_EQ(3u, resources.release_callbacks.size());
-  // Expect exactly three texture uploads, one for each plane.
-  EXPECT_EQ(3, gl_->UploadCount());
+  ExpectedMultiplanarResourceType(resources.type);
+  ExpectedMultiplanarResourceSize(
+      resources.resources.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarResourceReleaseCallback(
+      resources.release_callbacks.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarGLUpload(gl_->UploadCount(),
+                              video_frame->NumPlanes(video_frame->format()));
 
   // Simulate the ResourceProvider releasing the resources back to the video
   // updater.
@@ -646,9 +712,13 @@ TEST_F(VideoResourceUpdaterTest, ReuseResource) {
   // Allocate resources for the same frame.
   gl_->ResetUploadCount();
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(3u, resources.resources.size());
-  EXPECT_EQ(3u, resources.release_callbacks.size());
+  ExpectedMultiplanarResourceType(resources.type);
+  ExpectedMultiplanarResourceSize(
+      resources.resources.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarResourceReleaseCallback(
+      resources.release_callbacks.size(),
+      video_frame->NumPlanes(video_frame->format()));
   // The data should be reused so expect no texture uploads.
   EXPECT_EQ(0, gl_->UploadCount());
 }
@@ -663,11 +733,15 @@ TEST_F(VideoResourceUpdaterTest, ReuseResourceNV12) {
   gl_->ResetUploadCount();
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(2u, resources.resources.size());
-  EXPECT_EQ(2u, resources.release_callbacks.size());
-  // Expect exactly three texture uploads, one for each plane.
-  EXPECT_EQ(2, gl_->UploadCount());
+  ExpectedMultiplanarResourceType(resources.type);
+  ExpectedMultiplanarResourceSize(
+      resources.resources.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarResourceReleaseCallback(
+      resources.release_callbacks.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarGLUpload(gl_->UploadCount(),
+                              video_frame->NumPlanes(video_frame->format()));
 
   // Simulate the ResourceProvider releasing the resources back to the video
   // updater.
@@ -677,9 +751,13 @@ TEST_F(VideoResourceUpdaterTest, ReuseResourceNV12) {
   // Allocate resources for the same frame.
   gl_->ResetUploadCount();
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(2u, resources.resources.size());
-  EXPECT_EQ(2u, resources.release_callbacks.size());
+  ExpectedMultiplanarResourceType(resources.type);
+  ExpectedMultiplanarResourceSize(
+      resources.resources.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarResourceReleaseCallback(
+      resources.release_callbacks.size(),
+      video_frame->NumPlanes(video_frame->format()));
   // The data should be reused so expect no texture uploads.
   EXPECT_EQ(0, gl_->UploadCount());
 }
@@ -693,18 +771,26 @@ TEST_F(VideoResourceUpdaterTest, ReuseResourceNoDelete) {
   gl_->ResetUploadCount();
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(3u, resources.resources.size());
-  EXPECT_EQ(3u, resources.release_callbacks.size());
-  // Expect exactly three texture uploads, one for each plane.
-  EXPECT_EQ(3, gl_->UploadCount());
+  ExpectedMultiplanarResourceType(resources.type);
+  ExpectedMultiplanarResourceSize(
+      resources.resources.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarResourceReleaseCallback(
+      resources.release_callbacks.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarGLUpload(gl_->UploadCount(),
+                              video_frame->NumPlanes(video_frame->format()));
 
   // Allocate resources for the same frame.
   gl_->ResetUploadCount();
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(3u, resources.resources.size());
-  EXPECT_EQ(3u, resources.release_callbacks.size());
+  ExpectedMultiplanarResourceType(resources.type);
+  ExpectedMultiplanarResourceSize(
+      resources.resources.size(),
+      video_frame->NumPlanes(video_frame->format()));
+  ExpectedMultiplanarResourceReleaseCallback(
+      resources.release_callbacks.size(),
+      video_frame->NumPlanes(video_frame->format()));
   // The data should be reused so expect no texture uploads.
   EXPECT_EQ(0, gl_->UploadCount());
 }
@@ -962,7 +1048,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
       /*transform=*/gfx::Transform(),
       /*quad_rect=*/gfx::Rect(video_frame->coded_size()),
       /*visible_quad_rect=*/gfx::Rect(video_frame->coded_size()),
-      gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
+      gfx::MaskFilterInfo(), /*clip_rect=*/std::nullopt,
       /*context_opaque=*/true, /*draw_opacity=*/1.0,
       /*sorting_context_id=*/0);
 

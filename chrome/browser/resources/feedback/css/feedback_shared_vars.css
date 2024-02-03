@@ -2,6 +2,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+/* TODO(temao): Delete this file when feedback UI componentization is
+finished (crbug.com/1509032).*/
+
 html:has(body.jelly-enabled) {
   --feedback-alert-color: var(--cros-sys-alert);
   --feedback-bg-color: var(--cros-sys-app_base_shaded);

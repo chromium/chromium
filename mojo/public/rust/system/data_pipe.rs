@@ -14,7 +14,7 @@ use crate::handle::{self, CastHandle, Handle, UntypedHandle};
 use crate::mojo_types::*;
 
 bitflags::bitflags! {
-    #[derive(Default)]
+    #[derive(Clone, Copy, Default)]
     pub struct WriteFlags: u32 {
         /// Write all the data to the pipe if possible or none at all.
         const ALL_OR_NONE = 1 << 0;
@@ -22,7 +22,7 @@ bitflags::bitflags! {
 }
 
 bitflags::bitflags! {
-    #[derive(Default)]
+    #[derive(Clone, Copy, Default)]
     pub struct ReadFlags: u32 {
         /// Write all the data to the pipe if possible or none at all.
         const ALL_OR_NONE = 1 << 0;

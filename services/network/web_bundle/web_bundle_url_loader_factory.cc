@@ -4,6 +4,8 @@
 
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -29,7 +31,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/web_bundle/web_bundle_chunked_buffer.h"
 #include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -109,7 +110,7 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     std::string error_message;
     if (!CheckWebBundleServingConstraints(*response_head, error_message)) {
       if (factory_) {
@@ -223,11 +224,11 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   const net::HttpRequestHeaders& request_headers() const {
     return request_headers_;
   }
-  const absl::optional<std::string>& devtools_request_id() const {
+  const std::optional<std::string>& devtools_request_id() const {
     return devtools_request_id_;
   }
 
-  const absl::optional<url::Origin>& request_initiator() const {
+  const std::optional<url::Origin>& request_initiator() const {
     return request_initiator_;
   }
 
@@ -247,7 +248,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   void OnResponse(mojom::URLResponseHeadPtr response,
                   mojo::ScopedDataPipeConsumerHandle consumer) {
     client_->OnReceiveResponse(std::move(response), std::move(consumer),
-                               absl::nullopt);
+                               std::nullopt);
   }
 
   void OnFail(net::Error error) {
@@ -285,17 +286,17 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     }
     producer.reset();
     client_->OnReceiveResponse(std::move(response_head), std::move(consumer),
-                               absl::nullopt);
+                               std::nullopt);
 
     // CORB responses are reported as a success.
-    CompleteBlockedResponse(net::OK, absl::nullopt);
+    CompleteBlockedResponse(net::OK, std::nullopt);
   }
 
   bool is_trusted() const { return is_trusted_; }
 
   void CompleteBlockedResponse(
       int error_code,
-      absl::optional<mojom::BlockedByResponseReason> reason) {
+      std::optional<mojom::BlockedByResponseReason> reason) {
     URLLoaderCompletionStatus status;
     status.error_code = error_code;
     status.completion_time = base::TimeTicks::Now();
@@ -329,7 +330,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     NOTREACHED();
   }
 
@@ -346,10 +347,10 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   const GURL url_;
   const GURL bundle_url_;
   mojom::RequestMode request_mode_;
-  absl::optional<url::Origin> request_initiator_;
+  std::optional<url::Origin> request_initiator_;
   mojom::RequestDestination request_destination_;
   net::HttpRequestHeaders request_headers_;
-  absl::optional<std::string> devtools_request_id_;
+  std::optional<std::string> devtools_request_id_;
   const bool is_trusted_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
@@ -546,7 +547,7 @@ WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     std::unique_ptr<WebBundleMemoryQuotaConsumer>
         web_bundle_memory_quota_consumer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    absl::optional<std::string> devtools_request_id,
+    std::optional<std::string> devtools_request_id,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* coep_reporter)
     : bundle_url_(bundle_url),
@@ -604,7 +605,7 @@ void WebBundleURLLoaderFactory::SetBundleStream(
                               parser_.BindNewPipeAndPassReceiver());
 
   parser_->ParseMetadata(
-      /*offset=*/absl::nullopt,
+      /*offset=*/std::nullopt,
       base::BindOnce(&WebBundleURLLoaderFactory::OnMetadataParsed,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -673,7 +674,7 @@ void WebBundleURLLoaderFactory::StartLoader(base::WeakPtr<URLLoader> loader) {
 void WebBundleURLLoaderFactory::OnBeforeSendHeadersComplete(
     base::WeakPtr<URLLoader> loader,
     int result,
-    const absl::optional<net::HttpRequestHeaders>& headers) {
+    const std::optional<net::HttpRequestHeaders>& headers) {
   if (!loader)
     return;
   QueueOrStartLoader(loader);
@@ -849,8 +850,8 @@ void WebBundleURLLoaderFactory::OnHeadersReceivedComplete(
     uint64_t payload_offset,
     uint64_t payload_length,
     int result,
-    const absl::optional<std::string>& headers,
-    const absl::optional<GURL>& preserve_fragment_on_redirect_url) {
+    const std::optional<std::string>& headers,
+    const std::optional<GURL>& preserve_fragment_on_redirect_url) {
   if (!loader)
     return;
   SendResponseToLoader(loader, headers ? *headers : original_header,
@@ -884,7 +885,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   loader->SetBodyLength(payload_length);
 
   // Enforce the Cross-Origin-Resource-Policy (CORP) header.
-  if (absl::optional<mojom::BlockedByResponseReason> blocked_reason =
+  if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           CrossOriginResourcePolicy::IsBlocked(
               loader->url(), loader->url(), loader->request_initiator(),
               *response_head, loader->request_mode(),
@@ -909,7 +910,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
                                                    &auction_only)) &&
       base::EqualsCaseInsensitiveASCII(auction_only, "true")) {
     loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
-                                    /*reason=*/absl::nullopt);
+                                    /*reason=*/std::nullopt);
     return;
   }
 

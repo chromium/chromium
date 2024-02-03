@@ -10,7 +10,8 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <memory>
+#include <optional>
 
 namespace device {
 
@@ -20,10 +21,10 @@ struct FakeGeocoordinateData {
   DOUBLE latitude = 0;
   DOUBLE longitude = 0;
   DOUBLE accuracy = 0;
-  absl::optional<DOUBLE> altitude;
-  absl::optional<DOUBLE> altitude_accuracy;
-  absl::optional<DOUBLE> heading;
-  absl::optional<DOUBLE> speed;
+  std::optional<DOUBLE> altitude;
+  std::optional<DOUBLE> altitude_accuracy;
+  std::optional<DOUBLE> heading;
+  std::optional<DOUBLE> speed;
 };
 
 class FakeGeopoint

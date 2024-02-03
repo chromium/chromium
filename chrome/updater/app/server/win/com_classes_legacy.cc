@@ -356,7 +356,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       return E_ACCESSDENIED;
     }
 
-    app_id_ = base::WideToASCII(app_id);
+    is_install_ = is_install;
+    app_id_ = base::WideToUTF8(app_id);
+    brand_code_ = base::WideToUTF8(brand_code);
+    ap_ = base::WideToUTF8(ap);
     policy_same_version_update_ = policy_same_version_update;
 
     // Holds the result of the IPC to register an app.
@@ -447,6 +450,53 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     return S_OK;
   }
 
+  HRESULT UpdateOrInstall() { return is_install_ ? Install() : Update(); }
+
+  HRESULT Install() {
+    AppWebImplPtr obj(this);
+    UpdateService::StateChangeCallback state_change_callback =
+        base::BindRepeating(
+            [](AppWebImplPtr obj,
+               const UpdateService::UpdateState& state_update) {
+              obj->task_runner_->PostTask(
+                  FROM_HERE, base::BindOnce(&AppWebImpl::UpdateStateCallback,
+                                            obj, state_update));
+            },
+            obj);
+    UpdateService::Callback complete_callback = base::BindOnce(
+        [](AppWebImplPtr obj, UpdateService::Result result) {
+          obj->task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(&AppWebImpl::UpdateResultCallback, obj, result));
+        },
+        obj);
+
+    AppServerWin::PostRpcTask(base::BindOnce(
+        [](UpdateService::StateChangeCallback state_change_callback,
+           UpdateService::Callback complete_callback, AppWebImplPtr obj) {
+          scoped_refptr<UpdateService> update_service =
+              GetAppServerWinInstance()->update_service();
+          if (!update_service) {
+            std::move(complete_callback)
+                .Run(UpdateService::Result::kServiceStopped);
+            return;
+          }
+
+          RegistrationRequest request;
+          request.app_id = obj->app_id_;
+          request.version = base::Version(kNullVersion);
+          request.brand_code = obj->brand_code_;
+          request.ap = obj->ap_;
+
+          update_service->Install(request, {}, obj->install_data_index_,
+                                  UpdateService::Priority::kForeground,
+                                  std::move(state_change_callback),
+                                  std::move(complete_callback));
+        },
+        std::move(state_change_callback), std::move(complete_callback), obj));
+    return S_OK;
+  }
+
   HRESULT Update() {
     AppWebImplPtr obj(this);
     UpdateService::StateChangeCallback state_change_callback =
@@ -475,10 +525,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                 .Run(UpdateService::Result::kServiceStopped);
             return;
           }
-          update_service->Update(
-              obj->app_id_, "", UpdateService::Priority::kForeground,
-              obj->policy_same_version_update_,
-              std::move(state_change_callback), std::move(complete_callback));
+          update_service->Update(obj->app_id_, obj->install_data_index_,
+                                 UpdateService::Priority::kForeground,
+                                 obj->policy_same_version_update_,
+                                 std::move(state_change_callback),
+                                 std::move(complete_callback));
         },
         std::move(state_change_callback), std::move(complete_callback), obj));
     return S_OK;
@@ -492,7 +543,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   IFACEMETHODIMP get_appId(BSTR* app_id) override {
     CHECK(app_id);
 
-    *app_id = base::win::ScopedBstr(base::ASCIIToWide(app_id_)).Release();
+    *app_id = base::win::ScopedBstr(base::UTF8ToWide(app_id_)).Release();
     return S_OK;
   }
 
@@ -537,7 +588,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     }
 
     return MakeAndInitializeComObject<AppVersionWebImpl>(
-        current, base::ASCIIToWide(result->current_version->GetString()));
+        current, base::UTF8ToWide(result->current_version->GetString()));
   }
 
   IFACEMETHODIMP get_nextVersionWeb(IDispatch** next) override {
@@ -548,7 +599,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     }
 
     return MakeAndInitializeComObject<AppVersionWebImpl>(
-        next, base::ASCIIToWide(state_update_->next_version.GetString()));
+        next, base::UTF8ToWide(state_update_->next_version.GetString()));
   }
 
   IFACEMETHODIMP get_command(BSTR command_id, IDispatch** command) override {
@@ -557,8 +608,17 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP cancel() override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    AppServerWin::PostRpcTask(base::BindOnce(
+        [](const std::string& app_id) {
+          scoped_refptr<UpdateService> update_service =
+              GetAppServerWinInstance()->update_service();
+          if (!update_service) {
+            return;
+          }
+          update_service->CancelInstalls(app_id);
+        },
+        app_id_));
+    return S_OK;
   }
 
   IFACEMETHODIMP get_currentState(IDispatch** current_state) override {
@@ -659,13 +719,16 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP get_serverInstallDataIndex(BSTR* install_data_index) override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    CHECK(install_data_index);
+
+    *install_data_index =
+        base::win::ScopedBstr(base::UTF8ToWide(install_data_index_)).Release();
+    return S_OK;
   }
 
   IFACEMETHODIMP put_serverInstallDataIndex(BSTR install_data_index) override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    install_data_index_ = base::WideToUTF8(install_data_index);
+    return S_OK;
   }
 
  private:
@@ -730,7 +793,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   bool new_install_ = false;
+  bool is_install_ = false;
   std::string app_id_;
+  std::string brand_code_;
+  std::string ap_;
+  std::string install_data_index_;
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
       UpdateService::PolicySameVersionUpdate::kNotAllowed;
   bool set_ready_to_install_ = false;
@@ -839,7 +906,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
-    return app_web_->Update();
+    return app_web_->UpdateOrInstall();
   }
 
   IFACEMETHODIMP pause() override {
@@ -853,8 +920,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP cancel() override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    base::AutoLock lock{lock_};
+    return app_web_ ? app_web_->cancel() : E_UNEXPECTED;
   }
 
   IFACEMETHODIMP downloadPackage(BSTR app_id, BSTR package_name) override {
@@ -938,13 +1005,16 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
   return S_OK;
 }
 
+// Launches a process at medium integrity.
+// TODO(crbug.com/1523813): the `server_proc_id`, `proc_handle`, and
+// `stdout_handle` provided by the caller are not populated on return, so the
+// caller will not be able to monitor the progress.
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
     const WCHAR* cmd_line,
-    DWORD* server_proc_id,
-    ULONG_PTR* proc_handle,
-    ULONG_PTR* stdout_handle) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
+    DWORD* /*server_proc_id*/,
+    ULONG_PTR* /*proc_handle*/,
+    ULONG_PTR* /*stdout_handle*/) {
+  return RunDeElevatedCmdLine(cmd_line);
 }
 
 LegacyAppCommandWebImpl::LegacyAppCommandWebImpl()
@@ -1085,7 +1155,7 @@ STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(BSTR* pref) {
     return E_FAIL;
   }
 
-  *pref = base::win::ScopedBstr(base::ASCIIToWide(download_preference.policy()))
+  *pref = base::win::ScopedBstr(base::UTF8ToWide(download_preference.policy()))
               .Release();
   return S_OK;
 }
@@ -1122,7 +1192,7 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
   CHECK(policy);
 
   PolicyStatus<int> install_policy =
-      policy_service_->GetPolicyForAppInstalls(base::WideToASCII(app_id));
+      policy_service_->GetPolicyForAppInstalls(base::WideToUTF8(app_id));
   if (!install_policy) {
     return E_FAIL;
   }
@@ -1136,7 +1206,7 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(BSTR app_id,
   CHECK(policy);
 
   PolicyStatus<int> update_policy =
-      policy_service_->GetPolicyForAppUpdates(base::WideToASCII(app_id));
+      policy_service_->GetPolicyForAppUpdates(base::WideToUTF8(app_id));
   if (!update_policy) {
     return E_FAIL;
   }
@@ -1150,13 +1220,13 @@ STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(BSTR app_id,
   CHECK(prefix);
 
   PolicyStatus<std::string> target_version_prefix =
-      policy_service_->GetTargetVersionPrefix(base::WideToASCII(app_id));
+      policy_service_->GetTargetVersionPrefix(base::WideToUTF8(app_id));
   if (!target_version_prefix) {
     return E_FAIL;
   }
 
   *prefix =
-      base::win::ScopedBstr(base::ASCIIToWide(target_version_prefix.policy()))
+      base::win::ScopedBstr(base::UTF8ToWide(target_version_prefix.policy()))
           .Release();
   return S_OK;
 }
@@ -1168,7 +1238,7 @@ STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
 
   PolicyStatus<bool> is_rollback_allowed =
       policy_service_->IsRollbackToTargetVersionAllowed(
-          base::WideToASCII(app_id));
+          base::WideToUTF8(app_id));
   if (!is_rollback_allowed) {
     return E_FAIL;
   }
@@ -1393,7 +1463,7 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
   CHECK(value);
   auto policy_status = PolicyStatusResult<int>::Get(
       base::BindRepeating(&PolicyService::GetPolicyForAppInstalls,
-                          policy_service_, base::WideToASCII(app_id)));
+                          policy_service_, base::WideToUTF8(app_id)));
   return policy_status.has_value()
              ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
@@ -1405,7 +1475,7 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(
   CHECK(value);
   auto policy_status = PolicyStatusResult<int>::Get(
       base::BindRepeating(&PolicyService::GetPolicyForAppUpdates,
-                          policy_service_, base::WideToASCII(app_id)));
+                          policy_service_, base::WideToUTF8(app_id)));
   return policy_status.has_value()
              ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
@@ -1417,7 +1487,7 @@ STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(
   CHECK(value);
   auto policy_status = PolicyStatusResult<std::string>::Get(
       base::BindRepeating(&PolicyService::GetTargetVersionPrefix,
-                          policy_service_, base::WideToASCII(app_id)));
+                          policy_service_, base::WideToUTF8(app_id)));
   return policy_status.has_value()
              ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
@@ -1429,7 +1499,7 @@ STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
   CHECK(value);
   auto policy_status = PolicyStatusResult<bool>::Get(
       base::BindRepeating(&PolicyService::IsRollbackToTargetVersionAllowed,
-                          policy_service_, base::WideToASCII(app_id)));
+                          policy_service_, base::WideToUTF8(app_id)));
   return policy_status.has_value()
              ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
@@ -1440,7 +1510,7 @@ STDMETHODIMP PolicyStatusImpl::get_targetChannel(BSTR app_id,
   CHECK(value);
   auto policy_status = PolicyStatusResult<std::string>::Get(
       base::BindRepeating(&PolicyService::GetTargetChannel, policy_service_,
-                          base::WideToASCII(app_id)));
+                          base::WideToUTF8(app_id)));
   return policy_status.has_value()
              ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
@@ -1488,11 +1558,11 @@ HRESULT PolicyStatusValueImpl::RuntimeClassInitialize(
     bool has_conflict,
     const std::string& conflict_source,
     const std::string& conflict_value) {
-  source_ = base::ASCIIToWide(source);
-  value_ = base::ASCIIToWide(value);
+  source_ = base::UTF8ToWide(source);
+  value_ = base::UTF8ToWide(value);
   has_conflict_ = has_conflict ? VARIANT_TRUE : VARIANT_FALSE;
-  conflict_source_ = base::ASCIIToWide(conflict_source);
-  conflict_value_ = base::ASCIIToWide(conflict_value);
+  conflict_source_ = base::UTF8ToWide(conflict_source);
+  conflict_value_ = base::UTF8ToWide(conflict_value);
 
   return S_OK;
 }

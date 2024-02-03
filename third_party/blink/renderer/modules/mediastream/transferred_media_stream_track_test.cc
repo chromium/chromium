@@ -73,7 +73,7 @@ TEST_F(TransferredMediaStreamTrackTest, InitialProperties) {
   EXPECT_EQ(transferred_track_->GetReadyState(),
             MediaStreamSource::kReadyStateLive);
   EXPECT_EQ(transferred_track_->Ended(), false);
-  EXPECT_EQ(transferred_track_->device(), absl::nullopt);
+  EXPECT_EQ(transferred_track_->device(), std::nullopt);
 }
 
 TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
@@ -287,7 +287,7 @@ TEST_F(TransferredMediaStreamTrackTest, CloneInitialProperties) {
   EXPECT_EQ(clone->readyState(), "live");
   EXPECT_EQ(clone->GetReadyState(), MediaStreamSource::kReadyStateLive);
   EXPECT_EQ(clone->Ended(), false);
-  EXPECT_EQ(clone->device(), absl::nullopt);
+  EXPECT_EQ(clone->device(), std::nullopt);
 }
 
 TEST_F(TransferredMediaStreamTrackTest, CloneSetImplementation) {

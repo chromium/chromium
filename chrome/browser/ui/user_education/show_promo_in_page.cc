@@ -21,6 +21,7 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/webui/help_bubble_webui.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,6 +46,7 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
 
     bubble_params_.body_text = params.bubble_text;
     bubble_params_.arrow = params.bubble_arrow;
+    bubble_params_.focus_on_show_hint = false;
 
     if (params.close_button_alt_text_id) {
       bubble_params_.close_button_alt_text =
@@ -111,6 +113,18 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
       help_bubble_ =
           factory->CreateHelpBubble(anchor_element, std::move(bubble_params_));
       DCHECK(help_bubble_);
+
+      // Maybe focus the web contents containing the bubble (if it's the main
+      // contents).
+      if (help_bubble_) {
+        if (auto* const bubble =
+                help_bubble_->AsA<user_education::HelpBubbleWebUI>()) {
+          if (browser_->tab_strip_model()->GetActiveWebContents() ==
+              bubble->GetWebContents()) {
+            browser_->window()->FocusWebContentsPane();
+          }
+        }
+      }
     }
 
     if (!help_bubble_) {

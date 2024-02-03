@@ -6,10 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_CREDIT_CARD_CREDIT_CARD_DATA_H_
 
 #import <UIKit/UIKit.h>
-
-namespace autofill {
-class CreditCard;
-}  // namespace autofill
+#import "components/autofill/core/browser/data_model/credit_card.h"
 
 // Data source for each individual credit card.
 @interface CreditCardData : NSObject
@@ -29,6 +26,9 @@ class CreditCard;
 
 // The icon associated with this credit card.
 @property(readonly, strong) UIImage* icon;
+
+// Returns the record type of the credit card.
+@property(readonly) autofill::CreditCard::RecordType recordType;
 
 // Initializes from the autofill credit card type, and an icon.
 - (instancetype)initWithCreditCard:(const autofill::CreditCard*)creditCard

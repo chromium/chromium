@@ -193,7 +193,12 @@ void BaseRenderingContext2D::restore(ExceptionState& exception_state) {
     return;
   }
 
-  PopAndRestore();
+  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
+  if (!canvas) {
+    return;
+  }
+
+  PopAndRestore(*canvas);
   ValidateStateStack();
 }
 
@@ -206,16 +211,19 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
+  // Make sure we have a recorder and paint canvas.
+  if (!GetOrCreatePaintCanvas()) {
+    return;
+  }
+
+  MemoryManagedPaintRecorder* recorder = Recorder();
+  if (!recorder) {
+    return;
+  }
+
   ValidateStateStack();
 
-  // GetOrCreatePaintCanvas() can call RestoreMatrixClipStack which syncs
-  // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
-  // ensure canvas is synced prior to adjusting state_stack_.
-  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
-  if (!canvas)
-    return;
-
-  CanvasRenderingContext2DState& state = GetState();
+  sk_sp<PaintFilter> filter;
   if (const V8CanvasFilterInput* filter_input = CHECK_DEREF(options).filter();
       filter_input != nullptr) {
     HTMLCanvasElement* canvas_for_filter = HostAsHTMLCanvasElement();
@@ -231,23 +239,29 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
         1.0f,  // Deliberately ignore zoom on the canvas element.
         Color::kBlack, mojom::blink::ColorScheme::kLight);
 
-    // Save the layer's filter in the parent state, along with all the other
-    // render states impacting the layer. Technically, this is only required so
-    // that we could restore the `cc::PaintCanvas` matrix stack (in
-    // `RestoreMatrixClipStack`) if a frame is rendered while the layer is
-    // opened. The filter can be discarded from the parent state as soon as the
-    // layer is closed.
-    state.SetLayerFilter(paint_filter_builder::Build(
+    filter = paint_filter_builder::Build(
         filter_effect_builder.BuildFilterEffect(std::move(filter_operations),
                                                 !OriginClean()),
-        kInterpolationSpaceSRGB));
+        kInterpolationSpaceSRGB);
+  }
+
+  if (layer_count_ == 0) {
+    recorder->BeginSideRecording();
   }
 
   ++layer_count_;
 
+  // Layers are recorded on a side canvas to allow flushes with unclosed layers.
+  // When calling `BeginSideRecording()` for the top level layer,
+  // `getRecordingCanvas()` goes from returning the main canvas to returning the
+  // side canvas storing layer content.
+  cc::PaintCanvas& layer_canvas = recorder->getRecordingCanvas();
+
+  const CanvasRenderingContext2DState& state = GetState();
+  CanvasRenderingContext2DState::SaveType save_type =
+      SaveLayerForState(state, filter, layer_canvas);
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-      state, CanvasRenderingContext2DState::kDontCopyClipList,
-      SaveLayerForState(state, *canvas)));
+      state, CanvasRenderingContext2DState::kDontCopyClipList, save_type));
   max_state_stack_depth_ =
       std::max(state_stack_.size(), max_state_stack_depth_);
 
@@ -267,6 +281,7 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
 CanvasRenderingContext2DState::SaveType
 BaseRenderingContext2D::SaveLayerForState(
     const CanvasRenderingContext2DState& state,
+    sk_sp<PaintFilter> filter,
     cc::PaintCanvas& canvas) const {
   const int initial_save_count = canvas.getSaveCount();
   bool needs_compositing = state.GlobalComposite() != SkBlendMode::kSrcOver;
@@ -286,10 +301,10 @@ BaseRenderingContext2D::SaveLayerForState(
     canvas.saveLayer(flags);
   }
 
-  if (state.HasLayerFilter() || needs_compositing) {
+  if (filter || needs_compositing) {
     cc::PaintFlags flags;
     flags.setAlphaf(static_cast<float>(state.GlobalAlpha()));
-    flags.setImageFilter(state.GetLayerFilter());
+    flags.setImageFilter(filter);
     if (needs_compositing) {
       flags.setBlendMode(state.GlobalComposite());
     }
@@ -330,32 +345,51 @@ void BaseRenderingContext2D::endLayer(ExceptionState& exception_state) {
     return;
   }
 
-  PopAndRestore();
+  // Make sure we have a recorder and paint canvas.
+  if (!GetOrCreatePaintCanvas()) {
+    return;
+  }
+
+  MemoryManagedPaintRecorder* recorder = Recorder();
+  if (!recorder) {
+    return;
+  }
+
+  cc::PaintCanvas& layer_canvas = recorder->getRecordingCanvas();
+  PopAndRestore(layer_canvas);
 
   --layer_count_;
+  if (layer_count_ == 0) {
+    recorder->EndSideRecording();
+  }
+
+  // Layers are recorded on a side canvas to allow flushes with unclosed layers.
+  // When calling `EndSideRecording()` for the lop layer, `getRecordingCanvas()`
+  // goes from returning the side canvas storing the layers content to returning
+  // the main canvas.
+  cc::PaintCanvas& parent_canvas = recorder->getRecordingCanvas();
+  SkIRect clip_bounds;
+  if (parent_canvas.getDeviceClipBounds(&clip_bounds)) {
+    WillDraw(clip_bounds, CanvasPerformanceMonitor::DrawType::kOther);
+  }
+
   ValidateStateStack();
 }
 
-void BaseRenderingContext2D::PopAndRestore() {
-  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
-  if (!canvas)
-    return;
-
+void BaseRenderingContext2D::PopAndRestore(cc::PaintCanvas& canvas) {
   if (state_stack_.back()->GetSaveType() ==
       CanvasRenderingContext2DState::SaveType::kBeginEndLayerTwoSaves) {
-    canvas->restore();
+    canvas.restore();
   }
 
   if (IsTransformInvertible()) {
     GetModifiablePath().Transform(GetState().GetTransform());
   }
 
-  canvas->restore();
+  canvas.restore();
   state_stack_.pop_back();
   CanvasRenderingContext2DState& state = GetState();
   state.ClearResolvedFilter();
-  // If we popped a layer, we can clear its filter as it's no longer needed.
-  state.SetLayerFilter(nullptr);
 
   SetIsTransformInvertible(state.IsTransformInvertible());
   if (IsTransformInvertible()) {
@@ -365,12 +399,9 @@ void BaseRenderingContext2D::PopAndRestore() {
 
 void BaseRenderingContext2D::ValidateStateStackImpl(
     const cc::PaintCanvas* canvas) const {
-  if (canvas == nullptr) {
-    canvas = GetPaintCanvas();
-  }
-
   DCHECK_GE(state_stack_.size(), 1u);
-  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
+  DCHECK_GT(state_stack_.size(),
+            base::checked_cast<WTF::wtf_size_t>(layer_count_));
 
   using SaveType = CanvasRenderingContext2DState::SaveType;
   DCHECK_EQ(state_stack_[0]->GetSaveType(), SaveType::kInitial);
@@ -393,14 +424,27 @@ void BaseRenderingContext2D::ValidateStateStackImpl(
   }
   DCHECK_EQ(layer_count_, actual_layer_count);
 
-  if (canvas) {
+  if (const MemoryManagedPaintRecorder* recorder = Recorder();
+      recorder != nullptr) {
+    if (canvas == nullptr) {
+      canvas = &recorder->GetMainCanvas();
+    }
+    const cc::PaintCanvas* layer_canvas = recorder->GetSideCanvas();
+
     // The canvas should always have an initial save frame, to support
     // resetting the top level matrix and clip.
     DCHECK_GT(canvas->getSaveCount(), 1);
 
     if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
-      DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
-                state_stack_.size() + extra_layer_saves + 1);
+      // Recording canvases always starts with a baseline save that we have to
+      // account for here.
+      int main_saves = canvas->getSaveCount() - 1;
+      int layer_saves = layer_canvas ? layer_canvas->getSaveCount() - 1 : 0;
+
+      // The state stack depth should match the number of saves in the
+      // recording (taking in to account that some layers require two saves).
+      DCHECK_EQ(base::checked_cast<WTF::wtf_size_t>(main_saves + layer_saves),
+                state_stack_.size() + extra_layer_saves);
     }
   }
 }
@@ -408,20 +452,16 @@ void BaseRenderingContext2D::ValidateStateStackImpl(
 void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
   if (!c)
     return;
-  CanvasRenderingContext2DState* prev_state = nullptr;
+  AffineTransform prev_transform;
   for (Member<CanvasRenderingContext2DState> curr_state : state_stack_) {
     if (curr_state->IsLayerSaveType()) {
-      // Layers are rendered with the render states of their parent.
-      CanvasRenderingContext2DState::SaveType save_type =
-          SaveLayerForState(CHECK_DEREF(prev_state), *c);
-      CHECK_EQ(save_type, curr_state->GetSaveType());
-    } else {
-      c->save();
+      // Layers are stored in a separate recording that never gets flushed, so
+      // we are done restoring the main recording.
+      break;
     }
 
-    AffineTransform prev_transform =
-        (prev_state != nullptr ? prev_state->GetTransform()
-                               : AffineTransform());
+    c->save();
+
     if (curr_state->HasClip()) {
       if (!prev_transform.IsIdentity()) {
         c->setMatrix(SkM44());
@@ -433,9 +473,8 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
     if (AffineTransform curr_transform = curr_state->GetTransform();
         prev_transform != curr_transform) {
       c->setMatrix(AffineTransformToSkM44(curr_transform));
+      prev_transform = curr_transform;
     }
-
-    prev_state = curr_state.Get();
   }
   ValidateStateStack(c);
 }
@@ -2167,7 +2206,7 @@ ImageData* BaseRenderingContext2D::createImageData(
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
   return ImageData::ValidateAndCreate(
-      image_data->Size().width(), image_data->Size().height(), absl::nullopt,
+      image_data->Size().width(), image_data->Size().height(), std::nullopt,
       image_data->getSettings(), params, exception_state);
 }
 
@@ -2178,7 +2217,7 @@ ImageData* BaseRenderingContext2D::createImageData(
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
   params.default_color_space = GetDefaultImageDataColorSpace();
-  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
+  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), std::nullopt,
                                       /*settings=*/nullptr, params,
                                       exception_state);
 }
@@ -2191,7 +2230,7 @@ ImageData* BaseRenderingContext2D::createImageData(
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
   params.default_color_space = GetDefaultImageDataColorSpace();
-  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
+  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), std::nullopt,
                                       image_data_settings, params,
                                       exception_state);
 }
@@ -2280,7 +2319,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   if (UNLIKELY(isContextLost() || !CanCreateCanvas2dResourceProvider())) {
     return ImageData::ValidateAndCreate(
-        sw, sh, absl::nullopt, image_data_settings, validate_and_create_params,
+        sw, sh, std::nullopt, image_data_settings, validate_and_create_params,
         exception_state);
   }
 
@@ -2365,7 +2404,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   }
 
   ImageData* image_data =
-      ImageData::ValidateAndCreate(sw, sh, absl::nullopt, image_data_settings,
+      ImageData::ValidateAndCreate(sw, sh, std::nullopt, image_data_settings,
                                    validate_and_create_params, exception_state);
   if (!image_data)
     return nullptr;
@@ -2714,7 +2753,7 @@ void BaseRenderingContext2D::WillOverwriteCanvas(
   }
 
   if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
-    recorder->SkipQueuedDrawCommands();
+    recorder->RestartCurrentLayer();
   }
 }
 
@@ -3111,7 +3150,7 @@ void BaseRenderingContext2D::setTextRendering(
     setFont(font());
   }
 
-  absl::optional<blink::V8CanvasTextRendering> text_value =
+  std::optional<blink::V8CanvasTextRendering> text_value =
       V8CanvasTextRendering::Create(text_rendering_string);
 
   if (!text_value.has_value()) {
@@ -3161,7 +3200,7 @@ void BaseRenderingContext2D::setFontStretch(const String& font_stretch) {
     setFont(font());
   }
 
-  absl::optional<blink::V8CanvasFontStretch> font_value =
+  std::optional<blink::V8CanvasFontStretch> font_value =
       V8CanvasFontStretch::Create(font_stretch);
 
   if (!font_value.has_value()) {

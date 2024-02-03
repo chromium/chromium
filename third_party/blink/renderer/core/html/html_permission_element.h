@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_PERMISSION_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_PERMISSION_ELEMENT_H_
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -84,7 +85,7 @@ class CORE_EXPORT HTMLPermissionElement final
   // mojom::blink::EmbeddedPermissionControlClient override.
   void OnEmbeddedPermissionControlRegistered(
       bool allowed,
-      const absl::optional<Vector<mojom::blink::PermissionStatus>>& statuses)
+      const std::optional<Vector<mojom::blink::PermissionStatus>>& statuses)
       override;
 
   // Callback triggered when permission is decided from browser side.

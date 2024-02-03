@@ -707,7 +707,7 @@ void V4L2Device::SchedulePoll() {
   device_poller_->SchedulePoll();
 }
 
-absl::optional<struct v4l2_event> V4L2Device::DequeueEvent() {
+std::optional<struct v4l2_event> V4L2Device::DequeueEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   struct v4l2_event event;
   memset(&event, 0, sizeof(event));
@@ -716,7 +716,7 @@ absl::optional<struct v4l2_event> V4L2Device::DequeueEvent() {
     // The ioctl will fail if there are no pending events. This is part of the
     // normal flow, so keep this log level low.
     VPLOGF(4) << "Failed to dequeue event";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return event;
@@ -851,7 +851,7 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
   return result == 0;
 }
 
-absl::optional<struct v4l2_ext_control> V4L2Device::GetCtrl(uint32_t ctrl_id) {
+std::optional<struct v4l2_ext_control> V4L2Device::GetCtrl(uint32_t ctrl_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   struct v4l2_ext_control ctrl;
   memset(&ctrl, 0, sizeof(ctrl));
@@ -864,7 +864,7 @@ absl::optional<struct v4l2_ext_control> V4L2Device::GetCtrl(uint32_t ctrl_id) {
 
   if (Ioctl(VIDIOC_G_EXT_CTRLS, &ext_ctrls) != 0) {
     VPLOGF(3) << "Failed to get control";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ctrl;

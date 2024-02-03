@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/tracing/public/cpp/system_tracing_service.h"
+
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include "base/task/single_thread_task_runner.h"
 #include "services/tracing/perfetto/system_test_utils.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/system_tracing_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace tracing {
 
@@ -78,7 +79,7 @@ TEST_F(SystemTracingServiceTest, OpenProducerSocket) {
     run_loop.Quit();
   });
 
-  absl::optional<bool> socket_connected;
+  std::optional<bool> socket_connected;
   auto on_connect_callback = base::BindLambdaForTesting(
       [&](bool connected) { socket_connected = connected; });
 
@@ -109,7 +110,7 @@ TEST_F(SystemTracingServiceTest, OpenProducerSocket_Nonexistent) {
     run_loop.Quit();
   });
 
-  absl::optional<bool> socket_connected;
+  std::optional<bool> socket_connected;
   auto on_connect_callback = base::BindLambdaForTesting(
       [&](bool connected) { socket_connected = connected; });
   sts->OpenProducerSocketForTesting(std::move(callback),

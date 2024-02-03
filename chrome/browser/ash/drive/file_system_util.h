@@ -34,6 +34,21 @@ bool IsDriveAvailableForProfile(const Profile* profile);
 // Returns true if Drive is currently enabled for the given Profile.
 bool IsDriveEnabledForProfile(const Profile* profile);
 
+// Drive availability for a given profile.
+enum class DriveAvailability {
+  kAvailable,
+  kNotAvailableWhenDisableDrivePreferenceSet,
+  kNotAvailableForAccountType,
+  kNotAvailableForUninitialisedLoginState,
+  kNotAvailableInIncognito,
+  kNotAvailableForTestImage,
+};
+
+// Returns the Drive availability for a given profile. Checks if Drive is
+// enabled or if Drive is available for the given profile.
+DriveAvailability CheckDriveEnabledAndDriveAvailabilityForProfile(
+    const Profile* const profile);
+
 // Returns true if the bulk-pinning feature should be available and visible in
 // the given Profile. Several conditions need to be met for the bulk-pinning
 // feature to be available. This does not indicate whether the bulk-pinning

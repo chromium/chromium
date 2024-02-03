@@ -25,6 +25,12 @@ class QuickDeleteTabsFilter {
     private final TabModel mTabModel;
 
     /**
+     * List of tabs that are filtered for deletion. This should get updated every time the time
+     * period changes and again when the deletion is confirmed.
+     */
+    private @Nullable List<Tab> mTabs;
+
+    /**
      * This is needed because the code relies on {@link System#currentTimeMillis()} which is not
      * possible to mock.
      */
@@ -77,18 +83,26 @@ class QuickDeleteTabsFilter {
         }
     }
 
-    /**
-     * A method to close tabs which were either created or had a navigation committed, within the
-     * time period.
-     */
-    void closeTabsFilteredForQuickDelete(@TimePeriod int timePeriod) {
-        List<Tab> mTabs = getListOfTabsToBeClosed(timePeriod);
+    /** Closes list of tabs currently filtered for deletion. */
+    void closeTabsFilteredForQuickDelete() {
+        assert mTabs != null;
         mTabModel.closeMultipleTabs(mTabs, /* canUndo= */ false);
     }
 
-    List<Tab> getListOfTabsToBeClosed(@TimePeriod int timePeriod) {
+    /** Return list of tabs currently filtered for deletion. */
+    List<Tab> getListOfTabsFilteredToBeClosed() {
+        assert mTabs != null;
+        return mTabs;
+    }
+
+    /**
+     * Prepares a list of tabs which were either created or had a navigation committed within the
+     * time period.
+     */
+    void prepareListOfTabsToBeClosed(@TimePeriod int timePeriod) {
         if (TimePeriod.ALL_TIME == timePeriod) {
-            return getListOfAllTabsToBeClosed();
+            mTabs = getListOfAllTabsToBeClosed();
+            return;
         }
 
         List<Tab> mTabList = new ArrayList<>();
@@ -103,6 +117,7 @@ class QuickDeleteTabsFilter {
                 mTabList.add(tab);
             }
         }
-        return mTabList;
+
+        mTabs = mTabList;
     }
 }

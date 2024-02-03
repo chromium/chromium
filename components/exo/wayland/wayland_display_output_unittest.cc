@@ -11,6 +11,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/exo/wayland/output_controller_test_api.h"
 #include "components/exo/wayland/test/client_util.h"
 #include "components/exo/wayland/test/server_util.h"
 #include "components/exo/wayland/test/wayland_server_test.h"
@@ -19,28 +20,7 @@
 
 namespace exo::wayland {
 
-namespace {
-
-class WaylandDisplayOutputTest : public test::WaylandServerTest {
- public:
-  WaylandDisplayOutputTest()
-      : test::WaylandServerTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  WaylandDisplayOutputTest(const WaylandDisplayOutputTest&) = delete;
-  WaylandDisplayOutputTest& operator=(const WaylandDisplayOutputTest&) = delete;
-  ~WaylandDisplayOutputTest() override = default;
-
-  void TearDown() override {
-    // Force a cleanup of any remaining outputs.
-    task_environment()->FastForwardBy(
-        WaylandDisplayOutput::kDeleteTaskDelay *
-        (WaylandDisplayOutput::kDeleteRetries + 1));
-
-    test::WaylandServerTest::TearDown();
-  }
-};
-
-}  // namespace
+using WaylandDisplayOutputTest = test::WaylandServerTest;
 
 TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
@@ -133,6 +113,24 @@ TEST_F(WaylandDisplayOutputTest, MaintainsNonEmptyOutputList) {
   // crash if it enters a zero output state).
   UpdateDisplay("700x800,900x1000", /*from_native_platform=*/false,
                 /*generate_new_ids=*/true);
+}
+
+// Ensures metrics are correctly initialized and updated.
+TEST_F(WaylandDisplayOutputTest, InitializesAndUpdatesMetrics) {
+  // Start with a typical display configuration and confirm dimensions are
+  // reflected in the metrics.
+  UpdateDisplay("800x600");
+  const int64_t display_id =
+      display::Screen::GetScreen()->GetAllDisplays()[0].id();
+  OutputControllerTestApi output_controller_test_api(
+      *server_->output_controller_for_testing());
+  WaylandDisplayOutput* display_output =
+      output_controller_test_api.GetWaylandDisplayOutput(display_id);
+  EXPECT_EQ(gfx::Size(800, 600), display_output->metrics().logical_size);
+
+  // Update display dimensions, this should be reflected in the metrics.
+  UpdateDisplay("1200x800");
+  EXPECT_EQ(gfx::Size(1200, 800), display_output->metrics().logical_size);
 }
 
 }  // namespace exo::wayland

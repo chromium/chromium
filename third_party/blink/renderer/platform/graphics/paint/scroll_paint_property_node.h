@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCROLL_PAINT_PROPERTY_NODE_H_
 
 #include <algorithm>
+#include <optional>
 
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
@@ -79,7 +79,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     CompositorElementId compositor_element_id;
     cc::OverscrollBehavior overscroll_behavior =
         cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kAuto);
-    absl::optional<cc::SnapContainerData> snap_container_data;
+    std::optional<cc::SnapContainerData> snap_container_data;
 
     PaintPropertyChangeType ComputeChange(const State& other) const;
   };
@@ -128,7 +128,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     return state_.overscroll_behavior.y;
   }
 
-  absl::optional<cc::SnapContainerData> GetSnapContainerData() const {
+  std::optional<cc::SnapContainerData> GetSnapContainerData() const {
     return state_.snap_container_data;
   }
 

@@ -88,6 +88,15 @@ BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
 #endif
 );
 
+BASE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers,
+             "EnablePasswordsAccountStorageForNonSyncingUsers",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
              "SyncEnableContactInfoDataTypeForDasherUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -114,7 +123,7 @@ BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSyncWebauthnCredentials,
              "SyncWebauthnCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
@@ -148,6 +157,10 @@ bool IsReadingListAccountStorageEnabled() {
       syncer::kReadingListEnableSyncTransportModeUponSignIn);
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+BASE_FEATURE(kSyncSharedTabGroupDataInTransportMode,
+             "SyncSharedTabGroupDataInTransportMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncEnableWalletMetadataInTransportMode,
              "SyncEnableWalletMetadataInTransportMode",

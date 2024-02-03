@@ -41,7 +41,8 @@ class BrowserAction {
       bool should_trigger_session_restore,
       int64_t target_display_id,
       std::optional<uint64_t> profile_id = std::nullopt);
-  static std::unique_ptr<BrowserAction> NewTab();
+  static std::unique_ptr<BrowserAction> NewTab(
+      std::optional<uint64_t> profile_id = std::nullopt);
   static std::unique_ptr<BrowserAction> Launch(
       int64_t target_display_id,
       std::optional<uint64_t> profile_id = std::nullopt);

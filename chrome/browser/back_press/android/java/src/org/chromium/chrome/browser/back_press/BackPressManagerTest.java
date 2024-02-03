@@ -8,6 +8,7 @@ import androidx.activity.BackEventCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -227,6 +228,7 @@ public class BackPressManagerTest {
     @SmallTest
     public void testRecordSwipeEdge() {
         BackPressManager manager = new BackPressManager();
+        manager.setIsGestureNavEnabledSupplier(() -> true);
 
         EmptyBackPressHandler h1 =
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
@@ -250,6 +252,7 @@ public class BackPressManagerTest {
                     manager.addHandler(h2, BackPressHandler.Type.XR_DELEGATE);
                     h1.getHandleBackPressChangedSupplier().set(false);
                     h2.getHandleBackPressChangedSupplier().set(true);
+                    Assert.assertTrue(manager.getCallback().isEnabled());
 
                     var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
                     manager.getCallback().handleOnBackStarted(backEvent);
@@ -292,6 +295,7 @@ public class BackPressManagerTest {
     @SmallTest
     public void testRecordSwipeEdgeOfTabHistoryNavigation() {
         BackPressManager manager = new BackPressManager();
+        manager.setIsGestureNavEnabledSupplier(() -> true);
 
         EmptyBackPressHandler h1 =
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);

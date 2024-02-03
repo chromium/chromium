@@ -5,13 +5,14 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_ANONYMIZATION_KEY_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_ANONYMIZATION_KEY_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/network_anonymization_key.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class UnguessableToken;
@@ -40,7 +41,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.IsCrossSite();
   }
 
-  static const absl::optional<base::UnguessableToken>& nonce(
+  static const std::optional<base::UnguessableToken>& nonce(
       const net::NetworkAnonymizationKey& input) {
     return input.GetNonce();
   }

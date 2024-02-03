@@ -108,9 +108,12 @@ public final class FullScreenSyncPromoUtil {
                 identityManager.findExtendedAccountInfoByEmailAddress(
                         coreAccountInfos.get(0).getEmail());
         if (!(firstAccount != null
-                && firstAccount.getAccountCapabilities().canOfferExtendedSyncPromos()
+                && firstAccount
+                                .getAccountCapabilities()
+                                .canShowHistorySyncOptInsWithoutMinorModeRestrictions()
                         == Tribool.TRUE)) {
-            // Show promo only when CanOfferExtendedSyncPromos capability for the first account
+            // Show promo only when CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability
+            // for the first account
             // is fetched and true.
             return false;
         }

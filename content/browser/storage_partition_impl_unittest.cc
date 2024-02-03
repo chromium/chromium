@@ -2486,7 +2486,7 @@ TEST_F(StoragePartitionImplTest, PrivateNetworkAccessPermission) {
       browser_context()->GetDefaultStoragePartition());
   base::test::TestFuture<bool> grant_permission;
   partition->OnPrivateNetworkAccessPermissionRequired(
-      GURL::EmptyGURL(), net::IPAddress(192, 163, 1, 1), "test-id", "test-name",
+      GURL(), net::IPAddress(192, 163, 1, 1), "test-id", "test-name",
       base::BindOnce(grant_permission.GetCallback()));
   EXPECT_FALSE(grant_permission.Get());
 }

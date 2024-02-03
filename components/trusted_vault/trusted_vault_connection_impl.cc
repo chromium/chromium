@@ -132,7 +132,7 @@ trusted_vault_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
     std::optional<int> authentication_factor_type_hint) {
   trusted_vault_pb::JoinSecurityDomainsRequest request;
   request.mutable_security_domain()->set_name(
-      GetSecurityDomainName(security_domain));
+      GetSecurityDomainPath(security_domain));
   *request.mutable_security_domain_member() =
       CreateSecurityDomainMember(public_key, authentication_factor_type);
   for (const TrustedVaultKeyAndVersion& trusted_vault_key_and_version :
@@ -334,7 +334,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
     }
 
     const std::string security_domain_name =
-        GetSecurityDomainName(security_domain_);
+        GetSecurityDomainPath(security_domain_);
     for (const auto& member : response.security_domain_members()) {
       bool is_member_of_domain = false;
       for (const auto& membership : member.memberships()) {

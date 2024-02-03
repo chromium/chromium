@@ -1875,6 +1875,39 @@ TEST(URLCanonTest, CanonicalizeNonSpecialURL) {
   }
 }
 
+TEST(URLCanonTest, CanonicalizeNonSpecialURLOutputParsed) {
+  // Test that out_parsed is correctly set.
+  struct URLCase {
+    const std::string_view input;
+    // Currently, test only host and length.
+    Component expected_output_parsed_host;
+    int expected_output_parsed_length;
+  } cases[] = {
+      {"git:", Component(), 4},
+      {"git:opaque", Component(), 10},
+      {"git:/", Component(), 5},
+      {"git://", Component(6, 0), 6},
+      {"git:///", Component(6, 0), 7},
+      // The length of "[1:2:0:0:5::]" is 13.
+      {"git://[1:2:0:0:5:0:0:0]/", Component(6, 13), 20},
+  };
+
+  for (const auto& i : cases) {
+    SCOPED_TRACE(i.input);
+    Parsed parsed;
+    ParseNonSpecialURL(i.input.data(), i.input.size(), &parsed);
+    Parsed out_parsed;
+    std::string unused_out_str;
+    StdStringCanonOutput unused_output(&unused_out_str);
+    bool success = CanonicalizeNonSpecialURL(
+        i.input.data(), i.input.size(), parsed,
+        /*query_converter=*/nullptr, unused_output, out_parsed);
+    ASSERT_TRUE(success);
+    EXPECT_EQ(out_parsed.host, i.expected_output_parsed_host);
+    EXPECT_EQ(out_parsed.Length(), i.expected_output_parsed_length);
+  }
+}
+
 // The codepath here is the same as for regular canonicalization, so we just
 // need to test that things are replaced or not correctly.
 TEST(URLCanonTest, ReplaceStandardURL) {
@@ -2889,6 +2922,101 @@ TEST(URLCanonTest, ResolveRelativeURL) {
     }
   }
 }
+
+class URLCanonTypedTest : public ::testing::TestWithParam<bool> {
+ public:
+  URLCanonTypedTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    if (use_standard_compliant_non_special_scheme_url_parsing_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          kStandardCompliantNonSpecialSchemeURLParsing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          kStandardCompliantNonSpecialSchemeURLParsing);
+    }
+  }
+
+ protected:
+  struct URLCase {
+    const std::string_view input;
+    const std::string_view expected;
+    bool expected_success;
+  };
+
+  struct ResolveRelativeURLCase {
+    const std::string_view base;
+    const std::string_view rel;
+    const bool is_base_hier;
+    const bool expected_base_is_valid;
+    const bool expected_is_relative;
+    const bool expected_succeed_resolve;
+    const std::string_view expected_resolved_url;
+  };
+
+  void TestNonSpecialResolveRelativeURL(
+      const ResolveRelativeURLCase& relative_case) {
+    // The following test is similar to URLCanonTest::ResolveRelativeURL, but
+    // simplified.
+    Parsed parsed;
+    if (use_standard_compliant_non_special_scheme_url_parsing_) {
+      ParseNonSpecialURL(relative_case.base.data(), relative_case.base.size(),
+                         &parsed);
+    } else {
+      ParsePathURL(relative_case.base.data(), relative_case.base.size(),
+                   /*trim_path_end=*/false, &parsed);
+    }
+
+    // First see if it is relative.
+    bool is_relative;
+    Component relative_component;
+    bool succeed_is_rel = IsRelativeURL(
+        relative_case.base.data(), parsed, relative_case.rel.data(),
+        relative_case.rel.size(), relative_case.is_base_hier, &is_relative,
+        &relative_component);
+
+    EXPECT_EQ(is_relative, relative_case.expected_is_relative);
+    if (succeed_is_rel && is_relative) {
+      std::string resolved_url;
+      StdStringCanonOutput output(&resolved_url);
+      Parsed resolved_parsed;
+
+      bool succeed_resolve = ResolveRelativeURL(
+          relative_case.base.data(), parsed, relative_case.is_base_hier,
+          relative_case.rel.data(), relative_component, nullptr, &output,
+          &resolved_parsed);
+      output.Complete();
+
+      EXPECT_EQ(succeed_resolve, relative_case.expected_succeed_resolve);
+      EXPECT_EQ(resolved_url, relative_case.expected_resolved_url);
+    }
+  }
+
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(URLCanonTypedTest, NonSpecialResolveRelativeURL) {
+  // Test flag-dependent behaviors of non-special URLs.
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    ResolveRelativeURLCase cases[] = {
+        {"git://host", "path", true, true, true, true, "git://host/path"},
+    };
+    for (const auto& i : cases) {
+      TestNonSpecialResolveRelativeURL(i);
+    }
+  } else {
+    ResolveRelativeURLCase cases[] = {
+        {"git://host", "path", true, true, true, true, "git://path"},
+    };
+    for (const auto& i : cases) {
+      TestNonSpecialResolveRelativeURL(i);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, URLCanonTypedTest, ::testing::Bool());
 
 // It used to be the case that when we did a replacement with a long buffer of
 // UTF-16 characters, we would get invalid data in the URL. This is because the

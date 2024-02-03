@@ -4,9 +4,10 @@
 
 #include "ui/accessibility/ax_tree_update.h"
 
-#include "ui/accessibility/ax_tree_data.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_tree_checks.h"
+#include "ui/accessibility/ax_tree_data.h"
 
 namespace ui {
 

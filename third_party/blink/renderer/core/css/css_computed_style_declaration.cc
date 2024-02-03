@@ -86,7 +86,7 @@ void UseCountIfAnimationDurationZero(Document& document,
                                      const ComputedStyle& style,
                                      mojom::blink::WebFeature feature) {
   if (const CSSAnimationData* animation_data = style.Animations()) {
-    for (absl::optional<double> duration : animation_data->DurationList()) {
+    for (std::optional<double> duration : animation_data->DurationList()) {
       if (duration == 0.0) {
         UseCounter::Count(document, feature);
         return;

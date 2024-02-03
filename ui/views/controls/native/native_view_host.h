@@ -107,7 +107,7 @@ class VIEWS_EXPORT NativeViewHost : public View {
   void SetBackgroundColorWhenClipped(absl::optional<SkColor> color);
 
   // Overridden from View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void OnFocus() override;

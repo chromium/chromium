@@ -28,6 +28,7 @@
 #include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -138,8 +139,8 @@ std::wstring GetAppContainerProfileName() {
   appcontainer_id +=
       testing::UnitTest::GetInstance()->current_test_info()->name();
   auto sha1 = base::SHA1HashString(appcontainer_id);
-  std::string profile_name = base::StrCat(
-      {sandbox_base_name, base::HexEncode(sha1.data(), sha1.size())});
+  std::string profile_name =
+      base::StrCat({sandbox_base_name, base::HexEncode(sha1)});
   // CreateAppContainerProfile requires that the profile name is at most 64
   // characters but 50 on WCOS systems.  The size of sha1 is a constant 40, so
   // validate that the base names are sufficiently short that the total length
@@ -458,7 +459,14 @@ TEST(AppContainerLaunchTest, IsNotAppContainer) {
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
 }
 
-TEST_F(AppContainerTest, ChildProcessMitigationLowBox) {
+// TODO(crbug.com/1523707): Windows 11 ARM64 dbg seems to return 0xC0000005
+// (access violation) instead of SBOX_TEST_SECOND_ERROR.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+#define MAYBE_ChildProcessMitigationLowBox DISABLED_ChildProcessMitigationLowBox
+#else
+#define MAYBE_ChildProcessMitigationLowBox ChildProcessMitigationLowBox
+#endif
+TEST_F(AppContainerTest, MAYBE_ChildProcessMitigationLowBox) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }

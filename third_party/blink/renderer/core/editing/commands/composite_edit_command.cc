@@ -1523,7 +1523,7 @@ void CompositeEditCommand::MoveParagraphs(
             .SetShouldConvertBlocksToInlines(true)
             .SetConstrainingAncestor(constraining_ancestor)
             .Build());
-    fragment = CreateSanitizedFragmentFromMarkupWithContext(
+    fragment = CreateStrictlyProcessedFragmentFromMarkupWithContext(
         GetDocument(), paragraphs_markup, 0, paragraphs_markup.length(), "");
   }
 

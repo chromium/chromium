@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/gfx/font_render_params.h"
@@ -50,7 +50,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   uint32_t inactive_selection_bg_color{kDefaultInactiveSelectionBgColor};
   uint32_t inactive_selection_fg_color{kDefaultInactiveSelectionFgColor};
   bool browser_handles_all_top_level_requests{false};
-  absl::optional<base::TimeDelta> caret_blink_interval;
+  std::optional<base::TimeDelta> caret_blink_interval;
   bool use_custom_colors{true};
   bool enable_referrers{true};
   bool allow_cross_origin_auth_prompt{false};

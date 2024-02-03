@@ -15,13 +15,15 @@ import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mo
 import {EventLevelResult} from './event_level_result.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
-import {Column, TableModel} from './table_model.js';
+import {ArrayTableModel, Column, TableModel} from './table_model.js';
 import {TriggerDataMatching} from './trigger_data_matching.mojom-webui.js';
 
 // If kAttributionAggregatableBudgetPerSource changes, update this value
 const BUDGET_PER_SOURCE = 65536;
 
-function compareDefault<T>(a: T, b: T): number {
+type Comparable = bigint|number|string|boolean|Date;
+
+function compareDefault<T extends Comparable>(a: T, b: T): number {
   if (a < b) {
     return -1;
   }
@@ -31,132 +33,197 @@ function compareDefault<T>(a: T, b: T): number {
   return 0;
 }
 
+type CompareFunc<V> = (a: V, b: V) => number;
+
+function undefinedFirst<V extends Comparable>(f: CompareFunc<V>):
+    CompareFunc<V|undefined> {
+  return (a: V|undefined, b: V|undefined): number => {
+    if (a === undefined && b === undefined) {
+      return 0;
+    }
+    if (a === undefined) {
+      return -1;
+    }
+    if (b === undefined) {
+      return 1;
+    }
+    return f(a, b);
+  };
+}
+
 function bigintReplacer(_key: string, value: any): any {
   return typeof value === 'bigint' ? value.toString() : value;
 }
 
-class ValueColumn<T, V> implements Column<T> {
-  readonly compare?: (a: T, b: T) => number;
+type RenderFunc<V> = (e: HTMLElement, v: V) => void;
 
+function setInnerText(e: HTMLElement, v: any): void {
+  e.innerText = v;
+}
+
+abstract class ValueColumn<T, V> implements Column<T> {
   constructor(
       private readonly header: string,
-      protected readonly getValue: (param: T) => V,
-      comparable: boolean = true) {
-    if (comparable) {
-      this.compare = (a: T, b: T) => compareDefault(getValue(a), getValue(b));
-    }
-  }
+      protected readonly getValue: (row: T) => V,
+  ) {}
 
-  render(td: HTMLElement, row: T) {
-    td.innerText = `${this.getValue(row)}`;
-  }
+  abstract render(td: HTMLElement, row: T): void;
 
-  renderHeader(th: HTMLElement) {
+  renderHeader(th: HTMLElement): void {
     th.innerText = this.header;
   }
 }
 
-class DateColumn<T> extends ValueColumn<T, Date> {
-  constructor(header: string, getValue: (p: T) => Date) {
+class ComparableColumn<T, V> extends ValueColumn<T, V> {
+  constructor(
+      header: string,
+      getValue: (row: T) => V,
+      private readonly compareValues: CompareFunc<V>,
+      private readonly renderValue: RenderFunc<V>,
+  ) {
     super(header, getValue);
   }
 
-  override render(td: HTMLElement, row: T) {
-    td.innerText = this.getValue(row).toLocaleString();
+  render(td: HTMLElement, row: T): void {
+    this.renderValue(td, this.getValue(row));
+  }
+
+  compare(a: T, b: T): number {
+    return this.compareValues(this.getValue(a), this.getValue(b));
   }
 }
 
+function dateColumn<T>(header: string, getValue: (row: T) => Date): Column<T> {
+  return new ComparableColumn(
+      header, getValue, compareDefault,
+      (td, v) => td.innerText = v.toLocaleString());
+}
+
+const numberClass: string = 'number';
+
+function numberColumn<T, V extends bigint|number|undefined>(
+    header: string,
+    getValue: (row: T) => V,
+    formatValue: (v: NonNullable<V>) => string = (v) => `${v}`,
+    ): Column<T> {
+  return new ComparableColumn(
+      header, getValue, undefinedFirst(compareDefault), (td, v) => {
+        if (v !== undefined) {
+          td.classList.add(numberClass);
+          td.innerText = formatValue(v);
+        }
+      });
+}
+
+function stringOrBoolColumn<T, V extends string|boolean>(
+    header: string, getValue: (row: T) => V): Column<T> {
+  return new ComparableColumn(header, getValue, compareDefault, setInnerText);
+}
+
 class CodeColumn<T> extends ValueColumn<T, string> {
-  constructor(header: string, getValue: (p: T) => string) {
-    super(header, getValue, /*comparable=*/ false);
+  constructor(header: string, getValue: (row: T) => string) {
+    super(header, getValue);
   }
 
-  override render(td: HTMLElement, row: T) {
+  override render(td: HTMLElement, row: T): void {
     const code = td.ownerDocument.createElement('code');
     code.innerText = this.getValue(row);
 
     const pre = td.ownerDocument.createElement('pre');
-    pre.appendChild(code);
+    pre.append(code);
 
-    td.appendChild(pre);
+    td.append(pre);
   }
 }
 
 class ListColumn<T, V> extends ValueColumn<T, V[]> {
   constructor(
-      header: string, getValue: (p: T) => V[],
-      private readonly flatten: boolean = false,
-      private readonly renderItem: (p: V) => string = (p) => `${p}`) {
-    super(header, getValue, /*comparable=*/ false);
+      header: string,
+      getValue: (row: T) => V[],
+      private readonly renderItem: RenderFunc<V> = setInnerText,
+      private readonly tdClass?: string,
+  ) {
+    super(header, getValue);
   }
 
-  override render(td: HTMLElement, row: T) {
+  override render(td: HTMLElement, row: T): void {
     const values = this.getValue(row);
     if (values.length === 0) {
       return;
     }
 
-    if (this.flatten && values.length === 1) {
-      td.innerText = this.renderItem(values[0]!);
-      return;
+    if (this.tdClass !== undefined) {
+      td.classList.add(this.tdClass);
     }
 
     const ul = td.ownerDocument.createElement('ul');
 
     values.forEach(value => {
       const li = td.ownerDocument.createElement('li');
-      li.innerText = this.renderItem(value);
-      ul.appendChild(li);
+      this.renderItem(li, value);
+      ul.append(li);
     });
 
-    td.appendChild(ul);
+    td.append(ul);
   }
 }
 
-function renderDL<T>(td: HTMLElement, row: T, cols: Array<Column<T>>) {
+function renderDL<T>(
+    td: HTMLElement, row: T, cols: ReadonlyArray<Column<T>>): void {
   const dl = td.ownerDocument.createElement('dl');
 
   cols.forEach(col => {
     const dt = td.ownerDocument.createElement('dt');
     col.renderHeader(dt);
-    dl.appendChild(dt);
 
     const dd = td.ownerDocument.createElement('dd');
     col.render(dd, row);
-    dl.appendChild(dd);
+
+    dl.append(dt, dd);
   });
 
-  td.appendChild(dl);
+  td.append(dl);
+}
+
+function renderUrl(
+    td: HTMLElement, url: string,
+    renderAnchor: RenderFunc<string> = setInnerText): void {
+  const a = td.ownerDocument.createElement('a');
+  a.target = '_blank';
+  a.href = url;
+  renderAnchor(a, url);
+  td.append(a);
+}
+
+function urlColumn<T>(
+    header: string, getValue: (row: T) => string,
+    renderAnchor: RenderFunc<string> = setInnerText): Column<T> {
+  return new ComparableColumn(
+      header, getValue, compareDefault,
+      (td, url) => renderUrl(td, url, renderAnchor));
 }
 
 const debugPathPattern: RegExp =
     /(?<=\/\.well-known\/attribution-reporting\/)debug(?=\/)/;
 
-class ReportUrlColumn<T extends Report> extends ValueColumn<T, string> {
-  constructor() {
-    super('Report URL', (e) => e.reportUrl);
-  }
-
-  override render(td: HTMLElement, row: T) {
-    if (!row.isDebug) {
-      td.innerText = row.reportUrl;
+function reportUrlColumn<T extends Report>(): Column<T> {
+  return urlColumn('Report URL', (row) => row.reportUrl, (a, url) => {
+    const [pre, post] = url.split(debugPathPattern, 2);
+    if (pre === undefined || post === undefined) {
+      a.innerText = url;
       return;
     }
 
-    const [pre, post] = row.reportUrl.split(debugPathPattern, 2);
-    td.appendChild(new Text(pre));
-
-    const span = td.ownerDocument.createElement('span');
+    const span = a.ownerDocument.createElement('span');
     span.classList.add('debug-url');
     span.innerText = 'debug';
-    td.appendChild(span);
 
-    td.appendChild(new Text(post));
-  }
+    a.append(pre, span, post);
+  });
 }
 
 class Selectable {
-  input: HTMLInputElement;
+  readonly input: HTMLInputElement;
 
   constructor() {
     this.input = document.createElement('input');
@@ -186,15 +253,15 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
     this.model.rowsChangedListeners.add(this.listener);
   }
 
-  render(td: HTMLElement, row: T) {
-    td.appendChild(row.input);
+  render(td: HTMLElement, row: T): void {
+    td.append(row.input);
   }
 
-  renderHeader(th: HTMLElement) {
-    th.appendChild(this.selectAll);
+  renderHeader(th: HTMLElement): void {
+    th.append(this.selectAll);
   }
 
-  onChange() {
+  onChange(): void {
     let anySelectable = false;
     let anySelected = false;
     let anyUnselected = false;
@@ -224,7 +291,7 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
     this.notifySelectionChanged(anySelected);
   }
 
-  notifySelectionChanged(anySelected: boolean) {
+  notifySelectionChanged(anySelected: boolean): void {
     this.selectionChangedListeners.forEach((f) => f(anySelected));
   }
 }
@@ -242,7 +309,7 @@ class Source {
   sourceType: string;
   filterData: string;
   aggregationKeys: string;
-  debugKey: string;
+  debugKey?: bigint;
   dedupKeys: bigint[];
   priority: bigint;
   status: string;
@@ -256,7 +323,8 @@ class Source {
     this.sourceEventId = mojo.sourceEventId;
     this.sourceOrigin = originToText(mojo.sourceOrigin);
     this.destinations =
-        mojo.destinations.destinations.map(d => originToText(d.siteAsOrigin));
+        mojo.destinations.destinations.map(d => originToText(d.siteAsOrigin))
+            .sort(compareDefault);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
@@ -269,10 +337,13 @@ class Source {
     this.filterData = JSON.stringify(mojo.filterData.filterValues, null, ' ');
     this.aggregationKeys =
         JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
-    this.debugKey = mojo.debugKey ? `${mojo.debugKey}` : '';
-    this.dedupKeys = mojo.dedupKeys;
+    // TODO(crbug.com/1442785): Workaround for undefined/null issue.
+    this.debugKey =
+        typeof mojo.debugKey === 'bigint' ? mojo.debugKey : undefined;
+    this.dedupKeys = mojo.dedupKeys.sort(compareDefault);
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
-    this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
+    this.aggregatableDedupKeys =
+        mojo.aggregatableDedupKeys.sort(compareDefault);
     this.triggerDataMatching =
         triggerDataMatchingText[mojo.triggerDataMatching];
     this.eventLevelEpsilon = mojo.eventLevelEpsilon;
@@ -281,65 +352,47 @@ class Source {
   }
 }
 
-class SourceTableModel extends TableModel<Source> {
-  private storedSources: Source[] = [];
-
+class SourceTableModel extends ArrayTableModel<Source> {
   constructor() {
     super(
         [
-          new ValueColumn<Source, bigint>(
-              'Source Event ID', (e) => e.sourceEventId),
-          new ValueColumn<Source, string>('Status', (e) => e.status),
-          new ValueColumn<Source, string>(
-              'Source Origin', (e) => e.sourceOrigin),
-          new ListColumn<Source, string>(
-              'Destinations', (e) => e.destinations, /*flatten=*/ true),
-          new ValueColumn<Source, string>(
-              'Reporting Origin', (e) => e.reportingOrigin),
-          new DateColumn<Source>(
-              'Source Registration Time', (e) => e.sourceTime),
-          new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
+          numberColumn('Source Event ID', (e) => e.sourceEventId),
+          stringOrBoolColumn('Status', (e) => e.status),
+          urlColumn('Source Origin', (e) => e.sourceOrigin),
+          new ListColumn('Destinations', (e) => e.destinations, renderUrl),
+          urlColumn('Reporting Origin', (e) => e.reportingOrigin),
+          dateColumn('Registration Time', (e) => e.sourceTime),
+          dateColumn('Expiry Time', (e) => e.expiryTime),
           new CodeColumn<Source>('Trigger Specs', (e) => e.triggerSpecs),
-          new DateColumn<Source>(
+          dateColumn(
               'Aggregatable Report Window Time',
               (e) => e.aggregatableReportWindowTime),
-          new ValueColumn<Source, number>(
+          numberColumn(
               'Max Event Level Reports', (e) => e.maxEventLevelReports),
-          new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
-          new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
+          stringOrBoolColumn('Source Type', (e) => e.sourceType),
+          numberColumn('Priority', (e) => e.priority),
           new CodeColumn<Source>('Filter Data', (e) => e.filterData),
           new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
-          new ValueColumn<Source, string>(
+          stringOrBoolColumn(
               'Trigger Data Matching', (e) => e.triggerDataMatching),
-          new ValueColumn<Source, number>(
-              'Event-Level Epsilon', (e) => e.eventLevelEpsilon),
-          new ValueColumn<Source, string>(
+          numberColumn(
+              'Event-Level Epsilon', (e) => e.eventLevelEpsilon,
+              (v) => v.toFixed(3)),
+          numberColumn(
               'Aggregatable Budget Consumed',
-              (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
-          new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
-          new ValueColumn<Source, boolean>(
-              'Debug Cookie Set', (e) => e.debugCookieSet),
-          new ListColumn<Source, bigint>('Dedup Keys', (e) => e.dedupKeys),
-          new ListColumn<Source, bigint>(
-              'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
+              (e) => e.aggregatableBudgetConsumed,
+              (v) => `${v} / ${BUDGET_PER_SOURCE}`),
+          numberColumn('Debug Key', (e) => e.debugKey),
+          stringOrBoolColumn('Debug Cookie Set', (e) => e.debugCookieSet),
+          new ListColumn(
+              'Dedup Keys', (e) => e.dedupKeys, setInnerText, numberClass),
+          new ListColumn(
+              'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys,
+              setInnerText, numberClass),
         ],
-        5,  // Sort by source registration time by default.
+        5,  // Sort by registration time by default.
         'No sources.',
     );
-  }
-
-  override getRows() {
-    return this.storedSources;
-  }
-
-  setStoredSources(storedSources: Source[]) {
-    this.storedSources = storedSources;
-    this.notifyRowsChanged();
-  }
-
-  clear() {
-    this.storedSources = [];
-    this.notifyRowsChanged();
   }
 }
 
@@ -348,61 +401,37 @@ class Registration {
   readonly contextOrigin: string;
   readonly reportingOrigin: string;
   readonly registrationJson: string;
-  readonly clearedDebugKey: string;
+  readonly clearedDebugKey?: bigint;
 
   constructor(mojo: WebUIRegistration) {
     this.time = new Date(mojo.time);
     this.contextOrigin = originToText(mojo.contextOrigin);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.registrationJson = mojo.registrationJson;
-    this.clearedDebugKey =
-        mojo.clearedDebugKey ? `${mojo.clearedDebugKey}` : '';
+    // TODO(crbug.com/1442785): Workaround for undefined/null issue.
+    this.clearedDebugKey = typeof mojo.clearedDebugKey === 'bigint' ?
+        mojo.clearedDebugKey :
+        undefined;
   }
 }
 
-function registrationTableColumns<T extends Registration>(
-    contextOriginTitle: string): Array<Column<T>> {
-  return [
-    new DateColumn<T>('Time', (e) => e.time),
-    new ValueColumn<T, string>(contextOriginTitle, (e) => e.contextOrigin),
-    new ValueColumn<T, string>('Reporting Origin', (e) => e.reportingOrigin),
-    new CodeColumn<T>('Registration JSON', (e) => e.registrationJson),
-    new ValueColumn<T, string>('Cleared Debug Key', (e) => e.clearedDebugKey),
-  ];
-}
-
-class RegistrationTableModel<T extends Registration> extends TableModel<T> {
-  private registrations: T[] = [];
-
+class RegistrationTableModel<T extends Registration> extends
+    ArrayTableModel<T> {
   constructor(contextOriginTitle: string, cols: Array<Column<T>>) {
     super(
-        registrationTableColumns<T>(contextOriginTitle).concat(cols),
+        [
+          dateColumn('Time', (e) => e.time),
+          urlColumn(contextOriginTitle, (e) => e.contextOrigin),
+          urlColumn('Reporting Origin', (e) => e.reportingOrigin),
+          new CodeColumn<T>('Registration JSON', (e) => e.registrationJson),
+          numberColumn('Cleared Debug Key', (e) => e.clearedDebugKey),
+          ...cols,
+        ],
         0,  // Sort by time by default.
         'No registrations.',
     );
   }
-
-  override getRows() {
-    return this.registrations;
-  }
-
-  addRegistration(registration: T) {
-    // Prevent the page from consuming ever more memory if the user leaves the
-    // page open for a long time.
-    if (this.registrations.length >= 1000) {
-      this.registrations = [];
-    }
-
-    this.registrations.push(registration);
-    this.notifyRowsChanged();
-  }
-
-  clear() {
-    this.registrations = [];
-    this.notifyRowsChanged();
-  }
 }
-
 
 class Trigger extends Registration {
   readonly eventLevelResult: string;
@@ -417,31 +446,28 @@ class Trigger extends Registration {
   }
 }
 
-const VERIFICATION_COLS: Array<Column<TriggerVerification>> = [
-  new ValueColumn<TriggerVerification, string>('Token', e => e.token),
-  new ValueColumn<TriggerVerification, string>(
-      'Report ID', e => e.aggregatableReportId),
+const VERIFICATION_COLS: ReadonlyArray<Column<TriggerVerification>> = [
+  stringOrBoolColumn('Token', e => e.token),
+  stringOrBoolColumn('Report ID', e => e.aggregatableReportId),
 ];
 
 class ReportVerificationColumn implements Column<Trigger> {
-  renderHeader(th: HTMLElement) {
+  renderHeader(th: HTMLElement): void {
     th.innerText = 'Report Verification';
   }
 
-  render(td: HTMLElement, row: Trigger) {
-      row.verifications.forEach(verification => {
-        renderDL(td, verification, VERIFICATION_COLS);
-      });
+  render(td: HTMLElement, row: Trigger): void {
+    row.verifications.forEach(verification => {
+      renderDL(td, verification, VERIFICATION_COLS);
+    });
   }
 }
 
 class TriggerTableModel extends RegistrationTableModel<Trigger> {
   constructor() {
     super('Destination', [
-      new ValueColumn<Trigger, string>(
-          'Event-Level Result', (e) => e.eventLevelResult),
-      new ValueColumn<Trigger, string>(
-          'Aggregatable Result', (e) => e.aggregatableResult),
+      stringOrBoolColumn('Event-Level Result', (e) => e.eventLevelResult),
+      stringOrBoolColumn('Aggregatable Result', (e) => e.aggregatableResult),
       new ReportVerificationColumn(),
     ]);
   }
@@ -462,8 +488,8 @@ class SourceRegistrationTableModel extends
     RegistrationTableModel<SourceRegistration> {
   constructor() {
     super('Source Origin', [
-      new ValueColumn<SourceRegistration, string>('Type', (e) => e.type),
-      new ValueColumn<SourceRegistration, string>('Status', (e) => e.status),
+      stringOrBoolColumn('Type', (e) => e.type),
+      stringOrBoolColumn('Status', (e) => e.status),
     ]);
   }
 }
@@ -474,7 +500,6 @@ class Report extends Selectable {
   reportUrl: string;
   triggerTime: Date;
   reportTime: Date;
-  isDebug: boolean;
   status: string;
   sendFailed: boolean;
 
@@ -491,9 +516,6 @@ class Report extends Selectable {
     if (mojo.status.pending === undefined) {
       this.input.disabled = true;
     }
-
-    this.isDebug = this.reportUrl.indexOf(
-                       '/.well-known/attribution-reporting/debug/') >= 0;
 
     this.sendFailed = false;
 
@@ -515,6 +537,10 @@ class Report extends Selectable {
     } else {
       throw new Error('invalid ReportStatus union');
     }
+  }
+
+  isDebug(): boolean {
+    return debugPathPattern.test(this.reportUrl);
   }
 }
 
@@ -548,39 +574,32 @@ class AggregatableAttributionReport extends Report {
 
     this.aggregationCoordinator =
         mojo.data.aggregatableAttributionData!.aggregationCoordinator;
+
     this.isNullReport = mojo.data.aggregatableAttributionData!.isNullReport;
   }
 }
 
-function commonPreReportTableColumns<T extends Report>(): Array<Column<T>> {
-  return [
-    new ValueColumn<T, string>('Status', (e) => e.status),
-    new ReportUrlColumn<T>(),
-    new DateColumn<T>('Trigger Time', (e) => e.triggerTime),
-    new DateColumn<T>('Report Time', (e) => e.reportTime),
-  ];
-}
-
-function commonPostReportTableColumns<T extends Report>(): Array<Column<T>> {
-  return [
-    new CodeColumn<T>('Report Body', (e) => e.reportBody),
-  ];
-}
-
 class ReportTableModel<T extends Report> extends TableModel<T> {
+  private readonly sendReportsButton: HTMLButtonElement;
   private readonly showDebugReportsCheckbox: HTMLInputElement;
   private readonly hiddenDebugReportsSpan: HTMLSpanElement;
+
   private sentOrDroppedReports: T[] = [];
   private storedReports: T[] = [];
   private debugReports: T[] = [];
 
   constructor(
-      cols: Array<Column<T>>, showDebugReportsContainer: HTMLElement,
-      private readonly sendReportsButton: HTMLButtonElement,
-      private readonly handler: HandlerInterface) {
+      container: HTMLElement, private readonly handler: HandlerInterface,
+      cols: Array<Column<T>>) {
     super(
-        commonPreReportTableColumns<T>().concat(cols)
-            .concat(commonPostReportTableColumns<T>()),
+        [
+          stringOrBoolColumn('Status', (e) => e.status),
+          reportUrlColumn(),
+          dateColumn('Trigger Time', (e) => e.triggerTime),
+          dateColumn('Report Time', (e) => e.reportTime),
+          ...cols,
+          new CodeColumn<T>('Report Body', (e) => e.reportBody),
+        ],
         4,  // Sort by report time by default; the extra column is added below
         'No sent or pending reports.',
     );
@@ -590,12 +609,12 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     const selectionColumn = new SelectionColumn<T>(this);
     this.cols.unshift(selectionColumn);
 
-    this.showDebugReportsCheckbox =
-        showDebugReportsContainer.querySelector<HTMLInputElement>(
-            'input[type="checkbox"]')!;
+    this.sendReportsButton = container.querySelector('button')!;
 
-    this.hiddenDebugReportsSpan =
-        showDebugReportsContainer.querySelector('span')!;
+    this.showDebugReportsCheckbox =
+        container.querySelector('input[type="checkbox"]')!;
+
+    this.hiddenDebugReportsSpan = container.querySelector('span')!;
 
     this.showDebugReportsCheckbox.addEventListener(
         'input', () => this.notifyRowsChanged());
@@ -608,11 +627,18 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     this.rowsChangedListeners.add(() => this.updateHiddenDebugReportsSpan_());
   }
 
-  override styleRow(tr: HTMLElement, report: Report) {
+  override styleRow(tr: HTMLElement, report: Report): void {
     tr.classList.toggle('send-error', report.sendFailed);
   }
 
-  override getRows() {
+  override empty(): boolean {
+    return this.sentOrDroppedReports.length === 0 &&
+        this.storedReports.length === 0 &&
+        (!this.showDebugReportsCheckbox.checked ||
+         this.debugReports.length === 0);
+  }
+
+  override getRows(): T[] {
     let rows = this.sentOrDroppedReports.concat(this.storedReports);
     if (this.showDebugReportsCheckbox.checked) {
       rows = rows.concat(this.debugReports);
@@ -620,12 +646,12 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     return rows;
   }
 
-  setStoredReports(storedReports: T[]) {
+  setStoredReports(storedReports: T[]): void {
     this.storedReports = storedReports;
     this.notifyRowsChanged();
   }
 
-  addSentOrDroppedReport(report: T) {
+  addSentOrDroppedReport(report: T): void {
     // Prevent the page from consuming ever more memory if the user leaves the
     // page open for a long time.
     if (this.sentOrDroppedReports.length + this.debugReports.length >= 1000) {
@@ -633,7 +659,7 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
       this.debugReports = [];
     }
 
-    if (report.isDebug) {
+    if (report.isDebug()) {
       this.debugReports.push(report);
     } else {
       this.sentOrDroppedReports.push(report);
@@ -642,14 +668,14 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     this.notifyRowsChanged();
   }
 
-  clear() {
+  clear(): void {
     this.storedReports = [];
     this.sentOrDroppedReports = [];
     this.debugReports = [];
     this.notifyRowsChanged();
   }
 
-  private updateHiddenDebugReportsSpan_() {
+  private updateHiddenDebugReportsSpan_(): void {
     this.hiddenDebugReportsSpan.innerText =
         this.showDebugReportsCheckbox.checked ?
         '' :
@@ -663,7 +689,7 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
    * automatically as reports are deleted, so there's no need to manually
    * refresh the data on completion.
    */
-  private sendReports_() {
+  private sendReports_(): void {
     const ids: ReportID[] = [];
     this.storedReports.forEach((report) => {
       if (!report.input.disabled && report.input.checked) {
@@ -683,47 +709,6 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     this.handler.sendReports(ids).then(() => {
       this.sendReportsButton.innerText = previousText;
     });
-  }
-}
-
-class EventLevelReportTableModel extends ReportTableModel<EventLevelReport> {
-  constructor(
-      showDebugReportsContainer: HTMLElement,
-      sendReportsButton: HTMLButtonElement, remote: HandlerInterface) {
-    super(
-        [
-          new ValueColumn<EventLevelReport, bigint>(
-              'Report Priority', (e) => e.reportPriority),
-          new ValueColumn<EventLevelReport, boolean>(
-              'Randomized Report', (e) => !e.attributedTruthfully),
-        ],
-        showDebugReportsContainer,
-        sendReportsButton,
-        remote,
-    );
-  }
-}
-
-class AggregatableAttributionReportTableModel extends
-    ReportTableModel<AggregatableAttributionReport> {
-  constructor(
-      showDebugReportsContainer: HTMLElement,
-      sendReportsButton: HTMLButtonElement, remote: HandlerInterface) {
-    super(
-        [
-          new CodeColumn<AggregatableAttributionReport>(
-              'Histograms', (e) => e.contributions),
-          new ValueColumn<AggregatableAttributionReport, string>(
-              'Verification Token', (e) => e.verificationToken),
-          new ValueColumn<AggregatableAttributionReport, string>(
-              'Aggregation Coordinator', (e) => e.aggregationCoordinator),
-          new ValueColumn<AggregatableAttributionReport, boolean>(
-              'Null Report', (e) => e.isNullReport),
-        ],
-        showDebugReportsContainer,
-        sendReportsButton,
-        remote,
-    );
   }
 }
 
@@ -765,51 +750,23 @@ class OsRegistration {
   }
 }
 
-class OsRegistrationTableModel extends TableModel<OsRegistration> {
-  private osRegistrations: OsRegistration[] = [];
-
+class OsRegistrationTableModel extends ArrayTableModel<OsRegistration> {
   constructor() {
     super(
         [
-          new DateColumn<OsRegistration>('Timestamp', (e) => e.timestamp),
-          new ValueColumn<OsRegistration, string>(
-              'Registration Type', (e) => e.registrationType),
-          new ValueColumn<OsRegistration, string>(
-              'Registration URL', (e) => e.registrationUrl),
-          new ValueColumn<OsRegistration, string>(
-              'Top-Level Origin', (e) => e.topLevelOrigin),
-          new ValueColumn<OsRegistration, boolean>(
-              'Debug Key Allowed', (e) => e.debugKeyAllowed),
-          new ValueColumn<OsRegistration, boolean>(
-              'Debug Reporting', (e) => e.debugReporting),
-          new ValueColumn<OsRegistration, string>('Result', (e) => e.result),
+          dateColumn('Timestamp', (e) => e.timestamp),
+          stringOrBoolColumn('Registration Type', (e) => e.registrationType),
+          urlColumn('Registration URL', (e) => e.registrationUrl),
+          urlColumn('Top-Level Origin', (e) => e.topLevelOrigin),
+          stringOrBoolColumn('Debug Key Allowed', (e) => e.debugKeyAllowed),
+          stringOrBoolColumn('Debug Reporting', (e) => e.debugReporting),
+          stringOrBoolColumn('Result', (e) => e.result),
         ],
         0,
-        'No OS Registrations',
+        'No OS registrations.',
     );
   }
-
-  override getRows() {
-    return this.osRegistrations;
-  }
-
-  addOsRegistration(osRegistration: OsRegistration) {
-    // Prevent the page from consuming ever more memory if the user leaves the
-    // page open for a long time.
-    if (this.osRegistrations.length >= 1000) {
-      this.osRegistrations = [];
-    }
-
-    this.osRegistrations.push(osRegistration);
-    this.notifyRowsChanged();
-  }
-
-  clear() {
-    this.osRegistrations = [];
-    this.notifyRowsChanged();
-  }
 }
-
 
 class DebugReport {
   body: string;
@@ -832,15 +789,13 @@ class DebugReport {
   }
 }
 
-class DebugReportTableModel extends TableModel<DebugReport> {
-  private debugReports: DebugReport[] = [];
-
+class DebugReportTableModel extends ArrayTableModel<DebugReport> {
   constructor() {
     super(
         [
-          new DateColumn<DebugReport>('Time', (e) => e.time),
-          new ValueColumn<DebugReport, string>('URL', (e) => e.url),
-          new ValueColumn<DebugReport, string>('Status', (e) => e.status),
+          dateColumn('Time', (e) => e.time),
+          urlColumn('URL', (e) => e.url),
+          stringOrBoolColumn('Status', (e) => e.status),
           new CodeColumn<DebugReport>('Body', (e) => e.body),
         ],
         0,  // Sort by report time by default.
@@ -849,26 +804,6 @@ class DebugReportTableModel extends TableModel<DebugReport> {
   }
 
   // TODO(apaseltiner): Style error rows like `ReportTableModel`
-
-  override getRows() {
-    return this.debugReports;
-  }
-
-  add(report: DebugReport) {
-    // Prevent the page from consuming ever more memory if the user leaves the
-    // page open for a long time.
-    if (this.debugReports.length >= 1000) {
-      this.debugReports = [];
-    }
-
-    this.debugReports.push(report);
-    this.notifyRowsChanged();
-  }
-
-  clear() {
-    this.debugReports = [];
-    this.notifyRowsChanged();
-  }
 }
 
 /**
@@ -1015,23 +950,28 @@ class AttributionInternals implements ObserverInterface {
   private readonly triggers = new TriggerTableModel();
   private readonly debugReports = new DebugReportTableModel();
   private readonly osRegistrations = new OsRegistrationTableModel();
-  private readonly eventLevelReports: EventLevelReportTableModel;
-  private readonly aggregatableReports: AggregatableAttributionReportTableModel;
+  private readonly eventLevelReports: ReportTableModel<EventLevelReport>;
+  private readonly aggregatableReports:
+      ReportTableModel<AggregatableAttributionReport>;
 
   private readonly handler = new HandlerRemote();
 
   constructor() {
-    this.eventLevelReports = new EventLevelReportTableModel(
-        document.querySelector<HTMLButtonElement>('#show-debug-event-reports')!,
-        document.querySelector<HTMLButtonElement>('#send-reports')!,
-        this.handler);
+    this.eventLevelReports = new ReportTableModel(
+        document.querySelector('#event-level-report-controls')!, this.handler, [
+          numberColumn('Report Priority', (e) => e.reportPriority),
+          stringOrBoolColumn(
+              'Randomized Report', (e) => !e.attributedTruthfully),
+        ]);
 
-    this.aggregatableReports = new AggregatableAttributionReportTableModel(
-        document.querySelector<HTMLButtonElement>(
-            '#show-debug-aggregatable-reports')!,
-        document.querySelector<HTMLButtonElement>('#send-aggregatable-reports')!
-        ,
-        this.handler);
+    this.aggregatableReports = new ReportTableModel(
+        document.querySelector('#aggregatable-report-controls')!, this.handler,
+        [
+          new CodeColumn('Histograms', (e) => e.contributions),
+          stringOrBoolColumn('Verification Token', (e) => e.verificationToken),
+          urlColumn('Aggregation Coordinator', (e) => e.aggregationCoordinator),
+          stringOrBoolColumn('Null Report', (e) => e.isNullReport),
+        ]);
 
     installUnreadIndicator(
         this.sources, document.querySelector<HTMLElement>('#sources-tab')!);
@@ -1092,39 +1032,39 @@ class AttributionInternals implements ObserverInterface {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  onSourcesChanged() {
+  onSourcesChanged(): void {
     this.updateSources();
   }
 
-  onReportsChanged() {
+  onReportsChanged(): void {
     this.updateReports();
   }
 
-  onReportSent(mojo: WebUIReport) {
+  onReportSent(mojo: WebUIReport): void {
     this.addSentOrDroppedReport(mojo);
   }
 
-  onDebugReportSent(mojo: WebUIDebugReport) {
-    this.debugReports.add(new DebugReport(mojo));
+  onDebugReportSent(mojo: WebUIDebugReport): void {
+    this.debugReports.addRow(new DebugReport(mojo));
   }
 
-  onReportDropped(mojo: WebUIReport) {
+  onReportDropped(mojo: WebUIReport): void {
     this.addSentOrDroppedReport(mojo);
   }
 
-  onSourceHandled(mojo: WebUISourceRegistration) {
-    this.sourceRegistrations.addRegistration(new SourceRegistration(mojo));
+  onSourceHandled(mojo: WebUISourceRegistration): void {
+    this.sourceRegistrations.addRow(new SourceRegistration(mojo));
   }
 
-  onTriggerHandled(mojo: WebUITrigger) {
-    this.triggers.addRegistration(new Trigger(mojo));
+  onTriggerHandled(mojo: WebUITrigger): void {
+    this.triggers.addRow(new Trigger(mojo));
   }
 
-  onOsRegistration(mojo: WebUIOsRegistration) {
-    this.osRegistrations.addOsRegistration(new OsRegistration(mojo));
+  onOsRegistration(mojo: WebUIOsRegistration): void {
+    this.osRegistrations.addRow(new OsRegistration(mojo));
   }
 
-  private addSentOrDroppedReport(mojo: WebUIReport) {
+  private addSentOrDroppedReport(mojo: WebUIReport): void {
     if (mojo.data.eventLevelData !== undefined) {
       this.eventLevelReports.addSentOrDroppedReport(new EventLevelReport(mojo));
     } else {
@@ -1139,7 +1079,7 @@ class AttributionInternals implements ObserverInterface {
    * automatically as data is deleted, so there's no need to manually refresh
    * the data on completion.
    */
-  clearStorage() {
+  clearStorage(): void {
     this.sources.clear();
     this.sourceRegistrations.clear();
     this.triggers.clear();
@@ -1150,13 +1090,12 @@ class AttributionInternals implements ObserverInterface {
     this.handler.clearStorage();
   }
 
-  refresh() {
+  refresh(): void {
     this.handler.isAttributionReportingEnabled().then((response) => {
-      const featureStatusContent =
-          document.querySelector<HTMLElement>('#feature-status-content')!;
-      featureStatusContent.innerText =
-          response.enabled ? 'enabled' : 'disabled';
-      featureStatusContent.classList.toggle('disabled', !response.enabled);
+      const featureStatus =
+          document.querySelector<HTMLElement>('#feature-status')!;
+      featureStatus.innerText = response.enabled ? 'enabled' : 'disabled';
+      featureStatus.classList.toggle('disabled', !response.enabled);
 
       const reportDelaysContent =
           document.querySelector<HTMLElement>('#report-delays')!;
@@ -1179,14 +1118,13 @@ class AttributionInternals implements ObserverInterface {
     this.updateReports();
   }
 
-  private updateSources() {
+  private updateSources(): void {
     this.handler.getActiveSources().then((response) => {
-      this.sources.setStoredSources(
-          response.sources.map((mojo) => new Source(mojo)));
+      this.sources.setRows(response.sources.map((mojo) => new Source(mojo)));
     });
   }
 
-  private updateReports() {
+  private updateReports(): void {
     this.handler.getReports().then(response => {
       const eventLevelReports: EventLevelReport[] = [];
       const aggregatableReports: AggregatableAttributionReport[] = [];
@@ -1205,9 +1143,10 @@ class AttributionInternals implements ObserverInterface {
   }
 }
 
-function installUnreadIndicator(model: TableModel<any>, tab: HTMLElement) {
+function installUnreadIndicator(
+    model: TableModel<any>, tab: HTMLElement): void {
   model.rowsChangedListeners.add(() => {
-    if (!tab.hasAttribute('selected')) {
+    if (!tab.hasAttribute('selected') && !model.empty()) {
       tab.classList.add('unread');
     }
   });

@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_KEY_SYSTEM_INFO_H_
 #define MEDIA_BASE_KEY_SYSTEM_INFO_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

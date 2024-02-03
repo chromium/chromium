@@ -229,7 +229,7 @@ class DlpContentManagerAshTest : public testing::Test {
     profile_->SetIsNewProfile(true);
 
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, false /*is_affiliated*/, user_manager::USER_TYPE_REGULAR,
+        account_id, false /*is_affiliated*/, user_manager::UserType::kRegular,
         profile_);
     user_manager_->LoginUser(account_id, true /*set_profile_created_flag*/);
 

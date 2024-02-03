@@ -342,6 +342,9 @@ void HTMLElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kWebkitUserDrag, CSSValueID::kNone);
     }
   } else if (name == html_names::kDirAttr) {
+    // This chunk of code interacts with the html.css stylesheet rule labelled
+    // with `rendering.html#bidi-rendering`. Make sure any changes here are
+    // congruent with changes made there.
     if (EqualIgnoringASCIICase(value, "auto")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kUnicodeBidi,
@@ -387,12 +390,6 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnNonceAttrChanged},
       {html_names::kPopoverAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnPopoverChanged},
-
-      // Attributes handled by base class
-      {html_names::kFocusgroupAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::ReparseAttribute},
-      {html_names::kTabindexAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::ReparseAttribute},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
@@ -1998,12 +1995,24 @@ const HTMLElement* NearestTargetPopoverForInvoker(
 // first one to open is the "parent" and the second is the "child".
 // Additionally, a `popover=hint` cannot be the ancestor of a `popover=auto`.
 const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
-    HTMLElement& new_popover,
+    Element& new_popover_or_top_layer_element,
     HTMLDocument::PopoverStack& stack_to_check,
-    Element* new_popovers_invoker) {
-  CHECK(new_popover.HasPopoverAttribute());
-  CHECK_NE(new_popover.PopoverType(), PopoverValueType::kManual);
-  CHECK(!new_popover.popoverOpen());
+    Element* new_popovers_invoker,
+    TopLayerElementType top_layer_element_type) {
+  bool is_popover = top_layer_element_type == TopLayerElementType::kPopover;
+  HTMLElement* new_popover =
+      is_popover ? DynamicTo<HTMLElement>(new_popover_or_top_layer_element)
+                 : nullptr;
+  if (is_popover) {
+    CHECK(new_popover);
+    CHECK(new_popover->HasPopoverAttribute());
+    CHECK_NE(new_popover->PopoverType(), PopoverValueType::kManual);
+    CHECK(!new_popover->popoverOpen());
+  } else {
+    CHECK(RuntimeEnabledFeatures::NestedTopLayerSupportEnabled());
+    CHECK(!new_popover);
+    CHECK(!new_popovers_invoker);
+  }
 
   // Build a map from each open popover to its position in the stack.
   HeapHashMap<Member<const HTMLElement>, int> popover_positions;
@@ -2011,10 +2020,12 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
   for (auto popover : stack_to_check) {
     popover_positions.Set(popover, indx++);
   }
-  popover_positions.Set(&new_popover, indx++);
+  if (is_popover) {
+    popover_positions.Set(new_popover, indx++);
+  }
 
   const HTMLElement* topmost_popover_ancestor = nullptr;
-  auto check_ancestor = [&new_popover, &topmost_popover_ancestor,
+  auto check_ancestor = [new_popover, &topmost_popover_ancestor,
                          &popover_positions](const Element* to_check) {
     const HTMLElement* candidate_ancestor;
     bool ok_nesting = false;
@@ -2026,7 +2037,8 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
       }
       CHECK_NE(candidate_ancestor->PopoverType(), PopoverValueType::kManual);
       CHECK_NE(candidate_ancestor->PopoverType(), PopoverValueType::kNone);
-      ok_nesting = new_popover.PopoverType() == PopoverValueType::kHint ||
+      ok_nesting = !new_popover ||
+                   new_popover->PopoverType() == PopoverValueType::kHint ||
                    candidate_ancestor->PopoverType() == PopoverValueType::kAuto;
       if (!ok_nesting) {
         to_check = FlatTreeTraversal::ParentElement(*candidate_ancestor);
@@ -2040,12 +2052,34 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
   };
   // Add the three types of ancestor relationships to the map:
   // 1. DOM tree ancestor.
-  check_ancestor(FlatTreeTraversal::ParentElement(new_popover));
+  check_ancestor(
+      FlatTreeTraversal::ParentElement(new_popover_or_top_layer_element));
   // 2. Anchor attribute.
-  check_ancestor(new_popover.anchorElement());
+  check_ancestor(new_popover_or_top_layer_element.anchorElement());
   // 3. Invoker to popover
   check_ancestor(new_popovers_invoker);
   return topmost_popover_ancestor;
+}
+
+// static
+const HTMLElement* HTMLElement::TopLayerElementPopoverAncestor(
+    Element& top_layer_element,
+    TopLayerElementType top_layer_element_type) {
+  CHECK(top_layer_element_type != TopLayerElementType::kPopover);
+  if (!RuntimeEnabledFeatures::NestedTopLayerSupportEnabled()) {
+    return nullptr;
+  }
+  Document& document = top_layer_element.GetDocument();
+  // Check the hint stack first.
+  if (auto* ancestor = FindTopmostPopoverAncestor(
+          top_layer_element, document.PopoverHintStack(), nullptr,
+          top_layer_element_type)) {
+    return ancestor;
+  }
+  // Then the auto stack.
+  return FindTopmostPopoverAncestor(top_layer_element,
+                                    document.PopoverAutoStack(), nullptr,
+                                    top_layer_element_type);
 }
 
 namespace {
@@ -2550,7 +2584,7 @@ HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
 bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
   bool is_deferred = false;
   TextDirection text_direction;
-  absl::optional<TextDirection> resolve_result =
+  std::optional<TextDirection> resolve_result =
       ResolveAutoDirectionality(is_deferred);
   if (resolve_result) {
     text_direction = *resolve_result;
@@ -2995,7 +3029,7 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
       ClearDirAutoInheritsFromParent();
     }
 
-    absl::optional<TextDirection> text_direction;
+    std::optional<TextDirection> text_direction;
     if (EqualIgnoringASCIICase(params.new_value, "ltr")) {
       text_direction = TextDirection::kLtr;
     } else if (EqualIgnoringASCIICase(params.new_value, "rtl")) {
@@ -3021,10 +3055,6 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
 
 void HTMLElement::OnPopoverChanged(const AttributeModificationParams& params) {
   UpdatePopoverAttribute(params.new_value);
-}
-
-void HTMLElement::ReparseAttribute(const AttributeModificationParams& params) {
-  Element::ParseAttribute(params);
 }
 
 void HTMLElement::OnFormAttrChanged(const AttributeModificationParams& params) {

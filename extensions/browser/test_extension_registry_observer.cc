@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -42,7 +43,7 @@ TestExtensionRegistryObserver::TestExtensionRegistryObserver(
 
 TestExtensionRegistryObserver::TestExtensionRegistryObserver(
     ExtensionRegistry* registry,
-    const std::string& extension_id)
+    const ExtensionId& extension_id)
     : will_be_installed_waiter_(std::make_unique<Waiter>()),
       installed_waiter_(std::make_unique<Waiter>()),
       uninstalled_waiter_(std::make_unique<Waiter>()),

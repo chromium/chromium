@@ -13,7 +13,7 @@ namespace blink {
 
 class ParagraphLineBreakerTest : public RenderingTest {
  public:
-  absl::optional<LayoutUnit> AttemptParagraphBalancing(const InlineNode& node) {
+  std::optional<LayoutUnit> AttemptParagraphBalancing(const InlineNode& node) {
     const PhysicalBoxFragment* fragment =
         node.GetLayoutBox()->GetPhysicalFragment(0);
     const LayoutUnit width = fragment->Size().width;

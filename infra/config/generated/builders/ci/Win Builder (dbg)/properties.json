@@ -43,10 +43,6 @@
         {
           "builder": "win_chromium_compile_dbg_ng",
           "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win_chromium_compile_siso_dbg_ng",
-          "group": "tryserver.chromium.win"
         }
       ]
     }

@@ -26,8 +26,7 @@ namespace virtual_time_test {
 class ScriptExecutionCallbackHelper final {
  public:
   const String Result() const { return result_; }
-  void Completed(absl::optional<base::Value> value,
-                 base::TimeTicks start_time) {
+  void Completed(std::optional<base::Value> value, base::TimeTicks start_time) {
     if (!value)
       return;
     if (std::string* str = value->GetIfString())

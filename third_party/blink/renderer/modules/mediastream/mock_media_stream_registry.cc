@@ -61,7 +61,7 @@ void MockMediaStreamRegistry::Init() {
 MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
     const String& track_id,
     const VideoTrackAdapterSettings& adapter_settings,
-    const absl::optional<bool>& noise_reduction,
+    const std::optional<bool>& noise_reduction,
     bool is_screencast,
     double min_frame_rate) {
   auto native_source = std::make_unique<MockMediaStreamVideoSource>();
@@ -85,7 +85,7 @@ MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
 MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
     const String& track_id) {
   return AddVideoTrack(track_id, VideoTrackAdapterSettings(),
-                       absl::optional<bool>(), false /* is_screncast */,
+                       std::optional<bool>(), false /* is_screncast */,
                        0.0 /* min_frame_rate */);
 }
 

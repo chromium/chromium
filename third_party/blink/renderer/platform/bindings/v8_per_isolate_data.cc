@@ -94,13 +94,6 @@ void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
 }
 }  // namespace
 
-// Function defined in third_party/blink/public/web/blink.h.
-v8::Isolate* MainThreadIsolate() {
-  return V8PerIsolateData::MainThreadIsolate();
-}
-
-static V8PerIsolateData* g_main_thread_per_isolate_data = nullptr;
-
 static void BeforeCallEnteredCallback(v8::Isolate* isolate) {
   CHECK(!ScriptForbiddenScope::IsScriptForbidden());
 }
@@ -148,19 +141,14 @@ V8PerIsolateData::V8PerIsolateData(
     GetIsolate()->AddBeforeCallEnteredCallback(&BeforeCallEnteredCallback);
   }
   if (IsMainThread()) {
-    g_main_thread_per_isolate_data = this;
     GetIsolate()->SetAddCrashKeyCallback(AddCrashKey);
-    main_world_ = DOMWrapperWorld::Create(GetIsolate(),
-                                          DOMWrapperWorld::WorldType::kMain);
+    main_world_ =
+        DOMWrapperWorld::Create(GetIsolate(), DOMWrapperWorld::WorldType::kMain,
+                                /*is_default_world_of_isolate=*/true);
   }
 }
 
 V8PerIsolateData::~V8PerIsolateData() = default;
-
-v8::Isolate* V8PerIsolateData::MainThreadIsolate() {
-  DCHECK(g_main_thread_per_isolate_data);
-  return g_main_thread_per_isolate_data->GetIsolate();
-}
 
 v8::Isolate* V8PerIsolateData::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -198,7 +186,7 @@ void V8PerIsolateData::WillBeDestroyed(v8::Isolate* isolate) {
     data->profiler_group_ = nullptr;
   }
 
-  data->ClearUtilityScriptState();
+  data->ClearScriptRegexpContext();
 
   ThreadState::Current()->DetachFromIsolate();
 
@@ -227,17 +215,14 @@ void V8PerIsolateData::Destroy(v8::Isolate* isolate) {
   V8PerIsolateData* data = From(isolate);
 
   // Clear everything before exiting the Isolate.
-  if (data->utility_script_state_) {
-    data->utility_script_state_->DisposePerContextData();
+  if (data->script_regexp_script_state_) {
+    data->script_regexp_script_state_->DisposePerContextData();
   }
   data->private_property_.reset();
   data->string_cache_->Dispose();
   data->string_cache_.reset();
   data->v8_template_map_for_main_world_.clear();
   data->v8_template_map_for_non_main_worlds_.clear();
-  if (IsMainThread()) {
-    g_main_thread_per_isolate_data = nullptr;
-  }
 
   // FIXME: Remove once all v8::Isolate::GetCurrent() calls are gone.
   isolate->Exit();
@@ -259,6 +244,22 @@ void V8PerIsolateData::AddV8Template(const DOMWrapperWorld& world,
                                      v8::Local<v8::Template> value) {
   auto& map = SelectV8TemplateMap(world);
   auto result = map.insert(key, v8::Eternal<v8::Template>(GetIsolate(), value));
+  DCHECK(result.is_new_entry);
+}
+
+v8::MaybeLocal<v8::DictionaryTemplate>
+V8PerIsolateData::FindV8DictionaryTemplate(const void* key) {
+  auto it = v8_dict_template_map_.find(key);
+  return it != v8_dict_template_map_.end()
+             ? it->value.Get(GetIsolate())
+             : v8::MaybeLocal<v8::DictionaryTemplate>();
+}
+
+void V8PerIsolateData::AddV8DictionaryTemplate(
+    const void* key,
+    v8::Local<v8::DictionaryTemplate> value) {
+  auto result = v8_dict_template_map_.insert(
+      key, v8::Eternal<v8::DictionaryTemplate>(GetIsolate(), value));
   DCHECK(result.is_new_entry);
 }
 
@@ -325,7 +326,7 @@ void V8PerIsolateData::ClearPersistentsForV8ContextSnapshot() {
 const base::span<const v8::Eternal<v8::Name>>
 V8PerIsolateData::FindOrCreateEternalNameCache(
     const void* lookup_key,
-    const base::span<const char* const>& names) {
+    base::span<const std::string_view> names) {
   auto it = eternal_name_cache_.find(lookup_key);
   const Vector<v8::Eternal<v8::Name>>* vector = nullptr;
   if (UNLIKELY(it == eternal_name_cache_.end())) {
@@ -333,8 +334,12 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
     Vector<v8::Eternal<v8::Name>> new_vector(
         base::checked_cast<wtf_size_t>(names.size()));
     base::ranges::transform(
-        names, new_vector.begin(), [isolate](const char* name) {
-          return v8::Eternal<v8::Name>(isolate, V8AtomicString(isolate, name));
+        names, new_vector.begin(), [isolate](std::string_view name) {
+          return v8::Eternal<v8::Name>(
+              isolate,
+              V8AtomicString(
+                  isolate,
+                  StringView(name.data(), static_cast<unsigned>(name.size()))));
         });
     vector = &eternal_name_cache_.Set(lookup_key, std::move(new_vector))
                   .stored_value->value;
@@ -346,27 +351,25 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
                                                  vector->size());
 }
 
-ScriptState* V8PerIsolateData::EnsureUtilityScriptStateSlow() {
-  // This runs at most once per isolate, so the performance impact is
-  // negligible.
-  CHECK(!utility_script_state_);
-  LEAK_SANITIZER_DISABLED_SCOPE;
-  v8::HandleScope handle_scope(GetIsolate());
-  v8::Local<v8::Context> context(v8::Context::New(GetIsolate()));
-  utility_script_state_ = ScriptState::Create(
-      context,
-      DOMWrapperWorld::Create(
-          GetIsolate(), DOMWrapperWorld::WorldType::kBlinkInternalNonJSExposed),
-      /* execution_context = */ nullptr);
-  return utility_script_state_.Get();
+v8::Local<v8::Context> V8PerIsolateData::EnsureScriptRegexpContext() {
+  if (!script_regexp_script_state_) {
+    LEAK_SANITIZER_DISABLED_SCOPE;
+    v8::Local<v8::Context> context(v8::Context::New(GetIsolate()));
+    script_regexp_script_state_ = ScriptState::Create(
+        context,
+        DOMWrapperWorld::Create(GetIsolate(),
+                                DOMWrapperWorld::WorldType::kRegExp),
+        /* execution_context = */ nullptr);
+  }
+  return script_regexp_script_state_->GetContext();
 }
 
-void V8PerIsolateData::ClearUtilityScriptState() {
-  if (utility_script_state_) {
-    utility_script_state_->DisposePerContextData();
-    utility_script_state_->DissociateContext();
+void V8PerIsolateData::ClearScriptRegexpContext() {
+  if (script_regexp_script_state_) {
+    script_regexp_script_state_->DisposePerContextData();
+    script_regexp_script_state_->DissociateContext();
   }
-  utility_script_state_ = nullptr;
+  script_regexp_script_state_ = nullptr;
 }
 
 void V8PerIsolateData::SetThreadDebugger(

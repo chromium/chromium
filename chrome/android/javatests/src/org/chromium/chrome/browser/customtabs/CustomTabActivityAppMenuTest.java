@@ -210,6 +210,12 @@ public class CustomTabActivityAppMenuTest {
         int numMenuEntries = 1;
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(true);
 
         openAppMenuAndAssertMenuShown();
         ModelList menuItemsModelList =
@@ -275,7 +281,12 @@ public class CustomTabActivityAppMenuTest {
         int numMenuEntries = 0;
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(true);
         openAppMenuAndAssertMenuShown();
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(
@@ -503,6 +514,12 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertTrue(MAX_MENU_CUSTOM_ITEMS < numMenuEntries);
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(true);
 
         openAppMenuAndAssertMenuShown();
         ModelList menuItemsModelList =
@@ -642,6 +659,12 @@ public class CustomTabActivityAppMenuTest {
         IntentUtils.addTrustedIntentExtras(intent);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(true);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -666,6 +689,25 @@ public class CustomTabActivityAppMenuTest {
     @SmallTest
     @DisableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
     public void testNoHistoryItem_FeatureDisabled() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        openAppMenuAndAssertMenuShown();
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
+
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
+        final int expectedMenuSize = NUM_CHROME_MENU_ITEMS - 1;
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+    }
+
+    @Test
+    @SmallTest
+    public void testNoHistoryItem_NoClientPackage() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 

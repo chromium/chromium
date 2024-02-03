@@ -12,13 +12,15 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation_base.h"
+#include "chromeos/ash/services/secure_channel/nearby_connection_manager.h"
 #include "chromeos/ash/services/secure_channel/nearby_initiator_failure_type.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
 class AuthenticatedChannel;
-class NearbyConnectionManager;
 
 // Attempts to connect to a remote device over Nearby Connections via the
 // initiator role.
@@ -33,6 +35,8 @@ class NearbyInitiatorOperation
                ConnectionSuccessCallback success_callback,
            const ConnectToDeviceOperation<NearbyInitiatorFailureType>::
                ConnectionFailedCallback& failure_callback,
+           const NearbyConnectionManager::BleDiscoveryStateChangeCallback&
+               ble_discovery_state_changed_callback,
            const DeviceIdPair& device_id_pair,
            ConnectionPriority connection_priority,
            scoped_refptr<base::TaskRunner> task_runner =
@@ -43,14 +47,17 @@ class NearbyInitiatorOperation
     virtual ~Factory();
     virtual std::unique_ptr<
         ConnectToDeviceOperation<NearbyInitiatorFailureType>>
-    CreateInstance(NearbyConnectionManager* nearby_connection_manager,
-                   ConnectToDeviceOperation<NearbyInitiatorFailureType>::
-                       ConnectionSuccessCallback success_callback,
-                   const ConnectToDeviceOperation<NearbyInitiatorFailureType>::
-                       ConnectionFailedCallback& failure_callback,
-                   const DeviceIdPair& device_id_pair,
-                   ConnectionPriority connection_priority,
-                   scoped_refptr<base::TaskRunner> task_runner) = 0;
+    CreateInstance(
+        NearbyConnectionManager* nearby_connection_manager,
+        ConnectToDeviceOperation<NearbyInitiatorFailureType>::
+            ConnectionSuccessCallback success_callback,
+        const ConnectToDeviceOperation<NearbyInitiatorFailureType>::
+            ConnectionFailedCallback& failure_callback,
+        const NearbyConnectionManager::BleDiscoveryStateChangeCallback&
+            ble_discovery_state_changed_callback,
+        const DeviceIdPair& device_id_pair,
+        ConnectionPriority connection_priority,
+        scoped_refptr<base::TaskRunner> task_runner) = 0;
 
    private:
     static Factory* test_factory_;
@@ -67,6 +74,8 @@ class NearbyInitiatorOperation
           ConnectionSuccessCallback success_callback,
       const ConnectToDeviceOperation<NearbyInitiatorFailureType>::
           ConnectionFailedCallback& failure_callback,
+      const NearbyConnectionManager::BleDiscoveryStateChangeCallback&
+          ble_discovery_state_changed_callback,
       const DeviceIdPair& device_id_pair,
       ConnectionPriority connection_priority,
       scoped_refptr<base::TaskRunner> task_runner);
@@ -82,7 +91,13 @@ class NearbyInitiatorOperation
       std::unique_ptr<AuthenticatedChannel> authenticated_channel);
   void OnConnectionFailure(NearbyInitiatorFailureType failure_type);
 
+  void OnBleDiscoveryStateChanged(
+      mojom::DiscoveryResult discovery_result,
+      absl::optional<mojom::DiscoveryErrorCode> potential_error_code);
+
   raw_ptr<NearbyConnectionManager> nearby_connection_manager_;
+  NearbyConnectionManager::BleDiscoveryStateChangeCallback
+      ble_discovery_state_changed_callback_;
   base::WeakPtrFactory<NearbyInitiatorOperation> weak_ptr_factory_{this};
 };
 

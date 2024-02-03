@@ -96,7 +96,7 @@ RichHoverButton::RichHoverButton(
                    text_context, views::style::STYLE_PRIMARY));
 
   // TODO(pkasting): This class should subclass Button, not HoverButton.
-  table_layout->SetChildViewIgnoredByLayout(image(), true);
+  table_layout->SetChildViewIgnoredByLayout(image_container_view(), true);
   table_layout->SetChildViewIgnoredByLayout(label(), true);
   table_layout->SetChildViewIgnoredByLayout(ink_drop_container(), true);
 
@@ -162,7 +162,7 @@ RichHoverButton::RichHoverButton(
   SetTooltipText(tooltip_text);
   UpdateAccessibleName();
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void RichHoverButton::SetTitleText(const std::u16string& title_text) {

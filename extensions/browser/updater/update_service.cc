@@ -32,6 +32,7 @@
 #include "extensions/browser/updater/update_data_provider.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -172,7 +173,7 @@ void UpdateService::StartUpdateCheck(
   std::vector<std::vector<ExtensionId>> update_ids;
   update_ids.reserve(update_params.update_info.size());
   for (const auto& update_info : update_params.update_info) {
-    const std::string& extension_id = update_info.first;
+    const ExtensionId& extension_id = update_info.first;
 
     DCHECK(!extension_id.empty());
 

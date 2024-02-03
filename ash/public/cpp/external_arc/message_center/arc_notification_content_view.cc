@@ -445,7 +445,7 @@ void ArcNotificationContentView::MaybeCreateFloatingControlButtons() {
       GetWidget()->GetFocusTraversable());
   floating_control_buttons_widget_->SetFocusTraversableParentView(this);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
@@ -576,7 +576,7 @@ void ArcNotificationContentView::HideCopiedSurface() {
     return;
   DCHECK(surface_->GetWindow());
   surface_->GetWindow()->layer()->SetOpacity(1.0f);
-  Layout();
+  DeprecatedLayoutImmediately();
   surface_copy_.reset();
 
   // Re-install the mask since the custom mask is unset by
@@ -654,7 +654,7 @@ void ArcNotificationContentView::ViewHierarchyChanged(
   AttachSurface();
 }
 
-void ArcNotificationContentView::Layout() {
+void ArcNotificationContentView::Layout(PassKey) {
   base::AutoReset<bool> auto_reset_in_layout(&in_layout_, true);
 
   if (!surface_ || !GetWidget())
@@ -662,11 +662,11 @@ void ArcNotificationContentView::Layout() {
 
   bool is_surface_visible = (surface_->GetWindow()->layer()->opacity() != 0.0f);
   if (is_surface_visible) {
-    // |views::NativeViewHost::Layout()| can be called only when the hosted
+    // views::NativeViewHost::Layout() can be triggered only when the hosted
     // window is opaque, because that method calls
-    // |views::NativeViewHostAura::ShowWidget()| and |aura::Window::Show()|
-    // which has DCHECK the opacity of the window.
-    views::NativeViewHost::Layout();
+    // views::NativeViewHostAura::ShowWidget() and aura::Window::Show() which
+    // DCHECKs the opacity of the window.
+    LayoutSuperclass<views::NativeViewHost>(this);
     // Reinstall mask to update rounded mask insets. Set null mask unless radius
     // is set.
     UpdateMask(false /* force_update */);
@@ -856,7 +856,7 @@ void ArcNotificationContentView::OnWindowBoundsChanged(
     return;
 
   UpdatePreferredSize();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ArcNotificationContentView::OnWindowDestroying(aura::Window* window) {

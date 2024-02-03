@@ -81,6 +81,12 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
       },
       /**
        */
+      buttonsEnabled: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       */
       factors: {
         type: String,
         value: ModifiedFactors.ONLINE_PASSWORD,
@@ -95,6 +101,7 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
   }
 
   private hasNextStep: boolean;
+  private buttonsEnabled: boolean;
   private factors: ModifiedFactors;
   private changeMode: ChangeMode;
 
@@ -116,6 +123,7 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
     this.factors = data['modifiedFactors'];
     this.changeMode = data['changeMode'];
     this.hasNextStep = this.changeMode === ChangeMode.INITIAL_SETUP;
+    this.buttonsEnabled = true;
   }
 
   private getTitle(
@@ -148,6 +156,10 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
   }
 
   private onProceed(): void {
+    if (!this.buttonsEnabled) {
+      return;
+    }
+    this.buttonsEnabled = false;
     this.userActed(ACTION_PROCEED);
   }
 }

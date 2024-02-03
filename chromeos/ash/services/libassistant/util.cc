@@ -15,10 +15,10 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/cpp/switches.h"
 #include "chromeos/ash/services/libassistant/constants.h"
+#include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/ash/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
-#include "chromeos/assistant/internal/libassistant_util.h"
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/version/version_loader.h"
 
@@ -185,9 +185,8 @@ std::string CreateLibAssistantConfig(
   // Enables Libassistant gRPC server for V2.
   const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
   const std::string server_addresses =
-      chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device) +
-      "," +
-      chromeos::assistant::GetHttpConnectionServiceAddress(is_chromeos_device);
+      GetLibassistantServiceAddress(is_chromeos_device) + "," +
+      GetHttpConnectionServiceAddress(is_chromeos_device);
 
   config.Set("libas_server", Value::Dict()
                                  .Set("libas_server_address", server_addresses)

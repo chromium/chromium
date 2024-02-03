@@ -74,7 +74,7 @@ bool IsKnownUser(const AccountId& account_id) {
   return user_manager::UserManager::Get()->IsKnownUser(account_id);
 }
 
-// Returns the type of the user with the specified |id| or USER_TYPE_REGULAR.
+// Returns the type of the user with the specified |id| or kRegular.
 user_manager::UserType GetUserType(const AccountId& id) {
   if (user_manager::UserManager::IsInitialized()) {
     if (auto* user = user_manager::UserManager::Get()->FindUser(id))
@@ -83,7 +83,7 @@ user_manager::UserType GetUserType(const AccountId& id) {
   // TODO(crbug.com/1329256): Convert this to a DCHECK when tests are fixed.
   LOG(WARNING) << "No matching user. This should only happen in tests.";
   // Unit tests may not have a UserManager.
-  return user_manager::USER_TYPE_REGULAR;
+  return user_manager::UserType::kRegular;
 }
 
 // This has once been copied from
@@ -113,7 +113,7 @@ std::string HashWallpaperFilesIdStr(const std::string& files_id_unhashed) {
   std::vector<uint8_t> data = *salt;
   base::ranges::copy(files_id_unhashed, std::back_inserter(data));
   base::SHA1HashBytes(data.data(), data.size(), binmd);
-  std::string result = base::HexEncode(binmd, sizeof(binmd));
+  std::string result = base::HexEncode(binmd);
   base::ranges::transform(result, result.begin(), ::tolower);
   return result;
 }
@@ -155,8 +155,9 @@ bool HasNonDeviceLocalAccounts(const user_manager::UserList& users) {
 // none.
 user_manager::User* FindPublicSession(const user_manager::UserList& users) {
   for (size_t i = 0; i < users.size(); ++i) {
-    if (users[i]->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+    if (users[i]->GetType() == user_manager::UserType::kPublicAccount) {
       return users[i];
+    }
   }
   return nullptr;
 }

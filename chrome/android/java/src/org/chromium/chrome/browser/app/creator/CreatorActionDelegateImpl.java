@@ -39,7 +39,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private final Profile mProfile;
     private final SnackbarManager mSnackbarManager;
     private final CreatorCoordinator mCreatorCoordinator;
-    private final int mParentID;
+    private final int mParentId;
 
     public CreatorActionDelegateImpl(
             Context activityContext,
@@ -51,7 +51,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
         mProfile = profile;
         mSnackbarManager = snackbarManager;
         mCreatorCoordinator = creatorCoordinator;
-        mParentID = parentId;
+        mParentId = parentId;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             if (inGroup) {
                 AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(params);
                 new ChromeAsyncTabLauncher(offTheRecord)
-                        .launchNewTab(asyncParams, TabLaunchType.FROM_LINK, mParentID);
+                        .launchNewTab(asyncParams, TabLaunchType.FROM_LINK, mParentId);
 
             } else {
                 new ChromeAsyncTabLauncher(offTheRecord)

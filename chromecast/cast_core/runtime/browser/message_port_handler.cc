@@ -4,6 +4,7 @@
 
 #include "chromecast/cast_core/runtime/browser/message_port_handler.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -231,7 +232,7 @@ void MessagePortHandler::OnPortMessagePosted(
 }
 
 bool MessagePortHandler::OnMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cast::web::Message request;

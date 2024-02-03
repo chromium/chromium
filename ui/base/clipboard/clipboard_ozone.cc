@@ -697,8 +697,7 @@ void ClipboardOzone::WriteText(base::StringPiece text) {
 
 void ClipboardOzone::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> /* source_url */,
-    ClipboardContentType /* content_type */) {
+    absl::optional<base::StringPiece> /* source_url */) {
   std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
 }

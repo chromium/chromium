@@ -46,9 +46,9 @@ class WebUILoginView : public views::View,
                        public ChromeWebModalDialogManagerDelegate,
                        public web_modal::WebContentsModalDialogHost,
                        public SystemTrayObserver {
- public:
-  METADATA_HEADER(WebUILoginView);
+  METADATA_HEADER(WebUILoginView, views::View)
 
+ public:
   struct WebViewSettings {
     // If true, this will check for and consume a preloaded views::WebView
     // instance.
@@ -124,7 +124,7 @@ class WebUILoginView : public views::View,
                                 const std::u16string& title);
 
   // Overridden from views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void ChildPreferredSizeChanged(View* child) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

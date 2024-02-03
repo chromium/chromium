@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
 #define SERVICES_NETWORK_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -14,7 +15,6 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 namespace network {
 namespace test {
@@ -102,12 +102,12 @@ class TrustTokenRequestHandler {
 
   // Given a base64-encoded issuance request, processes the
   // request and returns either nullopt (on error) or a base64-encoded response.
-  absl::optional<std::string> Issue(std::string_view issuance_request);
+  std::optional<std::string> Issue(std::string_view issuance_request);
 
   // Given a base64-encoded redemption request, processes the
   // request and returns either nullopt (on error) or a string containing
   // the metadata values.
-  absl::optional<std::string> Redeem(std::string_view redemption_request);
+  std::optional<std::string> Redeem(std::string_view redemption_request);
 
   // Stores a representation of a signed request with the given destination and
   // headers in a manner that can be retrieved for inspection by calling
@@ -119,7 +119,7 @@ class TrustTokenRequestHandler {
   std::set<std::string> hashes_of_redemption_bound_public_keys() const;
 
   // Returns a structured representation of the last signed request received.
-  absl::optional<TrustTokenSignedRequest> last_incoming_signed_request() const;
+  std::optional<TrustTokenSignedRequest> last_incoming_signed_request() const;
 
  private:
   struct Rep;  // Contains state internal to this class's implementation.

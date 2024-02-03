@@ -91,9 +91,9 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/browser/metrics/model",
-    "//ios/chrome/browser/promos_manager:constants",
-    "//ios/chrome/browser/promos_manager:promos_manager",
-    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_testing",
@@ -347,9 +347,11 @@ source_set("docking_promo_app_agent") {
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/promos_manager",
-    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/docking_promo/model:utils",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/start_surface",
   ]
 }
 
@@ -364,8 +366,8 @@ source_set("post_restore_app_agent") {
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
-    "//ios/chrome/browser/promos_manager:constants",
-    "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
   ]
@@ -384,9 +386,9 @@ source_set("search_engine_choice_app_agent") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/promos_manager:constants",
-    "//ios/chrome/browser/promos_manager:factory",
-    "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/search_engine_choice/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
@@ -532,7 +534,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/passwords/model",
-    "//ios/chrome/browser/promos_manager:factory",
+    "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/screenshot/model",
@@ -699,6 +701,7 @@ chrome_app("chrome") {
   entitlements_target = ":entitlements"
   info_plist_target = ":info_plist"
   bundle_identifier = "$chromium_bundle_id"
+  orderfile_path = "//ios/chrome/app/Chromium.order"
 
   bundle_deps = [
     "//ios/chrome/app/resources",

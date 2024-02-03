@@ -1078,7 +1078,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   void MockRegularUserWithAffiliation(const AccountId& account_id,
                                       bool is_affiliated) {
-    MockUserWithTypeAndAffiliation(account_id, user_manager::USER_TYPE_REGULAR,
+    MockUserWithTypeAndAffiliation(account_id, user_manager::UserType::kRegular,
                                    is_affiliated);
   }
 
@@ -1621,7 +1621,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id0, true, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id0, true, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id0, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
@@ -1664,7 +1664,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id0, false, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id0, false, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id0, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
@@ -1839,32 +1839,32 @@ TEST_F(DeviceStatusCollectorTest, ReportUsers) {
                              /*is_child=*/false);
 
   auto* user0 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id0, true, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id0, true, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id0, user0->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
   auto* user1 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id1, true, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id1, true, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id1, user1->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
   auto* user2 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id2, true, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id2, true, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id2, user2->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
   auto* user3 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id3, false, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id3, false, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id3, user3->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
   auto* user4 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id4, true, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id4, true, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id4, user4->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
   auto* user5 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id5, true, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id5, true, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id5, user5->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
@@ -4188,7 +4188,7 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id0, false, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id0, false, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id0, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
@@ -4204,7 +4204,7 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id0, true, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id0, true, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id0, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
@@ -4360,7 +4360,7 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfUnaffiliatedUser) {
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id0, false, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id0, false, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id0, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
@@ -4375,7 +4375,7 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfAffiliatedUser) {
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id0, true, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id0, true, user_manager::UserType::kRegular, nullptr);
   user_manager->UserLoggedIn(account_id0, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);

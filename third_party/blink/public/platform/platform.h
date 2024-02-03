@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_PLATFORM_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -49,7 +50,6 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
@@ -574,8 +574,8 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // WebRTC ----------------------------------------------------------
 
-  virtual absl::optional<double> GetWebRtcMaxCaptureFrameRate() {
-    return absl::nullopt;
+  virtual std::optional<double> GetWebRtcMaxCaptureFrameRate() {
+    return std::nullopt;
   }
 
   virtual scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(

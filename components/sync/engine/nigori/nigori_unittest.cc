@@ -240,15 +240,12 @@ TEST(SyncNigoriTest, CreateByDerivationShouldDeriveCorrectKeyUsingPbkdf2) {
   nigori->ExportKeys(&user_key, &encryption_key, &mac_key);
   // These are reference values obtained by running PBKDF2 with Nigori's
   // parameters and the input values given above.
-  EXPECT_EQ(
-      "025599e143c4923d77f65b99d97019a3",
-      base::ToLowerASCII(base::HexEncode(user_key.data(), user_key.size())));
+  EXPECT_EQ("025599e143c4923d77f65b99d97019a3",
+            base::ToLowerASCII(base::HexEncode(user_key)));
   EXPECT_EQ("4596bf346572497d92b2a0e2146d93c1",
-            base::ToLowerASCII(
-                base::HexEncode(encryption_key.data(), encryption_key.size())));
-  EXPECT_EQ(
-      "2292ad9db96fe590b22a58db50f6f545",
-      base::ToLowerASCII(base::HexEncode(mac_key.data(), mac_key.size())));
+            base::ToLowerASCII(base::HexEncode(encryption_key)));
+  EXPECT_EQ("2292ad9db96fe590b22a58db50f6f545",
+            base::ToLowerASCII(base::HexEncode(mac_key)));
 }
 
 TEST(SyncNigoriTest, CreateByDerivationShouldDeriveCorrectKeyUsingScrypt) {
@@ -266,17 +263,14 @@ TEST(SyncNigoriTest, CreateByDerivationShouldDeriveCorrectKeyUsingScrypt) {
   // user_key is not used anymore, but is being set for backwards compatibility
   // (because legacy clients cannot import a Nigori node without one).
   // Therefore, we just initialize it to all zeroes.
-  EXPECT_EQ(
-      "00000000000000000000000000000000",
-      base::ToLowerASCII(base::HexEncode(user_key.data(), user_key.size())));
+  EXPECT_EQ("00000000000000000000000000000000",
+            base::ToLowerASCII(base::HexEncode(user_key)));
   // These are reference values obtained by running scrypt with Nigori's
   // parameters and the input values given above.
   EXPECT_EQ("8aa735e0091339a5e51da3b3dd1b328a",
-            base::ToLowerASCII(
-                base::HexEncode(encryption_key.data(), encryption_key.size())));
-  EXPECT_EQ(
-      "a7e73611968dfd2bca5b3382aed451ba",
-      base::ToLowerASCII(base::HexEncode(mac_key.data(), mac_key.size())));
+            base::ToLowerASCII(base::HexEncode(encryption_key)));
+  EXPECT_EQ("a7e73611968dfd2bca5b3382aed451ba",
+            base::ToLowerASCII(base::HexEncode(mac_key)));
 }
 
 TEST(SyncNigoriTest, CreateByDerivationShouldReportPbkdf2DurationInHistogram) {

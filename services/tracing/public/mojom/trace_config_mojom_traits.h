@@ -168,12 +168,12 @@ class StructTraits<tracing::mojom::TraceConfigDataView, perfetto::TraceConfig> {
     return src.write_into_file();
   }
 
-  static absl::optional<base::Token> trace_uuid(
+  static std::optional<base::Token> trace_uuid(
       const perfetto::TraceConfig& src) {
     if (src.has_trace_uuid_msb() || src.has_trace_uuid_lsb()) {
       return base::Token(src.trace_uuid_msb(), src.trace_uuid_lsb());
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static bool Read(tracing::mojom::TraceConfigDataView data,

@@ -514,8 +514,7 @@ class TabSwitcherMediator
     private void updateTopControlsProperties() {
         // If the Start surface is enabled, it will handle the margins and positioning of the tab
         // switcher. So, we shouldn't do it here.
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext)
-                && !ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
+        if (mIsStartSurfaceEnabled && !mIsStartSurfaceRefactorEnabled) {
             mContainerViewModel.set(TOP_MARGIN, 0);
             mContainerViewModel.set(SHADOW_TOP_OFFSET, 0);
             return;
@@ -951,8 +950,8 @@ class TabSwitcherMediator
         mHandler.postDelayed(mClearTabListRunnable, HARD_CLEANUP_DELAY_MS);
         mIsTransitionInProgress = false;
         notifyBackPressStateChangedInternal();
-        if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
-                && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
+        if (mIsStartSurfaceRefactorEnabled
+                && ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
             // Ensure we skip animating here as the UI is entirely occluded already.
             boolean previousAnimateVisibilityChangesValue =
                     mContainerViewModel.get(ANIMATE_VISIBILITY_CHANGES);

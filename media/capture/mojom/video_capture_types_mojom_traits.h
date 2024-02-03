@@ -213,7 +213,7 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return input.facing;
   }
 
-  static absl::optional<media::CameraAvailability> availability(
+  static std::optional<media::CameraAvailability> availability(
       const media::VideoCaptureDeviceDescriptor& input) {
     return input.availability;
   }

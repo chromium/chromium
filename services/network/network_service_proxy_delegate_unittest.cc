@@ -4,6 +4,7 @@
 
 #include "services/network/network_service_proxy_delegate.h"
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -24,7 +25,6 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -57,11 +57,11 @@ class TestCustomProxyConnectionObserver
   TestCustomProxyConnectionObserver() = default;
   ~TestCustomProxyConnectionObserver() override = default;
 
-  const absl::optional<std::pair<net::ProxyChain, int>>& FallbackArgs() const {
+  const std::optional<std::pair<net::ProxyChain, int>>& FallbackArgs() const {
     return fallback_;
   }
 
-  const absl::optional<HeadersReceived>& HeadersReceivedArgs() const {
+  const std::optional<HeadersReceived>& HeadersReceivedArgs() const {
     return headers_received_;
   }
 
@@ -78,8 +78,8 @@ class TestCustomProxyConnectionObserver
   }
 
  private:
-  absl::optional<std::pair<net::ProxyChain, int>> fallback_;
-  absl::optional<HeadersReceived> headers_received_;
+  std::optional<std::pair<net::ProxyChain, int>> fallback_;
+  std::optional<HeadersReceived> headers_received_;
 };
 
 class NetworkServiceProxyDelegateTest : public testing::Test {

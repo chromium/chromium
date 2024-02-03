@@ -30,10 +30,11 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
  public:
   // `built_in_backend` and `android_backend` must not be null and must outlive
   // this object as long as Shutdown() is not called.
-  PasswordStoreProxyBackend(PasswordStoreBackend* built_in_backend,
-                            PasswordStoreBackend* android_backend,
-                            PrefService* prefs,
-                            IsAccountStore is_account_store);
+  PasswordStoreProxyBackend(
+      std::unique_ptr<PasswordStoreBackend> built_in_backend,
+      std::unique_ptr<PasswordStoreBackend> android_backend,
+      PrefService* prefs,
+      IsAccountStore is_account_store);
   PasswordStoreProxyBackend(const PasswordStoreProxyBackend&) = delete;
   PasswordStoreProxyBackend(PasswordStoreProxyBackend&&) = delete;
   PasswordStoreProxyBackend& operator=(const PasswordStoreProxyBackend&) =
@@ -51,6 +52,7 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
+  bool IsAbleToSavePasswords() override;
   void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
   void GetAllLoginsWithAffiliationAndBrandingAsync(
       LoginsOrErrorReply callback) override;
@@ -129,8 +131,8 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
   PasswordStoreBackend* main_backend();
   PasswordStoreBackend* shadow_backend();
 
-  const raw_ptr<PasswordStoreBackend> built_in_backend_;
-  const raw_ptr<PasswordStoreBackend> android_backend_;
+  std::unique_ptr<PasswordStoreBackend> built_in_backend_;
+  std::unique_ptr<PasswordStoreBackend> android_backend_;
   raw_ptr<PrefService> const prefs_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 

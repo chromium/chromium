@@ -3695,13 +3695,17 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
   ASSERT_EQ(manager, pdf::PdfViewerStreamManager::FromWebContents(contents));
 
   // Verify the pdf has loaded. The test will timeout if the PDF fails to load.
-  manager->DeprecatedWaitUntilPdfLoaded();
+  manager->WaitUntilPdfLoadedInFirstChild();
 }
 
 // PDF extension tests for the OOPIF PDF viewer.
 class PDFExtensionOopifTest : public PDFExtensionTestWithoutOopifOverride {
  public:
   bool UseOopif() const override { return true; }
+
+  pdf::PdfViewerStreamManager* GetPdfViewerStreamManager() {
+    return pdf::PdfViewerStreamManager::FromWebContents(GetActiveWebContents());
+  }
 };
 
 // Test that full page PDF can send and receive postMessage() messages from its
@@ -3772,6 +3776,84 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
     EXPECT_EQ(child_frame, pdf_frame_util::FindFullPagePdfExtensionHost(
                                GetActiveWebContents()));
   }
+}
+
+// Test that re-navigating to the same PDF successfully loads the PDF.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToSamePdf) {
+  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  WebContents* web_contents = GetActiveWebContents();
+
+  // Navigate to the PDF URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+
+  auto* primary_main_frame1 = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // Make sure the stream has the same URL as the PDF URL.
+  ASSERT_TRUE(GetPdfViewerStreamManager());
+  base::WeakPtr<extensions::StreamContainer> stream =
+      GetPdfViewerStreamManager()->GetStreamContainer(primary_main_frame1);
+  ASSERT_TRUE(stream);
+  EXPECT_EQ(pdf_url, stream->original_url());
+
+  // Navigate to the same PDF URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  auto* primary_main_frame2 = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(primary_main_frame2));
+  EXPECT_EQ(primary_main_frame1->GetGlobalId(),
+            primary_main_frame2->GetGlobalId());
+
+  // Make sure the stream was replaced by a new stream. The new stream should
+  // still have the same URL as the PDF URL.
+  ASSERT_TRUE(GetPdfViewerStreamManager());
+  EXPECT_FALSE(stream);
+  stream = GetPdfViewerStreamManager()->GetStreamContainer(primary_main_frame2);
+  ASSERT_TRUE(stream);
+  EXPECT_EQ(pdf_url, stream->original_url());
+}
+
+// TODO(crbug.com/1522192): Add a test for reloading the same URL with a new
+// Content-Security-Policy: sandbox header.
+
+// Test that navigating to a different PDF successfully loads the PDF.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToDifferentPdf) {
+  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  WebContents* web_contents = GetActiveWebContents();
+
+  // Navigate to the PDF URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // Make sure the stream has the same URL as the PDF URL.
+  ASSERT_TRUE(GetPdfViewerStreamManager());
+  base::WeakPtr<extensions::StreamContainer> stream =
+      GetPdfViewerStreamManager()->GetStreamContainer(
+          web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(stream);
+  EXPECT_EQ(pdf_url, stream->original_url());
+
+  const GURL other_pdf_url =
+      embedded_test_server()->GetURL("/pdf/test-title.pdf");
+
+  // Navigate to a different PDF URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), other_pdf_url));
+
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // Make sure the stream was replaced by a new stream. The new stream should
+  // have the new PDF URL.
+  ASSERT_TRUE(GetPdfViewerStreamManager());
+  EXPECT_FALSE(stream);
+  stream = GetPdfViewerStreamManager()->GetStreamContainer(
+      web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(stream);
+  EXPECT_EQ(other_pdf_url, stream->original_url());
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer

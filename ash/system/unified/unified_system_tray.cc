@@ -433,7 +433,7 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
   status.push_back(channel_indicator_view_ &&
                            channel_indicator_view_->GetVisible()
                        ? channel_indicator_view_->GetAccessibleNameString()
-                       : base::EmptyString16());
+                       : std::u16string());
 
   std::u16string network_string, hotspot_string;
   if (network_tray_view_->GetVisible()) {
@@ -454,15 +454,15 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
 
   status.push_back(managed_device_view_->GetVisible()
                        ? managed_device_view_->image_view()->GetTooltipText()
-                       : base::EmptyString16());
+                       : std::u16string());
 
   status.push_back(ime_mode_view_->GetVisible()
                        ? ime_mode_view_->label()->GetAccessibleNameString()
-                       : base::EmptyString16());
+                       : std::u16string());
   status.push_back(
       current_locale_view_->GetVisible()
           ? current_locale_view_->label()->GetAccessibleNameString()
-          : base::EmptyString16());
+          : std::u16string());
 
   return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION,
                                     status, nullptr);

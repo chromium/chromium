@@ -444,7 +444,9 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   DCHECK(client);
   // Update the default store to the last used one.
   if (success &&
-      client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+      client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kButterOnDesktopFollowup)) {
     client->GetPasswordFeatureManager()->SetDefaultPasswordStore(store_to_use);
   }
   return success;
@@ -753,7 +755,9 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
   // Update the default store to the last used one.
-  if (client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+  if (client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kButterOnDesktopFollowup)) {
     client->GetPasswordFeatureManager()->SetDefaultPasswordStore(store_to_use);
   }
 }
@@ -815,7 +819,7 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
 
 bool PasswordsPrivateDelegateImpl::IsOptedInForAccountStorage() {
   return password_manager::features_util::IsOptedInForAccountStorage(
-      SyncServiceFactory::GetForProfile(profile_));
+      profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
 }
 
 void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(

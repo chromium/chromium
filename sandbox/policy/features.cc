@@ -71,18 +71,6 @@ BASE_FEATURE(kWinSboxHighRendererJobMemoryLimits,
              "WinSboxHighRendererJobMemoryLimits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Emergency "off switch" for closing the KsecDD handle in cryptbase.dll just
-// before sandbox lockdown in renderers.
-BASE_FEATURE(kWinSboxRendererCloseKsecDD,
-             "WinSboxRendererCloseKsecDD",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, only warm up `bcryptprimitives!ProcessPrng` - if disabled warms
-// up `advapi32!RtlGenRandom`.
-BASE_FEATURE(kWinSboxWarmupProcessPrng,
-             "WinSboxWarmupProcessPrng",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, launch the network service within an LPAC sandbox. If disabled,
 // the network service will run inside an App Container.
 BASE_FEATURE(kWinSboxNetworkServiceSandboxIsLPAC,
@@ -102,6 +90,14 @@ BASE_FEATURE(kWinSboxForceRendererCodeIntegrity,
 // processes.
 BASE_FEATURE(kWinSboxZeroAppShim,
              "WinSboxZeroAppShim",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables pre-launch Code Integrity Guard (CIG) for Chrome network service
+// process, when running on Windows 10 1511 and above. This has no effect if
+// NetworkServiceSandbox feature is disabled, or if using a component or ASAN
+// build. See https://blogs.windows.com/blog/tag/code-integrity-guard/.
+BASE_FEATURE(kNetworkServiceCodeIntegrity,
+             "NetworkServiceCodeIntegrity",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 

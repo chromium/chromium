@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -93,6 +94,11 @@ class OnDeviceModelServiceController
     return model_remote_.is_bound() || service_remote_.is_bound();
   }
 
+  // Sets the language detection model to be used by the ODM service when text
+  // safety evaluation is restricted to a specific set of languages.
+  void SetLanguageDetectionModel(
+      base::optional_ref<const ModelInfo> model_info);
+
   // Updates safety model if the model path provided by `model_info` differs
   // from what is already loaded. Virtual for testing.
   virtual void MaybeUpdateSafetyModel(
@@ -107,6 +113,10 @@ class OnDeviceModelServiceController
 
  protected:
   ~OnDeviceModelServiceController() override;
+
+  std::optional<base::FilePath> language_detection_model_path() const {
+    return language_detection_model_path_;
+  }
 
  private:
   friend class base::RefCounted<OnDeviceModelServiceController>;
@@ -140,6 +150,7 @@ class OnDeviceModelServiceController
 
   // Makes sure the service is running and starts a mojo session.
   void StartMojoSession(
+      on_device_model::ModelAssetPaths model_paths,
       mojo::PendingReceiver<on_device_model::mojom::Session> session);
 
   // Invoked at the end of model load, to continue with model execution.
@@ -170,7 +181,13 @@ class OnDeviceModelServiceController
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
-  std::optional<on_device_model::ModelAssetPaths> model_paths_;
+
+  // Directory containing file assets for underlying on-device models. This does
+  // not include the text safety model or the language detection model.
+  std::optional<base::FilePath> model_path_;
+  // Full path of the language detection model file if it's available.
+  std::optional<base::FilePath> language_detection_model_path_;
+
   std::optional<proto::OnDeviceModelVersions> model_versions_;
   // Can be null if no safey model available.
   std::unique_ptr<SafetyModelInfo> safety_model_info_;

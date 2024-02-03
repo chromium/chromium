@@ -41,10 +41,7 @@ std::string GetConfig() {
   std::string results;
   if (!base::JSONWriter::Write(dict, &results))
     return "";
-
-  std::string data;
-  base::Base64Encode(results, &data);
-  return data;
+  return base::Base64Encode(results);
 }
 
 TEST_F(TracingUITest, ConfigParsing) {

@@ -82,7 +82,9 @@ MetricsServicesManager::GetOnRendererUnresponsiveCb() {
 
 std::unique_ptr<const variations::EntropyProviders>
 MetricsServicesManager::CreateEntropyProvidersForTesting() {
-  return client_->GetMetricsStateManager()->CreateEntropyProviders();
+  // Setting enable_limited_entropy_mode=true to maximize code coverage.
+  return client_->GetMetricsStateManager()->CreateEntropyProviders(
+      /*enable_limited_entropy_mode=*/true);
 }
 
 metrics::MetricsServiceClient*

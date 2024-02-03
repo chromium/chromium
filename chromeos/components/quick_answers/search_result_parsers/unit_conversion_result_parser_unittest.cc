@@ -11,9 +11,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
+#include "chromeos/components/quick_answers/test/unit_conversion_unittest_constants.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_id.h"
+
+#define EXPECT_ROUNDED_DOUBLE_EQ(a, b)           \
+  {                                              \
+    double rounded_a = round(a * 100.0) / 100.0; \
+    double rounded_b = round(b * 100.0) / 100.0; \
+    EXPECT_DOUBLE_EQ(rounded_a, rounded_b);      \
+  }
 
 namespace quick_answers {
 namespace {
@@ -21,35 +30,36 @@ namespace {
 using base::Value;
 using Type = base::Value::Type;
 
-constexpr char kMassCategory[] = "Mass";
+inline constexpr char kTemperatureCategory[] = "Temperature";
 
-constexpr double kKilogramRateA = 1.0;
-constexpr char kKilogramName[] = "Kilogram";
-constexpr double kPoundRateA = 0.45359237;
-constexpr char kPoundName[] = "Pound";
-constexpr double kGramRateA = 0.001;
-constexpr char kGramName[] = "Gram";
-constexpr double kOunceRateA = 0.028349523125;
-constexpr char kOunceName[] = "Ounce";
+inline constexpr double kCelciusRateA = 1.0;
+inline constexpr double kCelciusRateB = 273.15;
+inline constexpr char kCelciusName[] = "Degree Celcius";
+inline constexpr double kFahrenheitRateA = 0.5555555555555556;
+inline constexpr double kFahrenheitRateB = 255.3722222222222;
+inline constexpr char kFahrenheitName[] = "Fahrenheit";
+inline constexpr double kKelvinRateA = 1.0;
+inline constexpr char kKelvinName[] = "Kelvin";
 
-constexpr double kSourceAmountKilogram = 100.0;
-constexpr double kDestAmountPound = 220.462;
-constexpr double kDestAmountGram = 100000;
-constexpr char kSourceRawTextKilogram[] = "100 kilograms";
-constexpr char kDestRawTextPound[] = "220.462 pounds";
-constexpr char kDestRawTextGram[] = "100000 grams";
+inline constexpr double kSourceAmountCelcius = 10.0;
+inline constexpr double kDestAmountFahrenheit = 50.0;
+inline constexpr double kDestAmountKelvin = 283.15;
+inline constexpr char kSourceRawTextCelcius[] = "10 degrees celcius";
+inline constexpr char kDestRawTextFahrenheit[] = "50 degrees fahrenheit";
 
-Value CreateUnit(double rate_a,
-                 const std::string& name,
-                 const std::string& category = std::string()) {
-  Value::Dict unit;
-  unit.Set(kConversionToSiAPath, rate_a);
-  unit.Set(kNamePath, name);
-  if (!category.empty())
-    unit.Set(kCategoryPath, category);
+inline constexpr char kFuelEconomyCategory[] = "Fuel Economy";
 
-  return Value(std::move(unit));
-}
+inline constexpr double kLiterPer100KilometersRateC = 100.0;
+inline constexpr char kLiterPer100KilometersName[] = "Liter per 100 kilometers";
+inline constexpr double kKilometerPerLiterRateA = 1.0;
+inline constexpr char kKilometerPerLiterName[] = "Kilometer per liter";
+
+inline constexpr double kSourceAmountLiterPer100Kilometers = 1.0;
+inline constexpr double kDestAmountKilometerPerLiter = 100.0;
+inline constexpr char kSourceRawTextLiterPer100Kilometers[] =
+    "1 liter per 100 kilometers";
+inline constexpr char kDestRawTextKilometerPerLiter[] =
+    "100 kilometers per liter";
 
 Value BuildMassRuleSet() {
   Value::List rule_set;
@@ -57,10 +67,42 @@ Value BuildMassRuleSet() {
   Value::List units;
 
   conversion.Set(kCategoryPath, kMassCategory);
-  units.Append(CreateUnit(kKilogramRateA, kKilogramName));
-  units.Append(CreateUnit(kGramRateA, kGramName));
-  units.Append(CreateUnit(kPoundRateA, kPoundName));
-  units.Append(CreateUnit(kOunceRateA, kOunceName));
+  units.Append(CreateUnit(kKilogramName, kKilogramRateA));
+  units.Append(CreateUnit(kGramName, kGramRateA));
+  units.Append(CreateUnit(kPoundName, kPoundRateA));
+  units.Append(CreateUnit(kOunceName, kOunceRateA));
+  conversion.Set(kUnitsPath, std::move(units));
+  rule_set.Append(std::move(conversion));
+
+  return Value(std::move(rule_set));
+}
+
+Value BuildTemperatureRuleSet() {
+  Value::List rule_set;
+  Value::Dict conversion;
+  Value::List units;
+
+  conversion.Set(kCategoryPath, kTemperatureCategory);
+  units.Append(CreateUnit(kCelciusName, kCelciusRateA, kCelciusRateB));
+  units.Append(CreateUnit(kFahrenheitName, kFahrenheitRateA, kFahrenheitRateB));
+  units.Append(CreateUnit(kKelvinName, kKelvinRateA));
+  conversion.Set(kUnitsPath, std::move(units));
+  rule_set.Append(std::move(conversion));
+
+  return Value(std::move(rule_set));
+}
+
+Value BuildFuelEconomyRuleSet() {
+  Value::List rule_set;
+  Value::Dict conversion;
+  Value::List units;
+
+  conversion.Set(kCategoryPath, kFuelEconomyCategory);
+  units.Append(
+      CreateUnit(kLiterPer100KilometersName, /*rate_a=*/kInvalidRateTermValue,
+                 /*rate_b=*/kInvalidRateTermValue, /*category=*/std::string(),
+                 kLiterPer100KilometersRateC));
+  units.Append(CreateUnit(kKilometerPerLiterName, kKilometerPerLiterRateA));
   conversion.Set(kUnitsPath, std::move(units));
   rule_set.Append(std::move(conversion));
 
@@ -98,11 +140,11 @@ class UnitConversionResultParserTest : public testing::Test {
     result_.SetByDottedPath(kDestAmountPath, value);
   }
 
-  void AddSourceUnit(Value src_unit) {
+  void AddSourceUnit(Value::Dict src_unit) {
     result_.SetByDottedPath(kSourceUnitPath, std::move(src_unit));
   }
 
-  void AddDestUnit(Value dest_unit) {
+  void AddDestUnit(Value::Dict dest_unit) {
     result_.SetByDottedPath(kDestUnitPath, std::move(dest_unit));
   }
 
@@ -153,11 +195,12 @@ TEST_F(UnitConversionResultParserTest,
 TEST_F(UnitConversionResultParserTest,
        ParseWithNoSourceUnitShouldReturnRawText) {
   SetCategory(kMassCategory);
-  SetDestText(kDestRawTextPound);
   SetSourceText(kSourceRawTextKilogram);
   SetSourceAmount(kSourceAmountKilogram);
+  SetDestText(kDestRawTextPound);
   SetDestAmount(kDestAmountPound);
-  AddDestUnit(CreateUnit(kPoundRateA, kPoundName, kMassCategory));
+  AddDestUnit(CreateUnit(kPoundName, kPoundRateA,
+                         /*rate_b=*/kInvalidRateTermValue, kMassCategory));
   AddRuleSet(BuildMassRuleSet());
 
   QuickAnswer quick_answer;
@@ -186,18 +229,21 @@ TEST_F(UnitConversionResultParserTest,
             base::UTF16ToASCII(answer->text));
   EXPECT_EQ(unit_conversion_result->category, kMassCategory);
   EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountKilogram);
-  EXPECT_FALSE(unit_conversion_result->standard_unit_conversion_rates);
-  EXPECT_FALSE(unit_conversion_result->alternative_units_list);
+  EXPECT_FALSE(unit_conversion_result->source_to_dest_unit_conversion);
+  EXPECT_TRUE(
+      unit_conversion_result->alternative_unit_conversions_list.empty());
 }
 
 TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
   SetCategory(kMassCategory);
-  SetDestText(kDestRawTextPound);
   SetSourceText(kSourceRawTextKilogram);
   SetSourceAmount(kSourceAmountKilogram);
+  SetDestText(kDestRawTextPound);
   SetDestAmount(kDestAmountPound);
-  AddSourceUnit(CreateUnit(kKilogramRateA, kKilogramName, kMassCategory));
-  AddDestUnit(CreateUnit(kPoundRateA, kPoundName, kMassCategory));
+  AddSourceUnit(CreateUnit(kKilogramName, kKilogramRateA,
+                           /*rate_b=*/kInvalidRateTermValue, kMassCategory));
+  AddDestUnit(CreateUnit(kPoundName, kPoundRateA,
+                         /*rate_b=*/kInvalidRateTermValue, kMassCategory));
 
   QuickAnswer quick_answer;
 
@@ -227,25 +273,31 @@ TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
   EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountKilogram);
 
   ASSERT_TRUE(structured_result->unit_conversion_result
-                  ->standard_unit_conversion_rates);
-  StandardUnitConversionRates conversion_rates =
-      unit_conversion_result->standard_unit_conversion_rates.value();
-  EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
-            kKilogramRateA);
-  EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
+                  ->source_to_dest_unit_conversion);
+  UnitConversion conversion_rate =
+      unit_conversion_result->source_to_dest_unit_conversion.value();
+  EXPECT_EQ(conversion_rate.category(), kMassCategory);
+  EXPECT_EQ(conversion_rate.source_rule().unit_name(), kKilogramName);
+  EXPECT_EQ(conversion_rate.dest_rule().unit_name(), kPoundName);
+  EXPECT_ROUNDED_DOUBLE_EQ(
+      conversion_rate.ConvertSourceAmountToDestAmount(kSourceAmountKilogram),
+      kDestAmountPound);
 
-  EXPECT_FALSE(unit_conversion_result->alternative_units_list);
+  EXPECT_TRUE(
+      unit_conversion_result->alternative_unit_conversions_list.empty());
 }
 
 TEST_F(UnitConversionResultParserTest,
        ParseWithResultWithinPreferredRangeShouldReturnRawText) {
   SetCategory(kMassCategory);
-  SetDestText(kDestRawTextPound);
   SetSourceText(kSourceRawTextKilogram);
   SetSourceAmount(kSourceAmountKilogram);
+  SetDestText(kDestRawTextPound);
   SetDestAmount(kDestAmountPound);
-  AddSourceUnit(CreateUnit(kKilogramRateA, kKilogramName, kMassCategory));
-  AddDestUnit(CreateUnit(kPoundRateA, kPoundName, kMassCategory));
+  AddSourceUnit(CreateUnit(kKilogramName, kKilogramRateA,
+                           /*rate_b=*/kInvalidRateTermValue, kMassCategory));
+  AddDestUnit(CreateUnit(kPoundName, kPoundRateA,
+                         /*rate_b=*/kInvalidRateTermValue, kMassCategory));
   AddRuleSet(BuildMassRuleSet());
 
   QuickAnswer quick_answer;
@@ -276,44 +328,49 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountKilogram);
 
   ASSERT_TRUE(structured_result->unit_conversion_result
-                  ->standard_unit_conversion_rates);
-  StandardUnitConversionRates conversion_rates =
-      unit_conversion_result->standard_unit_conversion_rates.value();
-  EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
-            kKilogramRateA);
-  EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
+                  ->source_to_dest_unit_conversion);
+  UnitConversion conversion_rate =
+      unit_conversion_result->source_to_dest_unit_conversion.value();
+  EXPECT_EQ(conversion_rate.category(), kMassCategory);
+  EXPECT_EQ(conversion_rate.source_rule().unit_name(), kKilogramName);
+  EXPECT_EQ(conversion_rate.dest_rule().unit_name(), kPoundName);
+  EXPECT_ROUNDED_DOUBLE_EQ(
+      conversion_rate.ConvertSourceAmountToDestAmount(kSourceAmountKilogram),
+      kDestAmountPound);
 
-  EXPECT_TRUE(unit_conversion_result->alternative_units_list);
-  std::vector<UnitConversionInfo> conversions =
-      unit_conversion_result->alternative_units_list.value();
-  EXPECT_EQ(2u, conversions.size());
-  UnitConversionInfo first_alternative_unit = conversions[0];
-  EXPECT_EQ(first_alternative_unit.unit, kOunceName);
-  EXPECT_EQ(first_alternative_unit.standard_unit_conversion_rates
-                .source_to_standard_conversion_rate,
-            kKilogramRateA);
-  EXPECT_EQ(first_alternative_unit.standard_unit_conversion_rates
-                .dest_to_standard_conversion_rate,
-            kOunceRateA);
-  UnitConversionInfo second_alternative_unit = conversions[1];
-  EXPECT_EQ(second_alternative_unit.unit, kGramName);
-  EXPECT_EQ(second_alternative_unit.standard_unit_conversion_rates
-                .source_to_standard_conversion_rate,
-            kKilogramRateA);
-  EXPECT_EQ(second_alternative_unit.standard_unit_conversion_rates
-                .dest_to_standard_conversion_rate,
-            kGramRateA);
+  EXPECT_FALSE(
+      unit_conversion_result->alternative_unit_conversions_list.empty());
+  std::vector<UnitConversion> alternative_conversions =
+      unit_conversion_result->alternative_unit_conversions_list;
+  EXPECT_EQ(2u, alternative_conversions.size());
+  UnitConversion first_alt_conversion = alternative_conversions[0];
+  EXPECT_EQ(first_alt_conversion.category(), kMassCategory);
+  EXPECT_EQ(first_alt_conversion.source_rule().unit_name(), kKilogramName);
+  EXPECT_EQ(first_alt_conversion.dest_rule().unit_name(), kOunceName);
+  EXPECT_ROUNDED_DOUBLE_EQ(first_alt_conversion.ConvertSourceAmountToDestAmount(
+                               kSourceAmountKilogram),
+                           kDestAmountOunce);
+  UnitConversion second_alt_conversion = alternative_conversions[1];
+  EXPECT_EQ(second_alt_conversion.category(), kMassCategory);
+  EXPECT_EQ(second_alt_conversion.source_rule().unit_name(), kKilogramName);
+  EXPECT_EQ(second_alt_conversion.dest_rule().unit_name(), kGramName);
+  EXPECT_ROUNDED_DOUBLE_EQ(
+      second_alt_conversion.ConvertSourceAmountToDestAmount(
+          kSourceAmountKilogram),
+      kDestAmountGram);
 }
 
 TEST_F(UnitConversionResultParserTest,
        ParseWithResultOutOfPreferredRangeShouldReturnProperConversionResult) {
   SetCategory(kMassCategory);
-  SetDestText(kDestRawTextGram);
   SetSourceText(kSourceRawTextKilogram);
   SetSourceAmount(kSourceAmountKilogram);
+  SetDestText(kDestRawTextGram);
   SetDestAmount(kDestAmountGram);
-  AddSourceUnit(CreateUnit(kKilogramRateA, kKilogramName, kMassCategory));
-  AddDestUnit(CreateUnit(kGramRateA, kGramName, kMassCategory));
+  AddSourceUnit(CreateUnit(kKilogramName, kKilogramRateA,
+                           /*rate_b=*/kInvalidRateTermValue, kMassCategory));
+  AddDestUnit(CreateUnit(kGramName, kGramRateA,
+                         /*rate_b=*/kInvalidRateTermValue, kMassCategory));
   AddRuleSet(BuildMassRuleSet());
 
   QuickAnswer quick_answer;
@@ -349,33 +406,162 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountKilogram);
 
   ASSERT_TRUE(structured_result->unit_conversion_result
-                  ->standard_unit_conversion_rates);
-  StandardUnitConversionRates conversion_rates =
-      unit_conversion_result->standard_unit_conversion_rates.value();
-  EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
-            kKilogramRateA);
-  EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
+                  ->source_to_dest_unit_conversion);
+  UnitConversion conversion_rate =
+      unit_conversion_result->source_to_dest_unit_conversion.value();
+  EXPECT_EQ(conversion_rate.category(), kMassCategory);
+  EXPECT_EQ(conversion_rate.source_rule().unit_name(), kKilogramName);
+  EXPECT_EQ(conversion_rate.dest_rule().unit_name(), kPoundName);
+  EXPECT_ROUNDED_DOUBLE_EQ(
+      conversion_rate.ConvertSourceAmountToDestAmount(kSourceAmountKilogram),
+      kDestAmountPound);
 
-  EXPECT_TRUE(unit_conversion_result->alternative_units_list);
-  std::vector<UnitConversionInfo> conversions =
-      unit_conversion_result->alternative_units_list.value();
-  EXPECT_EQ(2u, conversions.size());
-  UnitConversionInfo first_alternative_unit = conversions[0];
-  EXPECT_EQ(first_alternative_unit.unit, kOunceName);
-  EXPECT_EQ(first_alternative_unit.standard_unit_conversion_rates
-                .source_to_standard_conversion_rate,
-            kKilogramRateA);
-  EXPECT_EQ(first_alternative_unit.standard_unit_conversion_rates
-                .dest_to_standard_conversion_rate,
-            kOunceRateA);
-  UnitConversionInfo second_alternative_unit = conversions[1];
-  EXPECT_EQ(second_alternative_unit.unit, kGramName);
-  EXPECT_EQ(second_alternative_unit.standard_unit_conversion_rates
-                .source_to_standard_conversion_rate,
-            kKilogramRateA);
-  EXPECT_EQ(second_alternative_unit.standard_unit_conversion_rates
-                .dest_to_standard_conversion_rate,
-            kGramRateA);
+  EXPECT_FALSE(
+      unit_conversion_result->alternative_unit_conversions_list.empty());
+  std::vector<UnitConversion> alternative_conversions =
+      unit_conversion_result->alternative_unit_conversions_list;
+  EXPECT_EQ(2u, alternative_conversions.size());
+  UnitConversion first_alt_conversion = alternative_conversions[0];
+  EXPECT_EQ(first_alt_conversion.category(), kMassCategory);
+  EXPECT_EQ(first_alt_conversion.source_rule().unit_name(), kKilogramName);
+  EXPECT_EQ(first_alt_conversion.dest_rule().unit_name(), kOunceName);
+  EXPECT_ROUNDED_DOUBLE_EQ(first_alt_conversion.ConvertSourceAmountToDestAmount(
+                               kSourceAmountKilogram),
+                           kDestAmountOunce);
+  UnitConversion second_alt_conversion = alternative_conversions[1];
+  EXPECT_EQ(second_alt_conversion.category(), kMassCategory);
+  EXPECT_EQ(second_alt_conversion.source_rule().unit_name(), kKilogramName);
+  EXPECT_EQ(second_alt_conversion.dest_rule().unit_name(), kGramName);
+  EXPECT_ROUNDED_DOUBLE_EQ(
+      second_alt_conversion.ConvertSourceAmountToDestAmount(
+          kSourceAmountKilogram),
+      kDestAmountGram);
+}
+
+TEST_F(UnitConversionResultParserTest,
+       ParseWithMultiVariableConversionsShouldReturnProperConversionResult) {
+  SetCategory(kTemperatureCategory);
+  SetSourceText(kSourceRawTextCelcius);
+  SetSourceAmount(kSourceAmountCelcius);
+  SetDestText(kDestRawTextFahrenheit);
+  SetDestAmount(kDestAmountFahrenheit);
+  AddSourceUnit(CreateUnit(kCelciusName, kCelciusRateA, kCelciusRateB,
+                           kTemperatureCategory));
+  AddDestUnit(CreateUnit(kFahrenheitName, kFahrenheitRateA, kFahrenheitRateB,
+                         kTemperatureCategory));
+  AddRuleSet(BuildTemperatureRuleSet());
+
+  QuickAnswer quick_answer;
+
+  EXPECT_TRUE(Parse(&quick_answer));
+  EXPECT_EQ(ResultType::kUnitConversionResult, quick_answer.result_type);
+
+  EXPECT_EQ(1u, quick_answer.first_answer_row.size());
+  EXPECT_EQ(0u, quick_answer.title.size());
+  auto* answer =
+      static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
+  EXPECT_EQ(kDestRawTextFahrenheit,
+            GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
+
+  // Expectations for `StructuredResult`.
+  std::unique_ptr<StructuredResult> structured_result =
+      ParseInStructuredResult();
+  ASSERT_TRUE(structured_result);
+  ASSERT_TRUE(structured_result->unit_conversion_result);
+
+  UnitConversionResult* unit_conversion_result =
+      structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->source_text, kSourceRawTextCelcius);
+  EXPECT_EQ(unit_conversion_result->result_text,
+            base::UTF16ToASCII(answer->text));
+  EXPECT_EQ(unit_conversion_result->category, kTemperatureCategory);
+  EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountCelcius);
+
+  ASSERT_TRUE(structured_result->unit_conversion_result
+                  ->source_to_dest_unit_conversion);
+  UnitConversion conversion_rate =
+      unit_conversion_result->source_to_dest_unit_conversion.value();
+  EXPECT_EQ(conversion_rate.category(), kTemperatureCategory);
+  EXPECT_EQ(conversion_rate.source_rule().unit_name(), kCelciusName);
+  EXPECT_EQ(conversion_rate.dest_rule().unit_name(), kFahrenheitName);
+  EXPECT_ROUNDED_DOUBLE_EQ(
+      conversion_rate.ConvertSourceAmountToDestAmount(kSourceAmountCelcius),
+      kDestAmountFahrenheit);
+
+  EXPECT_FALSE(
+      unit_conversion_result->alternative_unit_conversions_list.empty());
+  std::vector<UnitConversion> alternative_conversions =
+      unit_conversion_result->alternative_unit_conversions_list;
+  EXPECT_EQ(1u, alternative_conversions.size());
+  UnitConversion alt_conversion = alternative_conversions[0];
+  EXPECT_EQ(alt_conversion.category(), kTemperatureCategory);
+  EXPECT_EQ(alt_conversion.source_rule().unit_name(), kCelciusName);
+  EXPECT_EQ(alt_conversion.dest_rule().unit_name(), kKelvinName);
+  EXPECT_ROUNDED_DOUBLE_EQ(
+      alt_conversion.ConvertSourceAmountToDestAmount(kSourceAmountCelcius),
+      kDestAmountKelvin);
+}
+
+TEST_F(UnitConversionResultParserTest,
+       ParseWithNonLinearConversionsShouldReturnProperConversionResult) {
+  SetCategory(kFuelEconomyCategory);
+  SetSourceText(kSourceRawTextLiterPer100Kilometers);
+  SetSourceAmount(kSourceAmountLiterPer100Kilometers);
+  SetDestText(kDestRawTextKilometerPerLiter);
+  SetDestAmount(kDestAmountKilometerPerLiter);
+  AddSourceUnit(CreateUnit(kLiterPer100KilometersName,
+                           /*rate_a=*/kInvalidRateTermValue,
+                           /*rate_b=*/kInvalidRateTermValue,
+                           kFuelEconomyCategory, kLiterPer100KilometersRateC));
+  AddDestUnit(CreateUnit(kKilometerPerLiterName, kKilometerPerLiterRateA,
+                         /*rate_b=*/kInvalidRateTermValue,
+                         kFuelEconomyCategory));
+  AddRuleSet(BuildFuelEconomyRuleSet());
+
+  QuickAnswer quick_answer;
+
+  EXPECT_TRUE(Parse(&quick_answer));
+  EXPECT_EQ(ResultType::kUnitConversionResult, quick_answer.result_type);
+
+  EXPECT_EQ(1u, quick_answer.first_answer_row.size());
+  EXPECT_EQ(0u, quick_answer.title.size());
+  auto* answer =
+      static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
+  EXPECT_EQ(kDestRawTextKilometerPerLiter,
+            GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
+
+  // Expectations for `StructuredResult`.
+  std::unique_ptr<StructuredResult> structured_result =
+      ParseInStructuredResult();
+  ASSERT_TRUE(structured_result);
+  ASSERT_TRUE(structured_result->unit_conversion_result);
+
+  UnitConversionResult* unit_conversion_result =
+      structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->source_text,
+            kSourceRawTextLiterPer100Kilometers);
+  EXPECT_EQ(unit_conversion_result->result_text,
+            base::UTF16ToASCII(answer->text));
+  EXPECT_EQ(unit_conversion_result->category, kFuelEconomyCategory);
+  EXPECT_EQ(unit_conversion_result->source_amount,
+            kSourceAmountLiterPer100Kilometers);
+
+  ASSERT_TRUE(structured_result->unit_conversion_result
+                  ->source_to_dest_unit_conversion);
+  UnitConversion conversion_rate =
+      unit_conversion_result->source_to_dest_unit_conversion.value();
+  EXPECT_EQ(conversion_rate.category(), kFuelEconomyCategory);
+  EXPECT_EQ(conversion_rate.source_rule().unit_name(),
+            kLiterPer100KilometersName);
+  EXPECT_EQ(conversion_rate.dest_rule().unit_name(), kKilometerPerLiterName);
+  EXPECT_ROUNDED_DOUBLE_EQ(conversion_rate.ConvertSourceAmountToDestAmount(
+                               kSourceAmountLiterPer100Kilometers),
+                           kDestAmountKilometerPerLiter);
+
+  EXPECT_TRUE(
+      unit_conversion_result->alternative_unit_conversions_list.empty());
 }
 
 }  // namespace quick_answers

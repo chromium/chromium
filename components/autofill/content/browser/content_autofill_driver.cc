@@ -402,31 +402,6 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
       });
 }
 
-void ContentAutofillDriver::ProbablyFormSubmitted(
-    base::PassKey<ContentAutofillDriverFactory>) {
-  // TODO(crbug.com/1117451): This currently misbehaves in frame-transcending
-  // forms: SetFormToBeProbablySubmitted() is routed, but this event is not.
-  // We should probably direct the event to the top-most frame, perhaps to the
-  // top-most frame that has a `potentially_submitted_form_`.
-  if (potentially_submitted_form_) {
-    FormSubmitted(*potentially_submitted_form_, false,
-                  mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
-  }
-}
-
-void ContentAutofillDriver::SetFormToBeProbablySubmitted(
-    const std::optional<FormData>& form) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
-    return;
-  }
-  router().SetFormToBeProbablySubmitted(
-      this, GetFormWithFrameAndFormMetaData(form),
-      [](autofill::AutofillDriver* target,
-         base::optional_ref<const FormData> form) {
-        cast(target)->potentially_submitted_form_ = form.CopyAsOptional();
-      });
-}
-
 void ContentAutofillDriver::FormsSeen(
     const std::vector<FormData>& raw_updated_forms,
     const std::vector<FormRendererId>& raw_removed_forms) {
@@ -463,16 +438,6 @@ void ContentAutofillDriver::FormSubmitted(
       submission_source,
       [](autofill::AutofillDriver* target, const FormData& form,
          bool known_success, mojom::SubmissionSource submission_source) {
-        // Omit duplicate form submissions. It may be reasonable to take
-        // |source| into account here as well.
-        // TODO(crbug/1117451): Clean up experiment code.
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillProbableFormSubmissionInBrowser) &&
-            !base::FeatureList::IsEnabled(
-                features::kAutofillAllowDuplicateFormSubmissions) &&
-            !cast(target)->submitted_forms_.insert(form.global_id()).second) {
-          return;
-        }
         target->GetAutofillManager().OnFormSubmitted(
             WithNewVersion(form), known_success, submission_source);
       });
@@ -673,9 +638,6 @@ void ContentAutofillDriver::OnContextMenuShownInField(
 }
 
 void ContentAutofillDriver::Reset() {
-  // The driver's RenderFrameHost may be used for the page we're navigating to.
-  // Therefore, we need to forget all forms of the page we're navigating from.
-  submitted_forms_.clear();
   owner_->router().UnregisterDriver(this,
                                     /*driver_is_dying=*/false);
   autofill_manager_->Reset();
@@ -714,7 +676,7 @@ void ContentAutofillDriver::SetFrameAndFormMetaData(
 
   auto SetFieldMetaData = [&](FormFieldData& f) {
     f.host_frame = form.host_frame;
-    f.host_form_id = form.unique_renderer_id;
+    f.host_form_id = form.renderer_id;
     f.origin = render_frame_host_->GetLastCommittedOrigin();
     f.host_form_signature = form_signature;
     f.bounds = TransformBoundingBoxToViewportCoordinates(f.bounds);

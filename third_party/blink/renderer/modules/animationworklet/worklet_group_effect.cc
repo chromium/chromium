@@ -7,7 +7,7 @@
 namespace blink {
 
 WorkletGroupEffect::WorkletGroupEffect(
-    const Vector<absl::optional<base::TimeDelta>>& local_times,
+    const Vector<std::optional<base::TimeDelta>>& local_times,
     const Vector<Timing>& timings,
     const Vector<Timing::NormalizedTiming>& normalized_timings) {
   DCHECK_GE(local_times.size(), 1u);

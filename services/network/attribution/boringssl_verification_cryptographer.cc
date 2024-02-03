@@ -4,6 +4,7 @@
 
 #include "services/network/attribution/boringssl_verification_cryptographer.h"
 
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
@@ -11,7 +12,6 @@
 #include "base/time/time.h"
 #include "services/network/trust_tokens/boringssl_trust_token_state.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
@@ -48,10 +48,10 @@ bool BoringsslVerificationCryptographer::AddKey(std::string_view key) {
   return true;
 }
 
-absl::optional<std::string> BoringsslVerificationCryptographer::BeginIssuance(
+std::optional<std::string> BoringsslVerificationCryptographer::BeginIssuance(
     std::string_view message) {
   if (!state_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ScopedBoringsslBytes raw_issuance_request;
@@ -61,22 +61,22 @@ absl::optional<std::string> BoringsslVerificationCryptographer::BeginIssuance(
           /*count=*/kIssuanceCount,
           /*msg=*/reinterpret_cast<const unsigned char*>(message.data()),
           /*msg_len=*/message.length())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::Base64Encode(raw_issuance_request.as_span());
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 BoringsslVerificationCryptographer::ConfirmIssuanceAndBeginRedemption(
     std::string_view response_header) {
   if (!state_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string decoded_response;
   if (!base::Base64Decode(response_header, &decoded_response)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The `out_key_index` returns the index of the key used among the
@@ -96,7 +96,7 @@ BoringsslVerificationCryptographer::ConfirmIssuanceAndBeginRedemption(
           /*response_len=*/decoded_response.size()));
 
   if (!tokens) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ScopedBoringsslBytes raw_redemption_request;
@@ -106,7 +106,7 @@ BoringsslVerificationCryptographer::ConfirmIssuanceAndBeginRedemption(
           /*token=*/sk_TRUST_TOKEN_value(tokens.get(), 0),
           /*data=*/nullptr, /*data_len=*/0,
           /*time=*/(base::Time::Now() - base::Time::UnixEpoch()).InSeconds())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::Base64Encode(raw_redemption_request.as_span());

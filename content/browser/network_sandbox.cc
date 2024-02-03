@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "content/browser/network_sandbox_grant_result.h"
 #include "content/public/browser/browser_thread.h"
@@ -297,6 +298,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
       // later, it ensures that any new files created by the cache subsystem
       // get the inherited ACE rather than having to set them manually later.
       SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.TimeToGrantCacheAccess");
+      TRACE_EVENT("startup", "NetworkSandbox.MaybeGrantAccessToDataPath");
       if (!MaybeGrantAccessToDataPath(
               sandbox_params, &*params->file_paths->http_cache_directory)) {
         PLOG(ERROR) << "Failed to grant sandbox access to cache directory "

@@ -441,6 +441,23 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.LIST);
     }
 
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Feature({"Android-TabSwitcher"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB})
+    public void testHubTabSwitcherLayout_Enabled() throws Exception {
+        launchedChromeAndEnterTabSwitcher();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(LayoutType.TAB_SWITCHER, getActiveLayout().getLayoutType());
+                });
+
+        // See https://crbug.com/1522983 this shouldn't crash.
+        showTabSwitcherLayout();
+    }
+
     // TODO(crbug.com/1108496): Update the test to use assertThat for better failure message.
     @Test
     @MediumTest

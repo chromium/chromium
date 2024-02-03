@@ -685,7 +685,7 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
   return widget;
 }
 
-void DeskBarViewBase::Layout() {
+void DeskBarViewBase::Layout(PassKey) {
   TRACE_EVENT0("ui", "DeskBarViewBase::Layout");
 
   if (pause_layout_) {
@@ -725,7 +725,7 @@ void DeskBarViewBase::Layout() {
   scroll_view_->SetBoundsRect(scroll_bounds);
   // When the bar reaches its max possible size, it's size does not change, but
   // we still need to layout child UIs to their right positions.
-  scroll_view_->Layout();
+  scroll_view_->DeprecatedLayoutImmediately();
 
   UpdateScrollButtonsVisibility();
   UpdateGradientMask();
@@ -934,11 +934,11 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
   }
 
   const int begin_x = GetFirstMiniViewXOffset();
-  Layout();
+  DeprecatedLayoutImmediately();
 
-  // The mini views and new desk button are already laid out in the earlier
-  // `Layout()` call. This call shifts the transforms of the mini views and new
-  // desk button and then animates to the identity transform.
+  // The mini views and new desk button are already laid out due to the above
+  // `DeprecatedLayoutImmediately()`. This call shifts the transforms of the
+  // mini views and new desk button and then animates to the identity transform.
   PerformLibraryButtonVisibilityAnimation(mini_views_, new_desk_button_,
                                           begin_x - GetFirstMiniViewXOffset());
 }
@@ -956,7 +956,7 @@ void DeskBarViewBase::UpdateDeskIconButtonState(
   gfx::Rect current_bounds = button->GetBoundsInScreen();
 
   button->UpdateState(target_state);
-  Layout();
+  DeprecatedLayoutImmediately();
 
   gfx::RectF target_bounds = gfx::RectF(new_desk_button_->GetBoundsInScreen());
   gfx::Transform scale_transform;
@@ -1315,7 +1315,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
   // There is desk removal animation for overview bar but not for desk button
   // desk bar.
   if (type_ == Type::kOverview) {
-    Layout();
+    DeprecatedLayoutImmediately();
     // Overview bar desk removal will preform mini view removal animation, while
     // desk button bar removes mini view immediately.
     PerformRemoveDeskMiniViewAnimation(removed_mini_view);
@@ -1324,7 +1324,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     // Desk button bar does not have mini view removal animation, mini view will
     // disappear immediately. Desk button bar will shrink during desk removal.
     removed_mini_view->parent()->RemoveChildViewT(removed_mini_view);
-    scroll_view_->Layout();
+    scroll_view_->DeprecatedLayoutImmediately();
     PerformDeskBarRemoveDeskAnimation(this, old_background_bounds);
   }
   PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
@@ -1344,7 +1344,7 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
   reordered_view->UpdateDeskButtonVisibility();
   mini_views_[old_index]->UpdateDeskButtonVisibility();
 
-  Layout();
+  DeprecatedLayoutImmediately();
 
   // Call the animation function after reorder the mini views.
   PerformReorderDeskMiniViewAnimation(old_index, new_index, mini_views_);
@@ -1424,7 +1424,7 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   UpdateBarBounds();
   pause_layout_ = false;
 
-  Layout();
+  DeprecatedLayoutImmediately();
 
   if (initializing_bar_view) {
     return;

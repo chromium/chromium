@@ -1,14 +1,15 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
+
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
 #include "third_party/webrtc/api/video/video_frame.h"
@@ -74,7 +75,7 @@ class MockDecoder : public webrtc::VideoDecoder {
     webrtc::VideoFrame video_frame =
         CreateMockFrame(input_image._encodedWidth, input_image._encodedHeight,
                         input_image.RtpTimestamp());
-    callback_->Decoded(video_frame, absl::nullopt, absl::nullopt);
+    callback_->Decoded(video_frame, std::nullopt, std::nullopt);
     return WEBRTC_VIDEO_CODEC_OK;
   }
 
@@ -109,8 +110,8 @@ class MockDecodedImageCallback : public webrtc::DecodedImageCallback {
     return 0;
   }
   void Decoded(webrtc::VideoFrame& decodedImage,
-               absl::optional<int32_t> decode_time_ms,
-               absl::optional<uint8_t> qp) override {
+               std::optional<int32_t> decode_time_ms,
+               std::optional<uint8_t> qp) override {
     // Set the processing time. Start time is set to a fixed nonzero time since
     // we're only interested in the delta.
     webrtc::Timestamp start_time = webrtc::Timestamp::Seconds(1234);

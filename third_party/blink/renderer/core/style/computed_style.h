@@ -914,12 +914,12 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // accent-color
   // An empty optional means the accent-color is 'auto'
-  absl::optional<blink::Color> AccentColorResolved() const;
+  std::optional<blink::Color> AccentColorResolved() const;
 
   // scrollbar-color
   // An empty optional means the scrollbar-color is 'auto'
-  absl::optional<blink::Color> ScrollbarThumbColorResolved() const;
-  absl::optional<blink::Color> ScrollbarTrackColorResolved() const;
+  std::optional<blink::Color> ScrollbarThumbColorResolved() const;
+  std::optional<blink::Color> ScrollbarTrackColorResolved() const;
 
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.
@@ -1814,11 +1814,11 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // Returns (by value) the last text decoration, if any.
-  absl::optional<AppliedTextDecoration> LastAppliedTextDecoration() const {
+  std::optional<AppliedTextDecoration> LastAppliedTextDecoration() const {
     if (HasAppliedTextDecorations()) {
       return AppliedTextDecorations().back();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Overflow utility functions.

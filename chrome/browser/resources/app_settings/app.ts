@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import 'chrome://resources/cr_components/app_management/app_content_item.js';
-import 'chrome://resources/cr_components/app_management/app_management_shared_style.css.js';
-import 'chrome://resources/cr_components/app_management/file_handling_item.js';
-import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
-import 'chrome://resources/cr_components/app_management/run_on_os_login_item.js';
-import 'chrome://resources/cr_components/app_management/permission_item.js';
-import 'chrome://resources/cr_components/app_management/window_mode_item.js';
-import 'chrome://resources/cr_components/app_management/icons.html.js';
-import 'chrome://resources/cr_components/app_management/uninstall_button.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_components/app_management/supported_links_item.js';
-import 'chrome://resources/cr_components/app_management/supported_links_overlapping_apps_dialog.js';
-import 'chrome://resources/cr_components/app_management/supported_links_dialog.js';
+import './strings.m.js';
+import './app_content_item.js';
+import './app_management_shared_style.css.js';
+import './file_handling_item.js';
+import './more_permissions_item.js';
+import './run_on_os_login_item.js';
+import './permission_item.js';
+import './window_mode_item.js';
+import './icons.html.js';
+import './uninstall_button.js';
+import './supported_links_item.js';
+import './supported_links_overlapping_apps_dialog.js';
+import './supported_links_dialog.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';

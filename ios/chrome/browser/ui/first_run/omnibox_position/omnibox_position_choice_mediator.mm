@@ -41,7 +41,8 @@
                     _isFirstRun);
   RecordSelectedPosition(
       self.selectedPosition,
-      self.selectedPosition == DefaultSelectedOmniboxPosition(), _isFirstRun);
+      self.selectedPosition == DefaultSelectedOmniboxPosition(), _isFirstRun,
+      self.deviceSwitcherResultDispatcher);
 }
 
 - (void)discardSelectedPosition {

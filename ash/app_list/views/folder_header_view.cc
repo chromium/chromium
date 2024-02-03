@@ -462,7 +462,7 @@ void FolderHeaderView::Update() {
     UpdateFolderNameAccessibleName();
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void FolderHeaderView::UpdateFolderNameAccessibleName() {
@@ -540,7 +540,7 @@ std::u16string FolderHeaderView::GetElidedFolderName() const {
   return elided_name;
 }
 
-void FolderHeaderView::Layout() {
+void FolderHeaderView::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty()) {
     return;
@@ -594,7 +594,7 @@ void FolderHeaderView::UpdateFolderName(
 
   UpdateFolderNameAccessibleName();
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 bool FolderHeaderView::ShouldNameViewClearFocus(const ui::KeyEvent& key_event) {

@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "pdf/document_layout.h"
 #include "pdf/loader/url_loader.h"
-#include "third_party/blink/public/web/blink.h"
+#include "pdf/test/test_helpers.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace chrome_pdf {
@@ -44,7 +44,7 @@ std::unique_ptr<UrlLoader> TestClient::CreateUrlLoader() {
 }
 
 v8::Isolate* TestClient::GetIsolate() {
-  return blink::MainThreadIsolate();
+  return GetBlinkIsolate();
 }
 
 std::vector<PDFEngine::Client::SearchStringResult> TestClient::SearchString(

@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_DECORATION_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_DECORATION_INFO_H_
 
+#include <optional>
+
 #include "base/types/strong_alias.h"
 #include "cc/paint/paint_record.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
@@ -51,7 +52,7 @@ class CORE_EXPORT TextDecorationInfo {
       LayoutUnit width,
       const ComputedStyle& target_style,
       const InlinePaintContext* inline_context,
-      const absl::optional<AppliedTextDecoration> selection_text_decoration,
+      const std::optional<AppliedTextDecoration> selection_text_decoration,
       const AppliedTextDecoration* decoration_override = nullptr,
       const Font* font_override = nullptr,
       MinimumThickness1 minimum_thickness1 = MinimumThickness1(true),
@@ -150,7 +151,7 @@ class CORE_EXPORT TextDecorationInfo {
   // (for originating decorations being painted in highlight overlays), or the
   // highlight ‘text-decoration-color’ resolved with the correct ‘currentColor’
   // (for decorations introduced by highlight pseudos).
-  void SetHighlightOverrideColor(const absl::optional<Color>&);
+  void SetHighlightOverrideColor(const std::optional<Color>&);
 
  private:
   LayoutUnit OffsetFromDecoratingBox() const;
@@ -182,7 +183,7 @@ class CORE_EXPORT TextDecorationInfo {
   const InlinePaintContext* const inline_context_ = nullptr;
   const DecoratingBox* decorating_box_ = nullptr;
   const AppliedTextDecoration* applied_text_decoration_ = nullptr;
-  const absl::optional<AppliedTextDecoration> selection_text_decoration_;
+  const std::optional<AppliedTextDecoration> selection_text_decoration_;
   const Font* font_ = nullptr;
   const SimpleFontData* font_data_ = nullptr;
 
@@ -234,7 +235,7 @@ class CORE_EXPORT TextDecorationInfo {
     float double_offset;
 
     // Only used for kDotted and kDashed lines.
-    absl::optional<Path> stroke_path;
+    std::optional<Path> stroke_path;
 
     // Only used for kWavy lines.
     int wavy_offset_factor;
@@ -242,7 +243,7 @@ class CORE_EXPORT TextDecorationInfo {
     cc::PaintRecord wavy_tile_record;
   };
   LineData line_data_;
-  absl::optional<Color> highlight_override_;
+  std::optional<Color> highlight_override_;
 };
 
 }  // namespace blink

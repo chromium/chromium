@@ -250,7 +250,7 @@ void CastDialogView::RestoreSinkListState() {
       const_cast<views::ScrollBar*>(scroll_view_->vertical_scroll_bar());
   if (scroll_bar) {
     scroll_view_->ScrollToPosition(scroll_bar, scroll_position_);
-    scroll_view_->Layout();
+    scroll_view_->DeprecatedLayoutImmediately();
   }
 }
 
@@ -280,7 +280,7 @@ void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
   scroll_view_->SetContents(std::move(sink_list_view));
 
   MaybeSizeToContents();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void CastDialogView::InitializeSourcesButton() {
@@ -441,7 +441,7 @@ bool CastDialogView::IsAccessCodeCastingEnabled() const {
          GetAccessCodeCastEnabledPref(profile_);
 }
 
-BEGIN_METADATA(CastDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CastDialogView)
 END_METADATA
 
 }  // namespace media_router

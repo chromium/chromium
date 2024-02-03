@@ -95,7 +95,7 @@ DriveSearchProvider::FileInfo::FileInfo(
 DriveSearchProvider::FileInfo::~FileInfo() = default;
 
 DriveSearchProvider::DriveSearchProvider(Profile* profile)
-    : SearchProvider(ControlCategory::kFiles),
+    : SearchProvider(SearchCategory::kFiles),
       profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)) {

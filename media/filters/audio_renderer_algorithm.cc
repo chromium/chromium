@@ -186,12 +186,12 @@ int AudioRendererAlgorithm::ResampleAndFill(AudioBus* dest,
                                             int dest_offset,
                                             int requested_frames,
                                             double playback_rate) {
-  SetFillBufferMode(FillBufferMode::kResampler);
   if (!resampler_) {
     resampler_ = std::make_unique<MultiChannelResampler>(
         channels_, playback_rate, SincResampler::kDefaultRequestSize,
         base::BindRepeating(&AudioRendererAlgorithm::OnResamplerRead,
                             base::Unretained(this)));
+    resampler_->PrimeWithSilence();
   }
 
   if (reached_end_of_stream_ && resampler_only_has_silence_ &&
@@ -236,42 +236,10 @@ int AudioRendererAlgorithm::ResampleAndFill(AudioBus* dest,
   return requested_frames;
 }
 
-int AudioRendererAlgorithm::FillBuffer(AudioBus* dest,
-                                       int dest_offset,
-                                       int requested_frames,
-                                       double playback_rate) {
-  if (playback_rate == 0)
-    return 0;
-
-  DCHECK_GT(playback_rate, 0);
-  DCHECK_EQ(channels_, dest->channels());
-
-  // In case of compressed bitstream formats, no post processing is allowed.
-  if (is_bitstream_format_)
-    return audio_buffer_.ReadFrames(requested_frames, dest_offset, dest);
-
-  int slower_step = ceil(ola_window_size_ * playback_rate);
-  int faster_step = ceil(ola_window_size_ / playback_rate);
-
-  // Optimize the most common |playback_rate| ~= 1 case to use a single copy
-  // instead of copying frame by frame.
-  if (ola_window_size_ <= faster_step && slower_step >= ola_window_size_) {
-    SetFillBufferMode(FillBufferMode::kPassthrough);
-
-    const int frames_to_copy =
-        std::min(audio_buffer_.frames(), requested_frames);
-    const int frames_read =
-        audio_buffer_.ReadFrames(frames_to_copy, dest_offset, dest);
-    DCHECK_EQ(frames_read, frames_to_copy);
-    return frames_read;
-  }
-
-  // Use resampling when no pitch adjustments are needed.
-  if (!preserves_pitch_)
-    return ResampleAndFill(dest, dest_offset, requested_frames, playback_rate);
-
-  SetFillBufferMode(FillBufferMode::kWSOLA);
-
+int AudioRendererAlgorithm::RunWsolaAndFill(AudioBus* dest,
+                                            int dest_offset,
+                                            int requested_frames,
+                                            double playback_rate) {
   // Allocate structures on first non-1.0 playback rate; these can eat a fair
   // chunk of memory. ~56kB for stereo 48kHz, up to ~765kB for 7.1 192kHz.
   if (!ola_window_) {
@@ -310,6 +278,72 @@ int AudioRendererAlgorithm::FillBuffer(AudioBus* dest,
   } while (rendered_frames < requested_frames &&
            RunOneWsolaIteration(playback_rate));
   return rendered_frames;
+}
+
+int AudioRendererAlgorithm::FillBuffer(AudioBus* dest,
+                                       int dest_offset,
+                                       int requested_frames,
+                                       double playback_rate) {
+  if (playback_rate == 0) {
+    return 0;
+  }
+
+  DCHECK_GT(playback_rate, 0);
+  DCHECK_EQ(channels_, dest->channels());
+
+  // In case of compressed bitstream formats, no post processing is allowed.
+  if (is_bitstream_format_) {
+    return audio_buffer_.ReadFrames(requested_frames, dest_offset, dest);
+  }
+
+  const FillBufferMode fill_buffer_mode = ChooseBufferMode(playback_rate);
+  SetFillBufferMode(fill_buffer_mode);
+
+  switch (fill_buffer_mode) {
+    case FillBufferMode::kPassthrough: {
+      // Optimize the most common `playback_rate` ~= 1 case to use a single copy
+      // instead of copying frame by frame.
+      const int frames_to_copy =
+          std::min(audio_buffer_.frames(), requested_frames);
+      const int frames_read =
+          audio_buffer_.ReadFrames(frames_to_copy, dest_offset, dest);
+      DCHECK_EQ(frames_read, frames_to_copy);
+      return frames_read;
+    }
+    case FillBufferMode::kResampler:
+      return ResampleAndFill(dest, dest_offset, requested_frames,
+                             playback_rate);
+
+    case FillBufferMode::kWSOLA:
+      return RunWsolaAndFill(dest, dest_offset, requested_frames,
+                             playback_rate);
+  }
+}
+
+AudioRendererAlgorithm::FillBufferMode AudioRendererAlgorithm::ChooseBufferMode(
+    double playback_rate) {
+  // Always resample when we don't care about pitch. This prevents audio pops
+  // when `playback_rate` goes back & forth between 1.0 and non 1.0 values.
+  // This can happen when making minute adjustment to the playback rate, to fix
+  // timestamp drift between multiple clips.
+  // Always resampling does come at a small performance/memory cost.
+  if (!preserves_pitch_) {
+    return FillBufferMode::kResampler;
+  }
+
+  int slower_step = ceil(ola_window_size_ * playback_rate);
+  int faster_step = ceil(ola_window_size_ / playback_rate);
+
+  const bool is_playback_rate_almost_one =
+      ola_window_size_ <= faster_step && slower_step >= ola_window_size_;
+
+  // Optimize the most common `playback_rate` ~= 1 case to use a single copy
+  // instead of copying frame by frame.
+  if (is_playback_rate_almost_one) {
+    return FillBufferMode::kPassthrough;
+  }
+
+  return FillBufferMode::kWSOLA;
 }
 
 void AudioRendererAlgorithm::SetFillBufferMode(FillBufferMode mode) {
@@ -359,7 +393,7 @@ void AudioRendererAlgorithm::EnqueueBuffer(
 }
 
 void AudioRendererAlgorithm::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   DCHECK_GE(playback_threshold_, min_playback_threshold_);
   DCHECK_LE(playback_threshold_, capacity_);
   DCHECK_LE(capacity_, max_capacity_);

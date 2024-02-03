@@ -126,6 +126,9 @@ class V8UnionBooleanOrScrollIntoViewOptions;
 class ComputedStyleBuilder;
 class StyleAdjuster;
 
+template <typename IDLType>
+class FrozenArray;
+
 enum class CSSPropertyID;
 enum class CSSValueID;
 enum class DisplayLockActivationReason;
@@ -249,27 +252,20 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   HeapVector<Member<Element>>* GetAttrAssociatedElements(
       const QualifiedName& name);
 
-  ScriptValue ariaControlsElements(ScriptState* script_state);
-  void setAriaControlsElements(ScriptState* script_state,
-                               ScriptValue given_elements);
-  ScriptValue ariaDescribedByElements(ScriptState* script_state);
-  void setAriaDescribedByElements(ScriptState* script_state,
-                                  ScriptValue given_elements);
-  ScriptValue ariaDetailsElements(ScriptState* script_state);
-  void setAriaDetailsElements(ScriptState* script_state,
-                              ScriptValue given_elements);
-  ScriptValue ariaErrorMessageElements(ScriptState* script_state);
-  void setAriaErrorMessageElements(ScriptState* script_state,
-                                   ScriptValue given_elements);
-  ScriptValue ariaFlowToElements(ScriptState* script_state);
-  void setAriaFlowToElements(ScriptState* script_state,
-                             ScriptValue given_elements);
-  ScriptValue ariaLabelledByElements(ScriptState* script_state);
-  void setAriaLabelledByElements(ScriptState* script_state,
-                                 ScriptValue given_elements);
-  ScriptValue ariaOwnsElements(ScriptState* script_state);
-  void setAriaOwnsElements(ScriptState* script_state,
-                           ScriptValue given_elements);
+  FrozenArray<Element>* ariaControlsElements();
+  void setAriaControlsElements(HeapVector<Member<Element>>* given_elements);
+  FrozenArray<Element>* ariaDescribedByElements();
+  void setAriaDescribedByElements(HeapVector<Member<Element>>* given_elements);
+  FrozenArray<Element>* ariaDetailsElements();
+  void setAriaDetailsElements(HeapVector<Member<Element>>* given_elements);
+  FrozenArray<Element>* ariaErrorMessageElements();
+  void setAriaErrorMessageElements(HeapVector<Member<Element>>* given_elements);
+  FrozenArray<Element>* ariaFlowToElements();
+  void setAriaFlowToElements(HeapVector<Member<Element>>* given_elements);
+  FrozenArray<Element>* ariaLabelledByElements();
+  void setAriaLabelledByElements(HeapVector<Member<Element>>* given_elements);
+  FrozenArray<Element>* ariaOwnsElements();
+  void setAriaOwnsElements(HeapVector<Member<Element>>* given_elements);
 
   // Call this to get the value of an attribute that is known not to be the
   // style attribute or one of the SVG animatable attributes.
@@ -322,7 +318,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void setAttribute(const QualifiedName&, const String&, ExceptionState&);
 
-  static absl::optional<QualifiedName> ParseAttributeName(
+  static std::optional<QualifiedName> ParseAttributeName(
       const AtomicString& namespace_uri,
       const AtomicString& qualified_name,
       ExceptionState&);
@@ -604,8 +600,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // attributes in a start tag were added to the element.
   virtual void AttributeChanged(const AttributeModificationParams&);
 
-  // |parseAttribute| is called by |attributeChanged|. If an element
+  // |ParseAttribute()| is called by |AttributeChanged()|. If an element
   // implementation needs to check an attribute update, override this function.
+  // This function is called before Element handles the change. This means
+  // changes like `kSlotAttr` will not have been processed. Subclasses should
+  // take care to avoid any processing that needs Element to have handled the
+  // change. For example, flat-tree-travesal could be problematic. In such
+  // cases subclasses should override AttributeChanged() and do the processing
+  // after calling Element::AttributeChanged().
   //
   // While the owner document is parsed, this function is called after all
   // attributes in a start tag were added to the element.
@@ -740,14 +742,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                        FocusDelegation,
                                        SlotAssignmentMode,
                                        CustomElementRegistry*,
-                                       bool serializable);
+                                       bool serializable,
+                                       bool clonable);
   // This version is for testing only, and allows easy attachment of a shadow
   // root, specifying only the type and none of the other arguments.
   ShadowRoot& AttachShadowRootForTesting(ShadowRootType type) {
     return AttachShadowRootInternal(type, FocusDelegation::kNone,
                                     SlotAssignmentMode::kNamed,
                                     /*registry*/ nullptr,
-                                    /*serializable*/ false);
+                                    /*serializable*/ false,
+                                    /*clonable*/ false);
   }
 
   // Returns the shadow root attached to this element if it is a shadow host.
@@ -1261,10 +1265,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // size has changed.
   void LastRememberedSizeChanged(ResizeObserverSize* size);
 
-  void SetLastRememberedInlineSize(absl::optional<LayoutUnit>);
-  void SetLastRememberedBlockSize(absl::optional<LayoutUnit>);
-  absl::optional<LayoutUnit> LastRememberedInlineSize() const;
-  absl::optional<LayoutUnit> LastRememberedBlockSize() const;
+  void SetLastRememberedInlineSize(std::optional<LayoutUnit>);
+  void SetLastRememberedBlockSize(std::optional<LayoutUnit>);
+  std::optional<LayoutUnit> LastRememberedInlineSize() const;
+  std::optional<LayoutUnit> LastRememberedBlockSize() const;
 
   // Returns a unique pseudo element for the given |pseudo_id| and
   // |view_transition_name| originating from this DOM element.
@@ -1435,7 +1439,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   TextDirection ParentDirectionality() const;
   bool RecalcSelfOrAncestorHasDirAuto();
-  absl::optional<TextDirection> ResolveAutoDirectionality(
+  std::optional<TextDirection> ResolveAutoDirectionality(
       bool& is_deferred) const;
 
  private:
@@ -1762,23 +1766,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsKeyboardFocusableScroller(
       UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
 
-  v8::Local<v8::Object> GetCachedAttrAssociatedElementsObject(
-      ScriptState* script_state);
-  v8::Local<v8::Value> GetCachedAttrAssociatedElements(
-      ScriptState* script_state,
-      const QualifiedName& blink_name);
-  void SetCachedAttrAssociatedElements(ScriptState* script_state,
-                                       const QualifiedName& blink_name,
-                                       v8::Local<v8::Value> elements);
-  void DeleteCachedAttrAssociatedElements(ScriptState* script_state,
-                                          const QualifiedName& name);
-  ScriptValue GetElementArrayAttribute(ScriptState* script_state,
-                                       const QualifiedName& name,
-                                       const char* const property_name);
-  void SetElementArrayAttribute(ScriptState* script_state,
-                                const QualifiedName& name,
-                                const ScriptValue given_value,
-                                const char* const property_name);
+  FrozenArray<Element>* GetElementArrayAttribute(const QualifiedName& name);
+  void SetElementArrayAttribute(
+      const QualifiedName& name,
+      const HeapVector<Member<Element>>* given_elements);
 
   Member<ElementData> element_data_;
 };

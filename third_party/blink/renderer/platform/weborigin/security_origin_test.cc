@@ -61,7 +61,7 @@ class SecurityOriginTest : public testing::Test {
  protected:
   void TearDown() override { SecurityPolicy::ClearOriginAccessList(); }
 
-  const absl::optional<url::Origin::Nonce>& GetNonceForOrigin(
+  const std::optional<url::Origin::Nonce>& GetNonceForOrigin(
       const SecurityOrigin& origin) {
     return origin.nonce_if_opaque_;
   }

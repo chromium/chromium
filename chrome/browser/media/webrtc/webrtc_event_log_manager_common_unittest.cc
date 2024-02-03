@@ -688,24 +688,24 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
   AccountId account_id = AccountId::FromUserEmailGaiaId("name", "id");
 
   switch (test_case.user_type) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
           account_id, false, test_case.user_type, testing_profile.get());
       break;
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       account_id = user_manager::GuestAccountId();
       fake_user_manager_->AddGuestUser();
       break;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       fake_user_manager_->AddPublicAccountUser(account_id);
       break;
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       fake_user_manager_->AddKioskAppUser(account_id);
       break;
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       fake_user_manager_->AddChildUser(account_id);
       break;
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       fake_user_manager_->AddArcKioskAppUser(account_id);
       break;
     default:
@@ -726,12 +726,12 @@ INSTANTIATE_TEST_SUITE_P(
     DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
     testing::ValuesIn(
         std::vector<DoesProfileDefaultToLoggingEnabledForUserTypeTestCase>{
-            {user_manager::USER_TYPE_REGULAR, true},
-            {user_manager::USER_TYPE_GUEST, false},
-            {user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
-            {user_manager::USER_TYPE_KIOSK_APP, false},
-            {user_manager::USER_TYPE_CHILD, false},
-            {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
+            {user_manager::UserType::kRegular, true},
+            {user_manager::UserType::kGuest, false},
+            {user_manager::UserType::kPublicAccount, false},
+            {user_manager::UserType::kKioskApp, false},
+            {user_manager::UserType::kChild, false},
+            {user_manager::UserType::kArcKioskApp, false},
         }));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

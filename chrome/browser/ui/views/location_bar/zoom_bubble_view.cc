@@ -92,9 +92,9 @@ std::unique_ptr<views::ImageButton> CreateZoomButton(
 }
 
 class ZoomValue : public views::Label {
- public:
-  METADATA_HEADER(ZoomValue);
+  METADATA_HEADER(ZoomValue, views::Label)
 
+ public:
   explicit ZoomValue(const content::WebContents* web_contents)
       : Label(std::u16string(),
               views::style::CONTEXT_LABEL,
@@ -133,7 +133,7 @@ class ZoomValue : public views::Label {
   const int max_width_;
 };
 
-BEGIN_METADATA(ZoomValue, views::Label)
+BEGIN_METADATA(ZoomValue)
 END_METADATA
 
 bool IsBrowserFullscreen(Browser* browser) {
@@ -610,3 +610,6 @@ Browser* ZoomBubbleView::GetBrowser() const {
 ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() {}
 
 ZoomBubbleView::ZoomBubbleExtensionInfo::~ZoomBubbleExtensionInfo() {}
+
+BEGIN_METADATA(ZoomBubbleView)
+END_METADATA

@@ -503,8 +503,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   uint32_t usage =
-      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_READ |
-      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
   // Verify backing can be created.
   auto backing = backing_factory_->CreateSharedImage(

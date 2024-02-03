@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1384959399684842514">Таталтыг түр зогсоосон</translation>
 <translation id="1415402041810619267">URL-г танасан</translation>
-<translation id="1426410128494586442">Тийм</translation>
 <translation id="1434873037477293673">үнэ бууралтын карт</translation>
 <translation id="1448064542941920355">Томруулалтыг багасгах</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайт}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" />-д камертаа хандахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="2238944249568001759">Таны сүүлийн табд тулгуурласан санал болгосон хайлтууд</translation>
+<translation id="2241587408274973373">Шинэ табын хуудасны картууд</translation>
 <translation id="2241634353105152135">Ганц удаа</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />-г хасах</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 сайтыг блоклосон}other{# сайтыг блоклосон}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Сайтууд таниулбарын үйлчилгээнүүдийн нэвтрэх сануулгыг харуулах боломжтой.</translation>
 <translation id="2790501146643349491">Асаалттай үед саяхан хаасан сайтууд өгөгдөл илгээх болон хүлээн авахыг дуусгах боломжтой. Унтраалттай үед саяхан хаасан сайтууд өгөгдөл илгээх эсвэл хүлээн авахыг дуусгах боломжгүй.</translation>
 <translation id="2822354292072154809">Та <ph name="CHOSEN_OBJECT_NAME" />-н бүх сайтын зөвшөөрлийг шинэчлэх үү?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Гар утсан дээр харагдах байдлыг хүсэх</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
 <translation id="2874939134665556319">Өмнөх бичлэг</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Сертификат харагч</translation>
 <translation id="2979365474350987274">Гуравдагч талын күүкинүүдийг хязгаарласан</translation>
 <translation id="3008272652534848354">Зөвшөөрлийг шинэчлэх</translation>
-<translation id="3013291976881901233">MIDI төхөөрөмж</translation>
 <translation id="301521992641321250">Автоматаар блок хийсэн</translation>
 <translation id="3069226013421428034">Тодорхой сайтын гуравдагч талын нэвтрэлтийг зөвшөөрнө үү.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Маргааш хугацаа нь дуусна}other{# хоногийн дараа хугацаа нь дуусна}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB төхөөрөмжтэй холбогдлоо</translation>
 <translation id="4194328954146351878">Сайтуудыг NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг зөвшөөрөхөөс өмнө асуух (зөвлөсөн)</translation>
 <translation id="4200726100658658164">Байршлын тохиргоог нээх</translation>
-<translation id="4212246570487010370">Тасралтгүй үзэх</translation>
 <translation id="4226663524361240545">Мэдэгдэл ирэхэд төхөөрөмж чичрэнэ</translation>
 <translation id="4259722352634471385">Навигацыг хориглосон байна: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Доош зөөх</translation>
 <translation id="6749077623962119521">Зөвшөөрлүүдийг шинэчлэх үү?</translation>
 <translation id="6766622839693428701">Хаахын тулд доош шударна уу.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-с</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" />-н сонголтыг сонгоно уу</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6818926723028410516">Зүйл сонгох</translation>

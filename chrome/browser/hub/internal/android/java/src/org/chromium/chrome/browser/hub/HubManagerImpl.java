@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.FrameLayout.LayoutParams;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -67,6 +68,9 @@ public class HubManagerImpl implements HubManager, HubController {
 
         // TODO(crbug/1487315): Consider making this a xml file so the entire core UI is inflated.
         mHubContainerView = new HubContainerView(mContext);
+        LayoutParams params =
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        mHubContainerView.setLayoutParams(params);
 
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnFocusedPaneChanged);
     }
@@ -86,6 +90,19 @@ public class HubManagerImpl implements HubManager, HubController {
     @Override
     public @NonNull HubController getHubController() {
         return this;
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Boolean> getHubVisibilitySupplier() {
+        return mHubVisibilitySupplier;
+    }
+
+    @Override
+    public void setStatusIndicatorHeight(int height) {
+        LayoutParams params = (LayoutParams) mHubContainerView.getLayoutParams();
+        assert params != null : "HubContainerView should always have layout params.";
+        params.topMargin = height;
+        mHubContainerView.setLayoutParams(params);
     }
 
     @Override

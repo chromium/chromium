@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_NATIVE_VALUE_TRAITS_IMPL_H_
 
 #include <concepts>
+#include <optional>
 #include <type_traits>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_iterator.h"
@@ -213,24 +213,6 @@ struct CORE_EXPORT NativeValueTraits<IDLUnrestrictedFloat>
                            ExceptionState& exception_state) {
     return ToFloat(isolate, value, exception_state);
   }
-};
-
-// DOMHighResTimeStamp is a typedef of double, so we should never need its
-// NativeValueTraits
-template <>
-struct CORE_EXPORT NativeValueTraits<IDLDOMHighResTimeStamp>
-    : public NativeValueTraitsBase<IDLDOMHighResTimeStamp> {
-  static double NativeValue(v8::Isolate* isolate,
-                            v8::Local<v8::Value> value,
-                            ExceptionState& exception_state) = delete;
-};
-
-template <>
-struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLDOMHighResTimeStamp>>
-    : public NativeValueTraitsBase<IDLNullable<IDLDOMHighResTimeStamp>> {
-  static double NativeValue(v8::Isolate* isolate,
-                            v8::Local<v8::Value> value,
-                            ExceptionState& exception_state) = delete;
 };
 
 // Strings
@@ -980,9 +962,9 @@ struct NativeValueTraits<IDLNullable<IDLPromise>>;
 //      type (a value type) for years until 2021 January.  This point is very
 //      inconsistent but kept unchanged so far.
 // - IDLNullable<IDLSequence<T>> where T is not traceable
-//   => absl::optional<Vector<T>> as a value type
+//   => std::optional<Vector<T>> as a value type
 // - IDLNullable<IDLSequence<T>> where T is traceable
-//   => HeapVector<T>* as a reference type.  absl::optional<HeapVector<T>> is
+//   => HeapVector<T>* as a reference type.  std::optional<HeapVector<T>> is
 //      not an option because it's not appropriately traceable despite that
 //      the content HeapVector needs tracing.  As same as other
 //      GarbageCollected types, pointer type is used to represent IDL nullable
@@ -994,7 +976,7 @@ struct NativeValueTraits<IDLSequence<T>>
   using typename NativeValueTraitsBase<IDLSequence<T>>::ImplType;
 
   // HeapVector is GarbageCollected, so HeapVector<T>* is used for IDLNullable
-  // while absl::optional<Vector<T>> is used for IDLNullable<Vector<T>>.
+  // while std::optional<Vector<T>> is used for IDLNullable<Vector<T>>.
   static constexpr bool has_null_value = WTF::IsTraceable<T>::value;
 
   // https://webidl.spec.whatwg.org/#es-sequence
@@ -1691,13 +1673,13 @@ struct NativeValueTraits<IDLNullable<InnerType>>
     : public NativeValueTraitsBase<IDLNullable<InnerType>> {
   // https://webidl.spec.whatwg.org/#es-nullable-type
   using ImplType =
-      absl::optional<typename NativeValueTraits<InnerType>::ImplType>;
+      std::optional<typename NativeValueTraits<InnerType>::ImplType>;
 
   static ImplType NativeValue(v8::Isolate* isolate,
                               v8::Local<v8::Value> value,
                               ExceptionState& exception_state) {
     if (value->IsNullOrUndefined())
-      return absl::nullopt;
+      return std::nullopt;
     return NativeValueTraits<InnerType>::NativeValue(isolate, value,
                                                      exception_state);
   }
@@ -1707,7 +1689,7 @@ struct NativeValueTraits<IDLNullable<InnerType>>
                                 v8::Local<v8::Value> value,
                                 ExceptionState& exception_state) {
     if (value->IsNullOrUndefined())
-      return absl::nullopt;
+      return std::nullopt;
     return NativeValueTraits<InnerType>::ArgumentValue(isolate, argument_index,
                                                        value, exception_state);
   }
@@ -1771,7 +1753,7 @@ template <>
 struct CORE_EXPORT NativeValueTraits<IDLDate>
     : public NativeValueTraitsBase<IDLDate> {
   // IDLDate must be always used as IDLNullable<IDLDate>.
-  static absl::optional<base::Time> NativeValue(
+  static std::optional<base::Time> NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
       ExceptionState& exception_state) = delete;
@@ -1780,7 +1762,7 @@ struct CORE_EXPORT NativeValueTraits<IDLDate>
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLDate>>
     : public NativeValueTraitsBase<IDLNullable<IDLDate>> {
-  static absl::optional<base::Time> NativeValue(
+  static std::optional<base::Time> NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
       ExceptionState& exception_state) {

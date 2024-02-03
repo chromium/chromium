@@ -209,7 +209,7 @@ bool CrosSettings::IsUserAllowlisted(
 
   bool family_link_allowed = false;
   GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed, &family_link_allowed);
-  return family_link_allowed && user_type == user_manager::USER_TYPE_CHILD;
+  return family_link_allowed && user_type == user_manager::UserType::kChild;
 }
 
 bool CrosSettings::FindEmailInList(const std::string& path,

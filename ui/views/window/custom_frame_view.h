@@ -54,7 +54,7 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
 
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;

@@ -47,6 +47,8 @@ AnnotationsTabHelper::AnnotationsTabHelper(web::WebState* web_state)
   web::AnnotationsTextManager::CreateForWebState(web_state);
   auto* manager = web::AnnotationsTextManager::FromWebState(web_state);
   manager->AddObserver(this);
+  manager->SetSupportedTypes(
+      ios::provider::GetHandledIntentTypesForOneTap(web_state));
 }
 
 AnnotationsTabHelper::~AnnotationsTabHelper() {

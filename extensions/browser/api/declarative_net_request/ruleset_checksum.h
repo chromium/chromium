@@ -9,8 +9,7 @@
 
 #include "extensions/common/api/declarative_net_request/constants.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 struct RulesetChecksum {
   RulesetChecksum(RulesetID ruleset_id, int checksum);
@@ -23,7 +22,6 @@ struct RulesetChecksum {
 
 using RulesetChecksums = std::vector<RulesetChecksum>;
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_CHECKSUM_H_

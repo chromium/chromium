@@ -127,11 +127,9 @@ void SyncEngineBackend::OnSyncStatusChanged(const SyncStatus& status) {
   host_.Call(FROM_HERE, &SyncEngineImpl::HandleSyncStatusChanged, status);
 }
 
-void SyncEngineBackend::DoOnInvalidatorStateChange(
-    invalidation::InvalidatorState state) {
+void SyncEngineBackend::DoOnInvalidatorStateChange(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->SetInvalidatorEnabled(state ==
-                                       invalidation::INVALIDATIONS_ENABLED);
+  sync_manager_->SetInvalidatorEnabled(enabled);
 }
 
 void SyncEngineBackend::DoInitialize(

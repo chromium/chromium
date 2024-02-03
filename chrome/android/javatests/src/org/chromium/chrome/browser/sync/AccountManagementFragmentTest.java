@@ -30,16 +30,21 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.FeatureList;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -48,12 +53,16 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** Tests {@link AccountManagementFragment}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
 public class AccountManagementFragmentTest {
     private static final String CHILD_ACCOUNT_NAME =
             AccountManagerTestRule.generateChildEmail("account@gmail.com");
@@ -77,6 +86,33 @@ public class AccountManagementFragmentTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
+
+    public static class MigrateAccountManagementSettingsToCapabilitiesParams
+            implements ParameterProvider {
+
+        private static List<ParameterSet> sMigrateAccountManagementSettingsToCapabilities =
+                Arrays.asList(
+                        new ParameterSet()
+                                .value(true)
+                                .name("MigrateProfileIsChildFlagParamsEnabled"),
+                        new ParameterSet()
+                                .value(false)
+                                .name("MigrateProfileIsChildFlagParamsDisabled"));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sMigrateAccountManagementSettingsToCapabilities;
+        }
+    }
+
+    @ParameterAnnotations.UseMethodParameterBefore(
+            MigrateAccountManagementSettingsToCapabilitiesParams.class)
+    public void enableFlag(boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) {
+        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
+        testValuesOverride.addFeatureFlagOverride(
+                ChromeFeatureList.MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES,
+                isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled);
+    }
 
     @Before
     public void setUp() {
@@ -170,12 +206,19 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testAccountManagementViewForChildAccount() throws Exception {
-        mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
-        final Profile profile =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        Profile::getLastUsedRegularProfile);
-        CriteriaHelper.pollUiThread(profile::isChild);
+    @ParameterAnnotations.UseMethodParameter(
+            MigrateAccountManagementSettingsToCapabilitiesParams.class)
+    public void testAccountManagementViewForChildAccount(
+            boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
+        final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
+                new AccountCapabilitiesBuilder();
+        CoreAccountInfo primarySupervisedAccount =
+                mSigninTestRule.addAccount(
+                        CHILD_ACCOUNT_NAME,
+                        accountCapabilitiesBuilder.setIsSubjectToParentalControls(true).build());
+        mSigninTestRule.waitForSeeding();
+        mSigninTestRule.waitForSignin(primarySupervisedAccount);
+
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -194,14 +237,20 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
-        mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME);
+    @ParameterAnnotations.UseMethodParameter(
+            MigrateAccountManagementSettingsToCapabilitiesParams.class)
+    public void testAccountManagementViewForChildAccountWithSecondaryEduAccount(
+            boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
+        final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
+                new AccountCapabilitiesBuilder();
+        CoreAccountInfo primarySupervisedAccount =
+                mSigninTestRule.addAccount(
+                        CHILD_ACCOUNT_NAME,
+                        accountCapabilitiesBuilder.setIsSubjectToParentalControls(true).build());
         mSigninTestRule.addAccount("account@school.com");
         mSigninTestRule.waitForSeeding();
-        final Profile profile =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        Profile::getLastUsedRegularProfile);
-        CriteriaHelper.pollUiThread(profile::isChild);
+        mSigninTestRule.waitForSignin(primarySupervisedAccount);
+
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
                 () -> {

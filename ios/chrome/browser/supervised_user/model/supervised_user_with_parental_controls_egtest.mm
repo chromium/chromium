@@ -54,13 +54,6 @@ static const char* kInterstitialFirstTimeBanner =
 
 @implementation SupervisedUserWithParentalControlsTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-  return config;
-}
-
 - (void)signInSupervisedUserWithSync:(BOOL)withSync {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -187,8 +180,6 @@ static const char* kInterstitialFirstTimeBanner =
 
   // Restart the browser (needed to obtain non-realized states).
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   // Add the switch to make sure that the user stays signed in in the restart.
   config.additional_args.push_back(std::string("-") +

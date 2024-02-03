@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -44,7 +45,8 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
                     }
 
                     @Override
-                    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                    public void onLoadUrl(
+                            Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
                         // Clear the app association if the user navigated to a different page from
                         // the omnibox.
                         if ((params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR)

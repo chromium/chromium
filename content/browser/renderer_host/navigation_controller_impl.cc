@@ -1919,7 +1919,7 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
     // new (we aren't reusing it).
     entry->SetTransitionType(params.transition);
     entry->SetOriginalRequestURL(request ? request->GetOriginalRequestURL()
-                                         : GURL::EmptyGURL());
+                                         : GURL());
     DCHECK_EQ(rfh->GetPage().is_overriding_user_agent(),
               params.is_overriding_user_agent);
     entry->SetIsOverridingUserAgent(params.is_overriding_user_agent);
@@ -1940,7 +1940,7 @@ void NavigationControllerImpl::CreateInitialEntry() {
   // The initial NavigationEntry's URL is the empty URL. This preserves the old
   // behavior of WebContent's GetLastCommittedURL() and GetVisibleURL() from
   // before we have initial NavigationEntries.
-  params->url = GURL::EmptyGURL();
+  params->url = GURL();
   params->http_status_code = 0;
   params->url_is_unreachable = false;
   params->method = "GET";
@@ -4857,7 +4857,7 @@ bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
   // The preview mode appears as prerendered page in renderers, and
   // GetDocument()->IsPrerendering() covers the case together.
   return frame_tree_->is_prerendering() ||
-         frame_tree_->page_delegate()->IsInPreviewMode() ||
+         frame_tree_->page_delegate()->IsPageInPreviewMode() ||
          frame_tree_node->IsInFencedFrameTree();
 }
 

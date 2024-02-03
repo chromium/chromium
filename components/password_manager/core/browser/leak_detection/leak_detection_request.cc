@@ -216,8 +216,7 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
       LookupSingleLeakResponse leak_response;
   if (!leak_response.ParseFromString(*response)) {
     RecordLookupResponseResult(LeakLookupResponseResult::kParseError);
-    DLOG(ERROR) << "Could not parse response: "
-                << base::HexEncode(response->data(), response->size());
+    DLOG(ERROR) << "Could not parse response: " << base::HexEncode(*response);
     std::move(callback).Run(nullptr,
                             LeakDetectionError::kInvalidServerResponse);
     return;

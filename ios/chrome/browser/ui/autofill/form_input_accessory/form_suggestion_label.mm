@@ -90,7 +90,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
     }
 
     NSString* suggestionText = suggestion.value;
-    if (base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade)) {
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
       UIStackView* verticalStackView =
           [[UIStackView alloc] initWithArrangedSubviews:@[]];
       verticalStackView.axis = UILayoutConstraintAxisVertical;

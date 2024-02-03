@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStoreEventType, Error, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement, RecentDestination, State} from 'chrome://print/print_preview.js';
+import type {LocalDestinationInfo, PrintPreviewDestinationSettingsElement, RecentDestination} from 'chrome://print/print_preview.js';
+import {Destination, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStoreEventType, Error, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -11,7 +12,8 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // clang-format off
 // <if expr="is_chromeos">
-import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
+import { setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {getGoogleDriveDestination} from './print_preview_test_utils.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';

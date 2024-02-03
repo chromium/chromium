@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -59,10 +58,6 @@ class AutofillPopupDelegate {
 
   // Informs the delegate that the Autofill previewed form should be cleared.
   virtual void ClearPreviewedForm() = 0;
-
-  // Returns the type of the popup being shown.
-  // TODO(b/316859406): Replace with `GetMainFillingProduct`.
-  virtual PopupType GetPopupType() const = 0;
 
   // Returns the main filling product the popup being shown, which is a function
   // of the list of suggestions being shown.

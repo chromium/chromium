@@ -32,9 +32,9 @@ enum ContentID {
 // throbber. It is used on ARC ghost window shell surface overlay, so it will
 // be destroyed after actual ARC task window launched.
 class ArcGhostWindowView : public views::View {
- public:
-  METADATA_HEADER(ArcGhostWindowView);
+  METADATA_HEADER(ArcGhostWindowView, views::View)
 
+ public:
   ArcGhostWindowView(ArcGhostWindowShellSurface* shell_surface,
                      const std::string& app_name);
   ArcGhostWindowView(const ArcGhostWindowView&) = delete;

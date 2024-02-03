@@ -11,7 +11,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "net/cookies/cookie_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -50,10 +49,8 @@ void HttpErrorTabHelper::ResourceLoadComplete(
   bool cookies_blocked =
       pscs && pscs->blocked_local_shared_objects().GetObjectCount() > 0;
 
-  ukm::builders::ThirdPartyCookies_BreakageIndicator(
+  ukm::builders::ThirdPartyCookies_BreakageIndicator_HTTPError(
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())
-      .SetBreakageIndicatorType(
-          static_cast<int>(net::cookie_util::BreakageIndicatorType::HTTP_ERROR))
       .SetTPCBlocked(cookies_blocked)
       .SetTPCBlockedInSettings(cookies_blocked_in_settings)
       .Record(ukm::UkmRecorder::Get());

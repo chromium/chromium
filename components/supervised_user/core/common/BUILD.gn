@@ -19,8 +19,6 @@ static_library("common") {
     "pref_names.h",
     "supervised_user_constants.cc",
     "supervised_user_constants.h",
-    "supervised_user_utils.cc",
-    "supervised_user_utils.h",
     "supervised_users.h",
   ]
 
@@ -76,10 +74,4 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//testing/gtest",
   ]
-}
-
-if (is_android) {
-  java_cpp_enum("supervised_user_utils_enum_javagen") {
-    sources = [ "supervised_user_utils.h" ]
-  }
 }

@@ -24,6 +24,7 @@ import {getTemplate} from './credit_card_list_entry.html.js';
 
 const enum CardSummarySublabelType {
   VIRTUAL_CARD,
+  VIRTUAL_CARD_WITH_CVC_TAG,
   EXPIRATION_DATE,
   EXPIRATION_DATE_WITH_CVC_TAG,
 }
@@ -142,6 +143,10 @@ export class SettingsCreditCardListEntryElement extends
 
   private getCardSublabelType(): CardSummarySublabelType {
     if (this.isVirtualCardEnrolled_()) {
+      if (loadTimeData.getBoolean('cvcStorageAvailable') &&
+          !!this.creditCard.cvc) {
+        return CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG;
+      }
       return CardSummarySublabelType.VIRTUAL_CARD;
     }
     if (loadTimeData.getBoolean('cvcStorageAvailable') &&
@@ -152,15 +157,25 @@ export class SettingsCreditCardListEntryElement extends
   }
 
   /**
-   * Returns virtual card metadata if the card is eligible for enrollment or has
-   * already enrolled, or expiration date (MM/YY) or expiration date (MM/YY)
-   * with the `CVC saved` tag otherwise.
-   * E.g., 11/23, or Virtual card turned on, or 11/23 | CVC saved
+   * Returns one of the following sublabels, based on the card's status:
+   *    Virtual card metadata if card is eligible for enrollment or has already
+   * enrolled
+   *    Expiration date tag (MM/YY)
+   *    'CVC saved' tag
+   *
+   * e.g., one of the following:
+   *    11/23
+   *    11/23 | CVC saved
+   *    Virtual card turned on
+   *    Virtual card turned on | CVC saved
    */
   private getSummarySublabel_(): string {
     switch (this.getCardSublabelType()) {
       case CardSummarySublabelType.VIRTUAL_CARD:
         return this.i18n('virtualCardTurnedOn');
+      case CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG:
+        return this.i18n('virtualCardTurnedOn') + ' | ' +
+            this.i18n('cvcTagForCreditCardListEntry');
       case CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_TAG:
         return this.getCardExpiryDate_() + ' | ' +
             this.i18n('cvcTagForCreditCardListEntry');
@@ -174,6 +189,7 @@ export class SettingsCreditCardListEntryElement extends
   private getSummaryAriaSublabel_(): string {
     switch (this.getCardSublabelType()) {
       case CardSummarySublabelType.VIRTUAL_CARD:
+      case CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG:
         return this.getSummarySublabel_();
       case CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_TAG:
       case CardSummarySublabelType.EXPIRATION_DATE:

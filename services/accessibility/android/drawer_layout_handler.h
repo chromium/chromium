@@ -6,11 +6,11 @@
 #define SERVICES_ACCESSIBILITY_ANDROID_DRAWER_LAYOUT_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "services/accessibility/android/ax_tree_source_android.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 struct AXNodeData;
@@ -24,8 +24,7 @@ class AccessibilityEventData;
 
 class DrawerLayoutHandler : public AXTreeSourceAndroid::Hook {
  public:
-  static absl::optional<
-      std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
+  static std::optional<std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
   CreateIfNecessary(AXTreeSourceAndroid* tree_source,
                     const mojom::AccessibilityEventData& event_data);
 

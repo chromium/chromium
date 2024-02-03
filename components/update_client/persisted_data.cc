@@ -76,6 +76,11 @@ class PersistedDataImpl : public PersistedData {
   base::Version GetProductVersion(const std::string& id) const override;
   void SetProductVersion(const std::string& id,
                          const base::Version& pv) override;
+  base::Version GetMaxPreviousProductVersion(
+      const std::string& id) const override;
+  void SetMaxPreviousProductVersion(const std::string& id,
+                                    const base::Version& max_version) override;
+
   std::string GetFingerprint(const std::string& id) const override;
   void SetFingerprint(const std::string& id,
                       const std::string& fingerprint) override;
@@ -322,6 +327,21 @@ void PersistedDataImpl::SetProductVersion(const std::string& id,
                                           const base::Version& pv) {
   CHECK(pv.IsValid());
   SetString(id, "pv", pv.GetString());
+}
+
+base::Version PersistedDataImpl::GetMaxPreviousProductVersion(
+    const std::string& id) const {
+  return base::Version(GetString(id, "max_pv"));
+}
+
+void PersistedDataImpl::SetMaxPreviousProductVersion(
+    const std::string& id,
+    const base::Version& max_version) {
+  CHECK(max_version.IsValid());
+  auto existing_max = GetMaxPreviousProductVersion(id);
+  if (!existing_max.IsValid() || max_version > existing_max) {
+    SetString(id, "max_pv", max_version.GetString());
+  }
 }
 
 std::string PersistedDataImpl::GetFingerprint(const std::string& id) const {

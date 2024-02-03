@@ -528,8 +528,8 @@ void DownloadToolbarButtonView::UpdateIcon() {
   SetTooltipText(tooltip_texts_.at(progress_download_count));
 }
 
-void DownloadToolbarButtonView::Layout() {
-  ToolbarButton::Layout();
+void DownloadToolbarButtonView::Layout(PassKey) {
+  LayoutSuperclass<ToolbarButton>(this);
   gfx::Size size = GetPreferredSize();
   // Badge width and height are the same.
   const int badge_height = std::min(size.width(), size.height()) / 2;
@@ -846,7 +846,7 @@ void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
   const ui::ColorProvider* color_provider = GetColorProvider();
   // Animation cleans itself up after it's done.
   new DownloadBubbleStartedAnimationViews(
-      web_contents, image()->GetBoundsInScreen(),
+      web_contents, image_container_view()->GetBoundsInScreen(),
       color_provider->GetColor(kColorDownloadToolbarButtonAnimationForeground),
       color_provider->GetColor(kColorDownloadToolbarButtonAnimationBackground));
 }

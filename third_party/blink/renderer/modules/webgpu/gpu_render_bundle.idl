@@ -5,7 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed=(Window, DedicatedWorker),
+    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
     SecureContext
 ] interface GPURenderBundle {
 };

@@ -104,7 +104,7 @@ std::ostream& operator<<(std::ostream& stream,
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
   return {signin::GetTestGaiaIdForEmail("primary@gmail.com") /*id*/,
           "primary@gmail.com" /*email*/,
-          user_manager::USER_TYPE_REGULAR /*user_type*/,
+          user_manager::UserType::kRegular /*user_type*/,
           account_manager::AccountType::kGaia /*account_type*/,
           "device-account-token" /*token*/};
 }
@@ -112,7 +112,7 @@ DeviceAccountInfo GetGaiaDeviceAccountInfo() {
 DeviceAccountInfo GetChildDeviceAccountInfo() {
   return {supervised_user::kChildAccountSUID /*id*/,
           "child@gmail.com" /*email*/,
-          user_manager::USER_TYPE_CHILD /*user_type*/,
+          user_manager::UserType::kChild /*user_type*/,
           account_manager::AccountType::kGaia /*account_type*/,
           "device-account-token" /*token*/};
 }
@@ -208,8 +208,7 @@ class InlineLoginHandlerTest
     // Setup user.
     auto user_manager = std::make_unique<FakeChromeUserManager>();
     const user_manager::User* user;
-    if (GetDeviceAccountInfo().user_type ==
-        user_manager::UserType::USER_TYPE_CHILD) {
+    if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
       user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
           GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
       profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
@@ -362,8 +361,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, NewAccountAdditionSuccess) {
   args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
   web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
-  if (GetDeviceAccountInfo().user_type ==
-      user_manager::UserType::USER_TYPE_CHILD) {
+  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
     // Consent logging is required for secondary accounts.
     CompleteConsentLogForChildUser(kSecondaryAccount1Email);
   }
@@ -450,8 +448,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
                        FlowNameForRegularSecondaryAccountAddition) {
-  if (GetDeviceAccountInfo().user_type ==
-      user_manager::UserType::USER_TYPE_CHILD) {
+  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
     return;
   }
 
@@ -465,8 +462,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
                        FlowNameForRegularSecondaryAccountReauthentication) {
-  if (GetDeviceAccountInfo().user_type ==
-      user_manager::UserType::USER_TYPE_CHILD) {
+  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
     return;
   }
 
@@ -481,8 +477,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
                        FlowNameForChildEduAccountAddition) {
-  if (GetDeviceAccountInfo().user_type !=
-      user_manager::UserType::USER_TYPE_CHILD) {
+  if (GetDeviceAccountInfo().user_type != user_manager::UserType::kChild) {
     return;
   }
 
@@ -496,8 +491,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
                        FlowNameForChildEduAccountReauthentication) {
-  if (GetDeviceAccountInfo().user_type !=
-      user_manager::UserType::USER_TYPE_CHILD) {
+  if (GetDeviceAccountInfo().user_type != user_manager::UserType::kChild) {
     return;
   }
 
@@ -624,8 +618,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
   args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
   web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
-  if (GetDeviceAccountInfo().user_type ==
-      user_manager::UserType::USER_TYPE_CHILD) {
+  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
     // Consent logging is required for secondary accounts.
     CompleteConsentLogForChildUser(kSecondaryAccount1Email);
   }

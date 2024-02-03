@@ -124,26 +124,29 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /**
      * Creates a new HistoryContentManager.
+     *
      * @param activity The Activity associated with the HistoryContentManager.
      * @param observer The Observer to receive updates from this manager.
      * @param isSeparateActivity Whether the history UI will be shown in a separate activity than
-     *                           the main Chrome activity.
+     *     the main Chrome activity.
      * @param profile The Profile associated with this history.
      * @param shouldShowPrivacyDisclaimers Whether the privacy disclaimers should be shown, if
-     *         available.
+     *     available.
      * @param shouldShowClearDataIfAvailable Whether the the clear history data button should be
-     *         shown, if available.
+     *     shown, if available.
      * @param hostName The hostName to retrieve history entries for, or null for all hosts.
      * @param selectionDelegate A class responsible for handling list item selection, null for
-     *         unselectable items.
+     *     unselectable items.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
-     *                    separate activity.
+     *     separate activity.
      * @param showHistoryToggleSupplier A supplier that tells us if and when we should show the
-     *         toggle that swaps between the Journeys and regular history UIs.
+     *     toggle that swaps between the Journeys and regular history UIs.
      * @param toggleViewFactory Function that provides a toggle view container for the given parent
-     *         ViewGroup. This toggle is used to switch between the Journeys UI and the regular
-     *         history UI and is thus controlled by our parent component.
+     *     ViewGroup. This toggle is used to switch between the Journeys UI and the regular history
+     *     UI and is thus controlled by our parent component.
      * @param historyProvider Provider of methods for querying and managing browsing history.
+     * @param appId The ID of the application from which the history activity is launched, passed as
+     *     the client package name.
      */
     public HistoryContentManager(
             @NonNull Activity activity,
@@ -157,7 +160,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             @Nullable Supplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> showHistoryToggleSupplier,
             Function<ViewGroup, ViewGroup> toggleViewFactory,
-            HistoryProvider historyProvider) {
+            HistoryProvider historyProvider,
+            String appId) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
@@ -169,6 +173,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mIsScrollToLoadDisabled =
                 ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                         || UiUtils.isHardwareKeyboardAttached();
+        mAppId = appId;
         mSelectionDelegate =
                 selectionDelegate != null
                         ? selectionDelegate
@@ -253,13 +258,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mPrefChangeRegistrar = new PrefChangeRegistrar();
         mPrefChangeRegistrar.addObserver(Pref.ALLOW_DELETING_BROWSER_HISTORY, this);
         mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, this);
-    }
-
-    /**
-     * @param appId The app ID to retrieve history entries for.
-     */
-    public void setAppId(String appId) {
-        mAppId = appId;
     }
 
     /** Tell the HistoryContentManager to start loading items. */

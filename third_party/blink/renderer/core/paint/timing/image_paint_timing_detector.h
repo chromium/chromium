@@ -9,9 +9,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_PAINT_TIMING_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_PAINT_TIMING_DETECTOR_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -67,9 +68,9 @@ class ImageRecord : public GarbageCollected<ImageRecord> {
   // if there is no `media_timing`.
   double EntropyForLCP() const;
 
-  // Returns the image's loading priority. Will return `absl::nullopt` if there
+  // Returns the image's loading priority. Will return `std::nullopt` if there
   // is no `media_timing`.
-  absl::optional<WebURLRequest::Priority> RequestPriority() const;
+  std::optional<WebURLRequest::Priority> RequestPriority() const;
 
   void Trace(Visitor* visitor) const;
 
@@ -347,7 +348,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // We cache the viewport size computation to avoid performing it on every
   // image. This value is reset when paint is finished and is computed if unset
   // when needed. 0 means that the size has not been computed.
-  absl::optional<uint64_t> viewport_size_;
+  std::optional<uint64_t> viewport_size_;
   // Whether the viewport size used is the page viewport.
   bool uses_page_viewport_;
   // Are we recording an LCP candidate? True after a navigation (including soft

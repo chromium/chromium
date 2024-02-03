@@ -38,6 +38,12 @@ DesktopEnvironmentOptions& DesktopEnvironmentOptions::operator=(
 
 void DesktopEnvironmentOptions::Initialize() {
   desktop_capture_options_.set_detect_updated_region(true);
+
+  // Enable iosurface in the Mac capturer to work around a recent change to
+  // the Mac screen-capturer - see http://crbug.com/1523038.
+#if BUILDFLAG(IS_MAC)
+  desktop_capture_options_.set_allow_iosurface(true);
+#endif
 }
 
 const DesktopCaptureOptions*

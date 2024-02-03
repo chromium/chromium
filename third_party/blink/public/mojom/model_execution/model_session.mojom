@@ -12,8 +12,30 @@ enum ModelStreamingResponseStatus {
   kOngoing,
   // The ModelStreamingResponder completes and closes.
   kComplete,
-  // The ModelStreamingResponder closes with some errors.
-  kError,
+
+  // The following enums are for the case when the ModelStreamingResponder closes with some errors.
+  kErrorUnknown,
+  // The request was invalid.
+  kErrorInvalidRequest,
+  // The request was throttled.
+  kErrorRequestThrottled,
+  // User permission errors such as not signed-in or not allowed to execute
+  // model.
+  kErrorPermissionDenied,
+  // Other generic failures.
+  kErrorGenericFailure,
+  // Retryable error occurred in server.
+  kErrorRetryableError,
+  // Non-retryable error occurred in server.
+  kErrorNonRetryableError,
+  // Unsupported language.
+  kErrorUnsupportedLanguage,
+  // Request was filtered.
+  kErrorFiltered,
+  // Response was disabled.
+  kErrorDisabled,
+  // The request was cancelled.
+  kErrorCancelled,
 };
 
 // The responder provides methods for the session to return the execution

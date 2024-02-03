@@ -5,6 +5,7 @@
 #ifndef MEDIA_FILTERS_HLS_MANIFEST_DEMUXER_ENGINE_H_
 #define MEDIA_FILTERS_HLS_MANIFEST_DEMUXER_ENGINE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -23,7 +24,6 @@
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/rendition_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -243,7 +243,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
 
   // When renditions are added, this ensures that they are all of the same
   // liveness, and allows access to the liveness check later.
-  absl::optional<bool> is_seekable_ = absl::nullopt;
+  std::optional<bool> is_seekable_ = std::nullopt;
 
   // Ensure that safe member fields are only accessed on the media sequence.
   SEQUENCE_CHECKER(media_sequence_checker_);

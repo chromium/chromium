@@ -52,6 +52,7 @@ typedef struct XrHandGestureANDROID {
 #define XR_TYPE_TRACKABLE_TRACKER_CREATE_INFO_ANDROID \
   ((XrStructureType)1000455004U)
 #define XR_TYPE_ANCHOR_SPACE_CREATE_INFO_ANDROID ((XrStructureType)1000455001U)
+#define XR_TYPE_ANCHOR_STATE_ANDROID ((XrStructureType)1000455002U)
 
 #define XR_ERROR_MISMATCHING_TRACKABLE_TYPE_ANDROID ((XrResult)-1000455000U)
 
@@ -141,6 +142,12 @@ typedef struct XrAnchorSpaceCreateInfoANDROID {
   XrPosef pose;
   XrTrackableANDROID trackable;
 } XrAnchorSpaceCreateInfoANDROID;
+
+typedef struct XrAnchorStateANDROID {
+  XrStructureType type;
+  void* next;
+  XrTrackingStateANDROID trackingState;
+} XrAnchorStateANDROID;
 
 typedef XrResult(XRAPI_PTR* PFN_xrCreateAnchorSpaceANDROID)(
     XrSession session, const XrAnchorSpaceCreateInfoANDROID* createInfo,

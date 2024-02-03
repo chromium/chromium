@@ -47,6 +47,7 @@ namespace crosier {
 
 enum class Requirement {
   kBluetooth,
+  kOndeviceHandwriting,
   kVulkan,
 };
 

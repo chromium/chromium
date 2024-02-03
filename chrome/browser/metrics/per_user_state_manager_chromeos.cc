@@ -185,7 +185,7 @@ PerUserStateManagerChromeOS::GetCurrentUserReportingConsentIfApplicable()
   // Guest sessions with no device owner should use the guest's metrics
   // consent set during guest OOBE flow with no device owner.
   bool is_guest_with_no_owner =
-      current_user_->GetType() == user_manager::USER_TYPE_GUEST &&
+      current_user_->GetType() == user_manager::UserType::kGuest &&
       !IsDeviceOwned();
 
   // Cases in which user permissions should be applied to metrics reporting.
@@ -274,15 +274,16 @@ bool PerUserStateManagerChromeOS::IsUserAllowedToChangeConsent(
 
   // Guest sessions for non-owned devices should be allowed to modify metrics
   // consent during the lifetime of the session.
-  if (user_type == user_manager::USER_TYPE_GUEST)
+  if (user_type == user_manager::UserType::kGuest) {
     return !IsDeviceOwned();
+  }
 
   // Non-managed devices only have control if owner has enabled metrics
   // reporting.
   if (!GetDeviceMetricsConsent())
     return false;
 
-  return user_type == user_manager::USER_TYPE_REGULAR;
+  return user_type == user_manager::UserType::kRegular;
 }
 
 base::CallbackListSubscription PerUserStateManagerChromeOS::AddObserver(
@@ -420,7 +421,7 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState(
   state_ = State::USER_LOG_STORE_HANDLED;
 
   const bool is_guest =
-      current_user_->GetType() == user_manager::USER_TYPE_GUEST;
+      current_user_->GetType() == user_manager::UserType::kGuest;
 
   // If a guest session is about to be started, the metrics reporting will
   // normally inherit from the device owner's setting. If there is no owner,
@@ -493,7 +494,7 @@ void PerUserStateManagerChromeOS::UpdateCurrentUserId(
   DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
 
   // Guest sessions should not have a user id.
-  if (current_user_->GetType() == user_manager::USER_TYPE_GUEST) {
+  if (current_user_->GetType() == user_manager::UserType::kGuest) {
     GetCurrentUserPrefs()->ClearPref(prefs::kMetricsUserId);
     local_state_->ClearPref(prefs::kMetricsCurrentUserId);
     return;

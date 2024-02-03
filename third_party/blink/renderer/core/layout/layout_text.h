@@ -209,8 +209,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   // Returns the offset in the original text that corresponds to the given
   // position in DOM; Returns nullopt is the position is not in this LayoutText.
-  virtual absl::optional<unsigned> CaretOffsetForPosition(
-      const Position&) const;
+  virtual std::optional<unsigned> CaretOffsetForPosition(const Position&) const;
 
   // Returns true if the offset (0-based in the original text) is next to a
   // non-collapsed non-linebreak character, or before a forced linebreak (<br>,

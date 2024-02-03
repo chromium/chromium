@@ -836,6 +836,7 @@ enum CSSSampleId {
     kMaskMode = 780,
     kInsetArea = 781,
     kViewTransitionClass = 782,
+    kPositionTryOrder = 783,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

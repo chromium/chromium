@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_VIEW_H_
 
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -158,7 +159,110 @@ class PLATFORM_EXPORT ShapeResultView final
   void ExpandRangeToIncludePartialGlyphs(unsigned* from, unsigned* to) const;
 
  private:
-  struct RunInfoPart;
+  // Note: We allocate |RunInfoPart| in flexible array in |ShapeResultView|.
+  struct RunInfoPart {
+   public:
+    RunInfoPart(scoped_refptr<const ShapeResult::RunInfo> run,
+                GlyphDataRange range,
+                unsigned start_index,
+                unsigned offset,
+                unsigned num_characters,
+                float width);
+
+    using const_iterator = const HarfBuzzRunGlyphData*;
+    const_iterator begin() const { return range_.begin; }
+    const_iterator end() const { return range_.end; }
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    const_reverse_iterator rbegin() const {
+      return const_reverse_iterator(end());
+    }
+    const_reverse_iterator rend() const {
+      return const_reverse_iterator(begin());
+    }
+    const HarfBuzzRunGlyphData& GlyphAt(unsigned index) const {
+      return *(range_.begin + index);
+    }
+    template <bool has_non_zero_glyph_offsets>
+    GlyphOffsetArray::iterator<has_non_zero_glyph_offsets> GetGlyphOffsets()
+        const {
+      return GlyphOffsetArray::iterator<has_non_zero_glyph_offsets>(range_);
+    }
+    bool HasGlyphOffsets() const { return range_.offsets; }
+    // The end character index of |this| without considering offsets in
+    // |ShapeResultView|. This is analogous to:
+    //   GlyphAt(IsRtl() ? -1 : NumGlyphs()).character_index
+    // if such |HarfBuzzRunGlyphData| is available.
+    unsigned CharacterIndexOfEndGlyph() const {
+      return num_characters_ + offset_;
+    }
+
+    unsigned NumCharacters() const { return num_characters_; }
+    unsigned NumGlyphs() const { return range_.size(); }
+    float Width() const { return width_; }
+
+    unsigned PreviousSafeToBreakOffset(unsigned offset) const;
+
+    // Common signatures with RunInfo, to templatize algorithms.
+    const ShapeResult::RunInfo* GetRunInfo() const { return run_.get(); }
+    const GlyphDataRange& GetGlyphDataRange() const { return range_; }
+    GlyphDataRange FindGlyphDataRange(unsigned start_character_index,
+                                      unsigned end_character_index) const;
+    unsigned OffsetToRunStartIndex() const { return offset_; }
+
+    // The helper function for implementing |PopulateRunInfoParts()| for
+    // handling iterating over |Vector<scoped_refptr<RunInfo>>| and
+    // |base::span<RunInfoPart>|.
+    const RunInfoPart* get() const { return this; }
+
+    template <typename RunType, typename ShapeResultType>
+    static unsigned ComputeStart(const RunType& run,
+                                 const ShapeResultType& result) {
+      const unsigned part_start =
+          run.start_index_ + result.StartIndexOffsetForRun();
+      if (result.IsLtr()) {
+        return part_start;
+      }
+      // Under RTL and multiple parts, A RunInfoPart may have an
+      // offset_ greater than start_index. In this case, run_start
+      // would result in an invalid negative value.
+      return std::max(part_start, run.OffsetToRunStartIndex());
+    }
+
+    template <typename RunType, typename ShapeResultType>
+    static std::optional<std::pair<unsigned, unsigned>> ComputeStartEnd(
+        const RunType& run,
+        const ShapeResultType& result,
+        const Segment& segment) {
+      if (!run.GetRunInfo()) {
+        return std::nullopt;
+      }
+      const unsigned part_start = ComputeStart(run, result);
+      if (segment.end_index <= part_start) {
+        return std::nullopt;
+      }
+      if (!run.num_characters_) {
+        return {{part_start, part_start}};
+      }
+      const unsigned part_end = part_start + run.num_characters_;
+      if (segment.start_index >= part_end) {
+        return std::nullopt;
+      }
+      return {{part_start, part_end}};
+    }
+
+    scoped_refptr<const ShapeResult::RunInfo> run_;
+    GlyphDataRange range_;
+
+    // Start index for partial run, adjusted to ensure that runs are continuous.
+    unsigned start_index_;
+
+    // Offset relative to start index for the original run.
+    unsigned offset_;
+
+    unsigned num_characters_;
+    float width_;
+  };
+
   RunInfoPart* PopulateRunInfoParts(const Segment& segment, RunInfoPart* part);
 
   // Populates |parts_[]| and accumulates |num_characters_|, |num_glyphs_| and

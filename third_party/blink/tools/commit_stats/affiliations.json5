@@ -57,5 +57,10 @@
       { start: "2021-11-29", domain: "kzar.co.uk" },
     ]
   },
+  "seokho@chromium.org": {
+    affiliations: [
+      { start: "2020-07-25", domain: "seokho.dev" },
+    ]
+  },
 }
 

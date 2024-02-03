@@ -166,8 +166,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   ToIsolationModeHighlightConfig(
       protocol::Overlay::IsolationModeHighlightConfig*,
       int highlight_index);
-  static absl::optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
-  static absl::optional<BoxStyle> ToBoxStyle(protocol::Overlay::BoxStyle*);
+  static std::optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
+  static std::optional<BoxStyle> ToBoxStyle(protocol::Overlay::BoxStyle*);
   static std::unique_ptr<InspectorHighlightConfig> ToHighlightConfig(
       protocol::Overlay::HighlightConfig*);
   InspectorOverlayAgent(WebLocalFrameImpl*,

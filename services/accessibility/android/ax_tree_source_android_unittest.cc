@@ -5,6 +5,7 @@
 #include "services/accessibility/android/ax_tree_source_android.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -87,7 +87,7 @@ class MockAutomationEventRouter
 
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override {}
+      const std::optional<gfx::Rect>& rect) override {}
 
   std::vector<ui::AXEvent> last_dispatched_events() const {
     return last_dispatched_events_;

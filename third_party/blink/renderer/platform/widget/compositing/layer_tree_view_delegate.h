@@ -44,7 +44,7 @@ class LayerTreeViewDelegate {
   virtual void OnDeferCommitsChanged(
       bool defer_status,
       cc::PaintHoldingReason reason,
-      absl::optional<cc::PaintHoldingCommitTrigger> trigger) = 0;
+      std::optional<cc::PaintHoldingCommitTrigger> trigger) = 0;
   virtual void OnCommitRequested() = 0;
 
   // Notifies that the layer tree host has completed a call to

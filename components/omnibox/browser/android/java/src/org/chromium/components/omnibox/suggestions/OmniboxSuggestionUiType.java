@@ -29,7 +29,6 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
     OmniboxSuggestionUiType.HEADER,
     OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-    OmniboxSuggestionUiType.PEDAL_SUGGESTION,
     OmniboxSuggestionUiType.GROUP_SEPARATOR,
     OmniboxSuggestionUiType.QUERY_TILES,
     OmniboxSuggestionUiType.COUNT
@@ -44,9 +43,8 @@ public @interface OmniboxSuggestionUiType {
     int CLIPBOARD_SUGGESTION = 5;
     int HEADER = 6;
     int TILE_NAVSUGGEST = 7;
-    int PEDAL_SUGGESTION = 8;
-    int GROUP_SEPARATOR = 9;
-    int QUERY_TILES = 10;
+    int GROUP_SEPARATOR = 8;
+    int QUERY_TILES = 9;
 
-    int COUNT = 11;
+    int COUNT = 10;
 }

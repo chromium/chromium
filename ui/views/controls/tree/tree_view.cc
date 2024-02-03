@@ -404,7 +404,7 @@ void TreeView::SetDrawingProvider(
   drawing_provider_ = std::move(provider);
 }
 
-void TreeView::Layout() {
+void TreeView::Layout(PassKey) {
   int width = preferred_size_.width();
   int height = preferred_size_.height();
   if (parent()) {
@@ -1063,7 +1063,7 @@ void TreeView::LayoutEditor() {
   // Scroll as necessary to ensure that the editor is visible.
   ScrollRectToVisible(outter_bounds);
   editor_->SetBoundsRect(row_bounds);
-  editor_->Layout();
+  editor_->DeprecatedLayoutImmediately();
 }
 
 void TreeView::SchedulePaintForNode(InternalNode* node) {

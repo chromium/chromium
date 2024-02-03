@@ -2460,6 +2460,9 @@ Style notes:
       <message name="IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility text read by screen readers for a closeable desk mini view when the close all feature is enabled.">
           Press Ctrl + W to combine with <ph name="DESK_NAME">$1<ex>Desk 1</ex></ph>. Press Ctrl + Shift + W to close desk and windows.
       </message>
+       <message name="IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL" translateable="false" desc="The accessible name for the Overview Settings button during faster splitscreen setup.">
+        Multitasking settings
+      </message>
       <message name="IDS_ASH_OVERVIEW_WINDOW_CLOSING_A11Y_ALERT" desc="The accessibility alert read by screen readers to alert the user that a window in overview mode is closing.">
         Window <ph name="WINDOW_TITILE">$1<ex>1</ex></ph> closed.
       </message>
@@ -3252,6 +3255,26 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_REJECT" desc="Message on button to reject Bluetooth pairing request.">
         Reject
+      </message>
+
+       <!-- Ash Bluetooth disconnect warning dialog strings -->
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_TITLE" desc="The title for disconnect Bluetooth warning dialog.">
+        Turn off Bluetooth?
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_TURN_OFF" desc="The label for turn off Bluetooth button for disconnect Bluetooth warning dialog.">
+        Turn off
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_KEEP_ON" desc="The label for keep Bluetooth on button for disconnect Bluetooth warning dialog.">
+        Keep on
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_ONE_DEVICE" desc="Bluetooth pairing message shown to indicate a Bluetooth device will disconnect when Bluetooth is turned off.">
+        When you turn off Bluetooth, "<ph name="DEVICE_NAME">$1<ex>Dell RGB Keyboard</ex></ph>" will disconnect from your Chromebook.
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_TWO_DEVICES" desc="Bluetooth pairing message shown to indicate that two Bluetooth devices will disconnect when Bluetooth is turned off.">
+        When you turn off Bluetooth, "<ph name="DEVICE_NAME_1">$1<ex>Logitech SmartMouse</ex></ph>" and "<ph name="DEVICE_NAME_2">$2<ex>Dell RGB Keyboard</ex></ph>" will disconnect from your Chromebook.
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_MULTIPLE_DEVICES" desc="Bluetooth pairing message shown to indicate that multiple Bluetooth devices will disconnect when Bluetooth is turned off.">
+        When you turn off Bluetooth, "<ph name="DEVICE_NAME_1">$1<ex>Logitech SmartMouse</ex></ph>", "<ph name="DEVICE_NAME_2">$2<ex>Dell RGB Keyboard</ex></ph>" and <ph name="DEVICE_COUNT">$3<ex>3</ex></ph> other devices will disconnect from your Chromebook.
       </message>
 
       <!-- Ash multi-user warning dialog -->
@@ -4480,6 +4503,12 @@ Some features are limited to increase battery life.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS" desc="Label for accelerator description - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
         Move between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
       </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS_FORWARDS" desc="Label for accelerator description - Move forwards between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
+        Move forwards between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS_BACKWARDS" desc="Label for accelerator description - Move backwards between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
+        Move backwards between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
+      </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_COPY" desc="Label for accelerator description - Copy selected content to clipboard.">
         Copy selected content to clipboard
       </message>
@@ -5045,6 +5074,14 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_HELP" desc="Label of a button in the auth dialog to open a help article">
         Need help?
+      </message>
+
+      <!-- Mahi -->
+      <message name="IDS_ASH_MAHI_DISCLAIMER_LABEL_TEXT" translateable="false" desc="Text for the disclaimer label in the Mahi panel">
+        Disclaimer: this is only used for experimental.
+      </message>
+      <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT" desc="Text for the learn more link that user can navigate to learn more about the project information">
+        Learn more
       </message>
 
       <!-- Multi-profiles intro dialog -->
@@ -7525,6 +7562,13 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER" desc="Text of the command to show the download file in folder.">
         Show in folder
+      </message>
+
+      <!-- Forest -->
+      <message name="IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT" translateable="false" desc="Text summarizing how many windows left to restore. [ICU Syntax]">
+        {NUM_OVERFLOW, plural,
+         =1 {1 more window}
+         other {# more windows}}
       </message>
      </messages>
     </release>

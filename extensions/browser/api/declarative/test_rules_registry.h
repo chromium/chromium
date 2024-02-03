@@ -7,6 +7,7 @@
 
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -24,12 +25,12 @@ class TestRulesRegistry : public RulesRegistry {
 
   // RulesRegistry implementation:
   std::string AddRulesImpl(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::vector<const api::events::Rule*>& rules) override;
   std::string RemoveRulesImpl(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::vector<std::string>& rule_identifiers) override;
-  std::string RemoveAllRulesImpl(const std::string& extension_id) override;
+  std::string RemoveAllRulesImpl(const ExtensionId& extension_id) override;
 
   // Sets the result message that will be returned by the next call of
   // AddRulesImpl, RemoveRulesImpl and RemoveAllRulesImpl.

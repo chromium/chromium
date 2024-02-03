@@ -27,8 +27,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
@@ -194,7 +195,7 @@ class CORE_EXPORT SVGImage final : public Image {
 
   // Paints the current frame. Returns new PaintRecord. |cull_rect| is an
   // optional additional cull rect.
-  absl::optional<PaintRecord> PaintRecordForCurrentFrame(
+  std::optional<PaintRecord> PaintRecordForCurrentFrame(
       const DrawInfo&,
       const gfx::Rect* cull_rect);
 

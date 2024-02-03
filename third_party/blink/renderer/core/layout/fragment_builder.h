@@ -78,10 +78,10 @@ class CORE_EXPORT FragmentBuilder {
   // Either this function or SetBoxType must be called before ToBoxFragment().
   void SetIsNewFormattingContext(bool is_new_fc) { is_new_fc_ = is_new_fc; }
 
-  PhysicalFragment::BoxType BoxType() const;
+  PhysicalFragment::BoxType GetBoxType() const;
   void SetBoxType(PhysicalFragment::BoxType box_type) { box_type_ = box_type; }
   bool IsFragmentainerBoxType() const {
-    PhysicalFragment::BoxType box_type = BoxType();
+    PhysicalFragment::BoxType box_type = GetBoxType();
     return box_type == PhysicalFragment::kColumnBox ||
            box_type == PhysicalFragment::kPageBox;
   }
@@ -113,7 +113,7 @@ class CORE_EXPORT FragmentBuilder {
 
   // The BFC block-offset is where this fragment was positioned within the BFC.
   // If it is not set, this fragment may be placed anywhere within the BFC.
-  const absl::optional<LayoutUnit>& BfcBlockOffset() const {
+  const std::optional<LayoutUnit>& BfcBlockOffset() const {
     return bfc_block_offset_;
   }
   void SetBfcBlockOffset(LayoutUnit bfc_block_offset) {
@@ -137,7 +137,7 @@ class CORE_EXPORT FragmentBuilder {
     exclusion_space_ = exclusion_space;
   }
 
-  void SetLinesUntilClamp(const absl::optional<int>& value) {
+  void SetLinesUntilClamp(const std::optional<int>& value) {
     lines_until_clamp_ = value;
   }
 
@@ -462,11 +462,11 @@ class CORE_EXPORT FragmentBuilder {
   // Report space shortage, i.e. how much more space would have been sufficient
   // to prevent some piece of content from breaking. This information may be
   // used by the column balancer to stretch columns.
-  void PropagateSpaceShortage(absl::optional<LayoutUnit> space_shortage);
+  void PropagateSpaceShortage(std::optional<LayoutUnit> space_shortage);
 
-  absl::optional<LayoutUnit> MinimalSpaceShortage() const {
+  std::optional<LayoutUnit> MinimalSpaceShortage() const {
     if (minimal_space_shortage_ == kIndefiniteSize) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return minimal_space_shortage_;
   }
@@ -564,10 +564,10 @@ class CORE_EXPORT FragmentBuilder {
   HeapHashSet<Member<LayoutBox>>* snap_areas_ = nullptr;
   LogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
-  absl::optional<LayoutUnit> bfc_block_offset_;
+  std::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;
   ExclusionSpace exclusion_space_;
-  absl::optional<int> lines_until_clamp_;
+  std::optional<int> lines_until_clamp_;
 
   ScrollStartTargetCandidates* scroll_start_targets_ = nullptr;
 

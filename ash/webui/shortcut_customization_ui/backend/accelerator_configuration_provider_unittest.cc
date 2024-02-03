@@ -461,8 +461,9 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     return accelerator_iter->second;
   }
 
-  uint32_t GetNonConfigurableIdFromAccelerator(ui::Accelerator accelerator) {
-    return provider_->non_configurable_accelerator_to_id_.Get(accelerator);
+  std::vector<uint32_t> GetNonConfigurableIdFromAccelerator(
+      ui::Accelerator accelerator) {
+    return provider_->FindNonConfigurableIdFromAccelerator(accelerator);
   }
 
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
@@ -1198,9 +1199,10 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableReverseLookup) {
     if (accelerators_details.IsStandardAccelerator()) {
       for (const auto& accelerator :
            accelerators_details.accelerators.value()) {
-        const uint32_t found_id =
+        std::vector<uint32_t> found_ids =
             GetNonConfigurableIdFromAccelerator(accelerator);
-        EXPECT_EQ(ambient_action_id, found_id);
+        ASSERT_FALSE(found_ids.empty());
+        EXPECT_TRUE(base::Contains(found_ids, ambient_action_id));
       }
     }
   }

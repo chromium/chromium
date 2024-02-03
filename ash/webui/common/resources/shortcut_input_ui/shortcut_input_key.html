@@ -113,12 +113,11 @@
 
 <div id="key" class="key-container">
   <template is="dom-if" if="[[getIconIdForKey(key)]]">
-    <div aria-describedby="icon-description">
-      <iron-icon icon="[[getIconIdForKey(key)]]" id="key-icon" aria-hidden="true"></iron-icon>
+    <div id="keyIcon" aria-label="[[getAriaLabelForIcon(key)]]" role="img">
+      <iron-icon icon="[[getIconIdForKey(key)]]" id="key-icon"></iron-icon>
     </div>
-    <div id="icon-description" hidden>[[getAriaLabelForIcon(key)]]</div>
   </template>
   <template is="dom-if" if="[[!getIconIdForKey(key)]]">
-    <span id="key-text" aria-hidden="[[getAriaHidden(key, keyState)]]">[[key]]</span>
+    <span id="key-text">[[key]]</span>
   </template>
 </div>

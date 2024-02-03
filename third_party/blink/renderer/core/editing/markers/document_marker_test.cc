@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 
 namespace blink {
@@ -76,7 +77,7 @@ TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_DeleteBeforeAndAfter) {
   DocumentMarker* marker = CreateMarker(20, 25);
   std::optional<MarkerOffsets> result =
       marker->ComputeOffsetsAfterShift(13, 19, 0);
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 }
 
 TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_DeleteBeforeAndBeginning) {
@@ -99,21 +100,21 @@ TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_DeleteStartAndAfter) {
   DocumentMarker* marker = CreateMarker(0, 5);
   std::optional<MarkerOffsets> result =
       marker->ComputeOffsetsAfterShift(0, 10, 0);
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 }
 
 TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_DeleteBeforeAndEnd) {
   DocumentMarker* marker = CreateMarker(5, 10);
   std::optional<MarkerOffsets> result =
       marker->ComputeOffsetsAfterShift(0, 10, 0);
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 }
 
 TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_DeleteMarkerExactly) {
   DocumentMarker* marker = CreateMarker(5, 10);
   std::optional<MarkerOffsets> result =
       marker->ComputeOffsetsAfterShift(5, 5, 0);
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 }
 
 TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_DeleteMiddleOfMarker) {
@@ -184,7 +185,7 @@ TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_ReplaceBeforeAndAfter) {
   DocumentMarker* marker = CreateMarker(20, 25);
   std::optional<MarkerOffsets> result =
       marker->ComputeOffsetsAfterShift(13, 19, 1);
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 }
 
 TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_ReplaceBeforeAndBeginning) {
@@ -231,14 +232,14 @@ TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_ReplaceBeginningAndAfter) {
   DocumentMarker* marker = CreateMarker(0, 5);
   std::optional<MarkerOffsets> result =
       marker->ComputeOffsetsAfterShift(0, 6, 1);
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 }
 
 TEST_F(DocumentMarkerTest, GetShiftedMarkerPosition_ReplaceBeforeAndEnd) {
   DocumentMarker* marker = CreateMarker(5, 10);
   std::optional<MarkerOffsets> result =
       marker->ComputeOffsetsAfterShift(4, 6, 1);
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 }
 
 }  // namespace blink

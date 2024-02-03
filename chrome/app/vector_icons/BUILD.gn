@@ -160,6 +160,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "paintbrush.icon",
     "palette.icon",
     "paste_menu.icon",
+    "payments/save_card_and_vcn_success_confirmation.icon",
     "performance.icon",
     "person_filled_padded_large.icon",
     "person_filled_padded_small.icon",

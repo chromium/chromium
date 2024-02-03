@@ -31,6 +31,9 @@ class PrivacySandboxInternalsHandler
 
   void ReadPref(const std::string& pref_name,
                 ReadPrefCallback callback) override;
+  void ReadContentSettings(const ContentSettingsType type,
+                           ReadContentSettingsCallback callback) override;
+
   void ContentSettingsPatternToString(
       const ContentSettingsPattern& pattern,
       ContentSettingsPatternToStringCallback callback) override;
@@ -39,11 +42,7 @@ class PrivacySandboxInternalsHandler
       const std::string& s,
       StringToContentSettingsPatternCallback callback) override;
 
-  void GetCookieSettings(GetCookieSettingsCallback callback) override;
   void GetTpcdMetadataGrants(GetTpcdMetadataGrantsCallback callback) override;
-  void GetTpcdHeuristicsGrants(GetTpcdMetadataGrantsCallback callback) override;
-  void GetTpcdTrial(GetTpcdMetadataGrantsCallback callback) override;
-  void GetTopLevelTpcdTrial(GetTpcdMetadataGrantsCallback callback) override;
 
  private:
   raw_ptr<Profile> profile_;

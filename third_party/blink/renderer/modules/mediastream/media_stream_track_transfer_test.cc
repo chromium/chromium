@@ -158,7 +158,7 @@ mojom::blink::StreamDevices DevicesTabCaptureVideo(
       /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
       /*capture_handle=*/nullptr,
       /*zoom_level=*/100);
-  return {absl::nullopt, device};
+  return {std::nullopt, device};
 }
 
 TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
@@ -170,7 +170,7 @@ TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
   auto data = TransferredValuesTabCaptureVideo();
 #if BUILDFLAG(IS_ANDROID)
   data.track_impl_subtype = MediaStreamTrack::GetStaticWrapperTypeInfo();
-  data.sub_capture_target_version = absl::nullopt;
+  data.sub_capture_target_version = std::nullopt;
 #endif
   scoped_user_media_client.display_mock_media_stream_dispatcher_host
       .SetStreamDevices(DevicesTabCaptureVideo(data.session_id));
@@ -237,7 +237,7 @@ TEST(MediaStreamTrackTransferTest, TabCaptureAudioFromTransferredState) {
       /*capture_handle=*/nullptr,
       /*zoom_level=*/100);
   scoped_user_media_client.display_mock_media_stream_dispatcher_host
-      .SetStreamDevices({absl::nullopt, device});
+      .SetStreamDevices({std::nullopt, device});
 
   auto* new_track =
       MediaStreamTrack::FromTransferredState(scope.GetScriptState(), data);

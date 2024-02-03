@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
@@ -37,11 +38,12 @@ namespace content {
 //
 // This class must be used and destructed on the same sequence as the
 // PartitionedLockManager.
-struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockHolder {
+struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockHolder
+    : public base::SupportsUserData {
   PartitionedLockHolder();
   PartitionedLockHolder(const PartitionedLockHolder&) = delete;
   PartitionedLockHolder& operator=(const PartitionedLockHolder&) = delete;
-  ~PartitionedLockHolder();
+  ~PartitionedLockHolder() override;
 
   base::WeakPtr<PartitionedLockHolder> AsWeakPtr() {
     return weak_factory.GetWeakPtr();
@@ -119,9 +121,9 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
   // this if the lock will never be used again.
   void RemoveLockId(const PartitionedLockId& lock_id);
 
-  // Returns 0 if the lock is not found, or the number of other active
-  // requests queued if the lock is held.
-  int64_t GetQueuedLockRequestCount(const PartitionedLockId& lock_id) const;
+  // Returns the lock requests that are blocked on the provided `lock_id`.
+  std::set<PartitionedLockHolder*> GetQueuedRequests(
+      const PartitionedLockId& lock_id) const;
 
   // Outputs the lock state (held & requested locks) into a debug value,
   // suitable for printing an 'internals' or to print during debugging. The

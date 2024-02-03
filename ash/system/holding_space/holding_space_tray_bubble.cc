@@ -349,7 +349,9 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
     layout_animation_->Show();
   }
 
-  void Layout() override { layout_manager_.ApplyLayout(current_layout_); }
+  void Layout(PassKey) override {
+    layout_manager_.ApplyLayout(current_layout_);
+  }
 
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);

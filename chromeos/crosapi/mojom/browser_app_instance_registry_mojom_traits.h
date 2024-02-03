@@ -45,6 +45,11 @@ struct StructTraits<crosapi::mojom::BrowserWindowInstanceUpdateDataView,
   static bool is_incognito(const apps::BrowserWindowInstanceUpdate& update) {
     return update.is_incognito;
   }
+
+  static uint64_t lacros_profile_id(
+      const apps::BrowserWindowInstanceUpdate& update) {
+    return update.lacros_profile_id;
+  }
 };
 
 template <>

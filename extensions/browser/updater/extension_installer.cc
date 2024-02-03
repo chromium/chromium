@@ -15,6 +15,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -24,7 +25,7 @@ using Result = update_client::CrxInstaller::Result;
 }  // namespace
 
 ExtensionInstaller::ExtensionInstaller(
-    std::string extension_id,
+    ExtensionId extension_id,
     const base::FilePath& extension_root,
     bool install_immediately,
     ExtensionInstallerCallback extension_installer_callback)

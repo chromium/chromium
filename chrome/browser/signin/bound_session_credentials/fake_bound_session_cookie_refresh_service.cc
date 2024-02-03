@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_cookie_refresh_service.h"
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/common/renderer_configuration.mojom-shared.h"
 
 FakeBoundSessionCookieRefreshService::FakeBoundSessionCookieRefreshService() =
     default;
@@ -27,8 +28,9 @@ FakeBoundSessionCookieRefreshService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void FakeBoundSessionCookieRefreshService::SimulateUnblockRequest() {
-  std::move(resume_blocked_request_).Run();
+void FakeBoundSessionCookieRefreshService::SimulateUnblockRequest(
+    chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
+  std::move(resume_blocked_request_).Run(resume_trigger);
 }
 
 void FakeBoundSessionCookieRefreshService::AddObserver(Observer* observer) {

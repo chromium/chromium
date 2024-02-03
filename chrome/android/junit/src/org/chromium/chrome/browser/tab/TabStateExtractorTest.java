@@ -44,7 +44,7 @@ public class TabStateExtractorTest {
     @Mock private WebContents mWebContentsMock;
     @Mock private Origin mMockOrigin;
 
-    private ByteBuffer mByteBuffer = ByteBuffer.allocate(1);
+    private ByteBuffer mByteBuffer = ByteBuffer.allocateDirect(1);
 
     @Before
     public void setUp() {

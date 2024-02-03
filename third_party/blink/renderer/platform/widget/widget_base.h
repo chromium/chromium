@@ -160,7 +160,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void OnDeferCommitsChanged(
       bool defer_status,
       cc::PaintHoldingReason reason,
-      absl::optional<cc::PaintHoldingCommitTrigger> trigger) override;
+      std::optional<cc::PaintHoldingCommitTrigger> trigger) override;
   void OnCommitRequested() override;
   void DidBeginMainFrame() override;
   void RequestNewLayerTreeFrameSink(
@@ -385,7 +385,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Returns the maximum bounds for buffers allocated for rasterization and
   // compositing.
   // Returns null if the compositing stack has not been initialized yet.
-  absl::optional<int> GetMaxRenderBufferBounds() const;
+  std::optional<int> GetMaxRenderBufferBounds() const;
 
   bool WillBeDestroyed() const { return will_be_destroyed_; }
 
@@ -548,7 +548,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // A pending window rect that is inflight and hasn't been acknowledged by the
   // browser yet. This should only be set if |pending_window_rect_count_| is
   // non-zero.
-  absl::optional<gfx::Rect> pending_window_rect_;
+  std::optional<gfx::Rect> pending_window_rect_;
 
   // The size of the visible viewport (in DIPs).
   // TODO(dtapuska): Figure out if we can change this to Blink Space.
@@ -572,8 +572,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // The maximum bounds for buffers allocated for rasterization and compositing.
   // Set when the compositor is initialized.
-  absl::optional<int> max_render_buffer_bounds_gpu_;
-  absl::optional<int> max_render_buffer_bounds_sw_;
+  std::optional<int> max_render_buffer_bounds_gpu_;
+  std::optional<int> max_render_buffer_bounds_sw_;
 
   // Tracks when the compositing setup for this widget has been torn down or
   // disconnected in preparation to destroy this widget.

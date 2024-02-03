@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace {
 // https://www.gnu.org/software/tar/manual/html_node/Standard.html
@@ -44,7 +45,8 @@ bool SingleFileTarReader::ExtractChunk(base::span<const uint8_t> src_buffer,
   // A tar file always has a padding at the end of the file. If `dst_buffer`
   // contains the padding, drop it.
   if (dst_buffer.size() > bytes_remaining) {
-    dst_buffer = dst_buffer.first(bytes_remaining);
+    // The comparison above guarantees that `checked_cast` will succeed:
+    dst_buffer = dst_buffer.first(base::checked_cast<size_t>(bytes_remaining));
   }
 
   bytes_processed_ += dst_buffer.size();

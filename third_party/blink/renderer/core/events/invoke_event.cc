@@ -37,6 +37,10 @@ InvokeEvent::InvokeEvent(const AtomicString& type,
 Element* InvokeEvent::invoker() const {
   auto* current = currentTarget();
   Element* invoker = invoker_.Get();
+  if (!invoker) {
+    return nullptr;
+  }
+
   if (current) {
     return &current->ToNode()->GetTreeScope().Retarget(*invoker);
   }

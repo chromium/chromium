@@ -26,6 +26,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1087110696012418426">Dzień dobry <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Szukaj elementów takich jak np. <ph name="CATEGORY" />, pliki lub aplikacje. Aby poruszać się po aplikacjach, użyj klawiszy strzałek.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + strzałka w dół</translation>
+<translation id="1094756674036064790">Wyłączyć Bluetooth?</translation>
 <translation id="109942774857561566">Nudzi mi się</translation>
 <translation id="1104084341931202936">Pokaż ustawienia ułatwień dostępu</translation>
 <translation id="1104621072296271835">Razem Twoje urządzenia mogą jeszcze więcej</translation>
@@ -607,9 +608,11 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3526440770046466733">Otwórz link na nowej karcie, pozostając na bieżącej</translation>
 <translation id="353086728817903341">Połączono z <ph name="NUM_DEVICES" /> urządzeniami</translation>
 <translation id="3533126039236445965">Aplikacje na półce</translation>
+<translation id="3537350467437346467">Wyświetlony przez Ciebie</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> – hotspot</translation>
 <translation id="3540893133818942399">Zamknij konfigurację wyświetlania najnowszych zdjęć i plików multimedialnych z telefonu</translation>
 <translation id="3542066395059568317">Zobaczysz rekomendacje, dzięki którym możesz kontynuować od ostatniego miejsca. Możesz je usunąć kliknięciem prawym przyciskiem.</translation>
+<translation id="3547318469722231257">Zmodyfikowany przez Ciebie</translation>
 <translation id="3552189655002856821">Wi-Fi jest wyłączone</translation>
 <translation id="3554215588514239132">Pokaż lub ukryj panel Narzędzi dla programistów</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> został przypięty</translation>
@@ -658,6 +661,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3660860940251915011">Przełącz dużą widoczność funkcji <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Użytkownik zarządzany <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Przesuń, aby ukryć pływające okno</translation>
+<translation id="3673898235958558034">Gdy wyłączysz Bluetooth, urządzenia „<ph name="DEVICE_NAME_1" />” i „<ph name="DEVICE_NAME_2" />” rozłączą się z Chromebookiem.</translation>
 <translation id="367531336287639526">Wybierz pierwszą ikonę na lewo od paska adresu</translation>
 <translation id="3677931086890821290">Ta funkcja sprawia, że wszystkie aplikacje i strony, które mają dostęp do lokalizacji, a także ChromeOS, mogą korzystać z Wi-Fi i sieci komórkowych do geolokalizacji.</translation>
 <translation id="3679827876008292680">Przejdź do ostatniej karty w oknie</translation>
@@ -701,6 +705,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="385300504083504382">Początek</translation>
 <translation id="3859364108019690">Nie można przesyłać strumieniowo aplikacji</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
+<translation id="3882323608730650973">Zmodyfikowany</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
@@ -894,6 +899,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4582666543382004902">Hotspot został wyłączony, żeby można było korzystać z Wi-Fi. Aby korzystać z hotspota, wyłącz Wi-Fi.</translation>
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
 <translation id="4596144739579517758">Ciemny motyw jest wyłączony</translation>
+<translation id="4596442969149038771">Udostępniony przez: <ph name="USER" /></translation>
 <translation id="4611292653554630842">Zaloguj się</translation>
 <translation id="462160925400706389">Połączono: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
@@ -911,6 +917,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4666911709726371538">Więcej aplikacji</translation>
 <translation id="4667099493359681081">Pobieram <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Oszczędzanie baterii jest włączone</translation>
+<translation id="4673427585974421255">Nie wyłączaj</translation>
 <translation id="468293128311738995">Aplikacje z telefonu</translation>
 <translation id="4690510401873698237">Półka na dole</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
@@ -1211,6 +1218,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5802516411616338943">Otwórz Szybkie ustawienia</translation>
 <translation id="5804651031882187592">Wyłączanie ustawienia „Zablokuj kartę SIM”</translation>
 <translation id="5805809050170488595">Kliknij, aby włączyć sieć <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Gdy wyłączysz Bluetooth, urządzenia „<ph name="DEVICE_NAME_1" />”, „<ph name="DEVICE_NAME_2" />” i jeszcze <ph name="DEVICE_COUNT" /> rozłączą się z Chromebookiem.</translation>
 <translation id="5823239091726045201">Lista zadań Google w przeglądarce</translation>
 <translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
@@ -1337,6 +1345,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6298183524022479114">Dostosuj to urządzenie w aplikacji</translation>
 <translation id="6309219492973062892">Kliknij ikony 1–8 na półce</translation>
 <translation id="6315170314923504164">Głos</translation>
+<translation id="6319058840130157106">Przejdź wstecz między prawym dolnym rogiem, Menu z aplikacjami, paskiem adresu, paskiem zakładek, otwartą stroną internetową i pobranymi plikami</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>
 <translation id="6330012934079202188">Pokazuję okna ze wszystkich biurek, naciśnij klawisz strzałki w górę, aby wyświetlić okna z aktualnego biurka</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="MANAGER" /></translation>
@@ -1390,6 +1399,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6539852571005954999">Skanuję pobierany plik <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Wyszukiwanie obrazów według zawartości i podglądy obrazów</translation>
+<translation id="6547795021703527064">Gdy wyłączysz Bluetooth, „<ph name="DEVICE_NAME" />” rozłączy się z Chromebookiem.</translation>
 <translation id="6555373427270923730">Wpisz adres internetowy w pasku adresu i naciśnij <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
 <translation id="6559976592393364813">Poproś administratora</translation>
@@ -1499,6 +1509,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6981291220124935078">Włącz dostęp</translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="698231206551913481">Usunięcie tego użytkownika spowoduje trwałe usunięcie wszystkich związanych z nim plików i danych lokalnych.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> nie obsługuje rozdzielczości <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Kliknij „Potwierdź”, aby zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Obejrzyj krótką prezentację, aby dowiedzieć się, jak korzystać z Chromebooka. Zacznij w 6 krokach.</translation>
 <translation id="7004910047186208204">Połącz z siecią komórkową</translation>
 <translation id="7005239792648594238">Aby rozpocząć, otwórz aplikację</translation>
@@ -1813,6 +1824,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8314772463905284467">Caps Lock jest włączony.</translation>
 <translation id="8315514906653279104">Włączam…</translation>
 <translation id="8331351032546853669">Pobieranie oczekuje</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Wybrano okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">program uruchamiający</translation>
@@ -1919,6 +1931,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="878215960996152260"><ph name="APP_NAME" />, zainstalowana aplikacja, zablokowana</translation>
 <translation id="8785070478575117577">Połącz z <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Przejdź do przodu między prawym dolnym rogiem, Menu z aplikacjami, paskiem adresu, paskiem zakładek, otwartą stroną internetową i pobranymi plikami</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
@@ -2032,6 +2045,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="953431725143473984">Wyłączyć urządzenie?</translation>
 <translation id="954052413789300507">Za mało miejsca na plik <ph name="FILENAME" />. Zwolnij miejsce.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Zmodyfikowany przez: <ph name="USER" /></translation>
 <translation id="974545358917229949">Wyświetlam wyniki (<ph name="RESULT_COUNT" />) dla zapytania <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Brak terminu</translation>
 <translation id="98120814841227350">Przejdź na koniec dokumentu</translation>

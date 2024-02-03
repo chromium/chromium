@@ -140,9 +140,14 @@ std::u16string GetFormattedDisplayUrl(const GURL& url) {
   // crbug.com/1070451). If it's really this long, the user won't be able to see
   // the whole thing anyway. We truncate the beginning so that the end of it is
   // shown, which contains the eTLD+1.
-  // Note: This may truncate the scheme part of the URL.
-  if (result.size() > url::kMaxURLChars) {
-    result = result.substr(result.size() - url::kMaxURLChars);
+  // Note:
+  // - This may truncate the scheme part of the URL.
+  // - Use a much smaller limit than url::kMaxURLChars (2M) since this is for
+  //   display only, and long URLs will affect page load speed and may cause
+  //   JavaScript errors (https://crbug.com/1522764).
+  const size_t kMaxDisplayURLChars = 16 * 1024;
+  if (result.size() > kMaxDisplayURLChars) {
+    result = result.substr(result.size() - kMaxDisplayURLChars);
   }
   return result;
 }

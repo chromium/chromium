@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Panloob na error</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">i-multiply</translation>
 <translation id="1145018782460575098">Nakabukas ang window para i-update ang firmware para sa mga external device. <ph name="NUM_UPDATES" /> (na) update ang available.</translation>
 <translation id="1145516343487477149">Maghanap ng mga artikulo ng tulong at sagot sa mga karaniwang tanong sa Chromebook</translation>
 <translation id="1154390310959620237">5 shortcut lang ang puwede mong i-customize. Mag-delete ng shortcut para makapagdagdag ng bago.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pagkasyahin sa nasa-scan na bahagi</translation>
 <translation id="1367951781824006909">Pumili ng isang file</translation>
+<translation id="1371650399987522809">Feedback para sa wallpaper na pinapagana ng Google AI</translation>
 <translation id="1387854245479784695">Isa itong pagsasama-sama ng lahat ng core</translation>
 <translation id="1394661041439318933">May <ph name="BATTERY_PERCENTAGE" />% baterya ang case ng device.</translation>
 <translation id="1397738625398125236">Puwedeng I-ping ang Gateway</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">kulay ng backlit</translation>
 <translation id="1565038567006703504">Hindi ma-update ang <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">i-divide</translation>
 <translation id="1567064801249837505">Mga Album</translation>
 <translation id="1572585716423026576">Itakda bilang wallpaper</translation>
 <translation id="1578784163189013834">Pumili ng background ng screen saver</translation>
 <translation id="160633243685262989">Larawan ng Preview</translation>
 <translation id="1611649489706141841">susunod</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Bumubuo ng mga larawan...</translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1626590945318984973">Hindi available ang shortcut. Pumindot ng bagong shortcut nang hindi ginagamit ang function key at <ph name="META_KEY" /> key.</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Nag-discharge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
 <translation id="2880569433548999039">Screen saver na paggalaw ng ulap</translation>
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
+<translation id="2938573842839598578">Para sa isang pagtataya sa resulta, <ph name="OPERATOR_TEXT" /> ang value ng <ph name="CATEGORY_TEXT" /> sa <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Hindi masuri ang device. Buksang ulit ang takip para suriin.</translation>
 <translation id="2941112035454246133">Mababa</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Update sa Chrome OS</translation>
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokal na pagkakakilanlan (opsyonal)</translation>
 <translation id="3565064564551103223">Mga pinapayagang IP</translation>
 <translation id="3569407787324516067">Screen saver</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7180865173735832675">I-customize</translation>
 <translation id="7184043045742675738">Mag-click sa anumang key para i-customize ang iyong button. Baguhin ang posisyon ng key gamit ang mouse o mga arrow key.</translation>
+<translation id="7206979415662233817">Mga tuntunin ng serbisyo</translation>
 <translation id="7212547870105584639">Pamahalaan ang mga setting ng APN ng network. Bumubuo ang mga APN ng koneksyon sa pagitan ng cellular network at internet. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mga update sa firmware para sa mga external na device</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">kulay ng keyboard</translation>
 <translation id="7317831949569936035">Pag-enroll para sa paaralan</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Dapat ay hindi ka bababa sa 18 taong gulang at dapat kang sumang-ayon na napapailalim sa <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> at <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Mga Karagdagang Tuntunin ng Serbisyo ng Generative AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ang iyong paggamit ng mga AI wallpaper.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Makakagawa ka lang ng mga wallpaper gamit ang AI para sa personal at di-komersyal na paggamit. Kapag humihingi ka ng tulong sa wallpaper, magpapadala ng text sa mga server ng Google AI para bumuo ng mga suhestyon sa wallpaper, na napapailalim sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Patakaran sa Privacy ng Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
 <translation id="7353413232959255829">Resulta ng paghahanap sa <ph name="LIST_POSITION" /> sa <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pindutin ang Enter para mag-navigate sa shortcut.</translation>

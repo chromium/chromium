@@ -68,7 +68,7 @@ class ReadAnythingAppModel {
     // All of the ReadAloudTextSegments in the current granularity.
     std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
 
-    // Because GetNextText returns a vector of node ids to be used by
+    // Because GetCurrentText returns a vector of node ids to be used by
     // TypeScript also store the node ids as a vector for easier retrieval.
     std::vector<ui::AXNodeID> node_ids;
   };
@@ -225,10 +225,7 @@ class ReadAnythingAppModel {
 
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).
-  // If the sentence exceeds the maximum text length, the sentence will be
-  // cropped to the nearest word boundary that doesn't exceed the maximum
-  // text length.
-  int GetNextSentence(const std::u16string& text, int max_text_length);
+  int GetNextSentence(const std::u16string& text);
 
   // PDF handling.
   void SetIsPdf(const GURL& url);
@@ -248,32 +245,6 @@ class ReadAnythingAppModel {
   void set_is_google_docs(bool is_google_docs) { is_docs_ = is_google_docs; }
   bool is_docs() const { return is_docs_; }
 
-  // Returns a list of AXNodeIds representing the next nodes that should be
-  // spoken and highlighted with Read Aloud after navigating backwards.
-  // GetNextTextStartIndex and GetNextTextEndIndex called with an AXNodeID
-  // returned by GetNextText will return the starting text and ending text
-  // indices for specific text that should be referenced within the node.
-  std::vector<ui::AXNodeID> GetPreviousText();
-
-  // Returns true if the node was previously spoken or we expect to speak it
-  // to be spoken once the current run of #GetNextText which called
-  // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
-  // sometimes returns leaf nodes, we sometimes need to use the parent of a
-  // node returned by AXPosition instead of the node itself. Because of this,
-  // we need to double-check that the node has not been used or currently
-  // in use.
-  // Example:
-  // parent node: id=5
-  //    child node: id=6
-  //    child node: id =7
-  // node: id = 10
-  // Where AXPosition will return nodes in order of 6, 7, 10, but Reading Mode
-  // process them as 5, 10. Without checking for previously spoken nodes,
-  // id 5 will be spoken twice.
-  bool NodeBeenOrWillBeSpoken(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
-      ui::AXNodeID id);
-
   // Returns the next valid AXNodePosition.
   ui::AXNodePosition::AXPositionInstance
   GetNextValidPositionFromCurrentPosition(
@@ -285,28 +256,40 @@ class ReadAnythingAppModel {
   void InitAXPositionWithNode(const ui::AXNodeID starting_node_id);
 
   // Returns a list of AXNodeIds representing the next nodes that should be
-  // spoken and highlighted with Read Aloud. GetNextTextStartIndex and
-  // GetNextTextEndIndex called with an AXNodeID return by GetNextText will
-  // return the starting text and ending text indices for specific text that
-  // should be referenced within the node.
-  std::vector<ui::AXNodeID> GetNextText(int max_text_length);
+  // spoken and highlighted with Read Aloud.
+  // This defaults to returning the first granularity until
+  // MovePositionTo<Next,Previous>Granularity() moves the position.
+  // If the the current processed_granularity_index_ has not been calculated
+  // yet, GetNextNodes() is called which updates the AXPosition.
+  // GetCurrentTextStartIndex and GetCurrentTextEndIndex called with an AXNodeID
+  // return by GetCurrentText will return the starting text and ending text
+  // indices for specific text that should be referenced within the node.
+  std::vector<ui::AXNodeID> GetCurrentText();
 
-  // Helper method for GetNextText.
-  ReadAloudCurrentGranularity GetNextNodes(int max_text_length);
+  // Increments the processed_granularity_index_, updating ReadAloud's state of
+  // the current granularity to refer to the next granularity. The current
+  // behavior allows the client to increment past the end of the page's content.
+  void MovePositionToNextGranularity();
+
+  // Decrements the processed_granularity_index_,updating ReadAloud's state of
+  // the current granularity to refer to the previous granularity. Cannot be
+  // decremented less than 0.
+  void MovePositionToPreviousGranularity();
+
+  // Helper method for GetCurrentText.
+  ReadAloudCurrentGranularity GetNextNodes();
 
   // Returns the Read Aloud starting text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
   // moment, this will return 0. Returns -1 if the node isn't in the current
   // segment.
-  int GetNextTextStartIndex(ui::AXNodeID node_id);
+  int GetCurrentTextStartIndex(ui::AXNodeID node_id);
 
   // Returns the Read Aloud ending text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
   // moment, this will return the length of the node's text. Returns -1 if the
   // node isn't in the current segment.
-  int GetNextTextEndIndex(ui::AXNodeID node_id);
-
-  void ClearReadAloudState();
+  int GetCurrentTextEndIndex(ui::AXNodeID node_id);
 
  private:
   void EraseTree(ui::AXTreeID tree_id);
@@ -344,6 +327,29 @@ class ReadAnythingAppModel {
   // Uses the current AXNodePosition to return the next node that should be
   // spoken by Read Aloud.
   ui::AXNode* GetNodeFromCurrentPosition();
+
+  void ResetReadAloudState();
+
+  bool IsTextForReadAnything(ui::AXNodeID ax_node_id) const;
+
+  // Returns true if the node was previously spoken or we expect to speak it
+  // to be spoken once the current run of #GetCurrentText which called
+  // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
+  // sometimes returns leaf nodes, we sometimes need to use the parent of a
+  // node returned by AXPosition instead of the node itself. Because of this,
+  // we need to double-check that the node has not been used or currently
+  // in use.
+  // Example:
+  // parent node: id=5
+  //    child node: id=6
+  //    child node: id =7
+  // node: id = 10
+  // Where AXPosition will return nodes in order of 6, 7, 10, but Reading Mode
+  // process them as 5, 10. Without checking for previously spoken nodes,
+  // id 5 will be spoken twice.
+  bool NodeBeenOrWillBeSpoken(
+      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
+      ui::AXNodeID id);
 
   // State.
   // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
@@ -444,10 +450,8 @@ class ReadAnythingAppModel {
 
   ui::AXNodePosition::AXPositionInstance ax_position_;
 
-  // Our current index within processed_granularities_on_current_page_. If it is
-  // equal to the size of the triples - 1, we're not navigating through
-  // previously processed text.
-  size_t processed_granularity_index_ = -1;
+  // Our current index within processed_granularities_on_current_page_.
+  size_t processed_granularity_index_ = 0;
 
   // The current text index within the given node.
   int current_text_index_ = 0;

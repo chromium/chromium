@@ -31,14 +31,14 @@ class MockEventListener final : public NativeEventListener {
 class FakeIdleService final : public mojom::blink::IdleManager {
  public:
   FakeIdleService() {
-    SetState(/*idle_time=*/absl::nullopt, /*screen_locked=*/false);
+    SetState(/*idle_time=*/std::nullopt, /*screen_locked=*/false);
   }
 
   mojo::PendingRemote<mojom::blink::IdleManager> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void SetState(absl::optional<base::TimeDelta> idle_time,
+  void SetState(std::optional<base::TimeDelta> idle_time,
                 bool screen_locked,
                 bool override = false) {
     state_ = mojom::blink::IdleState::New();
@@ -161,7 +161,7 @@ TEST(IdleDetectorTest, LockScreen) {
         EXPECT_EQ("locked", detector->screenState());
         loop.Quit();
       })));
-  idle_service.SetState(/*idle_time=*/absl::nullopt, /*screen_locked=*/true);
+  idle_service.SetState(/*idle_time=*/std::nullopt, /*screen_locked=*/true);
   loop.Run();
 }
 
@@ -357,7 +357,7 @@ TEST(IdleDetectorTest, BecomeIdleThenActiveBeforeThreshold) {
 
   // 15s later the user becomes active again.
   task_runner->FastForwardBy(base::Seconds(15));
-  idle_service.SetState(/*idle_time=*/absl::nullopt, /*screen_locked=*/false);
+  idle_service.SetState(/*idle_time=*/std::nullopt, /*screen_locked=*/false);
 
   // 15s later we would have fired an event but shouldn't because the user
   // became active.

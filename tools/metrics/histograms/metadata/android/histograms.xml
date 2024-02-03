@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.SettingsToggle.Changed"
-    enum="BooleanEnabled" expires_after="2024-05-26">
+    enum="BooleanEnabled" expires_after="2024-07-28">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -1934,7 +1934,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.DismissedWithoutFullyVisible"
-    enum="MessageIdentifier" expires_after="2024-05-19">
+    enum="MessageIdentifier" expires_after="2024-07-28">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -1969,7 +1969,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.Hidden" enum="MessageIdentifier"
-    expires_after="2024-05-19">
+    expires_after="2024-07-28">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2007,7 +2007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.{QueueState}"
-    enum="MessageIdentifier" expires_after="2024-05-19">
+    enum="MessageIdentifier" expires_after="2024-07-28">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2021,7 +2021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.{ScopeState}"
-    enum="MessageIdentifier" expires_after="2024-05-19">
+    enum="MessageIdentifier" expires_after="2024-07-28">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2049,7 +2049,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.FullyVisible" enum="MessageIdentifier"
-    expires_after="2024-05-19">
+    expires_after="2024-07-28">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2090,7 +2090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Stacking.RequestToFullyShow"
-    enum="MessageIdentifier" expires_after="2024-05-19">
+    enum="MessageIdentifier" expires_after="2024-07-28">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2127,7 +2127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Stacking.{Blocker}" enum="MessageIdentifier"
-    expires_after="2024-05-19">
+    expires_after="2024-07-28">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2309,6 +2309,21 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ActivityIndexMismatchAssignmentState"
       variants="ActivityIndexMismatchAssignmentState"/>
+</histogram>
+
+<histogram
+    name="Android.MultiWindowMode.MismatchedIndices.ActivityCreationTimeDelta"
+    units="ms" expires_after="2024-06-30">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    When the TabWindowManager allocates a different tab model index than the
+    window Id selected by MultiInstanceManagerApi31, it means the requested tab
+    model Id was assigned to a different Activity.
+
+    When this mismatch happened, record the difference in creation timestamps of
+    both activities that are attempting to use the same index.
+  </summary>
 </histogram>
 
 <histogram name="Android.MultiWindowMode.TotalDuration" units="ms"
@@ -2973,7 +2988,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.PartnerCustomization.DurationNeededForAsyncCompletion.{CustomizationDelegate}"
-    units="ms" expires_after="2024-05-26">
+    units="ms" expires_after="2024-07-28">
   <owner>donnd@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -3620,7 +3635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.DeviceRestoredFrom"
-    enum="RestoreTabsOnFREDeviceRestoredFrom" expires_after="2024-05-26">
+    enum="RestoreTabsOnFREDeviceRestoredFrom" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -3632,7 +3647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.EligibleTabsForRestoreCount"
-    units="count" expires_after="2024-05-26">
+    units="count" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -3643,7 +3658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.PromoShowResult"
-    enum="RestoreTabsOnFREPromoShowResult" expires_after="2024-05-26">
+    enum="RestoreTabsOnFREPromoShowResult" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -3654,7 +3669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.RestoredTabsResult"
-    enum="RestoreTabsOnFRERestoredTabsResult" expires_after="2024-05-26">
+    enum="RestoreTabsOnFRERestoredTabsResult" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -3688,7 +3703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.SyncedDevicesCount" units="count"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -3699,7 +3714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.TabsRestoredCount" units="count"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -3711,7 +3726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.TabsRestoredPercentage" units="%"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -3819,7 +3834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogUploadMethods"
-    enum="SelectFileDialogUploadMethods" expires_after="2024-05-26">
+    enum="SelectFileDialogUploadMethods" expires_after="2024-07-28">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -4102,7 +4117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabNavigationInterceptResult.For{ProtocolType}"
-    enum="NavigationInterceptResult" expires_after="2024-05-26">
+    enum="NavigationInterceptResult" expires_after="2024-07-28">
   <owner>blundell@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
@@ -4304,7 +4319,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.ThumbnailCache.InMemoryCacheEntries"
     units="thumbnails" expires_after="2024-06-30">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>dtrainor@chromium.com</owner>
+  <owner>dtrainor@chromium.org</owner>
   <summary>
     Records the number of entries for the in-memory ETC1 and bitmap thumbnail
     cache. Recorded on a Poisson distributed frequency with a mean of 5 minutes
@@ -4315,7 +4330,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.ThumbnailCache.InMemoryCacheSize" units="KiB"
     expires_after="2024-06-30">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>dtrainor@chromium.com</owner>
+  <owner>dtrainor@chromium.org</owner>
   <summary>
     Records the in-memory ETC1 and bitmap thumbnail cache size in KiB. Recorded
     on a Poisson distributed frequency with a mean of 5 minutes starting 1
@@ -4357,7 +4372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Toolbar.BitmapCapture" enum="ToolbarCaptureType"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>skym@chromium.org</owner>
   <owner>seacow@google.com</owner>
   <summary>
@@ -4944,6 +4959,20 @@ chromium-metrics-reviews@google.com.
     detected developer mode is enabled (see
     &quot;Android.WebView.DevUi.DeveloperModeEnabled&quot;). If developer mode
     is disabled, we will not toggle any flags through this mechanism.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.FileChooserResultOutsideAppDataDir"
+    enum="Boolean" expires_after="2024-12-15">
+  <owner>alibu@chromium.org</owner>
+  <owner>bewise@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>thomasbull@chromium.org</owner>
+  <summary>
+    Records how often the onShowFileChooser returns files outside of the app's
+    own data directory (excluding WebView resources and assets, and URIs that
+    don't use the 'file:' schema). Recorded once per file selected when the
+    dialog closes.
   </summary>
 </histogram>
 

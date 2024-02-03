@@ -25,8 +25,7 @@ namespace views {
 
 // Layout manager which explicitly animates its child views and/or its preferred
 // size when the target layout changes (the target layout being provided by a
-// separate, non-animating layout manager; typically a FlexLayout or
-// InterpolatingLayoutManager).
+// separate, non-animating layout manager; typically a FlexLayout).
 //
 // For example, consider a view in which multiple buttons can be displayed
 // depending on context, in a horizontal row. When we add a button, we want all

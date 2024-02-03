@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "chrome/browser/lacros/profile_util.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #endif
 
@@ -652,12 +653,17 @@ void BrowserAppInstanceTracker::RemoveAppWindowInstanceIfExists(
 }
 
 void BrowserAppInstanceTracker::CreateBrowserWindowInstance(Browser* browser) {
+  uint64_t lacros_profile_id = 0;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  lacros_profile_id = HashProfilePathToProfileId(browser->profile()->GetPath());
+#endif
   auto& instance = AddInstance(
       window_instances_, browser,
       std::make_unique<BrowserWindowInstance>(
           GenerateId(), browser->window()->GetNativeWindow(),
           browser->session_id().id(), browser->create_params().restore_id,
-          browser->profile()->IsIncognitoProfile(), IsBrowserActive(browser)));
+          browser->profile()->IsIncognitoProfile(), lacros_profile_id,
+          IsBrowserActive(browser)));
   for (auto& observer : observers_) {
     observer.OnBrowserWindowAdded(instance);
   }

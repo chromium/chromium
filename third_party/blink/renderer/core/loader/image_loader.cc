@@ -498,7 +498,7 @@ void ImageLoader::DoUpdateFromElement(
       if (GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
           frame->GetAttributionSrcLoader()->CanRegister(
               url, To<HTMLImageElement>(GetElement()),
-              /*request_id=*/absl::nullopt)) {
+              /*request_id=*/std::nullopt)) {
         resource_request.SetAttributionReportingEligibility(
             network::mojom::AttributionReportingEligibility::
                 kEventSourceOrTrigger);
@@ -812,7 +812,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   if (content->ErrorOccurred()) {
     pending_load_event_.Cancel();
 
-    absl::optional<ResourceError> error = content->GetResourceError();
+    std::optional<ResourceError> error = content->GetResourceError();
     if (error && error->IsAccessCheck())
       CrossSiteOrCSPViolationOccurred(AtomicString(error->FailingURL()));
 

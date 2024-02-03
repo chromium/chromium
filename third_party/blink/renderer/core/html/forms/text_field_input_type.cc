@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/text_field_input_type.h"
 
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -336,6 +337,8 @@ void TextFieldInputType::CreateShadowSubtree() {
 
   Document& document = GetElement().GetDocument();
   auto* container = MakeGarbageCollected<HTMLDivElement>(document);
+  container->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                                    CSSValueID::kNormal);
   container->SetIdAttribute(shadow_element_names::kIdTextFieldContainer);
   container->SetShadowPseudoId(
       shadow_element_names::kPseudoTextFieldDecorationContainer);

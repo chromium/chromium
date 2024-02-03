@@ -56,8 +56,8 @@ using EncodedVideoFrameInternalCallback =
 
 base::TimeDelta ComputeRefreshIntervalFromBounds(
     const base::TimeDelta required_min_refresh_interval,
-    const absl::optional<double>& min_frame_rate,
-    const absl::optional<double>& max_frame_rate) {
+    const std::optional<double>& min_frame_rate,
+    const std::optional<double>& max_frame_rate) {
   // Start with the default required refresh interval, and refine based on
   // constraints. If a minimum frameRate is provided, use that. Otherwise, use
   // the maximum frameRate if it happens to be less than the default.
@@ -786,9 +786,9 @@ WebMediaStreamTrack MediaStreamVideoTrack::CreateVideoTrack(
 WebMediaStreamTrack MediaStreamVideoTrack::CreateVideoTrack(
     MediaStreamVideoSource* source,
     const VideoTrackAdapterSettings& adapter_settings,
-    const absl::optional<bool>& noise_reduction,
+    const std::optional<bool>& noise_reduction,
     bool is_screencast,
-    const absl::optional<double>& min_frame_rate,
+    const std::optional<double>& min_frame_rate,
     const ImageCaptureDeviceSettings* image_capture_device_settings,
     bool pan_tilt_zoom_allowed,
     MediaStreamVideoSource::ConstraintsOnceCallback callback,
@@ -855,9 +855,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
 MediaStreamVideoTrack::MediaStreamVideoTrack(
     MediaStreamVideoSource* source,
     const VideoTrackAdapterSettings& adapter_settings,
-    const absl::optional<bool>& noise_reduction,
+    const std::optional<bool>& noise_reduction,
     bool is_screen_cast,
-    const absl::optional<double>& min_frame_rate,
+    const std::optional<double>& min_frame_rate,
     const ImageCaptureDeviceSettings* image_capture_device_settings,
     bool pan_tilt_zoom_allowed,
     MediaStreamVideoSource::ConstraintsOnceCallback callback,
@@ -869,8 +869,8 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
       min_frame_rate_(min_frame_rate),
       image_capture_device_settings_(
           image_capture_device_settings
-              ? absl::make_optional(*image_capture_device_settings)
-              : absl::nullopt),
+              ? std::make_optional(*image_capture_device_settings)
+              : std::nullopt),
       pan_tilt_zoom_allowed_(pan_tilt_zoom_allowed),
       source_(source->GetWeakPtr()) {
   frame_deliverer_ =
@@ -1110,7 +1110,7 @@ void MediaStreamVideoTrack::GetSettings(
     settings.aspect_ratio = static_cast<double>(width_) / height_;
   }
 
-  if (absl::optional<media::VideoCaptureFormat> format =
+  if (std::optional<media::VideoCaptureFormat> format =
           source_->GetCurrentFormat()) {
     // For local capture-based tracks, the frame rate returned by
     // MediaStreamTrack.getSettings() must be the configured frame rate. In case
@@ -1119,7 +1119,7 @@ void MediaStreamVideoTrack::GetSettings(
     // configured frame rate is the frame rate reported by the device.
     // Decimation occurs only when the adapter frame rate is lower than the
     // device frame rate.
-    absl::optional<double> adapter_frame_rate =
+    std::optional<double> adapter_frame_rate =
         adapter_settings_.max_frame_rate();
     settings.frame_rate =
         (!adapter_frame_rate || *adapter_frame_rate > format->frame_rate)

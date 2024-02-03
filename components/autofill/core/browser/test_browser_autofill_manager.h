@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_form_filler.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
@@ -75,10 +76,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   bool MaybeStartVoteUploadProcess(
       std::unique_ptr<FormStructure> form_structure,
       bool observed_submission) override;
-  // Immediately triggers the refill.
-  void ScheduleRefill(const FormData& form,
-                      const FormStructure& form_structure,
-                      const AutofillTriggerDetails& trigger_details) override;
 
   // Unique to TestBrowserAutofillManager:
 

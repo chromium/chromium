@@ -178,8 +178,8 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
   AudioCaptureSettings SelectSettings(
       bool is_reconfigurable = false,
-      absl::optional<AudioDeviceCaptureCapabilities> capabilities =
-          absl::nullopt) {
+      std::optional<AudioDeviceCaptureCapabilities> capabilities =
+          std::nullopt) {
     MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
     if (capabilities) {
       return SelectSettingsAudioCapture(*capabilities, constraints,

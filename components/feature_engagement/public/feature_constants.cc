@@ -551,9 +551,6 @@ BASE_FEATURE(kIPHiOSHistoryOnOverflowMenuFeature,
 BASE_FEATURE(kIPHiOSShareToolbarItemFeature,
              "IPH_iOSShareToolbarItemFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSDefaultBrowserVideoPromoTriggerFeature,
-             "IPH_iOSDefaultBrowserVideoPromoTrigger",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
              "IPH_iOSPromoPostRestoreDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);

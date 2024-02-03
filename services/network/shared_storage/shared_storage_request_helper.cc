@@ -5,6 +5,7 @@
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/shared_storage/shared_storage_header_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -36,13 +36,13 @@ void AddWritableRequestHeader(net::URLRequest& request) {
                                       /*overwrite=*/true);
 }
 
-absl::optional<std::string> GetSharedStorageWriteHeader(
+std::optional<std::string> GetSharedStorageWriteHeader(
     net::URLRequest& request) {
   std::string value;
   if (!request.response_headers() ||
       !request.response_headers()->GetNormalizedHeader(
           kSharedStorageWriteHeader, &value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return value;
 }
@@ -68,15 +68,15 @@ mojom::SharedStorageOperationPtr MakeSharedStorageOperation(
     return nullptr;
   }
 
-  absl::optional<mojom::SharedStorageOperationType> operation_type =
+  std::optional<mojom::SharedStorageOperationType> operation_type =
       StringToSharedStorageOperationType(item.GetString());
   if (!operation_type.has_value()) {
     // Did not find a valid operation type.
     return nullptr;
   }
 
-  absl::optional<std::string> key;
-  absl::optional<std::string> value;
+  std::optional<std::string> key;
+  std::optional<std::string> value;
   mojom::OptionalBool ignore_if_present = mojom::OptionalBool::kUnset;
 
   for (const auto& [param_key, param_item] : parameterized_member.params) {
@@ -85,7 +85,7 @@ mojom::SharedStorageOperationPtr MakeSharedStorageOperation(
       continue;
     }
 
-    absl::optional<SharedStorageHeaderParamType> param_type =
+    std::optional<SharedStorageHeaderParamType> param_type =
         StringToSharedStorageHeaderParamType(param_key);
     if (!param_type.has_value()) {
       // Did not find a valid parameter key.
@@ -144,7 +144,7 @@ bool SharedStorageRequestHelper::ProcessIncomingResponse(
     base::OnceClosure done) {
   DCHECK(done);
 
-  absl::optional<std::string> header_value =
+  std::optional<std::string> header_value =
       GetSharedStorageWriteHeader(request);
   if (!header_value.has_value()) {
     // This response doesn't have any shared storage response headers yet.
@@ -185,7 +185,7 @@ bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
   DCHECK(done);
   RemoveSharedStorageWriteHeader(request);
 
-  absl::optional<net::structured_headers::List> list =
+  std::optional<net::structured_headers::List> list =
       net::structured_headers::ParseList(value);
   if (!list.has_value()) {
     // Parsing has failed.

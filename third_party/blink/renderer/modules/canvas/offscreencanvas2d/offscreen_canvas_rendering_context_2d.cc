@@ -140,7 +140,7 @@ void OffscreenCanvasRenderingContext2D::commit() {
 void OffscreenCanvasRenderingContext2D::FlushRecording(FlushReason reason) {
   CanvasResourceProvider* provider = GetCanvasResourceProvider();
   if (UNLIKELY(provider == nullptr) ||
-      !provider->Recorder().HasRecordedDrawOps()) {
+      !provider->Recorder().HasReleasableDrawOps()) {
     return;
   }
 
@@ -312,7 +312,8 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return GetPaintCanvas();
 }
 
-cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
+const cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas()
+    const {
   if (UNLIKELY(!is_valid_size_ || isContextLost())) {
     return nullptr;
   }
@@ -323,8 +324,9 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
   return &provider->Canvas();
 }
 
-MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder() {
-  CanvasResourceProvider* provider = GetCanvasResourceProvider();
+const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
+    const {
+  const CanvasResourceProvider* provider = GetCanvasResourceProvider();
   if (UNLIKELY(provider == nullptr)) {
     return nullptr;
   }
@@ -473,13 +475,13 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   }
 }
 
-absl::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
+std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
   if (CanvasResourceProvider* provider = GetCanvasResourceProvider();
       LIKELY(provider != nullptr)) {
     return provider->FlushCanvas(reason);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()

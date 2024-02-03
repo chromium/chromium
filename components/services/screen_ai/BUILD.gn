@@ -8,11 +8,22 @@ source_set("screen_ai") {
   sources = [
     "screen_ai_ax_tree_serializer.cc",
     "screen_ai_ax_tree_serializer.h",
-    "screen_ai_library_wrapper.cc",
     "screen_ai_library_wrapper.h",
     "screen_ai_service_impl.cc",
     "screen_ai_service_impl.h",
   ]
+
+  if (is_msan) {
+    sources += [
+      "screen_ai_library_wrapper_fake.cc",
+      "screen_ai_library_wrapper_fake.h",
+    ]
+  } else {
+    sources += [
+      "screen_ai_library_wrapper_impl.cc",
+      "screen_ai_library_wrapper_impl.h",
+    ]
+  }
 
   public_deps = [ "//components/services/screen_ai/proto:proto_convertors" ]
 

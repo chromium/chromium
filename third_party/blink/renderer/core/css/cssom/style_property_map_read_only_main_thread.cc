@@ -62,7 +62,7 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
-  absl::optional<CSSPropertyName> name =
+  std::optional<CSSPropertyName> name =
       CSSPropertyName::From(execution_context, property_name);
 
   if (!name) {
@@ -96,7 +96,7 @@ CSSStyleValueVector StylePropertyMapReadOnlyMainThread::getAll(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
-  absl::optional<CSSPropertyName> name =
+  std::optional<CSSPropertyName> name =
       CSSPropertyName::From(execution_context, property_name);
 
   if (!name) {

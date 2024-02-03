@@ -112,15 +112,8 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
 
     bool disallow_managed_profile_signout = GetParam();
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features = {
-        switches::kUnoDesktop};
-    if (disallow_managed_profile_signout) {
-      enabled_features.push_back(kDisallowManagedProfileSignout);
-    } else {
-      disabled_features.push_back(kDisallowManagedProfileSignout);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatureState(kDisallowManagedProfileSignout,
+                                       disallow_managed_profile_signout);
   }
 
   ~UserPolicySigninServiceTest() override {

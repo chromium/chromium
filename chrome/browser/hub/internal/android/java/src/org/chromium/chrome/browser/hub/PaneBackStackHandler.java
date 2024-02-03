@@ -98,7 +98,7 @@ public class PaneBackStackHandler implements BackPressHandler {
 
     private void onPaneFocused(Pane pane) {
         // `pane` is the newly focused pane. At this point mCurrentPane is the previous pane.
-        if (mCurrentPane != null) {
+        if (mCurrentPane != null && mCurrentPane.getReferenceButtonDataSupplier().hasValue()) {
             mBackStack.addFirst(mCurrentPane);
             mHandleBackPressSupplier.set(true);
         }

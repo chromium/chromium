@@ -157,8 +157,8 @@ TEST_F(MediaStreamDevicesControllerTest, RequestPermissions) {
           /*page_request_id=*/0, /*url_origin=*/origin_, /*user_gesture=*/false,
           /*request_type=*/
           blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
-          /*requested_audio_device_id=*/kRequestedAudioCaptureDevice.id,
-          /*requested_video_device_id=*/kRequestedVideoCaptureDevice.id,
+          /*requested_audio_device_ids=*/{kRequestedAudioCaptureDevice.id},
+          /*requested_video_device_ids=*/{kRequestedVideoCaptureDevice.id},
           blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
           /*disable_local_echo=*/false,

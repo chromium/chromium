@@ -80,11 +80,11 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
      * A method to responsible for setting up the environment to show before the re-auth view.
      *
      * @param menuButtonDelegate The {@link ListMenuButtonDelegate} for the 3 dots menu. Non-null
-     *                           for full-screen coordinator.
+     *     for full-screen coordinator.
      * @param fullscreen A boolean indicating whether the incognito re-auth view needs to be shown
-     *                  fullscreen style or tab-switcher style.
+     *     fullscreen style or tab-switcher style.
      */
-    protected void prepareToshow(
+    protected void prepareToShow(
             @Nullable ListMenuButtonDelegate menuButtonDelegate, boolean fullscreen) {
         assert !fullscreen || menuButtonDelegate != null
                 : "Full screen should provide a valid menu" + " button delegate.";

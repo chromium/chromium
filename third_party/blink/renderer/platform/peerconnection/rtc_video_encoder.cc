@@ -35,6 +35,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/platform_features.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -357,7 +358,7 @@ bool CreateSpatialLayersConfig(
     std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>*
         spatial_layers,
     media::SVCInterLayerPredMode* inter_layer_pred) {
-  absl::optional<webrtc::ScalabilityMode> scalability_mode =
+  std::optional<webrtc::ScalabilityMode> scalability_mode =
       codec_settings.GetScalabilityMode();
 
   if (codec_settings.codecType == webrtc::kVideoCodecVP9 &&
@@ -463,6 +464,14 @@ bool CreateSpatialLayersConfig(
           *inter_layer_pred = CopyFromWebRtcInterLayerPredMode(
               codec_settings.VP9().interLayerPred);
         }
+      }
+      break;
+    case webrtc::kVideoCodecAV1:
+      // No hardware encoder supports for AV1 either temporal layer or spatial
+      // layer encoding.
+      if (scalability_mode.value_or(webrtc::ScalabilityMode::kL1T1) !=
+          webrtc::ScalabilityMode::kL1T1) {
+        return false;
       }
       break;
     default:
@@ -600,7 +609,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
        scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
            encoder_metrics_provider_factory,
        webrtc::VideoCodecType video_codec_type,
-       absl::optional<webrtc::ScalabilityMode> scalability_mode,
+       std::optional<webrtc::ScalabilityMode> scalability_mode,
        webrtc::VideoContentType video_content_type,
        UpdateEncoderInfoCallback update_encoder_info_callback,
        base::RepeatingClosure execute_software_fallback,
@@ -766,7 +775,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   const webrtc::VideoCodecType video_codec_type_;
 
   // The scalability mode, as reported to WebRTC.
-  const absl::optional<webrtc::ScalabilityMode> scalability_mode_;
+  const std::optional<webrtc::ScalabilityMode> scalability_mode_;
 
   // The content type, as reported to WebRTC (screenshare vs realtime video).
   const webrtc::VideoContentType video_content_type_;
@@ -817,7 +826,7 @@ RTCVideoEncoder::Impl::Impl(
     scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
         encoder_metrics_provider_factory,
     webrtc::VideoCodecType video_codec_type,
-    absl::optional<webrtc::ScalabilityMode> scalability_mode,
+    std::optional<webrtc::ScalabilityMode> scalability_mode,
     webrtc::VideoContentType video_content_type,
     UpdateEncoderInfoCallback update_encoder_info_callback,
     base::RepeatingClosure execute_software_fallback,
@@ -1024,7 +1033,7 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChange(
   }
   DCHECK_EQ(allocation.GetSumBps(), parameters.bitrate.get_sum_bps());
   video_encoder_->RequestEncodingParametersChange(allocation, framerate,
-                                                  absl::nullopt);
+                                                  std::nullopt);
 }
 
 void RTCVideoEncoder::Impl::RecordTimestampMatchUMA() const {
@@ -1162,9 +1171,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 
   // Find RTP and capture timestamps by going through |pending_timestamps_|.
   // Derive it from current time otherwise.
-  absl::optional<uint32_t> rtp_timestamp;
-  absl::optional<int64_t> capture_timestamp_ms;
-  absl::optional<ActiveSpatialLayers> expected_active_spatial_layers;
+  std::optional<uint32_t> rtp_timestamp;
+  std::optional<int64_t> capture_timestamp_ms;
+  std::optional<ActiveSpatialLayers> expected_active_spatial_layers;
   if (!failed_timestamp_match_) {
     // Pop timestamps until we have a match.
     while (!submitted_frames_.empty()) {
@@ -1552,7 +1561,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
                                               input_frame_coded_size_);
         input_buffers_[index] = std::make_unique<base::MappedReadOnlyRegion>(
             base::ReadOnlySharedMemoryRegion::Create(input_frame_buffer_size));
-        if (!input_buffers_[index]) {
+        if (!input_buffers_[index]->IsValid()) {
           NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
                              "Failed to create input buffer"});
           return;

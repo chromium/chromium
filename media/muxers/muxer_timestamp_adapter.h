@@ -38,13 +38,13 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
       const Muxer::VideoParameters& params,
       std::string encoded_data,
       std::string encoded_alpha,
-      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      std::optional<media::VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame);
   bool OnEncodedAudio(
       const AudioParameters& params,
       std::string encoded_data,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp);
 
   // Call to handle mute and tracks getting disabled. If the track is not live
@@ -97,7 +97,7 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   // Ensures a monotonically increasing timestamp sequence, despite
   // incoming non-monotonically increasing timestamps.
   base::TimeTicks UpdateLastTimestampAndGetNext(
-      absl::optional<base::TimeTicks>& last_timestamp,
+      std::optional<base::TimeTicks>& last_timestamp,
       base::TimeTicks incoming_timestamp);
 
   // TODO(ajose): Change these when support is added for multiple tracks.
@@ -108,15 +108,15 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   bool has_seen_audio_ = false;
 
   std::unique_ptr<Muxer> muxer_;
-  absl::optional<base::TimeTicks> last_video_timestamp_;
-  absl::optional<base::TimeTicks> last_audio_timestamp_;
+  std::optional<base::TimeTicks> last_video_timestamp_;
+  std::optional<base::TimeTicks> last_audio_timestamp_;
 
   // The timestamp of the lowest timestamp audio or video sample, compensated
   // for the total time in pause at the time.
   base::TimeTicks first_timestamp_;
 
   // Variables to measure and accumulate, respectively, the time in pause state.
-  absl::optional<base::ElapsedTimer> elapsed_time_in_pause_;
+  std::optional<base::ElapsedTimer> elapsed_time_in_pause_;
   base::TimeDelta total_time_in_pause_;
 
   // Variables to track live and enabled state of audio and video.

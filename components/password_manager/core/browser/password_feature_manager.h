@@ -100,6 +100,11 @@ class PasswordFeatureManager {
   // used for saving new credentials and adding blacking listing entries.
   virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
 
+  // Whether the default store value should be changed to match the account
+  // store setting. This is used to migrate users from having different
+  // `GetDefaultPasswordStore` and `IsOptedInForAccountStorage` values.
+  virtual bool ShouldChangeDefaultPasswordStore() const = 0;
+
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 };
 

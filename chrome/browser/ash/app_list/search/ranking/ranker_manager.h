@@ -12,8 +12,6 @@ class Profile;
 
 namespace app_list {
 
-class SearchController;
-
 // A manager for a series of rankers. Rankers can be added via AddRanker, and
 // all other methods will delegate the call to each ranker in the order they
 // were added.
@@ -22,7 +20,7 @@ class SearchController;
 // behavior.
 class RankerManager : public Ranker {
  public:
-  RankerManager(Profile* profile, SearchController* controller);
+  explicit RankerManager(Profile* profile);
   ~RankerManager() override;
 
   RankerManager(const RankerManager&) = delete;

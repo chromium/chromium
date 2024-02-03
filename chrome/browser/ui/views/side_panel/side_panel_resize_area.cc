@@ -91,8 +91,8 @@ bool SidePanelResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
-void SidePanelResizeArea::Layout() {
-  ResizeArea::Layout();
+void SidePanelResizeArea::Layout(PassKey) {
+  LayoutSuperclass<ResizeArea>(this);
   // The side panel resize area should draw on top of its parent's border.
   gfx::Rect local_bounds = parent()->GetLocalBounds();
   gfx::Rect contents_bounds = parent()->GetContentsBounds();

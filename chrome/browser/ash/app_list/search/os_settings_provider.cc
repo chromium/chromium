@@ -196,7 +196,8 @@ OsSettingsProvider::OsSettingsProvider(
     Profile* profile,
     ash::settings::SearchHandler* search_handler,
     const ash::settings::Hierarchy* hierarchy)
-    : profile_(profile),
+    : SearchProvider(SearchCategory::kSettings),
+      profile_(profile),
       search_handler_(search_handler),
       hierarchy_(hierarchy) {
   DCHECK(profile_);

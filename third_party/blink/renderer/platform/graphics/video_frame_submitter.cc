@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/video_frame_submitter.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -30,7 +31,6 @@
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom-blink.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -108,7 +108,7 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {
     if (!bundle_) {
       return;
@@ -123,7 +123,7 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {
     NOTREACHED();
@@ -711,7 +711,7 @@ bool VideoFrameSubmitter::SubmitFrame(
   // contain any SurfaceDrawQuads.
   compositor_frame_sink_->SubmitCompositorFrame(
       child_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-      std::move(compositor_frame), absl::nullopt, 0);
+      std::move(compositor_frame), std::nullopt, 0);
   resource_provider_->ReleaseFrameResources();
 
   waiting_for_compositor_ack_ = true;
@@ -737,7 +737,7 @@ void VideoFrameSubmitter::SubmitEmptyFrame() {
 
   compositor_frame_sink_->SubmitCompositorFrame(
       child_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-      std::move(compositor_frame), absl::nullopt, 0);
+      std::move(compositor_frame), std::nullopt, 0);
 
   // We don't set |waiting_for_compositor_ack_| here since we want to allow a
   // subsequent real frame to replace it at any time if needed.

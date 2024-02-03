@@ -1,0 +1,103 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.features.tasks;
+
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
+import org.chromium.chrome.browser.magic_stack.ModuleProvider;
+import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** The {@link ModuleProviderBuilder} to build the single tab module on the magic stack. */
+public class SingleTabModuleBuilder implements ModuleProviderBuilder {
+    private final Activity mActivity;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+
+    /**
+     * @param activity The instance of {@link Activity}.
+     * @param tabModelSelectorSupplier The supplier of the {@lin TabModelSelector}.
+     * @param tabContentManagerSupplier The supplier of the {@link TabContentManager}.
+     */
+    public SingleTabModuleBuilder(
+            @NonNull Activity activity,
+            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            @NonNull ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+        mActivity = activity;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mTabContentManagerSupplier = tabContentManagerSupplier;
+    }
+
+    // ModuleProviderBuilder implementation.
+
+    @Override
+    public boolean build(
+            ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
+        ModuleDelegateHost moduleDelegateHost =
+                ((HomeModulesCoordinator) moduleDelegate).getModuleDelegateHost();
+        boolean isShownOnNtp = moduleDelegate.getHostSurfaceType() == HostSurface.NEW_TAB_PAGE;
+
+        assert mTabContentManagerSupplier.hasValue();
+        Callback<Integer> singleTabCardClickedCallback =
+                (tabId) -> {
+                    moduleDelegate.onTabClicked(tabId, ModuleType.SINGLE_TAB);
+                };
+        Runnable snapshotParentViewRunnable =
+                () -> {
+                    moduleDelegateHost.onCaptureThumbnailStatusChanged();
+                };
+        SingleTabSwitcherCoordinator singleTabSwitcherCoordinator =
+                new SingleTabSwitcherCoordinator(
+                        mActivity,
+                        /* container= */ null,
+                        /* activityLifecycleDispatcher= */ null,
+                        mTabModelSelectorSupplier.get(),
+                        isShownOnNtp,
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                        moduleDelegateHost.showScrollableMvt(),
+                        isShownOnNtp
+                                ? ((HomeModulesCoordinator) moduleDelegate)
+                                        .getModuleDelegateHost()
+                                        .getTrackingTab()
+                                : null,
+                        singleTabCardClickedCallback,
+                        snapshotParentViewRunnable,
+                        mTabContentManagerSupplier.get(),
+                        moduleDelegateHost.getUiConfig(),
+                        moduleDelegate);
+        onModuleBuiltCallback.onResult(singleTabSwitcherCoordinator);
+        return true;
+    }
+
+    @Override
+    public ViewGroup createView(ViewGroup parentView) {
+        return (ViewGroup)
+                LayoutInflater.from(mActivity)
+                        .inflate(
+                                SingleTabSwitcherCoordinator.getModuleLayoutId(),
+                                parentView,
+                                false);
+    }
+
+    @Override
+    public void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+        SingleTabViewBinder.bind(model, view, propertyKey);
+    }
+}

@@ -369,9 +369,12 @@ bool AXRelationCache::IsValidOwner(AXObject* owner) {
     return false;
   }
 
-  // Can't have children.
-  if (!owner->CanHaveChildren())
+  // Can't have element children.
+  // <br> is special in that it is allowed to have inline textbox children,
+  // but no element children.
+  if (!owner->CanHaveChildren() || IsA<HTMLBRElement>(owner->GetNode())) {
     return false;
+  }
 
   // An aria-owns is disallowed on editable roots and atomic text fields, such
   // as <input>, <textarea> and content editables, otherwise the result would be

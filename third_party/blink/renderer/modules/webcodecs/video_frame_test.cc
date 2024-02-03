@@ -280,7 +280,7 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
 
   const auto* default_options = ImageBitmapOptions::Create();
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
+      UnacceleratedStaticBitmapImage::Create(original_image), std::nullopt,
       default_options);
   auto* source = MakeGarbageCollected<V8CanvasImageSource>(image_bitmap);
   auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
@@ -351,7 +351,7 @@ TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromImage) {
 
   const auto* default_options = ImageBitmapOptions::Create();
   auto* image_bitmap_layer = MakeGarbageCollected<ImageBitmap>(
-      UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
+      UnacceleratedStaticBitmapImage::Create(original_image), std::nullopt,
       default_options);
 
   TestWrappedVideoFrameImageReuse(
@@ -370,7 +370,7 @@ TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromVideoFrameFromImage) {
 
   const auto* default_options = ImageBitmapOptions::Create();
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
+      UnacceleratedStaticBitmapImage::Create(original_image), std::nullopt,
       default_options);
 
   auto* init = VideoFrameInit::Create();

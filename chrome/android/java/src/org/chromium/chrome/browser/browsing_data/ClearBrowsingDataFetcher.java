@@ -8,6 +8,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Arrays;
 
@@ -69,17 +70,18 @@ public class ClearBrowsingDataFetcher
             };
 
     /** Fetch important sites if the feature is enabled. */
-    public void fetchImportantSites() {
-        BrowsingDataBridge.fetchImportantSites(this);
+    public void fetchImportantSites(Profile profile) {
+        BrowsingDataBridge.getForProfile(profile).fetchImportantSites(this);
     }
 
     /**
      * Request information about other forms of browsing history if the history dialog hasn't been
      * shown yet.
      */
-    public void requestInfoAboutOtherFormsOfBrowsingHistory() {
+    public void requestInfoAboutOtherFormsOfBrowsingHistory(Profile profile) {
         if (!OtherFormsOfHistoryDialogFragment.wasDialogShown()) {
-            BrowsingDataBridge.getInstance().requestInfoAboutOtherFormsOfBrowsingHistory(this);
+            BrowsingDataBridge.getForProfile(profile)
+                    .requestInfoAboutOtherFormsOfBrowsingHistory(this);
         }
     }
 

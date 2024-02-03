@@ -16,8 +16,6 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/device/binder_overrides.h"
 #include "services/device/compute_pressure/pressure_manager_impl.h"
-#include "services/device/device_posture/device_posture_platform_provider.h"
-#include "services/device/device_posture/device_posture_provider_impl.h"
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/sensor_provider_impl.h"
@@ -328,18 +326,6 @@ void DeviceService::BindSensorProvider(
         std::make_unique<SensorProviderImpl>(std::move(platform_provider));
   }
   sensor_provider_->Bind(std::move(receiver));
-}
-
-void DeviceService::BindDevicePostureProvider(
-    mojo::PendingReceiver<mojom::DevicePostureProvider> receiver) {
-  if (!device_posture_provider_) {
-    auto posture_platform_provider_ = DevicePosturePlatformProvider::Create();
-    if (!posture_platform_provider_)
-      return;
-    device_posture_provider_ = std::make_unique<DevicePostureProviderImpl>(
-        std::move(posture_platform_provider_));
-  }
-  device_posture_provider_->Bind(std::move(receiver));
 }
 
 void DeviceService::BindSerialPortManager(

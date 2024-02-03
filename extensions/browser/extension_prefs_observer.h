@@ -5,9 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_PREFS_OBSERVER_H_
 #define EXTENSIONS_BROWSER_EXTENSION_PREFS_OBSERVER_H_
 
-#include <string>
-
 #include "base/time/time.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -18,30 +17,30 @@ class ExtensionPrefsObserver {
   // Called when the reasons for an extension being disabled have changed.
   // This is *not* called when the disable reasons change due to the extension
   // being enabled/disabled.
-  virtual void OnExtensionDisableReasonsChanged(const std::string& extension_id,
+  virtual void OnExtensionDisableReasonsChanged(const ExtensionId& extension_id,
                                                 int disabled_reasons) {}
 
   // Called when an extension is registered with ExtensionPrefs.
-  virtual void OnExtensionRegistered(const std::string& extension_id,
+  virtual void OnExtensionRegistered(const ExtensionId& extension_id,
                                      const base::Time& install_time,
                                      bool is_enabled) {}
 
   // Called when an extension's prefs have been loaded.
-  virtual void OnExtensionPrefsLoaded(const std::string& extension_id,
+  virtual void OnExtensionPrefsLoaded(const ExtensionId& extension_id,
                                       const ExtensionPrefs* prefs) {}
 
   // Called when an extension's prefs are deleted.
-  virtual void OnExtensionPrefsDeleted(const std::string& extension_id) {}
+  virtual void OnExtensionPrefsDeleted(const ExtensionId& extension_id) {}
 
   // Called when an extension's enabled state pref is changed.
   // Note: This does not necessarily correspond to the extension being loaded/
   // unloaded. For that, observe the ExtensionRegistry, and reconcile that the
   // events might not match up.
-  virtual void OnExtensionStateChanged(const std::string& extension_id,
+  virtual void OnExtensionStateChanged(const ExtensionId& extension_id,
                                        bool state) {}
 
   // Called when an extension's pref has been updated or changed.
-  virtual void OnExtensionPrefsUpdated(const std::string& extension_id) {}
+  virtual void OnExtensionPrefsUpdated(const ExtensionId& extension_id) {}
 
   // Called when the runtime permissions for an extension are changed.
   // TODO(devlin): This is a bit out of place here, and may be better suited on
@@ -49,11 +48,11 @@ class ExtensionPrefsObserver {
   // discussion at
   // https://chromium-review.googlesource.com/c/chromium/src/+/1196107/3/chrome/browser/extensions/runtime_permissions_observer.h#26.
   virtual void OnExtensionRuntimePermissionsChanged(
-      const std::string& extension_id) {}
+      const ExtensionId& extension_id) {}
 
   // Called when an extension's last-launch-time has changed.
   virtual void OnExtensionLastLaunchTimeChanged(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const base::Time& last_launch_time) {}
 
   // Called when the ExtensionPrefs object (the thing that this observer
@@ -91,7 +90,7 @@ class EarlyExtensionPrefsObserver {
   // RemoveObserver calls is to used a ScopedObservation.
   //
   // Unlike other ExtensionPrefsObserver methods, this method does not have an
-  // "const std::string& extension_id" argument. It is not about any one
+  // "const ExtensionId& extension_id" argument. It is not about any one
   // particular extension, it is about the extension preferences as a whole.
   virtual void OnExtensionPrefsAvailable(ExtensionPrefs* prefs) = 0;
 };

@@ -23,8 +23,7 @@ class FederatedIdentityAccountKeyedPermissionContextTest
  public:
   FederatedIdentityAccountKeyedPermissionContextTest() {
     context_ = std::make_unique<FederatedIdentityAccountKeyedPermissionContext>(
-        &profile_, ContentSettingsType::FEDERATED_IDENTITY_SHARING,
-        kTestIdpOriginKey);
+        &profile_, kTestIdpOriginKey);
   }
 
   void TearDown() override { context_.reset(); }

@@ -603,7 +603,7 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
   return AV1Accelerator::Status::kOk;
 }
 
-absl::optional<gfx::HDRMetadata> AV1Decoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> AV1Decoder::GetHDRMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return hdr_metadata_;
 }

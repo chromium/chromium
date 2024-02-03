@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/api/types.h"
+#include "extensions/common/extension_id.h"
 
 class PrefValueMap;
 
@@ -110,7 +111,7 @@ class ExtensionPrefValueMap : public KeyedService {
   // Note that this function does does not consider the existence of
   // policies. An extension is only really able to control a preference if
   // PrefService::Preference::IsExtensionModifiable() returns true as well.
-  bool CanExtensionControlPref(const std::string& extension_id,
+  bool CanExtensionControlPref(const extensions::ExtensionId& extension_id,
                                const std::string& pref_key,
                                bool incognito) const;
 
@@ -126,7 +127,7 @@ class ExtensionPrefValueMap : public KeyedService {
   // Note that the this function does does not consider the existence of
   // policies. An extension is only really able to control a preference if
   // PrefService::Preference::IsExtensionModifiable() returns true as well.
-  bool DoesExtensionControlPref(const std::string& extension_id,
+  bool DoesExtensionControlPref(const extensions::ExtensionId& extension_id,
                                 const std::string& pref_key,
                                 bool* from_incognito) const;
 

@@ -130,7 +130,7 @@
 }
 
 - (void)layoutToolbar {
-  _browserView->Layout();
+  _browserView->DeprecatedLayoutImmediately();
   _animationController->ToolbarDidUpdate();
   [_mouseTracker updateTrackingArea];
 }

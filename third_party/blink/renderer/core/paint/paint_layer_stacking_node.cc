@@ -308,7 +308,7 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
   if (object.IsStackingContext())
     return;
 
-  absl::optional<HighestLayers> subtree_highest_layers;
+  std::optional<HighestLayers> subtree_highest_layers;
   bool has_overlay_overflow_controls =
       paint_layer.GetScrollableArea() &&
       paint_layer.GetScrollableArea()->HasOverlayOverflowControls();

@@ -17,7 +17,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 
 namespace extensions {

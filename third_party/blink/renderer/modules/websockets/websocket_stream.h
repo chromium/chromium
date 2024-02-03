@@ -5,6 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_STREAM_H_
 
+#include <stdint.h>
+
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -105,13 +109,18 @@ class MODULES_EXPORT WebSocketStream final
   void CloseMaybeWithReason(ScriptValue maybe_reason, ExceptionState&);
 
   void CloseWithUnspecifiedCode(ExceptionState&);
-  void CloseInternal(int code,
+  void CloseInternal(std::optional<uint16_t> code,
                      const String& reason,
                      ExceptionState& exception_state);
   void OnAbort();
 
-  v8::Local<v8::Value> CreateNetworkErrorDOMException();
-  static WebSocketCloseInfo* MakeCloseInfo(uint16_t code, const String& reason);
+  // Create a WebSocketError with the supplied arguments.
+  v8::Local<v8::Value> CreateWebSocketError(
+      String message,
+      std::optional<uint16_t> close_code = std::nullopt,
+      String reason = String());
+  static WebSocketCloseInfo* MakeCloseInfo(uint16_t close_code,
+                                           const String& reason);
 
   const Member<ScriptState> script_state_;
   const Member<ScriptPromiseResolver> opened_resolver_;

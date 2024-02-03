@@ -46,13 +46,12 @@ TEST(TrustedVaultServerConstantsTest, ShouldGetGetSecurityDomainMemberURL) {
 }
 
 TEST(TrustedVaultServerConstantsTest, GetSecurityDomainByName) {
-  EXPECT_THAT(GetSecurityDomainByName("users/me/securitydomains/chromesync"),
+  EXPECT_THAT(GetSecurityDomainByName("chromesync"),
               Eq(SecurityDomainId::kChromeSync));
-  EXPECT_THAT(GetSecurityDomainByName("users/me/securitydomains/hw_protected"),
+  EXPECT_THAT(GetSecurityDomainByName("hw_protected"),
               Eq(SecurityDomainId::kPasskeys));
-  EXPECT_THAT(GetSecurityDomainByName("users/me/securitydomains/example"),
+  EXPECT_THAT(GetSecurityDomainByName("users/me/securitydomains/chromesync"),
               Eq(std::nullopt));
-  EXPECT_THAT(GetSecurityDomainByName("chromesync"), Eq(std::nullopt));
   EXPECT_THAT(GetSecurityDomainByName(""), Eq(std::nullopt));
 }
 

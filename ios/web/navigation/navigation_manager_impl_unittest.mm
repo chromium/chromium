@@ -1997,7 +1997,7 @@ TEST_F(NavigationManagerTest, CommitEmptyPendingItem) {
 
   // Call CommitPendingItem() with a valid pending item.
   auto item = std::make_unique<web::NavigationItemImpl>();
-  item->SetURL(GURL::EmptyGURL());
+  item->SetURL(GURL());
   navigation_manager()->CommitPendingItem(std::move(item));
 }
 

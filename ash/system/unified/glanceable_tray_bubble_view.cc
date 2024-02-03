@@ -316,7 +316,7 @@ void GlanceableTrayBubbleView::InitializeContents() {
   // Layout to set the calendar view bounds, so the calendar view finishes
   // initializing (e.g. scroll to today), which happens when the calendar view
   // bounds are set.
-  Layout();
+  DeprecatedLayoutImmediately();
 
   initialized_ = true;
 }
@@ -373,6 +373,7 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
 }
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
+    bool fetch_success,
     const ui::ListModel<api::TaskList>* task_lists) {
   if (task_lists->item_count() == 0) {
     return;

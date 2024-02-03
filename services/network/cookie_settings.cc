@@ -7,6 +7,7 @@
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -30,7 +31,6 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/static_cookie_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -54,6 +54,48 @@ bool IsValidType(ContentSettingsType type) {
     return true;
   }
   return CookieSettings::GetContentSettingsTypes().contains(type);
+}
+
+net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
+    CookieSettings::ThirdPartyCookieAllowMechanism allow_mechanism) {
+  switch (allow_mechanism) {
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowByExplicitSetting:
+      return net::CookieInclusionStatus::ExemptionReason::kUserSetting;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowByEnterprisePolicyCookieAllowedForUrls:
+      return net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
+      return net::CookieInclusionStatus::ExemptionReason::kStorageAccess;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowByTopLevelStorageAccess:
+      return net::CookieInclusionStatus::ExemptionReason::
+          kTopLevelStorageAccess;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByCORSException:
+      return net::CookieInclusionStatus::ExemptionReason::kCorsOptIn;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kNone:
+      return net::CookieInclusionStatus::ExemptionReason::kNone;
+  }
+}
+
+bool IsOriginOpaqueHttpOrHttps(const url::Origin* top_frame_origin) {
+  if (!top_frame_origin) {
+    return false;
+  }
+  if (!top_frame_origin->opaque()) {
+    return false;
+  }
+  const GURL url =
+      top_frame_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL();
+  return url.SchemeIsHTTPOrHTTPS();
 }
 
 }  // namespace
@@ -147,7 +189,7 @@ bool CookieSettings::IsCookieAccessible(
     const net::CanonicalCookie& cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieSettingOverrides overrides,
     net::CookieInclusionStatus* cookie_inclusion_status) const {
@@ -167,6 +209,8 @@ bool CookieSettings::IsCookieAccessible(
         cookie_inclusion_status->AddWarningReason(
             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
       }
+      cookie_inclusion_status->MaybeSetExemptionReason(GetExemptionReason(
+          setting_with_metadata.third_party_cookie_allow_mechanism()));
     } else {
       if (IsThirdPartyPhaseoutEnabled() &&
           AffectedByThirdPartyCookiePhaseout(
@@ -211,7 +255,7 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
 net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     net::CookieSettingOverrides overrides) const {
   return PrivacySetting(GetCookieSettingWithMetadata(
       url, site_for_cookies, base::OptionalToPtr(top_frame_origin), overrides));
@@ -224,8 +268,17 @@ CookieSettings::GetCookieSettingWithMetadata(
     const url::Origin* top_frame_origin,
     net::CookieSettingOverrides overrides) const {
   return GetCookieSettingInternal(
-      url, GetFirstPartyURL(site_for_cookies, top_frame_origin),
+      url, FirstPartyURLForMetadata(site_for_cookies, top_frame_origin),
       IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr);
+}
+
+// static
+GURL CookieSettings::FirstPartyURLForMetadata(
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin* top_frame_origin) {
+  return IsOriginOpaqueHttpOrHttps(top_frame_origin)
+             ? top_frame_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
+             : GetFirstPartyURL(site_for_cookies, top_frame_origin);
 }
 
 bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
@@ -260,6 +313,8 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
         cookie.access_result.status.AddWarningReason(
             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
       }
+      cookie.access_result.status.MaybeSetExemptionReason(GetExemptionReason(
+          setting_with_metadata.third_party_cookie_allow_mechanism()));
     } else {
       // Use a different exclusion reason when the 3pc is blocked by browser.
       if (IsThirdPartyPhaseoutEnabled() &&
@@ -348,13 +403,11 @@ ContentSetting CookieSettings::GetContentSetting(
       "ContentSettings.GetContentSetting.Network.Duration");
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
-#if DCHECK_IS_ON()
-    DCHECK(GetHostIndexedContentSettings(content_type)
-               .IsSameResultAsLinearLookup(primary_url, secondary_url,
-                                           GetContentSettings(content_type)))
-        << "Different result in index lookup: " << primary_url.spec() << " "
-        << secondary_url.spec();
-#endif
+    if constexpr (DCHECK_IS_ON()) {
+      GetHostIndexedContentSettings(content_type)
+          .DcheckSameResultAsLinearLookup(primary_url, secondary_url,
+                                          GetContentSettings(content_type));
+    }
     const content_settings::RuleEntry* result =
         GetHostIndexedContentSettings(content_type)
             .Find(primary_url, secondary_url);

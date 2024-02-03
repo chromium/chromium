@@ -77,7 +77,7 @@ TEST_F(IndexedDBClientStateCheckerFactoryTest,
   // active.
   TestDisallowInactiveClient(
       checker,
-      storage::mojom::DisallowInactiveClientReason::kClientEventIsTriggered,
+      storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent,
       /*expected_was_active=*/true);
   // There is no side effect to the active document.
   EXPECT_EQ(rfh->GetLifecycleState(),
@@ -89,7 +89,7 @@ TEST_F(IndexedDBClientStateCheckerFactoryTest,
   // Now the client state check should report that the document is not active.
   TestDisallowInactiveClient(
       checker,
-      storage::mojom::DisallowInactiveClientReason::kClientEventIsTriggered,
+      storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent,
       /*expected_was_active=*/false);
   // The page will be evicted from back/forward cache as the side effect.
   EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
@@ -114,7 +114,7 @@ TEST_F(IndexedDBClientStateCheckerFactoryTest,
   // active, since IndexedDB is supported in prerendering page.
   TestDisallowInactiveClient(
       checker,
-      storage::mojom::DisallowInactiveClientReason::kClientEventIsTriggered,
+      storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent,
       /*expected_was_active=*/true);
   EXPECT_EQ(rfh->GetLifecycleState(),
             RenderFrameHost::LifecycleState::kPrerendering);

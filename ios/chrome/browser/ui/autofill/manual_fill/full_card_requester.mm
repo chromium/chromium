@@ -5,13 +5,18 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 
 #import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 
 FullCardRequester::FullCardRequester(UIViewController* base_view_controller,
                                      ChromeBrowserState* browser_state)
     : base_view_controller_(base_view_controller),
-      unmask_controller_(browser_state->GetPrefs()) {}
+      unmask_controller_(browser_state->GetPrefs()),
+      personal_data_manager_(
+          autofill::PersonalDataManagerFactory::GetForBrowserState(
+              browser_state)) {}
 
 void FullCardRequester::GetFullCard(
     const autofill::CreditCard& card,
@@ -36,7 +41,8 @@ void FullCardRequester::ShowUnmaskPrompt(
   unmask_controller_.ShowPrompt(
       base::BindOnce(&autofill::CreateCardUnmaskPromptViewBridge,
                      base::Unretained(&unmask_controller_),
-                     base::Unretained(base_view_controller_)),
+                     base::Unretained(base_view_controller_),
+                     base::Unretained(personal_data_manager_)),
       card, card_unmask_prompt_options, delegate);
 }
 

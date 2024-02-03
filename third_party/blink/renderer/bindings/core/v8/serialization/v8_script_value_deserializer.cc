@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 
 #include <limits>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -264,7 +264,7 @@ bool V8ScriptValueDeserializer::ReadUnguessableToken(
   uint64_t low;
   if (!ReadUint64(&high) || !ReadUint64(&low))
     return false;
-  absl::optional<base::UnguessableToken> token =
+  std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return false;
@@ -505,7 +505,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       SerializedImageDataSettings settings(predefined_color_space,
                                            image_data_storage_format);
       ImageData* image_data = ImageData::ValidateAndCreate(
-          width, height, absl::nullopt, settings.GetImageDataSettings(),
+          width, height, std::nullopt, settings.GetImageDataSettings(),
           ImageData::ValidateAndCreateParams(), exception_state);
       if (!image_data)
         return nullptr;
@@ -696,9 +696,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           container_width, container_height, has_content_size, content_width,
           content_height, freeze_initial_size;
       KURL url;
-      absl::optional<KURL> urn_uuid;
+      std::optional<KURL> urn_uuid;
       FencedFrameConfig::AttributeVisibility url_visibility, size_visibility;
-      absl::optional<gfx::Size> container_size, content_size;
+      std::optional<gfx::Size> container_size, content_size;
 
       if (!ReadUTF8String(&url_string) || !ReadUint32(&width) ||
           !ReadUint32(&height) ||
@@ -790,7 +790,7 @@ File* V8ScriptValueDeserializer::ReadFile() {
   auto blob_handle = GetOrCreateBlobDataHandle(uuid, type, kSizeForDataHandle);
   if (!blob_handle)
     return nullptr;
-  absl::optional<base::Time> last_modified;
+  std::optional<base::Time> last_modified;
   if (has_snapshot && std::isfinite(last_modified_ms)) {
     last_modified =
         base::Time::FromMillisecondsSinceUnixEpoch(last_modified_ms);

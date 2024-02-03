@@ -19,7 +19,7 @@ ScriptValue DeprecationReportBody::anticipatedRemoval(
                                   script_state, *anticipated_removal_));
 }
 
-absl::optional<base::Time> DeprecationReportBody::AnticipatedRemoval() const {
+std::optional<base::Time> DeprecationReportBody::AnticipatedRemoval() const {
   return anticipated_removal_;
 }
 

@@ -111,11 +111,13 @@ enum class UploadIbanActionMetric {
   kMaxValue = kIgnored,
 };
 
-// Logs various metrics about the local IBANs associated with a profile. This
-// should be called each time a new Chrome profile is launched.
+// Logs various metrics about the local/server IBANs associated with a profile.
+// This should be called each time a new Chrome profile is launched.
 // `disused_data_threshold` is the time threshold to mark an IBAN as disused.
-void LogStoredIbanMetrics(const std::vector<std::unique_ptr<Iban>>& local_ibans,
-                          const base::TimeDelta& disused_data_threshold);
+void LogStoredIbanMetrics(
+    const std::vector<std::unique_ptr<Iban>>& local_ibans,
+    const std::vector<std::unique_ptr<Iban>>& server_ibans,
+    const base::TimeDelta& disused_data_threshold);
 
 // Logs the number of days since the given IBAN was last used.
 void LogDaysSinceLastIbanUse(const Iban& iban);

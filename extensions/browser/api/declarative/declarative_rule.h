@@ -123,12 +123,12 @@ class DeclarativeConditionSet {
 //       // Except this argument gets elements of the Values array.
 //       const base::Value::Dict& definition,
 //       std::string* error, bool* bad_message);
-//   void Apply(const std::string& extension_id,
+//   void Apply(const ExtensionId& extension_id,
 //              const base::Time& extension_install_time,
 //              // Contains action-type-specific in/out parameters.
 //              typename ActionT::ApplyInfo* apply_info) const;
 //   // Only needed if the RulesRegistry calls DeclarativeActionSet::Revert().
-//   void Revert(const std::string& extension_id,
+//   void Revert(const ExtensionId& extension_id,
 //               const base::Time& extension_install_time,
 //               // Contains action-type-specific in/out parameters.
 //               typename ActionT::ApplyInfo* apply_info) const;
@@ -160,20 +160,20 @@ class DeclarativeActionSet {
       bool* bad_message);
 
   // Rules call this method when their conditions are fulfilled.
-  void Apply(const std::string& extension_id,
+  void Apply(const ExtensionId& extension_id,
              const base::Time& extension_install_time,
              typename ActionT::ApplyInfo* apply_info) const;
 
   // Rules call this method when their conditions are fulfilled, but Apply has
   // already been called.
-  void Reapply(const std::string& extension_id,
+  void Reapply(const ExtensionId& extension_id,
                const base::Time& extension_install_time,
                typename ActionT::ApplyInfo* apply_info) const;
 
   // Rules call this method when they have stateful conditions, and those
   // conditions stop being fulfilled.  Rules with event-based conditions (e.g. a
   // network request happened) will never Revert() an action.
-  void Revert(const std::string& extension_id,
+  void Revert(const ExtensionId& extension_id,
               const base::Time& extension_install_time,
               typename ActionT::ApplyInfo* apply_info) const;
 
@@ -241,7 +241,7 @@ class DeclarativeRule {
 
   const GlobalRuleId& id() const { return id_; }
   const Tags& tags() const { return tags_; }
-  const std::string& extension_id() const { return id_.first; }
+  const ExtensionId& extension_id() const { return id_.first; }
   const ConditionSet& conditions() const { return *conditions_; }
   const ActionSet& actions() const { return *actions_; }
   Priority priority() const { return priority_; }
@@ -382,27 +382,27 @@ DeclarativeActionSet<ActionT>::Create(content::BrowserContext* browser_context,
   return std::make_unique<DeclarativeActionSet>(result);
 }
 
-template<typename ActionT>
+template <typename ActionT>
 void DeclarativeActionSet<ActionT>::Apply(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time,
     typename ActionT::ApplyInfo* apply_info) const {
   for (const scoped_refptr<const ActionT>& action : actions_)
     action->Apply(extension_id, extension_install_time, apply_info);
 }
 
-template<typename ActionT>
+template <typename ActionT>
 void DeclarativeActionSet<ActionT>::Reapply(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time,
     typename ActionT::ApplyInfo* apply_info) const {
   for (const scoped_refptr<const ActionT>& action : actions_)
     action->Reapply(extension_id, extension_install_time, apply_info);
 }
 
-template<typename ActionT>
+template <typename ActionT>
 void DeclarativeActionSet<ActionT>::Revert(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time,
     typename ActionT::ApplyInfo* apply_info) const {
   for (const scoped_refptr<const ActionT>& action : actions_)

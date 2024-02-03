@@ -48,7 +48,7 @@ bool IsChild(Profile* profile) {
   if (!user)
     return false;
 
-  return user->GetType() == user_manager::UserType::USER_TYPE_CHILD;
+  return user->GetType() == user_manager::UserType::kChild;
 }
 
 bool IsOwnerProfile(Profile* profile) {

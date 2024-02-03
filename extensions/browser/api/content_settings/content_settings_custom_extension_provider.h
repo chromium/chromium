@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "extensions/browser/api/content_settings/content_settings_store.h"
+#include "extensions/common/extension_id.h"
 
 namespace content_settings {
 
@@ -50,7 +51,7 @@ class CustomExtensionProvider : public ObservableProvider,
   void ShutdownOnUIThread() override;
 
   // extensions::ContentSettingsStore::Observer methods:
-  void OnContentSettingChanged(const std::string& extension_id,
+  void OnContentSettingChanged(const extensions::ExtensionId& extension_id,
                                bool incognito) override;
 
  private:

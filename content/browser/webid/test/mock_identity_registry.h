@@ -8,6 +8,8 @@
 #include "content/browser/webid/identity_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class GURL;
+
 namespace content {
 
 class MockIdentityRegistry : public IdentityRegistry {
@@ -15,7 +17,7 @@ class MockIdentityRegistry : public IdentityRegistry {
   explicit MockIdentityRegistry(
       content::WebContents* web_contents,
       base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-      const url::Origin& registry_origin);
+      const GURL& idp_config_url);
 
   ~MockIdentityRegistry() override;
 

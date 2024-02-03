@@ -27,9 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 
 #include <iosfwd>
+#include <optional>
 #include <tuple>
+
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -173,10 +174,10 @@ class PLATFORM_EXPORT Color {
                  ClampInt255(g) << 8 | ClampInt255(b));
   }
 
-  static Color FromRGBALegacy(absl::optional<int> r,
-                              absl::optional<int> g,
-                              absl::optional<int> b,
-                              absl::optional<int> alpha);
+  static Color FromRGBALegacy(std::optional<int> r,
+                              std::optional<int> g,
+                              std::optional<int> b,
+                              std::optional<int> alpha);
 
   // Create a color using the rgba() syntax, with float arguments. All
   // parameters will be clamped to the [0, 1] interval.
@@ -185,33 +186,33 @@ class PLATFORM_EXPORT Color {
   }
 
   // Create a color from a generic color space. Parameters that are none should
-  // be specified as absl::nullopt. The value for `alpha` will be clamped to the
+  // be specified as std::nullopt. The value for `alpha` will be clamped to the
   // [0, 1] interval. For colorspaces with Luminance the first channel will be
   // clamped to be non-negative. For colorspaces with chroma in param1 that
   // parameter will also be clamped to be non-negative.
   static Color FromColorSpace(ColorSpace space,
-                              absl::optional<float> param0,
-                              absl::optional<float> param1,
-                              absl::optional<float> param2,
-                              absl::optional<float> alpha);
+                              std::optional<float> param0,
+                              std::optional<float> param1,
+                              std::optional<float> param2,
+                              std::optional<float> alpha);
   static Color FromColorSpace(ColorSpace space,
-                              absl::optional<float> param0,
-                              absl::optional<float> param1,
-                              absl::optional<float> param2) {
+                              std::optional<float> param0,
+                              std::optional<float> param1,
+                              std::optional<float> param2) {
     return FromColorSpace(space, param0, param1, param2, 1.0f);
   }
 
   // Create a color using the hsl() syntax.
-  static Color FromHSLA(absl::optional<float> h,
-                        absl::optional<float> s,
-                        absl::optional<float> l,
-                        absl::optional<float> a);
+  static Color FromHSLA(std::optional<float> h,
+                        std::optional<float> s,
+                        std::optional<float> l,
+                        std::optional<float> a);
 
   // Create a color using the hwb() syntax.
-  static Color FromHWBA(absl::optional<float> h,
-                        absl::optional<float> w,
-                        absl::optional<float> b,
-                        absl::optional<float> a);
+  static Color FromHWBA(std::optional<float> h,
+                        std::optional<float> w,
+                        std::optional<float> b,
+                        std::optional<float> a);
 
   enum class HueInterpolationMethod : uint8_t {
     kShorter,
@@ -224,7 +225,7 @@ class PLATFORM_EXPORT Color {
   // an interpolation between two colors, and apply an alpha multiplier if the
   // proportion was not 100% when parsing.
   static Color FromColorMix(ColorSpace interpolation_space,
-                            absl::optional<HueInterpolationMethod> hue_method,
+                            std::optional<HueInterpolationMethod> hue_method,
                             Color color1,
                             Color color2,
                             float percentage,
@@ -243,7 +244,7 @@ class PLATFORM_EXPORT Color {
   // interpolate beyond these bounds with percentages outside the range [0, 1].
   static Color InterpolateColors(
       ColorSpace interpolation_space,
-      absl::optional<HueInterpolationMethod> hue_method,
+      std::optional<HueInterpolationMethod> hue_method,
       Color color1,
       Color color2,
       float percentage);

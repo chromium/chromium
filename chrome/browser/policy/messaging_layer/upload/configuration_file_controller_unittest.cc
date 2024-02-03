@@ -61,7 +61,7 @@ class ConfigurationFileControllerTest : public ::testing::Test {
         kBaseChromeVersion);
   }
 
-  content::BrowserTaskEnvironment task_envrionment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =

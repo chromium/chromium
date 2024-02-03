@@ -159,7 +159,8 @@ class PasswordsMediatorTest : public BlockCleanupTest {
                                          GetForBrowserState(
                                              browser_state_.get())
                          syncService:SyncServiceFactory::GetForBrowserState(
-                                         browser_state_.get())];
+                                         browser_state_.get())
+                         prefService:browser_state_->GetPrefs()];
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForBrowserState(browserState()));

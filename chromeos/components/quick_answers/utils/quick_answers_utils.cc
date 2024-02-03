@@ -118,16 +118,4 @@ std::optional<double> GetRatio(const std::optional<double>& value1,
          std::min(value1.value(), value2.value());
 }
 
-std::optional<double> GetUnitConversionRate(const base::Value::Dict& unit_a,
-                                            const base::Value::Dict& unit_b) {
-  const std::optional<double> unit_a_to_standard_conversion_rate =
-      unit_a.FindDoubleByDottedPath(kConversionToSiAPath);
-  const std::optional<double> unit_b_to_standard_conversion_rate =
-      unit_b.FindDoubleByDottedPath(kConversionToSiAPath);
-  const std::optional<double> conversion_rate = GetRatio(
-      unit_a_to_standard_conversion_rate, unit_b_to_standard_conversion_rate);
-
-  return conversion_rate;
-}
-
 }  // namespace quick_answers

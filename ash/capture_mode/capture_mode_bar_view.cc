@@ -146,7 +146,7 @@ void CaptureModeBarView::OnCloseButtonPressed() {
   CaptureModeController::Get()->Stop();
 }
 
-BEGIN_METADATA(CaptureModeBarView, views::View)
+BEGIN_METADATA(CaptureModeBarView)
 END_METADATA
 
 }  // namespace ash

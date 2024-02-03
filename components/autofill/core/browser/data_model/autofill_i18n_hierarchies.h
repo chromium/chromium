@@ -114,7 +114,7 @@ inline constexpr auto kAutofillModelRules =
       {"XX", kModel_XX}
       });
 
-// Set of pairs (country_code, field_type) that represent collection of
+// Set of pairs (country_code, field_type) that represent a collection of
 // synthesized nodes for all countries.
 inline constexpr auto kAutofillSynthesizeNodes =
     base::MakeFixedFlatSet<std::pair<std::string_view, FieldType>>({

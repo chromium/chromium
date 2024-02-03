@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_QUERY_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
@@ -233,7 +232,7 @@ class CORE_EXPORT LogicalAnchorQuery
 
   // Evaluate the |anchor_value| for the given reference. Returns |nullopt| if
   // the query is invalid (due to wrong axis).
-  absl::optional<LayoutUnit> EvaluateAnchor(
+  std::optional<LayoutUnit> EvaluateAnchor(
       const LogicalAnchorReference& reference,
       CSSAnchorValue anchor_value,
       float percentage,
@@ -263,14 +262,16 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
                       const LayoutObject* implicit_anchor,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
-                      const PhysicalOffset& offset_to_padding_box)
+                      const PhysicalOffset& offset_to_padding_box,
+                      const PhysicalSize& available_size)
       : query_object_(&query_object),
         anchor_query_(&anchor_query),
         default_anchor_specifier_(default_anchor_specifier),
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        offset_to_padding_box_(offset_to_padding_box) {
+        offset_to_padding_box_(offset_to_padding_box),
+        available_size_(available_size) {
     DCHECK(anchor_query_);
   }
 
@@ -283,7 +284,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
                       const LayoutObject& containing_block,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
-                      const PhysicalOffset& offset_to_padding_box)
+                      const PhysicalOffset& offset_to_padding_box,
+                      const PhysicalSize& available_size)
       : query_object_(&query_object),
         anchor_queries_(&anchor_queries),
         default_anchor_specifier_(default_anchor_specifier),
@@ -291,7 +293,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
         containing_block_(&containing_block),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        offset_to_padding_box_(offset_to_padding_box) {
+        offset_to_padding_box_(offset_to_padding_box),
+        available_size_(available_size) {
     DCHECK(anchor_queries_);
     DCHECK(containing_block_);
   }
@@ -310,29 +313,18 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
     return needs_scroll_adjustment_in_y_;
   }
 
-  // This must be set before evaluating `anchor()` function.
-  void SetAxis(bool is_y_axis,
-               bool is_right_or_bottom,
-               LayoutUnit available_size) {
-    available_size_ = available_size;
-    is_y_axis_ = is_y_axis;
-    is_right_or_bottom_ = is_right_or_bottom;
-  }
-
   // Evaluates the given anchor query. Returns nullopt if the query invalid
   // (e.g., no target or wrong axis).
-  absl::optional<LayoutUnit> Evaluate(
+  std::optional<LayoutUnit> Evaluate(
       const CalculationExpressionNode&) const override;
 
   // Finds the rect of the element referenced by the `position-fallback-bounds`
   // property, or nullopt if there's no such element.
-  absl::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
+  std::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
 
   // Returns the offset `anchor-center` aligns to in the current physical axis,
   // or nullopt if there's no default anchor.
-  absl::optional<LayoutUnit> GetPhysicalAnchorCenterOffset(
-      bool is_y_axis,
-      LayoutUnit available_size);
+  std::optional<LayoutUnit> GetPhysicalAnchorCenterOffset(bool is_y_axis);
 
   bool HasDefaultAnchor() const { return DefaultAnchor() != nullptr; }
 
@@ -342,16 +334,25 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
       const AnchorSpecifierValue& anchor_specifier) const;
   bool ShouldUseScrollAdjustmentFor(const LayoutObject* anchor) const;
 
-  absl::optional<LayoutUnit> EvaluateAnchor(
+  std::optional<LayoutUnit> EvaluateAnchor(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorValue anchor_value,
       float percentage) const;
-  absl::optional<LayoutUnit> EvaluateAnchorSize(
+  std::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value) const;
 
   const LayoutObject* DefaultAnchor() const;
   const PaintLayer* DefaultAnchorScrollContainerLayer() const;
+
+  bool AllowAnchor() const;
+  bool AllowAnchorSize() const;
+  bool IsYAxis() const;
+  bool IsRightOrBottom() const;
+
+  LayoutUnit AvailableSizeAlongAxis() const {
+    return IsYAxis() ? available_size_.height : available_size_.width;
+  }
 
   const LayoutObject* query_object_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
@@ -365,15 +366,15 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
                                                TextDirection::kLtr};
 
   PhysicalOffset offset_to_padding_box_;
-  LayoutUnit available_size_;
+
+  // Either width or height will be used, depending on IsYAxis().
+  PhysicalSize available_size_;
 
   // These fields will be populated during `anchor()` evaluation if needed.
-  mutable absl::optional<const LayoutObject*> default_anchor_;
-  mutable absl::optional<const PaintLayer*>
+  mutable std::optional<const LayoutObject*> default_anchor_;
+  mutable std::optional<const PaintLayer*>
       default_anchor_scroll_container_layer_;
 
-  bool is_y_axis_ = false;
-  bool is_right_or_bottom_ = false;
   mutable bool has_anchor_functions_ = false;
   mutable bool needs_scroll_adjustment_in_x_ = false;
   mutable bool needs_scroll_adjustment_in_y_ = false;

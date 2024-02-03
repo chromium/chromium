@@ -13,8 +13,10 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -138,7 +140,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
 }
 
 // static
-absl::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
+std::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
     CSSParserTokenRange range,
     const CSSParserContext* context,
     CSSNestingType nesting_type,
@@ -152,11 +154,11 @@ absl::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   range.ConsumeWhitespace();
-  absl::optional<base::span<CSSSelector>> result =
+  std::optional<base::span<CSSSelector>> result =
       parser.ConsumeForgivingComplexSelectorList(range, nesting_type);
   DCHECK(result.has_value());
   if (!range.AtEnd()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   parser.RecordUsageAndDeprecations(result.value());
   return result;
@@ -321,7 +323,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
     return ConsumeForgivingCompoundSelectorList(range);
   }
   ResetVectorAfterScope reset_vector(output_);
-  absl::optional<base::span<CSSSelector>> forgiving_list =
+  std::optional<base::span<CSSSelector>> forgiving_list =
       ConsumeForgivingComplexSelectorList(range, CSSNestingType::kNone);
   if (!forgiving_list.has_value()) {
     return nullptr;
@@ -329,7 +331,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
   return CSSSelectorList::AdoptSelectorVector(forgiving_list.value());
 }
 
-absl::optional<base::span<CSSSelector>>
+std::optional<base::span<CSSSelector>>
 CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     CSSParserTokenRange& range,
     CSSNestingType nesting_type) {
@@ -337,7 +339,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     base::span<CSSSelector> selectors =
         ConsumeComplexSelectorList(range, nesting_type);
     if (selectors.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     } else {
       return selectors;
     }
@@ -635,7 +637,7 @@ static CSSSelector CreateImplicitScopeActivation() {
   return selector;
 }
 
-static absl::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
+static std::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
     const CSSSelector* selector) {
@@ -658,7 +660,7 @@ static absl::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
       }
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // A nested rule that starts with a combinator; very similar to
@@ -777,10 +779,9 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     // of GetNestingTypeForSelectorList().
     wtf_size_t last_index = output_.size() - 1;
     output_[last_index].SetLastInSelectorList(true);
-    if (absl::optional<CSSSelector> anchor =
-            MaybeCreateImplicitDescendantAnchor(
-                nesting_type, parent_rule_for_nesting_,
-                reset_vector.AddedElements().data())) {
+    if (std::optional<CSSSelector> anchor = MaybeCreateImplicitDescendantAnchor(
+            nesting_type, parent_rule_for_nesting_,
+            reset_vector.AddedElements().data())) {
       output_.back().SetRelation(CSSSelector::kDescendant);
       if (nesting_type != CSSNestingType::kNone && is_within_scope_) {
         output_.push_back(CreateImplicitScopeActivation());
@@ -847,7 +848,33 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
     return CSSSelector::PseudoType::kPseudoBlinkInternalElement;
   }
   if (name.StartsWith("--")) {
-    return CSSSelector::PseudoType::kPseudoState;
+    String custom_name = name.GetString().Substring(2);
+    if (ExecutionContext* context =
+            document ? document->GetExecutionContext() : nullptr) {
+      Deprecation::CountDeprecation(
+          context, WebFeature::kCSSCustomStateDeprecatedSyntax);
+    }
+    if (RuntimeEnabledFeatures::CSSCustomStateDeprecatedSyntaxEnabled()) {
+      if (document) {
+        // TODO(crbug.com/1514397): Add DevTools deprecations here as well
+        document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kDeprecation,
+            mojom::ConsoleMessageLevel::kError,
+            "Custom state pseudo classes are changing from \":--" +
+                custom_name + "\" to \":state(" + custom_name +
+                ")\" soon. See more"
+                " here: https://github.com/w3c/csswg-drafts/issues/4805"));
+      }
+      return CSSSelector::PseudoType::kPseudoStateDeprecatedSyntax;
+    } else if (document) {
+      document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kDeprecation,
+          mojom::ConsoleMessageLevel::kError,
+          "Custom state pseudo classes have been changed from \":--" +
+              custom_name + "\" to \":state(" + custom_name +
+              ")\". See more here: "
+              "https://github.com/w3c/csswg-drafts/issues/4805"));
+    }
   }
 
   return CSSSelector::PseudoType::kPseudoUnknown;
@@ -969,7 +996,8 @@ bool IsPseudoClassValidAfterPseudoElement(
       return pseudo_class == CSSSelector::kPseudoWindowInactive;
     case CSSSelector::kPseudoPart:
       return IsUserActionPseudoClass(pseudo_class) ||
-             pseudo_class == CSSSelector::kPseudoState;
+             pseudo_class == CSSSelector::kPseudoState ||
+             pseudo_class == CSSSelector::kPseudoStateDeprecatedSyntax;
     case CSSSelector::kPseudoWebKitCustomElement:
     case CSSSelector::kPseudoBlinkInternalElement:
     case CSSSelector::kPseudoFileSelectorButton:
@@ -1511,7 +1539,10 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       output_.push_back(std::move(selector));
       return true;
     }
-    case CSSSelector::kPseudoDir: {
+    case CSSSelector::kPseudoDir:
+    case CSSSelector::kPseudoState: {
+      CHECK(selector.GetPseudoType() != CSSSelector::kPseudoState ||
+            RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled());
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (ident.GetType() != kIdentToken || !block.AtEnd()) {
         return false;
@@ -1572,24 +1603,45 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
     case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew: {
-      const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
+      const CSSParserToken& ident = block.Consume();
+      std::optional<AtomicString> name_or_wildcard;
+      if (ident.GetType() == kIdentToken) {
+        name_or_wildcard = ident.Value().ToAtomicString();
+      } else if (ident.GetType() == kDelimiterToken &&
+                 ident.Delimiter() == '*') {
+        name_or_wildcard = CSSSelector::UniversalSelectorAtom();
+      }
+
+      // TODO(https://github.com/w3c/csswg-drafts/issues/9874)
+      // Consider allowing (.class) without *.
+      if (!name_or_wildcard) {
+        return false;
+      }
+
+      std::unique_ptr<Vector<AtomicString>> name_and_classes =
+          std::make_unique<Vector<AtomicString>>();
+      name_and_classes->push_back(*name_or_wildcard);
+      if (RuntimeEnabledFeatures::CSSViewTransitionClassEnabled()) {
+        while (!block.AtEnd() && block.Peek().GetType() != kWhitespaceToken) {
+          if (block.Peek().GetType() != kDelimiterToken ||
+              block.Consume().Delimiter() != '.') {
+            return false;
+          }
+
+          if (block.Peek().GetType() != kIdentToken) {
+            return false;
+          }
+          name_and_classes->push_back(block.Consume().Value().ToAtomicString());
+        }
+      }
+
+      block.ConsumeWhitespace();
+
       if (!block.AtEnd()) {
         return false;
       }
 
-      absl::optional<AtomicString> argument;
-      if (ident.GetType() == kIdentToken) {
-        argument = ident.Value().ToAtomicString();
-      } else if (ident.GetType() == kDelimiterToken &&
-                 ident.Delimiter() == '*') {
-        argument = CSSSelector::UniversalSelectorAtom();
-      }
-
-      if (!argument) {
-        return false;
-      }
-
-      selector.SetArgument(*argument);
+      selector.SetIdentList(std::move(name_and_classes));
       output_.push_back(std::move(selector));
       return true;
     }
@@ -1880,10 +1932,6 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenRange& range,
 // Returns nullptr on failure.
 CSSSelectorList* CSSSelectorParser::ConsumeNthChildOfSelectors(
     CSSParserTokenRange& range) {
-  if (!RuntimeEnabledFeatures::CSSSelectorNthChildComplexSelectorEnabled()) {
-    return nullptr;
-  }
-
   if (range.Peek().GetType() != kIdentToken ||
       range.Consume().Value() != "of") {
     return nullptr;
@@ -2224,6 +2272,9 @@ static void RecordUsageAndDeprecationsOneSelector(
       break;
     case CSSSelector::kPseudoHas:
       feature = WebFeature::kCSSSelectorPseudoHas;
+      break;
+    case CSSSelector::kPseudoState:
+      feature = WebFeature::kCSSSelectorPseudoState;
       break;
     default:
       break;

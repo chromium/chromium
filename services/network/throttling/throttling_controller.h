@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
                 const base::UnguessableToken& throttling_profile_id);
   void Unregister(uint32_t net_log_source_id);
 
-  absl::optional<base::UnguessableToken> GetProfileID(
+  std::optional<base::UnguessableToken> GetProfileID(
       uint32_t net_log_source_id);
 
   void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,

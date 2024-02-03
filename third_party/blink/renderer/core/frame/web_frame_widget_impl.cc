@@ -604,14 +604,14 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   // detected writing has started.
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   if (!frame) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
   Element* stylus_writable_element =
       frame->GetEventHandler().CurrentTouchDownElement();
   if (!stylus_writable_element) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
@@ -631,7 +631,7 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
     return;
   }
 
-  std::move(callback).Run(absl::nullopt, absl::nullopt);
+  std::move(callback).Run(std::nullopt, std::nullopt);
 }
 
 void WebFrameWidgetImpl::HandleStylusWritingGestureAction(
@@ -1946,9 +1946,9 @@ std::unique_ptr<cc::ScopedPauseRendering> WebFrameWidgetImpl::PauseRendering() {
   return widget_base_->LayerTreeHost()->PauseRendering();
 }
 
-absl::optional<int> WebFrameWidgetImpl::GetMaxRenderBufferBounds() const {
+std::optional<int> WebFrameWidgetImpl::GetMaxRenderBufferBounds() const {
   if (!View()->does_composite()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return widget_base_->GetMaxRenderBufferBounds();
 }
@@ -2068,7 +2068,7 @@ void WebFrameWidgetImpl::ShowContextMenu(
 
 void WebFrameWidgetImpl::SetViewportIntersection(
     mojom::blink::ViewportIntersectionStatePtr intersection_state,
-    const absl::optional<VisualProperties>& visual_properties) {
+    const std::optional<VisualProperties>& visual_properties) {
   // Remote viewports are only applicable to local frames with remote ancestors.
   DCHECK(ForSubframe() || !LocalRootImpl()->GetFrame()->IsOutermostMainFrame());
 
@@ -2125,8 +2125,7 @@ void WebFrameWidgetImpl::SetIsInertForSubFrame(bool inert) {
   LocalRootImpl()->GetFrame()->SetIsInert(inert);
 }
 
-absl::optional<gfx::Point>
-WebFrameWidgetImpl::GetAndResetContextMenuLocation() {
+std::optional<gfx::Point> WebFrameWidgetImpl::GetAndResetContextMenuLocation() {
   return std::move(host_context_menu_location_);
 }
 
@@ -2389,7 +2388,7 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
       ->GetEventHandler()
       .RecomputeMouseHoverStateIfNeeded();
 
-  absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
+  std::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
   if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
     ukm_timer.emplace(
         LocalRootImpl()->GetFrame()->View()->GetUkmAggregator()->GetScopedTimer(
@@ -2735,7 +2734,7 @@ void WebFrameWidgetImpl::SetResizable(bool resizable) {
 }
 
 void WebFrameWidgetImpl::OverrideDevicePostureForEmulation(
-    device::mojom::blink::DevicePostureType device_posture_param) {
+    mojom::blink::DevicePostureType device_posture_param) {
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   frame->OverrideDevicePostureForEmulation(device_posture_param);
 }
@@ -3496,8 +3495,8 @@ bool WebFrameWidgetImpl::ShouldSuppressKeyboardForFocusedElement() {
 }
 
 void WebFrameWidgetImpl::GetEditContextBoundsInWindow(
-    absl::optional<gfx::Rect>* edit_context_control_bounds,
-    absl::optional<gfx::Rect>* edit_context_selection_bounds) {
+    std::optional<gfx::Rect>* edit_context_control_bounds,
+    std::optional<gfx::Rect>* edit_context_selection_bounds) {
   WebInputMethodController* controller = GetActiveWebInputMethodController();
   if (!controller)
     return;
@@ -3937,7 +3936,7 @@ void WebFrameWidgetImpl::UpdateLineBounds() {
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_base_->widget_input_handler_manager()
               ->GetWidgetInputHandlerHost()) {
-    host->ImeCompositionRangeChanged(gfx::Range::InvalidRange(), absl::nullopt,
+    host->ImeCompositionRangeChanged(gfx::Range::InvalidRange(), std::nullopt,
                                      input_visible_line_bounds_);
   }
 }
@@ -4570,7 +4569,7 @@ gfx::Rect WebFrameWidgetImpl::ViewportVisibleRect() {
   }
 }
 
-absl::optional<display::mojom::blink::ScreenOrientation>
+std::optional<display::mojom::blink::ScreenOrientation>
 WebFrameWidgetImpl::ScreenOrientationOverride() {
   return View()->ScreenOrientationOverride();
 }

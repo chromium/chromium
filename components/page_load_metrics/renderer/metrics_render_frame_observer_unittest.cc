@@ -101,7 +101,7 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
       mojom::SoftNavigationMetrics::New(
           blink::kSoftNavigationCountDefaultValue,
           base::Milliseconds(0),
-          base::EmptyString(),
+          std::string(),
           mojom::LargestContentfulPaintTiming::New());
 };
 
@@ -193,7 +193,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   mojom::SoftNavigationMetricsPtr soft_navigation_metrics =
       mojom::SoftNavigationMetrics::New(
           blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-          base::EmptyString(), mojom::LargestContentfulPaintTiming::New());
+          std::string(), mojom::LargestContentfulPaintTiming::New());
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
   observer.ExpectSoftNavigationMetrics(*soft_navigation_metrics);

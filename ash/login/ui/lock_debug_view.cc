@@ -120,7 +120,7 @@ struct UserMetadata {
   bool enable_tap_to_unlock = false;
   bool enable_challenge_response = false;  // Smart Card
   bool enable_auth = true;
-  user_manager::UserType type = user_manager::USER_TYPE_REGULAR;
+  user_manager::UserType type = user_manager::UserType::kRegular;
   SmartLockState smart_lock_state = SmartLockState::kInactive;
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
   DebugAuthEnabledState auth_enable_state = DebugAuthEnabledState::kAuthEnabled;
@@ -148,7 +148,7 @@ LoginUserInfo PopulateUserData(const LoginUserInfo& user,
   LoginUserInfo result = user;
   result.basic_user_info.type = type;
 
-  bool is_public_account = type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  bool is_public_account = type == user_manager::UserType::kPublicAccount;
   // Set debug user names and email. Useful for the stub user, which does not
   // have a name  and email set.
   result.basic_user_info.display_name =
@@ -393,7 +393,7 @@ class LockDebugView::DebugDataDispatcherTransformer
     const AccountId account_id = debug_user->account_id;
 
     std::unique_ptr<ash::UserContext> user_context =
-        std::make_unique<ash::UserContext>(user_manager::USER_TYPE_REGULAR,
+        std::make_unique<ash::UserContext>(user_manager::UserType::kRegular,
                                            account_id);
 
     Shell::Get()->local_authentication_request_controller()->ShowWidget(
@@ -526,9 +526,9 @@ class LockDebugView::DebugDataDispatcherTransformer
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata& user = debug_users_[user_index];
     // Swap the type between regular and public account.
-    user.type = user.type == user_manager::USER_TYPE_REGULAR
-                    ? user_manager::USER_TYPE_PUBLIC_ACCOUNT
-                    : user_manager::USER_TYPE_REGULAR;
+    user.type = user.type == user_manager::UserType::kRegular
+                    ? user_manager::UserType::kPublicAccount
+                    : user_manager::UserType::kRegular;
 
     std::vector<LoginUserInfo> users = BuildUserList(debug_users_.size());
     // Update display name and email in debug users.
@@ -953,7 +953,7 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
   container_->AddChildView(make_scroll(global_action_view_container_, 110));
   container_->AddChildView(make_scroll(per_user_action_view_container_, 100));
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 LockDebugView::~LockDebugView() {
@@ -962,18 +962,18 @@ LockDebugView::~LockDebugView() {
   delete lock_;
 }
 
-void LockDebugView::Layout() {
+void LockDebugView::Layout(PassKey) {
   global_action_view_container_->SizeToPreferredSize();
   per_user_action_view_container_->SizeToPreferredSize();
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   lock_->SetBoundsRect(GetLocalBounds());
   container_->SetPosition(gfx::Point());
   container_->SizeToPreferredSize();
 
   for (views::View* child : container_->children()) {
-    child->Layout();
+    child->DeprecatedLayoutImmediately();
   }
 }
 
@@ -986,7 +986,7 @@ void LockDebugView::AddOrRemoveUsersButtonPressed(int delta) {
   debug_data_dispatcher_->SetUserCount(
       std::max(0, debug_data_dispatcher_->GetUserCount() + delta));
   UpdatePerUserActionContainer();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::AddSystemInfoButtonPressed() {
@@ -1029,7 +1029,7 @@ void LockDebugView::ToggleAuthButtonPressed() {
   force_fail_auth_ = get_next_auth_state(force_fail_auth_);
   global_action_toggle_auth_->SetText(
       base::ASCIIToUTF16(get_auth_label(force_fail_auth_)));
-  Layout();
+  DeprecatedLayoutImmediately();
   Shell::Get()
       ->login_screen_controller()
       ->set_force_fail_auth_for_debug_overlay(force_fail_auth_);
@@ -1058,7 +1058,7 @@ void LockDebugView::ToggleDebugDetachableBaseButtonPressed() {
         DebugLoginDetachableBaseModel::kNullBaseId);
   }
   UpdateDetachableBaseColumn();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::CycleDetachableBaseStatusButtonPressed() {
@@ -1067,7 +1067,7 @@ void LockDebugView::CycleDetachableBaseStatusButtonPressed() {
       debug_detachable_base_model_->NextBaseId());
   UpdatePerUserActionContainer();
   UpdateDetachableBaseColumn();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::CycleDetachableBaseIdButtonPressed() {
@@ -1075,7 +1075,7 @@ void LockDebugView::CycleDetachableBaseIdButtonPressed() {
       DetachableBasePairingStatus::kAuthenticated,
       debug_detachable_base_model_->NextBaseId());
   UpdateDetachableBaseColumn();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::ToggleWarningBannerButtonPressed() {
@@ -1113,7 +1113,7 @@ void LockDebugView::UseDetachableBaseButtonPressed(int index) {
 void LockDebugView::TogglePublicAccountButtonPressed(int index) {
   debug_data_dispatcher_->TogglePublicAccountForUserIndex(index);
   UpdatePerUserActionContainer();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::CycleAuthErrorMessage() {
@@ -1281,7 +1281,7 @@ void LockDebugView::UpdatePerUserActionContainer() {
 
 void LockDebugView::UpdatePerUserActionContainerAndLayout() {
   UpdatePerUserActionContainer();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LockDebugView::UpdateDetachableBaseColumn() {

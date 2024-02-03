@@ -41,7 +41,9 @@
 #include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
-#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -59,9 +61,9 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view_utils.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace ash::download_status {
 
@@ -105,6 +107,13 @@ class MockNotificationDisplayServiceObserver
               OnNotificationDisplayServiceDestroyed,
               (NotificationDisplayService * service),
               (override));
+};
+
+// MockTabStripModelObserver ---------------------------------------------------
+
+class MockTabStripModelObserver : public TabStripModelObserver {
+ public:
+  MOCK_METHOD(void, OnTabWillBeAdded, (), (override));
 };
 
 // Helpers ---------------------------------------------------------------------
@@ -311,16 +320,10 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
 
 // Verifies clicking a completed download's notification.
 IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
-                       DISABLED_ClickCompletedDownload) {
-  // Test setup:
-  // 1. Wait until test system apps are installed so that opening a download
-  //    file is handled.
-  // 2. Minimize the browser window before clicking a notification to ensure the
-  //    activation change.
-  // NOTE: Perform setup tasks before showing the notification popup to avoid
-  // the flakiness when the popup is dismissed due to timeout.
+                       ClickCompletedDownload) {
+  // Wait until test system apps are installed so that opening a download file
+  // is handled.
   WaitForTestSystemAppInstall();
-  browser()->window()->Minimize();
 
   // Add a completed download and cache its notification ID.
   Profile* const profile = ProfileManager::GetActiveUserProfile();
@@ -340,32 +343,28 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
+  // The command that shows downloads in browser should not be performed.
+  EXPECT_CALL(download_status_updater_client(), ShowInBrowser).Times(0);
+
+  // Set up an observer to wait until a tab is added.
+  NiceMock<MockTabStripModelObserver> tab_strip_model_observer;
+  base::ScopedObservation<TabStripModel, MockTabStripModelObserver>
+      tab_strip_model_observation{&tab_strip_model_observer};
+  base::test::TestFuture<void> future;
+  ON_CALL(tab_strip_model_observer, OnTabWillBeAdded)
+      .WillByDefault(base::test::RunClosure(future.GetRepeatingCallback()));
+
   AshNotificationView* const notification_view =
       GetPopupView(profile, notification_id);
   ASSERT_TRUE(notification_view);
 
-  // Observe the `activation_client` so we can detect windows becoming active as
-  // a result of opening the download file.
-  NiceMock<MockActivationChangeObserver> activation_mock_observer;
-  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
-      activation_observation{&activation_mock_observer};
-  auto* const activation_client =
-      wm::GetActivationClient(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(activation_client);
-  activation_observation.Observe(activation_client);
-
-  // The command that shows downloads in browser should not be performed.
-  EXPECT_CALL(download_status_updater_client(), ShowInBrowser).Times(0);
-
-  // Click `notification_view` and wait until window activation updates. Then
-  // verify that the click is recorded.
-  base::test::TestFuture<void> future;
-  EXPECT_CALL(activation_mock_observer, OnWindowActivated)
-      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  // Click `notification_view` and wait until a tab is added. Then verify that
+  // the click is recorded. It assumes the download file is opened by browser.
   base::UserActionTester tester;
+  tab_strip_model_observation.Observe(browser()->tab_strip_model());
   test::Click(notification_view, ui::EF_NONE);
   EXPECT_TRUE(future.Wait());
-  Mock::VerifyAndClearExpectations(&activation_mock_observer);
+  Mock::VerifyAndClearExpectations(&tab_strip_model_observer);
   Mock::VerifyAndClearExpectations(&download_status_updater_client());
   EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Click_Completed"), 1);
 }
@@ -432,7 +431,6 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
       service_observer(),
       OnNotificationDisplayed(
           AllOf(
-              Property(&message_center::Notification::progress, Eq(-1)),
               Property(&message_center::Notification::progress_status,
                        Eq(std::u16string())),
               Property(&message_center::Notification::title,
@@ -445,12 +443,18 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
+  // The progress of `download` is not set so the progress bar should not show.
+  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  EXPECT_FALSE(popup_view->progress_bar_view_for_testing());
+
   // Update the download's received bytes and total bytes. Then check the
   // notification's progress.
   download->progress = crosapi::mojom::DownloadProgress::New();
   crosapi::mojom::DownloadProgressPtr& progress = download->progress;
   progress->received_bytes = 0;
   progress->total_bytes = 1024;
+  progress->visible = true;
   EXPECT_CALL(
       service_observer(),
       OnNotificationDisplayed(
@@ -460,6 +464,15 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
           _));
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
+
+  // The notification view should have a visible progress bar because `progress`
+  // specifies the visibility to be true.
+  popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  const views::ProgressBar* progress_bar =
+      popup_view->progress_bar_view_for_testing();
+  ASSERT_TRUE(progress_bar);
+  EXPECT_TRUE(progress_bar->GetVisible());
 
   // Update the download's:
   // 1. Received bytes
@@ -476,8 +489,6 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
           AllOf(
               Property(&message_center::Notification::id, Eq(notification_id)),
               Property(&message_center::Notification::progress, Eq(50)),
-              Property(&message_center::Notification::progress_status,
-                       Eq(u"Random text")),
               Property(&message_center::Notification::title,
                        Eq(download->target_file_path->BaseName()
                               .LossyDisplayName()))),
@@ -486,24 +497,22 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   Mock::VerifyAndClearExpectations(&service_observer());
 
   // Verify that the notification view of an in-progress download has a visible
-  // progress bar.
-  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  // progress bar with the expected status text.
+  popup_view = GetPopupView(profile, notification_id);
   ASSERT_TRUE(popup_view);
-  const views::ProgressBar* const progress_bar =
-      popup_view->progress_bar_view_for_testing();
+  progress_bar = popup_view->progress_bar_view_for_testing();
   ASSERT_TRUE(progress_bar);
   EXPECT_TRUE(progress_bar->GetVisible());
+  const views::Label* const status_view = popup_view->status_view_for_testing();
+  ASSERT_TRUE(status_view);
+  EXPECT_EQ(status_view->GetText(), u"Random text");
 
-  // Complete download and then check the notification.
-  progress->received_bytes = progress->total_bytes;
-  download->state = crosapi::mojom::DownloadState::kComplete;
+  // Complete download. Then check the notification.
+  MarkDownloadStatusCompleted(*download);
   EXPECT_CALL(
       service_observer(),
       OnNotificationDisplayed(
-          AllOf(
-              Property(&message_center::Notification::id, Eq(notification_id)),
-              Property(&message_center::Notification::progress, Eq(100))),
-          _));
+          Property(&message_center::Notification::id, Eq(notification_id)), _));
   Update(download->Clone());
   EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
 
@@ -512,6 +521,12 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   popup_view = GetPopupView(profile, notification_id);
   ASSERT_TRUE(popup_view);
   EXPECT_FALSE(popup_view->progress_bar_view_for_testing());
+
+  // Check the notification view's message label.
+  const views::Label* const message_label =
+      popup_view->message_label_for_testing();
+  ASSERT_TRUE(message_label);
+  EXPECT_EQ(message_label->GetText(), u"Random text");
 }
 
 // Verifies that a download notification should not show again if it has been
@@ -628,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   EXPECT_TRUE(progress_bar->GetVisible());
 
   // Complete the download. Check the existence of the associated notification.
-  download->state = crosapi::mojom::DownloadState::kComplete;
+  MarkDownloadStatusCompleted(*download);
   Update(download->Clone());
   EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
 

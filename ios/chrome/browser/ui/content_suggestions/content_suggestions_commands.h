@@ -14,23 +14,12 @@ enum class SafetyCheckItemType;
 // with the coordinator layer, and from there to the rest of the application.
 @protocol ContentSuggestionsCommands
 
-// Opens the Most Visited associated with this `item` at the `mostVisitedItem`.
-- (void)openMostVisitedItem:(NSObject*)item atIndex:(NSInteger)mostVisitedIndex;
-
-// Indicates to the receiver that a Most Visited tile `sender` was tapped.
-- (void)mostVisitedTileTapped:(UIGestureRecognizer*)sender;
-
-- (void)shortcutsTapped:(UIGestureRecognizer*)sender;
-
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
 - (void)openMostRecentTab;
 
 // Opens the displayed tab resumption item.
 - (void)openTabResumptionItem;
-
-// Handles a user tap load the `parcelTrackingURL`.
-- (void)loadParcelTrackingPage:(GURL)parcelTrackingURL;
 
 @end
 

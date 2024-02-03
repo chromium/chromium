@@ -8,6 +8,7 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 After style property removal:
 [expanded] 
@@ -16,5 +17,6 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 

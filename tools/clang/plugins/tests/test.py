@@ -38,13 +38,16 @@ def main():
       action='store_true',
       help='If specified, overwrites the expected results in place.')
   parser.add_argument('clang_path', help='The path to the clang binary.')
+  parser.add_argument('--filter',
+                      action='store',
+                      help='Filter to test files that match a regex')
   args = parser.parse_args()
 
-  return ChromeStylePluginTest(
-      os.path.dirname(os.path.realpath(__file__)),
-      args.clang_path,
-      'find-bad-constructs',
-      args.reset_results).Run()
+  return ChromeStylePluginTest(os.path.dirname(os.path.realpath(__file__)),
+                               args.clang_path,
+                               'find-bad-constructs',
+                               args.reset_results,
+                               filename_regex=args.filter).Run()
 
 
 if __name__ == '__main__':

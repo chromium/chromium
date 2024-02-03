@@ -157,7 +157,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -588,7 +589,7 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     // frame.
     content::RenderFrameHost* frame;
     if (UseOopif()) {
-      test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
+      test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
       frame = pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
     } else {
       auto* guest_view =
@@ -1272,7 +1273,6 @@ struct ContextMenuForComposeTestCase {
   uint64_t field_renderer_id;
   bool should_trigger_compose_context_menu;
   bool expected;
-  bool enabled;
 };
 
 class ContextMenuForComposeBrowserTest
@@ -1300,7 +1300,6 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForComposeBrowserTest,
   menu->Init();
 
   ASSERT_EQ(menu->IsItemPresent(IDC_CONTEXT_COMPOSE), test_case.expected);
-  ASSERT_EQ(menu->IsItemEnabled(IDC_CONTEXT_COMPOSE), test_case.enabled);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1310,18 +1309,15 @@ INSTANTIATE_TEST_SUITE_P(
         {.test_name = "Enabled",
          .is_editable = true,
          .should_trigger_compose_context_menu = true,
-         .expected = true,
-         .enabled = true},
+         .expected = true},
         {.test_name = "NotEditable",
          .is_editable = false,
          .should_trigger_compose_context_menu = true,
-         .expected = false,
-         .enabled = false},
-        {.test_name = "Disabled",
+         .expected = false},
+        {.test_name = "ShouldNotOffer",
          .is_editable = true,
          .should_trigger_compose_context_menu = false,
-         .expected = true,
-         .enabled = false},
+         .expected = false},
     }),
     [](const testing::TestParamInfo<
         ContextMenuForComposeBrowserTest::ParamType>& info) {
@@ -2911,8 +2907,8 @@ class PdfOcrContextMenuBrowserTest
     accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(
         IsScreenReaderEnabled());
     if (IsComponentReady()) {
-      screen_ai::ScreenAIInstallState::GetInstance()
-          ->SetComponentReadyForTesting();
+      screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+          ->set_ocr_ready_for_testing();
     }
   }
 

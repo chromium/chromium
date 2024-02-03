@@ -537,8 +537,8 @@ class TestEncodedVideoFrame : public webrtc::RecordableEncodedFrame {
       const override {
     return nullptr;
   }
-  absl::optional<webrtc::ColorSpace> color_space() const override {
-    return absl::nullopt;
+  std::optional<webrtc::ColorSpace> color_space() const override {
+    return std::nullopt;
   }
   webrtc::VideoCodecType codec() const override {
     return webrtc::kVideoCodecVP8;

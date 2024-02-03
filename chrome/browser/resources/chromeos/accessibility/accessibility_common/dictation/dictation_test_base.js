@@ -276,32 +276,6 @@ DictationE2ETestBase = class extends E2ETestBase {
     return accessibilityCommon.dictation_.active_;
   }
 
-  /**
-   * Async function to get a preference value from Settings.
-   * @param {string} name
-   * @return {!Promise<*>}
-   */
-  async getPref(name) {
-    return new Promise(resolve => {
-      chrome.settingsPrivate.getPref(name, ret => {
-        resolve(ret);
-      });
-    });
-  }
-
-  /**
-   * Async function to set a preference value in Settings.
-   * @param {string} name
-   * @return {!Promise}
-   */
-  async setPref(name, value) {
-    return new Promise(resolve => {
-      chrome.settingsPrivate.setPref(name, value, undefined, () => {
-        resolve();
-      });
-    });
-  }
-
   /** @return {InputTextStrategy} */
   getInputTextStrategy() {
     return accessibilityCommon.dictation_.speechParser_.inputTextStrategy_;

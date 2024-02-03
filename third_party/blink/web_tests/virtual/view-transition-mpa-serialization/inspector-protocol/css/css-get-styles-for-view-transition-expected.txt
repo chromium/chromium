@@ -212,10 +212,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-group()
+                                        text : html::view-transition-group(*)
                                     }
                                 ]
-                                text : html::view-transition-group()
+                                text : html::view-transition-group(*)
                             }
                             style : {
                                 cssProperties : [
@@ -263,10 +263,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-group()
+                                        text : html::view-transition-group(*)
                                     }
                                 ]
-                                text : html::view-transition-group()
+                                text : html::view-transition-group(*)
                             }
                             style : {
                                 cssProperties : [
@@ -446,10 +446,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-group()
+                                        text : html::view-transition-group(*)
                                     }
                                 ]
-                                text : html::view-transition-group()
+                                text : html::view-transition-group(*)
                             }
                             style : {
                                 cssProperties : [
@@ -497,10 +497,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-group()
+                                        text : html::view-transition-group(*)
                                     }
                                 ]
-                                text : html::view-transition-group()
+                                text : html::view-transition-group(*)
                             }
                             style : {
                                 cssProperties : [
@@ -680,10 +680,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-image-pair()
+                                        text : ::view-transition-image-pair(*)
                                     }
                                 ]
-                                text : ::view-transition-image-pair()
+                                text : ::view-transition-image-pair(*)
                             }
                             style : {
                                 cssProperties : [
@@ -743,10 +743,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-image-pair()
+                                        text : html::view-transition-image-pair(*)
                                     }
                                 ]
-                                text : html::view-transition-image-pair()
+                                text : html::view-transition-image-pair(*)
                             }
                             style : {
                                 cssProperties : [
@@ -839,10 +839,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-image-pair()
+                                        text : ::view-transition-image-pair(*)
                                     }
                                 ]
-                                text : ::view-transition-image-pair()
+                                text : ::view-transition-image-pair(*)
                             }
                             style : {
                                 cssProperties : [
@@ -902,10 +902,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-image-pair()
+                                        text : html::view-transition-image-pair(*)
                                     }
                                 ]
-                                text : html::view-transition-image-pair()
+                                text : html::view-transition-image-pair(*)
                             }
                             style : {
                                 cssProperties : [
@@ -998,7 +998,7 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-new()
+                                        text : ::view-transition-new(*)
                                     }
                                     [1] : {
                                         specificity : {
@@ -1006,10 +1006,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-old()
+                                        text : ::view-transition-old(*)
                                     }
                                 ]
-                                text : ::view-transition-new(), ::view-transition-old()
+                                text : ::view-transition-new(*), ::view-transition-old(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1061,10 +1061,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-old()
+                                        text : html::view-transition-old(*)
                                     }
                                 ]
-                                text : html::view-transition-old()
+                                text : html::view-transition-old(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1160,7 +1160,7 @@ The test verifies functionality of querying style information for view-transitio
                                         text : ::view-transition-old(*)
                                     }
                                 ]
-                                text : ::view-transition-old()
+                                text : ::view-transition-old(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1302,7 +1302,7 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-new()
+                                        text : ::view-transition-new(*)
                                     }
                                     [1] : {
                                         specificity : {
@@ -1310,10 +1310,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-old()
+                                        text : ::view-transition-old(*)
                                     }
                                 ]
-                                text : ::view-transition-new(), ::view-transition-old()
+                                text : ::view-transition-new(*), ::view-transition-old(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1365,10 +1365,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-old()
+                                        text : html::view-transition-old(*)
                                     }
                                 ]
-                                text : html::view-transition-old()
+                                text : html::view-transition-old(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1464,7 +1464,7 @@ The test verifies functionality of querying style information for view-transitio
                                         text : ::view-transition-old(*)
                                     }
                                 ]
-                                text : ::view-transition-old()
+                                text : ::view-transition-old(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1606,7 +1606,7 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-new()
+                                        text : ::view-transition-new(*)
                                     }
                                     [1] : {
                                         specificity : {
@@ -1614,10 +1614,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-old()
+                                        text : ::view-transition-old(*)
                                     }
                                 ]
-                                text : ::view-transition-new(), ::view-transition-old()
+                                text : ::view-transition-new(*), ::view-transition-old(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1669,10 +1669,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-new()
+                                        text : html::view-transition-new(*)
                                     }
                                 ]
-                                text : html::view-transition-new()
+                                text : html::view-transition-new(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1765,7 +1765,7 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-new()
+                                        text : ::view-transition-new(*)
                                     }
                                     [1] : {
                                         specificity : {
@@ -1773,10 +1773,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 0
                                         }
-                                        text : ::view-transition-old()
+                                        text : ::view-transition-old(*)
                                     }
                                 ]
-                                text : ::view-transition-new(), ::view-transition-old()
+                                text : ::view-transition-new(*), ::view-transition-old(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1828,10 +1828,10 @@ The test verifies functionality of querying style information for view-transitio
                                             b : 0
                                             c : 1
                                         }
-                                        text : html::view-transition-new()
+                                        text : html::view-transition-new(*)
                                     }
                                 ]
-                                text : html::view-transition-new()
+                                text : html::view-transition-new(*)
                             }
                             style : {
                                 cssProperties : [
@@ -1978,6 +1978,10 @@ Dumping styles for : ::view-transition with id undefined{
     result : {
         cssKeyframesRules : [
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2088,6 +2092,10 @@ Dumping styles for : ::view-transition-group with id root{
                 ]
             }
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2115,10 +2123,10 @@ Dumping styles for : ::view-transition-group with id root{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-group()
+                                text : html::view-transition-group(*)
                             }
                         ]
-                        text : html::view-transition-group()
+                        text : html::view-transition-group(*)
                     }
                     style : {
                         cssProperties : [
@@ -2166,10 +2174,10 @@ Dumping styles for : ::view-transition-group with id root{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-group()
+                                text : html::view-transition-group(*)
                             }
                         ]
-                        text : html::view-transition-group()
+                        text : html::view-transition-group(*)
                     }
                     style : {
                         cssProperties : [
@@ -2328,6 +2336,10 @@ Dumping styles for : ::view-transition-image-pair with id root{
     result : {
         cssKeyframesRules : [
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2355,10 +2367,10 @@ Dumping styles for : ::view-transition-image-pair with id root{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-image-pair()
+                                text : ::view-transition-image-pair(*)
                             }
                         ]
-                        text : ::view-transition-image-pair()
+                        text : ::view-transition-image-pair(*)
                     }
                     style : {
                         cssProperties : [
@@ -2418,10 +2430,10 @@ Dumping styles for : ::view-transition-image-pair with id root{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-image-pair()
+                                text : html::view-transition-image-pair(*)
                             }
                         ]
-                        text : html::view-transition-image-pair()
+                        text : html::view-transition-image-pair(*)
                     }
                     style : {
                         cssProperties : [
@@ -2555,6 +2567,10 @@ Dumping styles for : ::view-transition-old with id root{
                 ]
             }
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2582,7 +2598,7 @@ Dumping styles for : ::view-transition-old with id root{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-new()
+                                text : ::view-transition-new(*)
                             }
                             [1] : {
                                 specificity : {
@@ -2590,10 +2606,10 @@ Dumping styles for : ::view-transition-old with id root{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-old()
+                                text : ::view-transition-old(*)
                             }
                         ]
-                        text : ::view-transition-new(), ::view-transition-old()
+                        text : ::view-transition-new(*), ::view-transition-old(*)
                     }
                     style : {
                         cssProperties : [
@@ -2645,10 +2661,10 @@ Dumping styles for : ::view-transition-old with id root{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-old()
+                                text : html::view-transition-old(*)
                             }
                         ]
-                        text : html::view-transition-old()
+                        text : html::view-transition-old(*)
                     }
                     style : {
                         cssProperties : [
@@ -2744,7 +2760,7 @@ Dumping styles for : ::view-transition-old with id root{
                                 text : ::view-transition-old(*)
                             }
                         ]
-                        text : ::view-transition-old()
+                        text : ::view-transition-old(*)
                     }
                     style : {
                         cssProperties : [
@@ -2927,6 +2943,10 @@ Dumping styles for : ::view-transition-new with id root{
                 ]
             }
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2954,7 +2974,7 @@ Dumping styles for : ::view-transition-new with id root{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-new()
+                                text : ::view-transition-new(*)
                             }
                             [1] : {
                                 specificity : {
@@ -2962,10 +2982,10 @@ Dumping styles for : ::view-transition-new with id root{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-old()
+                                text : ::view-transition-old(*)
                             }
                         ]
-                        text : ::view-transition-new(), ::view-transition-old()
+                        text : ::view-transition-new(*), ::view-transition-old(*)
                     }
                     style : {
                         cssProperties : [
@@ -3017,10 +3037,10 @@ Dumping styles for : ::view-transition-new with id root{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-new()
+                                text : html::view-transition-new(*)
                             }
                         ]
-                        text : html::view-transition-new()
+                        text : html::view-transition-new(*)
                     }
                     style : {
                         cssProperties : [
@@ -3127,6 +3147,10 @@ Dumping styles for : ::view-transition-group with id shared{
                 ]
             }
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3154,10 +3178,10 @@ Dumping styles for : ::view-transition-group with id shared{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-group()
+                                text : html::view-transition-group(*)
                             }
                         ]
-                        text : html::view-transition-group()
+                        text : html::view-transition-group(*)
                     }
                     style : {
                         cssProperties : [
@@ -3205,10 +3229,10 @@ Dumping styles for : ::view-transition-group with id shared{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-group()
+                                text : html::view-transition-group(*)
                             }
                         ]
-                        text : html::view-transition-group()
+                        text : html::view-transition-group(*)
                     }
                     style : {
                         cssProperties : [
@@ -3367,6 +3391,10 @@ Dumping styles for : ::view-transition-image-pair with id shared{
     result : {
         cssKeyframesRules : [
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3394,10 +3422,10 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-image-pair()
+                                text : ::view-transition-image-pair(*)
                             }
                         ]
-                        text : ::view-transition-image-pair()
+                        text : ::view-transition-image-pair(*)
                     }
                     style : {
                         cssProperties : [
@@ -3457,10 +3485,10 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-image-pair()
+                                text : html::view-transition-image-pair(*)
                             }
                         ]
-                        text : html::view-transition-image-pair()
+                        text : html::view-transition-image-pair(*)
                     }
                     style : {
                         cssProperties : [
@@ -3594,6 +3622,10 @@ Dumping styles for : ::view-transition-old with id shared{
                 ]
             }
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3621,7 +3653,7 @@ Dumping styles for : ::view-transition-old with id shared{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-new()
+                                text : ::view-transition-new(*)
                             }
                             [1] : {
                                 specificity : {
@@ -3629,10 +3661,10 @@ Dumping styles for : ::view-transition-old with id shared{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-old()
+                                text : ::view-transition-old(*)
                             }
                         ]
-                        text : ::view-transition-new(), ::view-transition-old()
+                        text : ::view-transition-new(*), ::view-transition-old(*)
                     }
                     style : {
                         cssProperties : [
@@ -3684,10 +3716,10 @@ Dumping styles for : ::view-transition-old with id shared{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-old()
+                                text : html::view-transition-old(*)
                             }
                         ]
-                        text : html::view-transition-old()
+                        text : html::view-transition-old(*)
                     }
                     style : {
                         cssProperties : [
@@ -3783,7 +3815,7 @@ Dumping styles for : ::view-transition-old with id shared{
                                 text : ::view-transition-old(*)
                             }
                         ]
-                        text : ::view-transition-old()
+                        text : ::view-transition-old(*)
                     }
                     style : {
                         cssProperties : [
@@ -3966,6 +3998,10 @@ Dumping styles for : ::view-transition-new with id shared{
                 ]
             }
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3993,7 +4029,7 @@ Dumping styles for : ::view-transition-new with id shared{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-new()
+                                text : ::view-transition-new(*)
                             }
                             [1] : {
                                 specificity : {
@@ -4001,10 +4037,10 @@ Dumping styles for : ::view-transition-new with id shared{
                                     b : 0
                                     c : 0
                                 }
-                                text : ::view-transition-old()
+                                text : ::view-transition-old(*)
                             }
                         ]
-                        text : ::view-transition-new(), ::view-transition-old()
+                        text : ::view-transition-new(*), ::view-transition-old(*)
                     }
                     style : {
                         cssProperties : [
@@ -4056,10 +4092,10 @@ Dumping styles for : ::view-transition-new with id shared{
                                     b : 0
                                     c : 1
                                 }
-                                text : html::view-transition-new()
+                                text : html::view-transition-new(*)
                             }
                         ]
-                        text : html::view-transition-new()
+                        text : html::view-transition-new(*)
                     }
                     style : {
                         cssProperties : [

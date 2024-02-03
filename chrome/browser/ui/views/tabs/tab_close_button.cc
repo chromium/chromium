@@ -164,8 +164,8 @@ views::View* TabCloseButton::TargetForRect(views::View* root,
   // touch happens to be occurring.  In such a case, maybe we don't want this
   // code to run?  It's possible this block should be removed, or maybe this
   // whole function deleted.  Note that in these cases, we should probably
-  // also remove the padding on the close button bounds (see Tab::Layout()),
-  // as it will be pointless.
+  // also remove the padding on the close button bounds (see Tab::Layout()), as
+  // it will be pointless.
   if (aura::Env::GetInstance()->is_touch_down()) {
     contents_bounds = GetLocalBounds();
   }

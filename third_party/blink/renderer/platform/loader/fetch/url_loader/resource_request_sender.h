@@ -144,7 +144,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   virtual void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata,
+      std::optional<mojo_base::BigBuffer> cached_metadata,
       base::TimeTicks response_ipc_arrival_time);
 
   // Called when a redirect occurs.

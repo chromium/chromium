@@ -447,6 +447,7 @@ bool DawnContextProvider::InitializeGraphiteContext(
 
   if (device_) {
     skgpu::graphite::DawnBackendContext backend_context;
+    backend_context.fInstance = GetInstance();
     backend_context.fDevice = device_;
     backend_context.fQueue = device_.GetQueue();
     graphite_context_ =

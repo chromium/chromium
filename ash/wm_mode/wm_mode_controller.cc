@@ -4,6 +4,8 @@
 
 #include "ash/wm_mode/wm_mode_controller.h"
 
+#include <string_view>
+
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_finder.h"
@@ -165,7 +167,7 @@ void WmModeController::OnTouchEvent(ui::TouchEvent* event) {
   OnLocatedEvent(event);
 }
 
-base::StringPiece WmModeController::GetLogContext() const {
+std::string_view WmModeController::GetLogContext() const {
   return "WmMode";
 }
 
@@ -383,7 +385,7 @@ void WmModeController::MaybeRebuildMoveToDeskSubMenu() {
     button->SetEnabled(!desk->is_active());
   }
 
-  pie_menu_view_->Layout();
+  pie_menu_view_->DeprecatedLayoutImmediately();
 }
 
 bool WmModeController::IsTargetingPieMenu(aura::Window* event_target) const {

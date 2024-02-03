@@ -468,13 +468,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
 
 #if BUILDFLAG(ENABLE_INK)
 // TODO(https://crbug.com/920684): Test times out under sanitizers.
-#if defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || defined(_DEBUG)
-#define MAYBE_AnnotationsFeatureEnabled DISABLED_AnnotationsFeatureEnabled
-#else
-#define MAYBE_AnnotationsFeatureEnabled AnnotationsFeatureEnabled
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, MAYBE_AnnotationsFeatureEnabled) {
+// TODO(https://crbug.com/1523044): Test fails for
+// testViewportToCameraConversion.
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DISABLED_AnnotationsFeatureEnabled) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();

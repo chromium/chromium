@@ -15,9 +15,7 @@ MockTranslateDriver::MockTranslateDriver()
       on_is_page_translated_changed_called_(false),
       on_translate_enabled_changed_called_(false),
       translate_page_is_called_(false),
-      language_state_(this),
-      last_committed_url_(GURL::EmptyGURL()),
-      visible_url_(GURL::EmptyGURL()) {}
+      language_state_(this) {}
 
 MockTranslateDriver::~MockTranslateDriver() = default;
 

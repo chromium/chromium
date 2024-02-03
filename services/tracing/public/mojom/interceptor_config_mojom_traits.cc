@@ -4,10 +4,10 @@
 
 #include "services/tracing/public/mojom/interceptor_config_mojom_traits.h"
 
+#include <optional>
 #include <utility>
 
 #include "services/tracing/public/mojom/console_config_mojom_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 // static
@@ -16,7 +16,7 @@ bool StructTraits<tracing::mojom::InterceptorConfigDataView,
     Read(tracing::mojom::InterceptorConfigDataView data,
          perfetto::protos::gen::InterceptorConfig* out) {
   std::string name;
-  absl::optional<perfetto::protos::gen::ConsoleConfig> console_config;
+  std::optional<perfetto::protos::gen::ConsoleConfig> console_config;
   if (!data.ReadName(&name) || name.empty()) {
     return false;
   }

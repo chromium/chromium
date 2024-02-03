@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

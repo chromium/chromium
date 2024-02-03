@@ -153,6 +153,33 @@ TEST(CookieInclusionStatusTest, AddExclusionReason) {
       {CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
 }
 
+TEST(CookieInclusionStatusTest, ExemptionReason) {
+  CookieInclusionStatus status;
+  status.MaybeSetExemptionReason(
+      CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
+  ASSERT_EQ(status.exemption_reason(),
+            CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
+  ASSERT_TRUE(status.IsInclude());
+
+  // Updating exemption reason would be no-op.
+  status.MaybeSetExemptionReason(
+      CookieInclusionStatus::ExemptionReason::kEnterprisePolicy);
+  EXPECT_EQ(status.exemption_reason(),
+            CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
+
+  // Adding an exclusion reason resets the exemption reason.
+  status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
+  EXPECT_EQ(status.exemption_reason(),
+            CookieInclusionStatus::ExemptionReason::kNone);
+
+  // Setting exemption reason when the cookie is already excluded would be
+  // no-op.
+  status.MaybeSetExemptionReason(
+      CookieInclusionStatus::ExemptionReason::kEnterprisePolicy);
+  EXPECT_EQ(status.exemption_reason(),
+            CookieInclusionStatus::ExemptionReason::kNone);
+}
+
 TEST(CookieInclusionStatusTest, CheckEachWarningReason) {
   CookieInclusionStatus status;
 

@@ -55,7 +55,7 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
     ~ScopedCleanStyleForAllProperties();
 
    private:
-    absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope_;
+    std::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope_;
     CSSComputedStyleDeclaration* declaration_;
   };
 

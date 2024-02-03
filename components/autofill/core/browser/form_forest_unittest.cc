@@ -314,7 +314,7 @@ class FakeAutofillDriver : public TestAutofillDriver {
     form.main_frame_origin = origin_;
     for (FormFieldData& field : form.fields) {
       field.host_frame = form.host_frame;
-      field.host_form_id = form.unique_renderer_id;
+      field.host_form_id = form.renderer_id;
       field.origin = origin_;
     }
   }
@@ -1138,7 +1138,7 @@ class FormForestTestUpdateFieldAdd
     size_t target_index = GetParam().field_index;
     FormFieldData field = target_form.fields.front();
     field.name = base::StrCat({field.name, u"_copy"});
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     target_form.fields.insert(target_form.fields.begin() + target_index, field);
   }
 };
@@ -1185,7 +1185,7 @@ class FormForestTestUpdateFieldMove
     size_t target_index = p.target.field_index;
 
     FormFieldData field = source_form.fields[source_index];
-    field.host_form_id = target_form.unique_renderer_id;
+    field.host_form_id = target_form.renderer_id;
 
     if (source_index > target_index) {
       source_form.fields.erase(source_form.fields.begin() + source_index);

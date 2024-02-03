@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
 #include "media/gpu/v4l2/v4l2_vp9_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -43,13 +43,13 @@ bool IsVp9KSVCSupportedDriver(const std::string& driver_name) {
   return base::Contains(kVP9KSVCSupportedDrivers, driver_name);
 }
 
-absl::optional<uint8_t> V4L2PixelFormatToBitDepth(uint32_t v4l2_pixelformat) {
+std::optional<uint8_t> V4L2PixelFormatToBitDepth(uint32_t v4l2_pixelformat) {
   const auto fourcc = Fourcc::FromV4L2PixFmt(v4l2_pixelformat);
   if (fourcc) {
     return BitDepth(fourcc->ToVideoPixelFormat());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
@@ -297,7 +297,7 @@ void V4L2StatefulVideoDecoderBackend::ScheduleDecodeWork() {
 }
 
 void V4L2StatefulVideoDecoderBackend::ProcessEventQueue() {
-  while (absl::optional<struct v4l2_event> ev = device_->DequeueEvent()) {
+  while (std::optional<struct v4l2_event> ev = device_->DequeueEvent()) {
     if (ev->type == V4L2_EVENT_SOURCE_CHANGE &&
         (ev->u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION)) {
       ChangeResolution();
@@ -328,7 +328,7 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
     bool ret = false;
     bool no_buffer = false;
 
-    absl::optional<V4L2WritableBufferRef> buffer;
+    std::optional<V4L2WritableBufferRef> buffer;
     switch (mem_type) {
       case V4L2_MEMORY_MMAP:
         buffer = output_queue_->GetFreeBuffer();
@@ -401,7 +401,7 @@ scoped_refptr<VideoFrame> V4L2StatefulVideoDecoderBackend::GetPoolVideoFrame() {
 // static
 void V4L2StatefulVideoDecoderBackend::ReuseOutputBufferThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<base::WeakPtr<V4L2StatefulVideoDecoderBackend>> weak_this,
+    std::optional<base::WeakPtr<V4L2StatefulVideoDecoderBackend>> weak_this,
     V4L2ReadableBufferRef buffer) {
   DVLOGF(3);
   DCHECK(weak_this);

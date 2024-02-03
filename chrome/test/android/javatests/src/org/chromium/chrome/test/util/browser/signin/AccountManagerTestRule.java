@@ -177,7 +177,7 @@ public class AccountManagerTestRule implements TestRule {
                         givenName,
                         avatar,
                         capabilities);
-        mFakeAccountManagerFacade.addAccount(AccountUtils.createAccountFromName(email));
+        mFakeAccountManagerFacade.addAccountWithAccountInfo(accountInfo);
         // TODO(https://crbug.com/1352119): Revise this test rule and remove the condition here.
         if (mFakeAccountInfoService != null) mFakeAccountInfoService.addAccountInfo(accountInfo);
         return accountInfo;

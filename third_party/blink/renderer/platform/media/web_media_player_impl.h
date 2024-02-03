@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -43,7 +44,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_position.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_media_player_builder.h"
 #include "third_party/blink/public/platform/media/web_media_player_delegate.h"
@@ -193,7 +193,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
              const gfx::Rect& rect,
              cc::PaintFlags& flags) override;
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
-  absl::optional<media::VideoFrame::ID> CurrentFrameId() const override;
+  std::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
 
   // True if the loaded media has a playable video/audio track.
@@ -307,7 +307,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnBecameVisible() override;
   bool IsOpaque() const override;
   int GetDelegateId() override;
-  absl::optional<viz::SurfaceId> GetSurfaceId() override;
+  std::optional<viz::SurfaceId> GetSurfaceId() override;
   GURL GetSrcAfterRedirects() override;
   void RequestVideoFrameCallback() override;
   std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
@@ -406,7 +406,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnVideoConfigChange(const media::VideoDecoderConfig& config) override;
   void OnVideoNaturalSizeChange(const gfx::Size& size) override;
   void OnVideoOpacityChange(bool opaque) override;
-  void OnVideoFrameRateChange(absl::optional<int> fps) override;
+  void OnVideoFrameRateChange(std::optional<int> fps) override;
   void OnVideoAverageKeyframeDistanceUpdate() override;
   void OnAudioPipelineInfoChange(const media::AudioPipelineInfo& info) override;
   void OnVideoPipelineInfoChange(const media::VideoPipelineInfo& info) override;
@@ -483,10 +483,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       media::ProvideOverlayInfoCB provide_overlay_info_cb);
 
   // Creates a Renderer via the |renderer_factory_selector_|. If the
-  // |renderer_type| is absl::nullopt, create the base Renderer. Otherwise, set
+  // |renderer_type| is std::nullopt, create the base Renderer. Otherwise, set
   // the base type to be |renderer_type| and create a Renderer of that type.
   std::unique_ptr<media::Renderer> CreateRenderer(
-      absl::optional<media::RendererType> renderer_type);
+      std::optional<media::RendererType> renderer_type);
 
   // Finishes starting the pipeline due to a call to load().
   void StartPipeline();
@@ -714,7 +714,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Report UMAs when this object instance is destroyed.
   void ReportSessionUMAs() const;
 
-  absl::optional<media::DemuxerType> GetDemuxerType() const;
+  std::optional<media::DemuxerType> GetDemuxerType() const;
 
   // Useful to bind for a cb to be called when a demuxer is created.
   media::PipelineStatus OnDemuxerCreated(media::Demuxer* demuxer,
@@ -893,7 +893,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Captured once the cdm is provided to SetCdmInternal(). Used in creation of
   // |video_decode_stats_reporter_|.
-  absl::optional<media::CdmConfig> cdm_config_;
+  std::optional<media::CdmConfig> cdm_config_;
 
   // Whether the EME playback has been blocked waiting for the CDM to be set
   // or waiting for decryption key.
@@ -1012,10 +1012,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool disable_pipeline_auto_suspend_ = false;
 
   // Pipeline statistics overridden by tests.
-  absl::optional<media::PipelineStatistics> pipeline_statistics_for_test_;
+  std::optional<media::PipelineStatistics> pipeline_statistics_for_test_;
 
   // Pipeline media duration overridden by tests.
-  absl::optional<base::TimeDelta> pipeline_media_duration_for_test_;
+  std::optional<base::TimeDelta> pipeline_media_duration_for_test_;
 
   // Whether the video requires a user gesture to resume after it was paused in
   // the background. Affects the value of ShouldPausePlaybackWhenHidden().
@@ -1068,7 +1068,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   mojo::Remote<media::mojom::MediaMetricsProvider> media_metrics_provider_;
   mojo::Remote<media::mojom::PlaybackEventsRecorder> playback_events_recorder_;
 
-  absl::optional<ReadyState> stale_state_override_for_testing_;
+  std::optional<ReadyState> stale_state_override_for_testing_;
 
   // True if we attempt to start the media pipeline in a suspended state for
   // preload=metadata. Cleared upon pipeline startup.
@@ -1117,7 +1117,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Created while playing, deleted otherwise.
   std::unique_ptr<SmoothnessHelper> smoothness_helper_;
-  absl::optional<int> last_reported_fps_;
+  std::optional<int> last_reported_fps_;
 
   // Time of the last call to GetCurrentFrameFromCompositor(). Used to prevent
   // background optimizations from being applied when capturing is active.

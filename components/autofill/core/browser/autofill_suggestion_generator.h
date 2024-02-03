@@ -97,7 +97,7 @@ class AutofillSuggestionGenerator {
       const std::set<std::string>& previously_hidden_profiles_guid = {});
 
   // Generates suggestions for all available credit cards based on the
-  // `trigger_field_type` and the value of `trigger_field`.
+  // `trigger_field_type`, `trigger_field` and `trigger_source`.
   // `with_offer` is set to true if ANY card has card-linked offers.
   // `with_cvc` is set to true if ANY card has cvc saved.
   // `metadata_logging_context` contains card metadata related information used
@@ -106,6 +106,7 @@ class AutofillSuggestionGenerator {
   std::vector<Suggestion> GetSuggestionsForCreditCards(
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
+      AutofillSuggestionTriggerSource trigger_source,
       bool should_show_scan_credit_card,
       bool should_show_cards_from_account,
       bool& with_offer,

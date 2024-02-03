@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/task/task_traits.h"
 #include "services/device/hid/hid_device_info.h"
 #include "services/device/public/mojom/hid.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -94,7 +94,7 @@ class HidService {
 
  private:
   void RunPendingEnumerations();
-  absl::optional<std::string> FindDeviceGuidInDeviceMap(
+  std::optional<std::string> FindDeviceGuidInDeviceMap(
       const HidPlatformDeviceId& platform_device_id);
   scoped_refptr<HidDeviceInfo> FindSiblingDevice(
       const HidDeviceInfo& device_info) const;

@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_REQUEST_SIGNING_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -18,7 +19,6 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -97,7 +97,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // Sec-Redemption-Record header.
   void Begin(
       const GURL& url,
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+      base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                               mojom::TrustTokenOperationStatus)> done) override;
 
   // Immediately returns kOk with no other effect. (Signing is an operation that

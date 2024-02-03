@@ -43,9 +43,12 @@
 #include "content/browser/gpu/gpu_main_thread_factory.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
+#include "content/browser/worker_host/shared_worker_host.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/features.h"
 #include "content/common/in_process_child_thread_params.h"
@@ -1110,10 +1113,70 @@ std::string GpuProcessHost::GetIsolationKey(
     auto isolation_key =
         dedicated_worker_host->GetNetworkIsolationKey().ToCacheKeyString();
     return isolation_key ? *isolation_key : "";
+  } else if (token.Is<blink::SharedWorkerToken>()) {
+    // Return an empty isolation key if the process host or the worker host is
+    // gone. This may happen if the worker is destroyed (or being destroyed) in
+    // between when we are trying to get the isolation key.
+    RenderProcessHost* render_process_host =
+        RenderProcessHost::FromID(process_id);
+    if (!render_process_host ||
+        !render_process_host->IsInitializedAndNotDead()) {
+      return "";
+    }
+    auto* storage_partition = static_cast<StoragePartitionImpl*>(
+        render_process_host->GetStoragePartition());
+    auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+        storage_partition->GetSharedWorkerService());
+    SharedWorkerHost* shared_worker_host =
+        worker_service->GetSharedWorkerHostFromToken(
+            token.GetAs<blink::SharedWorkerToken>());
+    if (!shared_worker_host) {
+      return "";
+    }
+
+    auto isolation_key =
+        shared_worker_host->GetNetworkIsolationKey().ToCacheKeyString();
+    return isolation_key ? *isolation_key : "";
+  } else if (token.Is<blink::ServiceWorkerToken>()) {
+    // Return an empty isolation key if the process host or the worker host is
+    // gone. This may happen if the worker is destroyed (or being destroyed) in
+    // between when we are trying to get the isolation key.
+    RenderProcessHost* render_process_host =
+        RenderProcessHost::FromID(process_id);
+    if (!render_process_host ||
+        !render_process_host->IsInitializedAndNotDead()) {
+      return "";
+    }
+    ServiceWorkerContextWrapper* service_worker_context =
+        static_cast<StoragePartitionImpl*>(
+            render_process_host->GetStoragePartition())
+            ->GetServiceWorkerContext();
+    if (!service_worker_context) {
+      return "";
+    }
+    for (const auto& kv :
+         service_worker_context->GetRunningServiceWorkerInfos()) {
+      int64_t version_id = kv.first;
+      ServiceWorkerVersion* version =
+          service_worker_context->GetLiveVersion(version_id);
+      if (!version) {
+        continue;
+      }
+      if (token.GetAs<blink::ServiceWorkerToken>() !=
+          version->embedded_worker()->token().value()) {
+        continue;
+      }
+      ServiceWorkerHost* service_worker_host = version->worker_host();
+      if (!service_worker_host) {
+        continue;
+      }
+      auto isolation_key =
+          service_worker_host->GetNetworkIsolationKey().ToCacheKeyString();
+      return isolation_key ? *isolation_key : "";
+    }
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 void GpuProcessHost::BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,

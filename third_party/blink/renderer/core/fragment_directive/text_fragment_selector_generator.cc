@@ -122,7 +122,7 @@ constexpr int kMaxRangeWords = 10;
 constexpr int kMaxIterationCountToRecord = 10;
 constexpr int kMinWordCount = 3;
 
-absl::optional<int> g_exactTextMaxCharsOverride;
+std::optional<int> g_exactTextMaxCharsOverride;
 
 TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
     LocalFrame* main_frame)

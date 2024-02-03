@@ -602,8 +602,7 @@ void CertStoreServiceTest::CheckInstalledCerts(
       std::string cert_id = installer_->cert_ids()[cert_name];
       // Check CKA_ID and slot.
       int slot_id;
-      std::string hex_encoded_id =
-          base::HexEncode(cert_id.data(), cert_id.size());
+      std::string hex_encoded_id = base::HexEncode(cert_id);
       EXPECT_EQ(hex_encoded_id,
                 ash::NetworkCertLoader::GetPkcs11IdAndSlotForCert(
                     nss_cert.get(), &slot_id));

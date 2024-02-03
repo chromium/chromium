@@ -11,6 +11,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
+namespace ui {
+class ImageModel;
+}
+
 namespace views {
 class ImageView;
 class View;
@@ -24,24 +28,12 @@ class ASH_EXPORT PickerItemView : public views::Button {
   METADATA_HEADER(PickerItemView, views::Button)
 
  public:
-  // Determines layout and styling of the item.
-  enum class ItemType {
-    // Used for items with small primary contents, e.g. an emoji or symbol.
-    kSmallGridItem,
-    // Used for items with large primary contents, e.g. a gif.
-    kLargeGridItem,
-    // Used for items with primary contents along with other optional details,
-    // e.g. a url with an icon.
-    kListItem,
-  };
-
-  explicit PickerItemView(views::Button::PressedCallback callback,
-                          ItemType item_type);
+  explicit PickerItemView(views::Button::PressedCallback callback);
   PickerItemView(const PickerItemView&) = delete;
   PickerItemView& operator=(const PickerItemView&) = delete;
   ~PickerItemView() override;
 
-  void SetLeadingIcon(const gfx::VectorIcon& icon);
+  void SetLeadingIcon(const ui::ImageModel& icon);
 
   // Sets the primary text or image of the list item. This replaces any existing
   // contents in the primary container.
@@ -49,8 +41,6 @@ class ASH_EXPORT PickerItemView : public views::Button {
   void SetPrimaryImage(std::unique_ptr<views::ImageView> primary_image);
 
   void SetSecondaryText(const std::u16string& secondary_text);
-
-  ItemType item_type() const { return item_type_; }
 
   const views::View* leading_container_for_testing() const {
     return leading_container_;
@@ -60,8 +50,6 @@ class ASH_EXPORT PickerItemView : public views::Button {
   }
 
  private:
-  ItemType item_type_;
-
   // Contains the item's leading icon if it has been set.
   raw_ptr<views::View> leading_container_ = nullptr;
 

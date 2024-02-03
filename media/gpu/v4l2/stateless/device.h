@@ -5,12 +5,11 @@
 #ifndef MEDIA_GPU_V4L2_STATELESS_DEVICE_H_
 #define MEDIA_GPU_V4L2_STATELESS_DEVICE_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <poll.h>
 
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -18,7 +17,6 @@
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -137,9 +135,9 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // the driver via |GetOutputFormat|. If the desired format does not match
   // up with the retrieved format, |TryOutputFormat| and |SetOutputFormat| are
   // used.
-  absl::optional<BufferFormat> GetOutputFormat();
-  absl::optional<BufferFormat> TryOutputFormat(const BufferFormat& format);
-  absl::optional<BufferFormat> SetOutputFormat(const BufferFormat& format);
+  std::optional<BufferFormat> GetOutputFormat();
+  std::optional<BufferFormat> TryOutputFormat(const BufferFormat& format);
+  std::optional<BufferFormat> SetOutputFormat(const BufferFormat& format);
 
   // Stops streaming on the |type| of buffer using the VIDIOC_STREAMOFF ioctl.
   bool StreamOff(BufferType type);
@@ -150,15 +148,15 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // Request a |count| of buffers via the VIDIOC_REQBUFS ioctl. The driver
   // will return a |uint32_t| with the number of buffers allocated. This
   // number does not need to be the same as |count|.
-  absl::optional<uint32_t> RequestBuffers(BufferType type,
-                                          MemoryType memory,
-                                          uint32_t count);
+  std::optional<uint32_t> RequestBuffers(BufferType type,
+                                         MemoryType memory,
+                                         uint32_t count);
 
   // Uses the VIDIOC_QUERYBUF ioctl to fill out and return a |Buffer|.
-  absl::optional<Buffer> QueryBuffer(BufferType type,
-                                     MemoryType memory,
-                                     uint32_t index,
-                                     uint32_t num_planes);
+  std::optional<Buffer> QueryBuffer(BufferType type,
+                                    MemoryType memory,
+                                    uint32_t index,
+                                    uint32_t num_planes);
 
   // Wrap the buffer that was allocated from the driver so that it can be
   // passed on to other consumers.
@@ -169,9 +167,9 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   bool QueueBuffer(const Buffer& buffer, const base::ScopedFD& request_fd);
 
   // Used during frame processing on a per frame basis.
-  absl::optional<Buffer> DequeueBuffer(BufferType buffer_type,
-                                       MemoryType memory_type,
-                                       uint32_t num_planes);
+  std::optional<Buffer> DequeueBuffer(BufferType buffer_type,
+                                      MemoryType memory_type,
+                                      uint32_t num_planes);
 
   // Query the driver for the smallest and largest uncompressed frame sizes that
   // are supported using the VIDIOC_ENUM_FRAMESIZES ioctl.
@@ -186,9 +184,6 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
 
   // unmmap the |buffer| when read/write access is no longer needed.
   void MunmapBuffer(Buffer& buffer);
-
-  // Return the structure of events that should be waited on
-  struct pollfd GetPollEvent();
 
   // Capabilities are queried using VIDIOC_QUERYCAP. Stateless and
   // stateful drivers need different capabilities.
@@ -208,8 +203,8 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // |TryOutputFormat| and |SetOutputFormat| are identical calls, with the
   // difference being that |TryOutputFormat| does not change the state of the
   // driver while |SetOutputFormat| does.
-  absl::optional<BufferFormat> TrySetOutputFormat(int request,
-                                                  const BufferFormat& format);
+  std::optional<BufferFormat> TrySetOutputFormat(int request,
+                                                 const BufferFormat& format);
 
  protected:
   virtual ~Device();

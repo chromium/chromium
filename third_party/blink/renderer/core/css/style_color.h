@@ -103,8 +103,8 @@ class CORE_EXPORT StyleColor {
           color2_type_ != other.color2_type_) {
         return false;
       }
-
-      return Equals(color1_, color2_, color1_type_);
+      return Equals(color1_, other.color1_, color1_type_) &&
+             Equals(color2_, other.color2_, color2_type_);
     }
 
     bool operator!=(const UnresolvedColorMix& other) const {
@@ -204,6 +204,7 @@ class CORE_EXPORT StyleColor {
     }
 
     if (IsUnresolvedColorMixFunction()) {
+      DCHECK(other.IsUnresolvedColorMixFunction());
       return *color_or_unresolved_color_mix_.unresolved_color_mix ==
              *other.color_or_unresolved_color_mix_.unresolved_color_mix;
     }

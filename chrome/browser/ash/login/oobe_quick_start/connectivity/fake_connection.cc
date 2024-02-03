@@ -16,7 +16,7 @@ FakeConnection::Factory::~Factory() = default;
 
 std::unique_ptr<Connection> FakeConnection::Factory::Create(
     NearbyConnection* nearby_connection,
-    SessionContext session_context,
+    SessionContext* session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated) {
@@ -29,7 +29,7 @@ std::unique_ptr<Connection> FakeConnection::Factory::Create(
 
 FakeConnection::FakeConnection(
     NearbyConnection* nearby_connection,
-    SessionContext session_context,
+    SessionContext* session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)

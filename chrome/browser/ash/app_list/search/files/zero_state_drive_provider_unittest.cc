@@ -256,6 +256,7 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
                              suggested_file_path,
                              /*new_prediction_reason=*/std::nullopt,
                              /*timestamp=*/std::nullopt,
+                             /*secondary_timestamp=*/std::nullopt,
                              /*new_score=*/std::nullopt);
   }
 

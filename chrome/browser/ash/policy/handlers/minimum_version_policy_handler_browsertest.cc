@@ -960,7 +960,7 @@ class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
     login_manager_.WaitForActiveSession();
     EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 1u);
     EXPECT_EQ(user_manager::UserManager::Get()->GetActiveUser()->GetType(),
-              user_manager::USER_TYPE_CHILD);
+              user_manager::UserType::kChild);
     EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
               session_manager::SessionState::ACTIVE);
   }

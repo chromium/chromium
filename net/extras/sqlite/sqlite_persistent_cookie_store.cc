@@ -1280,7 +1280,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           }
           add_statement.BindString(6, po->cc().Path());
           add_statement.BindTime(7, po->cc().ExpiryDate());
-          add_statement.BindBool(8, po->cc().IsSecure());
+          add_statement.BindBool(8, po->cc().SecureAttribute());
           add_statement.BindBool(9, po->cc().IsHttpOnly());
           add_statement.BindTime(10, po->cc().LastAccessDate());
           add_statement.BindBool(11, po->cc().IsPersistent());

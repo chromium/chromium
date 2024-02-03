@@ -19,6 +19,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -38,6 +39,13 @@ class TestCalendarClient : public CalendarClient {
   TestCalendarClient(const TestCalendarClient& other) = delete;
   TestCalendarClient& operator=(const TestCalendarClient& other) = delete;
   ~TestCalendarClient() override = default;
+
+  base::OnceClosure GetCalendarList(
+      google_apis::calendar::CalendarListCallback callback) override {
+    // TODO(b/308692003): Implement TestCalendarClient changes to introduce
+    // CalendarListFetch.
+    return base::DoNothing();
+  }
 
   base::OnceClosure GetEventList(
       google_apis::calendar::CalendarEventListCallback callback,

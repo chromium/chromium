@@ -73,7 +73,14 @@
 </style>
 <div id="flexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
-    <read-anything-toolbar paused="[[paused]]" id="toolbar">
+    <read-anything-toolbar
+      paused="[[paused]]"
+      selected-voice="[[selectedVoice]]"
+      available-voices="[[availableVoices]]"
+      preview-voice-playing="[[previewVoicePlaying]]"
+      on-select-voice="onSelectVoice_"
+      on-preview-voice="onPreviewVoice_"
+      id="toolbar">
     </read-anything-toolbar>
   </div>
   <div id="container-parent" class="sp-card sp-scroller"
@@ -82,10 +89,10 @@
   </div>
   <div id="empty-state-container" hidden="[[hasContent_]]">
     <sp-empty-state
-        image-path="[[emptyStateImagePath_]]"
-        dark-image-path="[[emptyStateDarkImagePath_]]"
-        heading="[[emptyStateHeading_]]"
-        body="[[emptyStateSubheading_]]">
+      image-path="[[emptyStateImagePath_]]"
+      dark-image-path="[[emptyStateDarkImagePath_]]"
+      heading="[[emptyStateHeading_]]"
+      body="[[emptyStateSubheading_]]">
     </sp-empty-state>
   </div>
 </div>

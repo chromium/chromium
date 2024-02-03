@@ -239,6 +239,7 @@ void TasksBubbleView::ScheduleUpdateTasksList(bool initial_update) {
 void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
                                       const std::string& task_list_title,
                                       bool initial_update,
+                                      bool fetch_success,
                                       const ui::ListModel<api::Task>* tasks) {
   if (initial_update) {
     base::UmaHistogramCounts100(

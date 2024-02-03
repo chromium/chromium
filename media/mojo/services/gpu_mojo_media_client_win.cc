@@ -65,7 +65,7 @@ std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
                                                   std::move(task_runner));
 }
 
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
     base::WeakPtr<MediaGpuChannelManager> manager,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,

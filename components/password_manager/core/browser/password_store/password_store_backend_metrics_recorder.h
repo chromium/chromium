@@ -20,7 +20,7 @@ namespace password_manager {
 using ErrorFromPasswordStoreOrAndroidBackend =
     absl::variant<PasswordStoreBackendError, AndroidBackendError>;
 
-using MetricInfix = base::StrongAlias<struct MetricNameTag, std::string>;
+using MethodName = base::StrongAlias<struct MetricNameTag, std::string>;
 using BackendInfix = base::StrongAlias<struct BackendNameTag, std::string>;
 
 // Records metrics for an asynchronous job or a series of jobs. The job is
@@ -40,7 +40,7 @@ class PasswordStoreBackendMetricsRecorder {
   // Constructs a new recorder and immediately calls `RecordRequestStatus()` to
   // indicate a new request is started.
   explicit PasswordStoreBackendMetricsRecorder(BackendInfix backend_name,
-                                               MetricInfix metric_name);
+                                               MethodName method_name);
   PasswordStoreBackendMetricsRecorder(PasswordStoreBackendMetricsRecorder&&);
   PasswordStoreBackendMetricsRecorder& operator=(
       PasswordStoreBackendMetricsRecorder&&);
@@ -71,44 +71,39 @@ class PasswordStoreBackendMetricsRecorder {
   };
 
   // Records a broad status for an ongoing request:
-  // - "PasswordManager.PasswordStoreBackend.<metric_infix_>"
-  // - "PasswordManager.PasswordStore<backend_infix_>.<metric_infix_>"
+  // - "PasswordManager.PasswordStoreBackend.<method_name_>"
+  // - "PasswordManager.PasswordStore<backend_infix_>.<method_name_>"
   void RecordRequestStatus(StoreBackendRequestStatus request_status) const;
 
   // Records the following metrics:
-  // - "PasswordManager.PasswordStore<backend_infix_>.<metric_infix_>.Success"
-  // - "PasswordManager.PasswordStoreBackend.<metric_infix_>.Success"
+  // - "PasswordManager.PasswordStore<backend_infix_>.<method_name_>.Success"
+  // - "PasswordManager.PasswordStoreBackend.<method_name_>.Success"
   void RecordSuccess(SuccessStatus success_status) const;
 
   // Records metrics from `RecordApiErrorCode` if `backend_error`
   // requires it. Additionally records the following metrics:
   // - "PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
-  // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.ErrorCode"
+  // - "PasswordManager.PasswordStoreAndroidBackend.<method_name_>.ErrorCode"
   void RecordErrorCode(const AndroidBackendError& backend_error) const;
 
   // Records the following metrics:
-  // - "PasswordManager.PasswordStore<backend_infix_>.<metric_infix_>.Latency"
-  // - "PasswordManager.PasswordStoreBackend.<metric_infix_>.Latency"
+  // - "PasswordManager.PasswordStore<backend_infix_>.<method_name_>.Latency"
+  // - "PasswordManager.PasswordStoreBackend.<method_name_>.Latency"
   void RecordLatency() const;
 
   // Records the following metrics:
   // - "PasswordManager.PasswordStoreAndroidBackend.APIError"
-  // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.APIError"
+  // - "PasswordManager.PasswordStoreAndroidBackend.<method_name_>.APIError"
   void RecordApiErrorCode(int api_error_code) const;
 
   // Records the following metrics:
   // - "PasswordManager.PasswordStoreAndroidBackend.ConnectionResultCode"
-  // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>
+  // - "PasswordManager.PasswordStoreAndroidBackend.<method_name_>
   //        .ConnectionResultCode"
   void RecordConnectionResultCode(int connection_result_code) const;
 
-  std::string GetBackendMetricName() const;
-  std::string BuildMetricName(base::StringPiece suffix) const;
-  std::string GetOverallMetricName() const;
-  std::string BuildOverallMetricName(base::StringPiece suffix) const;
-
   BackendInfix backend_infix_;
-  MetricInfix metric_infix_;
+  MethodName method_name_;
   base::Time start_ = base::Time::Now();
 };
 }  // namespace password_manager

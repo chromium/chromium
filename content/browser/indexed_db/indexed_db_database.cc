@@ -41,6 +41,7 @@
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_index_writer.h"
+#include "content/browser/indexed_db/indexed_db_lock_request_data.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_return_value.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
@@ -174,6 +175,11 @@ void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
   }
 
   for (IndexedDBConnection* connection : connections_) {
+    if (connection->client_token() ==
+        current_transaction->connection()->client_token()) {
+      continue;
+    }
+
     // If any of the connection's transactions is holding one of the blocked
     // lock IDs, require that client to be active.
     if (std::any_of(
@@ -182,9 +188,6 @@ void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
             [&](const std::pair<const int64_t,
                                 std::unique_ptr<IndexedDBTransaction>>&
                     existing_transaction) {
-              if (existing_transaction.second.get() == current_transaction) {
-                return false;
-              }
               return !base::STLSetIntersection<std::vector<PartitionedLockId>>(
                           blocked_lock_ids,
                           existing_transaction.second->lock_ids())
@@ -192,7 +195,7 @@ void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
             })) {
       connection->DisallowInactiveClient(
           storage::mojom::DisallowInactiveClientReason::
-              kTransactionIsBlockingOthers,
+              kTransactionIsAcquiringLocks,
           base::DoNothing());
     }
   }
@@ -1503,14 +1506,16 @@ Status IndexedDBDatabase::OpenInternal() {
 std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
     std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker) {
+        client_state_checker,
+    base::UnguessableToken client_token) {
   auto connection = std::make_unique<IndexedDBConnection>(
       *bucket_context_, weak_factory_.GetWeakPtr(),
       base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,
                           weak_factory_.GetWeakPtr()),
       base::BindOnce(&IndexedDBDatabase::ConnectionClosed,
                      weak_factory_.GetWeakPtr()),
-      std::move(database_callbacks), std::move(client_state_checker));
+      std::move(database_callbacks), std::move(client_state_checker),
+      client_token);
   connections_.insert(connection.get());
   return connection;
 }
@@ -1549,7 +1554,7 @@ void IndexedDBDatabase::SendVersionChangeToAllConnections(int64_t old_version,
     // No matter which path it follows, the `SendVersionChangeToAllConnections`
     // method is executed asynchronously.
     connection->DisallowInactiveClient(
-        storage::mojom::DisallowInactiveClientReason::kClientEventIsTriggered,
+        storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent,
         base::BindOnce(
             [](base::WeakPtr<IndexedDBConnection> connection,
                int64_t old_version, int64_t new_version,
@@ -1579,19 +1584,6 @@ void IndexedDBDatabase::ConnectionClosed(IndexedDBConnection* connection) {
 
 bool IndexedDBDatabase::CanBeDestroyed() {
   return !connection_coordinator_.HasTasks() && connections_.empty();
-}
-
-bool IndexedDBDatabase::IsTransactionBlockingOthers(
-    IndexedDBTransaction* transaction) const {
-  base::flat_set<PartitionedLockId> lock_ids = transaction->lock_ids();
-  for (const auto& lock_id : lock_ids) {
-    if (bucket_context_->lock_manager()->GetQueuedLockRequestCount(lock_id) >
-        0) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 }  // namespace content

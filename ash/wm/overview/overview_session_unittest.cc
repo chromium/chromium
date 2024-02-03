@@ -1025,7 +1025,8 @@ TEST_P(OverviewSessionTest, DISABLED_TabletModeHistograms) {
 // Tests that entering overview when a fullscreen window is active in maximized
 // mode correctly applies the transformations to the window and correctly
 // updates the window bounds on exiting overview mode: http://crbug.com/401664.
-TEST_P(OverviewSessionTest, FullscreenWindowTabletMode) {
+// TODO(crbug.com/1523918): Fix flaky test.
+TEST_P(OverviewSessionTest, DISABLED_FullscreenWindowTabletMode) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
@@ -8989,9 +8990,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
-  // 5. Test if one window is snapped, the other window are showing in overview,
-  // activating an new window will not auto-snap the new window. Overview and
-  // splitview should be ended.
+  // 5. Test if one window is snapped, the other windows are showing in
+  // overview, activating an new window will not auto-snap the new window.
+  // Overview and splitview should be ended.
   ToggleOverview();
   overview_item1 = GetOverviewItemForWindow(window1.get());
   DragWindowTo(overview_item1, gfx::PointF(0, 0));
@@ -9652,25 +9653,23 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   EXPECT_FALSE(GetDropTarget(1));
 }
 
-// Tests that Alt+[ and Alt+] do not start overview.
-TEST_F(SplitViewOverviewSessionInClamshellTest,
-       AltSquareBracketNotStartOverview) {
+// Tests that cycle snap do not start overview.
+TEST_F(SplitViewOverviewSessionInClamshellTest, CycleSnapNotStartOverview) {
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 = CreateTestWindow();
   wm::ActivateWindow(window1.get());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());
-  // Alt+[
-  const WindowSnapWMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_PRIMARY);
+
+  const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
   WindowState* window1_state = WindowState::Get(window1.get());
-  window1_state->OnWMEvent(&alt_left_square_bracket);
+  window1_state->OnWMEvent(&cycle_snap_primary);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window1_state->GetStateType());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());
-  // Alt+]
-  const WindowSnapWMEvent alt_right_square_bracket(
-      WM_EVENT_CYCLE_SNAP_SECONDARY);
-  window1_state->OnWMEvent(&alt_right_square_bracket);
+
+  const WindowSnapWMEvent cycle_snap_secondary(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  window1_state->OnWMEvent(&cycle_snap_secondary);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, window1_state->GetStateType());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());

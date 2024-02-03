@@ -52,6 +52,7 @@
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/progress_sampler.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/exit_code.h"
@@ -461,6 +462,9 @@ class AppInstallControllerImpl : public AppInstallController,
   base::OnceCallback<void(int)> callback_;
 
   const bool is_silent_install_ = false;
+
+  ProgressSampler download_progress_sampler_;
+  ProgressSampler install_progress_sampler_;
 };
 
 AppInstallControllerImpl::AppInstallControllerImpl(
@@ -472,7 +476,9 @@ AppInstallControllerImpl::AppInstallControllerImpl(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
       update_service_(update_service),
-      is_silent_install_(is_silent_install) {}
+      is_silent_install_(is_silent_install),
+      download_progress_sampler_(base::Seconds(5), base::Seconds(1)),
+      install_progress_sampler_(base::Seconds(5), base::Seconds(1)) {}
 AppInstallControllerImpl::~AppInstallControllerImpl() = default;
 
 void AppInstallControllerImpl::InstallApp(
@@ -732,18 +738,37 @@ void AppInstallControllerImpl::StateChange(
     case UpdateService::UpdateState::State::kDownloading: {
       const auto pos = GetDownloadProgress(update_state.downloaded_bytes,
                                            update_state.total_bytes);
-      install_progress_observer_ipc_->OnDownloading(app_id_, app_name_, -1,
-                                                    pos != -1 ? pos : 0);
-    } break;
+      if (pos >= 0) {
+        download_progress_sampler_.AddSample(update_state.downloaded_bytes);
+      }
+      const std::optional<base::TimeDelta> remaining_download_time =
+          download_progress_sampler_.GetRemainingTime(update_state.total_bytes);
+      install_progress_observer_ipc_->OnDownloading(
+          app_id_, app_name_,
+          remaining_download_time ? remaining_download_time->InMilliseconds()
+                                  : -1,
+          pos >= 0 ? pos : 0);
+      break;
+    }
 
     case UpdateService::UpdateState::State::kInstalling: {
       // TODO(crbug.com/1290331): handle the install cancellation.
       bool can_start_install = false;
       install_progress_observer_ipc_->OnWaitingToInstall(app_id_, app_name_,
                                                          &can_start_install);
+
+      // Install progress goes from 0 to 100.
       const int pos = update_state.install_progress;
-      install_progress_observer_ipc_->OnInstalling(app_id_, app_name_, 0,
-                                                   pos != -1 ? pos : 0);
+      if (pos >= 0) {
+        install_progress_sampler_.AddSample(pos);
+      }
+      const std::optional<base::TimeDelta> remaining_install_time =
+          install_progress_sampler_.GetRemainingTime(100);
+      install_progress_observer_ipc_->OnInstalling(
+          app_id_, app_name_,
+          remaining_install_time ? remaining_install_time->InMilliseconds()
+                                 : -1,
+          pos >= 0 ? pos : 0);
       break;
     }
 

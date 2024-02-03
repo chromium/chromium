@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/extension_resource.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,7 +87,7 @@ class Receiver {
 void RunBasicTest(const std::vector<std::string>& filenames) {
   base::FilePath root_path;
   base::PathService::Get(DIR_TEST_DATA, &root_path);
-  std::string extension_id = crx_file::id_util::GenerateId("test");
+  ExtensionId extension_id = crx_file::id_util::GenerateId("test");
 
   std::vector<ExtensionResource> resources;
   resources.reserve(filenames.size());
@@ -125,7 +126,7 @@ TEST_F(FileReaderTest, MultiFile) {
 TEST_F(FileReaderTest, NonExistentFile) {
   base::FilePath path;
   base::PathService::Get(DIR_TEST_DATA, &path);
-  std::string extension_id = crx_file::id_util::GenerateId("test");
+  ExtensionId extension_id = crx_file::id_util::GenerateId("test");
   ExtensionResource resource(
       extension_id, path,
       base::FilePath(FILE_PATH_LITERAL("file_that_does_not_exist")));
@@ -141,7 +142,7 @@ TEST_F(FileReaderTest, NonExistentFile) {
 TEST_F(FileReaderTest, AboveSizeLimitFile) {
   base::FilePath path;
   base::PathService::Get(DIR_TEST_DATA, &path);
-  std::string extension_id = crx_file::id_util::GenerateId("test");
+  ExtensionId extension_id = crx_file::id_util::GenerateId("test");
 
   ExtensionResource resource(extension_id, path,
                              base::FilePath().AppendASCII("bigfile"));

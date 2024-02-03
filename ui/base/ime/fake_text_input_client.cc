@@ -87,6 +87,10 @@ void FakeTextInputClient::InsertText(
 
 void FakeTextInputClient::InsertChar(const KeyEvent& event) {}
 
+void FakeTextInputClient::InsertImage(const GURL& src) {
+  last_inserted_image_url_ = src;
+}
+
 TextInputType FakeTextInputClient::GetTextInputType() const {
   return text_input_type_;
 }

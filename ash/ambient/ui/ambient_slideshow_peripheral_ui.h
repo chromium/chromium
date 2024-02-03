@@ -25,9 +25,9 @@ class JitterCalculator;
 // weather and media string that are shown in the slideshow's photo view.
 class AmbientSlideshowPeripheralUi : public views::View,
                                      public MediaStringView::Delegate {
- public:
-  METADATA_HEADER(AmbientSlideshowPeripheralUi);
+  METADATA_HEADER(AmbientSlideshowPeripheralUi, views::View)
 
+ public:
   explicit AmbientSlideshowPeripheralUi(AmbientViewDelegate* delegate);
   ~AmbientSlideshowPeripheralUi() override;
 

@@ -8,12 +8,12 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -78,7 +78,7 @@ void PrivateAggregation::contributeToHistogram(
     return;
   }
 
-  absl::optional<absl::uint128> bucket = contribution->bucket().ToUInt128();
+  std::optional<absl::uint128> bucket = contribution->bucket().ToUInt128();
   if (!bucket) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
@@ -148,7 +148,7 @@ void PrivateAggregation::enableDebugMode(
 
   // If `options` is not provided, no debug key is set.
   if (options) {
-    absl::optional<absl::uint128> maybe_debug_key =
+    std::optional<absl::uint128> maybe_debug_key =
         options->debugKey().ToUInt128();
 
     if (!maybe_debug_key || absl::Uint128High64(maybe_debug_key.value()) != 0) {

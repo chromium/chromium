@@ -207,7 +207,7 @@ void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
       break;
     }
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void TimeView::SetTextColorId(ui::ColorId color_id,
@@ -359,7 +359,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
       vertical_label_hours_->SetText(current_hours);
       vertical_label_minutes_->SetText(current_minutes);
 
-      Layout();
+      DeprecatedLayoutImmediately();
 
       // When the `new_label` text does not have the some length as the
       // old one's, the layout size of this time view changes as well.

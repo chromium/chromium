@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="1384959399684842514">បានផ្អាកការទាញយក</translation>
 <translation id="1415402041810619267">បានបង្រួម URL</translation>
-<translation id="1426410128494586442">បាទ/ចាស</translation>
 <translation id="1434873037477293673">កាតធ្លាក់តម្លៃ</translation>
 <translation id="1448064542941920355">បន្ថយការពង្រីកបង្រួម</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{គេហទំព័រ <ph name="SITE_COUNT" />}other{គេហទំព័រ <ph name="SITE_COUNT" />}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">ដើម្បីអនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ចូលប្រើកាមេរ៉ា​របស់អ្នក អ្នកក៏ត្រូវបើក​កាមេរ៉ា​នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" /> ផងដែរ។</translation>
 <translation id="2235344399760031203">បាន​ទប់ស្កាត់ខូគី​ភាគី​ទីបី</translation>
 <translation id="2238944249568001759">ការស្វែងរក​ដែលបានណែនាំ​ផ្អែកលើ​ផ្ទាំង​ចុងក្រោយ​របស់អ្នក</translation>
+<translation id="2241587408274973373">កាតទំព័រ​ផ្ទាំងថ្មី</translation>
 <translation id="2241634353105152135">ម្តងប៉ុណ្ណោះ</translation>
 <translation id="2253414712144136228">ដក <ph name="NAME_OF_LIST_ITEM" /> ចេញ</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{បានទប់ស្កាត់គេហទំព័រ​ចំនួន 1}other{បានទប់ស្កាត់គេហទំព័រ​ចំនួន #}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">គេហទំព័រអាចបង្ហាញសារចូលគណនីពីសេវាកម្មដែលសួររកអត្តសញ្ញាណ។</translation>
 <translation id="2790501146643349491">នៅពេល​បើក គេហទំព័រ​ដែលបាន​បិទថ្មីៗ​អាចបញ្ចប់​ការផ្ញើ និង​ការទទួល​ទិន្នន័យ​បាន។ នៅពេល​បិទ គេហទំព័រ​ដែលបានបិទថ្មីៗ​មិនអាច​បញ្ចប់ការផ្ញើ ឬ​ការទទួល​ទិន្នន័យ​បានទេ។</translation>
 <translation id="2822354292072154809">តើ​អ្នកប្រាកដថា​ចង់​កំណត់​ការអនុញ្ញាត​គេហទំព័រ​ទាំងអស់​ឡើងវិញ​សម្រាប់ <ph name="CHOSEN_OBJECT_NAME" /> ដែរទេ?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ស្នើសុំ​ទិដ្ឋភាពលើ​ទូរសព្ទ</translation>
 <translation id="2870560284913253234">គេហទំព័រ</translation>
 <translation id="2874939134665556319">បទ​មុន</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">កម្មវិធីមើលវិញ្ញាបនប័ត្រ</translation>
 <translation id="2979365474350987274">ខូគី​ភាគីទីបី​ត្រូវបាន​ដាក់កំហិត</translation>
 <translation id="3008272652534848354">កំណត់​ការអនុញ្ញាត​ឡើងវិញ</translation>
-<translation id="3013291976881901233">ឧបករណ៍ MIDI</translation>
 <translation id="301521992641321250">បាន​ទប់ស្កាត់ដោយ​ស្វ័យ​ប្រវត្តិ</translation>
 <translation id="3069226013421428034">អនុញ្ញាត​ការចូល​របស់ភាគីទីបី​សម្រាប់​គេហទំព័រ​ជាក់លាក់។</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ផុតកំណត់​ថ្ងៃស្អែក}other{ផុតកំណត់​ក្នុងរយៈពេល # ថ្ងៃ}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">បានភ្ជាប់​ទៅ​ឧបករណ៍ USB</translation>
 <translation id="4194328954146351878">សួរ​មុនពេល​អនុញ្ញាតឱ្យ​គេហទំព័រមើលឃើញ និងផ្លាស់ប្ដូរព័ត៌មាននៅលើឧបករណ៍ NFC (បានណែនាំ)</translation>
 <translation id="4200726100658658164">បើកការកំណត់ទីតាំង</translation>
-<translation id="4212246570487010370">ការអានបន្ត</translation>
 <translation id="4226663524361240545">ការជូនដំណឹងអាចនឹងធ្វើឲ្យឧបករណ៍ញ័រ</translation>
 <translation id="4259722352634471385">ការរុករកត្រូវបានរារាំង៖ <ph name="URL" /></translation>
 <translation id="4278390842282768270">បានអនុញ្ញាត</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">រំកិលចុះ</translation>
 <translation id="6749077623962119521">កំណត់ការអនុញ្ញាតឡើងវិញឬ?</translation>
 <translation id="6766622839693428701">អូស​ចុះ​ក្រោម​ដើម្បី​បិទ។</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> ពី <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">ជ្រើសរើស​ជម្រើស​សម្រាប់ <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">លេង</translation>
 <translation id="6818926723028410516">ជ្រើសរើសធាតុ</translation>

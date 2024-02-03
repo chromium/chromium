@@ -23,6 +23,7 @@
 #include "google_apis/common/test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,21 +115,30 @@ class CalendarKeyedServiceIOTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  // Returns the response from a mock json file in google_apis/test/data/
+  // depending on whether the request is for the calendar list or the event
+  // list.
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (net::test_server::ShouldHandle(request,
+                                       "/calendar/v3/users/me/calendarList")) {
+      return google_apis::test_util::CreateHttpResponseFromFile(
+          google_apis::test_util::GetTestFilePath(
+              "calendar/calendar_list.json"));
+    }
+    if (net::test_server::ShouldHandle(request, "/calendar/v3/calendars")) {
+      return google_apis::test_util::CreateHttpResponseFromFile(
+          google_apis::test_util::GetTestFilePath("calendar/events.json"));
+    }
+    NOTREACHED_NORETURN();
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<google_apis::RequestSender> request_sender_;
   scoped_refptr<network::TestSharedURLLoaderFactory>
       test_shared_loader_factory_;
-
-  // Returns the mock calendar event list.
-  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
-      const net::test_server::HttpRequest& request) {
-    // Return the response from the event json file. The json file path is:
-    // google_apis/test/data/calendar/events.json
-    return google_apis::test_util::CreateHttpResponseFromFile(
-        google_apis::test_util::GetTestFilePath("calendar/events.json"));
-  }
 };
 
 // Calendar service does not support guest user.
@@ -190,6 +200,43 @@ TEST_F(CalendarKeyedServiceTest, SecondaryUserProfile) {
   ActivateSecondaryProfile();
   EXPECT_EQ(ash::Shell::Get()->calendar_controller()->GetClient(),
             secondary_calendar_service->client());
+}
+
+TEST_F(CalendarKeyedServiceIOTest, GetCalendarList) {
+  // Creating the service with a test profile and account ID.
+  std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
+  auto calendar_service = std::make_unique<CalendarKeyedService>(
+      profile_.get(), AccountId::FromUserEmail("test@email.com"));
+
+  calendar_service->set_sender_for_testing(std::move(request_sender_));
+  calendar_service->SetUrlForTesting(test_server_.base_url().spec());
+
+  // The error code should be overwritten by `HTTP_SUCCESS` after the
+  // `GetCalendarList` call.
+  google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
+
+  // Declaring the mock 'GetCalendarList' result.
+  std::unique_ptr<google_apis::calendar::CalendarList> calendar_list;
+
+  {
+    base::RunLoop run_loop;
+    calendar_service->GetCalendarList(
+        google_apis::test_util::CreateQuitCallback(
+            &run_loop, google_apis::test_util::CreateCopyResultCallback(
+                           &error, &calendar_list)));
+    run_loop.Run();
+  }
+
+  // Verify that the result has expected values.
+  EXPECT_EQ(google_apis::HTTP_SUCCESS, error);
+  EXPECT_EQ("calendar#calendarList", calendar_list->kind());
+  EXPECT_EQ(3U, calendar_list->items().size());
+  const google_apis::calendar::SingleCalendar& calendar =
+      *calendar_list->items()[1];
+  EXPECT_EQ(calendar.id(),
+            "google.com_zu35dc5syt5k0fddetqqfggb75test@"
+            "group.calendar.google.com");
+  EXPECT_FALSE(calendar.selected());
 }
 
 TEST_F(CalendarKeyedServiceIOTest, GetEventList) {

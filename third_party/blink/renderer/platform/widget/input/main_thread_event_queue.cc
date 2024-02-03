@@ -172,7 +172,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
       // The |callback| won't be run, so our stored |callback_| should run
       // indicating error.
       HandledEvent(queue, mojom::blink::InputEventResultState::kNotConsumed,
-                   event_->latency_info(), nullptr, absl::nullopt);
+                   event_->latency_info(), nullptr, std::nullopt);
     }
   }
 
@@ -180,7 +180,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
                     mojom::blink::InputEventResultState ack_result,
                     const ui::LatencyInfo& latency_info,
                     mojom::blink::DidOverscrollParamsPtr overscroll,
-                    absl::optional<cc::TouchAction> touch_action) {
+                    std::optional<cc::TouchAction> touch_action) {
     // callback_ can be null in tests.
     if (callback_) {
       std::move(callback_).Run(ack_result, latency_info, std::move(overscroll),
@@ -193,7 +193,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
       for (auto&& callback : blocking_coalesced_callbacks_) {
         coalesced_latency_info.set_trace_id(callback.second);
         std::move(callback.first)
-            .Run(ack_result, coalesced_latency_info, nullptr, absl::nullopt);
+            .Run(ack_result, coalesced_latency_info, nullptr, std::nullopt);
       }
     }
 
@@ -443,7 +443,7 @@ void MainThreadEventQueue::HandleEvent(
 
   if (callback) {
     std::move(callback).Run(ack_result, cloned_latency_info, nullptr,
-                            absl::nullopt);
+                            std::nullopt);
   }
 }
 

@@ -113,7 +113,7 @@ class LineBreakStrategy {
 
   void SetupLineBreaker(InlineChildLayoutContext* context,
                         LineBreaker& line_breaker) {
-    if (const absl::optional<LayoutUnit>& balanced_available_width =
+    if (const std::optional<LayoutUnit>& balanced_available_width =
             context->BalancedAvailableWidth();
         UNLIKELY(balanced_available_width)) {
       DCHECK(!score_line_break_context_ ||
@@ -172,7 +172,7 @@ class LineBreakStrategy {
     // Exclusions and negative inline sizes are not supported.
     if (opportunities.size() == 1 &&
         line_opportunity.AvailableInlineSize() > LayoutUnit()) {
-      if (const absl::optional<LayoutUnit> balanced_available_width =
+      if (const std::optional<LayoutUnit> balanced_available_width =
               ParagraphLineBreaker::AttemptParagraphBalancing(
                   node, space, line_opportunity)) {
         context->SetBalancedAvailableWidth(balanced_available_width);
@@ -1115,23 +1115,23 @@ void InlineLayoutAlgorithm::PlaceListMarker(const InlineItem& item,
 
 // Justify the line. This changes the size of items by adding spacing.
 // Returns false if justification failed and should fall back to start-aligned.
-absl::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
+std::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
     LayoutUnit space,
     LineInfo* line_info) {
   // Empty lines should align to start.
   if (line_info->IsEmptyLine())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Justify the end of visible text, ignoring preserved trailing spaces.
   unsigned end_offset = line_info->EndOffsetForJustify();
 
   // If this line overflows, fallback to 'text-align: start'.
   if (space <= 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Can't justify an empty string.
   if (end_offset == line_info->StartOffset())
-    return absl::nullopt;
+    return std::nullopt;
 
   const UChar kTextCombineItemMarker = 0x3042;  // U+3042 Hiragana Letter A
 
@@ -1189,7 +1189,7 @@ absl::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
     // LayoutRubyText.
     if (box && (box->IsRubyText() || box->IsRubyBase()))
       return space / 2;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   LayoutUnit inset;
@@ -1258,7 +1258,7 @@ LayoutUnit InlineLayoutAlgorithm::ApplyTextAlign(LineInfo* line_info) {
 
   ETextAlign text_align = line_info->TextAlign();
   if (text_align == ETextAlign::kJustify) {
-    absl::optional<LayoutUnit> offset = ApplyJustify(space, line_info);
+    std::optional<LayoutUnit> offset = ApplyJustify(space, line_info);
     if (offset)
       return *offset;
 
@@ -1666,13 +1666,12 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     // Propagate any break tokens for floats that we fragmented before or inside
     // to the block container in 3 steps: 1) in `PositionLeadingFloats`, 2) from
     // `LineInfo` here, 3) then `CreateLine` may propagate more.
-    for (const BreakToken* parallel_token :
+    for (const InlineBreakToken* parallel_token :
          line_info.ParallelFlowBreakTokens()) {
-      DCHECK(parallel_token->IsInlineType());
-      DCHECK(To<InlineBreakToken>(parallel_token)->IsInParallelBlockFlow());
+      DCHECK(parallel_token->IsInParallelBlockFlow());
       context_->PropagateParallelFlowBreakToken(parallel_token);
     }
-    if (absl::optional<LayoutUnit> minimum_space_shortage =
+    if (std::optional<LayoutUnit> minimum_space_shortage =
             line_info.MinimumSpaceShortage()) {
       container_builder_.PropagateSpaceShortage(minimum_space_shortage);
     }

@@ -39,11 +39,7 @@ dictionary DisplayMediaStreamOptions {
     SelfCapturePreferenceEnum selfBrowserSurface;
     SystemAudioPreferenceEnum systemAudio;
     SurfaceSwitchingPreferenceEnum surfaceSwitching;
-
-    // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-monitortypesurfaces
-    [
-      RuntimeEnabled = MonitorTypeSurfaces
-    ] MonitorTypeSurfacesEnum monitorTypeSurfaces;
+    MonitorTypeSurfacesEnum monitorTypeSurfaces;
 };
 
 // This dictionnary is used internally to hold all members from

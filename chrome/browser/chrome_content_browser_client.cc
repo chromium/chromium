@@ -46,8 +46,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
-#include "chrome/browser/accessibility/accessibility_labels_service.h"
-#include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
@@ -436,6 +434,7 @@
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/url_handler.h"
@@ -528,7 +527,7 @@
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 #include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
-#include "chrome/browser/metrics/chrome_responsiveness_calculator_delegate.h"
+#include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
 #include "chrome/browser/search/instant_service.h"
@@ -727,8 +726,6 @@
 #endif  // defined(_WINDOWS_)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #endif
 
@@ -777,19 +774,6 @@ using plugins::ChromeContentBrowserClientPluginsPart;
 #endif
 
 namespace {
-
-#if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) && \
-    !defined(ADDRESS_SANITIZER)
-// Enables pre-launch Code Integrity Guard (CIG) for Chrome network service
-// process, when running on Windows 10 1511 and above. This has no effect if
-// NetworkServiceSandbox feature is disabled. See
-// https://blogs.windows.com/blog/tag/code-integrity-guard/.
-BASE_FEATURE(kNetworkServiceCodeIntegrity,
-             "NetworkServiceCodeIntegrity",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) &&
-        // !defined(ADDRESS_SANITIZER)
 
 #if BUILDFLAG(IS_ANDROID)
 // Kill switch that allows falling back to the legacy behavior on Android when
@@ -2953,6 +2937,7 @@ bool ChromeContentBrowserClient::AllowSharedWorker(
     const std::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
     content::BrowserContext* context,
     int render_process_id,
     int render_frame_id) {
@@ -2964,7 +2949,8 @@ bool ChromeContentBrowserClient::AllowSharedWorker(
           Profile::FromBrowserContext(context));
   return embedder_support::AllowSharedWorker(
       worker_url, site_for_cookies, top_frame_origin, name, storage_key,
-      render_process_id, render_frame_id, cookie_settings.get());
+      same_site_cookies, render_process_id, render_frame_id,
+      cookie_settings.get());
 }
 
 bool ChromeContentBrowserClient::DoesSchemeAllowCrossOriginSharedWorker(
@@ -4216,6 +4202,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   for (auto& parts : extra_parts_) {
     parts->OverrideWebkitPrefs(web_contents, web_prefs);
   }
+
+  web_prefs->prefers_default_scrollbar_styles =
+      prefs->GetBoolean(prefs::kPrefersDefaultScrollbarStyles);
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
@@ -4461,7 +4450,7 @@ void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
   DCHECK(external_mount_points);
   auto backend = std::make_unique<ash::FileSystemBackend>(
       Profile::FromBrowserContext(browser_context),
-      std::make_unique<ash::file_system_provider::BackendDelegate>(),
+      ash::file_system_provider::BackendDelegate::MakeUnique(),
       std::make_unique<ash::MTPFileSystemBackendDelegate>(
           storage_partition_path),
       std::make_unique<arc::ArcContentFileSystemBackendDelegate>(),
@@ -4687,8 +4676,8 @@ bool ChromeContentBrowserClient::PreSpawnChild(
           (flags & ChildSpawnFlags::kChildSpawnFlagRendererCodeIntegrity);
       break;
     case sandbox::mojom::Sandbox::kNetwork:
-      enforce_code_integrity =
-          base::FeatureList::IsEnabled(kNetworkServiceCodeIntegrity);
+      enforce_code_integrity = base::FeatureList::IsEnabled(
+          sandbox::policy::features::kNetworkServiceCodeIntegrity);
       break;
     case sandbox::mojom::Sandbox::kServiceWithJit:
       enforce_code_integrity = true;
@@ -4719,13 +4708,6 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
       break;
   }
-
-#if !defined(OFFICIAL_BUILD)
-  // Disable renderer code integrity when Application Verifier or pageheap are
-  // enabled for chrome.exe to avoid renderer crashes. https://crbug.com/1004989
-  if (base::win::IsAppVerifierEnabled(chrome::kBrowserProcessExecutableName))
-    enforce_code_integrity = false;
-#endif  // !defined(OFFICIAL_BUILD)
 
   if (!enforce_code_integrity)
     return true;
@@ -7022,9 +7004,13 @@ void ChromeContentBrowserClient::ReportLegacyTechEvent(
   if (!profile) {
     return;
   }
-  enterprise_reporting::LegacyTechServiceFactory::GetForProfile(profile)
-      ->ReportEvent(type, url, frame_url, filename, line, column,
-                    cookie_issue_details);
+  enterprise_reporting::LegacyTechService* service =
+      enterprise_reporting::LegacyTechServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return;
+  }
+  service->ReportEvent(type, url, frame_url, filename, line, column,
+                       cookie_issue_details);
 }
 
 bool ChromeContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -7157,34 +7143,6 @@ bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
   using URLBlocklistState = policy::URLBlocklist::URLBlocklistState;
   URLBlocklistState blocklist_state = service->GetURLBlocklistState(url);
   return blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST;
-}
-
-ui::AXMode ChromeContentBrowserClient::GetAXModeForBrowserContext(
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  ui::AXMode ax_mode =
-      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-
-  // TODO(accessibility): Dynamically create AccessibilityLabelsService and
-  // destroy it when unused.
-  auto* labels_service =
-      AccessibilityLabelsServiceFactory::GetForProfile(profile);
-  if (labels_service && labels_service->IsEnabled()) {
-    ax_mode.set_mode(ui::AXMode::kLabelImages, true);
-  }
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsPdfOcrEnabled()) {
-    // PdfOcrController will be enabled when the user turns on a screen reader
-    // or any other accessibility feature that needs it; before or even after
-    // starting the browser.
-    auto* pdf_ocr_controller =
-        screen_ai::PdfOcrControllerFactory::GetForProfile(profile);
-    if (pdf_ocr_controller && pdf_ocr_controller->IsEnabled()) {
-      ax_mode.set_mode(ui::AXMode::kPDFOcr, true);
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  return ax_mode;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -7435,20 +7393,24 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 }
 
-bool ChromeContentBrowserClient::IsClipboardCopyAllowed(
+void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     content::BrowserContext* browser_context,
     const GURL& url,
     size_t data_size_in_bytes,
-    std::u16string& replacement_data) {
+    IsClipboardCopyAllowedCallback callback) {
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-  return enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
-      browser_context, url, data_size_in_bytes, replacement_data);
+  enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
+      browser_context, url, data_size_in_bytes, std::move(callback));
 #else
+  std::u16string replacement_data;
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
           browser_context);
-  return service->IsUrlAllowedToCopy(url, data_size_in_bytes,
-                                     &replacement_data);
+  if (service->IsUrlAllowedToCopy(url, data_size_in_bytes, &replacement_data)) {
+    std::move(callback).Run(std::nullopt);
+  } else {
+    std::move(callback).Run(std::move(replacement_data));
+  }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 }
 

@@ -87,7 +87,7 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
   // since these remain constant even if the page has dynamically modified its
   // fields to have different labels, form control types, etc.
   auto SimilarityTuple = [](const FormData& f) {
-    return std::tie(f.host_frame, f.unique_renderer_id, f.name, f.id_attribute,
+    return std::tie(f.host_frame, f.renderer_id, f.name, f.id_attribute,
                     f.name_attribute, f.url, f.action, f.is_form_tag);
   };
   return SimilarityTuple(form_) == SimilarityTuple(form) &&

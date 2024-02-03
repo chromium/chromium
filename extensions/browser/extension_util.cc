@@ -22,6 +22,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -33,6 +34,12 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
@@ -108,6 +115,24 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
       return true;
 #endif
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
+    // An OTR Profile is used for captive portal signin to hide PII from
+    // captive portals (which require HTTP redirects to function).
+    // However, for captive portal signin we do not want want to disable
+    // extensions by default. (Proxies are explicitly disabled elsewhere).
+    // See b/261727502 for details.
+    PrefService* prefs =
+        ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context);
+    if (prefs) {
+      const PrefService::Preference* captive_portal_pref =
+          prefs->FindPreference(chromeos::prefs::kCaptivePortalSignin);
+      if (captive_portal_pref && captive_portal_pref->GetValue()->GetBool()) {
+        return true;
+      }
+    }
+  }
+#endif
   return ExtensionPrefs::Get(context)->IsIncognitoEnabled(extension_id);
 }
 
@@ -333,7 +358,7 @@ bool IsExtensionVisibleToContext(const Extension& extension,
 
 void InitializeFileSchemeAccessForExtension(
     int render_process_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   // TODO(karandeepb): This should probably use
@@ -398,7 +423,7 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
   return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
 }
 
-bool IsChromeApp(const std::string& extension_id,
+bool IsChromeApp(const ExtensionId& extension_id,
                  content::BrowserContext* context) {
   const Extension* extension =
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
@@ -406,14 +431,14 @@ bool IsChromeApp(const std::string& extension_id,
   return extension->is_platform_app();
 }
 
-bool IsAppLaunchable(const std::string& extension_id,
+bool IsAppLaunchable(const ExtensionId& extension_id,
                      content::BrowserContext* context) {
   int reason = ExtensionPrefs::Get(context)->GetDisableReasons(extension_id);
   return !((reason & disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) ||
            (reason & disable_reason::DISABLE_CORRUPTED));
 }
 
-bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
+bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context) {
   return ExtensionRegistry::Get(context)->GetExtensionById(
              extension_id, ExtensionRegistry::ENABLED) != nullptr;

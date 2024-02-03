@@ -33,7 +33,7 @@ class FakeMojomRenderer : public mojom::Renderer {
   // mojom::Renderer implementations.
   void Initialize(
       mojo::PendingAssociatedRemote<mojom::RendererClient>,
-      absl::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>,
+      std::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>,
       mojom::MediaUrlParamsPtr,
       InitializeCallback cb) override {
     std::move(cb).Run(true);
@@ -45,7 +45,7 @@ class FakeMojomRenderer : public mojom::Renderer {
   MOCK_METHOD(void, SetVolume, (float), (override));
   MOCK_METHOD(void,
               SetCdm,
-              (const absl::optional<base::UnguessableToken>&, SetCdmCallback),
+              (const std::optional<base::UnguessableToken>&, SetCdmCallback),
               (override));
 };
 
@@ -167,7 +167,7 @@ class MockRendererClientMF : public RendererClient {
               (override));
   MOCK_METHOD(void, OnVideoNaturalSizeChange, (const gfx::Size&), (override));
   MOCK_METHOD(void, OnVideoOpacityChange, (bool), (override));
-  MOCK_METHOD(void, OnVideoFrameRateChange, (absl::optional<int>), (override));
+  MOCK_METHOD(void, OnVideoFrameRateChange, (std::optional<int>), (override));
 };
 
 class MediaFoundationRendererClientTest

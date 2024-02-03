@@ -182,10 +182,6 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
 
   void ReplaceMessages() {
     extensions::SharedL10nMap::IPCTarget* ipc_target = nullptr;
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    ipc_target = content::RenderThread::Get();
-    (void)frame_token_;
-#else
     // TODO(dtapuska): content::RenderThread::Get() returns nullptr so the old
     // version will never send it to the browser. Figure out why we are even
     // doing this on worker threads.
@@ -201,7 +197,6 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
         ipc_target = ExtensionFrameHelper::Get(render_frame)->GetRendererHost();
       }
     }
-#endif
     extensions::SharedL10nMap::GetInstance().ReplaceMessages(
         extension_id_, &data_, ipc_target);
   }

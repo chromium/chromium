@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_search_results.h"
@@ -20,8 +21,12 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 namespace {
@@ -63,6 +68,45 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
 // TODO: b/316936687 - Use the icons from real search results.
 const gfx::VectorIcon& kPlaceholderIcon = kCheckIcon;
 
+// Gets the current caret bounds in universal screen coordinates in DIP. Returns
+// an empty rect if there is no active caret or the caret bounds can't be
+// determined (e.g. no focused input field).
+gfx::Rect GetCaretBounds() {
+  const ui::InputMethod* input_method =
+      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  if (!input_method || !input_method->GetTextInputClient()) {
+    return gfx::Rect();
+  }
+
+  return input_method->GetTextInputClient()->GetCaretBounds();
+}
+
+PickerInsertMediaRequest::MediaData ResultToInsertMediaData(
+    const PickerSearchResult& result) {
+  return std::visit(
+      base::Overloaded{
+          [](const PickerSearchResult::TextData& data) {
+            return PickerInsertMediaRequest::MediaData::Text(data.text);
+          },
+          [](const PickerSearchResult::EmojiData& data) {
+            return PickerInsertMediaRequest::MediaData::Text(data.emoji);
+          },
+          [](const PickerSearchResult::SymbolData& data) {
+            return PickerInsertMediaRequest::MediaData::Text(data.symbol);
+          },
+          [](const PickerSearchResult::EmoticonData& data) {
+            return PickerInsertMediaRequest::MediaData::Text(data.emoticon);
+          },
+          [](const PickerSearchResult::GifData& data) {
+            return PickerInsertMediaRequest::MediaData::Image(data.url);
+          },
+          [](const PickerSearchResult::BrowsingHistoryData& data) {
+            return PickerInsertMediaRequest::MediaData::Link(data.url);
+          },
+      },
+      result.data());
+}
+
 }  // namespace
 
 PickerController::PickerController()
@@ -102,7 +146,8 @@ void PickerController::ToggleWidget(
   if (widget_) {
     widget_->Close();
   } else {
-    widget_ = PickerView::CreateWidget(this, trigger_event_timestamp);
+    widget_ = PickerView::CreateWidget(GetCaretBounds(), this,
+                                       trigger_event_timestamp);
     widget_->Show();
 
     feature_usage_metrics_.StartUsage();
@@ -131,17 +176,22 @@ void PickerController::StartSearch(const std::u16string& query,
   callback.Run(PickerSearchResults({{
       PickerSearchResults::Section(
           u"Matching expressions",
-          {{PickerSearchResult::Text(u"👍"), PickerSearchResult::Text(u"😊"),
-            PickerSearchResult::Gif(GURL(
-                "https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"))}}),
+          {{PickerSearchResult::Emoji(u"👍"), PickerSearchResult::Emoji(u"😊"),
+            PickerSearchResult::Symbol(u"⊃"), PickerSearchResult::Symbol(u"⊇"),
+            PickerSearchResult::Symbol(u"♬"),
+            PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯"),
+            PickerSearchResult::Gif(
+                GURL(
+                    "https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
+                gfx::Size(140, 140))}}),
       PickerSearchResults::Section(
           u"Matching links",
           {{
               PickerSearchResult::BrowsingHistory(
-                  GURL("www.foo.com"),
+                  GURL("http://www.foo.com"),
                   ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
               PickerSearchResult::BrowsingHistory(
-                  GURL("crbug.com"),
+                  GURL("http://crbug.com"),
                   ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
           }}),
       PickerSearchResults::Section(
@@ -162,12 +212,8 @@ void PickerController::InsertResultOnNextFocus(
   }
 
   // This cancels the previous request if there was one.
-  // TODO: b/316936577 - Support inserting images.
-  if (const auto* data =
-          std::get_if<PickerSearchResult::TextData>(&result.data())) {
-    insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
-        input_method, data->text, kInsertMediaTimeout);
-  }
+  insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
+      input_method, ResultToInsertMediaData(result), kInsertMediaTimeout);
 }
 
 bool PickerController::ShouldPaint() {

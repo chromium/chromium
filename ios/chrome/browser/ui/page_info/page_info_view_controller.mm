@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
+#import "ios/chrome/browser/ui/page_info/page_info_helper.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
@@ -38,8 +39,6 @@
 
 namespace {
 
-const CGFloat kTableViewSeparatorInset = 16;
-
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSecurityContent,
   SectionIdentifierPermissions,
@@ -50,11 +49,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierPermissionsCamera,
   ItemIdentifierPermissionsMicrophone,
 };
-
-// The vertical padding between the navigation bar and the Security header.
-float kPaddingSecurityHeader = 28.0f;
-// The minimum scale factor of the title label showing the URL.
-float kTitleLabelMinimumScaleFactor = 0.7f;
 
 }  // namespace
 
@@ -90,7 +84,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   [super viewDidLoad];
 
   self.navigationItem.titleView =
-      [self titleViewLabelForURL:self.pageInfoSecurityDescription.siteURL];
+      page_info::TitleViewLabelForURL(self.pageInfoSecurityDescription.siteURL);
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_INFORMATION);
   self.tableView.accessibilityIdentifier = kPageInfoViewAccessibilityIdentifier;
   self.navigationController.navigationBar.accessibilityIdentifier =
@@ -102,7 +96,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
                            action:@selector(hidePageInfo)];
   self.navigationItem.rightBarButtonItem = dismissButton;
   self.tableView.separatorInset =
-      UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
+      UIEdgeInsetsMake(0, kPageInfoTableViewSeparatorInset, 0, 0);
   if (!IsRevampPageInfoIosEnabled()) {
     self.tableView.allowsSelection = NO;
   }
@@ -175,7 +169,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
   return section == SectionIdentifierSecurityContent
-             ? kPaddingSecurityHeader
+             ? kPageInfoPaddingFirstSectionHeader
              : UITableViewAutomaticDimension;
 }
 
@@ -344,17 +338,6 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
       }
               range:NSMakeRange(0, descriptionAttributedString.length)];
   return descriptionAttributedString;
-}
-
-// Returns the navigationItem titleView for `siteURL`.
-- (UILabel*)titleViewLabelForURL:(NSString*)siteURL {
-  UILabel* labelURL = [[UILabel alloc] init];
-  labelURL.lineBreakMode = NSLineBreakByTruncatingHead;
-  labelURL.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  labelURL.text = siteURL;
-  labelURL.adjustsFontSizeToFitWidth = YES;
-  labelURL.minimumScaleFactor = kTitleLabelMinimumScaleFactor;
-  return labelURL;
 }
 
 // Updates `snapshot` to reflect the changes done to `permissions`.

@@ -25,10 +25,11 @@ class ExtensionsWebViewElement extends WebViewElement {
 }
 
 // Forward remaining ExtensionsWebViewElement.foo* method calls to
-// WebViewImpl.foo* or WebViewInternal.foo*.
+// WebViewImpl.foo* or WebViewInternal.foo*. WebView APIs don't support
+// promise-based syntax so |promiseMethodDetails| is left empty.
 forwardApiMethods(
     ExtensionsWebViewElement, WebViewImpl, WebViewInternal,
-    WEB_VIEW_API_METHODS);
+    WEB_VIEW_API_METHODS, /*promiseMethodDetails=*/[]);
 
 // Since |back| and |forward| are implemented in terms of |go|, we need to
 // keep a reference to the real |go| function, since user code may override

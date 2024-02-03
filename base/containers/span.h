@@ -140,6 +140,29 @@ constexpr size_t must_not_be_dynamic_extent() {
 //     char str_buffer[100];
 //     SafeSNPrintf(str_buffer, "Pi ~= %lf", 3.14);
 //
+// Dynamic vs Fixed size spans
+// ---------------------------
+//
+// Normally spans have a dynamic size, which is represented as a type as
+// `span<T>`. However it is possible to encode the size of the span into the
+// type as a second parameter such as `span<T, N>`. When working with fixed-size
+// spans, the compiler will check the size of operations and prevent compilation
+// when an invalid size is used for an operation such as assignment or
+// `copy_from()`. However operations that produce a new span will make a
+// dynamic-sized span by default. See below for how to prevent that.
+//
+// Fixed-size spans implicitly convert to a dynamic-size span, throwing away the
+// compile-time size information from the type signature. So most code should
+// work with dynamic-sized `span<T>` types and not worry about the existence of
+// fixed-size spans.
+//
+// It is possible to convert from a dynamic-size to a fixed-size span (or to
+// move from a fixed-size span to another fixed-size span) but it requires
+// writing an the size explicitly in the code. Methods like `first` can be
+// passed a size as a template argument, such as `first<N>()` to generate a
+// fixed-size span. And the `make_span` function can be given a compile-time
+// size in a similar way with `make_span<N>()`.
+//
 // Spans with "const" and pointers
 // -------------------------------
 //
@@ -188,8 +211,11 @@ constexpr size_t must_not_be_dynamic_extent() {
 // - as_chars() function.
 // - as_writable_chars() function.
 // - as_byte_span() function.
+// - as_writable_byte_span() function.
 // - copy_from() method.
 // - span_from_ref() function.
+// - byte_span_from_ref() function.
+// - split_at() method.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
@@ -277,6 +303,16 @@ class GSL_POINTER span {
     return span<T, Count>(data() + (size() - Count), Count);
   }
 
+  constexpr span<T> first(size_t count) const noexcept {
+    CHECK_LE(count, size());
+    return {data(), count};
+  }
+
+  constexpr span<T> last(size_t count) const noexcept {
+    CHECK_LE(count, size());
+    return {data() + (size() - count), count};
+  }
+
   template <size_t Offset, size_t Count = dynamic_extent>
   constexpr auto subspan() const noexcept
     requires(Offset <= N && (Count == dynamic_extent || Count <= N - Offset))
@@ -285,22 +321,35 @@ class GSL_POINTER span {
     return span<T, kExtent>(data() + Offset, kExtent);
   }
 
-  constexpr span<T, dynamic_extent> first(size_t count) const noexcept {
-    CHECK_LE(count, size());
-    return {data(), count};
-  }
-
-  constexpr span<T, dynamic_extent> last(size_t count) const noexcept {
-    CHECK_LE(count, size());
-    return {data() + (size() - count), count};
-  }
-
-  constexpr span<T, dynamic_extent> subspan(
-      size_t offset,
-      size_t count = dynamic_extent) const noexcept {
+  constexpr span<T> subspan(size_t offset,
+                            size_t count = dynamic_extent) const noexcept {
     CHECK_LE(offset, size());
     CHECK(count == dynamic_extent || count <= size() - offset);
     return {data() + offset, count != dynamic_extent ? count : size() - offset};
+  }
+
+  // Splits a span into two at the given `offset`, returning two spans that
+  // cover the full range of the original span.
+  //
+  // Similar to calling subspan() with the `offset` as the length on the first
+  // call, and then the `offset` as the offset in the second.
+  //
+  // The split_at<N>() overload allows construction of a fixed-size span from a
+  // compile-time constant. If the input span is fixed-size, both output output
+  // spans will be. Otherwise, the first will be fixed-size and the second will
+  // be dynamic-size.
+  //
+  // This is a non-std extension that  is inspired by the Rust slice::split_at()
+  // and split_at_mut() methods.
+  constexpr std::pair<span<T>, span<T>> split_at(size_t offset) const noexcept {
+    return {first(offset), subspan(offset)};
+  }
+
+  template <size_t Offset>
+    requires(Offset <= N)
+  constexpr std::pair<span<T, Offset>, span<T, N - Offset>> split_at()
+      const noexcept {
+    return {first<Offset>(), subspan<Offset, N - Offset>()};
   }
 
   // [span.obs], span observers
@@ -345,22 +394,36 @@ class GSL_POINTER span {
     return reverse_iterator(begin());
   }
 
-  // Bounds-checked copy of spans into spans. The spans must be the exact
-  // same size or a hard CHECK() occurs. This is a non-std extension that
-  // is inspired by the Rust slice::copy_from_slice() method.
-  template <typename U, size_t M>
-  void copy_from(const span<U, M>& other)
-    requires(M != dynamic_extent && internal::LegalDataConversion<T, U>)
-  {
-    static_assert(N == M, "span size mismatch");
-    std::ranges::copy(other, data());
-  }
-  template <typename U, size_t M>
-  void copy_from(const span<U, M>& other)
-    requires(M == dynamic_extent && internal::LegalDataConversion<T, U>)
-  {
+  // Bounds-checked copy from a non-overlapping span. The spans must be the
+  // exact same size or a hard CHECK() occurs. If the two spans overlap,
+  // Undefined Behaviour occurs.
+  //
+  // This is a non-std extension that is inspired by the Rust
+  // slice::copy_from_slice() method.
+  constexpr void copy_from(span<const T, N> other) {
     CHECK_EQ(size_bytes(), other.size_bytes());
-    std::ranges::copy(other, data());
+    // Verify non-overlapping in developer builds.
+    DCHECK(data() + size() <= other.data() ||
+           data() >= other.data() + other.size());
+    // When compiling with -Oz, std::ranges::copy() does not get inlined, which
+    // makes copy_from() very expensive compared to memcpy for small sizes (up
+    // to around 4x slower). We observe that this is because ranges::copy() uses
+    // begin()/end() and span's iterators are checked iterators, not just
+    // pointers. This additional complexity prevents inlining and breaks the
+    // ability for the compiler to eliminate code.
+    //
+    // See also https://crbug.com/1396134.
+    //
+    // We also see std::copy() (with pointer arguments! not iterators) optimize
+    // and inline better than memcpy() since memcpy() needs to rely on
+    // size_bytes(), which while computable at compile time when `other` has a
+    // fixed size, the optimizer stumbles on with -Oz.
+    //
+    // SAFETY: The copy() here does not check bounds, but we have verified that
+    // `this` and `other` have the same bounds above (and are pointers of the
+    // same type), so `data()` and `other.data()` both have at least
+    // `other.size()` elements.
+    std::copy(other.data(), other.data() + other.size(), data());
   }
 
  private:
@@ -446,6 +509,16 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return span<T, Count>(data() + (size() - Count), Count);
   }
 
+  constexpr span<T> first(size_t count) const noexcept {
+    CHECK_LE(count, size());
+    return {data(), count};
+  }
+
+  constexpr span<T> last(size_t count) const noexcept {
+    CHECK_LE(count, size());
+    return {data() + (size() - count), count};
+  }
+
   template <size_t Offset, size_t Count = dynamic_extent>
   constexpr span<T, Count> subspan() const noexcept {
     CHECK_LE(Offset, size());
@@ -454,22 +527,34 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
                           Count != dynamic_extent ? Count : size() - Offset);
   }
 
-  constexpr span<T, dynamic_extent> first(size_t count) const noexcept {
-    CHECK_LE(count, size());
-    return {data(), count};
-  }
-
-  constexpr span<T, dynamic_extent> last(size_t count) const noexcept {
-    CHECK_LE(count, size());
-    return {data() + (size() - count), count};
-  }
-
-  constexpr span<T, dynamic_extent> subspan(
-      size_t offset,
-      size_t count = dynamic_extent) const noexcept {
+  constexpr span<T> subspan(size_t offset,
+                            size_t count = dynamic_extent) const noexcept {
     CHECK_LE(offset, size());
     CHECK(count == dynamic_extent || count <= size() - offset);
     return {data() + offset, count != dynamic_extent ? count : size() - offset};
+  }
+
+  // Splits a span into two at the given `offset`, returning two spans that
+  // cover the full range of the original span.
+  //
+  // Similar to calling subspan() with the `offset` as the length on the first
+  // call, and then the `offset` as the offset in the second.
+  //
+  // The split_at<N>() overload allows construction of a fixed-size span from a
+  // compile-time constant. If the input span is fixed-size, both output output
+  // spans will be. Otherwise, the first will be fixed-size and the second will
+  // be dynamic-size.
+  //
+  // This is a non-std extension that  is inspired by the Rust slice::split_at()
+  // and split_at_mut() methods.
+  constexpr std::pair<span<T>, span<T>> split_at(size_t offset) const noexcept {
+    return {first(offset), subspan(offset)};
+  }
+
+  template <size_t Offset>
+  constexpr std::pair<span<T, Offset>, span<T>> split_at() const noexcept {
+    CHECK_LE(Offset, size());
+    return {first<Offset>(), subspan(Offset)};
   }
 
   // [span.obs], span observers
@@ -512,15 +597,36 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return reverse_iterator(begin());
   }
 
-  // Bounds-checked copy of spans into spans. The spans must be the exact
-  // same size or a hard CHECK() occurs. This is a non-std extension that
-  // is inspired by the Rust slice::copy_from_slice() method.
-  template <typename U, size_t M>
-  void copy_from(const span<U, M>& other)
-    requires(internal::LegalDataConversion<T, U>)
-  {
+  // Bounds-checked copy from a non-overlapping span. The spans must be the
+  // exact same size or a hard CHECK() occurs. If the two spans overlap,
+  // Undefined Behaviour occurs.
+  //
+  // This is a non-std extension that is inspired by the Rust
+  // slice::copy_from_slice() method.
+  constexpr void copy_from(span<const T> other) {
     CHECK_EQ(size_bytes(), other.size_bytes());
-    std::ranges::copy(other, data());
+    // Verify non-overlapping in developer builds.
+    DCHECK(data() + size() <= other.data() ||
+           data() >= other.data() + other.size());
+    // When compiling with -Oz, std::ranges::copy() does not get inlined, which
+    // makes copy_from() very expensive compared to memcpy for small sizes (up
+    // to around 4x slower). We observe that this is because ranges::copy() uses
+    // begin()/end() and span's iterators are checked iterators, not just
+    // pointers. This additional complexity prevents inlining and breaks the
+    // ability for the compiler to eliminate code.
+    //
+    // See also https://crbug.com/1396134.
+    //
+    // We also see std::copy() (with pointer arguments! not iterators) optimize
+    // and inline better than memcpy() since memcpy() needs to rely on
+    // size_bytes(), which while computable at compile time when `other` has a
+    // fixed size, the optimizer stumbles on with -Oz.
+    //
+    // SAFETY: The copy() here does not check bounds, but we have verified that
+    // `this` and `other` have the same bounds above (and are pointers of the
+    // same type), so `data()` and `other.data()` both have at least
+    // `other.size()` elements.
+    std::copy(other.data(), other.data() + other.size(), data());
   }
 
  private:
@@ -648,14 +754,62 @@ static constexpr span<T, 1u> span_from_ref(
   return span<T, 1u>(&single_object, 1u);
 }
 
+// `byte_span_from_ref` converts a reference to T into a span of uint8_t of
+// length sizeof(T).  This is a non-std helper that is a sugar for
+// `as_writable_bytes(span_from_ref(x))`.
+template <typename T>
+static constexpr span<const uint8_t, sizeof(T)> byte_span_from_ref(
+    const T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+  return as_bytes(span<const T, 1u>(&single_object, 1u));
+}
+template <typename T>
+static constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
+    T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+  return as_writable_bytes(span<T, 1u>(&single_object, 1u));
+}
+
 // Convenience function for converting an object which is itself convertible
 // to span into a span of bytes (i.e. span of const uint8_t). Typically used
 // to convert std::string or string-objects holding chars, or std::vector
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires byte spans.
 template <typename T>
-span<const uint8_t> as_byte_span(const T& arg) {
+  requires requires(const T& arg) {
+    requires !std::is_array_v<std::remove_reference_t<T>>;
+    make_span(arg);
+  }
+constexpr span<const uint8_t> as_byte_span(const T& arg) {
   return as_bytes(make_span(arg));
+}
+
+// This overload for arrays preserves the compile-time size N of the array in
+// the span type signature span<uint8_t, N>.
+template <typename T, size_t N>
+constexpr span<const uint8_t, N * sizeof(T)> as_byte_span(T (&arr)[N]) {
+  return as_bytes(make_span<N>(arr));
+}
+
+// Convenience function for converting an object which is itself convertible
+// to span into a span of mutable bytes (i.e. span of uint8_t). Typically used
+// to convert std::string or string-objects holding chars, or std::vector
+// or vector-like objects holding other scalar types, prior to passing them
+// into an API that requires mutable byte spans.
+template <typename T>
+  requires requires(T&& arg) {
+    requires !std::is_array_v<std::remove_reference_t<T>>;
+    make_span(arg);
+    requires !std::is_const_v<typename decltype(make_span(arg))::element_type>;
+  }
+constexpr span<uint8_t> as_writable_byte_span(T&& arg) {
+  return as_writable_bytes(make_span(arg));
+}
+
+// This overload for arrays preserves the compile-time size N of the array in
+// the span type signature span<uint8_t, N>.
+template <typename T, size_t N>
+  requires(!std::is_const_v<T>)
+constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(T (&arr)[N]) {
+  return as_writable_bytes(make_span<N>(arr));
 }
 
 }  // namespace base

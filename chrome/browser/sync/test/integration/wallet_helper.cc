@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
@@ -32,6 +33,7 @@ using autofill::CreditCardCloudTokenData;
 using autofill::PaymentsAutofillTable;
 using autofill::PaymentsCustomerData;
 using autofill::PersonalDataManager;
+using autofill::ServerCvc;
 using autofill::data_util::TruncateUTF8;
 using sync_datatype_helper::test;
 
@@ -40,6 +42,8 @@ namespace {
 // Constants for the credit card.
 const int kDefaultCardExpMonth = 8;
 const int kDefaultCardExpYear = 2087;
+const std::u16string kDefaultCardCvc = u"098";
+const int kDefaultCardInstrumentId = 1;
 const char kDefaultCardLastFour[] = "1234";
 const char16_t kDefaultCardLastFour16[] = u"1234";
 const char kDefaultCardName[] = "Patrick Valenzuela";
@@ -415,6 +419,34 @@ sync_pb::SyncEntity CreateDefaultSyncCreditCardCloudTokenData() {
   return CreateSyncCreditCardCloudTokenData(kDefaultCreditCardCloudTokenDataID);
 }
 
+sync_pb::SyncEntity CreateDefaultSyncWalletCredential() {
+  return CreateSyncWalletCredential(
+      ServerCvc{kDefaultCardInstrumentId, kDefaultCardCvc,
+                /*last_updated_timestamp=*/base::Time::UnixEpoch() +
+                    base::Milliseconds(25000)});
+}
+
+sync_pb::SyncEntity CreateSyncWalletCredential(const ServerCvc& server_cvc) {
+  sync_pb::SyncEntity entity;
+  entity.set_name(base::NumberToString(server_cvc.instrument_id));
+  entity.set_id_string(base::NumberToString(server_cvc.instrument_id));
+  entity.set_version(0);  // Will be overridden by the fake server.
+  entity.set_ctime(12345);
+  entity.set_mtime(12345);
+
+  sync_pb::AutofillWalletCredentialSpecifics* wallet_credential_specifics =
+      entity.mutable_specifics()->mutable_autofill_wallet_credential();
+
+  wallet_credential_specifics->set_instrument_id(
+      base::NumberToString(server_cvc.instrument_id));
+  wallet_credential_specifics->set_cvc(base::UTF16ToUTF8(server_cvc.cvc));
+  wallet_credential_specifics->set_last_updated_time_unix_epoch_millis(
+      (server_cvc.last_updated_timestamp - base::Time::UnixEpoch())
+          .InMilliseconds());
+
+  return entity;
+}
+
 void ExpectDefaultCreditCardValues(const CreditCard& card) {
   EXPECT_EQ(CreditCard::RecordType::kMaskedServerCard, card.record_type());
   EXPECT_EQ(kDefaultCardID, card.server_id());
@@ -425,6 +457,11 @@ void ExpectDefaultCreditCardValues(const CreditCard& card) {
   EXPECT_EQ(kDefaultCardName16,
             card.GetRawInfo(autofill::FieldType::CREDIT_CARD_NAME_FULL));
   EXPECT_EQ(kDefaultBillingAddressID, card.billing_address_id());
+}
+
+void ExpectDefaultWalletCredentialValues(const CreditCard& card) {
+  EXPECT_EQ(kDefaultCardInstrumentId, card.instrument_id());
+  EXPECT_EQ(kDefaultCardCvc, card.cvc());
 }
 
 std::vector<CreditCard*> GetServerCreditCards(int profile) {

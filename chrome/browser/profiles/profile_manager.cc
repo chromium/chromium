@@ -392,7 +392,7 @@ std::optional<bool> IsUserChild(Profile* profile) {
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user ? std::make_optional(user->GetType() ==
-                                   user_manager::USER_TYPE_CHILD)
+                                   user_manager::UserType::kChild)
               : std::nullopt;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->SessionType() ==
@@ -968,13 +968,6 @@ void ProfileManager::CreateMultiProfileAsync(
   init_params.is_ephemeral = is_hidden;
   init_params.is_omitted = is_hidden;
   storage.AddProfile(std::move(init_params));
-
-  if (!base::FeatureList::IsEnabled(
-          features::kNukeProfileBeforeCreateMultiAsync)) {
-    profile_manager->CreateProfileAsync(
-        new_path, std::move(initialized_callback), std::move(created_callback));
-    return;
-  }
 
   // As another check, make sure the generated path is not present in the file
   // system (there could be orphan profile dirs).

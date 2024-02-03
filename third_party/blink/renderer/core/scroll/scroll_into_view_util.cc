@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -70,7 +71,7 @@ bool AllowedToPropagateToParent(
 // a scroll should bubble up to or nullptr if the local root has been reached.
 // The return optional will be empty if the scroll is blocked from bubbling to
 // the root.
-absl::optional<LayoutBox*> GetScrollParent(
+std::optional<LayoutBox*> GetScrollParent(
     const LayoutBox& box,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
   bool is_fixed_to_frame = box.StyleRef().GetPosition() == EPosition::kFixed &&
@@ -87,7 +88,7 @@ absl::optional<LayoutBox*> GetScrollParent(
   // prevented from doing so for security or policy reasons. If so, we're
   // done.
   if (!AllowedToPropagateToParent(*box.GetFrame(), params))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!box.GetFrame()->IsLocalRoot()) {
     // The parent is a local iframe, convert to the absolute coordinate space
@@ -98,7 +99,7 @@ absl::optional<LayoutBox*> GetScrollParent(
     // A display:none iframe can have a LayoutView but its owner element won't
     // have a LayoutObject. If that happens, don't bubble the scroll.
     if (!owner_element->GetLayoutObject())
-      return absl::nullopt;
+      return std::nullopt;
 
     return owner_element->GetLayoutObject()->EnclosingBox();
   }
@@ -115,7 +116,7 @@ absl::optional<LayoutBox*> GetScrollParent(
 // LayoutObject::ScrollRectToVisible. If the scroll bubbled up to the local
 // root successfully, returns the updated absolute rect in the absolute
 // coordinates of the local root. Otherwise returns an empty optional.
-absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
+std::optional<PhysicalRect> PerformBubblingScrollIntoView(
     const LayoutBox& box,
     const PhysicalRect& absolute_rect,
     mojom::blink::ScrollIntoViewParamsPtr& params,
@@ -124,15 +125,10 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
          params->type == mojom::blink::ScrollType::kUser);
 
   if (!box.GetFrameView())
-    return absl::nullopt;
+    return std::nullopt;
 
   const LayoutBox* current_box = &box;
   PhysicalRect absolute_rect_to_scroll = absolute_rect;
-  const auto& box_style = box.StyleRef();
-  PhysicalBoxStrut scroll_margin(LayoutUnit(box_style.ScrollMarginTop()),
-                                 LayoutUnit(box_style.ScrollMarginRight()),
-                                 LayoutUnit(box_style.ScrollMarginBottom()),
-                                 LayoutUnit(box_style.ScrollMarginLeft()));
 
   // TODO(bokan): Temporary, to track cross-origin scroll-into-view prevalence.
   // https://crbug.com/1339003.
@@ -177,8 +173,8 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
               ? area_to_scroll->GetSmoothScrollSequencer()->GetCount()
               : 0ul;
 
-      absolute_rect_to_scroll = area_to_scroll->ScrollIntoView(
-          absolute_rect_to_scroll, scroll_margin, params);
+      absolute_rect_to_scroll =
+          area_to_scroll->ScrollIntoView(absolute_rect_to_scroll, params);
 
       // TODO(bokan): Temporary, to track cross-origin scroll-into-view
       // prevalence. https://crbug.com/1339003.
@@ -229,7 +225,7 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
             current_box->GetFrame()
                 ->GetPage()
                 ->GetVisualViewport()
-                .ScrollIntoView(absolute_rect_to_scroll, scroll_margin, params);
+                .ScrollIntoView(absolute_rect_to_scroll, params);
       }
 
       // TODO(bokan): To be correct we should continue to bubble the scroll
@@ -242,10 +238,10 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
 
     // If the scroll was stopped prior to reaching the local root, we cannot
     // return a rect since the caller cannot know which frame it's relative to.
-    absl::optional<LayoutBox*> next_box_opt =
+    std::optional<LayoutBox*> next_box_opt =
         GetScrollParent(*current_box, params);
     if (!next_box_opt)
-      return absl::nullopt;
+      return std::nullopt;
 
     LayoutBox* next_box = *next_box_opt;
 
@@ -290,7 +286,7 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
     frame->GetSmoothScrollSequencer()->SetScrollType(params->type);
   }
 
-  absl::optional<PhysicalRect> updated_absolute_rect =
+  std::optional<PhysicalRect> updated_absolute_rect =
       PerformBubblingScrollIntoView(*enclosing_box, absolute_rect, params,
                                     from_remote_frame);
 

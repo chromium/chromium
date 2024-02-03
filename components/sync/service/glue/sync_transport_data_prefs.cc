@@ -137,8 +137,7 @@ void SyncTransportDataPrefs::SetBagOfChips(const std::string& bag_of_chips) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // |bag_of_chips| contains a serialized proto which is not utf-8, hence we use
   // base64 encoding in prefs.
-  std::string encoded;
-  base::Base64Encode(bag_of_chips, &encoded);
+  std::string encoded = base::Base64Encode(bag_of_chips);
   pref_service_->SetString(kSyncBagOfChips, encoded);
 }
 

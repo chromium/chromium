@@ -36,6 +36,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -54,7 +55,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -184,7 +184,7 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
       std::move(updated_group), main_frame_url_, origin(),
       GetFrame()->GetNetworkIsolationKey(), report_result_only,
-      *GetFrameURLLoaderFactory(),
+      *GetFrameURLLoaderFactory(), GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(
           &AreAllowedReportingOriginsAttested,
           base::Unretained(render_frame_host().GetBrowserContext())),
@@ -587,28 +587,23 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
   if (!trusted_url_loader_factory_ ||
       !trusted_url_loader_factory_.is_connected()) {
     trusted_url_loader_factory_.reset();
-    network::URLLoaderFactoryBuilder factory_builder;
 
     // TODO(mmenke): Should this have its own URLLoaderFactoryType? FLEDGE
     // requests are very different from subresource requests.
     //
     // TODO(mmenke): Hook up devtools.
-    GetContentClient()->browser()->WillCreateURLLoaderFactory(
-        render_frame_host().GetSiteInstance()->GetBrowserContext(),
-        &render_frame_host(), render_frame_host().GetProcess()->GetID(),
+    url_loader_factory::CreateAndConnectToPendingReceiver(
+        trusted_url_loader_factory_.BindNewPipeAndPassReceiver(),
         ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-        url::Origin(), /*navigation_id=*/std::nullopt,
-        ukm::SourceIdObj::FromInt64(render_frame_host().GetPageUkmSourceId()),
-        factory_builder, /*header_client=*/nullptr,
-        /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
-        /*factory_override=*/nullptr,
-        /*navigation_response_task_runner=*/nullptr);
-
-    std::move(factory_builder)
-        .Finish(trusted_url_loader_factory_.BindNewPipeAndPassReceiver(),
-                render_frame_host()
-                    .GetStoragePartition()
-                    ->GetURLLoaderFactoryForBrowserProcess());
+        url_loader_factory::TerminalParams::ForBrowserProcess(
+            static_cast<RenderFrameHostImpl&>(render_frame_host())
+                .GetStoragePartition()),
+        url_loader_factory::ContentClientParams(
+            render_frame_host().GetSiteInstance()->GetBrowserContext(),
+            &render_frame_host(), render_frame_host().GetProcess()->GetID(),
+            url::Origin(),
+            ukm::SourceIdObj::FromInt64(
+                render_frame_host().GetPageUkmSourceId())));
 
     mojo::Remote<network::mojom::URLLoaderFactory> shared_remote;
     trusted_url_loader_factory_->Clone(

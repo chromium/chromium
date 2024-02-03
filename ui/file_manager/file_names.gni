@@ -3,16 +3,16 @@ image_loader_static_js_files = [
   "image_loader/image_loader.js",
   "image_loader/image_loader_client.js",
   "image_loader/image_loader_util.js",
-  "image_loader/image_orientation.js",
   "image_loader/image_request_task.js",
   "image_loader/load_image_request.js",
   "image_loader/piex_loader.js",
-  "image_loader/scheduler.js",
 ]
 
 image_loader_ts = [
+  "image_loader/scheduler.ts",
   "image_loader/background.ts",
   "image_loader/cache.ts",
+  "image_loader/image_orientation.ts",
 ]
 
 static_js_files = [
@@ -58,6 +58,7 @@ ts_files = [
   "file_manager/common/js/progress_center_common.ts",
   "file_manager/common/js/recent_date_bucket.ts",
   "file_manager/common/js/script_loader.ts",
+  "file_manager/common/js/shared_types.ts",
   "file_manager/common/js/storage.ts",
   "file_manager/common/js/translations.ts",
   "file_manager/common/js/trash.ts",
@@ -316,12 +317,6 @@ ts_files = [
   # 3-line header to avoid conflict.
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
-  # Definitions.
-  "file_manager/definitions/file_manager_private.ts",
-
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Metadata:
   "file_manager/foreground/js/metadata/byte_reader.ts",
   "file_manager/foreground/js/metadata/content_metadata_provider.ts",
@@ -554,7 +549,9 @@ ts_test_files = [
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.ts",
 
   # Image Loader:
+  "image_loader/cache_unittest.ts",
   "image_loader/image_orientation_unittest.ts",
+  "image_loader/scheduler_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -595,6 +592,7 @@ other_dts_files = [
   "//tools/typescript/definitions/tabs.d.ts",
   "//tools/typescript/definitions/wallpaper.d.ts",
   "//tools/typescript/definitions/webview_tag.d.ts",
+  "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
 ]
 
 generated_js_files = [
@@ -611,10 +609,8 @@ unittest_files = [
   "file_manager/foreground/js/navigation_list_model_unittest.js",
 
   # Image Loader:
-  "image_loader/scheduler_unittest.js",
-  "image_loader/image_loader_unittest.js",
-  "image_loader/cache_unittest.js",
   "image_loader/image_loader_client_unittest.js",
+  "image_loader/image_loader_unittest.js",
 ]
 
 # Files that don't have the generated HTML, but are used for tests.

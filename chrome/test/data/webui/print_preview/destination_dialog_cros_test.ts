@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS, DestinationStore, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrinterSetupInfoMessageType, PrintPreviewDestinationDialogCrosElement, PrintPreviewPrinterSetupInfoCrosElement, RecentDestination} from 'chrome://print/print_preview.js';
+import type {Destination, DestinationStore, LocalDestinationInfo, PrintPreviewDestinationDialogCrosElement, RecentDestination} from 'chrome://print/print_preview.js';
+import {DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS, makeRecentDestination, NativeLayerImpl, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -11,7 +12,8 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
 

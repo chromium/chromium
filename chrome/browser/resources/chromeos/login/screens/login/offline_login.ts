@@ -6,19 +6,19 @@
  * @fileoverview Polymer element for displaying material design offline login.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '../../components/gaia_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/dialogs/oobe_content_dialog.js';
 
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import '//resources/cr_elements/cr_input/cr_input.js';
-import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

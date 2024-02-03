@@ -421,9 +421,6 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_MIC_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the microphone permission is in the ask state and the site can prompt the user to ask if allow the site to use your microphone.">
       Can ask to use your microphone
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_MIDI_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the MIDI permission is in the ask state and the site can prompt the user to ask if they allow the site to use MIDI devices.">
-      Can ask to use your MIDI devices
-    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_MIDI_SYSEX_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the MIDI_SYSEX permission is in the ask state and the site can prompt the user to ask if they allow the site to control and reprogram MIDI devices.">
       Can ask to control and reprogram your MIDI devices
     </message>
@@ -777,12 +774,6 @@
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED" desc="The label detailing that third party cookies are blocked. This text will be shown on the blocking third-party cookies toggle if the user has chosen to block all third party cookies.">
     Blocked
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT" desc="The label of the count for sites that have blocked access to cookies on the page. This text will be shown on the blocking third-party cookies toggle.">
-    {NUM_COOKIES, plural, =0 {No sites blocked} =1 {1 site blocked} other {# sites blocked}}
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT_WHEN_FPS_BLOCKED" desc="The label of the count for sites that have blocked access to cookies on the page when fps is blocked. This text will be shown on the blocking third-party cookies toggle.">
-    {NUM_COOKIES, plural, =0 {No sites blocked, including related sites} =1 {1 site blocked, including related sites} other {# sites blocked, including related sites}}
-  </message>
   <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button.">
     {NUM_COOKIES, plural, =0 {No sites allowed} =1 {1 site allowed} other {# sites allowed}}
   </message>
@@ -847,69 +838,36 @@
     Manage ad privacy
   </message>
 
-  <!-- User Bypass strings -->
+  <!-- Tracking Protection strings -->
   <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="A heading in the page info bubble guiding the user where to go if the site they're on appears broken because of a third-party cookie dependency">
     Site not working?
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the page info bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
-    Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
   </message>
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the page info bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
     Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the page info bubble explaining the trade-off of allowing third-party cookies for this site, a change that will not automatically expire in the future.">
-    Try allowing third-party cookies, which means less protection but site features are more likely to work
-  </message>
   <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="A label next to a toggle that allows or blocks third-party cookies.  When the toggle is enabled, third party cookies are allowed.">
     Third-party cookies
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the page info bubble when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
-    {COUNT, plural,
-              =0 {Chrome will block cookies again today}
-              =1 {Chrome will block cookies again tomorrow}
-              other {# days until Chrome blocks cookies again}}
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITING_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are limited again.">
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are limited again.">
     {COUNT, plural,
               =0 {Chrome will limit cookies again today}
               =1 {Chrome will limit cookies again tomorrow}
               other {# days until Chrome limits cookies again}}
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_3PC_BLOCKED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are blocked again.">
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are blocked again.">
     {COUNT, plural,
               =0 {Cookies will be blocked again today}
               =1 {Cookies will be blocked again tomorrow}
               other {# days until cookies are blocked again}}
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY" desc="Descriptive text in the page info bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
-    You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has temporarily allowed third-party cookies on a site explaining the browsing protection trade-off of their decision.">
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has temporarily allowed third-party cookies on a site explaining the browsing protection trade-off of their decision.">
     You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the page info bubble if cookies were allowed by the user and they won't be automatically blocked again the future.">
-    You allowed third-party cookies for this site
   </message>
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Tracking Protection subpage bubble telling the user they allowed third-party cookies on the current site.">
     You allowed third-party cookies on this site
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
-    This means that most site features should work, but you have less protection
-  </message>
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list.">
     This means site features should work as expected, but you may have less browsing protection.
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_ALLOWED_TOGGLE_A11Y" desc="Accessible name in the page info bubble, for the third-party cookies toggle, if third party cookies are allowed indicating how many third-party sites were allowed to access cookies.">
-    {NUM_COOKIES, plural,
-      =0 {Third-party cookies, No sites allowed}
-      =1 {Third-party cookies, 1 site allowed}
-      other {Third-party cookies, # sites allowed}}
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_BLOCKED_TOGGLE_A11Y" desc="Accessible name in the page info bubble, for the third-party cookies toggle, if third party cookies are blocked indicating how many third-party sites were blocked from accessing cookies.">
-    {NUM_COOKIES, plural,
-      =0 {Third-party cookies, No sites blocked}
-      =1 {Third-party cookies, 1 site blocked}
-      other {Third-party cookies, # sites blocked}}
   </message>
 
 </grit-part>

@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -108,9 +107,7 @@ class ReadAnythingAppController
       base::Value::Dict voices,
       read_anything::mojom::HighlightGranularity granularity) override;
   void SetDefaultLanguageCode(const std::string& code) override;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady() override;
-#endif
 
   // gin templates:
   ui::AXNodeID RootId() const;
@@ -217,29 +214,43 @@ class ReadAnythingAppController
   void InitAXPositionWithNode(const ui::AXNodeID starting_node_id);
 
   // Returns a list of AXNodeIds representing the next nodes that should be
-  // spoken and highlighted with Read Aloud. GetNextTextStartIndex and
-  // GetNextTextEndIndex called with an AXNodeID return by GetNextText will
-  // return the starting text and ending text indices for specific text that
-  // should be referenced within the node.
-  std::vector<ui::AXNodeID> GetNextText(int max_text_length);
+  // spoken and highlighted with Read Aloud.
+  // This defaults to returning the first granularity until
+  // MovePositionTo<Next,Previous>Granularity() moves the position.
+  // If the the current processed_granularity_index_ has not been calculated
+  // yet, GetNextNodes() is called which updates the AXPosition.
+  // GetCurrentTextStartIndex and GetCurrentTextEndIndex called with an AXNodeID
+  // return by GetCurrentText will return the starting text and ending text
+  // indices for specific text that should be referenced within the node.
+  std::vector<ui::AXNodeID> GetCurrentText();
 
-  // Returns a list of triples representing the previous nodes that should be
-  // spoken and highlighted with Read Aloud. Each triple contains three numbers:
-  // the AXNodeID, the starting text index, and the ending text index. This
-  // list of triples is represented as a double array.
-  std::vector<ui::AXNodeID> GetPreviousText();
+  // TODO(crbug.com/1474951): Random access to processed nodes might not always
+  // work (e.g. if we're switching granularities or jumping to a specific node),
+  // so we should implement a method of retrieving previous text from
+  // AXPosition.
+
+  // Increments the processed_granularity_index_, updating ReadAloud's state of
+  // the current granularity to refer to the next granularity. The current
+  // behavior allows the client to increment past the end of the page's content.
+  void MovePositionToNextGranularity();
+
+  // Decrements the processed_granularity_index_,updating ReadAloud's state of
+  // the current granularity to refer to the previous granularity
+  void MovePositionToPreviousGranularity();
+
+  int GetAccessibleBoundary(const std::u16string& text, int max_text_length);
 
   // Returns the Read Aloud starting text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
   // moment, this will return 0. Returns -1 if the node isn't in the current
   // segment.
-  int GetNextTextStartIndex(ui::AXNodeID node_id);
+  int GetCurrentTextStartIndex(ui::AXNodeID node_id);
 
   // Returns the Read Aloud ending text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
   // moment, this will return the length of the node's text. Returns -1 if the
   // node isn't in the current segment.
-  int GetNextTextEndIndex(ui::AXNodeID node_id);
+  int GetCurrentTextEndIndex(ui::AXNodeID node_id);
 
   // SetContentForTesting, SetThemeForTesting, and SetLanguageForTesting are
   // used by ReadAnythingAppTest and thus need to be kept in

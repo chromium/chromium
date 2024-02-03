@@ -268,7 +268,7 @@ views::Widget* IsolatedWebAppInstallerViewController::GetWidgetForTesting() {
 
 views::Widget*
 IsolatedWebAppInstallerViewController::GetChildWidgetForTesting() {
-  return view_->GetChildWidgetForTesting();
+  return child_widget_;
 }
 
 void IsolatedWebAppInstallerViewController::Show() {
@@ -496,12 +496,19 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
   }
 }
 
+void IsolatedWebAppInstallerViewController::OnChildDialogDestroying() {
+  child_widget_ = nullptr;
+}
+
 void IsolatedWebAppInstallerViewController::OnStepChanged() {
   if (!view_) {
     return;
   }
 
   switch (model_->step()) {
+    case IsolatedWebAppInstallerModel::Step::kNone:
+      NOTREACHED();
+      break;
     case IsolatedWebAppInstallerModel::Step::kDisabled:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CLOSE,
@@ -540,7 +547,7 @@ void IsolatedWebAppInstallerViewController::OnStepChanged() {
 
 void IsolatedWebAppInstallerViewController::OnChildDialogChanged() {
   if (model_->has_dialog()) {
-    view_->ShowDialog(model_->dialog());
+    child_widget_ = view_->ShowDialog(model_->dialog());
   }
 }
 

@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_TRANSFERABLE_RESOURCE_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_TRANSFERABLE_RESOURCE_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -12,7 +14,6 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
@@ -96,7 +97,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.needs_detiling;
   }
 
-  static const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
+  static const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
       const viz::TransferableResource& resource) {
     return resource.ycbcr_info;
   }

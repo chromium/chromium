@@ -156,7 +156,7 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   void OnAudioConfigChange(const AudioDecoderConfig& config) override {}
   void OnVideoConfigChange(const VideoDecoderConfig& config) override {}
   void OnVideoOpacityChange(bool opaque) override {}
-  void OnVideoFrameRateChange(absl::optional<int>) override {}
+  void OnVideoFrameRateChange(std::optional<int>) override {}
   void OnVideoAverageKeyframeDistanceUpdate() override {}
   void OnAudioPipelineInfoChange(const AudioPipelineInfo& info) override {}
   void OnVideoPipelineInfoChange(const VideoPipelineInfo& info) override {}

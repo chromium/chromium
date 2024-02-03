@@ -2,6 +2,10 @@
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
+# TODO:crbug.com/1500895: Remove this finder's annotation once we enable Graphite tests
+# on automated CI bots.
+# finder:disable-general
+
 # ==== Tests failed due to Graphite rendering zero length gradient incorrectly =====
 crbug.com/1517553 virtual/gpu/fast/canvas/canvas-fillRect-zeroSizeGradient.html [ Failure ]
 crbug.com/1517553 virtual/gpu/fast/canvas/canvas-stroke-zeroSizeGradient.html [ Failure ]
@@ -38,3 +42,5 @@ crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ 
 crbug.com/626703 external/wpt/png/apng/acTL-plays-two.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-capture/getdisplaymedia-capture-controller.https.window.html [ Crash ]
 crbug.com/626703 external/wpt/screen-capture/getdisplaymedia.https.html [ Crash ]
+
+# finder:enable-general

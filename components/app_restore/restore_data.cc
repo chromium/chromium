@@ -141,8 +141,8 @@ bool RestoreData::HasAppTypeBrowser() const {
     return false;
 
   for (const auto& data : it->second) {
-    if (data.second->app_type_browser.has_value() &&
-        data.second->app_type_browser.value()) {
+    if (data.second->browser_extra_info.app_type_browser.has_value() &&
+        data.second->browser_extra_info.app_type_browser.value()) {
       return true;
     }
   }
@@ -155,8 +155,8 @@ bool RestoreData::HasBrowser() const {
     return false;
 
   for (const auto& data : it->second) {
-    if (!data.second->app_type_browser.has_value() ||
-        !data.second->app_type_browser.value()) {
+    if (!data.second->browser_extra_info.app_type_browser.has_value() ||
+        !data.second->browser_extra_info.app_type_browser.value()) {
       return true;
     }
   }

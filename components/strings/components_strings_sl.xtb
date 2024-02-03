@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Napadalci včasih poskušajo posnemati spletna mesta, tako da skoraj neopazno spremenijo spletni naslov.</translation>
 <translation id="1024913885641459127">Ocene izdelkov in primerjava cen</translation>
 <translation id="1028781062521375153">Ogled podrobnosti</translation>
+<translation id="102916930470544692">Ključ za dostop</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno shranjevati velike količine podatkov v vaši napravi</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Brez}=1{1 spletno mesto. Odjavi vas iz večine spletnih mest. }one{# spletno mesto. Odjavi vas iz večine spletnih mest. }two{# spletni mesti. Odjavi vas iz večine spletnih mest. }few{# spletna mesta. Odjavi vas iz večine spletnih mest. }other{# spletnih mest. Odjavi vas iz večine spletnih mest. }}</translation>
 <translation id="1033329911862281889">V anonimnem načinu niste nevidni v spletu:
@@ -257,6 +258,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1442987760062738829">Luknjanje</translation>
 <translation id="1446396933673057385">Preverjanje natančnosti</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">Ključev »<ph name="DATA_CONTROLS_FIRST_KEY_SET" />« ni mogoče nastaviti v istem slovarju kot tipke »<ph name="DATA_CONTROLS_SECOND_KEY_SET" />«.</translation>
 <translation id="1452803302401719440">Zaradi nastavitev, ki jih je izbral starš, je splet zate varnejši</translation>
 <translation id="1455413310270022028">Radirka</translation>
 <translation id="1458140305240870199">Spodnje perilo</translation>
@@ -396,6 +398,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1711528724596764268">Strojno učenje in umetna inteligenca</translation>
 <translation id="1712552549805331520"><ph name="URL" /> želi trajno shraniti podatke v lokalnem računalniku</translation>
 <translation id="1713628304598226412">Pladenj 2</translation>
+<translation id="1713819065634160212">Uporaba in shranjevanje naslovov iz računa Google</translation>
 <translation id="1714807406136741351">Način brskanja, preklopite lahko v način za obrazce in uporabite puščico levo/desno za pregled sprememb cen na grafikonu</translation>
 <translation id="1717218214683051432">Tipala gibanja</translation>
 <translation id="1717494416764505390">Nabiralnik 3</translation>
@@ -427,6 +430,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1752021286346845558">Nabiralnik 8</translation>
 <translation id="1753068535428855445">Zmenki in zasebni stiki</translation>
 <translation id="1753706481035618306">Številka strani</translation>
+<translation id="1755203724116202818">Zaradi merjenja uspešnosti oglasa se s spletnimi mesti delijo omejene vrste podatkov, na primer ali ste opravili nakup po obisku spletnega mesta.</translation>
 <translation id="1755621011177747277">Posvojitev</translation>
 <translation id="1756026472674246267">Odpri povezavo na novem zavihku</translation>
 <translation id="175656076281618225">Čarovnija</translation>
@@ -768,6 +772,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Zunanje naprave, priključene na to napravo, medtem ko ste prijavljeni.</translation>
 <translation id="2450021089947420533">Poti</translation>
+<translation id="2452837234288608067">Pri tem vam nismo mogli pomagati. Poskusite znova.</translation>
 <translation id="2456755709261364512">Baterija mora imeti več kot <ph name="REQUIRED_BATTERY_PRECENT" /> % energije</translation>
 <translation id="2462599289530201834">Iščite <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Izpolni</translation>
@@ -880,7 +885,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2674804415323431591">Skrivanje predlogov</translation>
 <translation id="2677696497921480781">Rojstni dnevi in godovi</translation>
 <translation id="2677748264148917807">Zapusti</translation>
-<translation id="2678468611080193228">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
+<translation id="2683195745483370038">Najdeni so bili drugi rezultati</translation>
 <translation id="2686919536310834199">Pošlji povratne informacije za funkcijo »Pomoč pri pisanju«.</translation>
 <translation id="2687555958734450033">Najustreznejše</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -909,6 +914,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2725927759457695883">Izpolnitev polnega imena</translation>
 <translation id="2726001110728089263">Stranski pladenj</translation>
 <translation id="2728127805433021124">Strežnikovo potrdilo je podpisano s šibkim podpisnim algoritmom.</translation>
+<translation id="272937284275742856">Varno preverjanje podatkov za plačilo …</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Izvajanje orodja Diagnostika povezljivosti<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Klasična glasba</translation>
 <translation id="2731382536835015353">44 x 68 palcev</translation>
@@ -1008,6 +1014,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2958544468932521864">Kriket</translation>
 <translation id="2959113999220720579">Nega obraza in telesa</translation>
 <translation id="2962073860865348475">12 x 18 palcev</translation>
+<translation id="2967098518029543669">shranite ga v računu Google</translation>
 <translation id="2968103128155246731">Kombiji in enoprostorci</translation>
 <translation id="2972581237482394796">&amp;Uveljavi</translation>
 <translation id="2977665033722899841">Trenutno izbrano: <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
@@ -1030,7 +1037,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3005723025932146533">Pokaži shranjeno kopijo</translation>
 <translation id="300580149047131921">Nedavno uporabljeno</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, če želite prebrskati razpoložljiva dejanja, nato pritisnite Enter, če želite izvesti izbrano dejanje.</translation>
-<translation id="3013291976881901233">Naprave MIDI</translation>
 <translation id="3014553260345122294">Poslovne novice</translation>
 <translation id="3014726756341138577">Dodatne funkcije tiskalnika</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
@@ -1052,7 +1058,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3067505415088964188">Cena je nizka</translation>
 <translation id="3068991664510324412">Računalniške in video igre</translation>
 <translation id="3080254622891793721">Grafični elementi</translation>
-<translation id="3081538120861307764">Zaradi merjenja uspešnosti oglasa se s spletnimi mesti delijo omejene vrste podatkov, kot je ura v dnevu, ko je bil oglas prikazan.</translation>
 <translation id="3082007635241601060">Naj Google uporabi vaše nakupovalne vozičke za iskanje osebno prilagojenih popustov, ko so na voljo</translation>
 <translation id="3086579638707268289">Vaša dejavnost v spletu je nadzorovana</translation>
 <translation id="3087734570205094154">Na dno</translation>
@@ -1084,6 +1089,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3120807611504813890">Envelope (Lightweight)</translation>
 <translation id="3121994479408824897">Odpri <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Labels (Permanent)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je zdaj vaš privzeti iskalnik</translation>
 <translation id="3140646734028448730">Poslovne storitve</translation>
 <translation id="3141093262818886744">Vseeno odpri</translation>
 <translation id="3141641372357166056">Brez odločitve glede privolitve</translation>
@@ -1098,7 +1104,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Piškotki tretjih oseb, nobeno spletno mesto ni dovoljeno}=1{Piškotki tretjih oseb, 1 dovoljeno spletno mesto}one{Piškotki tretjih oseb, # dovoljeno spletno mesto}two{Piškotki tretjih oseb, # dovoljeni spletni mesti}few{Piškotki tretjih oseb, # dovoljena spletna mesta}other{Piškotki tretjih oseb, # dovoljenih spletnih mest}}</translation>
 <translation id="3168744840365648658">Radio oprema</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Nepremičninske storitve</translation>
@@ -1157,7 +1162,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3262698603497362968">Možnosti nakupa</translation>
 <translation id="3266367459139339908">Uvajamo nove načine, s katerimi lahko omejite, kaj lahko spletna mesta izvejo o vas, ko vam prikažejo osebno prilagojene oglase, na primer:</translation>
 <translation id="3266793032086590337">Vrednost (v sporu)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Ni blokiranih spletnih mest, vključno s povezanimi spletnimi mesti}=1{1 blokirano spletno mesto, vključno s povezanimi spletnimi mesti}one{# blokirano spletno mesto, vključno s povezanimi spletnimi mesti}two{# blokirani spletni mesti, vključno s povezanimi spletnimi mesti}few{# blokirana spletna mesta, vključno s povezanimi spletnimi mesti}other{# blokiranih spletnih mest, vključno s povezanimi spletnimi mesti}}</translation>
 <translation id="3268451620468152448">Odprti zavihki</translation>
 <translation id="3270041629388773465">Hitrejši zaključek nakupov, če so kode CVC shranjene</translation>
 <translation id="3270156322180235608">Letalska potovanja</translation>
@@ -1202,7 +1206,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3359565626472459400">Zakon</translation>
 <translation id="3360103848165129075">List rutine za obravnavo plačil</translation>
 <translation id="3360313521703038580">Ekologija in okolje</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Piškotki tretjih oseb, ni blokiranih spletnih mest}=1{Piškotki tretjih oseb, 1 blokirano spletno mesto}one{Piškotki tretjih oseb, # blokirano spletno mesto}two{Piškotki tretjih oseb, # blokirani spletni mesti}few{Piškotki tretjih oseb, # blokirana spletna mesta}other{Piškotki tretjih oseb, # blokiranih spletnih mest}}</translation>
 <translation id="3362968246557010467">Ta pravilnik je bil samodejno kopiran iz zastarelega pravilnika <ph name="OLD_POLICY" />. Uporabite ta pravilnik.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> želi uporabljati napravo in podatke za navidezno resničnost</translation>
 <translation id="3366477098757335611">Ogled kartic</translation>
@@ -1263,6 +1266,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3462200631372590220">Skrij podrobnosti</translation>
 <translation id="3465972433695735758">Ta datoteka PDF ni dostopna. Besedilo pridobljeno, uporablja tehnologijo Googlove umetne inteligence</translation>
 <translation id="346601286295919445">Kemija</translation>
+<translation id="3467081767799433066">Pri merjenju oglasov se s spletnimi mesti zaradi merjenja uspešnosti oglasov delijo omejene vrste podatkov, na primer ura v dnevu, na primer ali ste opravili nakup po obisku spletnega mesta.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, trenutno odprto, pritisnite tabulatorko, nato Enter, če želite preklopiti na odprti zavihek</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite zapreti vsa trenutno odprta anonimna okna.</translation>
 <translation id="3474392552865647225">Gumb za prilagajanje pisav v Chromu, aktivirajte, če želite prilagoditi velikosti pisav in tipografije v Chromu</translation>
@@ -1382,6 +1386,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3678914302246317895">Vnesite <ph name="OTP_LENGTH" />-mestno kodo za preverjanje</translation>
 <translation id="3681007416295224113">Informacije o potrdilu</translation>
 <translation id="3681421644246505351">Chrome beleži teme zanimanja na podlagi nedavne zgodovine brskanja.</translation>
+<translation id="3682094733650754138">Izbrana je bila možnost za izpolnitev naslova</translation>
 <translation id="3689867156802445220">Številka stavbe</translation>
 <translation id="3693327506115126094">Izberite, kako želite potrditi, da ste to res vi</translation>
 <translation id="3698629142018988477">Gumb za ustvarjanje spletnih mest, aktivirajte, če želite hitro ustvariti novo spletno mesto v Google Spletnih mestih</translation>
@@ -1506,6 +1511,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="3946209740501886391">Vedno vprašaj na tem spletnem mestu</translation>
 <translation id="3948588869002647271">Ta aplikacija manjka ali je poškodovana</translation>
+<translation id="3949297482798028668">Lepljenje te vsebine sem je blokiral skrbnik.</translation>
 <translation id="3949571496842715403">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo ne določa nadomestnih imen SAN (Subject Alternative Name). Razlog za to je morda napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="3949601375789751990">Tu je prikazana zgodovina brskanja</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1558,7 +1564,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4065659219963895623">Restavracije</translation>
 <translation id="4067098466788473230">Štipendije</translation>
 <translation id="4067947977115446013">Dodajanje veljavnega naslova</translation>
-<translation id="4070790659619547722">Pri merjenju oglasov se s spletnimi mesti delijo omejene vrste podatkov, na primer ura v dnevu, ko je bil oglas prikazan.</translation>
 <translation id="4072486802667267160">Pri obdelavi naročila je prišlo do napake. Poskusite znova.</translation>
 <translation id="4073376909608563327">Odklepanja naprave ni bilo mogoče uporabiti</translation>
 <translation id="4073797364926776829">Ogled kartice</translation>
@@ -1606,7 +1611,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4151403195736952345">Globalno uporabi privzete nastavitve (zaznavanje)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. stran}one{{COUNT}. stran}two{{COUNT}. stran}few{{COUNT}. stran}other{{COUNT}. stran}}</translation>
 <translation id="4154277373259957087">Chrome bo zdaj preveril vašo identiteto, preden vnesete podatke o plačilnih sredstvih. To lahko kadar koli posodobite v <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">To pomeni, da bi morala večina funkcij spletnega mesta delovati, vendar boste imeli manj zaščite</translation>
 <translation id="4159784952369912983">Vijolična</translation>
 <translation id="4165986682804962316">Nastavitve spletnega mesta</translation>
 <translation id="4169535189173047238">Ne dovoli</translation>
@@ -1923,6 +1927,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4764680219299728632">Štedilniki, kuhalne plošče in pečice</translation>
 <translation id="4764776831041365478">Spletna stran na naslovu <ph name="URL" /> morda začasno ne deluje ali pa je trajno premaknjena na novi spletni naslov.</translation>
 <translation id="4766713847338118463">Dvojno spenjanje spodaj</translation>
+<translation id="4768864802656530630">Podrobni sistemski dnevniki. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Prišlo je do neznane napake.</translation>
 <translation id="4774055414220872623">Potrebščine za ustvarjalne</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pojavno okno je blokirano}one{# pojavno okno je blokirano}two{# pojavni okni sta blokirani}few{# pojavna okna so blokirana}other{# pojavnih oken je blokiranih}}</translation>
@@ -2029,7 +2034,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4983145717627482381">Vodeni izleti in počitnice v spremstvu</translation>
 <translation id="498323057460789381">Napaka pri preverjanju sheme: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Želite uporabiti mikrofon?</translation>
-<translation id="4985206706500620449">Za to spletno mesto ste dovolili piškotke tretjih oseb</translation>
 <translation id="4989163558385430922">Pokaži vse</translation>
 <translation id="4989542687859782284">Ni na voljo</translation>
 <translation id="4989809363548539747">Ta vtičnik ni podprt</translation>
@@ -2208,7 +2212,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5331585574693522196">Nastavi kot privzeto</translation>
 <translation id="5332219387342487447">Način pošiljanja</translation>
 <translation id="5332769172018416402">Vprašaj v sporočilu</translation>
-<translation id="5334013548165032829">Podrobni sistemski dnevniki</translation>
 <translation id="5334145288572353250">Želite shraniti naslov?</translation>
 <translation id="5340250774223869109">Aplikacija je blokirana</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
@@ -2229,6 +2232,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5377026284221673050">Ura zaostaja« ali »Ura prehiteva« ali »&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;«</translation>
 <translation id="5383478552402031184">Storitve, povezane s talnimi oblogami</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">Predogleda URL-ja, ki ni HTTPS, ni mogoče prikazati</translation>
 <translation id="5386426401304769735">Veriga potrdil za to spletno mesto vsebuje potrdilo, podpisano z algoritmom SHA-1.</translation>
 <translation id="5392506727170022660">Metal (Semi-Gloss)</translation>
 <translation id="5396631636586785122">Robni šiv na desni</translation>
@@ -2246,7 +2250,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5414511064953050917">Vseeno premakni</translation>
 <translation id="5421136146218899937">Izbriši podatke brskanja ...</translation>
 <translation id="5423269318075950257">Spremljanje cene</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ni blokiranih spletnih mest}=1{1 blokirano spletno mesto}one{# blokirano spletno mesto}two{# blokirani spletni mesti}few{# blokirana spletna mesta}other{# blokiranih spletnih mest}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vam želi pošiljati obvestila</translation>
 <translation id="5430298929874300616">Odstrani zaznamek</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ne bo shranjeval<ph name="END_EMPHASIS" />:
@@ -2452,6 +2455,8 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5838732667866024867">S puščico levo/desno lahko pregledujete spremembe cen na grafikonu</translation>
 <translation id="5840318881868981258">V računu Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Želite shraniti v račun?</translation>
+<translation id="5843987376989109187">Ta jezik še ni podprt.
+    <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Dobava energije</translation>
 <translation id="5851548754964597211">Seznam zavihkov</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -2785,9 +2790,9 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6480864723214312258">Baterije za gospodinjstvo</translation>
 <translation id="6486200200930923183">Dokumentarni filmi</translation>
 <translation id="6489534406876378309">Začetek prenašanja zrušitev v storitev</translation>
-<translation id="6491663123807473970"><ph name="URL" /> želi uporabljati vaše naprave MIDI</translation>
 <translation id="6493924760403974580">Ta aplikacija podpira samo to velikost.</translation>
 <translation id="6494750904506170417">pojavna okna in preusmeritve</translation>
+<translation id="6495664197699704593">To geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">Poslovanje</translation>
 <translation id="6499038740797743453">Ali želite ponastaviti geslo?</translation>
 <translation id="6502510275417601303">Opozorilo o novi nastavitvi plačil je zaprto</translation>
@@ -2803,7 +2808,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6521745193039995384">Nedejavno</translation>
 <translation id="6524830701589638230">Gumb za upravljanje nastavitev funkcij za ljudi s posebnimi potrebami, aktivirajte, če želite osebno prilagoditi orodja za ljudi s posebnimi potrebami v Chromovih nastavitvah</translation>
 <translation id="6529173248185917884">Kolut 7</translation>
-<translation id="652937045869844725">Poskusite omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
 <translation id="6529602333819889595">&amp;Uveljavi izbris</translation>
 <translation id="6535751101619004418">Valute in devizno poslovanje</translation>
 <translation id="6536221421038631327">Če iz naprave <ph name="DEVICE_TYPE" /> odstranite naročnino na Passpoint, boste odstranili povezana omrežja. Če želite spremeniti naročniško pogodbo, se obrnite na »<ph name="FRIENDLY_NAME" />«. <ph name="LEARN_MORE" /></translation>
@@ -2902,6 +2906,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6732087373923685049">fotoaparat</translation>
 <translation id="6737708609449480586">Pecivo</translation>
 <translation id="6738516213925468394">Podatki so bili šifrirani (<ph name="TIME" />) z vašim <ph name="BEGIN_LINK" />geslom za sinhronizacijo<ph name="END_LINK" />. Vnesite ga, če želite začeti sinhronizacijo.</translation>
+<translation id="6740851646645036700">Dosegli ste trenutno omejitev pomoči pri pisanju. Poskusite znova pozneje.</translation>
 <translation id="674375294223700098">Neznana napaka potrdila strežnika.</translation>
 <translation id="6744009308914054259">Med čakanjem na povezavo lahko berete članke za branje brez povezave med prenosi.</translation>
 <translation id="6745592621698551453">Posodobi</translation>
@@ -2958,6 +2963,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6860888819347870819">Lahko zahteva odpiranje načina slike v sliki</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Potrošniški viri</translation>
+<translation id="6865166112578825782">Izpolni naslov</translation>
 <translation id="6865412394715372076">Te kartice trenutno ni mogoče preveriti</translation>
 <translation id="6868573634057275953">Nadaljujte posodabljanje</translation>
 <translation id="6869334554832814367">Osebna posojila</translation>
@@ -3157,7 +3163,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7221855153210829124">Pokaži obvestila</translation>
 <translation id="7221857374443660083">Vaša banka se želi prepričati, da ste to vi</translation>
 <translation id="722454870747268814">New Incognito Tab</translation>
-<translation id="7226276626900992675">Temu spletnemu mestu ste dovolili uporabo piškotkov tretjih oseb. To pomeni, da bi morala večina funkcij spletnega mesta delovati, vendar boste imeli manj zaščite.</translation>
 <translation id="7227293336683593977">Zgodovina cen</translation>
 <translation id="7227747683324411744">Napadalci na spletnem mestu, ki ga poskušate obiskati, vas lahko zavedejo, da namestite škodljivo programsko opremo, ki vpliva na vaš način brskanja – na primer tako, da spremenijo vašo domačo stran ali vam na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase.</translation>
 <translation id="7233592378249864828">Tiskanje potrditvenega lista</translation>
@@ -3174,6 +3179,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7251437084390964440">Omrežna konfiguracija ne ustreza standardu ONC. Deli konfiguracije morda niso bili uvoženi.
 Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Sporočilo skrbnika: »<ph name="CUSTOM_MESSAGE" />«</translation>
 <translation id="7256634549594854023">Zadnji pladenj</translation>
 <translation id="725866823122871198">Zasebne povezave z domeno <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ni mogoče vzpostaviti, ker sta datum in ura (<ph name="DATE_AND_TIME" />) v računalniku nepravilna.</translation>
 <translation id="7260075294900977274">Nova pametna mapa, ki vam pomaga shraniti vse strani za nakupovanje na enem mestu in samodejno spremljati cene, pridobiti vpoglede v cene in drugo</translation>
@@ -3427,6 +3433,7 @@ Dodatne podrobnosti:
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7701544340847569275">Posodobitev je končana z napakami</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Nadaljuj na spletno mesto <ph name="SITE" /> (ni varno)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">Pomoč pri pisanju</translation>
 <translation id="7705992072972338699">Optical Disc (High-Gloss)</translation>
 <translation id="770607638235926858">Smučanje in deskanje</translation>
 <translation id="7706689436519265630">Datoteke, ki jih kopirate ali premaknete, so poslane storitvi Google Cloud ali tretjim osebam v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo, pri čemer so morda shranjene na podlagi pravilnikov podjetja.</translation>
@@ -3470,7 +3477,6 @@ Dodatne podrobnosti:
 <translation id="7785790577395078482">s tem tabličnim računalnikom</translation>
 <translation id="7786368602962652765">Obvezno polje je prazno. Pred shranjevanjem ga izpolnite.</translation>
 <translation id="7786432318297177736">Ti iskalniki so prikazani v naključnem vrstnem redu. Privzeto možnost lahko kadar koli spremenite v nastavitvah.</translation>
-<translation id="7790488044432570133">Spletna mesta, ki jih obiščete, lahko od Chroma zahtevajo podatke zaradi merjenja uspešnosti oglasov. Chrome omogoča spletnim mestom zbiranje omejenih vrst podatkov, kot je ura v dnevu, ko je bil oglas prikazan.</translation>
 <translation id="7791011319128895129">Neobjavljeno</translation>
 <translation id="7791196057686275387">Vezava »bale«</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -3589,7 +3595,6 @@ Dodatne podrobnosti:
 <translation id="8038817883578389970">Avtomobilske dirke</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8041940743680923270">Uporabi globalno privzeto (Vprašaj)</translation>
-<translation id="8042577181291637092">Želite uporabiti naprave MIDI?</translation>
 <translation id="8043255123207491407">Oglejte si določila in pogoje prodajalca</translation>
 <translation id="8046360364391076336">Industrijski materiali in oprema</translation>
 <translation id="8052898407431791827">Kopirano v odložišče</translation>
@@ -3646,6 +3651,7 @@ Dodatne podrobnosti:
 <translation id="8161095570253161196">Nadaljuj brskanje</translation>
 <translation id="8163866351304776260">Četverno luknjanje na levi</translation>
 <translation id="8164078261547504572">Želite prejemati e-poštna sporočila ob znižanju cen?</translation>
+<translation id="8169175551046720804">Ključev »<ph name="DATA_CONTROLS_KEYS" />« ni mogoče nastaviti v istem slovarju</translation>
 <translation id="8175796834047840627">Chrome ponuja shranjevanje kartic v račun Google, ker ste prijavljeni. To lahko spremenite v nastavitvah.</translation>
 <translation id="8176440868214972690">Skrbnik te naprave je poslal nekatere podatke, kot so nastavitve ali pravilniki, na ta spletna mesta.</translation>
 <translation id="817820454357658398">Izdelki za žensko intimno nego</translation>
@@ -3659,6 +3665,7 @@ Dodatne podrobnosti:
 <translation id="8194797478851900357">&amp;Razveljavi premik</translation>
 <translation id="8194956568907463262">Strelske igre</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
+<translation id="8199730148066603000">Predogled URL-ja, ki ni HTTPS, ni dovoljen.</translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8202097416529803614">Povzetek naročila</translation>
 <translation id="8202370299023114387">Spor</translation>
@@ -3774,7 +3781,6 @@ Dodatne podrobnosti:
 <translation id="8398335999901363925">Plačilna sredstva, ki jih je mogoče izpolniti z dotikom, odprta pri polni višini.</translation>
 <translation id="8398446215576328011">Razveljavi uporabljene pravilnike</translation>
 <translation id="8398790343843005537">Poiščite telefon</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome bo znova blokiral piškotke danes}=1{Chrome bo znova blokiral piškotke jutri}one{Še # dan in Chrome bo znova blokiral piškotke}two{Še # dneva in Chrome bo znova blokiral piškotke}few{Še # dni in Chrome bo znova blokiral piškotke}other{Še # dni in Chrome bo znova blokiral piškotke}}</translation>
 <translation id="8403506619177967839">Zgodbe, ki jih pišejo navdušenci</translation>
 <translation id="8405579342203358118">Upravljajte, kateri podatki se sinhronizirajo v Chromu.</translation>
 <translation id="8406071103346257942">ustaviti uporabo zaklepanja zaslona za izpolnjevanje gesel.</translation>
@@ -3793,7 +3799,6 @@ Dodatne podrobnosti:
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8428634594422941299">Razumem</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati nastavitve piškotkov v Chromovih nastavitvah.</translation>
-<translation id="8432419784006585012">Lahko zahteva uporabo naprav MIDI</translation>
 <translation id="8433057134996913067">S tem boste odjavljeni z večine spletnih mest.</translation>
 <translation id="8434014327286137412">Če želite naslednjič hitreje plačati, shranite številko IBAN v računu Google</translation>
 <translation id="8434840396568290395">Domače živali</translation>
@@ -3885,7 +3890,6 @@ Dodatne podrobnosti:
 <translation id="860043288473659153">Ime imetnika kartice</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Vaša dejavnost na spletnem mestu, ki ga obiščete v Chromu v tej napravi.</translation>
 <translation id="8601456038554914806">Oprema za vodne športe</translation>
-<translation id="8606726445206553943">Uporaba naprav MIDI</translation>
 <translation id="8606988009912891950">Teme oglasov pomagajo spletnim mestom pri prikazovanju ustreznih oglasov, obenem pa varujejo vašo zgodovino brskanja in identiteto. Chrome lahko beleži teme zanimanja na podlagi nedavne zgodovine brskanja. Pozneje lahko spletno mesto, ki ga obiščete, od Chroma zahteva ustrezne teme zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
 <translation id="8617269623452051934">podatke o napravi uporabe</translation>
 <translation id="861775596732816396">Velikost 4</translation>
@@ -4041,6 +4045,7 @@ Dodatne podrobnosti:
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Zakonodaja in država</translation>
+<translation id="8952569554322479410">Spletno mesto je pravkar zahtevalo dostop do tega: <ph name="REQUEST_TYPE" />. Izpolnite to enominutno anketo in nam pomagajte izboljšati način, kako spletna mesta zahtevajo dostop.</translation>
 <translation id="8954252855949068147">Oblačila</translation>
 <translation id="8956124158020778855">Po vklopu te nastavitve se vrnite na ta zavihek in začnite pisati.</translation>
 <translation id="8957210676456822347">Odobritev prestreznega portala</translation>
@@ -4073,6 +4078,7 @@ Dodatne podrobnosti:
 <translation id="9005998258318286617">Dokumenta PDF ni bilo mogoče naložiti.</translation>
 <translation id="9008178007718859630">Oprema za dom in notranja oprema</translation>
 <translation id="9008201768610948239">Prezri</translation>
+<translation id="9014705027639070815">Spletna mesta, ki jih obiščete, lahko od Chroma zahtevajo podatke zaradi merjenja uspešnosti oglasov. Chrome omogoča spletnim mestom zbiranje omejenih vrst podatkov, na primer o tem, ali ste opravili nakup po obisku spletnega mesta.</translation>
 <translation id="9018120810758822233">Vnesite varnostno kodo za kartico <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-pošta</translation>
 <translation id="9020542370529661692">Ta stran je prevedena v jezik <ph name="TARGET_LANGUAGE" /></translation>
@@ -4095,6 +4101,8 @@ Dodatne podrobnosti:
 <translation id="9049981332609050619">Skušali ste dostopati do domene <ph name="DOMAIN" />, vendar je strežnik predložil neveljavno potrdilo.</translation>
 <translation id="9050666287014529139">Geslo</translation>
 <translation id="9051072642122229460">Kavni avtomati</translation>
+<translation id="9051260467258969162">Znova <ph name="BEGIN_LINK" />se prijavite<ph name="END_LINK" />, 
+    nato se vrnite na ta zavihek, če želite pomoč pri pisanju</translation>
 <translation id="9053840549256861041">Uvajamo novo funkcijo za zasebnost pri oglaševanju, ki se imenuje merjenje oglasov. Chrome deli samo zelo omejene podatke s spletnimi mesti, na primer kdaj vam je bil oglas prikazan, da bi spletnim mestom pomagal meriti uspešnost oglasov.</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Morda je premaknjena, urejena ali izbrisana.</translation>

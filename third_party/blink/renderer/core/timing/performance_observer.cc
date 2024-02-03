@@ -351,7 +351,7 @@ bool PerformanceObserver::HasPendingActivity() const {
   return is_registered_;
 }
 
-void PerformanceObserver::Deliver(absl::optional<int> dropped_entries_count) {
+void PerformanceObserver::Deliver(std::optional<int> dropped_entries_count) {
   if (!GetExecutionContext())
     return;
   DCHECK(!GetExecutionContext()->IsContextPaused());

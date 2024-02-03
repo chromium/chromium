@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -22,7 +24,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink-forward.h"
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -119,7 +120,7 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
       uint32_t sink_id,
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time);
   void DidNotProduceFrame(uint32_t sink_id, const viz::BeginFrameAck& ack);
   void DidAllocateSharedBitmap(uint32_t sink_id,

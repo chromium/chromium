@@ -1,7 +1,7 @@
 'use strict';
 
 self.addEventListener('install', async e => {
-  await e.registerRouter(
+  await e.addRoutes(
       [{condition: {urlPattern: new URLPattern({})}, source: 'network'}]);
   self.skipWaiting();
 });

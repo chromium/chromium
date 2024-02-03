@@ -90,7 +90,7 @@ void FakeVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   // Reject bitrate mode changes.
   if (stored_bitrates_.empty() ||
       stored_bitrates_.back().mode() == bitrate.mode()) {
@@ -104,7 +104,7 @@ void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(
 void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   stored_bitrate_allocations_.push_back(bitrate);
   if (size.has_value()) {
     UpdateOutputFrameSize(size.value());

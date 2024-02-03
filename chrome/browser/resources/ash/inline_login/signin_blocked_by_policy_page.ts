@@ -7,7 +7,7 @@
  * `chrome/browser/resources/inline_login/inline_login_app.js`
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './account_manager_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

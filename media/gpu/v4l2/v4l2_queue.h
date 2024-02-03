@@ -5,13 +5,13 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_QUEUE_H_
 #define MEDIA_GPU_V4L2_V4L2_QUEUE_H_
 
+#include <linux/videodev2.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <queue>
 #include <vector>
-
-#include <linux/videodev2.h>
 
 #include "base/containers/small_map.h"
 #include "base/memory/raw_ptr.h"
@@ -25,7 +25,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -301,7 +300,7 @@ class MEDIA_GPU_EXPORT V4L2RequestRef : public V4L2RequestRefBase {
   // Apply buffer to the request.
   [[nodiscard]] bool ApplyQueueBuffer(struct v4l2_buffer* buffer) const;
   // Submits the request to the driver.
-  absl::optional<V4L2SubmittedRequestRef> Submit() &&;
+  std::optional<V4L2SubmittedRequestRef> Submit() &&;
 
  private:
   friend class V4L2RequestsQueue;
@@ -349,7 +348,7 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
 
   // Gets a free request. If no request is available, a non-valid request
   // reference will be returned.
-  absl::optional<V4L2RequestRef> GetFreeRequest();
+  std::optional<V4L2RequestRef> GetFreeRequest();
 
  private:
   // File descriptor of the media device (/dev/mediaX) from which requests
@@ -361,7 +360,7 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
   std::queue<V4L2Request*> free_requests_;
 
   // Returns a new request file descriptor.
-  absl::optional<base::ScopedFD> CreateRequestFD();
+  std::optional<base::ScopedFD> CreateRequestFD();
 
   friend class V4L2Request;
   // Returns a request to the queue after being used.
@@ -407,21 +406,21 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // format is returned. It is guaranteed to feature the specified |fourcc|,
   // but any other parameter (including |size| and |buffer_size| may have been
   // adjusted by the driver, so the caller must check their values.
-  [[nodiscard]] absl::optional<struct v4l2_format>
+  [[nodiscard]] std::optional<struct v4l2_format>
   SetFormat(uint32_t fourcc, const gfx::Size& size, size_t buffer_size);
 
   // Identical to |SetFormat|, but does not actually apply the format, and can
   // be called anytime.
   // Returns an adjusted V4L2 format if |fourcc| is supported by the queue, or
   // |nullopt| if |fourcc| is not supported or an ioctl error happened.
-  [[nodiscard]] absl::optional<struct v4l2_format>
+  [[nodiscard]] std::optional<struct v4l2_format>
   TryFormat(uint32_t fourcc, const gfx::Size& size, size_t buffer_size);
 
   // Returns the currently set format on the queue. The result is returned as
-  // a std::pair where the first member is the format, or absl::nullopt if the
+  // a std::pair where the first member is the format, or std::nullopt if the
   // format could not be obtained due to an ioctl error. The second member is
   // only used in case of an error and contains the |errno| set by the failing
-  // ioctl. If the first member is not absl::nullopt, the second member will
+  // ioctl. If the first member is not std::nullopt, the second member will
   // always be zero.
   //
   // If the second member is 0, then the first member is guaranteed to have
@@ -431,11 +430,11 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // This pair is used because not all failures to get the format are
   // necessarily errors, so we need to way to let the use decide whether it
   // is one or not.
-  [[nodiscard]] std::pair<absl::optional<struct v4l2_format>, int> GetFormat();
+  [[nodiscard]] std::pair<std::optional<struct v4l2_format>, int> GetFormat();
 
   // Codec-specific method to get the visible rectangle of the queue, using the
   // VIDIOC_G_SELECTION ioctl if available, or VIDIOC_G_CROP as a fallback.
-  [[nodiscard]] absl::optional<gfx::Rect> GetVisibleRect();
+  [[nodiscard]] std::optional<gfx::Rect> GetVisibleRect();
 
   // Allocate |count| buffers for the current format of this queue, with a
   // specific |memory| allocation, and returns the number of buffers allocated
@@ -480,13 +479,13 @@ class MEDIA_GPU_EXPORT V4L2Queue
   //
   // If the caller discards the returned reference, the underlying buffer is
   // made available to clients again.
-  [[nodiscard]] absl::optional<V4L2WritableBufferRef> GetFreeBuffer();
+  [[nodiscard]] std::optional<V4L2WritableBufferRef> GetFreeBuffer();
   // Return the buffer at index |requested_buffer_id|, if it is available at
   // this time.
   //
   // If the buffer is currently in use or the provided index is invalid,
-  // return |absl::nullopt|.
-  [[nodiscard]] absl::optional<V4L2WritableBufferRef> GetFreeBuffer(
+  // return |std::nullopt|.
+  [[nodiscard]] std::optional<V4L2WritableBufferRef> GetFreeBuffer(
       size_t requested_buffer_id);
   // Return a V4L2 buffer suitable for the passed VideoFrame.
   //
@@ -503,7 +502,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // since it will maximize performance in that case provided the number of
   // different VideoFrames passed to this method does not exceed the number of
   // V4L2 buffers allocated on the queue.
-  [[nodiscard]] absl::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
+  [[nodiscard]] std::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
       const gfx::GenericSharedMemoryId& id);
 
   // Attempt to dequeue a buffer, and return a reference to it if one was
@@ -546,7 +545,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
 
   // TODO (b/166275274) : Remove this once V4L2 properly supports modifiers.
   // Out of band method to configure V4L2 for modifier use.
-  [[nodiscard]] absl::optional<struct v4l2_format> SetModifierFormat(
+  [[nodiscard]] std::optional<struct v4l2_format> SetModifierFormat(
       uint64_t modifier,
       const gfx::Size& size);
 
@@ -580,7 +579,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   bool supports_requests_ = false;
   size_t planes_count_ = 0;
   // Current format as set by SetFormat.
-  absl::optional<struct v4l2_format> current_format_;
+  std::optional<struct v4l2_format> current_format_;
 
   std::vector<std::unique_ptr<V4L2Buffer>> buffers_;
 

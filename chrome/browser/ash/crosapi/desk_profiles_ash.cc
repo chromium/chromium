@@ -80,6 +80,11 @@ DeskProfilesAsh::GetProfilesSnapshot() const {
 
 const ash::LacrosProfileSummary*
 DeskProfilesAsh::GetProfilesSnapshotByProfileId(uint64_t profile_id) const {
+  // Profile ID 0 is an alias for the primary user.
+  if (profile_id == 0) {
+    profile_id = primary_user_profile_id_;
+  }
+
   for (auto& profile : profiles_) {
     if (profile.profile_id == profile_id) {
       return &profile;

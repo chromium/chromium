@@ -293,6 +293,11 @@ extern const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[];
 extern const char
     kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[];
 
+// Title and description for the flag to disable the Lens input selection
+// and camera experience.
+extern const char kDisableLensCameraName[];
+extern const char kDisableLensCameraDescription[];
+
 // Title and description for the flag to enable red interstitial facelift UI
 // changes.
 extern const char kEnableRedInterstitialFaceliftName[];
@@ -468,10 +473,6 @@ extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 extern const char kIOSPasswordSignInUffName[];
 extern const char kIOSPasswordSignInUffDescription[];
 
-// Title and description for the flag to enable payments bottom sheet on IOS.
-extern const char kIOSPaymentsBottomSheetName[];
-extern const char kIOSPaymentsBottomSheetDescription[];
-
 // Title and description for the flag to enable the Save to Drive feature.
 extern const char kIOSSaveToDriveName[];
 extern const char kIOSSaveToDriveDescription[];
@@ -542,6 +543,10 @@ extern const char kMixedContentAutoupgradeDescription[];
 // implemented tabstrip.
 extern const char kModernTabStripName[];
 extern const char kModernTabStripDescription[];
+
+// Title and description for the flag to make MVTiles a horizontal render group.
+extern const char kMostVisitedTilesHorizontalRenderGroupName[];
+extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
 
 // Title and description of the flag to enable the native Find in Page API
 // for iOS 16 and later.
@@ -844,6 +849,11 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 // optimizations (go/bling-session-restoration).
 extern const char kEnableSessionSerializationOptimizationsName[];
 extern const char kEnableSessionSerializationOptimizationsDescription[];
+
+// Title and description for the flag to let the Tab Grid always bounce (even
+// when the content fits the screen already).
+extern const char kTabGridAlwaysBounceName[];
+extern const char kTabGridAlwaysBounceDescription[];
 
 // Title and description for the tab grid new compositional layout.
 extern const char kTabGridCompositionalLayoutName[];

@@ -207,8 +207,7 @@ std::unique_ptr<base::Value::Dict> QuickStartMessage::GenerateEncodedMessage() {
       return nullptr;
     }
 
-    std::string base64_payload;
-    base::Base64Encode(json, &base64_payload);
+    std::string base64_payload = base::Base64Encode(json);
 
     message->Set(str_payload_key, base64_payload);
   }

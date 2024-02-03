@@ -71,11 +71,11 @@ Position LayoutBR::PositionForCaretOffset(unsigned offset) const {
                 : Position::BeforeNode(*GetNode());
 }
 
-absl::optional<unsigned> LayoutBR::CaretOffsetForPosition(
+std::optional<unsigned> LayoutBR::CaretOffsetForPosition(
     const Position& position) const {
   NOT_DESTROYED();
   if (position.IsNull() || position.AnchorNode() != GetNode())
-    return absl::nullopt;
+    return std::nullopt;
   DCHECK(position.IsBeforeAnchor() || position.IsAfterAnchor()) << position;
   return position.IsBeforeAnchor() ? 0 : 1;
 }

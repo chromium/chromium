@@ -32,6 +32,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "gemm";
     case mojom::Operation::Tag::kHardSigmoid:
       return "hardSigmoid";
+    case mojom::Operation::Tag::kHardSwish:
+      return "hardSwish";
     case mojom::Operation::Tag::kInstanceNormalization:
       return "instanceNormalization";
     case mojom::Operation::Tag::kLayerNormalization:

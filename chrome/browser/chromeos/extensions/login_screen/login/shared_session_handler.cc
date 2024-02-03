@@ -40,8 +40,9 @@ constexpr size_t kScryptMaxMemory = 1024 * 1024 * 32;
 const user_manager::User* GetManagedGuestSessionUser() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   for (const user_manager::User* user : user_manager->GetUsers()) {
-    if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+    if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
       continue;
+    }
 
     return user;
   }
@@ -99,7 +100,7 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
 
   session_secret_ = GenerateRandomString(kSessionSecretLength);
 
-  ash::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  ash::UserContext context(user_manager::UserType::kPublicAccount,
                            user->GetAccountId());
   context.SetKey(ash::Key(session_secret_));
   context.SetCanLockManagedGuestSession(true);
@@ -291,7 +292,7 @@ void SharedSessionHandler::UnlockWithSessionSecret(
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
 
-  ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  ash::UserContext user_context(user_manager::UserType::kPublicAccount,
                                 active_user->GetAccountId());
   user_context.SetKey(ash::Key(session_secret_));
   LoginApiLockHandler::Get()->Authenticate(user_context, std::move(callback));
@@ -334,9 +335,7 @@ void SharedSessionHandler::OnCleanupDone(
 }
 
 std::string SharedSessionHandler::GenerateRandomString(size_t size) {
-  char random_bytes[size];
-  crypto::RandBytes(random_bytes, size);
-  return base::HexEncode(random_bytes, size);
+  return base::HexEncode(crypto::RandBytesAsVector(size));
 }
 
 }  // namespace chromeos

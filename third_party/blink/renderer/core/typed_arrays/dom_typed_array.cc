@@ -12,7 +12,7 @@ namespace blink {
 template <typename T, typename V8TypedArray, bool clamped>
 v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
     ScriptState* script_state) {
-  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+  DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));
 
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
   DOMArrayBufferBase* buffer = BufferBase();

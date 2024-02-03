@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
@@ -767,7 +768,8 @@ public class NavigateTest {
         TabObserver onPageLoadStartedObserver =
                 new EmptyTabObserver() {
                     @Override
-                    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                    public void onLoadUrl(
+                            Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
                         tab.removeObserver(this);
                         // Check that the final URL will be loaded properly, and the navigation
                         // is renderer initiated and has the correct origin.

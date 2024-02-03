@@ -2,7 +2,7 @@ Tests target info reported by paint worklet.
 {
     sessionId : <string>
     targetInfo : {
-        attached : false
+        attached : true
         browserContextId : <string>
         canAccessOpener : false
         targetId : <string>

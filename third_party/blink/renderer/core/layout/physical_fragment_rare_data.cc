@@ -18,7 +18,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
     const PhysicalRect* scrollable_overflow,
     const PhysicalBoxStrut* borders,
     const PhysicalBoxStrut* padding,
-    absl::optional<PhysicalRect> inflow_bounds,
+    std::optional<PhysicalRect> inflow_bounds,
     BoxFragmentBuilder& builder,
     wtf_size_t num_fields)
     : table_collapsed_borders_(builder.table_collapsed_borders_),

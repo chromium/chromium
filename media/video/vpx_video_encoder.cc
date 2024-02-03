@@ -5,6 +5,7 @@
 #include "media/video/vpx_video_encoder.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
@@ -231,9 +232,9 @@ std::string LogVpxErrorMessage(vpx_codec_ctx_t* context,
 
 // If conversion is needed for given profile and frame, returns the destination
 // pixel format. If no conversion is needed returns nullopt.
-absl::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
-                                                     VideoPixelFormat format,
-                                                     bool needs_resize) {
+std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
+                                                    VideoPixelFormat format,
+                                                    bool needs_resize) {
   switch (profile) {
     case VP8PROFILE_ANY:
     case VP9PROFILE_PROFILE0:
@@ -265,7 +266,7 @@ absl::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
       NOTREACHED();  // Checked during Initialize().
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Sets up a standard 3-plane vpx_image_t from `frame`.
@@ -366,6 +367,21 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
           "Only 4:4:4 subsampling is supported with VP9 profiles 1 and 3."));
       return;
     }
+  }
+
+  if ((profile == VP9PROFILE_PROFILE0 || profile == VP9PROFILE_PROFILE1) &&
+      options.bit_depth.value_or(8) != 8) {
+    std::move(done_cb).Run(EncoderStatus(
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        "Only 8-bit depth is supported with VP9 profiles 0 and 1."));
+    return;
+  }
+  if ((profile == VP9PROFILE_PROFILE2 || profile == VP9PROFILE_PROFILE3) &&
+      options.bit_depth.value_or(10) != 10) {
+    std::move(done_cb).Run(EncoderStatus(
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        "Only 10-bit depth is supported with VP9 profiles 2 and 3."));
+    return;
   }
 
   switch (profile) {

@@ -219,7 +219,7 @@ static float AspectValue(const SimpleFontData& font_data,
       }
       break;
     case FontSizeAdjust::Metric::kIcWidth:
-      if (const absl::optional<float> size =
+      if (const std::optional<float> size =
               font_data.IdeographicAdvanceWidth()) {
         aspect_value = *size / computed_size;
       }
@@ -233,17 +233,17 @@ static float AspectValue(const SimpleFontData& font_data,
   return aspect_value;
 }
 
-absl::optional<float> FontSizeFunctions::FontAspectValue(
+std::optional<float> FontSizeFunctions::FontAspectValue(
     const SimpleFontData* font_data,
     FontSizeAdjust::Metric metric,
     float computed_size) {
   if (!font_data || !computed_size) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return AspectValue(*font_data, metric, computed_size);
 }
 
-absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
+std::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
     const SimpleFontData* font_data,
     const FontDescription& font_description) {
   DCHECK(font_data);
@@ -251,13 +251,13 @@ absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
   const FontSizeAdjust size_adjust = font_description.SizeAdjust();
   if (!computed_size ||
       size_adjust.Value() == FontSizeAdjust::kFontSizeAdjustNone) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   float aspect_value =
       AspectValue(*font_data, size_adjust.GetMetric(), computed_size);
   if (!aspect_value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return (size_adjust.Value() / aspect_value) * computed_size;
 }

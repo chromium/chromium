@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/loader/threaded_icon_loader.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -51,7 +52,7 @@ class ThreadedIconLoaderTest : public PageTestBase {
 
   std::pair<SkBitmap, double> LoadIcon(
       const KURL& url,
-      absl::optional<gfx::Size> resize_dimensions = absl::nullopt) {
+      std::optional<gfx::Size> resize_dimensions = std::nullopt) {
     auto* icon_loader = MakeGarbageCollected<ThreadedIconLoader>();
 
     ResourceRequest resource_request(url);

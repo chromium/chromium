@@ -368,14 +368,14 @@ class TestVideoCaptureHost : public media::mojom::VideoCaptureHost {
 blink::StreamControls GetVideoStreamControls(std::string hmac_device_id) {
   blink::StreamControls stream_controls{/*request_audio=*/false,
                                         /*request_video=*/true};
-  stream_controls.video.device_id = hmac_device_id;
+  stream_controls.video.device_ids = {hmac_device_id};
   return stream_controls;
 }
 
 blink::StreamControls GetAudioStreamControls(std::string hmac_device_id) {
   blink::StreamControls stream_controls{/*request_audio=*/true,
                                         /*request_video=*/false};
-  stream_controls.audio.device_id = hmac_device_id;
+  stream_controls.audio.device_ids = {hmac_device_id};
   return stream_controls;
 }
 

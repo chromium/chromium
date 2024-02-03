@@ -371,11 +371,11 @@ void DownloadItemView::AddedToWidget() {
   StartLoadIcons();
 }
 
-void DownloadItemView::Layout() {
+void DownloadItemView::Layout(PassKey) {
   // TODO(crbug.com/1005568): Replace Layout()/CalculatePreferredSize() with a
   // LayoutManager.
 
-  View::Layout();
+  LayoutSuperclass<View>(this);
 
   open_button_->SetBoundsRect(GetLocalBounds());
   dropdown_button_->SetPosition(

@@ -111,7 +111,7 @@ InputStream::InputStream(
   // |this| owns these objects, so unretained is safe.
   base::RepeatingClosure error_handler =
       base::BindRepeating(&InputStream::OnStreamError, base::Unretained(this),
-                          absl::optional<DisconnectReason>());
+                          std::optional<DisconnectReason>());
   receiver_.set_disconnect_handler(error_handler);
   client_.set_disconnect_handler(error_handler);
 
@@ -155,7 +155,7 @@ InputStream::~InputStream() {
   if (created_callback_) {
     // Didn't manage to create the stream. Call the callback anyways as mandated
     // by mojo.
-    std::move(created_callback_).Run(nullptr, false, absl::nullopt);
+    std::move(created_callback_).Run(nullptr, false, std::nullopt);
   }
 
   if (!controller_) {
@@ -226,7 +226,7 @@ void InputStream::OnCreated(bool initially_muted) {
   DCHECK(socket_handle.is_valid());
 
   std::move(created_callback_)
-      .Run({absl::in_place, std::move(shared_memory_region),
+      .Run({std::in_place, std::move(shared_memory_region),
             std::move(socket_handle)},
            initially_muted, id_);
 }
@@ -284,7 +284,7 @@ void InputStream::OnStreamPlatformError() {
 }
 
 void InputStream::OnStreamError(
-    absl::optional<DisconnectReason> reason_to_report) {
+    std::optional<DisconnectReason> reason_to_report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", "OnStreamError", this);
 

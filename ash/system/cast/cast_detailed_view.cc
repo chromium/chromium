@@ -112,7 +112,7 @@ void CastDetailedView::OnDevicesUpdated(
   }
   // Update UI.
   UpdateReceiverListFromCachedData();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void CastDetailedView::UpdateReceiverListFromCachedData() {
@@ -154,7 +154,7 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
   }
 
   scroll_content()->SizeToPreferredSize();
-  scroller()->Layout();
+  scroller()->DeprecatedLayoutImmediately();
 }
 
 void CastDetailedView::AddZeroStateView() {

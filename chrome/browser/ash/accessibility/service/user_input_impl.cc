@@ -4,11 +4,10 @@
 
 #include "chrome/browser/ash/accessibility/service/user_input_impl.h"
 
-#include "ash/public/cpp/window_tree_host_lookup.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/accessibility/public/mojom/user_input.mojom.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -54,6 +53,49 @@ void UserInputImpl::SendSyntheticKeyEventForShortcutOrNavigation(
   auto* host = GetHostForPrimaryDisplay();
   // Skips sending to rewriters.
   host->DeliverEventToSink(&synthetic_key_event);
+}
+
+void UserInputImpl::SendSyntheticMouseEvent(
+    ax::mojom::SyntheticMouseEventPtr mouse_event) {
+  ui::EventType type = mojo::ConvertTo<ui::EventType>(mouse_event->type);
+
+  int flags = 0;
+  if (type != ui::ET_MOUSE_MOVED) {
+    if (mouse_event->mouse_button) {
+      switch (*mouse_event->mouse_button) {
+        case ax::mojom::SyntheticMouseEventButton::kLeft:
+          flags |= ui::EF_LEFT_MOUSE_BUTTON;
+          break;
+        case ax::mojom::SyntheticMouseEventButton::kMiddle:
+          flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
+          break;
+        case ax::mojom::SyntheticMouseEventButton::kRight:
+          flags |= ui::EF_RIGHT_MOUSE_BUTTON;
+          break;
+        case ax::mojom::SyntheticMouseEventButton::kBack:
+          flags |= ui::EF_BACK_MOUSE_BUTTON;
+          break;
+        case ax::mojom::SyntheticMouseEventButton::kForward:
+          flags |= ui::EF_FORWARD_MOUSE_BUTTON;
+          break;
+        default:
+          NOTREACHED();
+      }
+    } else {
+      // If no mouse button is provided, use kLeft.
+      flags |= ui::EF_LEFT_MOUSE_BUTTON;
+    }
+  }
+
+  int changed_button_flags = flags;
+
+  flags |= ui::EF_IS_SYNTHESIZED;
+  if (mouse_event->touch_accessibility && *(mouse_event->touch_accessibility)) {
+    flags |= ui::EF_TOUCH_ACCESSIBILITY;
+  }
+
+  AccessibilityManager::Get()->SendSyntheticMouseEvent(
+      type, flags, changed_button_flags, mouse_event->point);
 }
 
 }  // namespace ash

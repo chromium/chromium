@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_NODE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
@@ -153,7 +154,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   LogicalSize GetAspectRatio() const;
 
   // Returns the transform to apply to a child (e.g. for scrollable-overflow).
-  absl::optional<gfx::Transform> GetTransformForChildFragment(
+  std::optional<gfx::Transform> GetTransformForChildFragment(
       const PhysicalBoxFragment& child_fragment,
       PhysicalSize size) const;
 
@@ -258,7 +259,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
                     const ConstraintSpace&,
                     const BlockBreakToken*,
                     const LayoutResult*,
-                    const absl::optional<PhysicalSize>& old_box_size) const;
+                    const std::optional<PhysicalSize>& old_box_size) const;
 
   // Update the layout results vector in LayoutBox with the new result.
   void StoreResultInLayoutBox(const LayoutResult*,

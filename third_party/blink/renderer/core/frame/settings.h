@@ -28,30 +28,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_H_
 
-#include "third_party/blink/public/common/css/navigation_controls.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
-#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
-#include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/editing/selection_strategy.h"
-#include "third_party/blink/renderer/core/frame/settings_delegate.h"
-#include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
-#include "third_party/blink/renderer/core/html/parser/parser_scripting_flag_policy.h"
-#include "third_party/blink/renderer/core/html/track/text_track_kind_user_preference.h"
-#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
-#include "third_party/blink/renderer/core/settings_macros.h"
+#include "third_party/blink/renderer/core/settings_base.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
-#include "third_party/blink/renderer/platform/graphics/lcd_text_preference.h"
-#include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "ui/base/pointer/pointer_device.h"
-#include "ui/base/ui_base_types.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
-class CORE_EXPORT Settings {
+class CORE_EXPORT Settings : public SettingsBase {
   USING_FAST_MALLOC(Settings);
 
  public:
@@ -69,20 +52,10 @@ class CORE_EXPORT Settings {
     Invalidate(SettingsDelegate::ChangeType::kFontFamily);
   }
 
-  SETTINGS_GETTERS_AND_SETTERS
-
   void SetPreferCompositingToLCDTextForTesting(bool enabled);
 
-  void SetDelegate(SettingsDelegate*);
-
  private:
-  void Invalidate(SettingsDelegate::ChangeType);
-
-  SettingsDelegate* delegate_;
-
   GenericFontFamilySettings generic_font_family_settings_;
-
-  SETTINGS_MEMBER_VARIABLES
 };
 
 }  // namespace blink

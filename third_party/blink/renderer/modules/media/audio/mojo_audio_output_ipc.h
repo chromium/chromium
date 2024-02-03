@@ -95,7 +95,7 @@ class MODULES_EXPORT MojoAudioOutputIPC
   // This is the state that |delegate_| expects the stream to be in. It is
   // maintained for when the stream is created.
   enum { kPaused, kPlaying } expected_state_ = kPaused;
-  absl::optional<double> volume_;
+  std::optional<double> volume_;
 
   mojo::Receiver<media::mojom::blink::AudioOutputStreamProviderClient>
       receiver_{this};

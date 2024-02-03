@@ -5,10 +5,11 @@
 #ifndef CHROMECAST_BROWSER_CAST_WEB_CONTENTS_H_
 #define CHROMECAST_BROWSER_CAST_WEB_CONTENTS_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
@@ -246,7 +247,7 @@ class CastWebContents : public mojom::CastWebContents {
   // precedence in the injection order will be preserved.
   // |script| and |id| must be non-empty string.
   virtual void AddBeforeLoadJavaScript(uint64_t id,
-                                       base::StringPiece script) = 0;
+                                       std::string_view script) = 0;
 
   // Posts a message to the frame's onMessage handler.
   //

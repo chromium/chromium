@@ -54,6 +54,7 @@ struct LcppDataInputs {
   std::string lcp_element_locator;
   // async script urls of the latest LCP candidate element.
   std::vector<GURL> lcp_influencer_scripts;
+  std::vector<GURL> preconnect_origins;
 
   // Fetched font URLs.
   // Unlike data above, the field will be updated per font fetch.

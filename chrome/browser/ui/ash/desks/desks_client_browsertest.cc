@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
   ASSERT_TRUE(data);
 
   // Check the urls are captured correctly in the |desk_template|.
-  EXPECT_EQ(data->urls, urls);
+  EXPECT_EQ(data->browser_extra_info.urls, urls);
 }
 
 // Tests that a browser's tab groups can be captured correctly in a saved desk.
@@ -700,10 +700,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
   ASSERT_TRUE(data);
 
   // Check the urls are captured correctly in the `desk_template`.
-  EXPECT_EQ(urls, data->urls);
+  EXPECT_EQ(urls, data->browser_extra_info.urls);
 
   // We don't care about the order of the tab groups.
-  EXPECT_THAT(data->tab_group_infos,
+  EXPECT_THAT(data->browser_extra_info.tab_group_infos,
               testing::UnorderedElementsAreArray(expected_tab_groups));
 }
 
@@ -736,10 +736,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
   ASSERT_TRUE(data);
 
   // Check the urls are captured correctly in the `desk_template`.
-  EXPECT_EQ(urls, data->urls);
+  EXPECT_EQ(urls, data->browser_extra_info.urls);
 
   // Check that the number of pinned tabs is correct.
-  EXPECT_THAT(data->first_non_pinned_tab_index,
+  EXPECT_THAT(data->browser_extra_info.first_non_pinned_tab_index,
               Optional(expected_number_of_pinned_tabs));
 }
 
@@ -1102,8 +1102,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithFloatedWindow) {
   const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
   aura::Window* window = browser()->window()->GetNativeWindow();
   ui::test::EventGenerator event_generator(window->GetRootWindow());
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(window)->IsFloated());
   window->SetBounds(browser_bounds);
   const int32_t browser_window_id =
@@ -1351,8 +1351,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
 
   // Verify window info are correctly captured.
   EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
-  EXPECT_THAT(data->app_type_browser, Optional(true));
-  EXPECT_THAT(data->app_name, Optional(*app_name));
+  EXPECT_THAT(data->browser_extra_info.app_type_browser, Optional(true));
+  EXPECT_THAT(data->browser_extra_info.app_name, Optional(*app_name));
 
   // Set the template and launch it.
   SetAndLaunchTemplate(std::move(desk_template));
@@ -1399,8 +1399,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
 
   // Verify window info are correctly captured.
   EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
-  EXPECT_THAT(data->app_type_browser, Optional(true));
-  EXPECT_THAT(data->app_name, Optional(*app_name));
+  EXPECT_THAT(data->browser_extra_info.app_type_browser, Optional(true));
+  EXPECT_THAT(data->browser_extra_info.app_name, Optional(*app_name));
   const std::vector<GURL> urls = GetURLsForBrowserWindow(pwa_browser);
 
   // Set the template and launch it.
@@ -1628,7 +1628,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
       *templates.front(), app_constants::kChromeAppId, browser_window_id);
   ASSERT_TRUE(data);
   // Check the urls are captured correctly in the `desk_template`.
-  EXPECT_EQ(data->urls, urls);
+  EXPECT_EQ(data->browser_extra_info.urls, urls);
 }
 
 // Tests that snapped window's snap ratio/percentage is maintained when
@@ -2130,8 +2130,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
 
   // Verify window info are correctly captured.
   EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
-  EXPECT_THAT(data->app_type_browser, Optional(true));
-  EXPECT_THAT(data->app_name, Optional(*app_name));
+  EXPECT_THAT(data->browser_extra_info.app_type_browser, Optional(true));
+  EXPECT_THAT(data->browser_extra_info.app_name, Optional(*app_name));
 
   // Launch the template.
   ClickFirstTemplateItem();
@@ -2822,7 +2822,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveEmptyDesk) {
   ASSERT_TRUE(data);
 
   // Check the urls are captured correctly in the `saved_desk`.
-  EXPECT_EQ(data->urls, urls);
+  EXPECT_EQ(data->browser_extra_info.urls, urls);
 
   // Exit overview.
   ash::ToggleOverview();
@@ -2850,7 +2850,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveActiveDesk) {
   ASSERT_TRUE(data);
 
   // Check the urls are captured correctly in the `saved_desk`.
-  EXPECT_EQ(data->urls, urls);
+  EXPECT_EQ(data->browser_extra_info.urls, urls);
 
   // Exit overview.
   ash::ToggleOverview();
@@ -3257,17 +3257,16 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
   const app_restore::AppRestoreData* actual_app_data = nullptr;
 
   for (const auto& it : launch_list) {
-    if (it.second->app_name.has_value() &&
-        it.second->app_name.value() == kTestAppName) {
+    if (it.second->browser_extra_info.app_name.value_or("") == kTestAppName) {
       actual_app_data = it.second.get();
       break;
     }
   }
-  ASSERT_NE(actual_app_data, nullptr);
+  ASSERT_TRUE(actual_app_data);
 
   // Finally assert we set the relevant fields properly.
-  EXPECT_TRUE(actual_app_data->app_type_browser.has_value());
-  EXPECT_TRUE(actual_app_data->app_type_browser.value());
+  EXPECT_THAT(actual_app_data->browser_extra_info.app_type_browser,
+              testing::Optional((true)));
 }
 
 using SaveAndRecallBrowserTest = DesksClientTest;
@@ -3278,7 +3277,6 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
 
   // We'll now save the desk as Save & Recall. After saving desks, this
   // operation will try to automatically close windows.
-
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskForLaterButton();

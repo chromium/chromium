@@ -246,8 +246,14 @@ void LayoutText::StyleDidChange(StyleDifference diff,
   ETextSecurity old_security =
       old_style ? old_style->TextSecurity() : ETextSecurity::kNone;
   if (old_transform != new_style.TextTransform() ||
-      old_security != new_style.TextSecurity())
+      old_security != new_style.TextSecurity()) {
     TransformAndSecureOriginalText();
+  } else if (RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled() &&
+             old_transform == new_style.TextTransform() &&
+             new_style.TextTransform() != ETextTransform::kNone &&
+             old_style->Locale() != new_style.Locale()) {
+    TransformAndSecureOriginalText();
+  }
 
   // This is an optimization that kicks off font load before layout.
   if (!TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
@@ -417,7 +423,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
         // Compute start of the legacy text box.
         if (unit.AssociatedNode()) {
           // In case of |text_| comes from DOM node.
-          if (const absl::optional<unsigned> box_start = CaretOffsetForPosition(
+          if (const std::optional<unsigned> box_start = CaretOffsetForPosition(
                   mapping->GetLastPosition(clamped_start))) {
             results.push_back(TextBoxInfo{rect, *box_start, box_length});
             continue;
@@ -1170,7 +1176,7 @@ Position LayoutText::PositionForCaretOffset(unsigned offset) const {
   return Position(node, clamped_offset);
 }
 
-absl::optional<unsigned> LayoutText::CaretOffsetForPosition(
+std::optional<unsigned> LayoutText::CaretOffsetForPosition(
     const Position& position) const {
   NOT_DESTROYED();
   // ::first-letter handling should be done by LayoutTextFragment override.
@@ -1180,7 +1186,7 @@ absl::optional<unsigned> LayoutText::CaretOffsetForPosition(
   // WBR handling should be done by LayoutWordBreak override.
   DCHECK(!IsWordBreak());
   if (position.IsNull() || position.AnchorNode() != GetNode())
-    return absl::nullopt;
+    return std::nullopt;
   DCHECK(GetNode()->IsTextNode());
   if (position.IsBeforeAnchor())
     return 0;
@@ -1201,7 +1207,7 @@ int LayoutText::CaretMinOffset() const {
     const Position first_position = PositionForCaretOffset(0);
     if (first_position.IsNull())
       return 0;
-    absl::optional<unsigned> candidate = CaretOffsetForPosition(
+    std::optional<unsigned> candidate = CaretOffsetForPosition(
         mapping->StartOfNextNonCollapsedContent(first_position));
     // Align with the legacy behavior that 0 is returned if the entire node
     // contains only collapsed whitespaces.
@@ -1222,7 +1228,7 @@ int LayoutText::CaretMaxOffset() const {
     const Position last_position = PositionForCaretOffset(text_length);
     if (last_position.IsNull())
       return text_length;
-    absl::optional<unsigned> candidate = CaretOffsetForPosition(
+    std::optional<unsigned> candidate = CaretOffsetForPosition(
         mapping->EndOfLastNonCollapsedContent(last_position));
     // Align with the legacy behavior that |TextLenght()| is returned if the
     // entire node contains only collapsed whitespaces.
@@ -1249,9 +1255,9 @@ unsigned LayoutText::ResolvedTextLength() const {
       return 0;
     }
     DCHECK(end_position.IsNotNull()) << start_position;
-    absl::optional<unsigned> start =
+    std::optional<unsigned> start =
         mapping->GetTextContentOffset(start_position);
-    absl::optional<unsigned> end = mapping->GetTextContentOffset(end_position);
+    std::optional<unsigned> end = mapping->GetTextContentOffset(end_position);
     if (!start.has_value() || !end.has_value()) {
       DCHECK(!start.has_value()) << this;
       DCHECK(!end.has_value()) << this;

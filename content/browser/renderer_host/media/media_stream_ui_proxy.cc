@@ -543,14 +543,16 @@ void FakeMediaStreamUIProxy::RequestAccess(
     if (!devices_to_use.audio_device.has_value() &&
         blink::IsAudioInputMediaType(request->audio_type) &&
         blink::IsAudioInputMediaType(device.type) &&
-        (request->requested_audio_device_id.empty() ||
-         request->requested_audio_device_id == device.id)) {
+        (request->requested_audio_device_ids.empty() ||
+         request->requested_audio_device_ids.front().empty() ||
+         request->requested_audio_device_ids.front() == device.id)) {
       devices_to_use.audio_device = device;
     } else if (!devices_to_use.video_device.has_value() &&
                blink::IsVideoInputMediaType(request->video_type) &&
                blink::IsVideoInputMediaType(device.type) &&
-               (request->requested_video_device_id.empty() ||
-                request->requested_video_device_id == device.id)) {
+               (request->requested_video_device_ids.empty() ||
+                request->requested_video_device_ids.front().empty() ||
+                request->requested_video_device_ids.front() == device.id)) {
       devices_to_use.video_device = device;
     }
   }

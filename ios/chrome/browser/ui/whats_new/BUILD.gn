@@ -47,7 +47,6 @@ source_set("whats_new") {
     "//ios/chrome/browser/ui/whats_new/data_source:whats_new_item",
     "//ios/chrome/browser/ui/whats_new/strings",
     "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements",
@@ -70,9 +69,9 @@ source_set("util") {
   deps = [
     ":constants",
     "//base",
-    "//ios/chrome/browser/promos_manager",
-    "//ios/chrome/browser/promos_manager:constants",
-    "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/whats_new/data_source:whats_new_item",
   ]

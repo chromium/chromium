@@ -214,6 +214,9 @@ class ASH_EXPORT ShellDelegate {
   // Returns the DeskProfilesDelegate, or nullptr if it isn't available. The
   // delegate (when available) is owned by `CrosapiAsh`.
   virtual DeskProfilesDelegate* GetDeskProfilesDelegate();
+
+  // Opens the Multitasking OS Settings page.
+  virtual void OpenMultitaskingSettings() = 0;
 };
 
 }  // namespace ash

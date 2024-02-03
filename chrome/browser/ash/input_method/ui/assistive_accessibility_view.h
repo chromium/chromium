@@ -19,8 +19,9 @@ namespace ime {
 // can make ChromeVox announcement incurred by assistive features.
 class UI_CHROMEOS_EXPORT AssistiveAccessibilityView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(AssistiveAccessibilityView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(AssistiveAccessibilityView);
   explicit AssistiveAccessibilityView(gfx::NativeView parent);
   AssistiveAccessibilityView(const AssistiveAccessibilityView&) = delete;
   AssistiveAccessibilityView& operator=(const AssistiveAccessibilityView&) =

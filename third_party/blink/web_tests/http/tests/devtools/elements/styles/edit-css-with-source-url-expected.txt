@@ -18,6 +18,7 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 Editing styles from elements panel:
 Styles edited.
@@ -33,6 +34,7 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 Dumping uiSourceCode content:
 #inspected {

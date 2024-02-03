@@ -574,9 +574,11 @@ TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
       content::SessionStorageUsageInfo{partitioned_storage_key, "example"};
 
   auto unpartitioned_shared_worker_info = browsing_data::SharedWorkerInfo(
-      kSiteOrigin.GetURL(), "example", unpartitioned_storage_key);
+      kSiteOrigin.GetURL(), "example", unpartitioned_storage_key,
+      blink::mojom::SharedWorkerSameSiteCookies::kAll);
   auto partitioned_shared_worker_info = browsing_data::SharedWorkerInfo(
-      kSiteOrigin.GetURL(), "example", partitioned_storage_key);
+      kSiteOrigin.GetURL(), "example", partitioned_storage_key,
+      blink::mojom::SharedWorkerSameSiteCookies::kNone);
 
   auto unpartitioned_cookie = MakeCanonicalCookie("name", kSiteOriginHost);
 
@@ -680,7 +682,8 @@ TEST_F(BrowsingDataModelTest, HasThirdPartyPartitioningSite_True) {
   auto partitioned_shared_dictionary_key = net::SharedDictionaryIsolationKey{
       kSiteOrigin, net::SchemefulSite(kTestOrigin)};
   auto partitioned_shared_worker_info = browsing_data::SharedWorkerInfo(
-      kSiteOrigin.GetURL(), "example", partitioned_storage_key);
+      kSiteOrigin.GetURL(), "example", partitioned_storage_key,
+      blink::mojom::SharedWorkerSameSiteCookies::kNone);
 
   model->AddBrowsingData(partitioned_storage_key,
                          BrowsingDataModel::StorageType::kQuotaStorage, 0, 0);
@@ -714,7 +717,8 @@ TEST_F(BrowsingDataModelTest, HasThirdPartyPartitioningSite_False) {
   auto unpartitioned_shared_dictionary_key = net::SharedDictionaryIsolationKey{
       kSubdomainOrigin, net::SchemefulSite(kSiteOrigin)};
   auto unpartitioned_shared_worker_info = browsing_data::SharedWorkerInfo(
-      kSiteOrigin.GetURL(), "example", unpartitioned_storage_key);
+      kSiteOrigin.GetURL(), "example", unpartitioned_storage_key,
+      blink::mojom::SharedWorkerSameSiteCookies::kAll);
   auto non_partition_key = kAnotherTestOrigin;
 
   model->AddBrowsingData(unpartitioned_storage_key,

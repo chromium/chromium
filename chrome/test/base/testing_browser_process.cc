@@ -482,7 +482,7 @@ TestingBrowserProcess::network_time_tracker() {
     network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(new base::DefaultClock()),
         std::unique_ptr<base::TickClock>(new base::DefaultTickClock()),
-        local_state_, nullptr);
+        local_state_, nullptr, std::nullopt);
   }
   return network_time_tracker_.get();
 }
@@ -579,7 +579,7 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
 
 void TestingBrowserProcess::ShutdownBrowserPolicyConnector() {
   if (browser_policy_connector_) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     // Initial cleanup for ChromeBrowserCloudManagement, shutdown components
     // that depend on profile and notification system. For example,
     // ProfileManager observer and KeyServices observer need to be removed

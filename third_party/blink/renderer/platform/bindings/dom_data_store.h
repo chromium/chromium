@@ -44,116 +44,140 @@
 
 namespace blink {
 
-// Holds a map specialized to map between ScriptWrappable objects and their
-// wrappers and provides an API to perform common operations with this map and
-// manage wrappers in a single world. Each world (DOMWrapperWorld) holds a
-// single map instance to hold wrappers only for that world.
+// DOMDataStore is the entity responsible for managing wrapper references (C++
+// to JS) in different worlds and settings (get/set wrapper, set return value).
+// Such references are stored in two ways:
+// - Inline in ScriptWrappable (or CustomWrappable); or
+// - In an ephemeron map in the DOMDataStore instance that is tied to a context
+//   in a V8 Isolate.
+//
+// The methods on DOMDataStore generally come in two forms:
+// - static methods: Have fast paths for inline storage (e.g. main world on the
+//   main rendering thread) and otherwise consider the current world, i.e., the
+//   world that corresponds to the current context
+//   (`v8::Isolate::GetCurrentContext()`).
+// - instance methods: Have fast paths for inline storage and consider the
+//   world the methods are invoked on. The calls are faster than the static
+//   calls if the DOMDataStore is already around.
+//
+// Exceptions are methods that operate on all worlds instead of the current
+// world. The methods mention this fact explicitly.
 class DOMDataStore final : public GarbageCollected<DOMDataStore> {
  public:
   static DOMDataStore& Current(v8::Isolate* isolate) {
     return DOMWrapperWorld::Current(isolate).DomDataStore();
   }
 
-  static bool SetReturnValue(v8::ReturnValue<v8::Value> return_value,
-                             ScriptWrappable* object) {
-    if (CanUseMainWorldWrapper())
-      return object->SetReturnValue(return_value);
-    return Current(return_value.GetIsolate())
-        .SetReturnValueFrom(return_value, object);
-  }
+  // Sets the `return_value` from `value`. Can be used from any world. Will only
+  // consider the current world.
+  static inline bool SetReturnValue(v8::ReturnValue<v8::Value> return_value,
+                                    ScriptWrappable* value);
 
-  static bool SetReturnValueForMainWorld(
+  // Sets the `return_value` from `value` in a world that can use inline
+  // storage.
+  static inline bool SetReturnValueFromInlineStorage(
       v8::ReturnValue<v8::Value> return_value,
-      ScriptWrappable* object) {
-    return object->SetReturnValue(return_value);
-  }
+      const ScriptWrappable* value);
 
-  static bool SetReturnValueFast(v8::ReturnValue<v8::Value> return_value,
-                                 ScriptWrappable* object,
-                                 v8::Local<v8::Object> holder,
-                                 const ScriptWrappable* wrappable) {
-    if (HolderContainsWrapperForMainWorld(holder, wrappable)) {
-      // Verify our assumptions about the main world.
-      DCHECK(Current(return_value.GetIsolate()).is_main_world_);
-      return object->SetReturnValue(return_value);
-    }
-    return Current(return_value.GetIsolate())
-        .SetReturnValueFrom(return_value, object);
-  }
+  // Sets the `return_value` from `value` if already wrapped and returns false
+  // otherwise. Will use the `v8_receiver` and `blink_receiver` to check whether
+  // inline storage can be used.  Can be used from any world. Will only consider
+  // the current world.
+  static inline bool SetReturnValueFast(v8::ReturnValue<v8::Value> return_value,
+                                        ScriptWrappable* value,
+                                        v8::Local<v8::Object> v8_receiver,
+                                        const ScriptWrappable* blink_receiver);
 
-  static v8::Local<v8::Object> GetWrapper(ScriptWrappable* object,
-                                          v8::Isolate* isolate) {
-    if (CanUseMainWorldWrapper())
-      return object->MainWorldWrapper(isolate);
-    return Current(isolate).Get(object, isolate);
-  }
+  // Returns the wrapper for `object` in the world corresponding to `isolate`.
+  // Can be used from any world. Will only consider the current world.
+  static inline v8::MaybeLocal<v8::Object> GetWrapper(
+      v8::Isolate* isolate,
+      const ScriptWrappable* object);
 
-  // Associates the given |object| with the given |wrapper| if the object is
-  // not yet associated with any wrapper.  Returns true if the given wrapper
-  // is associated with the object, or false if the object is already
-  // associated with a wrapper.  In the latter case, |wrapper| will be updated
-  // to the existing wrapper.
-  [[nodiscard]] static bool SetWrapper(v8::Isolate* isolate,
-                                       ScriptWrappable* object,
-                                       const WrapperTypeInfo* wrapper_type_info,
-                                       v8::Local<v8::Object>& wrapper) {
-    if (CanUseMainWorldWrapper())
-      return object->SetWrapper(isolate, wrapper_type_info, wrapper);
-    return Current(isolate).Set(isolate, object, wrapper_type_info, wrapper);
-  }
+  // Associates the given `object` with the given `wrapper` if the object is not
+  // yet associated with any wrapper.  Returns true if the given wrapper is
+  // associated with the object, or false if the object is already associated
+  // with a wrapper.  In the latter case, `wrapper` will be updated to the
+  // existing wrapper. Can be used from any world. Will only consider the
+  // current world.
+  [[nodiscard]] static inline bool SetWrapper(
+      v8::Isolate* isolate,
+      ScriptWrappable* object,
+      const WrapperTypeInfo* wrapper_type_info,
+      v8::Local<v8::Object>& wrapper);
 
-  static bool ContainsWrapper(const ScriptWrappable* object,
-                              v8::Isolate* isolate) {
-    return Current(isolate).ContainsWrapper(object);
-  }
+  // Same as `SetWrapper()` with the difference that it only considers inline
+  // storage. Can be used from any world.
+  template <bool entered_context = true>
+  [[nodiscard]] static inline bool SetWrapperInInlineStorage(
+      v8::Isolate* isolate,
+      ScriptWrappable* object,
+      const WrapperTypeInfo* wrapper_type_info,
+      v8::Local<v8::Object>& wrapper);
 
-  DOMDataStore(v8::Isolate* isolate, bool is_main_world);
+  // Checks for the wrapper pair in all worlds and clears the first found pair.
+  // This should only be needed for garbage collection. All other callsites
+  // should know their worlds.
+  template <typename HandleType>
+  static inline bool ClearWrapperInAnyWorldIfEqualTo(ScriptWrappable* object,
+                                                     const HandleType& handle);
+
+  // Clears the inline storage wrapper if it is equal to `handle`. Can be used
+  // from any world.
+  template <typename HandleType>
+  static inline bool ClearInlineStorageWrapperIfEqualTo(
+      ScriptWrappable* object,
+      const HandleType& handle);
+
+  // Checks whether a wrapper for `object` exists. Can be used from any world.
+  // Will only consider the current world.
+  static inline bool ContainsWrapper(v8::Isolate* isolate,
+                                     const ScriptWrappable* object);
+
+  DOMDataStore(v8::Isolate* isolate, bool);
   DOMDataStore(const DOMDataStore&) = delete;
   DOMDataStore& operator=(const DOMDataStore&) = delete;
 
   // Clears all references.
   void Dispose();
 
-  v8::Local<v8::Object> Get(ScriptWrappable* object, v8::Isolate* isolate) {
-    if (is_main_world_)
-      return object->MainWorldWrapper(isolate);
-    auto it = wrapper_map_.find(object);
-    if (it != wrapper_map_.end())
-      return it->value.Get(isolate);
-    return v8::Local<v8::Object>();
-  }
+  // Same as `GetWrapper()` but for a single world.
+  template <bool entered_context = true>
+  inline v8::MaybeLocal<v8::Object> Get(v8::Isolate* isolate,
+                                        const ScriptWrappable* object);
 
-  [[nodiscard]] bool Set(v8::Isolate* isolate,
-                         ScriptWrappable* object,
-                         const WrapperTypeInfo* wrapper_type_info,
-                         v8::Local<v8::Object>& wrapper) {
-    DCHECK(object);
-    DCHECK(!wrapper.IsEmpty());
-    if (is_main_world_)
-      return object->SetWrapper(isolate, wrapper_type_info, wrapper);
+  // Same as `SetWrapper()` but for a single world.
+  template <bool entered_context = true>
+  [[nodiscard]] inline bool Set(v8::Isolate* isolate,
+                                ScriptWrappable* object,
+                                const WrapperTypeInfo* wrapper_type_info,
+                                v8::Local<v8::Object>& wrapper);
 
-    auto result = wrapper_map_.insert(
-        object, wrapper_type_info->SupportsDroppingWrapper()
-                    ? TraceWrapperV8Reference<v8::Object>(
-                          isolate, wrapper,
-                          TraceWrapperV8Reference<v8::Object>::IsDroppable{})
-                    : TraceWrapperV8Reference<v8::Object>(isolate, wrapper));
-    // TODO(mlippautz): Check whether there's still recursive cases of
-    // Wrap()/AssociateWithWrapper() that can run into the case of an existing
-    // entry.
-    if (UNLIKELY(!result.is_new_entry)) {
-      DCHECK(!result.stored_value->value.IsEmpty());
-      wrapper = result.stored_value->value.Get(isolate);
-    }
-    return result.is_new_entry;
-  }
+  // Same as `ContainsWrapper()` but for a single world.
+  inline bool Contains(const ScriptWrappable* object) const;
 
+  // Returns true if the pair {object, handle} exists in the current world.
   template <typename HandleType>
-  bool ClearWrapperIfEqualTo(ScriptWrappable* object,
+  inline bool EqualTo(const ScriptWrappable* object, const HandleType& handle);
+
+  // Clears the connection between object and handle in the current world.
+  template <typename HandleType>
+  inline bool ClearIfEqualTo(ScriptWrappable* object,
                              const HandleType& handle) {
-    DCHECK(!is_main_world_);
-    const auto& it = wrapper_map_.find(object);
-    if (it != wrapper_map_.end() && it->value == handle) {
+    if (can_use_inline_storage_) {
+      return ClearInlineStorageWrapperIfEqualTo(object, handle);
+    }
+    return ClearInMapIfEqualTo(object, handle);
+  }
+
+  // Clears the connection between object and handle in the current world
+  // assuming no inline storage is available for this world.
+  template <typename HandleType>
+  inline bool ClearInMapIfEqualTo(const ScriptWrappable* object,
+                                  const HandleType& handle) {
+    DCHECK(!can_use_inline_storage_);
+    if (const auto& it = wrapper_map_.find(object);
+        it != wrapper_map_.end() && it->value == handle) {
       it->value.Reset();
       wrapper_map_.erase(it);
       return true;
@@ -161,57 +185,247 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     return false;
   }
 
-  bool SetReturnValueFrom(v8::ReturnValue<v8::Value> return_value,
-                          ScriptWrappable* object) {
-    if (is_main_world_)
-      return object->SetReturnValue(return_value);
-    auto it = wrapper_map_.find(object);
-    if (it != wrapper_map_.end()) {
-      return_value.SetNonEmpty(it->value);
-      return true;
-    }
-    return false;
-  }
-
-  bool ContainsWrapper(const ScriptWrappable* object) {
-    if (is_main_world_)
-      return object->ContainsWrapper();
-    return base::Contains(wrapper_map_, object);
-  }
-
   virtual void Trace(Visitor*) const;
 
  private:
-  // We can use a wrapper stored in a ScriptWrappable when we're in the main
-  // world.  This method does the fast check if we're in the main world. If this
+  // We can use the inline storage in a ScriptWrappable when we're in the main
+  // world. This method does the fast check if we're in the main world. If this
   // method returns true, it is guaranteed that we're in the main world. On the
   // other hand, if this method returns false, nothing is guaranteed (we might
   // be in the main world).
-  static bool CanUseMainWorldWrapper() {
+  static bool CanUseInlineStorageForWrapper() {
     return !WTF::MayNotBeMainThread() &&
            !DOMWrapperWorld::NonMainWorldsExistInMainThread();
   }
 
-  static bool HolderContainsWrapperForMainWorld(
-      v8::Local<v8::Object> holder,
+  inline bool SetReturnValueFrom(v8::ReturnValue<v8::Value> return_value,
+                                 const ScriptWrappable* value);
+
+  using WrapperRefType = decltype(ScriptWrappable::wrapper_);
+
+  // Convenience methods for accessing the inlined storage.
+  static inline WrapperRefType& GetUncheckedInlineStorage(
+      ScriptWrappable* wrappable) {
+    return wrappable->wrapper_;
+  }
+  static inline const WrapperRefType& GetUncheckedInlineStorage(
       const ScriptWrappable* wrappable) {
-    // The first fastest way is to check that there is only the main world
-    // on the main thread.
-    if (CanUseMainWorldWrapper()) {
-      return true;
-    }
-    // The second fastest way to check if we're in the main world is to
-    // check if the wrappable's wrapper is the same as the holder.
-    DCHECK(wrappable);
-    return wrappable->IsEqualTo(holder);
+    return GetUncheckedInlineStorage(const_cast<ScriptWrappable*>(wrappable));
+  }
+  static inline WrapperRefType& GetInlineStorage(v8::Isolate* isolate,
+                                                 ScriptWrappable* wrappable) {
+    // The following will crash if no context is entered. This is by design. The
+    // validation can be skipped with `SetWrapperInInlineStorage<false>()`.
+    DCHECK(Current(isolate).can_use_inline_storage_);
+    return GetUncheckedInlineStorage(wrappable);
+  }
+  static inline const WrapperRefType& GetInlineStorage(
+      v8::Isolate* isolate,
+      const ScriptWrappable* wrappable) {
+    return GetInlineStorage(isolate, const_cast<ScriptWrappable*>(wrappable));
   }
 
-  bool is_main_world_;
+  // Specifies whether this data store is allowed to use inline storage of a
+  // ScriptWrappable and can avoid using the ephemeron map below.
+  const bool can_use_inline_storage_;
   // Ephemeron map: V8 wrapper will be kept alive as long as ScriptWrappable is.
   HeapHashMap<WeakMember<const ScriptWrappable>,
               TraceWrapperV8Reference<v8::Object>>
       wrapper_map_;
 };
+
+// static
+bool DOMDataStore::SetReturnValue(v8::ReturnValue<v8::Value> return_value,
+                                  ScriptWrappable* value) {
+  if (CanUseInlineStorageForWrapper()) {
+    return SetReturnValueFromInlineStorage(return_value, value);
+  }
+  return Current(return_value.GetIsolate())
+      .SetReturnValueFrom(return_value, value);
+}
+
+// static
+bool DOMDataStore::SetReturnValueFromInlineStorage(
+    v8::ReturnValue<v8::Value> return_value,
+    const ScriptWrappable* value) {
+  const auto& ref = GetInlineStorage(return_value.GetIsolate(), value);
+  if (!ref.IsEmpty()) {
+    return_value.SetNonEmpty(ref);
+    return true;
+  }
+  return false;
+}
+
+// static
+bool DOMDataStore::SetReturnValueFast(v8::ReturnValue<v8::Value> return_value,
+                                      ScriptWrappable* object,
+                                      v8::Local<v8::Object> v8_receiver,
+                                      const ScriptWrappable* blink_receiver) {
+  // Fast checks for using inline storage:
+  // 1. Fast check for inline storage.
+  // 2. If the receiver receiver's inline wrapper is the V8 receiver. In this
+  //    case we know we are in the world that can use inline storage.
+  DCHECK(blink_receiver);
+  DCHECK(!v8_receiver.IsEmpty());
+  if (CanUseInlineStorageForWrapper() ||
+      v8_receiver == GetUncheckedInlineStorage(blink_receiver)) {
+    return SetReturnValueFromInlineStorage(return_value, object);
+  }
+  return Current(return_value.GetIsolate())
+      .SetReturnValueFrom(return_value, object);
+}
+
+bool DOMDataStore::SetReturnValueFrom(v8::ReturnValue<v8::Value> return_value,
+                                      const ScriptWrappable* value) {
+  if (can_use_inline_storage_) {
+    return SetReturnValueFromInlineStorage(return_value, value);
+  }
+  if (const auto it = wrapper_map_.find(value); it != wrapper_map_.end()) {
+    return_value.SetNonEmpty(it->value);
+    return true;
+  }
+  return false;
+}
+
+// static
+v8::MaybeLocal<v8::Object> DOMDataStore::GetWrapper(
+    v8::Isolate* isolate,
+    const ScriptWrappable* object) {
+  if (CanUseInlineStorageForWrapper()) {
+    return GetInlineStorage(isolate, object).Get(isolate);
+  }
+  return Current(isolate).Get(isolate, object);
+}
+
+template <bool entered_context>
+v8::MaybeLocal<v8::Object> DOMDataStore::Get(v8::Isolate* isolate,
+                                             const ScriptWrappable* object) {
+  if (can_use_inline_storage_) {
+    return entered_context ? GetInlineStorage(isolate, object).Get(isolate)
+                           : GetUncheckedInlineStorage(object).Get(isolate);
+  }
+  if (const auto it = wrapper_map_.find(object); it != wrapper_map_.end()) {
+    return it->value.Get(isolate);
+  }
+  return {};
+}
+
+// static
+bool DOMDataStore::SetWrapper(v8::Isolate* isolate,
+                              ScriptWrappable* object,
+                              const WrapperTypeInfo* wrapper_type_info,
+                              v8::Local<v8::Object>& wrapper) {
+  if (CanUseInlineStorageForWrapper()) {
+    return SetWrapperInInlineStorage(isolate, object, wrapper_type_info,
+                                     wrapper);
+  }
+  return Current(isolate).Set(isolate, object, wrapper_type_info, wrapper);
+}
+
+// static
+template <bool entered_context>
+bool DOMDataStore::SetWrapperInInlineStorage(
+    v8::Isolate* isolate,
+    ScriptWrappable* object,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::Object>& wrapper) {
+  DCHECK(!wrapper.IsEmpty());
+  auto& ref = entered_context ? GetInlineStorage(isolate, object)
+                              : GetUncheckedInlineStorage(object);
+  if (UNLIKELY(!ref.IsEmpty())) {
+    wrapper = ref.Get(isolate);
+    return false;
+  }
+  if (wrapper_type_info->SupportsDroppingWrapper()) {
+    ref.Reset(isolate, wrapper,
+              TraceWrapperV8Reference<v8::Object>::IsDroppable{});
+  } else {
+    ref.Reset(isolate, wrapper);
+  }
+  DCHECK(!ref.IsEmpty());
+  return true;
+}
+
+template <bool entered_context>
+bool DOMDataStore::Set(v8::Isolate* isolate,
+                       ScriptWrappable* object,
+                       const WrapperTypeInfo* wrapper_type_info,
+                       v8::Local<v8::Object>& wrapper) {
+  DCHECK(object);
+  DCHECK(!wrapper.IsEmpty());
+  if (can_use_inline_storage_) {
+    return SetWrapperInInlineStorage<entered_context>(
+        isolate, object, wrapper_type_info, wrapper);
+  }
+  auto result = wrapper_map_.insert(
+      object, wrapper_type_info->SupportsDroppingWrapper()
+                  ? TraceWrapperV8Reference<v8::Object>(
+                        isolate, wrapper,
+                        TraceWrapperV8Reference<v8::Object>::IsDroppable{})
+                  : TraceWrapperV8Reference<v8::Object>(isolate, wrapper));
+  // TODO(mlippautz): Check whether there's still recursive cases of
+  // Wrap()/AssociateWithWrapper() that can run into the case of an existing
+  // entry.
+  if (UNLIKELY(!result.is_new_entry)) {
+    DCHECK(!result.stored_value->value.IsEmpty());
+    wrapper = result.stored_value->value.Get(isolate);
+  }
+  return result.is_new_entry;
+}
+
+//  static
+bool DOMDataStore::ContainsWrapper(v8::Isolate* isolate,
+                                   const ScriptWrappable* object) {
+  if (CanUseInlineStorageForWrapper()) {
+    return !GetInlineStorage(isolate, object).IsEmpty();
+  }
+  return Current(isolate).Contains(object);
+}
+
+// Same as `ContainsWrapper()` but for a single world.
+bool DOMDataStore::Contains(const ScriptWrappable* object) const {
+  if (can_use_inline_storage_) {
+    return !GetUncheckedInlineStorage(object).IsEmpty();
+  }
+  return base::Contains(wrapper_map_, object);
+}
+
+// static
+template <typename HandleType>
+bool DOMDataStore::ClearWrapperInAnyWorldIfEqualTo(ScriptWrappable* object,
+                                                   const HandleType& handle) {
+  if (LIKELY(ClearInlineStorageWrapperIfEqualTo(object, handle))) {
+    return true;
+  }
+  return DOMWrapperWorld::ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
+      object, handle);
+}
+
+// static
+template <typename HandleType>
+bool DOMDataStore::ClearInlineStorageWrapperIfEqualTo(
+    ScriptWrappable* object,
+    const HandleType& handle) {
+  auto& ref = GetUncheckedInlineStorage(object);
+  if (ref == handle) {
+    ref.Reset();
+    return true;
+  }
+  return false;
+}
+
+template <typename HandleType>
+bool DOMDataStore::EqualTo(const ScriptWrappable* object,
+                           const HandleType& handle) {
+  if (can_use_inline_storage_) {
+    return GetUncheckedInlineStorage(object) == handle;
+  }
+  if (const auto& it = wrapper_map_.find(object);
+      it != wrapper_map_.end() && it->value == handle) {
+    return true;
+  }
+  return false;
+}
 
 }  // namespace blink
 

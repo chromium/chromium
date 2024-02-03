@@ -130,6 +130,11 @@ void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
   password_form.form_data = std::move(form_data.value());
 }
 
+void SetStoreForForm(PasswordForm& form, IsAccountStore is_account_store) {
+  form.in_store = is_account_store ? PasswordForm::Store::kAccountStore
+                                   : PasswordForm::Store::kProfileStore;
+}
+
 }  // namespace
 
 PasswordWithLocalData PasswordWithLocalDataFromPassword(
@@ -159,16 +164,19 @@ PasswordForm PasswordFromProtoWithLocalData(
 }
 
 std::vector<PasswordForm> PasswordVectorFromListResult(
-    const ListPasswordsResult& list_result) {
+    const ListPasswordsResult& list_result,
+    IsAccountStore is_account_store) {
   std::vector<PasswordForm> forms;
   for (const PasswordWithLocalData& password : list_result.password_data()) {
     forms.push_back(PasswordFromProtoWithLocalData(password));
+    SetStoreForForm(forms.back(), is_account_store);
   }
   return forms;
 }
 
 std::vector<PasswordForm> PasswordVectorFromListResult(
-    const ListAffiliatedPasswordsResult& list_result) {
+    const ListAffiliatedPasswordsResult& list_result,
+    IsAccountStore is_account_store) {
   std::vector<PasswordForm> forms;
   for (const auto& password : list_result.affiliated_passwords()) {
     PasswordForm form =
@@ -181,19 +189,22 @@ std::vector<PasswordForm> PasswordVectorFromListResult(
     if (password.is_grouping_affiliation_match()) {
       form.match_type |= PasswordForm::MatchType::kGrouped;
     }
+    SetStoreForForm(form, is_account_store);
     forms.push_back(std::move(form));
   }
   return forms;
 }
 
 std::vector<PasswordForm> PasswordVectorFromListResult(
-    const ListPasswordsWithUiInfoResult& list_result) {
+    const ListPasswordsWithUiInfoResult& list_result,
+    IsAccountStore is_account_store) {
   std::vector<PasswordForm> forms;
   for (const auto& password : list_result.passwords_with_ui_info()) {
     PasswordForm form =
         PasswordFromProtoWithLocalData(password.password_data());
     form.app_display_name = password.ui_info().display_name();
     form.app_icon_url = GURL(password.ui_info().icon_url());
+    SetStoreForForm(form, is_account_store);
     forms.push_back(std::move(form));
   }
   return forms;

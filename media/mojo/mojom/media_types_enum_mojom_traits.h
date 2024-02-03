@@ -208,6 +208,9 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
       case media::SVCScalabilityMode::kL2T3KeyShift:
       case media::SVCScalabilityMode::kL3T2KeyShift:
       case media::SVCScalabilityMode::kL3T3KeyShift:
+      case media::SVCScalabilityMode::kL3T1h:
+      case media::SVCScalabilityMode::kL3T2h:
+      case media::SVCScalabilityMode::kL3T3h:
         NOTREACHED_NORETURN();
     }
   }

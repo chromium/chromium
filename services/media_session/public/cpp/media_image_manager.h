@@ -5,12 +5,12 @@
 #ifndef SERVICES_MEDIA_SESSION_PUBLIC_CPP_MEDIA_IMAGE_MANAGER_H_
 #define SERVICES_MEDIA_SESSION_PUBLIC_CPP_MEDIA_IMAGE_MANAGER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "services/media_session/public/cpp/media_image.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Size;
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaImageManager {
 
   // Select the best image from the |images|. If an image could not be selected
   // then will return null.
-  absl::optional<MediaImage> SelectImage(const std::vector<MediaImage>& images);
+  std::optional<MediaImage> SelectImage(const std::vector<MediaImage>& images);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaImageManagerTest,
@@ -70,9 +70,9 @@ class COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaImageManager {
 
   double GetImageScore(const MediaImage& image) const;
 
-  static absl::optional<double> GetImageExtensionScore(const GURL& url);
+  static std::optional<double> GetImageExtensionScore(const GURL& url);
 
-  static absl::optional<double> GetImageTypeScore(const std::u16string& type);
+  static std::optional<double> GetImageTypeScore(const std::u16string& type);
 
   const int min_size_;
   const int ideal_size_;

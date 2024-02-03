@@ -684,7 +684,7 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
   return gfx::Size(width, height);
 }
 
-void BookmarkBarView::Layout() {
+void BookmarkBarView::Layout(PassKey) {
   // Skip layout during destruction, when no model exists.
   if (!bookmark_model_) {
     return;
@@ -873,7 +873,7 @@ void BookmarkBarView::ViewHierarchyChanged(
       // We only layout while parented. When we become parented, if our bounds
       // haven't changed, OnBoundsChanged() won't get invoked and we won't
       // layout. Therefore we always force a layout when added.
-      Layout();
+      DeprecatedLayoutImmediately();
     }
   }
 }
@@ -1627,8 +1627,8 @@ bool BookmarkBarView::BookmarkNodeAddedImpl(BookmarkModel* model,
     return true;
   }
   // If the new node was added after the last button we've created we may be
-  // able to fit it. Assume we can by returning true, which forces a Layout()
-  // and creation of the button (if it fits).
+  // able to fit it. Assume we can by returning true, which forces a layout and
+  // creation of the button (if it fits).
   return index == bookmark_buttons_.size();
 }
 

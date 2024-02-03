@@ -29,6 +29,7 @@
  */
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include <algorithm>
@@ -100,6 +101,7 @@ namespace blink {
 using network::mojom::ContentSecurityPolicySource;
 using network::mojom::ContentSecurityPolicyType;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 class DocumentTest : public PageTestBase {
  public:
@@ -1790,17 +1792,28 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
                          expected_elements.begin(), expected_elements.end()));
 }
 
-// We don't extract unassociated listed element in a shadow DOM.
+// We extract unassociated listed element in a shadow DOM iff
+// `kAutofillIncludeShadowDomInUnassociatedListedElements` is enabled.
 TEST_F(UnassociatedListedElementTest,
        GetUnassociatedListedElementsFromShadowTree) {
   ShadowRoot& shadow_root =
       GetDocument().body()->AttachShadowRootForTesting(ShadowRootType::kOpen);
   HTMLInputElement* input =
       MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  input->SetIdAttribute(AtomicString("unassociated_input"));
   shadow_root.AppendChild(input);
   ListedElement::List listed_elements =
       GetDocument().UnassociatedListedElements();
-  EXPECT_EQ(0u, listed_elements.size());
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kAutofillIncludeShadowDomInUnassociatedListedElements)) {
+    EXPECT_THAT(listed_elements,
+                ElementsAre(ListedElement::From(*shadow_root.getElementById(
+                    AtomicString("unassociated_input")))));
+  } else {
+    EXPECT_THAT(listed_elements, IsEmpty());
+  }
 }
 
 // Check if the dynamically added unassociated listed element is properly

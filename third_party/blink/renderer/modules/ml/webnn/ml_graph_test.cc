@@ -29,6 +29,8 @@ namespace blink {
 
 namespace {
 
+// kWebNNService is a valid parameter type, but ml_graph_test doesn't run
+// against it.
 const TestVariety kGraphTestVariety[] = {
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
     {BackendType::kXnnpack, ExecutionMode::kAsync},
@@ -401,8 +403,7 @@ struct ElementWiseUnaryTester {
 };
 
 TEST_P(MLGraphTest, ElementWiseUnaryTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test element-wise abs operator for a 0-D scalar.
     // The expected results should be the absolute value of the input scalar.
@@ -472,6 +473,48 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
                   .dimensions = {1, 2, 2, 1},
                   .values = {1.0, 4.0, 9.0, 16.0}},
         .expected = {1.0, 2.0, 3.0, 4.0}}
+        .Test(*this, scope);
+  }
+  // Below operators are not implemented on XNNPACK backend.
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kXnnpack);
+  {
+    // Test element-wise Cos operator.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kCos,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1, -2, 3, -4}},
+        .expected = {cos(1.f), cos(-2.f), cos(3.f), cos(-4.f)}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise Exp operator.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kExp,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1, -2, 3, -4}},
+        .expected = {exp(1.f), exp(-2.f), exp(3.f), exp(-4.f)}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise Log operator.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kLog,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {3},
+                  .values = {0, 3, 10}},
+        .expected = {log(0.f), log(3.f), log(10.f)}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise Sin operator.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kSin,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1, -2, 3, -4}},
+        .expected = {sin(1.f), sin(-2.f), sin(3.f), sin(-4.f)}}
         .Test(*this, scope);
   }
 }
@@ -668,8 +711,7 @@ struct LeakyReluTester {
 };
 
 TEST_P(MLGraphTest, LeakyReluTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test leakyRelu operator with default options.
     auto* options = MLLeakyReluOptions::Create();
@@ -966,7 +1008,7 @@ template <typename T>
 struct Conv2dTester {
   OperandInfo<T> input;
   OperandInfo<T> filter;
-  absl::optional<OperandInfo<T>> bias = absl::nullopt;
+  std::optional<OperandInfo<T>> bias = std::nullopt;
   Vector<T> expected;
 
   void Test(MLGraphTest& helper,
@@ -1130,7 +1172,7 @@ template <typename T>
 struct ConvTranspose2dTester {
   OperandInfo<T> input;
   OperandInfo<T> filter;
-  absl::optional<OperandInfo<T>> bias = absl::nullopt;
+  std::optional<OperandInfo<T>> bias = std::nullopt;
   Vector<T> expected;
 
   void Test(
@@ -1301,7 +1343,7 @@ template <typename T>
 struct GemmTester {
   OperandInfo<T> a;
   OperandInfo<T> b;
-  absl::optional<OperandInfo<T>> c = absl::nullopt;
+  std::optional<OperandInfo<T>> c = std::nullopt;
   Vector<T> expected;
 
   void Test(MLGraphTest& helper,
@@ -1417,16 +1459,12 @@ struct HardSwishTester {
         helper.ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<float>(outputs[0].second);
-    EXPECT_EQ(results.size(), expected.size());
-    for (wtf_size_t i = 0; i < expected.size(); ++i) {
-      EXPECT_FLOAT_EQ(results[i], expected[i]);
-    }
+    ExpectFloatArrayEqual(results, expected);
   }
 };
 
 TEST_P(MLGraphTest, HardSwishTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test hardSwish operator for 1-D tensor.
     // The expected results should be the result of the nonlinear function, y
@@ -1628,6 +1666,71 @@ TEST_P(MLGraphTest, ReshapeTest) {
                   .values = {-10.0, -0.5, 0.5, 10.0}},
         .new_shape = {1, 4},
         .expected_output_shape = {1, 4}}
+        .Test(*this, scope);
+  }
+}
+
+template <typename T>
+struct SigmoidTester {
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper, V8TestingScope& scope) {
+    // Build the graph.
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* output_operand =
+        builder->sigmoid(input_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    ASSERT_EQ(compute_exception, nullptr);
+    ASSERT_EQ(outputs.size(), 1u);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    ExpectFloatArrayEqual(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, SigmoidTest) {
+  MLGraphV8TestingScope scope;
+  {
+    // Test sigmoid with a 0-D scalar input.
+    SigmoidTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {},
+                  .values = {0}},
+        .expected = {0.5}}
+        .Test(*this, scope);
+  }
+  {
+    // Test sigmoid with a 1d input.
+    SigmoidTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {3},
+                  .values = {0, 0, 0}},
+        .expected = {0.5, 0.5, 0.5}}
+        .Test(*this, scope);
+  }
+  {
+    // Test sigmoid with a 3d input.
+    SigmoidTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 3, 1},
+                  .values = {0, 0, 0, 0, 0, 0}},
+        .expected = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5}}
         .Test(*this, scope);
   }
 }

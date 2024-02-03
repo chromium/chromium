@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -27,6 +28,8 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
 
 /** A controller responsible for setting up quick delete MVC. */
 public class QuickDeleteController {
@@ -120,6 +123,7 @@ public class QuickDeleteController {
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
                 @TimePeriod int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
+                mDeleteTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
                 mDelegate.performQuickDelete(
                         () -> onBrowsingDataDeletionFinished(timePeriod), timePeriod);
                 break;
@@ -141,14 +145,15 @@ public class QuickDeleteController {
 
     private void maybeShowQuickDeleteAnimation(@TimePeriod int timePeriod) {
         if (isQuickDeleteAnimationEnabled()) {
-            mDelegate.showQuickDeleteAnimation(() -> showPostDeleteFeedback(timePeriod));
+            List<Tab> tabs = mDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
+            mDelegate.showQuickDeleteAnimation(() -> showPostDeleteFeedback(timePeriod), tabs);
         } else {
             showPostDeleteFeedback(timePeriod);
         }
     }
 
     private void showPostDeleteFeedback(@TimePeriod int timePeriod) {
-        mDeleteTabsFilter.closeTabsFilteredForQuickDelete(timePeriod);
+        mDeleteTabsFilter.closeTabsFilteredForQuickDelete();
         triggerHapticFeedback();
         showSnackbar(timePeriod);
     }
@@ -165,8 +170,8 @@ public class QuickDeleteController {
                     @Override
                     public void onFinishedShowing(int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
-                            onNavigationFinished.run();
                             mLayoutManager.removeObserver(this);
+                            onNavigationFinished.run();
                         }
                     }
                 });

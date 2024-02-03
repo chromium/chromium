@@ -72,7 +72,8 @@ class MediaStreamDevicesControllerBrowserTest
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,
         url::Origin::Create(request_url_), false, blink::MEDIA_DEVICE_ACCESS,
-        std::string(), std::string(), audio_request_type, video_request_type,
+        /*requested_audio_device_ids=*/{}, /*requested_video_device_ids=*/{},
+        audio_request_type, video_request_type,
         /*disable_local_echo=*/false,
         /*request_pan_tilt_zoom_permission=*/false);
   }

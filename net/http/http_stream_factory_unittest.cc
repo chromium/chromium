@@ -591,8 +591,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
 
     // Put a SpdySession in the pool.
     HostPortPair host_port_pair("www.google.com", 443);
-    SpdySessionKey key(host_port_pair, ProxyChain::Direct(),
-                       PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+    SpdySessionKey key(host_port_pair, PRIVACY_MODE_DISABLED,
+                       ProxyChain::Direct(), SessionUsage::kDestination,
                        SocketTag(), NetworkAnonymizationKey(),
                        SecureDnsPolicy::kAllow);
     std::ignore = CreateFakeSpdySession(session->spdy_session_pool(), key);
@@ -849,11 +849,12 @@ const int quic_proxy_test_mock_errors[] = {
 // Tests that a bad QUIC proxy is added to the list of bad proxies.
 TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
   for (int quic_proxy_test_mock_error : quic_proxy_test_mock_errors) {
+    auto quic_proxy_chain =
+        ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+            ProxyServer::SCHEME_QUIC, "bad", 99)});
     std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-            {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "bad",
-                                               99),
-             ProxyChain::Direct()},
+            {quic_proxy_chain, ProxyChain::Direct()},
             TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkSessionParams session_params;
@@ -917,8 +918,7 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     EXPECT_EQ(1u, retry_info.size()) << quic_proxy_test_mock_error;
     EXPECT_TRUE(waiter.used_proxy_info().is_direct());
 
-    auto iter = retry_info.find(ProxyChain(
-        ProxyUriToProxyServer("quic://bad:99", ProxyServer::SCHEME_QUIC)));
+    auto iter = retry_info.find(quic_proxy_chain);
     EXPECT_TRUE(iter != retry_info.end()) << quic_proxy_test_mock_error;
   }
 }

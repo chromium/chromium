@@ -270,13 +270,18 @@ class Git(object):
 
         return self._remote_merge_base()
 
-    def changed_files(self, git_commit=None, diff_filter='ADM'):
+    def changed_files(self,
+                      git_commit=None,
+                      diff_filter='ADM',
+                      path: Optional[str] = None):
         # FIXME: --diff-filter could be used to avoid the "extract_filenames" step.
         status_command = [
             'diff', '-r', '--name-status', '--no-renames', '--no-ext-diff',
             '--full-index',
             self._merge_base(git_commit)
         ]
+        if path:
+            status_command.append(path)
         # Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
         return self._run_status_and_extract_filenames(
             status_command, self._status_regexp(diff_filter))

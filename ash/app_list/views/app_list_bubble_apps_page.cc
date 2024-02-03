@@ -295,7 +295,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
 
   // The animation relies on the correct positions of views, so force layout.
   if (needs_layout())
-    Layout();
+    DeprecatedLayoutImmediately();
   DCHECK(!needs_layout());
 
   // This part of the animation has a longer duration than the bubble part
@@ -592,8 +592,8 @@ bool AppListBubbleAppsPage::MaybeScrollToShowToast() {
   return true;
 }
 
-void AppListBubbleAppsPage::Layout() {
-  views::View::Layout();
+void AppListBubbleAppsPage::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
   if (gradient_helper_)
     gradient_helper_->UpdateGradientMask();
 }
@@ -654,7 +654,7 @@ void AppListBubbleAppsPage::OnNudgeRemoved() {
   const gfx::Rect current_grid_bounds = scrollable_apps_grid_view_->bounds();
 
   if (needs_layout())
-    Layout();
+    DeprecatedLayoutImmediately();
 
   const gfx::Rect target_grid_bounds = scrollable_apps_grid_view_->bounds();
   const int offset = current_grid_bounds.y() - target_grid_bounds.y();
@@ -847,7 +847,7 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEnded(
   // to calculate visible items. Therefore trigger layout before starting the
   // fade in animation.
   if (toast_visibility_change)
-    Layout();
+    DeprecatedLayoutImmediately();
 
   // Ensure to scroll before triggering apps grid fade in animation so that
   // the bubble apps page's layout is ready.
@@ -950,13 +950,13 @@ void AppListBubbleAppsPage::OnToggleContinueSection() {
   view_delegate_->SetHideContinueSection(should_hide);
   // AppListControllerImpl will trigger UpdateContinueSectionVisibility().
 
-  // Layout() will change the position of the separator and apps grid based on
-  // the visibility of the continue section view and recent apps.
+  // Layout will change the position of the separator and apps grid based on the
+  // visibility of the continue section view and recent apps.
   if (needs_layout())
-    Layout();
+    DeprecatedLayoutImmediately();
 
   // The vertical offset for slide animations is the difference in separator
-  // position from before the Layout() versus its position now.
+  // position from before layout versus its position now.
   const int vertical_offset = separator_initial_y - separator_->y();
   const base::TimeDelta duration = base::Milliseconds(300);
   const gfx::Tween::Type tween_type = gfx::Tween::ACCEL_LIN_DECEL_100_3;
@@ -983,7 +983,7 @@ void AppListBubbleAppsPage::OnToggleContinueSection() {
   }
 }
 
-BEGIN_METADATA(AppListBubbleAppsPage, views::View)
+BEGIN_METADATA(AppListBubbleAppsPage)
 END_METADATA
 
 }  // namespace ash

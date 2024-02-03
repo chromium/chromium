@@ -42,7 +42,7 @@
   readonly attribute boolean complete;
 
   // Property-based promise for signaling that all data has been received.
-  [CallWith=ScriptState] readonly attribute Promise<void> completed;
+  [CallWith=ScriptState] readonly attribute Promise<undefined> completed;
 
   // List of tracks available in this image.
   //

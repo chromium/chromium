@@ -41,6 +41,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      *
      * @param settingsFragment An instance of {SafetyCheckSettingsFragment} to observe.
      * @param updatesClient An instance implementing the {@SafetyCheckUpdatesDelegate} interface.
+     * @param bridge An instances of {@link SafetyCheckBridge} to access C++ APIs.
      * @param settingsLauncher An instance implementing the {@SettingsLauncher} interface.
      * @param signinLauncher An instance implementing {@SigninActivityLauncher}.
      * @param modalDialogManagerSupplier An supplier for the {@ModalDialogManager}.
@@ -48,6 +49,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     public static void create(
             SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient,
+            SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -56,6 +58,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
         new SafetyCheckCoordinator(
                 settingsFragment,
                 updatesClient,
+                bridge,
                 settingsLauncher,
                 signinLauncher,
                 modalDialogManagerSupplier,
@@ -66,6 +69,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     private SafetyCheckCoordinator(
             SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient,
+            SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -109,6 +113,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     mPasswordCheckAccountModel,
                                                     mPasswordCheckLocalModel,
                                                     mUpdatesClient,
+                                                    bridge,
                                                     settingsLauncher,
                                                     signinLauncher,
                                                     syncService,

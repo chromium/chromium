@@ -210,7 +210,7 @@ TEST_F(CustomPropertyTest, GetCSSPropertyName) {
 
 TEST_F(CustomPropertyTest, SupportsGuaranteedInvalid) {
   RegisterProperty(GetDocument(), "--universal", "*", "foo", true);
-  RegisterProperty(GetDocument(), "--no-initial", "*", absl::nullopt, true);
+  RegisterProperty(GetDocument(), "--no-initial", "*", std::nullopt, true);
   RegisterProperty(GetDocument(), "--length", "<length>", "0px", true);
 
   CustomProperty unregistered(AtomicString("--unregistered"), GetDocument());
@@ -226,7 +226,7 @@ TEST_F(CustomPropertyTest, SupportsGuaranteedInvalid) {
 
 TEST_F(CustomPropertyTest, HasInitialValue) {
   RegisterProperty(GetDocument(), "--universal", "*", "foo", true);
-  RegisterProperty(GetDocument(), "--no-initial", "*", absl::nullopt, true);
+  RegisterProperty(GetDocument(), "--no-initial", "*", std::nullopt, true);
   RegisterProperty(GetDocument(), "--length", "<length>", "0px", true);
 
   CustomProperty unregistered(AtomicString("--unregistered"), GetDocument());

@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TEST_HELPERS_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
@@ -66,18 +67,18 @@ PropertyRegistration* CreateLengthRegistration(const String& name, int px);
 void RegisterProperty(Document& document,
                       const String& name,
                       const String& syntax,
-                      const absl::optional<String>& initial_value,
+                      const std::optional<String>& initial_value,
                       bool is_inherited);
 void RegisterProperty(Document& document,
                       const String& name,
                       const String& syntax,
-                      const absl::optional<String>& initial_value,
+                      const std::optional<String>& initial_value,
                       bool is_inherited,
                       ExceptionState&);
 void DeclareProperty(Document& document,
                      const String& name,
                      const String& syntax,
-                     const absl::optional<String>& initial_value,
+                     const std::optional<String>& initial_value,
                      bool is_inherited);
 
 scoped_refptr<CSSVariableData> CreateVariableData(String);
@@ -103,8 +104,16 @@ CSSSelectorList* ParseSelectorList(const String&,
                                    const StyleRule* parent_rule_for_nesting,
                                    bool is_within_scope);
 
-// Make a copy of a style rule which carries the specified signal.
-StyleRule* MakeSignalingRule(StyleRule*, CSSSelector::Signal);
+// Make the incoming StyleRule carry the specified signal.
+StyleRule* MakeSignalingRule(StyleRule&&, CSSSelector::Signal);
+
+// Make the incoming StyleRule invisible. (See CSSSelector::IsInvisible).
+StyleRule* MakeInvisibleRule(StyleRule&&);
+
+StyleRule* ParseSignalingRule(Document& document,
+                              String text,
+                              CSSSelector::Signal);
+StyleRule* ParseInvisibleRule(Document& document, String text);
 
 }  // namespace css_test_helpers
 }  // namespace blink

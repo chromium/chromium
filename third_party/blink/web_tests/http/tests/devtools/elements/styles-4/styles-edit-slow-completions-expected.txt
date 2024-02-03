@@ -7,5 +7,6 @@ element.style {
 }
 div {
    display: block
+   unicode-bidi: isolate
 }
 

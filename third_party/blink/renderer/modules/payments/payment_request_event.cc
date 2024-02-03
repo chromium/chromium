@@ -136,10 +136,10 @@ const ScriptValue PaymentRequestEvent::paymentOptions(
   return ScriptValue::From(script_state, payment_options_.Get());
 }
 
-absl::optional<HeapVector<Member<PaymentShippingOption>>>
+std::optional<HeapVector<Member<PaymentShippingOption>>>
 PaymentRequestEvent::shippingOptions() const {
   if (shipping_options_.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return shipping_options_;
 }
 

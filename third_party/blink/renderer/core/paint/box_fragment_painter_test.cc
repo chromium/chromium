@@ -114,7 +114,7 @@ TEST_P(BoxFragmentPainterTest, AddUrlRects) {
   UpdateAllLifecyclePhasesForTest();
 
   paint_preview::PaintPreviewTracker tracker(base::UnguessableToken::Create(),
-                                             absl::nullopt, true);
+                                             std::nullopt, true);
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   builder->Context().SetPaintPreviewTracker(&tracker);
 

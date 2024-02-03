@@ -49,7 +49,7 @@ VEAEncoder::VEAEncoder(
     media::Bitrate::Mode bitrate_mode,
     uint32_t bits_per_second,
     media::VideoCodecProfile codec,
-    absl::optional<uint8_t> level,
+    std::optional<uint8_t> level,
     const gfx::Size& size,
     bool use_native_input,
     bool is_screencast)
@@ -114,7 +114,7 @@ void VEAEncoder::BitstreamBufferReady(
   }
 
   on_encoded_video_cb_.Run(front_frame.first, std::move(data), std::string(),
-                           absl::nullopt, front_frame.second,
+                           std::nullopt, front_frame.second,
                            metadata.key_frame);
 
   UseOutputBitstreamBufferId(bitstream_buffer_id);

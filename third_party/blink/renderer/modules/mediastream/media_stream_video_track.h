@@ -45,9 +45,9 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   static WebMediaStreamTrack CreateVideoTrack(
       MediaStreamVideoSource* source,
       const VideoTrackAdapterSettings& adapter_settings,
-      const absl::optional<bool>& noise_reduction,
+      const std::optional<bool>& noise_reduction,
       bool is_screencast,
-      const absl::optional<double>& min_frame_rate,
+      const std::optional<double>& min_frame_rate,
       const ImageCaptureDeviceSettings* image_capture_device_settings,
       bool pan_tilt_zoom_allowed,
       MediaStreamVideoSource::ConstraintsOnceCallback callback,
@@ -63,9 +63,9 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   MediaStreamVideoTrack(
       MediaStreamVideoSource* source,
       const VideoTrackAdapterSettings& adapter_settings,
-      const absl::optional<bool>& noise_reduction,
+      const std::optional<bool>& noise_reduction,
       bool is_screen_cast,
-      const absl::optional<double>& min_frame_rate,
+      const std::optional<double>& min_frame_rate,
       const ImageCaptureDeviceSettings* image_capture_device_settings,
       bool pan_tilt_zoom_allowed,
       MediaStreamVideoSource::ConstraintsOnceCallback callback,
@@ -124,20 +124,20 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   void OnReadyStateChanged(WebMediaStreamSource::ReadyState state);
 
-  const absl::optional<bool>& noise_reduction() const {
+  const std::optional<bool>& noise_reduction() const {
     return noise_reduction_;
   }
   bool is_screencast() const { return is_screencast_; }
-  const absl::optional<double>& min_frame_rate() const {
+  const std::optional<double>& min_frame_rate() const {
     return min_frame_rate_;
   }
-  absl::optional<double> max_frame_rate() const {
+  std::optional<double> max_frame_rate() const {
     return adapter_settings_.max_frame_rate();
   }
   const VideoTrackAdapterSettings& adapter_settings() const {
     return adapter_settings_;
   }
-  const absl::optional<ImageCaptureDeviceSettings>&
+  const std::optional<ImageCaptureDeviceSettings>&
   image_capture_device_settings() const {
     return image_capture_device_settings_;
   }
@@ -244,10 +244,10 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   scoped_refptr<FrameDeliverer> frame_deliverer_;
 
   VideoTrackAdapterSettings adapter_settings_;
-  absl::optional<bool> noise_reduction_;
+  std::optional<bool> noise_reduction_;
   bool is_screencast_;
-  absl::optional<double> min_frame_rate_;
-  absl::optional<ImageCaptureDeviceSettings> image_capture_device_settings_;
+  std::optional<double> min_frame_rate_;
+  std::optional<ImageCaptureDeviceSettings> image_capture_device_settings_;
   bool pan_tilt_zoom_allowed_ = false;
 
   // Weak ref to the source this tracks is connected to.
@@ -263,7 +263,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   // Remembering our desired video size and frame rate.
   int width_ = 0;
   int height_ = 0;
-  absl::optional<double> computed_frame_rate_;
+  std::optional<double> computed_frame_rate_;
   media::VideoCaptureFormat computed_source_format_;
   base::RepeatingTimer refresh_timer_;
 

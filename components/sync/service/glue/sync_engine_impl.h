@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/invalidation/public/invalidator_state.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -44,7 +43,6 @@ class SyncEngineImpl : public SyncEngine,
   using Status = SyncStatus;
 
   // |sync_invalidations_service| must not be null.
-  // TODO(crbug.com/1404927): remove old invalidations.
   SyncEngineImpl(const std::string& name,
                  SyncInvalidationsService* sync_invalidations_service,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
@@ -168,7 +166,8 @@ class SyncEngineImpl : public SyncEngine,
   // received during browser startup).
   void UpdateStandaloneInvalidationsState();
 
-  void OnInvalidatorStateChange(invalidation::InvalidatorState state);
+  // Updates invalidator's state.
+  void OnInvalidatorStateChange(bool enabled);
 
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;

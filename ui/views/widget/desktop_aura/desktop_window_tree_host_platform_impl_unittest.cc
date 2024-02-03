@@ -67,7 +67,7 @@ class ShapedNonClientFrameView : public NonClientFrameView {
   }
 
  private:
-  void Layout() override { layout_requested_ = true; }
+  void Layout(PassKey) override { layout_requested_ = true; }
 
   bool layout_requested_ = false;
 };

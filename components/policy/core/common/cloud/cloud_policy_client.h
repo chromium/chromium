@@ -205,12 +205,22 @@ class POLICY_EXPORT CloudPolicyClient {
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceDMTokenCallback device_dm_token_callback);
+  // Create CloudPolicyClient for Profile with its `profile_id`.
+  CloudPolicyClient(
+      const std::string& profile_id,
+      DeviceManagementService* service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      DeviceDMTokenCallback device_dm_token_callback);
   // A simpler constructor for those that do not need any of the identification
   // strings of the full constructor.
   CloudPolicyClient(
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceDMTokenCallback device_dm_token_callback);
+  CloudPolicyClient(
+      DeviceManagementService* service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   CloudPolicyClient(const CloudPolicyClient&) = delete;
   CloudPolicyClient& operator=(const CloudPolicyClient&) = delete;
 
@@ -263,7 +273,6 @@ class POLICY_EXPORT CloudPolicyClient {
       const RegistrationParameters& parameters,
       const std::string& oauth_token,
       const std::string& oidc_id_token,
-      const std::string& profile_id,
       const std::string& client_id);
 
   // Sets information about a policy invalidation. Subsequent fetch operations

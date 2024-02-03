@@ -55,11 +55,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Managed"/>
 </enum>
 
-<enum name="BooleanOriginHeaderSameAsRequestOrigin">
-  <int value="0" label="Headers differ"/>
-  <int value="1" label="Headers match"/>
-</enum>
-
 <enum name="CaptivePortalNetworkState">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="ONLINE"/>
@@ -575,6 +570,12 @@ chromium-metrics-reviews@google.com.
 <enum name="HotspotUpstreamStatus">
   <int value="0" label="kWifiWithCellularConnected"/>
   <int value="1" label="kWifiWithCellularNotConnected"/>
+</enum>
+
+<enum name="IpProtectionEligibility">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Ineligible"/>
+  <int value="2" label="Eligible"/>
 </enum>
 
 <enum name="IpProtectionProxyLayer">

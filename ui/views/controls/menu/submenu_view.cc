@@ -182,7 +182,7 @@ void SubmenuView::ChildPreferredSizeChanged(View* child) {
   }
 }
 
-void SubmenuView::Layout() {
+void SubmenuView::Layout(PassKey) {
   // We're in a ScrollView, and need to set our width/height ourselves.
   if (!parent()) {
     return;

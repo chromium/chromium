@@ -411,13 +411,13 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
   }
 }
 
-void FrameSizeButton::Layout() {
+void FrameSizeButton::Layout(PassKey) {
   // Use the bounds of the inkdrop for the pie animation.
   gfx::Rect bounds = GetLocalBounds();
   bounds.Inset(GetInkdropInsets(bounds.size()));
   pie_animation_view_->SetBoundsRect(bounds);
 
-  views::FrameCaptionButton::Layout();
+  LayoutSuperclass<views::FrameCaptionButton>(this);
 }
 
 void FrameSizeButton::OnDisplayTabletStateChanged(display::TabletState state) {

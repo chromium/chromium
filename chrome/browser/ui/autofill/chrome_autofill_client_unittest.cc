@@ -76,7 +76,7 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
       : SaveCardBubbleControllerImpl(web_contents) {}
   ~MockSaveCardBubbleController() override = default;
 
-  MOCK_METHOD(void, HideIconAndBubbleAfterUpload, (), (override));
+  MOCK_METHOD(void, ShowConfirmationBubbleView, (), (override));
 };
 #endif
 
@@ -227,10 +227,10 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
 // tests; this test is intended to ensure the default state does not behave
 // unexpectedly.
 TEST_F(ChromeAutofillClientTest,
-       PlusAddressesDefaultFeatureStateMeansNullPlusAddressService) {
+       PlusAddressDefaultFeatureStateMeansNullPlusAddressService) {
   PlusAddressServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
-  EXPECT_EQ(client()->GetPlusAddressService(), nullptr);
+  EXPECT_EQ(client()->GetPlusAddressDelegate(), nullptr);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -255,7 +255,7 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
 
 TEST_F(ChromeAutofillClientTest,
        CreditCardUploadCompleted_HidesSaveCardBubbleAndIcon) {
-  EXPECT_CALL(save_card_bubble_controller(), HideIconAndBubbleAfterUpload);
+  EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView);
   client()->CreditCardUploadCompleted(true);
 }
 #endif
@@ -263,7 +263,11 @@ TEST_F(ChromeAutofillClientTest,
 // Test that there is always an PaymentsWindowManager present if attempted
 // to be retrieved.
 TEST_F(ChromeAutofillClientTest, GetPaymentsWindowManager) {
-  EXPECT_NE(client()->GetPaymentsWindowManager(), nullptr);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_EQ(client()->GetPaymentsWindowManager(), nullptr);
+  } else {
+    EXPECT_NE(client()->GetPaymentsWindowManager(), nullptr);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

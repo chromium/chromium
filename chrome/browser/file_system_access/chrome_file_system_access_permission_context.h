@@ -210,10 +210,6 @@ class ChromeFileSystemAccessPermissionContext
     max_ids_per_origin_ = max_ids;
   }
 
-  // This method may only be called when the Persistent Permissions feature
-  // flag is enabled.
-  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
-  // flag after FSA Persistent Permissions feature launch.
   PersistedGrantStatus GetPersistedGrantStatusForTesting(
       const url::Origin& origin) {
     CHECK(base::FeatureList::IsEnabled(

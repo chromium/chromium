@@ -616,17 +616,17 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window_);
 
-    heuristics->SameDocumentNavigationStarted(script_state);
+    heuristics->SameDocumentNavigationStarted();
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (tracker && script_state->World().IsMainWorld()) {
-      task = tracker->RunningTask(script_state);
+      task = tracker->RunningTask(script_state->GetIsolate());
       tracker->AddSameDocumentNavigationTask(task);
     }
   }
   frame->GetLocalFrameHostRemote().NavigateToNavigationApiKey(
       key, LocalFrame::HasTransientUserActivation(frame),
-      task ? absl::optional<scheduler::TaskAttributionId>(task->Id())
-           : absl::nullopt);
+      task ? std::optional<scheduler::TaskAttributionId>(task->Id())
+           : std::nullopt);
   return api_method_tracker->GetNavigationResult();
 }
 

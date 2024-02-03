@@ -227,7 +227,7 @@ class AnimationSpeedControl : public views::SliderListener, public views::View {
                           views::SliderChangeReason reason) override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   // Map slider values to animation scale.
@@ -336,7 +336,7 @@ void AnimationSpeedControl::SliderValueChanged(
   }
 }
 
-void AnimationSpeedControl::Layout() {
+void AnimationSpeedControl::Layout(PassKey) {
   gfx::Size max_size;
   // Make all labels equal size.
   for (const views::View* label : hints_container_->children()) {
@@ -356,7 +356,7 @@ void AnimationSpeedControl::Layout() {
   slider_->SetPreferredSize(slider_size);
   slider_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(0, max_size.width() / 2)));
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 class HUDActionButton : public views::LabelButton {

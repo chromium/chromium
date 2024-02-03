@@ -38,7 +38,8 @@ NotificationCenterBubble::NotificationCenterBubble(
   if (features::IsNotificationCenterControllerEnabled()) {
     notification_center_controller_ =
         std::make_unique<NotificationCenterController>();
-    bubble_view_->AddChildView(notification_center_controller_->CreateView());
+    bubble_view_->AddChildView(
+        notification_center_controller_->CreateNotificationCenterView());
   } else {
     notification_center_view_ =
         bubble_view_->AddChildView(std::make_unique<NotificationCenterView>());
@@ -54,7 +55,7 @@ NotificationCenterBubble::~NotificationCenterBubble() {
 
 void NotificationCenterBubble::ShowBubble() {
   if (features::IsNotificationCenterControllerEnabled()) {
-    notification_center_controller_->InitView();
+    notification_center_controller_->InitNotificationCenterView();
   }
   bubble_wrapper_->ShowBubble(std::move(bubble_view_));
   if (!features::IsNotificationCenterControllerEnabled()) {

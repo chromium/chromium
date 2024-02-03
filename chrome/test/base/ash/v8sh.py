@@ -30,6 +30,7 @@ def main():
     parser.add_argument('test_api_js')
     parser.add_argument('js2webui_js')
     parser.add_argument('test_type')
+    parser.add_argument('parameterized')
     parser.add_argument('inputfile')
     parser.add_argument('srcrootdir')
     parser.add_argument('cxxoutfile')
@@ -48,7 +49,7 @@ def main():
     cmd = [args.v8_shell]
     arguments = [
         args.js2webui_js, args.inputfile, args.srcrootdir, args.deps_js,
-        args.cxxoutfile, args.test_type
+        args.cxxoutfile, args.test_type, args.parameterized
     ]
     cmd.extend([
         '-e', "arguments=" + json.dumps(arguments), args.test_api_js,

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_H_
 
 #include <stdint.h>
+#include <memory>
 #include <queue>
 #include <string>
 #include <vector>
@@ -40,6 +41,7 @@ class URLLoaderThrottle;
 namespace content {
 
 class BrowserContext;
+class KeepAliveAttributionRequestHelper;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
 class RenderFrameHostImpl;
@@ -117,7 +119,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
       WeakDocumentPtr weak_document_ptr,
       BrowserContext* browser_context,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-      base::PassKey<KeepAliveURLLoaderService>);
+      base::PassKey<KeepAliveURLLoaderService>,
+      std::unique_ptr<KeepAliveAttributionRequestHelper>
+          attribution_request_helper);
   ~KeepAliveURLLoader() override;
 
   // Not copyable.
@@ -346,6 +350,13 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Counts the total number when this loader is requested by throttle to pause
   // reading body.
   size_t paused_reading_body_from_net_count_ = 0;
+
+  // Request helper responsible for processing Attribution Reporting API
+  // operations (https://github.com/WICG/attribution-reporting-api). Only set if
+  // the request is related to attribution. When set, responses (redirects &
+  // final) handled by the loader will be forwarded to the helper.
+  std::unique_ptr<KeepAliveAttributionRequestHelper>
+      attribution_request_helper_;
 
   // For testing only:
   // Not owned.

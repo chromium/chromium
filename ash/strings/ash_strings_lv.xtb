@@ -607,9 +607,11 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3526440770046466733">Atvērt saiti jaunā cilnē, bet palikt pašreizējā cilnē</translation>
 <translation id="353086728817903341">Izveidots savienojums ar <ph name="NUM_DEVICES" /> ierīcēm</translation>
 <translation id="3533126039236445965">Lietotņu plaukts</translation>
+<translation id="3537350467437346467">Jūs skatījāt</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> tīklājs</translation>
 <translation id="3540893133818942399">Nerādīt iespēju iestatīt tālruņa jaunāko fotoattēlu un multivides satura skatīšanu</translation>
 <translation id="3542066395059568317">Tā kā tiks rādīti ieteikumi, varēsiet turpināt no vietas, kur beidzāt darbu. Lai noņemtu ieteikumus, varat noklikšķināt ar peles labo pogu.</translation>
+<translation id="3547318469722231257">Jūs mainījāt</translation>
 <translation id="3552189655002856821">Wi-Fi ir izslēgts</translation>
 <translation id="3554215588514239132">Rādīt vai paslēpt izstrādātāja rīku paneli</translation>
 <translation id="3554637740840164787">Vienums <ph name="ITEM_TITLE" /> tika piesprausts</translation>
@@ -701,6 +703,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="385300504083504382">Sākums</translation>
 <translation id="3859364108019690">Nevar straumēt lietotnes</translation>
 <translation id="3861651314799684201">Lai ierakstītu visu ekrānu, nospiediet taustiņu Enter</translation>
+<translation id="3882323608730650973">Mainīts</translation>
 <translation id="3886872229787704059">Atvērts šodien</translation>
 <translation id="3891340733213178823">Lai izrakstītos, divas reizes nospiediet taustiņu kombināciju Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (balss komentāri)</translation>
@@ -894,6 +897,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4582666543382004902">Tīklājs ir izslēgts, lai varētu izmantot Wi-Fi. Lai izmantotu tīklāju, izslēdziet Wi-Fi.</translation>
 <translation id="4585337515783392668">Pārtraukt apraidi nezināmā uztvērējā</translation>
 <translation id="4596144739579517758">Tumšais motīvs ir izslēgts.</translation>
+<translation id="4596442969149038771"><ph name="USER" /> kopīgoja</translation>
 <translation id="4611292653554630842">Pieteikties</translation>
 <translation id="462160925400706389">Izveidots savienojums ar: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Verificēt kontu</translation>
@@ -1337,6 +1341,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="6298183524022479114">Pielāgojiet šo ierīci lietotnē</translation>
 <translation id="6309219492973062892">Noklikšķināt uz 1.–8. plaukta ikonas vai pieskarties tai</translation>
 <translation id="6315170314923504164">Balss</translation>
+<translation id="6319058840130157106">Pārvietoties atpakaļ starp apakšējo labo stūri, palaidēju, adreses joslu, grāmatzīmju joslu, atvērto tīmekļa vietni un lejupielādēm</translation>
 <translation id="6324916366299863871">Saīsnes rediģēšana</translation>
 <translation id="6330012934079202188">Tiek rādīti visu darbvietu logi. Nospiediet augšupvērsto bultiņu, lai tiktu rādīti pašreizējās darbvietas logi.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ir pārvaldīta sesija, ko pārvalda <ph name="MANAGER" />.</translation>
@@ -1500,6 +1505,7 @@ Jauna instalācija</translation>
 <translation id="6981291220124935078">Ieslēgt piekļuvi</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="698231206551913481">Visi faili un lokālie dati, kas ir saistīti ar šo lietotāju, tiks neatgriezeniski dzēsti, tiklīdz šis lietotājs tiks noņemts.</translation>
+<translation id="6984028004251196682">Displejā “<ph name="DISPLAY_NAME" />” netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Izšķirtspēja tika mainīta uz <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Skatiet īsu ceļvedi par Chromebook datora lietošanu. Sāciet darbu, veicot 6 darbības.</translation>
 <translation id="7004910047186208204">Mobilo datu savienojuma izveide</translation>
 <translation id="7005239792648594238">Lai sāktu, atveriet kādu lietotni</translation>
@@ -1814,6 +1820,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8314772463905284467">Funkcija Caps Lock ir ieslēgta</translation>
 <translation id="8315514906653279104">Notiek ieslēgšana…</translation>
 <translation id="8331351032546853669">Tiek gaidīta lejupielāde</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Atlasīts logs “<ph name="WINDOW_TITLE" />”</translation>
 <translation id="8349826889576450703">palaišanas programma</translation>
@@ -1920,6 +1927,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="878215960996152260"><ph name="APP_NAME" />, instalēta lietotne, bloķēta</translation>
 <translation id="8785070478575117577">Savienošana ar ierīci <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Pārvietoties uz priekšu starp apakšējo labo stūri, palaidēju, adreses joslu, grāmatzīmju joslu, atvērto tīmekļa vietni un lejupielādēm</translation>
 <translation id="8792626944327216835">mikrofons</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Mape <ph name="FOLDER_NAME" /></translation>
@@ -2033,6 +2041,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="953431725143473984">Vai izslēgt ierīci?</translation>
 <translation id="954052413789300507">Nepietiek vietas krātuvē, lai lejupielādētu “<ph name="FILENAME" />”. Atbrīvojiet vietu krātuvē.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145"><ph name="USER" /> mainīja</translation>
 <translation id="974545358917229949">Tiek rādīti <ph name="RESULT_COUNT" /> rezultāti vaicājumam “<ph name="QUERY" />”</translation>
 <translation id="981011780479609956">Nav izpildes datuma</translation>
 <translation id="98120814841227350">Doties uz dokumenta beigām</translation>

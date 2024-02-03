@@ -18,11 +18,11 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -66,7 +66,7 @@ public class FeedManagementMediator {
                 new ModelListAdapter.ListItem(
                         FeedManagementItemProperties.DEFAULT_ITEM_TYPE, activityModel));
         int descResource =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
+                FeedFeatures.isFeedFollowUiUpdateEnabled()
                         ? R.string.feed_manage_interests_description_ui_update
                         : R.string.feed_manage_interests_description;
         PropertyModel interestsModel =

@@ -690,7 +690,8 @@ class CookieTreeSharedWorkerNode : public CookieTreeNode {
     if (container) {
       container->shared_worker_helper_->DeleteSharedWorker(
           shared_worker_info_->worker, shared_worker_info_->name,
-          shared_worker_info_->storage_key);
+          shared_worker_info_->storage_key,
+          shared_worker_info_->same_site_cookies);
       container->shared_worker_info_list_.erase(shared_worker_info_);
     }
   }
@@ -1222,7 +1223,7 @@ CookiesTreeModel::~CookiesTreeModel() = default;
 
 // static
 int CookiesTreeModel::GetSendForMessageID(const net::CanonicalCookie& cookie) {
-  if (cookie.IsSecure()) {
+  if (cookie.SecureAttribute()) {
     if (!cookie.IsEffectivelySameSiteNone())
       return IDS_COOKIES_COOKIE_SENDFOR_SECURE_SAME_SITE;
     return IDS_COOKIES_COOKIE_SENDFOR_SECURE;

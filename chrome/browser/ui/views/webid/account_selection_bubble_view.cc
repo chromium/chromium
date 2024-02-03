@@ -51,148 +51,12 @@
 
 namespace {
 
-// The radius used for the corner of the "Continue as" button.
-constexpr int kButtonRadius = 16;
-// The fixed, total width of the bubble.
-constexpr int kBubbleWidth = 375;
-// The desired size of the avatars of user accounts.
-constexpr int kDesiredAvatarSize = 30;
-// The desired size of the icon of the identity provider.
-constexpr int kDesiredIdpIconSize = 20;
-// The desired size of the icon for the "Use another account" button.
-constexpr int kDesiredUseOtherAccountIconSize = 20;
-// The size of the padding used at the top and bottom of the bubble.
-constexpr int kTopBottomPadding = 4;
-// The size of the horizontal padding between the bubble content and the edge of
-// the bubble, as well as the horizontal padding between icons and text.
-constexpr int kLeftRightPadding = 12;
-// The size of the vertical padding for most elements in the bubble.
-constexpr int kVerticalSpacing = 8;
-// The height of the progress bar shown when showing "Verifying...".
-constexpr int kProgressBarHeight = 2;
-// The size of the space between the right boundary of the WebContents and the
-// right boundary of the bubble.
-constexpr int kRightMargin = 40;
-// The size of the space between the top boundary of the WebContents and the top
-// boundary of the bubble.
-constexpr int kTopMargin = 16;
-
-constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
-
 // Error codes.
 constexpr char kInvalidRequest[] = "invalid_request";
 constexpr char kUnauthorizedClient[] = "unauthorized_client";
 constexpr char kAccessDenied[] = "access_denied";
 constexpr char kTemporarilyUnavailable[] = "temporarily_unavailable";
 constexpr char kServerError[] = "server_error";
-
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("fedcm_account_profile_image_fetcher",
-                                        R"(
-        semantics {
-          sender: "Profile image fetcher for FedCM Account chooser on desktop."
-          description:
-            "Retrieves profile images for user's accounts in the FedCM login"
-            "flow."
-          trigger:
-            "Triggered when FedCM API is called and account chooser shows up."
-            "The accounts shown are ones for which the user has previously"
-            "signed into the identity provider."
-          data:
-            "Account picture URL of user account, provided by the identity"
-            "provider."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "You can enable or disable this feature in chrome://settings, under"
-            "'Privacy and security', then 'Site Settings', and finally"
-            "'Third party sign-in'."
-          policy_exception_justification:
-            "Not implemented. This is a feature that sites use for"
-            "Federated Sign-In, for which we do not have an Enterprise policy."
-        })");
-
-// A CanvasImageSource that fills a gray circle with a monogram.
-class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
- public:
-  LetterCircleCroppedImageSkiaSource(const std::u16string& letter, int size)
-      : gfx::CanvasImageSource(gfx::Size(size, size)), letter_(letter) {}
-
-  LetterCircleCroppedImageSkiaSource(
-      const LetterCircleCroppedImageSkiaSource&) = delete;
-  LetterCircleCroppedImageSkiaSource& operator=(
-      const LetterCircleCroppedImageSkiaSource&) = delete;
-  ~LetterCircleCroppedImageSkiaSource() override = default;
-
-  void Draw(gfx::Canvas* canvas) override {
-    monogram::DrawMonogramInCanvas(canvas, size().width(), size().width(),
-                                   letter_, SK_ColorWHITE, SK_ColorGRAY);
-  }
-
- private:
-  const std::u16string letter_;
-};
-
-// A CanvasImageSource that:
-// 1) Applies an optional square center-crop.
-// 2) Resizes the cropped image (while maintaining the image's aspect ratio) to
-//    fit into the target canvas. If no center-crop was applied and the source
-//    image is rectangular, the image is resized so that
-//    `avatar` small edge size == `canvas_edge_size`.
-// 3) Circle center-crops the resized image.
-class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
- public:
-  CircleCroppedImageSkiaSource(gfx::ImageSkia avatar,
-                               std::optional<int> pre_resize_avatar_crop_size,
-                               int canvas_edge_size)
-      : gfx::CanvasImageSource(gfx::Size(canvas_edge_size, canvas_edge_size)) {
-    int scaled_width = canvas_edge_size;
-    int scaled_height = canvas_edge_size;
-    if (pre_resize_avatar_crop_size) {
-      const float avatar_scale =
-          (canvas_edge_size / (float)*pre_resize_avatar_crop_size);
-      scaled_width = floor(avatar.width() * avatar_scale);
-      scaled_height = floor(avatar.height() * avatar_scale);
-    } else {
-      // Resize `avatar` so that it completely fills the canvas.
-      const float height_ratio =
-          ((float)avatar.height() / (float)avatar.width());
-      if (height_ratio >= 1.0f)
-        scaled_height = floor(canvas_edge_size * height_ratio);
-      else
-        scaled_width = floor(canvas_edge_size / height_ratio);
-    }
-    avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
-        avatar, skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(scaled_width, scaled_height));
-  }
-
-  CircleCroppedImageSkiaSource(const CircleCroppedImageSkiaSource&) = delete;
-  CircleCroppedImageSkiaSource& operator=(const CircleCroppedImageSkiaSource&) =
-      delete;
-  ~CircleCroppedImageSkiaSource() override = default;
-
-  // CanvasImageSource override:
-  void Draw(gfx::Canvas* canvas) override {
-    const int canvas_edge_size = size().width();
-
-    // Center the avatar in the canvas.
-    const int x = (canvas_edge_size - avatar_.width()) / 2;
-    const int y = (canvas_edge_size - avatar_.height()) / 2;
-
-    SkPath circular_mask;
-    circular_mask.addCircle(SkIntToScalar(canvas_edge_size / 2),
-                            SkIntToScalar(canvas_edge_size / 2),
-                            SkIntToScalar(canvas_edge_size / 2));
-    canvas->ClipPath(circular_mask, true);
-    canvas->DrawImageInt(avatar_, x, y);
-  }
-
- private:
-  gfx::ImageSkia avatar_;
-};
 
 // views::MdTextButton which:
 // - Uses the passed-in `brand_background_color` based on whether the button
@@ -257,57 +121,6 @@ class ContinueButton : public views::MdTextButton {
 BEGIN_METADATA(ContinueButton)
 END_METADATA
 
-class AccountImageView : public views::ImageView {
-  METADATA_HEADER(AccountImageView, views::ImageView)
-
- public:
-  AccountImageView() = default;
-
-  AccountImageView(const AccountImageView&) = delete;
-  AccountImageView& operator=(const AccountImageView&) = delete;
-  ~AccountImageView() override = default;
-
-  // Fetch image and set it on AccountImageView.
-  void FetchImage(const content::IdentityRequestAccount& account,
-                  image_fetcher::ImageFetcher& image_fetcher) {
-    image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
-                                             kImageFetcherUmaClient);
-
-    // OnImageFetched() is a member of AccountImageView so that the callback
-    // is cancelled in the case that AccountImageView is destroyed prior to
-    // the callback returning.
-    image_fetcher.FetchImage(account.picture,
-                             base::BindOnce(&AccountImageView::OnImageFetched,
-                                            weak_ptr_factory_.GetWeakPtr(),
-                                            base::UTF8ToUTF16(account.name)),
-                             std::move(params));
-  }
-
- private:
-  void OnImageFetched(const std::u16string& account_name,
-                      const gfx::Image& image,
-                      const image_fetcher::RequestMetadata& metadata) {
-    gfx::ImageSkia avatar;
-    if (image.IsEmpty()) {
-      std::u16string letter = account_name;
-      if (letter.length() > 0)
-        letter = base::i18n::ToUpper(account_name.substr(0, 1));
-      avatar = gfx::CanvasImageSource::MakeImageSkia<
-          LetterCircleCroppedImageSkiaSource>(letter, kDesiredAvatarSize);
-    } else {
-      avatar =
-          gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-              image.AsImageSkia(), std::nullopt, kDesiredAvatarSize);
-    }
-    SetImage(ui::ImageModel::FromImageSkia(avatar));
-  }
-
-  base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
-};
-
-BEGIN_METADATA(AccountImageView)
-END_METADATA
-
 // Wrapper around ImageViews for IDP icons. Used to ensure that the fetch
 // callback is not run when the ImageView has been deleted.
 class IdpImageView : public views::ImageView {
@@ -324,8 +137,9 @@ class IdpImageView : public views::ImageView {
   // Fetch image and set it on IdpImageView.
   void FetchImage(const GURL& icon_url,
                   image_fetcher::ImageFetcher& image_fetcher) {
-    image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
-                                             kImageFetcherUmaClient);
+    image_fetcher::ImageFetcherParams params(
+        AccountSelectionViewBase::GetTrafficAnnotation(),
+        kImageFetcherUmaClient);
     image_fetcher.FetchImage(
         icon_url,
         base::BindOnce(&IdpImageView::OnImageFetched,
@@ -383,66 +197,6 @@ int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
   return terms_of_service_url.is_empty()
              ? IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS
              : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT;
-}
-
-int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context) {
-  switch (rp_context) {
-    case blink::mojom::RpContext::kSignIn:
-      return IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_SIGN_IN;
-    case blink::mojom::RpContext::kSignUp:
-      return IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_SIGN_UP;
-    case blink::mojom::RpContext::kUse:
-      return IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_USE;
-    case blink::mojom::RpContext::kContinue:
-      return IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_CONTINUE;
-  }
-}
-
-void SetTitleHeaderProperties(views::Label* label) {
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetAllowCharacterBreak(true);
-  label->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true));
-}
-
-// Returns the title to be shown in the dialog. This does not include the
-// subtitle. For screen reader purposes, GetAccessibleTitle() is used instead.
-std::u16string GetTitle(const std::u16string& top_frame_for_display,
-                        const std::optional<std::u16string>& iframe_for_display,
-                        const std::optional<std::u16string>& idp_title,
-                        blink::mojom::RpContext rp_context) {
-  std::u16string frame_in_title = iframe_for_display.has_value()
-                                      ? iframe_for_display.value()
-                                      : top_frame_for_display;
-  return idp_title.has_value()
-             ? l10n_util::GetStringFUTF16(
-                   SelectSingleIdpTitleResourceId(rp_context), frame_in_title,
-                   idp_title.value())
-             : l10n_util::GetStringFUTF16(
-                   IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
-                   frame_in_title);
-}
-
-std::u16string GetSubtitle(const std::u16string& top_frame_for_display) {
-  return l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE,
-                                    top_frame_for_display);
-}
-
-// Returns the title combined with the subtitle for screen reader purposes.
-std::u16string GetAccessibleTitle(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
-    const std::optional<std::u16string>& idp_title,
-    blink::mojom::RpContext rp_context) {
-  std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
-                                  idp_title, rp_context);
-  return iframe_for_display.has_value()
-             ? title + u" " + GetSubtitle(top_frame_for_display)
-             : title;
 }
 
 std::pair<std::u16string, std::u16string> GetErrorDialogText(
@@ -520,19 +274,21 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox,
-
+    Browser* browser,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    Observer* observer)
+    AccountSelectionViewBase::Observer* observer,
+    views::WidgetObserver* widget_observer)
     : views::BubbleDialogDelegateView(
           anchor_view,
           // Note that BOTTOM_RIGHT means the bubble's bottom and right are
           // anchored to the `anchor_view`, which effectively means the bubble
           // will be on top of the `anchor_view`, aligned on its right side.
           views::BubbleBorder::Arrow::BOTTOM_RIGHT),
-      observer_(observer) {
-  image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
-      std::make_unique<ImageDecoderImpl>(), url_loader_factory);
+      AccountSelectionViewBase(browser,
+                               observer,
+                               widget_observer,
+                               std::move(url_loader_factory)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(kBubbleWidth);
   set_margins(gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0));
@@ -560,7 +316,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetAccessibleTitle(accessible_title_);
 
   if (iframe_for_display.has_value()) {
-    subtitle_ = ::GetSubtitle(top_frame_for_display);
+    subtitle_ = AccountSelectionViewBase::GetSubtitle(top_frame_for_display);
   }
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -571,6 +327,21 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
+
+void AccountSelectionBubbleView::InitDialogWidget() {
+  if (!browser_ || !widget_observer_) {
+    return;
+  }
+
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
+
+  if (!widget) {
+    return;
+  }
+
+  widget->AddObserver(widget_observer_);
+  dialog_widget_ = widget->GetWeakPtr();
+}
 
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
@@ -584,18 +355,22 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
+
+  if (!has_sheet_) {
+    has_sheet_ = true;
+    InitDialogWidget();
+    return;
+  }
+
   SizeToContents();
   PreferredSizeChanged();
 
-  if (has_sheet_) {
-    // Focusing `continue_button_` without screen reader on makes the UI look
-    // awkward, so we only want to do so when screen reader is enabled.
-    if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_)
-      continue_button_->RequestFocus();
-    SendAccessibilityEvent(GetWidget(), std::u16string());
+  // Focusing `continue_button_` without screen reader on makes the UI look
+  // awkward, so we only want to do so when screen reader is enabled.
+  if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_) {
+    continue_button_->RequestFocus();
   }
-
-  has_sheet_ = true;
+  SendAccessibilityEvent(GetWidget(), std::u16string());
 }
 
 void AccountSelectionBubbleView::ShowVerifyingSheet(
@@ -619,12 +394,18 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   row->AddChildView(
       CreateAccountRow(account, idp_display_data, /*should_hover=*/false));
   AddChildView(std::move(row));
+
+  if (!has_sheet_) {
+    has_sheet_ = true;
+    InitDialogWidget();
+    SendAccessibilityEvent(GetWidget(), title);
+    return;
+  }
+
   SizeToContents();
   PreferredSizeChanged();
 
   SendAccessibilityEvent(GetWidget(), title);
-
-  has_sheet_ = true;
 }
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
@@ -642,18 +423,22 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateSingleAccountChooser(idp_display_data, account));
+
+  if (!has_sheet_) {
+    has_sheet_ = true;
+    InitDialogWidget();
+    return;
+  }
+
   SizeToContents();
   PreferredSizeChanged();
 
-  if (has_sheet_) {
-    // Focusing `continue_button_` without screen reader on makes the UI look
-    // awkward, so we only want to do so when screen reader is enabled.
-    if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_)
-      continue_button_->RequestFocus();
-    SendAccessibilityEvent(GetWidget(), std::u16string());
+  // Focusing `continue_button_` without screen reader on makes the UI look
+  // awkward, so we only want to do so when screen reader is enabled.
+  if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_) {
+    continue_button_->RequestFocus();
   }
-
-  has_sheet_ = true;
+  SendAccessibilityEvent(GetWidget(), std::u16string());
 }
 
 void AccountSelectionBubbleView::ShowFailureDialog(
@@ -691,17 +476,22 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
+      base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
+                          base::Unretained(observer_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE),
       this, idp_metadata);
   row->AddChildView(std::move(button));
   AddChildView(std::move(row));
 
+  if (!has_sheet_) {
+    has_sheet_ = true;
+    InitDialogWidget();
+    return;
+  }
+
   SizeToContents();
   PreferredSizeChanged();
-
-  has_sheet_ = true;
 }
 
 void AccountSelectionBubbleView::ShowErrorDialog(
@@ -761,7 +551,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   // Add more details button.
   if (error && !error->url.is_empty()) {
     auto more_details_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&Observer::OnMoreDetails,
+        base::BindRepeating(&AccountSelectionViewBase::Observer::OnMoreDetails,
                             base::Unretained(observer_)),
         l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON));
     button_row->AddChildView(std::move(more_details_button));
@@ -769,16 +559,31 @@ void AccountSelectionBubbleView::ShowErrorDialog(
 
   // Add got it button.
   auto got_it_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&Observer::OnGotIt, base::Unretained(observer_)),
+      base::BindRepeating(&AccountSelectionViewBase::Observer::OnGotIt,
+                          base::Unretained(observer_)),
       l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
   button_row->AddChildView(std::move(got_it_button));
 
   AddChildView(std::move(button_row));
 
+  if (!has_sheet_) {
+    has_sheet_ = true;
+    InitDialogWidget();
+    return;
+  }
+
   SizeToContents();
   PreferredSizeChanged();
+}
 
-  has_sheet_ = true;
+void AccountSelectionBubbleView::CloseDialog() {
+  if (!dialog_widget_ || !widget_observer_) {
+    return;
+  }
+
+  CancelDialog();
+  dialog_widget_->RemoveObserver(widget_observer_);
+  dialog_widget_.reset();
 }
 
 void AccountSelectionBubbleView::AddIdpImage(const GURL& image_url,
@@ -852,8 +657,9 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
   back_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(&Observer::OnBackButtonClicked,
-                              base::Unretained(observer_)),
+          base::BindRepeating(
+              &AccountSelectionViewBase::Observer::OnBackButtonClicked,
+              base::Unretained(observer_)),
           vector_icons::kArrowBackIcon));
   views::InstallCircleHighlightPathGenerator(back_button_.get());
   back_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
@@ -876,12 +682,13 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
       title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY));
-  SetTitleHeaderProperties(title_label_);
+  SetLabelProperties(title_label_);
 
   // Add the close button.
   std::unique_ptr<views::Button> close_button =
       views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
-          &Observer::OnCloseButtonClicked, base::Unretained(observer_)));
+          &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
+          base::Unretained(observer_)));
   close_button->SetVisible(true);
   header->AddChildView(std::move(close_button));
 
@@ -898,7 +705,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
       header_with_subtitle->AddChildView(std::make_unique<views::Label>(
           subtitle_, views::style::CONTEXT_DIALOG_BODY_TEXT,
           views::style::STYLE_SECONDARY));
-  SetTitleHeaderProperties(subtitle_label_);
+  SetLabelProperties(subtitle_label_);
   int leftPadding = 2 * kLeftRightPadding;
   if (has_idp_icon) {
     leftPadding += kDesiredIdpIconSize;
@@ -928,9 +735,10 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // We can pass crefs to OnAccountSelected because the `observer_` owns the
   // data.
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&Observer::OnAccountSelected,
-                          base::Unretained(observer_), std::cref(account),
-                          std::cref(idp_display_data)),
+      base::BindRepeating(
+          &AccountSelectionViewBase::Observer::OnAccountSelected,
+          base::Unretained(observer_), std::cref(account),
+          std::cref(idp_display_data)),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)),
       this, idp_metadata);
@@ -993,8 +801,9 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     disclosure_label->AddStyleRange(
         gfx::Range(offsets[offset_index], offsets[offset_index + 1]),
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &Observer::OnLinkClicked, base::Unretained(observer_),
-            link_data_item.first, link_data_item.second)));
+            &AccountSelectionViewBase::Observer::OnLinkClicked,
+            base::Unretained(observer_), link_data_item.first,
+            link_data_item.second)));
     offset_index += 2;
   }
 
@@ -1074,56 +883,6 @@ AccountSelectionBubbleView::CreateIdpHeaderRowForMultiIdp(
   return header;
 }
 
-std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
-    const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_display_data,
-    bool should_hover) {
-  auto image_view = std::make_unique<AccountImageView>();
-  image_view->SetImageSize({kDesiredAvatarSize, kDesiredAvatarSize});
-  image_view->FetchImage(account, *image_fetcher_);
-  if (should_hover) {
-    // We can pass crefs to OnAccountSelected because the `observer_` owns the
-    // data.
-    auto row = std::make_unique<HoverButton>(
-        base::BindRepeating(&Observer::OnAccountSelected,
-                            base::Unretained(observer_), std::cref(account),
-                            std::cref(idp_display_data)),
-        std::move(image_view), base::UTF8ToUTF16(account.name),
-        base::UTF8ToUTF16(account.email));
-    row->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding)));
-    row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
-                              views::style::STYLE_SECONDARY);
-    return row;
-  }
-  auto row = std::make_unique<views::View>();
-  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::VH(/*vertical=*/kVerticalSpacing, /*horizontal=*/0),
-      kLeftRightPadding));
-  row->AddChildView(std::move(image_view));
-  views::View* const text_column =
-      row->AddChildView(std::make_unique<views::View>());
-  text_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
-  // Add account name.
-  views::Label* const account_name =
-      text_column->AddChildView(std::make_unique<views::Label>(
-          base::UTF8ToUTF16(account.name),
-          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
-  account_name->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-
-  // Add account email.
-  views::Label* const account_email = text_column->AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(account.email),
-                                     views::style::CONTEXT_DIALOG_BODY_TEXT,
-                                     views::style::STYLE_SECONDARY));
-  account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-
-  return row;
-}
-
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
@@ -1134,7 +893,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
   ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
 
   auto button = std::make_unique<HoverButton>(
-      base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
+      base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
+                          base::Unretained(observer_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       std::move(image_view),
       l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT,
@@ -1148,7 +908,8 @@ std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateUseOtherAccountButton(
     const content::IdentityProviderMetadata& idp_metadata) {
   auto button = std::make_unique<HoverButton>(
-      base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
+      base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
+                          base::Unretained(observer_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       ui::ImageModel::FromVectorIcon(kOpenInNewIcon, ui::kColorMenuIcon,
                                      kDesiredUseOtherAccountIconSize),

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/video_capture/lacros/video_buffer_adapters.h"
@@ -36,7 +37,8 @@ void ReceiverMediaToCrosapiAdapter::OnNewBuffer(
 void ReceiverMediaToCrosapiAdapter::DEPRECATED_OnFrameReadyInBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<crosapi::mojom::ReadyFrameInBufferPtr> /*scaled_buffers*/) {
-  OnFrameReadyInBuffer(std::move(buffer));
+  NOTREACHED_NORETURN()
+      << "This method is deprecated, use OnFrameReadyInBuffer instead.";
 }
 
 void ReceiverMediaToCrosapiAdapter::OnFrameReadyInBuffer(

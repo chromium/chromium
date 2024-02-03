@@ -334,13 +334,6 @@ builder.
   Location filters:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
-* [fuchsia-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-arm64-rel""))
-
-  Location filters:
-  * [`//.*fuchsia.*`](https://cs.chromium.org/search?q=+file:.*fuchsia.*)
-  * [`//media/.+`](https://cs.chromium.org/chromium/src/media/)
-  * [`//components/viz/viz.gni`](https://cs.chromium.org/search?q=+file:components/viz/viz.gni)
-
 * [fuchsia-compile-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/fuchsia-compile-x64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-compile-x64-dbg""))
 
   Location filters:
@@ -457,6 +450,11 @@ builder.
   Location filters:
   * [`//media/gpu/chromeos/.+`](https://cs.chromium.org/chromium/src/media/gpu/chromeos/)
   * [`//media/gpu/v4l2/.+`](https://cs.chromium.org/chromium/src/media/gpu/v4l2/)
+
+* [linux-wayland-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-rel""))
+
+  Location filters:
+  * [`//ui/ozone/platform/wayland/.+`](https://cs.chromium.org/chromium/src/ui/ozone/platform/wayland/)
 
 * [linux-x64-castos-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-x64-castos-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-castos-dbg""))
 
@@ -652,7 +650,7 @@ as required builders.
   * Experiment percentage: 10.0
 
 * [mac-siso-rel](https://ci.chromium.org/p/chromium/builders/try/mac-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-siso-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 5.0
 
 * [mac13-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac13-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac13-arm64-rel""))
   * Experiment percentage: 100.0
@@ -663,9 +661,6 @@ as required builders.
   Location filters:
   * [`//sandbox/win/.+`](https://cs.chromium.org/chromium/src/sandbox/win/)
   * [`//sandbox/policy/win/.+`](https://cs.chromium.org/chromium/src/sandbox/policy/win/)
-
-* [win_chromium_compile_siso_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/win_chromium_compile_siso_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win_chromium_compile_siso_dbg_ng""))
-  * Experiment percentage: 10.0
 
 
 ## Mega CQ builders

@@ -49,7 +49,7 @@ class PageTimingMetricsSenderTest : public testing::Test {
   mojom::SoftNavigationMetrics CreateEmptySoftNavigationMetrics() {
     return mojom::SoftNavigationMetrics(
         blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-        base::EmptyString(), mojom::LargestContentfulPaintTiming::New());
+        std::string(), mojom::LargestContentfulPaintTiming::New());
   }
 
  protected:

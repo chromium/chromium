@@ -46,14 +46,14 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
     bool is_key_frame_ = false;
     std::string data_;
     media::VideoCodec codec_ = media::VideoCodec::kVP8;
-    absl::optional<gfx::ColorSpace> color_space_;
+    std::optional<gfx::ColorSpace> color_space_;
     gfx::Size resolution_{0, 0};
   };
 
   FakeEncodedVideoFrame(bool is_key_frame,
                         std::string data,
                         media::VideoCodec codec,
-                        absl::optional<gfx::ColorSpace> color_space,
+                        std::optional<gfx::ColorSpace> color_space,
                         gfx::Size resolution)
       : is_key_frame_(is_key_frame),
         data_(std::move(data)),
@@ -66,7 +66,7 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
   }
   media::VideoCodec Codec() const override { return codec_; }
   bool IsKeyFrame() const override { return is_key_frame_; }
-  absl::optional<gfx::ColorSpace> ColorSpace() const override {
+  std::optional<gfx::ColorSpace> ColorSpace() const override {
     return color_space_;
   }
   gfx::Size Resolution() const override { return resolution_; }
@@ -75,7 +75,7 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
   bool is_key_frame_;
   std::string data_;
   media::VideoCodec codec_;
-  absl::optional<gfx::ColorSpace> color_space_;
+  std::optional<gfx::ColorSpace> color_space_;
   gfx::Size resolution_;
 };
 

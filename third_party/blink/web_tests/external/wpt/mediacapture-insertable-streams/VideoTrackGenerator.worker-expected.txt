@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] Tests that VideoTrackGenerator forwards frames to sink
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] Tests that creating a VideoTrackGenerator works as expected
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] Tests that VideoFrames are destroyed on write
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] Generator writer rejects on mismatched media input
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] Generator writer rejects on non media input
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] A writer rejects when generator's track is stopped
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] A muted writer rejects when generator's track is stopped
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] A writer rejects when generator's track and clones are stopped
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] Tests that VideoTrackGenerator forwards frames only when unmuted
+  promise_test: Unhandled rejection with value: object "ReferenceError: VideoTrackGenerator is not defined"
+Harness: the test ran to completion.
+

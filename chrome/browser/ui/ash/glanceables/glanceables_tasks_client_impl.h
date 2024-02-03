@@ -122,7 +122,13 @@ class TasksClientImpl : public api::TasksClient {
   //                 first page.
   // `page_number` - 1-based page number of this fetch request. Used for UMA
   //                 to track the total number of pages needed to fetch.
-  void FetchTaskListsPage(const std::string& page_token, int page_number);
+  // `accumulated_raw_task_lists` - The list of task lists accumulated from
+  //                                different task lists pages.
+  void FetchTaskListsPage(
+      const std::string& page_token,
+      int page_number,
+      std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
+          accumulated_raw_task_lists);
 
   // Callback for `FetchTaskListsPage()`. Transforms fetched items to
   // ash-friendly types. If `next_page_token()` in the `result` is not empty -
@@ -131,6 +137,8 @@ class TasksClientImpl : public api::TasksClient {
   void OnTaskListsPageFetched(
       const base::Time& request_start_time,
       int page_number,
+      std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
+          accumulated_raw_task_lists,
       base::expected<std::unique_ptr<google_apis::tasks::TaskLists>,
                      google_apis::ApiErrorCode> result);
 
@@ -201,15 +209,20 @@ class TasksClientImpl : public api::TasksClient {
   // To be called when requests to get user's task lists complete.
   // It sets the task lists fetch status to `final_fetch_status`, and runs all
   // pending callbacks in `task_lists_fetch_state_`.
-  void RunGetTaskListsCallbacks(FetchStatus final_fetch_status);
+  void RunGetTaskListsCallbacks(
+      FetchStatus final_fetch_status,
+      std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
+          accumulated_raw_task_lists);
 
   // To be called when requests to get tasks in the task list identified by
   // `task_list_id` complete. It sets fetch status for the task list fetch to
   // `final_fetch_status`, and runs all pending callbacks for the task list
   // (kept in `tasks_fetch_state_` map). The callbacks are run with `tasks`.
-  void RunGetTasksCallbacks(const std::string& task_list_id,
-                            FetchStatus final_fetch_status,
-                            const ui::ListModel<api::Task>* tasks);
+  void RunGetTasksCallbacks(
+      const std::string& task_list_id,
+      FetchStatus final_fetch_status,
+      std::vector<std::unique_ptr<google_apis::tasks::Task>>
+          accumulated_raw_tasks);
 
   // A map of `task_list_id` to a set of `task_id` that are pending to be
   // completed.

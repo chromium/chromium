@@ -80,7 +80,7 @@ TEST_F(PaletteInterpolationTest, RetrievePaletteIndexFromColorFont) {
   PaletteInterpolation palette_interpolation(color_palette_typeface_);
   scoped_refptr<FontPalette> palette =
       FontPalette::Create(FontPalette::kDarkPalette);
-  absl::optional<uint16_t> index =
+  std::optional<uint16_t> index =
       palette_interpolation.RetrievePaletteIndex(palette.get());
   EXPECT_TRUE(index.has_value());
   EXPECT_EQ(*index, 3);
@@ -90,7 +90,7 @@ TEST_F(PaletteInterpolationTest, RetrievePaletteIndexFromNonColorFont) {
   PaletteInterpolation palette_interpolation(non_color_ahem_typeface_);
   scoped_refptr<FontPalette> palette =
       FontPalette::Create(FontPalette::kLightPalette);
-  absl::optional<uint16_t> index =
+  std::optional<uint16_t> index =
       palette_interpolation.RetrievePaletteIndex(palette.get());
   EXPECT_FALSE(index.has_value());
 }
@@ -126,7 +126,7 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesAtHalfTime) {
 
   scoped_refptr<FontPalette> palette =
       FontPalette::Mix(palette_start, palette_end, 50, 50, 0.5, 1.0,
-                       Color::ColorSpace::kOklab, absl::nullopt);
+                       Color::ColorSpace::kOklab, std::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // We expect each color to be half-way between palette_start and palette_end
@@ -177,7 +177,7 @@ TEST_F(PaletteInterpolationTest, MixCustomAndNonExistingPalettes) {
 
   scoped_refptr<FontPalette> palette =
       FontPalette::Mix(palette_start, palette_end, 50, 50, 0.5, 1.0,
-                       Color::ColorSpace::kOklab, absl::nullopt);
+                       Color::ColorSpace::kOklab, std::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // We expect each color to be half-way between palette_start and normal
@@ -211,7 +211,7 @@ TEST_F(PaletteInterpolationTest, MixNonExistingPalettes) {
 
   scoped_refptr<FontPalette> palette =
       FontPalette::Mix(palette_start, palette_end, 50, 50, 0.5, 1.0,
-                       Color::ColorSpace::kOklab, absl::nullopt);
+                       Color::ColorSpace::kOklab, std::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // Since both of the endpoints are equal and have color records from normal
@@ -260,7 +260,7 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesInOklab) {
 
   scoped_refptr<FontPalette> palette =
       FontPalette::Mix(palette_start, palette_end, 70, 30, 0.3, 1.0,
-                       Color::ColorSpace::kOklab, absl::nullopt);
+                       Color::ColorSpace::kOklab, std::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // We expect each color to be equal palette_start * 0.7 + palette_end * 0.3
@@ -309,7 +309,7 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesInSRGB) {
 
   scoped_refptr<FontPalette> palette =
       FontPalette::Mix(palette_start, palette_end, 70, 30, 0.3, 1.0,
-                       Color::ColorSpace::kSRGB, absl::nullopt);
+                       Color::ColorSpace::kSRGB, std::nullopt);
   Vector<FontPalette::FontPaletteOverride> actual_color_records =
       palette_interpolation.ComputeInterpolableFontPalette(palette.get());
   // We expect each color to be equal palette_start * 0.7 + palette_end * 0.3

@@ -41,8 +41,6 @@ namespace password_manager {
 
 struct PasswordForm;
 
-using IsAccountStore = base::StrongAlias<class IsAccountStoreTag, bool>;
-
 using metrics_util::GaiaPasswordHashChange;
 
 class PasswordStoreConsumer;
@@ -131,19 +129,6 @@ class PasswordStore : public PasswordStoreInterface {
   ~PasswordStore() override;
 
  private:
-  // Status of PasswordStore::Init().
-  enum class InitStatus {
-    // Initialization status is still not determined (init hasn't started or
-    // finished yet).
-    kUnknown,
-    // Initialization is successfully finished.
-    kSuccess,
-    // There was an error during initialization and PasswordStore is not ready
-    // to save or get passwords.
-    // Removing passwords may still work.
-    kFailure,
-  };
-
   // Represents different triggers that may require requesting all logins from
   // the password store. Entries should not be renumbered and numeric values
   // should never be reused. Always keep this enum in sync with the
@@ -160,8 +145,7 @@ class PasswordStore : public PasswordStoreInterface {
   };
 
   // Called on the main thread after initialization is completed.
-  // |success| is true if initialization was successful. Sets the
-  // |init_status_|.
+  // |success| is true if initialization was successful.
   void OnInitCompleted(bool success);
 
   // Notifies observers that password store data may have been changed. If
@@ -204,8 +188,6 @@ class PasswordStore : public PasswordStoreInterface {
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
   raw_ptr<PrefService> prefs_ = nullptr;
-
-  InitStatus init_status_ = InitStatus::kUnknown;
 
   base::Time construction_time_;
 };

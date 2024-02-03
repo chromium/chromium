@@ -42,17 +42,18 @@ copy("copy_src") {
     "image_loader.js",
     "image_loader_client.js",
     "image_loader_util.js",
-    "image_orientation.js",
+    "image_orientation.ts",
     "image_request_task.js",
     "load_image_request.js",
     "piex_loader.js",
-    "scheduler.js",
+    "scheduler.ts",
   ]
   outputs = [ "$preprocess_folder/image_loader/{{source_file_part}}" ]
 }
 
 dts_files = [
   "image_loader_private.d.ts",
+  "//tools/typescript/definitions/metrics_private.d.ts",
   "//tools/typescript/definitions/runtime.d.ts",
 ]
 

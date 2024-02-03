@@ -19,7 +19,16 @@ namespace app_list {
 
 TestSearchProvider::TestSearchProvider(ash::AppListSearchResultType result_type,
                                        base::TimeDelta delay)
-    : result_type_(result_type), delay_(delay) {}
+    : SearchProvider(SearchCategory::kTest),
+      result_type_(result_type),
+      delay_(delay) {}
+
+TestSearchProvider::TestSearchProvider(ash::AppListSearchResultType result_type,
+                                       base::TimeDelta delay,
+                                       SearchCategory search_category)
+    : SearchProvider(search_category),
+      result_type_(result_type),
+      delay_(delay) {}
 
 TestSearchProvider::~TestSearchProvider() = default;
 
@@ -57,11 +66,6 @@ void TestSearchProvider::StartZeroState() {
 
 void TestSearchProvider::SetResults() {
   SwapResults(&results_);
-}
-
-void TestSearchProvider::SetControlCategoryForTest(
-    ControlCategory control_category) {
-  set_control_category(control_category);
 }
 
 }  // namespace app_list

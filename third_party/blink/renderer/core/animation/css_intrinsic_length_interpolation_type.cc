@@ -205,7 +205,7 @@ void CSSIntrinsicLengthInterpolationType::ApplyStandardPropertyValue(
   if (non_interpolable->HasNone()) {
     SetIntrinsicDimension(
         state.StyleBuilder(),
-        StyleIntrinsicLength(non_interpolable->HasAuto(), absl::nullopt));
+        StyleIntrinsicLength(non_interpolable->HasAuto(), std::nullopt));
   } else {
     SetIntrinsicDimension(
         state.StyleBuilder(),

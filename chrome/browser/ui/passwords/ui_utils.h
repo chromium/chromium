@@ -114,6 +114,10 @@ void NavigateToManagePasswordsPage(
     Browser* browser,
     password_manager::ManagePasswordsReferrer referrer);
 
+// Navigates to the Password Manager settings page and focuses the account store
+// toggle.
+void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser);
+
 // Navigates to Passwords Checkup page.
 void NavigateToPasswordCheckupPage(Profile* profile);
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -24,9 +24,11 @@
 #include "base/android/callback_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/google/core/common/google_util.h"
@@ -145,6 +147,7 @@ SigninManagerAndroid::SigninManagerAndroid(
 
   java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      ProfileAndroid::FromProfile(profile_)->GetJavaObject(),
       identity_manager_->LegacyGetAccountTrackerServiceJavaObject(),
       identity_manager_->GetJavaObject(),
       identity_manager_->GetIdentityMutatorJavaObject(),
@@ -326,4 +329,15 @@ JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
   std::string email = base::android::ConvertJavaStringToUTF8(env, j_email);
   std::string domain = gaia::ExtractDomainName(email);
   return base::android::ConvertUTF8ToJavaString(env, domain);
+}
+
+void SigninManagerAndroid::SetUserAcceptedAccountManagement(
+    JNIEnv* env,
+    jboolean acceptedAccountManagement) {
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      profile_, acceptedAccountManagement);
+}
+
+bool SigninManagerAndroid::GetUserAcceptedAccountManagement(JNIEnv* env) {
+  return chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
 }

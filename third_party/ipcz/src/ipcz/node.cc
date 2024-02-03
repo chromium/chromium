@@ -169,9 +169,10 @@ bool Node::AddConnection(const NodeName& remote_node_name,
       // handling an incoming NodeConnector message, we can err on the side of
       // caution (i.e. less re-entrancy in event handlers) by treating every
       // case like an API call.
+      const Ref<NodeLink> link = it->second.link;
       mutex_.Unlock();
       const OperationContext context{OperationContext::kAPICall};
-      DropConnection(context, *it->second.link);
+      DropConnection(context, *link);
       mutex_.Lock();
     }
 

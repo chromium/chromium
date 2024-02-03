@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">অভ্যন্তরীণ ত্রুটি</translation>
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">গুণ করুন</translation>
 <translation id="1145018782460575098">এক্সটার্নাল ডিভাইসের জন্য ফার্মওয়্যার আপডেট করে এমন উইন্ডো খোলা আছে। <ph name="NUM_UPDATES" />টি আপডেট উপলভ্য।</translation>
 <translation id="1145516343487477149">সহায়তা নিবন্ধ এবং Chromebook সংক্রান্ত সাধারণ প্রশ্নের উত্তর খুঁজুন</translation>
 <translation id="1154390310959620237">আপনি শুধুমাত্র ৫টি শর্টকাট কাস্টমাইজ করতে পারবেন। নতুন একটি শর্টকাট যোগ করতে পুরনো একটি মুছুন।</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">স্ক্যান করতে ক্ষেত্রটি ফিট করান</translation>
 <translation id="1367951781824006909">একটি ফাইল বেছে নিন</translation>
+<translation id="1371650399987522809">Google AI দ্বারা পরিচালিত ওয়ালপেপারের জন্য মতামত দিন</translation>
 <translation id="1387854245479784695">এটি সব কোরকে একসাথে দেখায়</translation>
 <translation id="1394661041439318933">ডিভাইসের কেসে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="1397738625398125236">গেটওয়ে পিং করা যেতে পারে</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">টাচপ্যাড</translation>
 <translation id="1561927818299383735">ব্যাকলাইটের উজ্জ্বলতা সম্পন্ন কালার</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> আপডেট করা যাচ্ছে না</translation>
+<translation id="1566493343215789965">ভাগ করুন</translation>
 <translation id="1567064801249837505">অ্যালবাম</translation>
 <translation id="1572585716423026576">ওয়ালপেপার হিসেবে সেট করুন</translation>
 <translation id="1578784163189013834">স্ক্রিন সেভারের ব্যাকগ্রাউন্ড বেছে নিন</translation>
 <translation id="160633243685262989">ছবির প্রিভিউ দেখুন</translation>
 <translation id="1611649489706141841">ফরওয়ার্ড</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
+<translation id="1615576200479539465">ছবি তৈরি করা হচ্ছে...</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
 <translation id="1626590945318984973">শর্টকাট উপলভ্য নেই। ফাংশন ও <ph name="META_KEY" /> 'কী' ব্যবহার না করেই একটি নতুন শর্টকাটে প্রেস করুন।</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ শেষ হয়েছে।</translation>
 <translation id="2880569433548999039">ক্লাউড ফ্লো স্ক্রিন সেভার</translation>
 <translation id="2926057806159140518">আপনার ব্যবহারকারীর নাম এবং পাসওয়ার্ড লিখুন বা আপনার QR কোড স্ক্যান করুন</translation>
+<translation id="2938573842839598578">একটি আনুমানিক ফলাফলের জন্য,<ph name="CATEGORY_TEXT" />-এর মান <ph name="CONVERSION_RATE" />-এর সাহায্যে <ph name="OPERATOR_TEXT" /> গুণ করুন</translation>
 <translation id="2940811910881150316">ডিভাইসটি পরীক্ষা করা সম্ভব হচ্ছে না। পরীক্ষার জন্য ডিভাইসের লিডটি আবার খুলুন।</translation>
 <translation id="2941112035454246133">নিম্ন</translation>
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS-এর আপডেট</translation>
 <translation id="3527036260304016759">প্রিন্ট করা যায়নি - অজানা সমস্যা</translation>
 <translation id="3532980081107202182">প্রায় <ph name="MIN_REMAINING" /> মিনিট সময় লাগবে</translation>
+<translation id="3547264467365135390">ফর্মুলা</translation>
 <translation id="3557205324756024651">স্থানীয় আইডেন্টিটি (ঐচ্ছিক)</translation>
 <translation id="3565064564551103223">অনুমোদিত IP অ্যাড্রেসগুলি</translation>
 <translation id="3569407787324516067">স্ক্রিন সেভার</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7180865173735832675">কাস্টমাইজ করুন</translation>
 <translation id="7184043045742675738">আপনার বোতামটি কাস্টমাইজ করতে, যেকোনও 'কী'-এর উপরে ক্লিক করুন। মাউস বা তীরচিহ্নযুক্ত 'কী'-এর সাহায্যে 'কী' অন্য জায়গায় সরান।</translation>
+<translation id="7206979415662233817">পরিষেবার শর্তাবলী</translation>
 <translation id="7212547870105584639">নেটওয়ার্কের APN সেটিংস ম্যানেজ করুন। APN মোবাইল নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">এক্সটার্নাল ডিভাইসের জন্য ফার্মওয়্যার আপডেট</translation>
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">কীবোর্ডের কালার</translation>
 <translation id="7317831949569936035">স্কুলে নথিভুক্ত করা</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">আপনার বয়স কমপক্ষে ১৮ বছর হতে হবে এবং আপনাকে সম্মত হতে হবে যে, এআই (AI) ওয়ালপেপারের ব্যবহার <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google পরিষেবার শর্তাবলী<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> এবং <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />জেনারেটিভ AI অতিরিক্ত শর্তাবলী<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> অনুযায়ী হবে।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          আপনি ব্যক্তিগত ও অ-বাণিজ্যিক ব্যবহারের জন্য AI-এর সাহায্যে শুধুমাত্র ওয়ালপেপার তৈরি করতে পারবেন। ওয়ালপেপার সম্পর্কে সাহায্য পেলে, টেক্সট Google AI সার্ভারে পাঠানো হয় যাতে ওয়ালপেপার সাজেশন, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-এর সাজেশন গোপনীয়তা নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুযায়ী হয়। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-এ ফলাফল দেখতে Search ও Space 'কী' প্রেস করুন।</translation>
 <translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" />-এর মধ্যে <ph name="LIST_POSITION" /> নম্বর সার্চ ফলাফল: <ph name="SEARCH_RESULT_TEXT" />। শর্টকাটে যেতে Enter প্রেস করুন।</translation>

@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_VIEW_TRANSITION_STATE_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_VIEW_TRANSITION_STATE_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/mojom/frame/view_transition_state.mojom-shared.h"
@@ -47,7 +48,7 @@ struct BLINK_COMMON_EXPORT
     return r.paint_order;
   }
 
-  static const absl::optional<gfx::RectF>& captured_rect_in_layout_space(
+  static const std::optional<gfx::RectF>& captured_rect_in_layout_space(
       const blink::ViewTransitionElement& r) {
     return r.captured_rect_in_layout_space;
   }

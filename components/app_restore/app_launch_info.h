@@ -10,11 +10,10 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/tab_groups/tab_group_info.h"
 #include "ui/base/window_open_disposition.h"
-#include "url/gurl.h"
 
 namespace app_restore {
 
@@ -73,18 +72,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   apps::IntentPtr intent = nullptr;
 
   // Additional info for browsers.
-  std::vector<GURL> urls;
-  std::optional<int32_t> active_tab_index;
-  std::optional<int32_t> first_non_pinned_tab_index;
-  std::optional<bool> app_type_browser;
-  std::optional<std::string> app_name;
-  // Represents tab groups associated with this browser instance if there are
-  // any. This is only used in Desks Storage, tab groups in full restore are
-  // persisted by sessions. This field is not converted to base::Value in base
-  // value conversions.
-  std::vector<tab_groups::TabGroupInfo> tab_group_infos;
-  // Lacros only, the ID of the lacros profile that this browser uses.
-  std::optional<uint64_t> lacros_profile_id;
+  BrowserExtraInfo browser_extra_info;
 };
 
 }  // namespace app_restore

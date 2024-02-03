@@ -329,7 +329,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->fetch_integrity = src.GetFetchIntegrity().Utf8();
   if (src.GetWebBundleTokenParams().has_value()) {
     dest->web_bundle_token_params =
-        absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
+        std::make_optional(network::ResourceRequest::WebBundleTokenParams(
             GURL(src.GetWebBundleTokenParams()->bundle_url),
             src.GetWebBundleTokenParams()->token,
             ToCrossVariantMojoType(
@@ -362,7 +362,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->required_ip_address_space = src.GetTargetAddressSpace();
 
   if (base::UnguessableToken window_id = src.GetFetchWindowId())
-    dest->fetch_window_id = absl::make_optional(window_id);
+    dest->fetch_window_id = std::make_optional(window_id);
 
   if (!src.GetDevToolsId().IsNull()) {
     dest->devtools_request_id = src.GetDevToolsId().Ascii();

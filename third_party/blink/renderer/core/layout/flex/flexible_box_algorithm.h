@@ -81,7 +81,7 @@ class FlexItem {
            LayoutUnit flex_base_content_size,
            MinMaxSizes min_max_main_sizes,
            // Ignored for legacy, required for NG:
-           absl::optional<MinMaxSizes> min_max_cross_sizes,
+           std::optional<MinMaxSizes> min_max_cross_sizes,
            LayoutUnit main_axis_border_padding,
            LayoutUnit cross_axis_border_padding,
            PhysicalBoxStrut physical_margins,
@@ -154,7 +154,7 @@ class FlexItem {
   Member<const ComputedStyle> style_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;
-  const absl::optional<MinMaxSizes> min_max_cross_sizes_;
+  const std::optional<MinMaxSizes> min_max_cross_sizes_;
   const LayoutUnit hypothetical_main_content_size_;
   const LayoutUnit main_axis_border_padding_;
   const LayoutUnit cross_axis_border_padding_;
@@ -176,7 +176,7 @@ class FlexItem {
   // contrast, are just convenient storage.
   BlockNode ng_input_node_;
   Member<const LayoutResult> layout_result_;
-  absl::optional<LayoutUnit> max_content_contribution_;
+  std::optional<LayoutUnit> max_content_contribution_;
 };
 
 class FlexItemVectorView {

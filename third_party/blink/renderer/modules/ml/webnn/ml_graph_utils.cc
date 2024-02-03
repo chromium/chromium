@@ -83,7 +83,7 @@ HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
   return toposorted_operators;
 }
 
-absl::optional<ArrayBufferViewInfo> TransferArrayBufferView(
+std::optional<ArrayBufferViewInfo> TransferArrayBufferView(
     v8::Isolate* isolate,
     NotShared<DOMArrayBufferView> source_view,
     ExceptionState& exception_state) {
@@ -99,7 +99,7 @@ absl::optional<ArrayBufferViewInfo> TransferArrayBufferView(
   if (!source_view->buffer()->IsDetachable(isolate)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       "The ArrayBuffer is not detachable.");
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Get the offset and length of the source view before transferring it.
@@ -113,7 +113,7 @@ absl::optional<ArrayBufferViewInfo> TransferArrayBufferView(
   // detach key of the ArrayBuffer is not `undefined`.
   if (!source_view->buffer()->Transfer(isolate, view_info.contents,
                                        exception_state)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return view_info;

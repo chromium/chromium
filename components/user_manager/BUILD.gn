@@ -8,10 +8,6 @@ component("user_manager") {
   sources = [
     "multi_user/multi_user_sign_in_policy.cc",
     "multi_user/multi_user_sign_in_policy.h",
-    "user_info.cc",
-    "user_info.h",
-    "user_info_impl.cc",
-    "user_info_impl.h",
     "user_manager_export.h",
     "user_names.cc",
     "user_names.h",

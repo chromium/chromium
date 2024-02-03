@@ -240,7 +240,7 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
               return;
             }
 
-            WriteHTML(data.markup, data.source_url, params.content_type);
+            WriteHTML(data.markup, data.source_url);
           },
           [&](const RtfData& data) {
             if (data.data.empty()) {
@@ -309,9 +309,8 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
 
 Clipboard::ObjectMapParams::ObjectMapParams() = default;
 
-Clipboard::ObjectMapParams::ObjectMapParams(Data data,
-                                            ClipboardContentType content_type)
-    : data(std::move(data)), content_type(content_type) {}
+Clipboard::ObjectMapParams::ObjectMapParams(Data data)
+    : data(std::move(data)) {}
 
 Clipboard::ObjectMapParams::ObjectMapParams(const ObjectMapParams& other) =
     default;

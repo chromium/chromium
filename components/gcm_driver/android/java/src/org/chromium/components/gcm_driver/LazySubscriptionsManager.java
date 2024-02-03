@@ -35,9 +35,6 @@ public class LazySubscriptionsManager {
             "subscriptions_with_persisted_messages";
     private static final String PREF_PACKAGE =
             "org.chromium.components.gcm_driver.lazy_subscriptions";
-    // TODO(crbug.com/1404927): clean up sync sender ID.
-    private static final String INVALIDATION_APP_ID = "com.google.chrome.fcm.invalidations";
-    private static final String INVALIDATION_SENDER_ID = "8181035976";
 
     // The max number of most recent messages queued per lazy subscription until
     // Chrome is foregrounded.
@@ -137,11 +134,7 @@ public class LazySubscriptionsManager {
      * @return The unique identifier for the subscription.
      */
     public static String buildSubscriptionUniqueId(final String appId, final String senderId) {
-        if (appId.equals(INVALIDATION_APP_ID)) {
-            return appId + INVALIDATION_SENDER_ID;
-        } else {
-            return appId + senderId;
-        }
+        return appId + senderId;
     }
 
     /** Stores the information about lazy subscriptions in SharedPreferences. */

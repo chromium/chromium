@@ -53,7 +53,7 @@ XRReferenceSpace::~XRReferenceSpace() = default;
 
 XRPose* XRReferenceSpace::getPose(const XRSpace* other_space) const {
   if (type_ == ReferenceSpaceType::kViewer) {
-    absl::optional<gfx::Transform> other_offset_from_viewer =
+    std::optional<gfx::Transform> other_offset_from_viewer =
         other_space->OffsetFromViewer();
     if (!other_offset_from_viewer) {
       return nullptr;
@@ -86,7 +86,7 @@ void XRReferenceSpace::SetMojoFromFloor() const {
   stage_parameters_id_ = session()->StageParametersId();
 }
 
-absl::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
+std::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
   DVLOG(3) << __func__ << ": type_=" << type_;
 
   switch (type_) {
@@ -101,8 +101,8 @@ absl::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
         // it's not tracked; but for any other type if it's not locatable, we
         // return nullopt.
         return type_ == ReferenceSpaceType::kViewer
-                   ? absl::optional<gfx::Transform>(gfx::Transform{})
-                   : absl::nullopt;
+                   ? std::optional<gfx::Transform>(gfx::Transform{})
+                   : std::nullopt;
       }
 
       return *mojo_from_native;
@@ -121,7 +121,7 @@ absl::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
       // transform based off of local space:
       auto mojo_from_local = session()->GetMojoFrom(ReferenceSpaceType::kLocal);
       if (!mojo_from_local) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // local_from_floor-local transform corresponding to the default height.
@@ -132,13 +132,13 @@ absl::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
     }
     case ReferenceSpaceType::kBoundedFloor: {
       NOTREACHED() << "kBoundedFloor should be handled by subclass";
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 }
 
-absl::optional<gfx::Transform> XRReferenceSpace::NativeFromViewer(
-    const absl::optional<gfx::Transform>& mojo_from_viewer) const {
+std::optional<gfx::Transform> XRReferenceSpace::NativeFromViewer(
+    const std::optional<gfx::Transform>& mojo_from_viewer) const {
   if (type_ == ReferenceSpaceType::kViewer) {
     // Special case for viewer space, always return an identity matrix
     // explicitly. In theory the default behavior of multiplying NativeFromMojo
@@ -148,12 +148,12 @@ absl::optional<gfx::Transform> XRReferenceSpace::NativeFromViewer(
   }
 
   if (!mojo_from_viewer)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Return native_from_viewer = native_from_mojo * mojo_from_viewer
   auto native_from_viewer = NativeFromMojo();
   if (!native_from_viewer)
-    return absl::nullopt;
+    return std::nullopt;
   native_from_viewer->PreConcat(*mojo_from_viewer);
   return native_from_viewer;
 }

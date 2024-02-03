@@ -114,11 +114,11 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   void setSizeAdjust(ExecutionContext*, const String&, ExceptionState&);
 
   String status() const;
-  ScriptPromise loaded(ScriptState* script_state) {
+  ScriptPromiseTyped<FontFace> loaded(ScriptState* script_state) {
     return FontStatusPromise(script_state);
   }
 
-  ScriptPromise load(ScriptState*);
+  ScriptPromiseTyped<FontFace> load(ScriptState*);
 
   LoadStatusType LoadStatus() const { return status_; }
   void SetLoadStatus(LoadStatusType);
@@ -185,7 +185,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
   void SetFamilyValue(const CSSFontFamilyValue&);
-  ScriptPromise FontStatusPromise(ScriptState*);
+  ScriptPromiseTyped<FontFace> FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
   using LoadedProperty = ScriptPromiseProperty<FontFace, DOMException>;

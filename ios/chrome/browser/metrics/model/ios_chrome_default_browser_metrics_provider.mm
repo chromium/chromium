@@ -23,6 +23,26 @@ void ProvideUmaHistograms() {
   base::UmaHistogramBoolean(
       "IOS.IsEligibleDefaultBrowserPromoUser",
       IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
+
+  base::UmaHistogramBoolean("IOS.IsDefaultBrowser1",
+                            IsChromeLikelyDefaultBrowserXDays(1));
+  base::UmaHistogramBoolean("IOS.IsDefaultBrowser3",
+                            IsChromeLikelyDefaultBrowserXDays(3));
+  base::UmaHistogramBoolean("IOS.IsDefaultBrowser14",
+                            IsChromeLikelyDefaultBrowserXDays(14));
+  base::UmaHistogramBoolean("IOS.IsDefaultBrowser28",
+                            IsChromeLikelyDefaultBrowserXDays(28));
+  base::UmaHistogramBoolean("IOS.IsDefaultBrowser35",
+                            IsChromeLikelyDefaultBrowserXDays(35));
+  base::UmaHistogramBoolean("IOS.IsDefaultBrowser42",
+                            IsChromeLikelyDefaultBrowserXDays(42));
+
+  base::UmaHistogramBoolean("IOS.DefaultBrowserAbandonment21To7",
+                            IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  base::UmaHistogramBoolean("IOS.DefaultBrowserAbandonment28To14",
+                            IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  base::UmaHistogramBoolean("IOS.DefaultBrowserAbandonment35To14",
+                            IsChromePotentiallyNoLongerDefaultBrowser35To14());
 }
 
 }  // namespace

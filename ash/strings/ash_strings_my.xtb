@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">လင့်ခ်ကို တဘ်အသစ်တွင် ဖွင့်ပြီး လက်ရှိတဘ်တွင် နေရန်</translation>
 <translation id="353086728817903341">စက် <ph name="NUM_DEVICES" /> ခုသို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="3533126039236445965">စင်ရှိအက်ပ်များ</translation>
+<translation id="3537350467437346467">သင်က ကြည့်ထားသည်</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ဟော့စပေါ့</translation>
 <translation id="3540893133818942399">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံနှင့် မီဒီယာများ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
 <translation id="3542066395059568317">ထားခဲ့သည့်နေရာမှ ဆက်လုပ်နိုင်ရန် အကြံပြုချက်များ မြင်ရပါမည်။ ညာဘက်ခလုတ်ကိုနှိပ်ပြီး အကြံပြုချက်များ ဖျက်နိုင်သည်။</translation>
+<translation id="3547318469722231257">သင်က မွမ်းမံထားသည်</translation>
 <translation id="3552189655002856821">Wi-Fi ပိတ်ထားသည်</translation>
 <translation id="3554215588514239132">‘ဆော့ဖ်ဝဲရေးသူတူးလ်’ အကန့် ပြပါ (သို့) ဖျောက်ပါ</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ကို ပင်ထိုးထားသည်</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">အစ</translation>
 <translation id="3859364108019690">အက်ပ်များ တိုက်ရိုက်မလွှင့်နိုင်ပါ</translation>
 <translation id="3861651314799684201">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
+<translation id="3882323608730650973">မွမ်းမံထားသည်</translation>
 <translation id="3886872229787704059">ယနေ့ ဖွင့်ထားသည်</translation>
 <translation id="3891340733213178823">ထွက်ခွာရန် Ctrl+Shift+Q ကို နှစ်ကြိမ် နှိပ်ပါ။</translation>
 <translation id="3893630138897523026">ChromeVox (နှုတ်ပြော အကြံပြုချက်)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">WiFi သုံးရန် ဟော့စပေါ့ ပိတ်လိုက်သည်။ ဟော့စပေါ့သုံးရန် WiFi ပိတ်ပါ။</translation>
 <translation id="4585337515783392668">အမည်မသိ လက်ခံစက်သို့ ကာ့စ်လုပ်ခြင်း ရပ်တန့်ရန်</translation>
 <translation id="4596144739579517758">အမှောင်နောက်ခံ ပိတ်ထားသည်</translation>
+<translation id="4596442969149038771"><ph name="USER" /> က မျှဝေထားသည်</translation>
 <translation id="4611292653554630842">အကောင့်ထဲဝင်ရန်</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ချိတ်ဆက်ပြီးပြီ</translation>
 <translation id="4623167406982293031">အကောင့်ကို အတည်ပြုရန်</translation>
@@ -1337,6 +1341,7 @@
 <translation id="6298183524022479114">ဤစက်ကို အက်ပ်တွင် စိတ်ကြိုက်လုပ်ပါ</translation>
 <translation id="6309219492973062892">စင်ပေါ်ရှိ သင်္ကေတ ၁-၈ ကို နှိပ်ရန် (သို့) တို့ရန်</translation>
 <translation id="6315170314923504164">အသံ</translation>
+<translation id="6319058840130157106">ညာဘက်အောက်ခြေထောင့်၊ Launcher၊ လိပ်စာဘား၊ လိပ်စာစာရင်းဘား၊ ဖွင့်ထားသည့်ဝဘ်ဆိုက်နှင့် ဒေါင်းလုဒ်များကြား နောက်သို့ရွှေ့ရန်</translation>
 <translation id="6324916366299863871">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="6330012934079202188">မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြနေသည်၊ လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> သည် <ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည့် စက်ရှင်ဖြစ်သည်</translation>
@@ -1500,6 +1505,7 @@
 <translation id="6981291220124935078">သုံးခွင့်ဖွင့်ရန်</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="698231206551913481">ဤအသုံးပြုသူကို ဖယ်ရှားလိုက်သည်နှင့် ၎င်းနှင့်ဆက်စပ်နေသော ဖိုင်များနှင့် စက်တွင်းဒေတာများအားလုံး အပြီးတိုင် ပျက်သွားလိမ့်မည်။</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> က <ph name="SPECIFIED_RESOLUTION" /> ကို မပံ့ပိုးပါ (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)။ ပုံရိပ်ပြတ်သားကိန်းကို <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) သို့ ပြောင်းထားသည်။ အပြောင်းအလဲများသိမ်းရန် ‘အတည်ပြုရန်’ ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားပါမည်။</translation>
 <translation id="6989752354829085073">သင့် Chromebook သုံးနည်းလေ့လာရန် လမ်းညွှန်အကျဉ်းချုပ်ကို ကြည့်ပါ။ အဆင့် ၆ ဆင့်ဖြင့် စတင်ပြီးလုပ်ဆောင်နိုင်သည်။</translation>
 <translation id="7004910047186208204">မိုဘိုင်းဒေတာသို့ ချိတ်ဆက်ပါ</translation>
 <translation id="7005239792648594238">စတင်ရန် အက်ပ်ကိုဖွင့်ပါ</translation>
@@ -1814,6 +1820,7 @@
 <translation id="8314772463905284467">‘စာလုံးကြီးလော့ခ်’ ဖွင့်ထားသည်</translation>
 <translation id="8315514906653279104">ဖွင့်နေသည်...</translation>
 <translation id="8331351032546853669">ဒေါင်းလုဒ် ဆိုင်းငံ့ထားသည်</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ဝင်းဒိုးကို ရွေးထားသည်</translation>
 <translation id="8349826889576450703">Launcher</translation>
@@ -1920,6 +1927,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />၊ ထည့်သွင်းထားသည့် အက်ပ်၊ ပိတ်ထားသည်</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> သို့ ချိတ်ဆက်ရန်</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />။ <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">ညာဘက်အောက်ခြေထောင့်၊ Launcher၊ လိပ်စာဘား၊ လိပ်စာစာရင်းဘား၊ ဖွင့်ထားသည့်ဝဘ်ဆိုက်နှင့် ဒေါင်းလုဒ်များကြား ရှေ့သို့ရွှေ့ရန်</translation>
 <translation id="8792626944327216835">မိုက်ခရိုဖုန်း</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">ဖိုလ်ဒါ <ph name="FOLDER_NAME" /></translation>
@@ -2034,6 +2042,7 @@
 <translation id="953431725143473984">စက်အပြီးပိတ်မလား။</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> အတွက် နေရာမလောက်ပါ။ နေရာလွတ်ပြုလုပ်ပါ။</translation>
 <translation id="954520015070501466">မိနစ် ၃၀</translation>
+<translation id="954786879461589145"><ph name="USER" /> က မွမ်းမံထားသည်</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> အတွက် ရလဒ် <ph name="RESULT_COUNT" /> ခုကို ပြနေသည်</translation>
 <translation id="981011780479609956">အလုပ်ပြီးဆုံးရမည့်နေ့ မရှိပါ</translation>
 <translation id="98120814841227350">မှတ်တမ်း အဆုံးသို့ သွားပါ</translation>

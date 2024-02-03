@@ -73,11 +73,10 @@ void ScreenAIDownloaderAsh::StateChanged(
     case screen_ai::ScreenAIInstallState::State::kDownloading:
       return;
 
-    case screen_ai::ScreenAIInstallState::State::kFailed:
+    case screen_ai::ScreenAIInstallState::State::kDownloadFailed:
       break;
 
     case screen_ai::ScreenAIInstallState::State::kDownloaded:
-    case screen_ai::ScreenAIInstallState::State::kReady:
       component_path = screen_ai::ScreenAIInstallState::GetInstance()
                            ->get_component_binary_path()
                            .DirName();

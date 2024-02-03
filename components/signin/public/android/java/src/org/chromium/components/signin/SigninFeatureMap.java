@@ -9,7 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 
-/** Java accessor for base/feature_map.h state. */
+/** Java accessor for base/android/feature_map.h state. */
 @JNINamespace("signin")
 public final class SigninFeatureMap extends FeatureMap {
     private static final SigninFeatureMap sInstance = new SigninFeatureMap();

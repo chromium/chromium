@@ -110,7 +110,7 @@ content::BrowserContext* BrowserContextHelper::GetBrowserContextByUser(
 
   // GetBrowserContextByPath() returns a new instance of ProfileImpl,
   // but actually its off-the-record profile should be used.
-  // TODO(hidehiko): Replace this by user->GetType() == USER_TYPE_GUEST.
+  // TODO(hidehiko): Replace this by user->GetType() == kGuest.
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
     browser_context =
         delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);

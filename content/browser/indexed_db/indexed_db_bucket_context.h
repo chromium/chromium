@@ -281,7 +281,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   }
 
   // `pending_factory_client` must be bound on the thread that uses it, hence it
-  // is not safe to bind it before passing here.
+  // is not safe to bind it before passing here. `client_token` uniquely
+  // identifies `state_checker`, and by extension, the "client"/render frame.
   void OpenDatabase(
       const std::u16string& name,
       int64_t version,
@@ -295,7 +296,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
       bool was_cold_open,
       IndexedDBDataLossInfo data_loss_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          state_checker);
+          state_checker,
+      base::UnguessableToken client_token);
 
   // `pending_factory_client` must be bound on the thread that uses it, hence it
   // is not safe to bind it before passing here.

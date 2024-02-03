@@ -90,15 +90,12 @@ IN_PROC_BROWSER_TEST_F(SandboxDiagnosticsBrowserTest, Navigate) {
     if (base::checked_cast<base::ProcessId>(pid.value()) != renderer_process_id)
       continue;
     found_renderer = true;
-    auto* rules = process->FindDict("handlesToClose");
+    auto* rules = process->FindList("handlesToClose");
     ASSERT_TRUE(rules);
-
-    const base::Value::List* handles_to_close = rules->FindList("File");
-    ASSERT_TRUE(handles_to_close);
 
     // Validate that there are a couple of listed handle names to be sure there
     // is something in the rule.
-    for (const base::Value& opcode : *handles_to_close) {
+    for (const base::Value& opcode : *rules) {
       auto* value = opcode.GetIfString();
       ASSERT_TRUE(value);
       if (value->find("DeviceApi") != value->npos) {

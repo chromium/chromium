@@ -10,12 +10,18 @@
 #include "ui/message_center/message_center_observer.h"
 #include "ui/views/view_tracker.h"
 
+namespace message_center {
+class MessageView;
+class Notification;
+}  // namespace message_center
+
 namespace views {
 class View;
 }  // namespace views
 
 namespace ash {
 
+class MessageViewContainer;
 class NotificationCenterView;
 
 // Manages and updates `NotificationCenterView`.
@@ -23,19 +29,23 @@ class ASH_EXPORT NotificationCenterController
     : public message_center::MessageCenterObserver {
  public:
   NotificationCenterController();
-
   NotificationCenterController(const NotificationCenterController&) = delete;
   NotificationCenterController& operator=(const NotificationCenterController&) =
       delete;
-
   ~NotificationCenterController() override;
 
   // Creates a `NotificationCenterView` object and returns it so it can be added
   // to the parent bubble view.
-  std::unique_ptr<views::View> CreateView();
+  std::unique_ptr<views::View> CreateNotificationCenterView();
 
-  // Inits the tracked `NotificationCenterView`.
-  void InitView();
+  // Inits the `NotificationCenterView` so it can be populated with views for
+  // the existing notifications.
+  // When `OngoingProcesses` are disabled, notification views are created inside
+  // of the `NotificationListView` class. When `OngoingProcesses` are enabled,
+  // pinned notification views are created in this controller.
+  // TODO(b/322835713): Also create and manage unpinned notification views from
+  // this controller instead of from `NotificationListView`.
+  void InitNotificationCenterView();
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;
@@ -47,10 +57,33 @@ class ASH_EXPORT NotificationCenterController
   }
 
  private:
-  raw_ptr<NotificationCenterView> notification_center_view_ = nullptr;
+  // Updates `MessageViewContainer` borders of the edges of the specified pinned
+  // or unpinned list view, based on the `pinned` parameter.
+  void UpdateListViewBorders(const bool pinned);
 
-  // View tracker to safely clear `notification_center_view_` when deleted.
+  // Creates a `MessageView` that will be owned by a `MessageViewContainer`.
+  std::unique_ptr<message_center::MessageView> CreateMessageView(
+      const message_center::Notification& notification);
+
+  // Creates the view for the given `notification` and adds it as a child view
+  // of the appropriate pinned or unpinned notification list view.
+  void AddNotificationChildView(message_center::Notification* notification);
+
+  // Syntactic sugar to downcast.
+  static const MessageViewContainer* AsMVC(const views::View* v);
+  static MessageViewContainer* AsMVC(views::View* v);
+
+  // Returns the `MessageViewContainer` object with the provided `id`.
+  MessageViewContainer* GetMessageViewContainerById(const std::string& id,
+                                                    views::View* list_view);
+
+  // Owned by the views hierarchy.
+  raw_ptr<NotificationCenterView> notification_center_view_ = nullptr;
+  raw_ptr<views::View> pinned_notification_list_view_ = nullptr;
+
+  // View trackers to clear view pointers immediately when they're deleted.
   views::ViewTracker notification_center_view_tracker_;
+  views::ViewTracker pinned_notification_list_view_tracker_;
 };
 
 }  // namespace ash

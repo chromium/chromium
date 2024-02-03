@@ -37,7 +37,7 @@ CroStatus::Or<scoped_refptr<VideoFrame>> CreateGpuMemoryBufferVideoFrame(
     bool use_linear_buffers,
     bool needs_detiling,
     base::TimeDelta timestamp) {
-  absl::optional<gfx::BufferFormat> gfx_format =
+  std::optional<gfx::BufferFormat> gfx_format =
       VideoPixelFormatToGfxBufferFormat(format);
   DCHECK(gfx_format);
   const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
@@ -57,7 +57,7 @@ CreateChromeOSCompressedGpuMemoryBufferVideoFrame(uint64_t modifier,
                                                   bool use_linear_buffers,
                                                   bool needs_detiling,
                                                   base::TimeDelta timestamp) {
-  absl::optional<gfx::BufferFormat> gfx_format =
+  std::optional<gfx::BufferFormat> gfx_format =
       VideoPixelFormatToGfxBufferFormat(format);
   DCHECK(gfx_format);
   return WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
@@ -129,7 +129,7 @@ class PlatformVideoFramePoolTestBase : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PlatformVideoFramePool> pool_;
 
-  absl::optional<GpuBufferLayout> layout_;
+  std::optional<GpuBufferLayout> layout_;
   gfx::Rect visible_rect_;
   gfx::Size natural_size_;
 };

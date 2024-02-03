@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
 
 class Browser;
+@protocol GridCommands;
 @protocol GridCoordinatorAudience;
 @class IncognitoGridViewController;
 @class IncognitoGridMediator;
@@ -16,6 +17,10 @@ class Browser;
 
 @interface IncognitoGridCoordinator
     : BaseGridCoordinator <IncognitoGridMediatorDelegate>
+
+// The command handler to handle commands related to this grid. This is exposed
+// to make sure other can use it.
+@property(nonatomic, weak, readonly) id<GridCommands> gridHandler;
 
 // The Grid view controller.
 // TODO(crbug.com/1457146): Make it private.

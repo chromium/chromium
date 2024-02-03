@@ -32,10 +32,16 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     SHARED_IMAGE_USAGE_MIPMAP;
 
+#if BUILDFLAG(IS_ANDROID)
+// AHardwareBufferImageBackingFactory is used for interop with WebGL and WebGPU
+// on Android.
+constexpr uint32_t kGraphiteDawnFallbackUsage = 0;
+#else
 constexpr uint32_t kGraphiteDawnFallbackUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_WEBGPU |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE;
+#endif
 
 uint32_t GetSupportedUsage(const SharedContextState* context_state) {
   // We support WebGL and WebGPU fallback when using Graphite Dawn Vulkan or

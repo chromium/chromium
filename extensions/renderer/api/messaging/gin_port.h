@@ -39,18 +39,15 @@ class GinPort final : public gin::Wrappable<GinPort> {
     // Posts a message to the port.
     virtual void PostMessageToPort(v8::Local<v8::Context> context,
                                    const PortId& port_id,
-                                   int routing_id,
                                    std::unique_ptr<Message> message) = 0;
 
     // Closes the port.
     virtual void ClosePort(v8::Local<v8::Context> context,
-                           const PortId& port_id,
-                           int routing_id) = 0;
+                           const PortId& port_id) = 0;
   };
 
   GinPort(v8::Local<v8::Context> context,
           const PortId& port_id,
-          int routing_id,
           const std::string& name,
           APIEventHandler* event_handler,
           Delegate* delegate);
@@ -81,7 +78,6 @@ class GinPort final : public gin::Wrappable<GinPort> {
   void SetSender(v8::Local<v8::Context> context, v8::Local<v8::Value> sender);
 
   const PortId& port_id() const { return port_id_; }
-  int routing_id() const { return routing_id_; }
   const std::string& name() const { return name_; }
 
   bool is_closed_for_testing() const { return state_ == kDisconnected; }
@@ -134,10 +130,6 @@ class GinPort final : public gin::Wrappable<GinPort> {
 
   // The associated port id.
   const PortId port_id_;
-
-  // The routing id associated with the port's context's render frame.
-  // TODO(devlin/lazyboy): This won't work with service workers.
-  const int routing_id_;
 
   // The port's name.
   const std::string name_;

@@ -9,16 +9,16 @@
 
 import 'chrome://resources/ash/common/cr.m.js';
 import 'chrome://resources/ash/common/event_target.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './components/buttons/oobe_text_button.js';
 import './components/oobe_icons.html.js';
 import './components/oobe_illo_icons.html.js';
 import './gaia_action_buttons/gaia_action_buttons.js';
-import '//resources/cr_elements/policy/cr_tooltip_icon.js';
+import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';

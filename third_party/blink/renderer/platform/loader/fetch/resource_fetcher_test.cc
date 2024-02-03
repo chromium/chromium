@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,7 +42,6 @@
 #include "build/build_config.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
@@ -157,14 +157,14 @@ class ResourceFetcherTest : public testing::Test {
     void DidChangeRenderBlockingBehavior(
         Resource* resource,
         const FetchParameters& params) override {}
-    const absl::optional<PartialResourceRequest>& GetLastRequest() const {
+    const std::optional<PartialResourceRequest>& GetLastRequest() const {
       return request_;
     }
 
-    void ClearLastRequest() { request_ = absl::nullopt; }
+    void ClearLastRequest() { request_ = std::nullopt; }
 
    private:
-    absl::optional<PartialResourceRequest> request_;
+    std::optional<PartialResourceRequest> request_;
   };
 
  protected:
@@ -528,7 +528,7 @@ TEST_F(ResourceFetcherTest, WillSendRequestAdBit) {
   Resource* new_resource = RawResource::Fetch(fetch_params, fetcher, nullptr);
 
   EXPECT_EQ(resource, new_resource);
-  absl::optional<PartialResourceRequest> new_request =
+  std::optional<PartialResourceRequest> new_request =
       observer->GetLastRequest();
   EXPECT_TRUE(new_request.has_value());
   EXPECT_TRUE(new_request.value().IsAdResource());
@@ -1252,7 +1252,7 @@ TEST_F(ResourceFetcherTest, StaleWhileRevalidate) {
   EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
   static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
       ->RunUntilIdle();
-  absl::optional<PartialResourceRequest> swr_request =
+  std::optional<PartialResourceRequest> swr_request =
       observer->GetLastRequest();
   ASSERT_TRUE(swr_request.has_value());
   EXPECT_EQ(ResourceLoadPriority::kVeryLow, swr_request->Priority());
@@ -1396,7 +1396,7 @@ TEST_F(ResourceFetcherTest, BoostImagePriority) {
         FetchParameters::SpeculativePreloadType::kInDocument,
         RenderBlockingBehavior::kNonBlocking,
         mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
-        0 /* resource_width*/, absl::nullopt /* resource_height*/);
+        0 /* resource_width*/, std::nullopt /* resource_height*/);
     EXPECT_EQ(priority, ResourceLoadPriority::kLow);
   }
   {
@@ -1408,7 +1408,7 @@ TEST_F(ResourceFetcherTest, BoostImagePriority) {
         FetchParameters::SpeculativePreloadType::kInDocument,
         RenderBlockingBehavior::kNonBlocking,
         mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
-        absl::nullopt /* resource_width*/, 0 /* resource_height*/);
+        std::nullopt /* resource_width*/, 0 /* resource_height*/);
     EXPECT_EQ(priority, ResourceLoadPriority::kLow);
   }
 
@@ -1438,7 +1438,7 @@ TEST_F(ResourceFetcherTest, BoostImagePriority) {
         FetchParameters::SpeculativePreloadType::kInDocument,
         RenderBlockingBehavior::kNonBlocking,
         mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
-        200 /* resource_width*/, absl::nullopt /* resource_height*/);
+        200 /* resource_width*/, std::nullopt /* resource_height*/);
     EXPECT_EQ(priority, ResourceLoadPriority::kMedium);
   }
   // #3 - non-zero height but no width.
@@ -1451,7 +1451,7 @@ TEST_F(ResourceFetcherTest, BoostImagePriority) {
         FetchParameters::SpeculativePreloadType::kInDocument,
         RenderBlockingBehavior::kNonBlocking,
         mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
-        absl::nullopt /* resource_width*/, 200 /* resource_height*/);
+        std::nullopt /* resource_width*/, 200 /* resource_height*/);
     EXPECT_EQ(priority, ResourceLoadPriority::kMedium);
   }
   // #4-5 - neither height nor width.
@@ -1658,7 +1658,7 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_FALSE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_EQ(observer->GetLastRequest(), absl::nullopt);
+  ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
 
   otherContextFetcher->EmulateLoadStartedForInspector(
       resource, url, mojom::blink::RequestContextType::FONT,
@@ -1671,7 +1671,7 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_FALSE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_NE(observer->GetLastRequest(), absl::nullopt);
+  ASSERT_NE(observer->GetLastRequest(), std::nullopt);
 
   // Clear out the last request to start fresh
   observer->ClearLastRequest();
@@ -1688,7 +1688,7 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_FALSE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_NE(observer->GetLastRequest(), absl::nullopt);
+  ASSERT_NE(observer->GetLastRequest(), std::nullopt);
 }
 
 TEST_F(ResourceFetcherTest,
@@ -1716,7 +1716,7 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_FALSE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_EQ(observer->GetLastRequest(), absl::nullopt);
+  ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
 
   otherContextFetcher->EmulateLoadStartedForInspector(
       resource, url, mojom::blink::RequestContextType::FONT,
@@ -1729,7 +1729,7 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_TRUE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_NE(observer->GetLastRequest(), absl::nullopt);
+  ASSERT_NE(observer->GetLastRequest(), std::nullopt);
 
   // Clear out the last request to start fresh
   observer->ClearLastRequest();
@@ -1746,7 +1746,7 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_TRUE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_EQ(observer->GetLastRequest(), absl::nullopt);
+  ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
 }
 
 }  // namespace blink

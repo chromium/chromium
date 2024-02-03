@@ -214,7 +214,7 @@ void MojoVideoEncodeAcceleratorService::
     RequestEncodingParametersChangeWithLayers(
         const media::VideoBitrateAllocation& bitrate_allocation,
         uint32_t framerate,
-        const absl::optional<gfx::Size>& size) {
+        const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string parameters_description = base::StringPrintf(
       "bitrate_allocation=%s, framerate=%d, size=%s",
@@ -244,7 +244,7 @@ void MojoVideoEncodeAcceleratorService::
     RequestEncodingParametersChangeWithBitrate(
         const media::Bitrate& bitrate,
         uint32_t framerate,
-        const absl::optional<gfx::Size>& size) {
+        const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string parameters_description = base::StringPrintf(
       "bitrate=%s, framerate=%d, size=%s", bitrate.ToString().c_str(),

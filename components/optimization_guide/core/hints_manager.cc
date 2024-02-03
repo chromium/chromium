@@ -349,7 +349,9 @@ HintsManager::HintsManager(
       identity_manager_(identity_manager),
       clock_(base::DefaultClock::GetInstance()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
+      allowed_contexts_for_personalized_metadata_(
+          features::GetAllowedContextsForPersonalizedMetadata()) {
   if (push_notification_manager_) {
     push_notification_manager_->SetDelegate(this);
   }
@@ -1127,7 +1129,7 @@ void HintsManager::CanApplyOptimizationOnDemand(
     }
   }
 
-  if (features::ShouldEnablePersonalizedMetadata(request_context)) {
+  if (allowed_contexts_for_personalized_metadata_.Has(request_context)) {
     // Request the token before fetching the hints.
     RequestAccessToken(
         identity_manager_,

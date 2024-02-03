@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/md_select.css.js';
+import './voice_selection_menu.js';
 import './icons.html.js';
 
 import type {CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -22,6 +23,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {ReadAnythingElement} from './app.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
+import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
 export interface ReadAnythingToolbarElement {
   $: {
@@ -32,16 +34,11 @@ export interface ReadAnythingToolbarElement {
     fontMenu: CrActionMenuElement,
     fontSizeMenu: CrActionMenuElement,
     moreOptionsMenu: CrActionMenuElement,
-    voiceSelectionMenu: CrActionMenuElement,
+    voiceSelectionMenu: VoiceSelectionMenuElement,
     fontTemplate: DomRepeat,
   };
 }
 
-interface VoiceDropdown {
-  voice: SpeechSynthesisVoice;
-  selected: boolean;
-  previewPlaying: boolean;
-}
 
 interface MenuStateItem<T> {
   title: string;
@@ -112,6 +109,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       textStyleOptions_: Array,
       textStyleToggles_: Array,
       paused: Boolean,
+      selectedVoice: Object,
+      availableVoices: Array,
+      previewVoicePlaying: Object,
     };
   }
 
@@ -260,7 +260,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     },
   ];
 
-  private voiceSelectionOptions_: Array<MenuStateItem<VoiceDropdown>> = [];
 
   private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
@@ -440,32 +439,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.$.fontTemplate.render();
   }
 
-  showVoicePreviewPlaying(voice: SpeechSynthesisVoice|null) {
-    if (!voice) {
-      return;
-    }
-    this.voiceSelectionOptions_ = this.voiceSelectionOptions_.map(
-        ({data, ...rest}) => ({
-          ...rest,
-          data: {
-            voice: data.voice,
-            selected: data.selected,
-            previewPlaying: this.voicesAreEqual_(data.voice, voice),
-          },
-        }));
-  }
-
-  showVoicePreviewDone() {
-    this.voiceSelectionOptions_ =
-        this.voiceSelectionOptions_.map(({data, ...rest}) => ({
-                                          ...rest,
-                                          data: {
-                                            voice: data.voice,
-                                            selected: data.selected,
-                                            previewPlaying: false,
-                                          },
-                                        }));
-  }
 
   private playPauseButtonAriaLabel_(paused: boolean) {
     return paused ? loadTimeData.getString('playLabel') :
@@ -502,52 +475,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onShowRateMenuClick_(event: MouseEvent) {
     this.openMenu_(this.$.rateMenu, event.target as HTMLElement);
-  }
-
-  private voicesAreEqual_(
-      voice1?: SpeechSynthesisVoice, voice2?: SpeechSynthesisVoice): boolean {
-    if (!voice1 || !voice2) {
-      return false;
-    }
-    return voice1.default === voice2.default && voice1.lang === voice2.lang &&
-        voice1.localService === voice2.localService &&
-        voice1.name === voice2.name && voice1.voiceURI === voice2.voiceURI;
-  }
-
-  // TODO(crbug.com/1474951): Add unit tests
-  private onVoiceSelectionMenuClick_(event: MouseEvent) {
-    if (this.contentPage) {
-      const voices = this.contentPage.getVoices();
-      const selectedVoice = this.contentPage.getSpeechSynthesisVoice();
-
-      // TODO(crbug.com/1474951): Use the full language code instead of
-      // splitting it once we start using page language instead of browser
-      // language.
-      this.voiceSelectionOptions_ = Object.entries(voices).reduce(
-          (aggregateVoiceList: Array<MenuStateItem<VoiceDropdown>>,
-           [_, voiceListForLang]) =>
-              ([
-                ...aggregateVoiceList,
-                ...(voiceListForLang)
-                    .map(speechSynthesisVoice => ({
-                           title: speechSynthesisVoice.name,
-                           icon: '',
-                           data: {
-                             voice: speechSynthesisVoice,
-                             selected: this.voicesAreEqual_(
-                                 selectedVoice, speechSynthesisVoice),
-                             previewPlaying: false,
-                           },
-                           callback: () => chrome.readingMode.onVoiceChange(
-                               speechSynthesisVoice.name,
-                               speechSynthesisVoice.lang.split('-')[0]),
-                         })),
-              ]),
-          []);
-
-      this.openMenu_(
-          this.$.voiceSelectionMenu, event.target as HTMLElement, true);
-    }
   }
 
   private onMoreOptionsClick_(event: MouseEvent) {
@@ -637,35 +564,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         ReadAnythingElement.prototype.updateThemeFromWebUi);
   }
 
-  private onVoiceSelectClick_(
-      event: DomRepeatEvent<MenuStateItem<VoiceDropdown>>) {
-    event.model.item.callback();
-    if (this.contentPage) {
-      const selectedVoice = event.model.item.data.voice;
-      this.contentPage.setSpeechSynthesisVoice(selectedVoice);
-      this.voiceSelectionOptions_ = this.voiceSelectionOptions_.map(
-          ({data, ...rest}) => ({
-            ...rest,
-            data: {
-              voice: data.voice,
-              selected: this.voicesAreEqual_(selectedVoice, data.voice),
-              previewPlaying: false,
-            },
-          }));
-    }
-  }
-
-  private onVoicePreviewClick_(
-      event: DomRepeatEvent<MenuStateItem<VoiceDropdown>>) {
-    // Because the preview button is layered onto the voice-selection button,
-    // the onVoiceSelectClick_() listener is also subscribed to this event. This
-    // line is to make sure that the voice-selection callback is not triggered.
-    event.stopImmediatePropagation();
-
-    if (this.contentPage) {
-      this.contentPage.previewSpeechSynthesisVoice(event.model.item.data.voice);
-    }
-  }
 
   private onTextStyleClick_(
       event: DomRepeatEvent<MenuStateItem<any>>,

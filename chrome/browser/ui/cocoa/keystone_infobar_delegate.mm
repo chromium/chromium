@@ -19,7 +19,7 @@
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/common/chrome_features.h"
@@ -115,7 +115,7 @@ void KeystoneInfoBar::PromotionInfoBar(Profile* profile) {
   }
 
   EnsureUpdater(base::BindOnce([]() {
-                  Browser* browser = chrome::GetLastActiveBrowser();
+                  Browser* browser = chrome::FindLastActive();
                   if (browser) {
                     content::WebContents* webContents =
                         browser->tab_strip_model()->GetActiveWebContents();

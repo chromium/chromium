@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
-<translation id="1426410128494586442">Да</translation>
 <translation id="1434873037477293673">Оповещение о скидках</translation>
 <translation id="1448064542941920355">Уменьшить масштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайта}many{<ph name="SITE_COUNT" /> сайтов}other{<ph name="SITE_COUNT" /> сайта}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
 <translation id="2238944249568001759">Варианты поисковых запросов, основанные на данных последней вкладки</translation>
+<translation id="2241587408274973373">Карточки страницы быстрого доступа</translation>
 <translation id="2241634353105152135">Однократно</translation>
 <translation id="2253414712144136228">Удалить пункт "<ph name="NAME_OF_LIST_ITEM" />"</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 заблокированный сайт}one{# заблокированный сайт}few{# заблокированных сайта}many{# заблокированных сайтов}other{# заблокированного сайта}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Сайты могут показывать предложения войти в аккаунт от сервисов подтверждения личности.</translation>
 <translation id="2790501146643349491">Когда этот параметр включен, недавно закрытые сайты могут завершать отправку и получение данных. Когда параметр отключен, недавно закрытым сайтам запрещено это делать.</translation>
 <translation id="2822354292072154809">Сбросить разрешения для сайта <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Запрашивать мобильную версию</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Предыдущий трек</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Просмотр сертификатов</translation>
 <translation id="2979365474350987274">Использование сторонних файлов cookie ограничено</translation>
 <translation id="3008272652534848354">Сбросить разрешения</translation>
-<translation id="3013291976881901233">MIDI-устройства</translation>
 <translation id="301521992641321250">Заблокировано автоматически</translation>
 <translation id="3069226013421428034">Разрешить вход через сторонние сервисы для определенного сайта.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Срок действия истекает завтра}one{Срок действия истекает через # день}few{Срок действия истекает через # дня}many{Срок действия истекает через # дней}other{Срок действия истекает через # дня}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Выполнено подключение к USB-устройству</translation>
 <translation id="4194328954146351878">Запрашивать для сайтов разрешение на доступ к информации и ее изменение через NFC (рекомендуется)</translation>
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
-<translation id="4212246570487010370">Продолжить просмотр</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Разрешено</translation>
@@ -303,7 +300,7 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="6064125863973209585">Завершенные скачивания</translation>
-<translation id="6071501408666570960">Вы выйдете из аккаунта на этом сайте.</translation>
+<translation id="6071501408666570960">Возможно, вам потребуется повторно войти в аккаунт на этом сайте.</translation>
 <translation id="6120483543004435978">Когда этот параметр включен, сайтам разрешено запрашивать информацию о том, используете ли вы сейчас устройство. Когда параметр отключен, сайтам запрещен доступ к таким сведениям.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6171020522141473435">Когда этот параметр включен, сайты могут запрашивать разрешение на использование устройств Bluetooth. Когда параметр отключен, сайтам запрещено использовать такие устройства.</translation>
@@ -323,7 +320,7 @@
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6304434827459067558"><ph name="SITE" /> запрещено использовать ваши данные на перечисленных сайтах</translation>
 <translation id="6320088164292336938">Вибросигнал</translation>
-<translation id="6344622098450209924">Блокировка отслеживания</translation>
+<translation id="6344622098450209924">Защита от слежения</translation>
 <translation id="6367753977865761591">Блокировать вход через сторонние сервисы для определенного сайта.</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="640163077447496506">Срок действия истекает сегодня</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="6749077623962119521">Сбросить разрешения?</translation>
 <translation id="6766622839693428701">Проведите вниз, чтобы закрыть панель.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> С устройства "<ph name="FROM_DEVICE" />"</translation>
 <translation id="6787751205395685251">Выберите значение для сайта <ph name="SITE_NAME" />.</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6818926723028410516">Выберите объекты</translation>
@@ -498,7 +494,7 @@
 <translation id="9002538116239926534">Когда этот параметр включен, сайты могут сохранять данные на вашем устройстве. Когда параметр отключен, сайтам запрещено это делать.</translation>
 <translation id="9011903857143958461">Действует для сайта <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Управляется вашими родителями</translation>
-<translation id="9039697262778250930">Возможно, на этих сайтах вам потребуется повторно войти в аккаунт.</translation>
+<translation id="9039697262778250930">Возможно, вам потребуется повторно войти в аккаунт на этих сайтах.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Этот сайт может отслеживать ваши действия. Он входит в группу <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Удалить файлы cookie</translation>

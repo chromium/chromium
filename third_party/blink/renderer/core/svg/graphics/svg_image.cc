@@ -399,7 +399,7 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
   if (draw_info.ContainerSize().IsEmpty())
     return false;
   const gfx::Rect cull_rect(gfx::ToEnclosingRect(unzoomed_src_rect));
-  absl::optional<PaintRecord> record =
+  std::optional<PaintRecord> record =
       PaintRecordForCurrentFrame(draw_info, &cull_rect);
   if (!record)
     return false;
@@ -457,11 +457,11 @@ void SVGImage::Draw(cc::PaintCanvas* canvas,
   DrawInternal(draw_info, canvas, flags, dst_rect, src_rect);
 }
 
-absl::optional<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
+std::optional<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
     const DrawInfo& draw_info,
     const gfx::Rect* cull_rect) {
   if (!page_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Temporarily disable the image observer to prevent ChangeInRect() calls due
   // re-laying out the image.
@@ -512,7 +512,7 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
                             const gfx::RectF& dst_rect,
                             const gfx::RectF& unzoomed_src_rect) {
   const gfx::Rect cull_rect(gfx::ToEnclosingRect(unzoomed_src_rect));
-  absl::optional<PaintRecord> record =
+  std::optional<PaintRecord> record =
       PaintRecordForCurrentFrame(draw_info, &cull_rect);
   if (!record)
     return;

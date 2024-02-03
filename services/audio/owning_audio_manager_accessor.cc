@@ -73,7 +73,7 @@ MainThread::MainThread()
       worker_thread_("AudioWorkerThread", kReatimeThreadPeriod),
       hang_monitor_(media::AudioThreadHangMonitor::Create(
           GetAudioThreadHangAction(),
-          /*use the default*/ absl::nullopt,
+          /*use the default*/ std::nullopt,
           base::DefaultTickClock::GetInstance(),
           task_runner_)) {}
 

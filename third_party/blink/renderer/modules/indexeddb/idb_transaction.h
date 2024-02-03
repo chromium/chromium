@@ -234,7 +234,7 @@ class MODULES_EXPORT IDBTransaction final
   // requests larger than this size will be rejected.
   // Used by unit tests to exercise behavior without allocating huge chunks
   // of memory.
-  absl::optional<size_t> max_put_value_size_override_;
+  std::optional<size_t> max_put_value_size_override_;
 
   // Called when a transaction is aborted.
   void AbortOutstandingRequests(bool queue_tasks);

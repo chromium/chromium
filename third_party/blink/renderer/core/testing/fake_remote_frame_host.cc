@@ -34,14 +34,14 @@ void FakeRemoteFrameHost::CapturePaintPreviewOfCrossProcessSubframe(
 void FakeRemoteFrameHost::SetIsInert(bool inert) {}
 
 void FakeRemoteFrameHost::DidChangeOpener(
-    const absl::optional<LocalFrameToken>& opener_frame_token) {}
+    const std::optional<LocalFrameToken>& opener_frame_token) {}
 
 void FakeRemoteFrameHost::AdvanceFocus(
     blink::mojom::FocusType focus_type,
     const LocalFrameToken& source_frame_token) {}
 
 void FakeRemoteFrameHost::RouteMessageEvent(
-    const absl::optional<LocalFrameToken>& source_frame_token,
+    const std::optional<LocalFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {}
@@ -53,7 +53,7 @@ void FakeRemoteFrameHost::Detach() {}
 
 void FakeRemoteFrameHost::UpdateViewportIntersection(
     blink::mojom::blink::ViewportIntersectionStatePtr intersection_state,
-    const absl::optional<FrameVisualProperties>& visual_properties) {}
+    const std::optional<FrameVisualProperties>& visual_properties) {}
 
 void FakeRemoteFrameHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& properties) {}

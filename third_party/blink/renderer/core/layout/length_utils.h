@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LENGTH_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LENGTH_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
@@ -67,7 +68,7 @@ CORE_EXPORT LayoutUnit ResolveInlineLengthInternal(
     const ConstraintSpace&,
     const ComputedStyle&,
     const BoxStrut& border_padding,
-    const absl::optional<MinMaxSizes>&,
+    const std::optional<MinMaxSizes>&,
     const Length&,
     LayoutUnit override_available_size = kIndefiniteSize,
     const Length::AnchorEvaluator* anchor_evaluator = nullptr);
@@ -107,7 +108,7 @@ inline LayoutUnit ResolveMinInlineLength(
              InlineLengthUnresolvable(constraint_space, length)))
     return border_padding.InlineSum();
 
-  absl::optional<MinMaxSizes> min_max_sizes;
+  std::optional<MinMaxSizes> min_max_sizes;
   if (length.IsContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
@@ -134,7 +135,7 @@ inline LayoutUnit ResolveMaxInlineLength(
              InlineLengthUnresolvable(constraint_space, length)))
     return LayoutUnit::Max();
 
-  absl::optional<MinMaxSizes> min_max_sizes;
+  std::optional<MinMaxSizes> min_max_sizes;
   if (length.IsContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
@@ -158,7 +159,7 @@ inline LayoutUnit ResolveMainInlineLength(
     LayoutUnit override_available_size = kIndefiniteSize,
     const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
-  absl::optional<MinMaxSizes> min_max_sizes;
+  std::optional<MinMaxSizes> min_max_sizes;
   if (length.IsContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
@@ -339,7 +340,7 @@ CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
     const ComputedStyle&,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    absl::optional<LayoutUnit> inline_size,
+    std::optional<LayoutUnit> inline_size,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 CORE_EXPORT LayoutUnit
@@ -450,7 +451,7 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
     const ComputedStyle&,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    absl::optional<LayoutUnit> inline_size,
+    std::optional<LayoutUnit> inline_size,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 // Calculates default content size for html and body elements in quirks mode.
@@ -673,7 +674,7 @@ FragmentGeometry CalculateInitialFragmentGeometry(
     return {border_box_size, border, scrollbar, padding};
   }
 
-  absl::optional<LayoutUnit> inline_size;
+  std::optional<LayoutUnit> inline_size;
   const auto default_block_size = CalculateDefaultBlockSize(
       space, node, break_token, border_scrollbar_padding);
 
@@ -761,7 +762,7 @@ LayoutUnit ClampIntrinsicBlockSize(
     const BlockBreakToken* break_token,
     const BoxStrut& border_scrollbar_padding,
     LayoutUnit current_intrinsic_block_size,
-    absl::optional<LayoutUnit> body_margin_block_sum = absl::nullopt);
+    std::optional<LayoutUnit> body_margin_block_sum = std::nullopt);
 
 template <typename MinMaxSizesFunc>
 MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
@@ -884,9 +885,9 @@ ComputeMinAndMaxContentContributionForTest(WritingMode writing_mode,
 
 // This function checks if the inline size of this node has to be calculated
 // without considering children. If so, it returns the calculated size.
-// Otherwise, it returns absl::nullopt and the caller has to compute the size
+// Otherwise, it returns std::nullopt and the caller has to compute the size
 // itself.
-absl::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
+std::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
     const BlockNode&,
     const BoxStrut& border_scrollbar_padding);
 

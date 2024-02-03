@@ -198,7 +198,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
 
   if (frame && window) {
-    eventTiming = EventTiming::Create(window, *event_);
+    eventTiming = EventTiming::Create(window, *event_, event_->target());
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&

@@ -126,8 +126,8 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -2037,7 +2037,6 @@ void RenderViewContextMenu::AppendVideoItems() {
   if (base::FeatureList::IsEnabled(media::kContextMenuSaveVideoFrameAs)) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS,
                                     IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS);
-    menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
   }
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEAVAS,
                                   IDS_CONTENT_CONTEXT_SAVEVIDEOAS);
@@ -2380,35 +2379,24 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (render_frame_host) {
     auto* compose_client = GetChromeComposeClient();
-    if (compose_client) {
-      bool should_trigger =
-          compose_client->ShouldTriggerContextMenu(render_frame_host, params_);
+    if (compose_client &&
+        compose_client->ShouldTriggerContextMenu(render_frame_host, params_)) {
       compose::LogComposeContextMenuCtr(
           compose::ComposeContextMenuCtrEvent::kMenuItemDisplayed);
       base::RecordAction(
           base::UserMetricsAction("Compose.ContextMenu.ItemSeen"));
       menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
                                       IDS_COMPOSE_CONTEXT_MENU_TEXT);
+      menu_model_.SetElementIdentifierAt(
+          menu_model_.GetIndexOfCommandId(IDC_CONTEXT_COMPOSE).value(),
+          kComposeMenuItem);
 
-      absl::optional<size_t> command_index =
-          menu_model_.GetIndexOfCommandId(IDC_CONTEXT_COMPOSE);
-
-      if (command_index.has_value()) {
-        menu_model_.SetElementIdentifierAt(command_index.value(),
-                                           kComposeMenuItem);
-
-        if (should_trigger) {
-          // TODO(b/303646344): Remove new feature tag when no longer new.
-          menu_model_.SetIsNewFeatureAt(
-              menu_model_.GetItemCount() - 1,
-              new_badge_tracker_.TryShowNewBadge(
-                  feature_engagement::kIPHComposeMenuNewBadgeFeature,
-                  &compose::features::kEnableCompose));
-        } else {
-          // Still show the menu item, but disable it.
-          menu_model_.SetEnabledAt(command_index.value(), false);
-        }
-      }
+      // TODO(b/303646344): Remove new feature tag when no longer new.
+      menu_model_.SetIsNewFeatureAt(
+          menu_model_.GetItemCount() - 1,
+          new_badge_tracker_.TryShowNewBadge(
+              feature_engagement::kIPHComposeMenuNewBadgeFeature,
+              &compose::features::kEnableCompose));
 
       render_separator = true;
     }

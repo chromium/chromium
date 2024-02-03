@@ -1358,8 +1358,7 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
   return os << base::UTF16ToUTF8(credit_card.Label()) << " "
             << (credit_card.record_type() == CreditCard::RecordType::kLocalCard
                     ? credit_card.guid()
-                    : base::HexEncode(credit_card.server_id().data(),
-                                      credit_card.server_id().size()))
+                    : base::HexEncode(credit_card.server_id()))
             << " " << credit_card.origin() << " "
             << base::UTF16ToUTF8(credit_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
             << " "

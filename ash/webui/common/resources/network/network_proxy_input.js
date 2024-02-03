@@ -9,7 +9,7 @@
  * string, url:port.
  */
 
-import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';

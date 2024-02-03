@@ -46,13 +46,14 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-bool ShouldShowQuickAnswersSettings() {
+// Whether Quick answers is supported for the current language.
+bool IsQuickAnswersSupported() {
   return QuickAnswersState::Get() && QuickAnswersState::Get()->is_eligible();
 }
 
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
     const char* section_path) {
-  if (ShouldShowQuickAnswersSettings()) {
+  if (IsQuickAnswersSupported()) {
     static const base::NoDestructor<std::vector<SearchConcept>> tags({
         {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
          mojom::kSearchSubpagePath,
@@ -314,8 +315,7 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("shouldShowQuickAnswersSettings",
-                          ShouldShowQuickAnswersSettings());
+  html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
   html_source->AddLocalizedString("osSearchPageTitle",
@@ -366,7 +366,7 @@ bool SearchSection::LogMetric(mojom::Setting setting,
 void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Register Preferred search engine as top level settings if Quick answers is
   // not available.
-  if (!ShouldShowQuickAnswersSettings()) {
+  if (!IsQuickAnswersSupported()) {
     generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
   }
 
@@ -377,7 +377,7 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::kSearchSubpagePath);
   // Register Preferred search engine under Search subpage if Quick answers is
   // available.
-  if (ShouldShowQuickAnswersSettings()) {
+  if (IsQuickAnswersSupported()) {
     static constexpr mojom::Setting kSearchSettingsWithPreferredSearchEngine[] =
         {
             mojom::Setting::kQuickAnswersOnOff,
@@ -486,7 +486,7 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
   updater.RemoveSearchTags(GetQuickAnswersSearchConcepts());
   updater.RemoveSearchTags(GetQuickAnswersOnSearchConcepts());
 
-  if (!ShouldShowQuickAnswersSettings()) {
+  if (!IsQuickAnswersSupported()) {
     return;
   }
 

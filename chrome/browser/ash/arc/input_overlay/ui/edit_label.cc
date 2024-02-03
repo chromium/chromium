@@ -47,10 +47,12 @@ constexpr base::TimeDelta kPulseDuration = base::Seconds(2);
 
 EditLabel::EditLabel(DisplayOverlayController* controller,
                      Action* action,
+                     bool for_editing_list,
                      size_t index)
     : views::LabelButton(),
       controller_(controller),
       action_(action),
+      for_editing_list_(for_editing_list),
       index_(index) {
   Init();
 }
@@ -121,8 +123,6 @@ void EditLabel::PerformPulseAnimation(int pulse_count) {
 void EditLabel::Init() {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetPreferredSize(gfx::Size(kLabelSize, kLabelSize));
-  SetAccessibilityProperties(ax::mojom::Role::kLabelText,
-                             CalculateAccessibleName());
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(false);
   SetRequestFocusOnPress(true);
@@ -156,7 +156,8 @@ void EditLabel::SetLabelContent() {
 
 void EditLabel::SetTextLabel(const std::u16string& text) {
   SetText(text);
-  SetAccessibleName(CalculateAccessibleName());
+  UpdateAccessibleName();
+
   SetBackground(views::CreateThemedRoundedRectBackground(
       text == kUnknownBind && !action_->is_new()
           ? cros_tokens::kCrosSysErrorHighlight
@@ -176,10 +177,21 @@ void EditLabel::SetNameTagState(bool is_error,
   parent_view->SetNameTagState(is_error, error_tooltip);
 }
 
-std::u16string EditLabel::CalculateAccessibleName() {
-  return l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_KEYMAPPING_KEY)
-      .append(u" ")
-      .append(GetDisplayTextAccessibleName(label()->GetText()));
+void EditLabel::UpdateAccessibleName() {
+  const std::u16string a11y_name =
+      GetDisplayTextAccessibleName(label()->GetText());
+  const std::u16string reassign = l10n_util::GetStringUTF16(
+      IDS_INPUT_OVERLAY_EDIT_LABEL_REASSIGN_A11Y_LABEL);
+
+  if (a11y_name.empty() || a11y_name.compare(kUnknownBind) == 0) {
+    SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_INPUT_OVERLAY_EDIT_LABEL_UNASSIGNED_A11Y_LABEL));
+  } else if (for_editing_list_) {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_INPUT_OVERLAY_EDIT_LABEL_A11Y_LABEL_TEMPLATE, a11y_name, reassign));
+  } else {
+    SetAccessibleName(reassign);
+  }
 }
 
 void EditLabel::SetToDefault() {
@@ -274,7 +286,7 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
   return true;
 }
 
-BEGIN_METADATA(EditLabel, views::LabelButton)
+BEGIN_METADATA(EditLabel)
 END_METADATA
 
 }  // namespace arc::input_overlay

@@ -849,7 +849,7 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
             state.StyleBuilder().UsedColorScheme());
 }
 
-TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
+TEST_F(ComputedStyleTest, ApplyLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
@@ -874,7 +874,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   light_value->Append(*CSSIdentifierValue::Create(CSSValueID::kLight));
 
   auto* color_declaration = ParseDeclarationBlock(
-      "color:-internal-light-dark(black, white)", CSSParserMode::kUASheetMode);
+      "color:light-dark(black, white)", CSSParserMode::kUASheetMode);
   auto* dark_declaration = ParseDeclarationBlock("color-scheme:dark");
   auto* light_declaration = ParseDeclarationBlock("color-scheme:light");
 
@@ -897,7 +897,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   EXPECT_EQ(Color::kBlack, style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
-TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
+TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
@@ -916,8 +916,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   state.SetStyle(*initial);
 
   auto* bgimage_declaration = ParseDeclarationBlock(
-      "background-image:-internal-light-dark(none, url(dummy.png))",
-      kUASheetMode);
+      "background-image:light-dark(none, url(dummy.png))", kUASheetMode);
   auto* dark_declaration = ParseDeclarationBlock("color-scheme:dark");
   auto* light_declaration = ParseDeclarationBlock("color-scheme:light");
 

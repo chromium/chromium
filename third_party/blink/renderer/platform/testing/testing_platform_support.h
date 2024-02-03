@@ -175,7 +175,7 @@ class ScopedUnittestsEnvironmentSetup final {
   std::unique_ptr<Platform> dummy_platform_;
   std::unique_ptr<v8::Platform> v8_platform_for_heap_testing_;
   std::unique_ptr<TestingPlatformSupport> testing_platform_support_;
-  absl::optional<HeapPointersOnStackScope> conservative_gc_scope_;
+  std::optional<HeapPointersOnStackScope> conservative_gc_scope_;
 };
 
 }  // namespace blink

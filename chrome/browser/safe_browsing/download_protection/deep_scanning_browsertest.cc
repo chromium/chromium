@@ -353,8 +353,8 @@ class DownloadDeepScanningBrowserTestBase
 
   template <typename T>
   void SendFcmMessage(const T& response) {
-    std::string encoded_proto;
-    base::Base64Encode(response.SerializeAsString(), &encoded_proto);
+    std::string encoded_proto =
+        base::Base64Encode(response.SerializeAsString());
     gcm::IncomingMessage gcm_message;
     gcm_message.data["proto"] = encoded_proto;
     binary_fcm_service()->OnMessage("app_id", gcm_message);

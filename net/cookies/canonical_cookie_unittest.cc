@@ -63,7 +63,7 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_EQ("2", cookie1->Value());
   EXPECT_EQ("www.example.com", cookie1->Domain());
   EXPECT_EQ("/test", cookie1->Path());
-  EXPECT_FALSE(cookie1->IsSecure());
+  EXPECT_FALSE(cookie1->SecureAttribute());
   EXPECT_FALSE(cookie1->IsHttpOnly());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie1->SameSite());
   EXPECT_EQ(CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie1->Priority());
@@ -81,7 +81,7 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_EQ("2", cookie2->Value());
   EXPECT_EQ(".www.example.com", cookie2->Domain());
   EXPECT_EQ("/", cookie2->Path());
-  EXPECT_FALSE(cookie2->IsSecure());
+  EXPECT_FALSE(cookie2->SecureAttribute());
   EXPECT_FALSE(cookie2->IsHttpOnly());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie2->SameSite());
   EXPECT_EQ(CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie2->Priority());
@@ -97,7 +97,7 @@ TEST(CanonicalCookieTest, Constructor) {
       "A", "2", ".www.example.com", "/", current_time, base::Time(),
       base::Time(), base::Time(), true /* secure */, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT);
-  EXPECT_TRUE(cookie3->IsSecure());
+  EXPECT_TRUE(cookie3->SecureAttribute());
   EXPECT_EQ(cookie3->SourceScheme(), CookieSourceScheme::kUnset);
   EXPECT_EQ(cookie3->SourcePort(), url::PORT_UNSPECIFIED);
 
@@ -109,7 +109,7 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_EQ("2", cookie4->Value());
   EXPECT_EQ(".www.example.com", cookie4->Domain());
   EXPECT_EQ("/test", cookie4->Path());
-  EXPECT_FALSE(cookie4->IsSecure());
+  EXPECT_FALSE(cookie4->SecureAttribute());
   EXPECT_FALSE(cookie4->IsHttpOnly());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie4->SameSite());
   EXPECT_FALSE(cookie4->IsPartitioned());
@@ -200,7 +200,7 @@ TEST(CanonicalCookieTest, Create) {
   EXPECT_EQ("2", cookie->Value());
   EXPECT_EQ("www.example.com", cookie->Domain());
   EXPECT_EQ("/test", cookie->Path());
-  EXPECT_FALSE(cookie->IsSecure());
+  EXPECT_FALSE(cookie->SecureAttribute());
   EXPECT_EQ(cookie->SourceScheme(), CookieSourceScheme::kNonSecure);
   EXPECT_EQ(cookie->SourcePort(), 80);
 
@@ -211,7 +211,7 @@ TEST(CanonicalCookieTest, Create) {
   EXPECT_EQ("1", cookie->Value());
   EXPECT_EQ("www.foo.com", cookie->Domain());
   EXPECT_EQ("/", cookie->Path());
-  EXPECT_FALSE(cookie->IsSecure());
+  EXPECT_FALSE(cookie->SecureAttribute());
   EXPECT_EQ(cookie->SourceScheme(), CookieSourceScheme::kNonSecure);
   EXPECT_EQ(cookie->SourcePort(), 80);
 
@@ -220,23 +220,23 @@ TEST(CanonicalCookieTest, Create) {
   cookie =
       CanonicalCookie::Create(url, "A=2; Secure", creation_time, server_time,
                               absl::nullopt /* cookie_partition_key */);
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
 
   cookie = CanonicalCookie::Create(https_url, "A=2; Secure", creation_time,
                                    server_time,
                                    absl::nullopt /* cookie_partition_key */);
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
 
   GURL url3("https://www.foo.com");
   cookie =
       CanonicalCookie::Create(url3, "A=2; Secure", creation_time, server_time,
                               absl::nullopt /* cookie_partition_key */);
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
   EXPECT_EQ(cookie->SourceScheme(), CookieSourceScheme::kSecure);
 
   cookie = CanonicalCookie::Create(url3, "A=2", creation_time, server_time,
                                    absl::nullopt /* cookie_partition_key */);
-  EXPECT_FALSE(cookie->IsSecure());
+  EXPECT_FALSE(cookie->SecureAttribute());
   EXPECT_EQ(cookie->SourceScheme(), CookieSourceScheme::kSecure);
 
   // Test creating cookie from localhost URL.
@@ -662,7 +662,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
       server_time, partition_key, /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
   EXPECT_TRUE(cookie->IsPartitioned());
   EXPECT_EQ(partition_key, cookie->PartitionKey());
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
@@ -757,7 +757,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned_Localhost) {
       partition_key, /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie.get());
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
   EXPECT_TRUE(cookie->IsPartitioned());
   EXPECT_EQ(partition_key, cookie->PartitionKey());
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
@@ -1686,7 +1686,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
   cookie = CanonicalCookie::Create(secure_url, "A=2; Secure", creation_time,
                                    server_time,
                                    absl::nullopt /* cookie_partition_key */);
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
   EXPECT_TRUE(
       cookie
           ->IncludeForRequestURL(
@@ -1709,7 +1709,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
       CanonicalCookie::Create(url, "A=2; Secure", creation_time, server_time,
                               absl::nullopt /* cookie_partition_key */);
   ASSERT_TRUE(cookie);
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
   CookieAccessResult result = cookie->IncludeForRequestURL(
       url, options,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
@@ -1724,7 +1724,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
                                    server_time,
                                    absl::nullopt /* cookie_partition_key */);
   ASSERT_TRUE(cookie);
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
   result = cookie->IncludeForRequestURL(
       localhost_url, options,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
@@ -1738,7 +1738,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
                                    server_time,
                                    absl::nullopt /* cookie_partition_key */);
   ASSERT_TRUE(cookie);
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
   result = cookie->IncludeForRequestURL(
       secure_url, options,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
@@ -2230,7 +2230,7 @@ TEST(CanonicalCookieTest, IncludeCookiesWithoutSameSiteMustBeSecure) {
       url, "A=2; SameSite=None", creation_time, server_time,
       absl::nullopt /* cookie_partition_key */);
   ASSERT_TRUE(cookie.get());
-  EXPECT_FALSE(cookie->IsSecure());
+  EXPECT_FALSE(cookie->SecureAttribute());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie->SameSite());
   EXPECT_EQ(CookieEffectiveSameSite::NO_RESTRICTION,
             cookie->GetEffectiveSameSiteForTesting());
@@ -3811,7 +3811,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
   EXPECT_EQ(base::Time(), cc->CreationDate());
   EXPECT_EQ(base::Time(), cc->LastAccessDate());
   EXPECT_EQ(base::Time(), cc->ExpiryDate());
-  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->SecureAttribute());
   EXPECT_FALSE(cc->IsHttpOnly());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cc->SameSite());
   EXPECT_EQ(COOKIE_PRIORITY_MEDIUM, cc->Priority());
@@ -3856,7 +3856,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
       false /*httponly*/, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, absl::nullopt /*partition_key*/, &status);
   EXPECT_TRUE(cc);
-  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_TRUE(cc->SecureAttribute());
   EXPECT_TRUE(status.IsInclude());
 
   // Httponly
@@ -4643,7 +4643,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
-  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
 
@@ -4654,7 +4654,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
-  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_TRUE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
 
@@ -4666,7 +4666,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
-  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kNonSecure);
   EXPECT_EQ(cc->SourcePort(), 80);
 
@@ -4680,7 +4680,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
       {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
-  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_TRUE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
 
@@ -4692,7 +4692,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
-  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kNonSecure);
   EXPECT_EQ(cc->SourcePort(), 123);
 
@@ -4706,7 +4706,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
       {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
-  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_TRUE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 123);
 }
@@ -4731,7 +4731,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
-  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
 
@@ -4744,7 +4744,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
-  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_TRUE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
 
@@ -4758,7 +4758,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
-  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kNonSecure);
   EXPECT_EQ(cc->SourcePort(), 80);
 
@@ -4774,7 +4774,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
       {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
-  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_TRUE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
 
@@ -4788,7 +4788,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
   EXPECT_FALSE(status.ShouldWarn());
-  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kNonSecure);
   EXPECT_EQ(cc->SourcePort(), 123);
 
@@ -4804,7 +4804,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
       {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
-  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_TRUE(cc->SecureAttribute());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 123);
 }
@@ -4828,7 +4828,7 @@ TEST(CanonicalCookieTest, FromStorage) {
   EXPECT_EQ(one_hour_ago, cc->LastAccessDate());
   EXPECT_EQ(one_hour_from_now, cc->ExpiryDate());
   EXPECT_EQ(one_hour_ago, cc->LastUpdateDate());
-  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->SecureAttribute());
   EXPECT_FALSE(cc->IsHttpOnly());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cc->SameSite());
   EXPECT_EQ(COOKIE_PRIORITY_MEDIUM, cc->Priority());

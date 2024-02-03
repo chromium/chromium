@@ -123,7 +123,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   static void WillBeDestroyed(v8::Isolate*);
   static void Destroy(v8::Isolate*);
-  static v8::Isolate* MainThreadIsolate();
 
   static void EnableIdleTasks(v8::Isolate*,
                               std::unique_ptr<gin::V8IdleTaskRunner>);
@@ -155,6 +154,11 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                      const void* key,
                      v8::Local<v8::Template> value);
 
+  v8::MaybeLocal<v8::DictionaryTemplate> FindV8DictionaryTemplate(
+      const void* key);
+  void AddV8DictionaryTemplate(const void* key,
+                               v8::Local<v8::DictionaryTemplate> value);
+
   bool HasInstance(const WrapperTypeInfo* wrapper_type_info,
                    v8::Local<v8::Value> untrusted_value);
   bool HasInstanceOfUntrustedType(
@@ -178,17 +182,10 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   // compile-time list of related names, such as IDL dictionary keys.
   const base::span<const v8::Eternal<v8::Name>> FindOrCreateEternalNameCache(
       const void* lookup_key,
-      const base::span<const char* const>& names);
+      base::span<const std::string_view> names);
 
-  ScriptState* EnsureScriptRegexpScriptState() {
-    return EnsureUtilityScriptState();
-  }
-
-  ScriptState* EnsureContinuationPreservedEmbedderDataScriptState() {
-    return EnsureUtilityScriptState();
-  }
-
-  void ClearUtilityScriptState();
+  v8::Local<v8::Context> EnsureScriptRegexpContext();
+  void ClearScriptRegexpContext();
 
   ThreadDebugger* GetThreadDebugger() const { return thread_debugger_.get(); }
   void SetThreadDebugger(std::unique_ptr<ThreadDebugger> thread_debugger);
@@ -244,15 +241,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
       v8::Local<v8::Value> untrusted_value,
       const V8TemplateMap& map);
 
-  ScriptState* EnsureUtilityScriptState() {
-    if (LIKELY(utility_script_state_)) {
-      return utility_script_state_.Get();
-    }
-    return EnsureUtilityScriptStateSlow();
-  }
-
-  ScriptState* EnsureUtilityScriptStateSlow();
-
   V8ContextSnapshotMode v8_context_snapshot_mode_;
 
   // This isolate_holder_ must be initialized before initializing some other
@@ -263,14 +251,19 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   V8TemplateMap v8_template_map_for_main_world_;
   V8TemplateMap v8_template_map_for_non_main_worlds_;
 
+  using V8DictTemplateMap = HashMap<const void*,
+                                    v8::Eternal<v8::DictionaryTemplate>,
+                                    SimplePtrHashTraits>;
+
+  HashMap<const void*, v8::Eternal<v8::DictionaryTemplate>, SimplePtrHashTraits>
+      v8_dict_template_map_;
+
   // Contains lists of eternal names, such as dictionary keys.
   HashMap<const void*, Vector<v8::Eternal<v8::Name>>> eternal_name_cache_;
 
   std::unique_ptr<StringCache> string_cache_;
   std::unique_ptr<V8PrivateProperty> private_property_;
-  // ScriptState corresponding to the BlinkInternalNonJSExposed world, used
-  // for regexp and continuation preserved embedder data.
-  Persistent<ScriptState> utility_script_state_;
+  Persistent<ScriptState> script_regexp_script_state_;
 
   bool constructor_mode_;
   friend class ConstructorMode;

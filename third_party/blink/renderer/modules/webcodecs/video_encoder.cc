@@ -117,9 +117,8 @@ namespace {
 
 constexpr const char kCategory[] = "media";
 
-int ComputeMaxActiveEncodes(
-    absl::optional<int> frame_delay = absl::nullopt,
-    absl::optional<int> input_capacity = absl::nullopt) {
+int ComputeMaxActiveEncodes(std::optional<int> frame_delay = std::nullopt,
+                            std::optional<int> input_capacity = std::nullopt) {
   constexpr int kDefaultEncoderFrameDelay = 0;
 
   // The maximum number of input frames above the encoder frame delay that we
@@ -164,9 +163,11 @@ bool IsAcceleratedConfigurationSupported(
     return false;
   }
 
-  // Hardware encoders don't currently support subsampling other than 4:2:0.
+  // Hardware encoders don't currently support high bit depths or subsamplings
+  // other than 4:2:0.
   if (options.subsampling.value_or(media::VideoChromaSampling::k420) !=
-      media::VideoChromaSampling::k420) {
+          media::VideoChromaSampling::k420 ||
+      options.bit_depth.value_or(8) != 8) {
     return false;
   }
 
@@ -348,14 +349,6 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     return result;
   }
 
-  if (parse_result->subsampling.value_or(media::VideoChromaSampling::k420) !=
-          media::VideoChromaSampling::k420 &&
-      parse_result->codec != media::VideoCodec::kVP9) {
-    result->not_supported_error_message =
-        "4:4:4 subsampling is currently only supported with VP9";
-    return result;
-  }
-
   // Some codec strings provide color space info, but for WebCodecs this is
   // ignored. Instead, the VideoFrames given to encode() are the source of truth
   // for input color space. Note also that the output color space is up to the
@@ -364,28 +357,13 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   result->profile = parse_result->profile;
   result->level = parse_result->level;
   result->options.subsampling = parse_result->subsampling;
+  result->options.bit_depth = parse_result->bit_depth;
 
+  // Ideally which profile supports a given subsampling would be checked by
+  // ParseVideoCodecString() above. Unfortunately, ParseVideoCodecString() is
+  // shared by many paths and enforcing profile and subsampling broke several
+  // sites. The error messages below are more helpful anyways.
   switch (result->codec) {
-    case media::VideoCodec::kVP9:
-      // Ideally this would checked by the parser above, but unfortunately the
-      // parser is shared by many paths and enforcing profile and subsampling
-      // broke several sites. The error message below is more helpful anyways.
-      if (parse_result->subsampling.value_or(
-              media::VideoChromaSampling::k420) ==
-          media::VideoChromaSampling::k420) {
-        break;
-      }
-      if (result->options.subsampling == media::VideoChromaSampling::k444 &&
-          (result->profile == media::VP9PROFILE_PROFILE1 ||
-           result->profile == media::VP9PROFILE_PROFILE3)) {
-        break;
-      }
-      result->not_supported_error_message =
-          "Unsupported VP9 subsampling; 4:2:0 subsampling is supported with "
-          "profile 0 and 2, while 4:4:4 subsampling is supported with "
-          "profile 1 and 3.";
-      return result;
-
     case media::VideoCodec::kH264: {
       if (config->hasAvc()) {
         std::string avc_format =
@@ -760,7 +738,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
                 media::EncoderStatus(
                     media::EncoderStatus::Codes::kEncoderInitializationError,
                     "Unable to create encoder (most likely unsupported "
-                    "codec/acceleration requirement combination)"));
+                    "codec/acceleration requirement combination)"),
+                /*is_error_message_from_software_codec=*/!is_platform_encoder);
     request->EndTracing();
     return;
   }
@@ -778,6 +757,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::VideoCodec codec,
+                          const bool is_platform_encoder,
                           media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
@@ -800,7 +780,9 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
           break;
       }
 
-      self->ReportError(error_message.c_str(), std::move(status));
+      self->ReportError(
+          error_message.c_str(), std::move(status),
+          /*is_error_message_from_software_codec=*/!is_platform_encoder);
     } else {
       base::UmaHistogramEnumeration("Blink.WebCodecs.VideoEncoder.Codec",
                                     codec);
@@ -823,7 +805,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
       std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
-          MakeUnwrappingCrossThreadHandle(request), active_config_->codec)));
+          MakeUnwrappingCrossThreadHandle(request), active_config_->codec,
+          is_platform_encoder)));
 }
 
 std::unique_ptr<media::VideoEncoderMetricsProvider>
@@ -870,9 +853,11 @@ void VideoEncoder::Trace(Visitor* visitor) const {
 }
 
 void VideoEncoder::ReportError(const char* error_message,
-                               const media::EncoderStatus& status) {
+                               const media::EncoderStatus& status,
+                               bool is_error_message_from_software_codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!status.is_ok());
+
   // ReportError() can be called before |encoder_metrics_provider_| is created
   // in media::VideoEncoder::Initialize() (e.g. there is no available
   // media::VideoEncoder). Since the case is about webrtc::VideoEncoder failure,
@@ -880,7 +865,13 @@ void VideoEncoder::ReportError(const char* error_message,
   if (encoder_metrics_provider_) {
     encoder_metrics_provider_->SetError(status);
   }
-  HandleError(logger_->MakeOperationError(error_message, status));
+
+  // We don't use `is_platform_encoder_` here since it may not match where the
+  // error is coming from in the case of a pending configuration change.
+  HandleError(
+      is_error_message_from_software_codec
+          ? logger_->MakeSoftwareCodecOperationError(error_message, status)
+          : logger_->MakeOperationError(error_message, status));
 }
 
 bool VideoEncoder::ReadyToProcessNextRequest() {
@@ -895,6 +886,9 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
   // TODO(crbug.com/1195433): Once support for alpha channel encoding is
   // implemented, |force_opaque| must be set based on the
   // VideoEncoderConfig.
+  //
+  // TODO(crbug.com/1116564): If we ever support high bit depth read back, this
+  // path should do something different based on options.bit_depth.
   const bool can_use_gmb =
       active_config_->options.subsampling != media::VideoChromaSampling::k444 &&
       !disable_accelerated_frame_pool_ &&
@@ -1152,7 +1146,8 @@ void VideoEncoder::OnEncodeDone(Request* request, media::EncoderStatus status) {
 
   active_encodes_--;
   if (!status.is_ok()) {
-    ReportError("Encoding error.", std::move(status));
+    ReportError("Encoding error.", std::move(status),
+                /*is_error_message_from_software_codec=*/!is_platform_encoder_);
   }
   request->EndTracing();
   ProcessRequests();
@@ -1237,7 +1232,9 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->ReportError("Encoder initialization error.", std::move(status));
+      self->ReportError(
+          "Encoder initialization error.", std::move(status),
+          /*is_error_message_from_software_codec=*/!is_platform_encoder);
       self->blocking_request_in_progress_ = nullptr;
       req->EndTracing();
       return;
@@ -1303,7 +1300,7 @@ void VideoEncoder::CallOutputCallback(
     ParsedConfig* active_config,
     uint32_t reset_count,
     media::VideoEncoderOutput output,
-    absl::optional<media::VideoEncoder::CodecDescription> codec_desc) {
+    std::optional<media::VideoEncoder::CodecDescription> codec_desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(active_config);
   if (!script_state_->ContextIsValid() || !output_callback_ ||

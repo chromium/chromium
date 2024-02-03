@@ -172,10 +172,12 @@ TrayBubbleView::InitParams CreateInitParamsForTrayBubble(
   TrayBubbleView::InitParams init_params;
   init_params.delegate = tray->GetWeakPtr();
   init_params.parent_window = tray->GetBubbleWindowContainer();
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = anchor_to_shelf_corner
-                                ? tray->shelf()->GetSystemTrayAnchorRect()
-                                : tray->GetAnchorBoundsInScreen();
+  if (anchor_to_shelf_corner) {
+    init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
+    init_params.anchor_rect = tray->shelf()->GetSystemTrayAnchorRect();
+  } else {
+    init_params.anchor_view = tray;
+  }
   init_params.insets = GetTrayBubbleInsets(tray->GetBubbleWindowContainer());
   init_params.shelf_alignment = tray->shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;

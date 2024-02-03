@@ -51,8 +51,8 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
   }
 }
 
-void GlanceableTrayChildBubble::Layout() {
-  views::View::Layout();
+void GlanceableTrayChildBubble::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
   if (error_message_) {
     error_message_->UpdateBoundsToContainer(GetLocalBounds());
   }

@@ -334,7 +334,7 @@ blink::mojom::ViewportFit HTMLMetaElement::ParseViewportFitValueAsEnum(
 }
 
 // static
-absl::optional<ui::mojom::blink::VirtualKeyboardMode>
+std::optional<ui::mojom::blink::VirtualKeyboardMode>
 HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const String& value) {
   if (EqualIgnoringASCIICase(value, "resizes-content"))
     return ui::mojom::blink::VirtualKeyboardMode::kResizesContent;
@@ -343,7 +343,7 @@ HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const String& value) {
   else if (EqualIgnoringASCIICase(value, "overlays-content"))
     return ui::mojom::blink::VirtualKeyboardMode::kOverlaysContent;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void HTMLMetaElement::ProcessViewportKeyValuePair(
@@ -406,7 +406,7 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
   } else if (key_string == "shrink-to-fit") {
     // Ignore vendor-specific argument.
   } else if (key_string == "interactive-widget") {
-    absl::optional<ui::mojom::blink::VirtualKeyboardMode> resize_type =
+    std::optional<ui::mojom::blink::VirtualKeyboardMode> resize_type =
         ParseVirtualKeyboardValueAsEnum(value_string);
 
     if (resize_type) {
@@ -547,7 +547,7 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
              EqualIgnoringASCIICase(name_value, "view-transition")) {
     ViewTransitionSupplement::From(GetDocument())
         ->OnMetaTagChanged(g_null_atom);
-  } else if (RuntimeEnabledFeatures::AppTitleEnabled() &&
+  } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
              EqualIgnoringASCIICase(name_value, "app-title")) {
     GetDocument().UpdateAppTitle();
   }
@@ -727,7 +727,7 @@ void HTMLMetaElement::ProcessContent() {
              EqualIgnoringASCIICase(name_value, "view-transition")) {
     ViewTransitionSupplement::From(GetDocument())
         ->OnMetaTagChanged(content_value);
-  } else if (RuntimeEnabledFeatures::AppTitleEnabled() &&
+  } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
              EqualIgnoringASCIICase(name_value, "app-title")) {
     GetDocument().UpdateAppTitle();
   }

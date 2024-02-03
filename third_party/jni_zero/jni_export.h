@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-
 #ifndef JNI_ZERO_JNI_EXPORT_H_
 #define JNI_ZERO_JNI_EXPORT_H_
 
-#if defined(ARCH_CPU_X86)
+#if defined(__i386__)
 // Dalvik JIT generated code doesn't guarantee 16-byte stack alignment on
 // x86 - use force_align_arg_pointer to realign the stack at the JNI
 // boundary. crbug.com/655248

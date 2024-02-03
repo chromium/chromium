@@ -94,8 +94,8 @@ std::string GetFeedReferrerUrl() {
 }
 
 bool IsCormorantEnabledForLocale(std::string country) {
-  const std::vector<std::string> launched_countries = {"AU", "GB", "NZ", "US",
-                                                       "ZA"};
+  const std::vector<std::string> launched_countries = {"AU", "CA", "GB",
+                                                       "NZ", "US", "ZA"};
   return base::Contains(launched_countries, country);
 }
 

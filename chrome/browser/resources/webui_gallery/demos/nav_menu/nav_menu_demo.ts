@@ -9,7 +9,7 @@ import '//resources/cr_elements/cr_hidden_style.css.js';
 import './nav_menu.js';
 import '../demo.css.js';
 
-import {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
+import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nav_menu_demo.html.js';

@@ -109,15 +109,17 @@ SmartCardContext::SmartCardContext(
       &SmartCardContext::CloseMojoConnection, WrapWeakPersistent(this)));
 }
 
-ScriptPromise SmartCardContext::listReaders(ScriptState* script_state,
-                                            ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<IDLString>> SmartCardContext::listReaders(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!EnsureMojoConnection(exception_state) ||
       !EnsureNoOperationInProgress(exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<IDLString>>();
   }
 
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+          script_state, exception_state.GetContext());
 
   SetOperationInProgress(resolver);
   scard_context_->ListReaders(
@@ -294,7 +296,7 @@ bool SmartCardContext::EnsureMojoConnection(
 }
 
 void SmartCardContext::OnListReadersDone(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
     device::mojom::blink::SmartCardListReadersResultPtr result) {
   ClearOperationInProgress(resolver);
 
@@ -304,7 +306,7 @@ void SmartCardContext::OnListReadersDone(
     // error. In web API we want to return an empty list of readers instead.
     if (mojom_error ==
         device::mojom::blink::SmartCardError::kNoReadersAvailable) {
-      resolver->Resolve<IDLSequence<IDLString>>(Vector<String>());
+      resolver->Resolve(Vector<String>());
       return;
     }
 
@@ -312,7 +314,7 @@ void SmartCardContext::OnListReadersDone(
     return;
   }
 
-  resolver->Resolve<IDLSequence<IDLString>>(std::move(result->get_readers()));
+  resolver->Resolve(std::move(result->get_readers()));
 }
 
 void SmartCardContext::OnGetStatusChangeDone(

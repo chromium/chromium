@@ -44,8 +44,7 @@ std::wstring GetAutoLaunchKeyName() {
   uint8_t hash[16];
   crypto::SHA256HashString(input, hash, std::size(hash));
   return base::StrCat(
-      {kAutolaunchKeyValue, L"_",
-       base::ASCIIToWide(base::HexEncode(hash, std::size(hash)))});
+      {kAutolaunchKeyValue, L"_", base::ASCIIToWide(base::HexEncode(hash))});
 }
 
 }  // namespace

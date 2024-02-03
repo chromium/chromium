@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_HOST_RESOLVER_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_HOST_RESOLVER_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -28,7 +29,6 @@
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "services/network/public/mojom/host_resolver.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -66,12 +66,12 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
     StructTraits<network::mojom::DnsConfigOverridesDataView,
                  net::DnsConfigOverrides> {
-  static const absl::optional<std::vector<net::IPEndPoint>>& nameservers(
+  static const std::optional<std::vector<net::IPEndPoint>>& nameservers(
       const net::DnsConfigOverrides& overrides) {
     return overrides.nameservers;
   }
 
-  static const absl::optional<std::vector<std::string>>& search(
+  static const std::optional<std::vector<std::string>>& search(
       const net::DnsConfigOverrides& overrides) {
     return overrides.search;
   }
@@ -83,7 +83,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
     return overrides.ndots.value_or(-1);
   }
 
-  static const absl::optional<base::TimeDelta>& fallback_period(
+  static const std::optional<base::TimeDelta>& fallback_period(
       const net::DnsConfigOverrides& overrides) {
     return overrides.fallback_period;
   }
@@ -97,7 +97,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
   static network::mojom::DnsConfigOverrides_Tristate use_local_ipv6(
       const net::DnsConfigOverrides& overrides);
 
-  static const absl::optional<net::DnsOverHttpsConfig>& dns_over_https_config(
+  static const std::optional<net::DnsOverHttpsConfig>& dns_over_https_config(
       const net::DnsConfigOverrides& overrides) {
     return overrides.dns_over_https_config;
   }

@@ -54,7 +54,7 @@ export class FeedbackBrowserProxyImpl implements FeedbackBrowserProxy {
   }
 
   getUserMedia(params: any): Promise<MediaStream|undefined> {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       navigator.webkitGetUserMedia(
           params, stream => resolve(stream), error => reject(error));
     });

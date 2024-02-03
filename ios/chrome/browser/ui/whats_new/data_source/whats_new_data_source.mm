@@ -278,7 +278,7 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
     GURL gurl(base::SysNSStringToUTF8(url));
     [whats_new_item setLearnMoreURL:gurl];
   } else {
-    [whats_new_item setLearnMoreURL:GURL::EmptyGURL()];
+    [whats_new_item setLearnMoreURL:GURL()];
   }
 
   // Load screenshot image.

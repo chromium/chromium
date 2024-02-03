@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384959399684842514">Download sospeso</translation>
 <translation id="1415402041810619267">URL troncato</translation>
-<translation id="1426410128494586442">Sì</translation>
 <translation id="1434873037477293673">scheda calo di prezzo</translation>
 <translation id="1448064542941920355">Diminuisci lo zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sito}other{<ph name="SITE_COUNT" /> siti}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Per consentire all'app <ph name="APP_NAME" /> di accedere alla fotocamera, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
 <translation id="2238944249568001759">Ricerche suggerite in base all'ultima scheda</translation>
+<translation id="2241587408274973373">Schede pagina Nuova scheda</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2253414712144136228">Rimuovi <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sito bloccato}other{# siti bloccati}}</translation>
@@ -103,13 +103,12 @@
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2678468611080193228">Prova a consentire temporaneamente i cookie di terze parti, il che significa meno protezione, ma è più probabile che le funzionalità del sito funzionino.</translation>
-<translation id="2683434792633810741">Vuoi eliminare e reimpostare?</translation>
+<translation id="2683434792633810741">Vuoi eliminare e reimpostare i dati?</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
 <translation id="2750481671343847896">I siti possono mostrare richieste di accesso da servizi di identità.</translation>
 <translation id="2790501146643349491">Quando l'opzione è attiva, i siti chiusi di recente possono terminare l'invio e la ricezione di dati. Quando l'opzione è disattivata, i siti chiusi di recente non possono terminare l'invio o la ricezione di dati.</translation>
 <translation id="2822354292072154809">Vuoi reimpostare tutte le autorizzazioni del sito per <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Richiedi visualizzazione mobile</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2874939134665556319">Traccia precedente</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Visualizzatore certificati</translation>
 <translation id="2979365474350987274">I cookie di terze parti sono limitati</translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
-<translation id="3013291976881901233">Dispositivi MIDI</translation>
 <translation id="301521992641321250">Autorizzazione bloccata automaticamente</translation>
 <translation id="3069226013421428034">Consenti l'accesso di terze parti per un sito specifico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Scade domani}other{Scade tra # giorni}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Connesso a un dispositivo USB</translation>
 <translation id="4194328954146351878">Chiedi conferma prima di consentire ai siti di vedere e modificare informazioni su dispositivi NFC (opzione consigliata)</translation>
 <translation id="4200726100658658164">Apri Impostazioni di geolocalizzazione</translation>
-<translation id="4212246570487010370">Continua la navigazione</translation>
 <translation id="4226663524361240545">Le notifiche possono far vibrare il dispositivo</translation>
 <translation id="4259722352634471385">Navigazione bloccata: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Autorizzazione consentita</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Sposta giù</translation>
 <translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
 <translation id="6766622839693428701">Fai scorrere verso il basso per chiudere.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Da <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Seleziona un'opzione per <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6818926723028410516">Seleziona elementi</translation>

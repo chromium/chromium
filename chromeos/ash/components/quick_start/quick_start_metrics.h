@@ -296,6 +296,11 @@ class QuickStartMetrics {
   // received.
   std::unique_ptr<base::ElapsedTimer> message_elapsed_timer_;
 
+  // Timer to keep track of challenge bytes fetch requests. It should be set at
+  // the start of a challenge bytes fetch and destroyed when a response is
+  // received.
+  std::unique_ptr<base::ElapsedTimer> challenge_bytes_fetch_timer_;
+
   // Timer to keep track of remote attestation certificate fetch requests. It
   // should be set at the start of a certificate fetch and destroyed when a
   // response is received.

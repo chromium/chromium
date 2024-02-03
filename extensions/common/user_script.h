@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -240,7 +241,7 @@ class UserScript {
   ContentList& css_scripts() { return css_scripts_; }
   const ContentList& css_scripts() const { return css_scripts_; }
 
-  const std::string& extension_id() const { return host_id_.id; }
+  const ExtensionId& extension_id() const { return host_id_.id; }
 
   const mojom::HostID& host_id() const { return host_id_; }
   void set_host_id(const mojom::HostID& host_id) { host_id_ = host_id; }

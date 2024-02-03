@@ -44,8 +44,9 @@ constexpr cros_styles::ColorName kButtonHighlightColor =
 
 // CompletionSuggestionView renders a suggestion.
 class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
+  METADATA_HEADER(CompletionSuggestionView, views::Button)
+
  public:
-  METADATA_HEADER(CompletionSuggestionView);
   explicit CompletionSuggestionView(PressedCallback callback);
   CompletionSuggestionView(const CompletionSuggestionView&) = delete;
   CompletionSuggestionView& operator=(const CompletionSuggestionView&) = delete;
@@ -70,7 +71,7 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
   friend class SuggestionWindowViewTest;
   FRIEND_TEST_ALL_PREFIXES(SuggestionWindowViewTest, ShortcutSettingTest);
 
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 

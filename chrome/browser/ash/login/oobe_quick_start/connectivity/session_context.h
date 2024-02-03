@@ -34,6 +34,10 @@ class SessionContext {
   SessionContext& operator=(const SessionContext& other);
   ~SessionContext();
 
+  // Updates session info with new random values. Used when a user exits Quick
+  // Start in case they attempt to re-enter.
+  void ResetSession();
+
   SessionId session_id() const { return session_id_; }
 
   AdvertisingId advertising_id() const { return advertising_id_; }
@@ -54,6 +58,7 @@ class SessionContext {
   base::Value::Dict GetPrepareForUpdateInfo();
 
  private:
+  void PopulateRandomSessionContext();
   // When Quick Start is automatically resumed after the target device updates,
   // this method retrieves the previously-persisted |advertising_id| and
   // |shared_secret|.

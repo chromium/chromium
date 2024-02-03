@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
@@ -172,8 +173,8 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Return the edit context bounds in window coordinates.
   virtual void GetEditContextBoundsInWindow(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) = 0;
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) = 0;
 
   virtual int32_t ComputeWebTextInputNextPreviousFlags() = 0;
   virtual void ResetVirtualKeyboardVisibilityRequest() = 0;

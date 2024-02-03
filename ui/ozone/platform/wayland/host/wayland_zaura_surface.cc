@@ -10,6 +10,21 @@
 
 namespace ui {
 
+PlatformWindowOcclusionState
+WaylandOcclusionStateToPlatformWindowOcclusionState(uint32_t mode) {
+  switch (mode) {
+    case ZAURA_SURFACE_OCCLUSION_STATE_UNKNOWN:
+      return PlatformWindowOcclusionState::kUnknown;
+    case ZAURA_SURFACE_OCCLUSION_STATE_VISIBLE:
+      return PlatformWindowOcclusionState::kVisible;
+    case ZAURA_SURFACE_OCCLUSION_STATE_OCCLUDED:
+      return PlatformWindowOcclusionState::kOccluded;
+    case ZAURA_SURFACE_OCCLUSION_STATE_HIDDEN:
+      return PlatformWindowOcclusionState::kHidden;
+  }
+  return PlatformWindowOcclusionState::kUnknown;
+}
+
 WaylandZAuraSurface::WaylandZAuraSurface(zaura_shell* zaura_shell,
                                          wl_surface* wl_surface,
                                          WaylandConnection* connection)
@@ -249,7 +264,8 @@ void WaylandZAuraSurface::OnOcclusionStateChanged(void* data,
                                                   uint32_t mode) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
-    self->delegate_->OcclusionStateChanged(mode);
+    self->delegate_->OcclusionStateChanged(
+        WaylandOcclusionStateToPlatformWindowOcclusionState(mode));
   }
 }
 

@@ -8,6 +8,7 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 After insertion at index 0:
 [expanded] 
@@ -18,6 +19,7 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 After appending and changing a 'compound' property:
 [expanded] 
@@ -30,6 +32,7 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 After insertion at index 2:
 [expanded] 
@@ -43,5 +46,6 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 

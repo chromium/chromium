@@ -306,12 +306,6 @@
     padding: 16px;
   }
 
-  .result-text {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    user-select: text;
-  }
-
   #resultOptions {
     display: flex;
     align-items: flex-end;
@@ -533,17 +527,15 @@
         </cr-loading-gradient>
       </div>
       <div id="resultContainer" class="result-container"
-          hidden="[[!hasPartialOrCompleteResponse_(response_,
-              partialResponse_)]]">
+          hidden="[[!hasOutput_]]">
         <div id="resultContainerInner">
-          <div class="result-text"
-              hidden="[[hasPartialResponse_(partialResponse_)]]"
-              >[[getTrimmedResult_(response_.result)]]</div>
-          <div id="partialResultText" class="result-text"
-              hidden="[[!hasPartialResponse_(partialResponse_)]]"
-              >[[getTrimmedPartialResult_(partialResponse_)]]</div>
+          <compose-result-text id="resultText" text-input="[[responseText_]]"
+              is-output-complete="{{outputComplete_}}"
+              has-output="{{hasOutput_}}"
+              has-partial-output="{{hasPartialOutput_}}">
+          </compose-result-text>
           <div id="resultOptions"
-              inert$="[[hasPartialResponse_(partialResponse_)]]">
+              inert$="[[!outputComplete_]]">
             <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
                 aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
               <template is="dom-repeat" items="[[lengthOptions_]]">
@@ -591,8 +583,8 @@
     </div>
 
     <div id="resultFooter" class="footer"
-        hidden$="[[!hasSuccessfulResponse_(response_)]]"
-        inert$="[[hasPartialResponse_(partialResponse_)]]">
+        hidden$="[[!outputComplete_]]"
+        inert$="[[hasPartialOutput_]]">
       <div class="footer-text">
         <div on-click="onFooterClick_">
           <b id="onDeviceUsedFooter"
@@ -632,15 +624,23 @@
         input-params="[[inputParams_]]">
       </compose-textarea>
       <div class="footer">
-        <cr-button id="cancelEditButton" class="tonal-button"
-          on-click="onCancelEditClick_">
-          $i18n{editCancelButton}
-        </cr-button>
+        <if expr="not(is_win)">
+          <cr-button id="cancelEditButton" class="tonal-button"
+            on-click="onCancelEditClick_">
+            $i18n{editCancelButton}
+          </cr-button>
+        </if>
         <cr-button id="submitEditButton" class="action-button"
           on-click="onSubmitEdit_"
           disabled$="[[!isEditSubmitEnabled_]]">
           $i18n{editUpdateButton}
         </cr-button>
+        <if expr="is_win">
+          <cr-button id="cancelEditButton" class="tonal-button"
+            on-click="onCancelEditClick_">
+            $i18n{editCancelButton}
+          </cr-button>
+        </if>
       </div>
     </div>
   </div>

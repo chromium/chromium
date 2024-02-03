@@ -335,7 +335,7 @@ void SuggestionWindowView::SetCandidateHighlighted(
     view->SetHighlight(highlighted);
 }
 
-BEGIN_METADATA(SuggestionWindowView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(SuggestionWindowView)
 END_METADATA
 
 }  // namespace ime

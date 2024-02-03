@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,12 +68,6 @@ BookmarkCodec::BookmarkCodec() = default;
 
 BookmarkCodec::~BookmarkCodec() = default;
 
-base::Value::Dict BookmarkCodec::Encode(BookmarkModel* model,
-                                        std::string sync_metadata_str) {
-  return Encode(model->bookmark_bar_node(), model->other_node(),
-                model->mobile_node(), std::move(sync_metadata_str));
-}
-
 base::Value::Dict BookmarkCodec::Encode(
     const BookmarkNode* bookmark_bar_node,
     const BookmarkNode* other_folder_node,
@@ -110,12 +103,16 @@ base::Value::Dict BookmarkCodec::Encode(
 }
 
 bool BookmarkCodec::Decode(const base::Value::Dict& value,
+                           std::set<int64_t> already_assigned_ids,
                            BookmarkNode* bb_node,
                            BookmarkNode* other_folder_node,
                            BookmarkNode* mobile_folder_node,
                            int64_t* max_id,
                            std::string* sync_metadata_str) {
-  ids_.clear();
+  const int64_t max_already_assigned_id =
+      already_assigned_ids.empty() ? 0 : *already_assigned_ids.rbegin();
+
+  ids_ = std::move(already_assigned_ids);
   uuids_ = {base::Uuid::ParseLowercase(kRootNodeUuid),
             base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
             base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
@@ -132,10 +129,17 @@ bool BookmarkCodec::Decode(const base::Value::Dict& value,
   FinalizeChecksum();
   // If either the checksums differ or some IDs were missing/not unique,
   // reassign IDs.
-  if (!ids_valid_ || computed_checksum() != stored_checksum())
+  if (!ids_valid_ || computed_checksum_ != stored_checksum_) {
+    maximum_id_ = max_already_assigned_id;
     ReassignIDs(bb_node, other_folder_node, mobile_folder_node);
+  }
   *max_id = maximum_id_ + 1;
   return success;
+}
+
+bool BookmarkCodec::required_recovery() const {
+  return ids_reassigned_ || uuids_reassigned_ ||
+         computed_checksum_ != stored_checksum_;
 }
 
 base::Value::Dict BookmarkCodec::EncodeNode(const BookmarkNode* node) {
@@ -455,7 +459,7 @@ void BookmarkCodec::DecodeMetaInfoHelper(
 void BookmarkCodec::ReassignIDs(BookmarkNode* bb_node,
                                 BookmarkNode* other_node,
                                 BookmarkNode* mobile_node) {
-  maximum_id_ = 0;
+  ids_.clear();
   ReassignIDsHelper(bb_node);
   ReassignIDsHelper(other_node);
   ReassignIDsHelper(mobile_node);
@@ -465,6 +469,7 @@ void BookmarkCodec::ReassignIDs(BookmarkNode* bb_node,
 void BookmarkCodec::ReassignIDsHelper(BookmarkNode* node) {
   DCHECK(node);
   node->set_id(++maximum_id_);
+  ids_.insert(node->id());
   for (const auto& child : node->children())
     ReassignIDsHelper(child.get());
 }

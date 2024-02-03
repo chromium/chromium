@@ -61,6 +61,8 @@ class WebContentsViewChildFrame : public WebContentsView,
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
+  BackForwardTransitionAnimationManager*
+  GetBackForwardTransitionAnimationManager() override;
 
   // Backend implementation of RenderViewHostDelegateView.
   void ShowContextMenu(RenderFrameHost& render_frame_host,

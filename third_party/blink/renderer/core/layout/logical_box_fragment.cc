@@ -25,7 +25,7 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
                       BlockSize() - BlockSize() / 2 + margins.line_under);
   }
 
-  absl::optional<LayoutUnit> baseline;
+  std::optional<LayoutUnit> baseline;
   switch (physical_fragment_.Style().BaselineSource()) {
     case EBaselineSource::kAuto:
       baseline = GetPhysicalBoxFragment().UseLastBaselineForInlineBaseline()

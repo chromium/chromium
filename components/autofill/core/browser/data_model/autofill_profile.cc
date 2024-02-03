@@ -379,7 +379,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   company_ = profile.company_;
   phone_number_ = profile.phone_number_;
   phone_number_.set_profile(this);
-  birthdate_ = profile.birthdate_;
 
   address_ = profile.address_;
   set_language_code(profile.language_code());
@@ -815,7 +814,6 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   CompanyInfo company;
   PhoneNumber phone_number(this);
   Address address(profile.GetAddressCountryCode());
-  Birthdate birthdate;
 
   DVLOG(1) << "Merging profiles:\nSource = " << profile << "\nDest = " << *this;
 
@@ -829,8 +827,7 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
       !comparator.MergeEmailAddresses(profile, *this, email) ||
       !comparator.MergeCompanyNames(profile, *this, company) ||
       !comparator.MergePhoneNumbers(profile, *this, phone_number) ||
-      !comparator.MergeAddresses(profile, *this, address) ||
-      !comparator.MergeBirthdates(profile, *this, birthdate)) {
+      !comparator.MergeAddresses(profile, *this, address)) {
     NOTREACHED();
     return false;
   }
@@ -883,12 +880,6 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
     modified = true;
   }
 
-  if (birthdate_ != birthdate) {
-    MergeFormGroupTokenQuality(birthdate, profile);
-    birthdate_ = birthdate;
-    modified = true;
-  }
-
   return modified;
 }
 
@@ -924,21 +915,6 @@ void AutofillProfile::MergeFormGroupTokenQuality(
       // Since observations cannot be merged, reset the token quality.
       token_quality_.ResetObservationsForStoredType(type);
     }
-  }
-}
-
-void AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
-                                         const std::string& app_locale) {
-  // SaveAdditionalInfo should not have been called if the profiles were not
-  // already deemed to be mergeable.
-  DCHECK(AutofillProfileComparator(app_locale).AreMergeable(*this, profile));
-
-  if (MergeDataFrom(profile, app_locale)) {
-    AutofillMetrics::LogProfileActionOnFormSubmitted(
-        AutofillMetrics::EXISTING_PROFILE_UPDATED);
-  } else {
-    AutofillMetrics::LogProfileActionOnFormSubmitted(
-        AutofillMetrics::EXISTING_PROFILE_USED);
   }
 }
 
@@ -1244,9 +1220,6 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
     case FieldTypeGroup::kAddress:
       return &address_;
 
-    case FieldTypeGroup::kBirthdateField:
-      return &birthdate_;
-
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kIban:
@@ -1355,7 +1328,6 @@ AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kBirthdateField:
       return field_type;
     // For field-by-field filling in manual fallback autofill, the field's type
     // will not be used but the type that generated the suggested value will.

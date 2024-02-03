@@ -380,6 +380,14 @@ suite('<settings-display>', () => {
           externalDisplayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kNightLight));
 
+      const externalDisplayNightLightStatusHistogram =
+          displaySettingsProvider.getDisplayNightLightStatusHistogram(
+              /*is_internal=*/ false);
+      assertEquals(
+          1,
+          externalDisplayNightLightStatusHistogram.get(
+              /*night_light_status=*/ true));
+
       // Mock user updating night light schedule.
       const schedule = displayNightLight.shadowRoot!
                            .querySelector<SettingsDropdownMenuElement>(
@@ -397,6 +405,15 @@ suite('<settings-display>', () => {
           externalDisplayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType
                   .kNightLightSchedule));
+
+      const externalDisplayNightLightScheduleHistogram =
+          displaySettingsProvider.getDisplayNightLightScheduleHistogram(
+              /*is_internal=*/ false);
+      assertEquals(
+          1,
+          externalDisplayNightLightScheduleHistogram.get(
+              displaySettingsProviderMojom
+                  .DisplaySettingsNightLightScheduleOption.kSunsetToSunrise));
     });
 
     test('mirror mode', () => {
@@ -413,6 +430,10 @@ suite('<settings-display>', () => {
           1,
           displayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
+      assertEquals(
+          1,
+          displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
+              /*mirror_mode_status=*/ true));
     });
 
     test('unified mode', () => {
@@ -428,6 +449,10 @@ suite('<settings-display>', () => {
           1,
           displayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kUnifiedMode));
+      assertEquals(
+          1,
+          displaySettingsProvider.getDisplayUnifiedModeStatusHistogram().get(
+              /*mirror_mode_status=*/ true));
     });
 
     test('primary display', () => {

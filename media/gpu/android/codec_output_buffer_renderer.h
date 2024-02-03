@@ -60,11 +60,11 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   void InvalidateForTesting() { Invalidate(); }
 
   // Runs the frame info callback when UpdateTexImage() is called. If the buffer
-  // is dropped without being rendered to the front buffer, absl::nullopt will
+  // is dropped without being rendered to the front buffer, std::nullopt will
   // be sent for the coded size and visible rect.
   using FrameInfoCallback =
-      base::OnceCallback<void(absl::optional<gfx::Size> coded_size,
-                              absl::optional<gfx::Rect> visible_rect)>;
+      base::OnceCallback<void(std::optional<gfx::Size> coded_size,
+                              std::optional<gfx::Rect> visible_rect)>;
   void set_frame_info_callback(FrameInfoCallback callback) {
     frame_info_callback_ = std::move(callback);
   }

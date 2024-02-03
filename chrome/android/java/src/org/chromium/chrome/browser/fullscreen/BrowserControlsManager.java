@@ -538,6 +538,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mHidingTokenHolder.releaseToken(token);
     }
 
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     private boolean shouldShowAndroidControls() {
         if (mControlContainer == null) return false;
         if (mHidingTokenHolder.hasTokens()) {
@@ -556,6 +557,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             FrameLayout.LayoutParams layoutParams =
                     (FrameLayout.LayoutParams) child.getLayoutParams();
             if (Gravity.TOP == (layoutParams.gravity & Gravity.FILL_VERTICAL)) {
+                TraceEvent.instant("BCM::showAndroidControls" + child.getId());
                 showControls = true;
                 break;
             }

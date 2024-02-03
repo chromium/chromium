@@ -302,7 +302,7 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
         the parents or children of the relationship.
 
         The node types has the following methods:
-        * link(name, parent_key, child_key): Create a link between the nodes
+        * link(parent_key, child_key): Create a link between the nodes
             identified by `parent_key` and `child_key`. The name is an arbitrary
             name that will appear in error messages if there are issues with the
             node.

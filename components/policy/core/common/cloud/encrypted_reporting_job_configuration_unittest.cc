@@ -221,8 +221,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   base::Value GenerateSingleRecord(std::string_view encrypted_wrapped_record,
                                    ::reporting::Priority priority = kPriority) {
     base::Value::Dict record_dictionary;
-    std::string base64_encode;
-    base::Base64Encode(encrypted_wrapped_record, &base64_encode);
+    std::string base64_encode = base::Base64Encode(encrypted_wrapped_record);
     record_dictionary.Set(reporting::json_keys::kEncryptedWrappedRecord,
                           base64_encode);
 

@@ -106,7 +106,7 @@ void NotificationOverflowView::AddIcon(
     overflow_icon_->SetVisible(true);
     image_views_.at(kMaxOverflowIcons)->SetVisible(false);
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void NotificationOverflowView::RemoveIcon(const std::string& notification_id) {
@@ -116,11 +116,11 @@ void NotificationOverflowView::RemoveIcon(const std::string& notification_id) {
     RemoveChildViewT(*it);
     image_views_.erase(it);
     MaybeRemoveOverflowIcon();
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 
-void NotificationOverflowView::Layout() {
+void NotificationOverflowView::Layout(PassKey) {
   separator_->SetBoundsRect(
       gfx::Rect(width(), separator_->GetPreferredSize().height()));
 

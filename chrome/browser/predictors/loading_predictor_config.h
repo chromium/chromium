@@ -47,6 +47,9 @@ enum class HintOrigin {
 
   // Triggered by bookmark bar.
   BOOKMARK_BAR,
+
+  // Triggered by New Tab Page.
+  NEW_TAB_PAGE,
 };
 
 // Gets the string that can be used to record histograms for the hint origin.

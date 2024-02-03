@@ -4,6 +4,7 @@
 
 #include "services/network/shared_storage/shared_storage_test_utils.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/shared_storage/shared_storage_header_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 namespace network {
@@ -111,7 +111,7 @@ HandleSharedStorageRequestMultiple(
     return nullptr;
   }
 
-  absl::optional<std::string> write_header;
+  std::optional<std::string> write_header;
   auto it = request.headers.find(kSecSharedStorageWritableHeader);
   if ((base::EndsWith(path, kSharedStorageWritePathSuffix) &&
        it != request.headers.end() &&
@@ -121,7 +121,7 @@ HandleSharedStorageRequestMultiple(
     write_header = std::move(
         shared_storage_write_headers[SharedStorageRequestCount::Get() - 1]);
   }
-  absl::optional<std::string> location;
+  std::optional<std::string> location;
   const std::string& query = request.GetURL().query();
   if (base::StartsWith(path, MakeSharedStorageRedirectPrefix()) &&
       !query.empty()) {

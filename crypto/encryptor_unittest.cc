@@ -432,8 +432,7 @@ TEST(EncryptorTest, EncryptAES128CBCRegression) {
 
   std::string ciphertext;
   EXPECT_TRUE(encryptor.Encrypt(plaintext, &ciphertext));
-  EXPECT_EQ(expected_ciphertext_hex, base::HexEncode(ciphertext.data(),
-                                                     ciphertext.size()));
+  EXPECT_EQ(expected_ciphertext_hex, base::HexEncode(ciphertext));
 
   std::string decrypted;
   EXPECT_TRUE(encryptor.Decrypt(ciphertext, &decrypted));
@@ -484,8 +483,7 @@ TEST(EncryptorTest, EmptyEncryptCBC) {
 
   std::string ciphertext;
   EXPECT_TRUE(encryptor.Encrypt(plaintext, &ciphertext));
-  EXPECT_EQ(expected_ciphertext_hex, base::HexEncode(ciphertext.data(),
-                                                     ciphertext.size()));
+  EXPECT_EQ(expected_ciphertext_hex, base::HexEncode(ciphertext));
 
   std::string decrypted;
   EXPECT_TRUE(encryptor.Decrypt(ciphertext, &decrypted));

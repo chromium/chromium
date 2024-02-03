@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "chrome/browser/password_manager/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -71,8 +72,8 @@ CreateProfilePasswordStoreBackend(
         // supports talking to the account storage in GMS Core. All local
         // storage requests go to the built-in backend instead.
         std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-            prefs, affiliations_prefetcher),
-        prefs, password_manager::IsAccountStore(false));
+            prefs, affiliations_prefetcher, password_manager::kProfileStore),
+        prefs, password_manager::kProfileStore);
   }
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
       std::move(profile_login_db),
@@ -103,14 +104,13 @@ CreateAccountPasswordStoreBackend(
   // syncs it. As such, it expects local data to be cleared every time when
   // sync is permanently disabled and thus uses
   // WipeModelUponSyncDisabledBehavior::kAlways.
-  return std::make_unique<
-      password_manager::PasswordStoreBackendMigrationDecorator>(
+  return std::make_unique<password_manager::PasswordStoreProxyBackend>(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways),
       std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, affiliations_prefetcher),
-      prefs, password_manager::IsAccountStore(true));
+          prefs, affiliations_prefetcher, password_manager::kAccountStore),
+      prefs, password_manager::kAccountStore);
 #else
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
       std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,

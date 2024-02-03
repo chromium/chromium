@@ -130,7 +130,7 @@ FormPredictions ConvertToFormPredictions(
     }
 
     field_predictions.emplace_back();
-    field_predictions.back().renderer_id = field.unique_renderer_id;
+    field_predictions.back().renderer_id = field.renderer_id;
     field_predictions.back().signature = current_signature;
     field_predictions.back().type = server_type;
     field_predictions.back().may_use_prefilled_placeholder =

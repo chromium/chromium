@@ -256,12 +256,17 @@ BASE_FEATURE(kJavaScriptRegExpModifiers,
 
 // Enables the `with` syntax for the Import Attributes proposal.
 BASE_FEATURE(kJavaScriptImportAttributes,
-             "kJavaScriptImportAttributes",
+             "JavaScriptImportAttributes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the set methods proposal.
 BASE_FEATURE(kJavaScriptSetMethods,
              "JavaScriptSetMethods",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the RegExp duplicate named capture groups proposal.
+BASE_FEATURE(kJavaScriptRegExpDuplicateNamedGroups,
+             "JavaScriptRegExpDuplicateNamedGroups",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // WebAssembly features.

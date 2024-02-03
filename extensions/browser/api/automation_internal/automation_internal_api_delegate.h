@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_AUTOMATION_INTERNAL_AUTOMATION_INTERNAL_API_DELEGATE_H_
 
 #include "extensions/common/extension_id.h"
-#include "extensions/common/extension_messages.h"
 
 namespace extensions {
 class AutomationInternalApiDelegate;

@@ -52,7 +52,7 @@
                inBackground:(BOOL)inBackground
                    appendTo:(OpenPosition)append {
   return [self initWithURL:URL
-                virtualURL:GURL::EmptyGURL()
+                virtualURL:GURL()
                   referrer:referrer
                inIncognito:inIncognito
               inBackground:inBackground

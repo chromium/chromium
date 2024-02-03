@@ -32,9 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATIONS_H_
 
 #include <memory>
+#include <optional>
+
 #include "base/time/time.h"
 #include "cc/animation/keyframe_model.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
@@ -148,7 +149,7 @@ class CORE_EXPORT CompositorAnimations {
   static void StartAnimationOnCompositor(
       const Element&,
       int group,
-      absl::optional<double> start_time,
+      std::optional<double> start_time,
       base::TimeDelta time_offset,
       const Timing&,
       const Timing::NormalizedTiming&,
@@ -194,7 +195,7 @@ class CORE_EXPORT CompositorAnimations {
       const Timing&,
       const Timing::NormalizedTiming&,
       int group,
-      absl::optional<double> start_time,
+      std::optional<double> start_time,
       base::TimeDelta time_offset,
       const KeyframeEffectModelBase&,
       Vector<std::unique_ptr<cc::KeyframeModel>>& animations,

@@ -458,6 +458,10 @@ const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
     "NtpHistoryClustersModuleCategoriesBoostlistParam";
 const char kNtpHistoryClustersModuleMaxClustersParam[] =
     "NtpHistoryClustersModuleMaxClustersParam";
+const char kNtpHistoryClustersModuleMaxCategoriesToRecordParam[] =
+    "NtpHistoryClustersModuleMaxCategoriesToRecordParam";
+const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[] =
+    "NtpHistoryClustersModuleMinCategoryWeightToRecordParam";
 const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
     "NtpHistoryClustersModuleRankingMetricsQueryDaysParam";
 const char kNtpHistoryClustersModuleScoreThresholdParam[] =
@@ -465,6 +469,8 @@ const char kNtpHistoryClustersModuleScoreThresholdParam[] =
 const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
+const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =
+    "NtpTabResumptionModuleVisibilityThresholdDataParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
 
 const base::FeatureParam<bool> kNtpRealboxCr23ExpandedStateBgMatchesOmnibox(

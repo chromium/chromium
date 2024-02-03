@@ -32,7 +32,7 @@ class SplitViewDividerView : public views::View,
   void SetDividerBarVisible(bool visible);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

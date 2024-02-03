@@ -56,7 +56,7 @@ v8::Local<v8::Value> Location::Wrap(ScriptState* script_state) {
   // the cross-origin status changes by changing properties like
   // |document.domain|.
   if (IsA<RemoteDOMWindow>(dom_window_.Get())) {
-    DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+    DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));
 
     DOMWrapperWorld& world = script_state->World();
     v8::Isolate* isolate = script_state->GetIsolate();

@@ -95,9 +95,13 @@ void ProcessSeed(EntropyProviders&& entropy_providers) {
 // behavior clients that disable high entropy randomization, such as clients
 // not opted in to UMA, and clients on platforms like webview where high entropy
 // randomization is not supported.
+// TODO(crbug.com/1518401): add anti-shuffle test for studies constrained to a
+// layer with LIMTIED entropy mode after the randomization logic lands.
 
 TEST(VariationsAntishuffleTest, HighEntropyNil_LowEntropy0) {
-  ProcessSeed(EntropyProviders("", {0, 8000}));
+  ProcessSeed(EntropyProviders(
+      "", {0, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view()));
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt"), "group87");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_WithSalt"), "group22");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt_LowEntropy"),
@@ -107,7 +111,9 @@ TEST(VariationsAntishuffleTest, HighEntropyNil_LowEntropy0) {
 }
 
 TEST(VariationsAntishuffleTest, HighEntropyId0_LowEntropy0) {
-  ProcessSeed(EntropyProviders("clientid_0", {0, 8000}));
+  ProcessSeed(EntropyProviders(
+      "clientid_0", {0, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view()));
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt"), "group64");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_WithSalt"), "group15");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt_LowEntropy"),
@@ -117,7 +123,9 @@ TEST(VariationsAntishuffleTest, HighEntropyId0_LowEntropy0) {
 }
 
 TEST(VariationsAntishuffleTest, HighEntropyId1_LowEntropy0) {
-  ProcessSeed(EntropyProviders("clientid_1", {0, 8000}));
+  ProcessSeed(EntropyProviders(
+      "clientid_1", {0, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view()));
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt"), "group02");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_WithSalt"), "group40");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt_LowEntropy"),
@@ -127,7 +135,9 @@ TEST(VariationsAntishuffleTest, HighEntropyId1_LowEntropy0) {
 }
 
 TEST(VariationsAntishuffleTest, HighEntropyNil_LowEntropy7999) {
-  ProcessSeed(EntropyProviders("", {7999, 8000}));
+  ProcessSeed(EntropyProviders(
+      "", {7999, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view()));
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt"), "group43");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_WithSalt"), "group48");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt_LowEntropy"),
@@ -137,7 +147,9 @@ TEST(VariationsAntishuffleTest, HighEntropyNil_LowEntropy7999) {
 }
 
 TEST(VariationsAntishuffleTest, HighEntropyId0_LowEntropy7999) {
-  ProcessSeed(EntropyProviders("clientid_0", {7999, 8000}));
+  ProcessSeed(EntropyProviders(
+      "clientid_0", {7999, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view()));
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt"), "group64");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_WithSalt"), "group15");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt_LowEntropy"),
@@ -147,7 +159,9 @@ TEST(VariationsAntishuffleTest, HighEntropyId0_LowEntropy7999) {
 }
 
 TEST(VariationsAntishuffleTest, HighEntropyId1_LowEntropy7999) {
-  ProcessSeed(EntropyProviders("clientid_1", {7999, 8000}));
+  ProcessSeed(EntropyProviders(
+      "clientid_1", {7999, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view()));
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt"), "group02");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_WithSalt"), "group40");
   EXPECT_EQ(base::FieldTrialList::FindFullName("Study_NoSalt_LowEntropy"),

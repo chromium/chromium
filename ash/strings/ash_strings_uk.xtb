@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Відкрити посилання на новій вкладці й залишитися на поточній вкладці</translation>
 <translation id="353086728817903341">Підключено до стількох пристроїв: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Додатки на панелі запуску</translation>
+<translation id="3537350467437346467">Ви переглядали</translation>
 <translation id="3539957339480430241">Точка доступу <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Відхиліть налаштування перегляду нещодавніх фотографій і медіафайлів на телефоні</translation>
 <translation id="3542066395059568317">Ви побачите рекомендації, тож зможете продовжити з місця зупинки. Натисніть правою кнопкою миші, щоб видалити їх.</translation>
+<translation id="3547318469722231257">Ви змінювали</translation>
 <translation id="3552189655002856821">Wi-Fi вимкнено</translation>
 <translation id="3554215588514239132">Показати або сховати панель Інструментів розробника</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />: закріплено</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">На початок</translation>
 <translation id="3859364108019690">Не вдалося виконати потокове передавання додатків</translation>
 <translation id="3861651314799684201">Щоб записати весь екран, натисніть клавішу Enter</translation>
+<translation id="3882323608730650973">Змінено</translation>
 <translation id="3886872229787704059">Відкрито сьогодні</translation>
 <translation id="3891340733213178823">Щоб вийти, двічі натисніть Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосові підказки)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Точку доступу вимкнено, щоб підключитися до Wi-Fi. Щоб використовувати точку доступу, вимкніть Wi-Fi.</translation>
 <translation id="4585337515783392668">Зупинити трансляцію на невідомий пристрій</translation>
 <translation id="4596144739579517758">Темну тему вимкнено</translation>
+<translation id="4596442969149038771">Поділився користувач <ph name="USER" /></translation>
 <translation id="4611292653554630842">Увійти</translation>
 <translation id="462160925400706389"><ph name="NAME" /> підключено</translation>
 <translation id="4623167406982293031">Підтвердьте обліковий запис</translation>
@@ -1337,6 +1341,7 @@
 <translation id="6298183524022479114">Налаштуйте цей пристрій у додатку</translation>
 <translation id="6309219492973062892">Натиснути значки 1–8 на панелі запуску</translation>
 <translation id="6315170314923504164">Голос</translation>
+<translation id="6319058840130157106">Перейти назад між нижнім правим кутом, панеллю запуску, адресним рядком, панеллю закладок, відкритим веб-сайтом і завантаженнями</translation>
 <translation id="6324916366299863871">Змінити ярлик</translation>
 <translation id="6330012934079202188">Показано вікна всіх робочих столів. Щоб показати вікна поточного робочого столу, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, яким керує <ph name="MANAGER" /></translation>
@@ -1500,6 +1505,7 @@
 <translation id="6981291220124935078">Увімкнути доступ</translation>
 <translation id="6981982820502123353">Доступність</translation>
 <translation id="698231206551913481">Якщо видалити цього користувача, усі файли та локальні дані, зв’язані з ним, буде видалено назавжди.</translation>
+<translation id="6984028004251196682">Дисплей "<ph name="DISPLAY_NAME" />" не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц), тому вибрано <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Ознайомтеся з коротким оглядом Chromebook. Щоб почати роботу, виконайте 6 кроків.</translation>
 <translation id="7004910047186208204">Підключіться до мобільного Інтернету</translation>
 <translation id="7005239792648594238">Щоб почати, відкрийте додаток</translation>
@@ -1814,6 +1820,7 @@
 <translation id="8314772463905284467">Режим Caps Lock увімкнено</translation>
 <translation id="8315514906653279104">Увімкнення…</translation>
 <translation id="8331351032546853669">Очікує на завантаження</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Вибрано вікно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8349826889576450703">панель запуску</translation>
@@ -1920,6 +1927,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, установлений додаток, заблоковано</translation>
 <translation id="8785070478575117577">Підключитися: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Перейти вперед між нижнім правим кутом, панеллю запуску, адресним рядком, панеллю закладок, відкритим веб-сайтом і завантаженнями</translation>
 <translation id="8792626944327216835">мікрофон</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" /></translation>
@@ -2033,6 +2041,7 @@
 <translation id="953431725143473984">Завершити роботу пристрою?</translation>
 <translation id="954052413789300507">Недостатньо місця для файлу "<ph name="FILENAME" />". Очистьте пам’ять.</translation>
 <translation id="954520015070501466">30 хвилин</translation>
+<translation id="954786879461589145">Змінено користувачем <ph name="USER" /></translation>
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Термін здачі не вказано</translation>
 <translation id="98120814841227350">Перейти в кінець документа</translation>

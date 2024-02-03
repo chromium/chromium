@@ -217,9 +217,8 @@ TEST_F(CloudPolicyCoreTest, RefreshSoon) {
 }
 
 TEST_F(CloudPolicyCoreTest, DmProtocolBase64Constants) {
-  std::string encoded;
-  base::Base64Encode(dm_protocol::kChromeMachineLevelUserCloudPolicyType,
-                     &encoded);
+  std::string encoded =
+      base::Base64Encode(dm_protocol::kChromeMachineLevelUserCloudPolicyType);
   EXPECT_EQ(encoded, dm_protocol::kChromeMachineLevelUserCloudPolicyTypeBase64);
 }
 

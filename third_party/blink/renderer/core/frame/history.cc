@@ -54,14 +54,13 @@ namespace blink {
 
 namespace {
 void ReportURLChange(LocalDOMWindow* window,
-                     ScriptState* script_state,
                      const String& url) {
   DCHECK(window);
   DCHECK(window->GetFrame());
   if (window->GetFrame()->IsMainFrame() && window->Url() != url) {
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window);
-    heuristics->SameDocumentNavigationStarted(script_state);
+    heuristics->SameDocumentNavigationStarted();
   }
 }
 }  // namespace
@@ -222,7 +221,7 @@ void History::go(ScriptState* script_state,
     // asynchronously set the URL at
     // DocumentLoader::UpdateForSameDocumentNavigation, once the same document
     // navigation is committed.
-    ReportURLChange(window, script_state,
+    ReportURLChange(window,
                     /*url=*/String(""));
     // Pass the current task ID so it'd be set as the parent task for the future
     // popstate event.
@@ -235,9 +234,9 @@ void History::go(ScriptState* script_state,
     }
     DCHECK(frame->Client());
     if (frame->Client()->NavigateBackForward(
-            delta,
-            task ? absl::optional<scheduler::TaskAttributionId>(task->Id())
-                 : absl::nullopt)) {
+            delta, task
+                       ? std::optional<scheduler::TaskAttributionId>(task->Id())
+                       : std::nullopt)) {
       if (Page* page = frame->GetPage())
         page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
     }
@@ -327,7 +326,7 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   }
 
   KURL full_url = UrlForState(url_string);
-  ReportURLChange(window, script_state, full_url);
+  ReportURLChange(window, full_url);
   bool can_change = CanChangeToUrlForHistoryApi(
       full_url, window->GetSecurityOrigin(), window->Url());
 

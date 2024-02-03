@@ -211,14 +211,16 @@ device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::user_dis
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::cred_params
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::excluded_credentials
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::resident_key
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::prf
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::fmt
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::auth_data
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::statement
 device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::rp_id
 device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::client_data_hash
 device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::allowed_credentials
-device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::origin
-device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::challenge
+device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::prf_eval_first
+device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::prf_eval_second
+device::cablev2::authenticator::(anonymous namespace)::GetAssertionRequest::prf_eval_by_cred
 device::Ed25519PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::kty
 device::Ed25519PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::crv
 device::Ed25519PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::key
@@ -363,6 +365,7 @@ LinkNodeBase::previous_
 WeakLinkNode::list_
 base::Location::program_counter_
 base::MessagePump::Delegate::ScopedDoWorkItem::outer_
+base::MessagePumpEpoll::RunState::delegate
 base::MessagePumpLibevent::RunState::delegate
 base::internal::OperationsController::OperationToken::outer_
 base::internal::SequenceLocalStorageMap::ValueDestructorPair::destructor_
@@ -418,8 +421,20 @@ extensions::LazyContextTaskQueue::ContextInfo::render_process_host
 extensions::LazyContextTaskQueue::ContextInfo::browser_context
 extensions::LazyContextTaskQueue::ContextInfo::web_contents
 mojo::core::MessagePipeDispatcher::node_controller_
-mojo::internal::ArrayDataViewImpl::data_
-mojo::internal::ArrayDataViewImpl::message_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<MojomType, MojomTypeCategory::kUnion>::value, void>::type>::data_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<MojomType, MojomTypeCategory::kUnion>::value, void>::type>::message_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kBoolean>::value, void>::type>::data_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kBoolean>::value, void>::type>::message_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kEnum>::value, void>::type>::data_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kEnum>::value, void>::type>::message_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kAssociatedInterface | MojomTypeCategory::kAssociatedInterfaceRequest | MojomTypeCategory::kInterface | MojomTypeCategory::kInterfaceRequest>::value, void>::type>::data_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kAssociatedInterface | MojomTypeCategory::kAssociatedInterfaceRequest | MojomTypeCategory::kInterface | MojomTypeCategory::kInterfaceRequest>::value, void>::type>::message_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kHandle>::value, void>::type>::data_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kHandle>::value, void>::type>::message_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kArray | MojomTypeCategory::kMap | MojomTypeCategory::kString | MojomTypeCategory::kStruct>::value, void>::type>::data_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kArray | MojomTypeCategory::kMap | MojomTypeCategory::kString | MojomTypeCategory::kStruct>::value, void>::type>::message_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kPOD>::value, void>::type>::data_
+mojo::internal::ArrayDataViewImpl<type-parameter-0-0, typename enable_if<BelongsTo<T, MojomTypeCategory::kPOD>::value, void>::type>::message_
 mojo::Connector::incoming_receiver_
 mojo::Connector::nesting_observer_
 mojo::InterfaceEndpointClient::controller_
@@ -438,3 +453,109 @@ content::responsiveness::Watcher::calculator_io_
 #######
 # End of performance-related exclusions
 #######
+
+
+# This section contains exclusions that were discovered during the rewrite in
+# crrev.comc/c/5232280.
+#
+# Some of these caused compiler errors, some of these simply pertained to
+# pointers that were already marked as RAW_PTR_EXCLUSION for non-automated
+# reasons.
+#
+# We want to list them explicitly, so that future incremental rewrites that
+# ignore RAW_PTR_EXCLUSION don't try to rewrite these again and again.
+base::internal::BasicAutoLock::lock_
+base::internal::BasicAutoTryLock::lock_
+base::internal::BasicAutoUnlock::lock_
+base::internal::BasicAutoLockMaybe::lock_
+base::internal::BasicReleasableAutoLock::lock_
+base::CheckedContiguousIterator::start_
+base::CheckedContiguousIterator::current_
+base::CheckedContiguousIterator::end_
+base::internal::flat_tree::KeyValueCompare::comp_
+base::MemoryMappedFile::data_
+base::MadvFreeDiscardableMemoryPosix::data_
+base::i18n::IcuMergeableDataFile::lacros_data_
+base::internal::UnexpectedDeducer::lambda_
+(anonymous namespace)::CouponDataStruct::description
+(anonymous namespace)::CouponDataStruct::coupon_code
+chromeos::editor_menu::EditorMenuControllerImpl::EditorCardSession::panel_manager
+webauthn::authenticator::(anonymous namespace)::PreLinkInfo::contact_id
+webauthn::authenticator::(anonymous namespace)::PreLinkInfo::pairing_id
+webauthn::authenticator::(anonymous namespace)::PreLinkInfo::secret
+webauthn::authenticator::(anonymous namespace)::PreLinkInfo::peer_public_key_x962
+crash_reporter::internal::CrashKeyStringImpl::index_array_
+crash_reporter::internal::CrashKeyStringCombinedImpl::breakpad_key_
+crash_reporter::internal::CrashKeyStringCombinedImpl::crashpad_key_
+redaction_internal::CanonOutputT::buffer_
+redaction_internal::StdStringCanonOutput::str_
+mojo::core::ChannelLinux::SharedBuffer::base_ptr_
+sandbox::Trap::trap_array_
+(anonymous namespace)::arch_sigsys::ip
+sandbox::syscall_broker::BrokerSimpleMessage::read_next_
+sandbox::syscall_broker::BrokerSimpleMessage::write_next_
+blink::StorageKeyTest_FromWireReturnValue_Test::TestBody()::TestCase::nonce
+views::internal::(anonymous namespace)::DanglingMouseMoveHandlerOnViewDestroyingChecker::mouse_move_handler_
+ash::ToastData::leading_icon
+base::internal::ReversedAdapter::t_
+base::(anonymous namespace)::DestructCounter::where_
+base::(anonymous namespace)::GetThreadEnvironmentBlock(PlatformThreadId, HANDLE)::THREAD_BASIC_INFORMATION::Teb
+base::LazyNow::tick_clock_
+base::TaskAnnotator::LongTaskTracker::tick_clock_
+base::TaskAnnotator::LongTaskTracker::pending_task_
+base::TaskAnnotator::LongTaskTracker::task_annotator_
+base::sequence_manager::internal::SequencedTaskSource::SelectedTask::task
+base::trace_event::StringStorage::data_
+base::trace_event::TrackEventHandle::event_
+base::trace_event::TrackEventHandle::incremental_state_
+base::trace_event::TrackEventHandle::listener_
+base::win::ScopedSafearray::LockScope::safearray_
+cc::PictureLayerTilingSet::StateSinceLastTilePriorityUpdate::AutoClear::state_to_clear_
+cc::Tile::CreateInfo::tiling
+cc::Tile::tile_manager_
+cc::Tile::tiling_
+cc::OcclusionTracker::StackObject::target
+safe_browsing::MultipartDataPipeGetter::InternalMemoryMappedFile::data_
+ScreenshotArea::window
+ExtensionSettingsOverriddenDialog::Params::icon
+ProfileMenuViewBase::EditButtonParams::edit_icon
+ReadAnythingLineSpacingModel::LineSpacingInfo::icon_asset
+ReadAnythingLetterSpacingModel::LetterSpacingInfo::icon_asset
+ToolbarButton::VectorIcons::icon
+ToolbarButton::VectorIcons::touch_icon
+updater::ScopedLockImpl::mutex_
+ash::memory::userspace_swap::(anonymous namespace)::ScopedMemory::ptr_
+pdf::PdfStreamDelegate::StreamInfo::injected_script
+content::responsiveness::JankMonitorImpl::ThreadExecutionState::TaskMetadata::identifier
+media::V4L2CaptureDelegate::BufferTracker::start_
+mojo::internal::ArrayDataViewImpl::data_
+mojo::internal::ArrayDataViewImpl::message_
+mojo::MapValuesArrayView::map
+mojo::internal::ArrayIterator<Traits, MaybeConstUserType, true>::input_
+mojo::internal::ArrayIterator<Traits, MaybeConstUserType, false>::input_
+mojo::internal::MapReaderBase::input_
+mojo::internal::MessageFragment::message_
+mojo::internal::MessageFragment<Array_Data<T>>::message_
+mojo::internal::ValidationContext::message_
+mojo::ReceiverSetState::Entry::state_
+mojo::ReceiverSetState::Entry::DispatchFilter::entry_
+mojo::StringDataView::data_
+sandbox::EatResolverThunk::eat_entry_
+sandbox::InterceptionAgent::interceptions_
+sandbox::ResolverThunk::target_
+sandbox::ResolverThunk::interceptor_
+sandbox::SharedMemIPCClient::control_
+sandbox::SharedMemIPCClient::first_base_
+audio::OutputController::ErrorStatisticsTracker::controller_
+audio::OutputController::handler_
+gfx::NativeView::ns_view_
+message_center::RichNotificationData::vector_small_image
+message_center::RichNotificationData::parent_vector_small_image
+views::BoxLayout::ViewWrapper::view_
+views::BoxLayout::ViewWrapper::layout_
+base::internal::BinaryPredicateProjector::pred_
+base::internal::BinaryPredicateProjector::proj1_
+base::internal::BinaryPredicateProjector::proj2_
+gwp_asan::internal::lud::AllocationInfo::address
+gwp_asan::internal::lud::AllocationInfo::context
+ui::EventTarget::PrioritizedHandler::handler

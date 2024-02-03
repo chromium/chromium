@@ -81,4 +81,23 @@ void ServiceWorkerResourceLoader::SetDispatchedPreloadType(
   }
   dispatched_preload_type_ = type;
 }
+
+bool ServiceWorkerResourceLoader::
+    ShouldAvoidRecordingServiceWorkerTimingInfo() {
+  if (!used_router_source_type_.has_value()) {
+    return false;
+  }
+
+  switch (*used_router_source_type_) {
+    case blink::ServiceWorkerRouterSource::Type::kNetwork:
+    case blink::ServiceWorkerRouterSource::Type::kCache:
+      return true;
+    case blink::ServiceWorkerRouterSource::Type::kRace:
+    case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
+      // It is fine to record the ServiceWorker related metrics
+      // because the fetch handler is executed.
+      return false;
+  }
+}
+
 }  // namespace content

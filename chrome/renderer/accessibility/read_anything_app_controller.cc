@@ -34,6 +34,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
@@ -524,11 +525,9 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
-  // Update Read Aloud state.
-  model_.ClearReadAloudState();
-
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
+  // This also includes Read Aloud state.
   model_.Reset(content_node_ids);
 
   // Return early if any of the following scenarios occurred while waiting for
@@ -641,11 +640,9 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
   }
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void ReadAnythingAppController::ScreenAIServiceReady() {
   distiller_->ScreenAIServiceReady(GetRenderFrame());
 }
-#endif
 
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
@@ -759,13 +756,18 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SetLanguageForTesting)
       .SetMethod("initAXPositionWithNode",
                  &ReadAnythingAppController::InitAXPositionWithNode)
-      .SetMethod("getNextTextStartIndex",
-                 &ReadAnythingAppController::GetNextTextStartIndex)
-      .SetMethod("getNextTextEndIndex",
-                 &ReadAnythingAppController::GetNextTextEndIndex)
-      .SetMethod("getNextText", &ReadAnythingAppController::GetNextText)
-      .SetMethod("getPreviousText", &ReadAnythingAppController::GetPreviousText)
-      .SetMethod("shouldShowUI", &ReadAnythingAppController::ShouldShowUI);
+      .SetMethod("getCurrentTextStartIndex",
+                 &ReadAnythingAppController::GetCurrentTextStartIndex)
+      .SetMethod("getCurrentTextEndIndex",
+                 &ReadAnythingAppController::GetCurrentTextEndIndex)
+      .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
+      .SetMethod("shouldShowUI", &ReadAnythingAppController::ShouldShowUI)
+      .SetMethod("getAccessibleBoundary",
+                 &ReadAnythingAppController::GetAccessibleBoundary)
+      .SetMethod("movePositionToNextGranularity",
+                 &ReadAnythingAppController::MovePositionToNextGranularity)
+      .SetMethod("movePositionToPreviousGranularity",
+                 &ReadAnythingAppController::MovePositionToPreviousGranularity);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1265,24 +1267,24 @@ void ReadAnythingAppController::InitAXPositionWithNode(
   model_.InitAXPositionWithNode(starting_node_id);
 }
 
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
-    int max_text_length) {
-  return model_.GetNextText(max_text_length);
+std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
+  return model_.GetCurrentText();
 }
 
-// TODO(crbug.com/1474951): Random access to processed nodes might not always
-// work (e.g. if we're switching granularities or jumping to a specific node),
-// so we should implement a method of retrieving previous text from AXPosition
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText() {
-  return model_.GetPreviousText();
+void ReadAnythingAppController::MovePositionToNextGranularity() {
+  model_.MovePositionToNextGranularity();
 }
 
-int ReadAnythingAppController::GetNextTextStartIndex(ui::AXNodeID node_id) {
-  return model_.GetNextTextStartIndex(node_id);
+void ReadAnythingAppController::MovePositionToPreviousGranularity() {
+  model_.MovePositionToPreviousGranularity();
 }
 
-int ReadAnythingAppController::GetNextTextEndIndex(ui::AXNodeID node_id) {
-  return model_.GetNextTextEndIndex(node_id);
+int ReadAnythingAppController::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
+  return model_.GetCurrentTextStartIndex(node_id);
+}
+
+int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
+  return model_.GetCurrentTextEndIndex(node_id);
 }
 
 // TODO(crbug.com/1266555): Change line_spacing and letter_spacing types from
@@ -1332,7 +1334,7 @@ void ReadAnythingAppController::SetContentForTesting(
   selection_event.event_from = ax::mojom::EventFrom::kUser;
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
   OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId,
-                          GURL::EmptyGURL(), false);
+                          GURL(), false);
   OnAXTreeDistilled(snapshot.tree_data.tree_id, content_node_ids);
 
   // Trigger a selection event (for testing selections).
@@ -1350,4 +1352,34 @@ content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
 
 void ReadAnythingAppController::ShouldShowUI() {
   page_handler_factory_->ShouldShowUI();
+}
+
+int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
+                                                     int max_text_length) {
+  std::vector<int> offsets;
+  const std::u16string shorter_string = text.substr(0, max_text_length);
+  size_t sentence_ends_short = ui::FindAccessibleTextBoundary(
+      shorter_string, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
+      ax::mojom::MoveDirection::kForward,
+      ax::mojom::TextAffinity::kDefaultValue);
+  size_t sentence_ends_long = ui::FindAccessibleTextBoundary(
+      text, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
+      ax::mojom::MoveDirection::kForward,
+      ax::mojom::TextAffinity::kDefaultValue);
+
+  // Compare the index result for the sentence of maximum text length and of
+  // the longer text string. If the two values are the same, the index is
+  // correct. If they are different, the maximum text length may have
+  // incorrectly spliced a word (e.g. returned "this is a sen" instead of
+  // "this is a" or "this is a sentence"), so if this is the case, we'll want
+  // to use the last word boundary instead.
+  if (sentence_ends_short == sentence_ends_long) {
+    return sentence_ends_short;
+  }
+
+  size_t word_ends = ui::FindAccessibleTextBoundary(
+      shorter_string, offsets, ax::mojom::TextBoundary::kWordStart,
+      shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
+      ax::mojom::TextAffinity::kDefaultValue);
+  return word_ends;
 }

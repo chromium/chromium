@@ -28,8 +28,9 @@ namespace {
 // VerticalCandidateLabel is used for rendering candidate text in
 // the vertical candidate window.
 class VerticalCandidateLabel : public views::Label {
+  METADATA_HEADER(VerticalCandidateLabel, views::Label)
+
  public:
-  METADATA_HEADER(VerticalCandidateLabel);
   VerticalCandidateLabel() = default;
   VerticalCandidateLabel(const VerticalCandidateLabel&) = delete;
   VerticalCandidateLabel& operator=(const VerticalCandidateLabel&) = delete;
@@ -48,13 +49,14 @@ class VerticalCandidateLabel : public views::Label {
   }
 };
 
-BEGIN_METADATA(VerticalCandidateLabel, views::Label)
+BEGIN_METADATA(VerticalCandidateLabel)
 END_METADATA
 
 // The label text is not set in this class.
 class ShortcutLabel : public views::Label {
+  METADATA_HEADER(ShortcutLabel, views::Label)
+
  public:
-  METADATA_HEADER(ShortcutLabel);
   explicit ShortcutLabel(ui::CandidateWindow::Orientation orientation)
       : orientation_(orientation) {
     // TODO(tapted): Get this FontList from views::style.
@@ -98,7 +100,7 @@ class ShortcutLabel : public views::Label {
   const ui::CandidateWindow::Orientation orientation_;
 };
 
-BEGIN_METADATA(ShortcutLabel, views::Label)
+BEGIN_METADATA(ShortcutLabel)
 END_METADATA
 
 // Creates an annotation label. Sets no text by default.
@@ -241,7 +243,7 @@ bool CandidateView::OnMouseDragged(const ui::MouseEvent& event) {
   return views::Button::OnMouseDragged(event);
 }
 
-void CandidateView::Layout() {
+void CandidateView::Layout(PassKey) {
   const int padding_width =
       orientation_ == ui::CandidateWindow::VERTICAL ? 4 : 6;
   int x = 0;
@@ -302,7 +304,7 @@ void CandidateView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                              total_candidates_);
 }
 
-BEGIN_METADATA(CandidateView, views::Button)
+BEGIN_METADATA(CandidateView)
 END_METADATA
 
 }  // namespace ui::ime

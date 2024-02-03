@@ -18,5 +18,5 @@
 
   // Property-based promise for signaling initial metadata readiness (e.g.,
   // track count, animation status, etc).
-  [CallWith=ScriptState] readonly attribute Promise<void> ready;
+  [CallWith=ScriptState] readonly attribute Promise<undefined> ready;
 };

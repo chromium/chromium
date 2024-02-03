@@ -191,6 +191,33 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 }
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       DisableSavingDuringLocalPasswordsMigration) {
+  prefs().SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending));
+  ON_CALL(*android_backend(), IsAbleToSavePasswords)
+      .WillByDefault(Return(true));
+  ON_CALL(*built_in_backend(), IsAbleToSavePasswords)
+      .WillByDefault(Return(true));
+
+  backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      /*remote_form_changes_received=*/base::DoNothing(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*completion=*/base::DoNothing());
+  InitSyncService(/*is_password_sync_enabled=*/false);
+
+  // True so far because the migration is deferred.
+  ASSERT_TRUE(backend_migration_decorator()->IsAbleToSavePasswords());
+
+  FastForwardUntilNoTasksRemain();
+
+  // False now because the migration is ongoing.
+  EXPECT_FALSE(backend_migration_decorator()->IsAbleToSavePasswords());
+}
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        NonSyncableDataMigrationDoesNotStartWhenSyncEnabledAndStoresSplit) {
   // Mark that the local and account stores are split.
   prefs().SetInteger(

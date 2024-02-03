@@ -37,6 +37,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation_container.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/event_monitor.h"
@@ -61,11 +62,6 @@
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/wm/window_util.h"
-#include "chromeos/ui/base/chromeos_ui_constants.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -579,12 +575,6 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   frame_background_ = std::make_unique<views::FrameBackground>();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::window_util::SetChildrenUseExtendedHitRegionForWindow(
-      frame->GetNativeWindow()->parent());
-  ash::window_util::InstallResizeHandleWindowTargeterForWindow(
-      frame->GetNativeWindow());
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   frame->GetNativeWindow()->SetEventTargeter(
@@ -734,8 +724,10 @@ gfx::Size PictureInPictureBrowserFrameView::GetMinimumSize() const {
 }
 
 gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
-  if (!GetWidget() || !GetWidget()->GetNativeWindow())
-    return gfx::Size();
+  if (!GetWidget() || !GetWidget()->GetNativeWindow()) {
+    // The maximum size can't be smaller than the minimum size.
+    return GetMinimumSize();
+  }
 
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
@@ -760,7 +752,7 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
   BrowserNonClientFrameView::OnThemeChanged();
 }
 
-void PictureInPictureBrowserFrameView::Layout() {
+void PictureInPictureBrowserFrameView::Layout(PassKey) {
   gfx::Rect content_area = GetLocalBounds();
   content_area.Inset(FrameBorderInsets());
   gfx::Rect top_bar = content_area;
@@ -773,7 +765,7 @@ void PictureInPictureBrowserFrameView::Layout() {
   }
 #endif
 
-  BrowserNonClientFrameView::Layout();
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
 }
 
 void PictureInPictureBrowserFrameView::AddedToWidget() {
@@ -1228,10 +1220,10 @@ gfx::Insets PictureInPictureBrowserFrameView::FrameBorderInsets() const {
 gfx::Insets PictureInPictureBrowserFrameView::ResizeBorderInsets() const {
 #if BUILDFLAG(IS_LINUX)
   return FrameBorderInsets();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return gfx::Insets(chromeos::kResizeInsideBoundsSize);
-#else
+#elif !BUILDFLAG(IS_CHROMEOS_ASH)
   return gfx::Insets(kResizeBorder);
+#else
+  return gfx::Insets();
 #endif
 }
 

@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/common/supervised_user_utils.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/navigation_throttle.h"
 

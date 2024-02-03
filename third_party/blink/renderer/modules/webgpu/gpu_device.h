@@ -92,7 +92,7 @@ class GPUDevice final : public EventTarget,
   GPUAdapter* adapter() const;
   GPUSupportedFeatures* features() const;
   GPUSupportedLimits* limits() const { return limits_.Get(); }
-  ScriptPromise lost(ScriptState* script_state);
+  ScriptPromiseTyped<GPUDeviceLostInfo> lost(ScriptState* script_state);
 
   GPUQueue* queue();
   bool destroyed() const;
@@ -186,13 +186,13 @@ class GPUDevice final : public EventTarget,
                                WGPUErrorType type,
                                const char* message);
 
-  void OnCreateRenderPipelineAsyncCallback(absl::optional<String> label,
+  void OnCreateRenderPipelineAsyncCallback(std::optional<String> label,
                                            ScriptPromiseResolver* resolver,
                                            WGPUCreatePipelineAsyncStatus status,
                                            WGPURenderPipeline render_pipeline,
                                            const char* message);
   void OnCreateComputePipelineAsyncCallback(
-      absl::optional<String> label,
+      std::optional<String> label,
       ScriptPromiseResolver* resolver,
       WGPUCreatePipelineAsyncStatus status,
       WGPUComputePipeline compute_pipeline,

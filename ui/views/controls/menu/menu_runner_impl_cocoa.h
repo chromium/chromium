@@ -53,6 +53,8 @@ class VIEWS_EXPORT MenuRunnerImplCocoa : public MenuRunnerImplInterface {
 
   ~MenuRunnerImplCocoa() override;
 
+  raw_ptr<ui::MenuModel> menu_model_;
+
   // The Cocoa menu controller that this instance is bridging.
   MenuControllerCocoa* __strong menu_controller_;
 

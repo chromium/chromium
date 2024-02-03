@@ -3,15 +3,34 @@
 // found in the LICENSE file.
 
 import {AppManagementBrowserProxy, AppManagementComponentBrowserProxy, AppManagementToggleRowElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, PageCallbackRouter} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakePageHandler} from './fake_page_handler.js';
 import {TestAppManagementStore} from './test_store.js';
 
 type AppConfig = Partial<App>;
+
+export class TestAppManagementBrowserProxy extends TestBrowserProxy implements
+    AppManagementComponentBrowserProxy {
+  callbackRouter: PageCallbackRouter;
+  handler: FakePageHandler;
+
+  constructor(handler: FakePageHandler) {
+    super(['recordEnumerationValue']);
+    this.handler = handler;
+    this.callbackRouter = new PageCallbackRouter();
+  }
+
+  recordEnumerationValue(metricName: string, value: number, enumSize: number) {
+    this.methodCalled('recordEnumerationValue', metricName, value, enumSize);
+  }
+}
+
+export let fakeComponentBrowserProxy: TestAppManagementBrowserProxy|null = null;
 
 /**
  * Create an app for testing purpose.
@@ -26,9 +45,8 @@ export function setupFakeHandler(): FakePageHandler {
       browserProxy.callbackRouter.$.bindNewPipeAndPassRemote());
   browserProxy.handler = fakeHandler.getRemote();
 
-  const componentBrowserProxy =
-      AppManagementComponentBrowserProxy.getInstance();
-  componentBrowserProxy.handler = fakeHandler;
+  fakeComponentBrowserProxy = new TestAppManagementBrowserProxy(fakeHandler);
+  AppManagementComponentBrowserProxy.setInstance(fakeComponentBrowserProxy);
   return fakeHandler;
 }
 

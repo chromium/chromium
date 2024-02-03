@@ -38,8 +38,8 @@
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -514,6 +514,15 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
       0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+}
+
+// Regression test for (crbug.com/1513574): Showing an Autofill Compose
+// suggestion twice does not crash.
+TEST_F(AutofillPopupControllerImplTest, ShowTwice) {
+  ShowSuggestions(manager(),
+                  {Suggestion(u"Help me write", PopupItemId::kCompose)});
+  ShowSuggestions(manager(),
+                  {Suggestion(u"Help me write", PopupItemId::kCompose)});
 }
 
 TEST_F(AutofillPopupControllerImplTest,

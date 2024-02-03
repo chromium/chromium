@@ -116,7 +116,7 @@ gfx::Size NotificationItemView::CalculatePreferredSize() const {
                    kNotificationItemViewHeight);
 }
 
-void NotificationItemView::Layout() {
+void NotificationItemView::Layout(PassKey) {
   gfx::Insets insets = GetInsets();
   // Enforce |text_container_| width, if necessary the labels will elide as a
   // result of |text_container_| being too small to hold the full width of its

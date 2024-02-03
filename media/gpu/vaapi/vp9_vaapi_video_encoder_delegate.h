@@ -134,12 +134,12 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   Vp9ReferenceFrameVector reference_frames_;
   std::unique_ptr<VP9SVCLayers> svc_layers_;
 
-  absl::optional<std::pair<VideoBitrateAllocation, uint32_t>>
+  std::optional<std::pair<VideoBitrateAllocation, uint32_t>>
       pending_update_rates_;
 
   std::unique_ptr<VP9RateControlWrapper> rate_ctrl_;
 
-  absl::optional<base::TimeDelta> dropped_superframe_timestamp_;
+  std::optional<base::TimeDelta> dropped_superframe_timestamp_;
 
   // TODO(b/297226972): Remove the workaround once the iHD driver is fixed.
   bool is_last_encoded_key_frame_ = false;

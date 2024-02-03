@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -46,8 +46,8 @@ std::unique_ptr<KeepAliveAttributionRequestHelper>
 KeepAliveAttributionRequestHelper::CreateIfNeeded(
     network::mojom::AttributionReportingEligibility eligibility,
     const GURL& request_url,
-    const absl::optional<base::UnguessableToken>& attribution_src_token,
-    const absl::optional<std::string>& devtools_request_id,
+    const std::optional<base::UnguessableToken>& attribution_src_token,
+    const std::optional<std::string>& devtools_request_id,
     network::AttributionReportingRuntimeFeatures runtime_features,
     const AttributionSuitableContext& context) {
   if (!base::FeatureList::IsEnabled(
@@ -77,7 +77,7 @@ KeepAliveAttributionRequestHelper::CreateIfNeeded(
     return nullptr;
   }
 
-  absl::optional<blink::AttributionSrcToken> token;
+  std::optional<blink::AttributionSrcToken> token;
   if (attribution_src_token.has_value()) {
     token = blink::AttributionSrcToken(attribution_src_token.value());
   }

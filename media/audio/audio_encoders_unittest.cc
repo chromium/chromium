@@ -153,7 +153,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
   AudioEncodersTest& operator=(const AudioEncodersTest&) = delete;
   ~AudioEncodersTest() override = default;
 
-  using MaybeDesc = absl::optional<AudioEncoder::CodecDescription>;
+  using MaybeDesc = std::optional<AudioEncoder::CodecDescription>;
 
   AudioEncoder* encoder() const { return encoder_.get(); }
 

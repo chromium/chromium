@@ -223,6 +223,15 @@ public class TabSwitcherPaneMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testTabModelObserverOnRestore() {
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        observer.restoreCompleted();
+        verify(mResetHandler).resetWithTabList(mTabModelFilter, false);
+    }
+
+    @Test
+    @SmallTest
     public void testIsDialogVisibleSupplier() {
         ObservableSupplier<Boolean> dialogVisibilitySupplier =
                 mMediator.getIsDialogVisibleSupplier();

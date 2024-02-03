@@ -6,6 +6,7 @@
 #define MEDIA_GPU_WINDOWS_D3D11_COPYING_TEXTURE_WRAPPER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/task/single_thread_task_runner.h"
@@ -13,7 +14,6 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -30,7 +30,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
                           std::unique_ptr<Texture2DWrapper> output_wrapper,
                           scoped_refptr<VideoProcessorProxy> processor,
                           ComD3D11Texture2D output_texture,
-                          absl::optional<gfx::ColorSpace> output_color_space);
+                          std::optional<gfx::ColorSpace> output_color_space);
   ~CopyingTexture2DWrapper() override;
 
   D3D11Status BeginSharedImageAccess() override;
@@ -57,10 +57,10 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   std::unique_ptr<Texture2DWrapper> output_texture_wrapper_;
   ComD3D11Texture2D output_texture_;
   // If set, then this is the desired output color space for the copy.
-  absl::optional<gfx::ColorSpace> output_color_space_;
+  std::optional<gfx::ColorSpace> output_color_space_;
 
   // If set, this is the color space that we last saw in ProcessTexture.
-  absl::optional<gfx::ColorSpace> previous_input_color_space_;
+  std::optional<gfx::ColorSpace> previous_input_color_space_;
 
   ComD3D11Texture2D texture_;
   size_t array_slice_ = 0;

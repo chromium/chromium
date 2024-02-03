@@ -148,7 +148,7 @@ class CORE_EXPORT MessagePort : public EventTarget,
     void AddPostMessageTask(scheduler::TaskAttributionInfo* task);
 
     scheduler::TaskAttributionInfo* GetAndDecrementPostMessageTask(
-        absl::optional<scheduler::TaskAttributionId> id);
+        std::optional<scheduler::TaskAttributionId> id);
 
     void Trace(Visitor* visitor) const { visitor->Trace(post_message_tasks_); }
 

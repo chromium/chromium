@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_ANCHOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_ANCHOR_H_
 
+#include <optional>
+
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "ui/gfx/geometry/transform.h"
@@ -30,7 +31,7 @@ class XRAnchor : public ScriptWrappable {
 
   XRSpace* anchorSpace(ExceptionState& exception_state) const;
 
-  absl::optional<gfx::Transform> MojoFromObject() const;
+  std::optional<gfx::Transform> MojoFromObject() const;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 
@@ -51,7 +52,7 @@ class XRAnchor : public ScriptWrappable {
 
   // Anchor's pose in device (mojo) space. Nullopt if the pose of the anchor is
   // unknown in the current frame.
-  absl::optional<device::Pose> mojo_from_anchor_;
+  std::optional<device::Pose> mojo_from_anchor_;
 
   // Cached anchor space - it will be created by `anchorSpace()` if it's not
   // set.

@@ -26,7 +26,7 @@ build_webui("build") {
     "//third_party/material_web_components:library",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ui/webui/resources/cr_elements:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

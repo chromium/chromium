@@ -94,7 +94,7 @@
     dp.Network.onRequestWillBeSentExtraInfo(
         listenForSiteHasCookieInOtherPartition);
     dp.Network.onResponseReceivedExtraInfo(listenForResponsePartitionKey);
-
+    // This will set a partitioned cookie
     await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php');
     logCookies((await dp.Network.getCookies()).result);
 
@@ -265,6 +265,18 @@
       await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test:8443', sameSite: 'None'});
       await setCookie({url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://devtools.test:8443', sameSite: 'None'});
       await setCookie({url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://notinset.test:8443', sameSite: 'None'});
+    },
+
+    deleteAllCookies,
+    logCookies,
+
+    async function partitionedAndUnpartitionedCookiesWithSameName() {
+      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', sameSite: 'None'});
+      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test', sameSite: 'None'});
+      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://notinset.test', sameSite: 'None'});
+
+      await deleteCookie({url: 'https://devtools.test:8443', name: '__Host-foo'});
+      await deleteCookie({url: 'https://devtools.test:8443', name: '__Host-foo', partitionKey: 'https://example.test'});
     },
 
     deleteAllCookies,

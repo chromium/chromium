@@ -49,6 +49,12 @@ const char kProcessId[] = "processId";
 const char kTag[] = "tag";
 const char kZeroAppShim[] = "zeroAppShim";
 
+// Closable handles.
+const char kALPCPort[] = "ALPC Port";
+const char kFileDeviceApi[] = "\\Device\\DeviceApi";
+const char kFileKsecDD[] = "\\Device\\KsecDD";
+const char kWindowsShellGlobalCounters[] = "*\\windows_shell_global_counters";
+
 // Values in snapshots of Policies.
 const char kDisabled[] = "disabled";
 const char kEnabled[] = "enabled";
@@ -322,16 +328,24 @@ base::Value::Dict GetPolicyRules(const PolicyGlobal* policy_rules) {
   return results;
 }
 
-// HandleMap is just wstrings, nested sets could be empty.
-base::Value::Dict GetHandlesToClose(const HandleMap& handle_map) {
-  base::Value::Dict results;
-  for (const auto& kv : handle_map) {
-    base::Value::List entries;
-    // kv.second may be an empty map.
-    for (const auto& entry : kv.second) {
-      entries.Append(base::AsStringPiece16(entry));
-    }
-    results.Set(base::WideToUTF8(kv.first), std::move(entries));
+// `handle_config` is a set of configuration bools - only output things
+// if they are enabled.
+base::Value::List GetHandlesToClose(HandleCloserConfig& handle_config) {
+  base::Value::List results;
+  if (!handle_config.handle_closer_enabled) {
+    return results;
+  }
+  if (handle_config.section_windows_global_shell_counters) {
+    results.Append(kWindowsShellGlobalCounters);
+  }
+  if (handle_config.file_device_api) {
+    results.Append(kFileDeviceApi);
+  }
+  if (handle_config.file_ksecdd) {
+    results.Append(kFileKsecDD);
+  }
+  if (handle_config.disconnect_csrss) {
+    results.Append(kALPCPort);
   }
   return results;
 }
@@ -390,11 +404,7 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   }
   is_csrss_connected_ = config->is_csrss_connected();
   zero_appshim_ = config->zero_appshim();
-  auto* handle_closer = config->handle_closer();
-  if (handle_closer) {
-    handles_to_close_.insert(handle_closer->handles_to_close_.begin(),
-                             handle_closer->handles_to_close_.end());
-  }
+  handles_to_close_ = config->handle_closer();
 }
 
 PolicyDiagnostic::~PolicyDiagnostic() = default;
@@ -446,8 +456,7 @@ const char* PolicyDiagnostic::JsonString() {
 
   dict.Set(kDisconnectCsrss, is_csrss_connected_ ? kDisabled : kEnabled);
   dict.Set(kZeroAppShim, zero_appshim_);
-  if (!handles_to_close_.empty())
-    dict.Set(kHandlesToClose, GetHandlesToClose(handles_to_close_));
+  dict.Set(kHandlesToClose, GetHandlesToClose(handles_to_close_));
 
   auto json_string = std::make_unique<std::string>();
   JSONStringValueSerializer to_json(json_string.get());

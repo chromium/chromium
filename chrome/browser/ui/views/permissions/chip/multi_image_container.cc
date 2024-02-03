@@ -58,7 +58,7 @@ void MultiImageContainer::RemoveExtraImages(const size_t number_of_images) {
   }
 
   for (size_t i = images_.size() - 1; i >= number_of_images; i--) {
-    view_->RemoveChildView(std::exchange(images_[i], nullptr));
+    view_->RemoveChildViewT(std::exchange(images_[i], nullptr));
   }
   images_.resize(number_of_images);
 }

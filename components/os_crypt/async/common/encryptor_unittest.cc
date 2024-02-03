@@ -116,9 +116,7 @@ class EncryptorTestBase : public ::testing::Test {
   }
 
   static std::vector<uint8_t> GenerateRandomTestKey(size_t length) {
-    std::vector<uint8_t> key_data(length);
-    crypto::RandBytes(key_data);
-    return key_data;
+    return crypto::RandBytesAsVector(length);
   }
 
   static Encryptor::Key GenerateRandomAES256TestKey() {

@@ -124,8 +124,7 @@ TEST(HistoryUrlUtilsTest, ToggleHTTPAndHTTPS) {
             ToggleHTTPAndHTTPS(GURL("https://www.google.com/test?q#r")));
   EXPECT_EQ(GURL("https://www.google.com:137/"),
             ToggleHTTPAndHTTPS(GURL("http://www.google.com:137/")));
-  EXPECT_EQ(GURL::EmptyGURL(),
-            ToggleHTTPAndHTTPS(GURL("ftp://www.google.com/")));
+  EXPECT_EQ(GURL(), ToggleHTTPAndHTTPS(GURL("ftp://www.google.com/")));
 }
 
 TEST(HistoryUrlUtilsTest, HostForTopHosts) {

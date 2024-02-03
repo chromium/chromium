@@ -4,7 +4,7 @@
 
 import './multidevice_setup_shared.css.js';
 import './ui_page.js';
-import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import '//resources/ash/common/cr.m.js';
 
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

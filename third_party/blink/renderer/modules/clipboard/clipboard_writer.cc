@@ -184,7 +184,7 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
     // Sanitizing on the main thread because HTML DOM nodes can only be used on
     // the main thread.
     Document* document = local_frame->GetDocument();
-    String sanitized_html = CreateSanitizedMarkupWithContext(
+    String sanitized_html = CreateStrictlyProcessedMarkupWithContext(
         *document, html_string, /*fragment_start=*/0,
         /*fragment_end=*/html_string.length(), url, kIncludeNode,
         kResolveAllURLs);
@@ -227,10 +227,10 @@ class ClipboardSvgWriter final : public ClipboardWriter {
       return;
     }
     Document* document = local_frame->GetDocument();
-    String sanitized_svg = CreateSanitizedMarkupWithContext(
+    String strictly_processed_svg = CreateStrictlyProcessedMarkupWithContext(
         *document, svg_string, fragment_start, fragment_end, url, kIncludeNode,
         kResolveAllURLs);
-    Write(sanitized_svg);
+    Write(strictly_processed_svg);
   }
 
   void Write(const String& svg_html) {

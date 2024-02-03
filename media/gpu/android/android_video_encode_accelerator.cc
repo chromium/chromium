@@ -275,7 +275,7 @@ void AndroidVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 void AndroidVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   // If this is changed to use variable bitrate encoding, change the mode check
   // to check that the mode matches the current mode.
   if (bitrate.mode() != Bitrate::Mode::kConstant) {

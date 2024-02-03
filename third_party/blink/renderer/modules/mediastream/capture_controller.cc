@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -34,7 +35,7 @@ bool IsCaptureType(const MediaStreamTrack* track,
 
   MediaStreamTrackPlatform::Settings settings;
   video_track->GetSettings(settings);
-  const absl::optional<SurfaceType> display_surface = settings.display_surface;
+  const std::optional<SurfaceType> display_surface = settings.display_surface;
   return base::ranges::any_of(
       types, [display_surface](SurfaceType t) { return t == display_surface; });
 }
@@ -105,19 +106,37 @@ bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
 }
 
 void OnCapturedSurfaceControlResult(ScriptPromiseResolver* resolver,
-                                    bool success,
-                                    const String& error) {
-  if (success) {
-    resolver->Resolve();
+                                    DOMException* exception) {
+  if (exception) {
+    resolver->Reject(exception);
   } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, error));
+    resolver->Resolve();
   }
 }
 
+std::optional<int> GetInitialZoomLevel(MediaStreamTrack* video_track) {
+  const MediaStreamVideoSource* native_source =
+      MediaStreamVideoSource::GetVideoSource(
+          video_track->Component()->Source());
+  if (!native_source) {
+    return std::nullopt;
+  }
+
+  const media::mojom::DisplayMediaInformationPtr& display_media_info =
+      native_source->device().display_media_info;
+  if (!display_media_info) {
+    return std::nullopt;
+  }
+
+  return display_media_info->initial_zoom_level;
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
+
+CaptureController::ValidationResult::ValidationResult(DOMExceptionCode code,
+                                                      String message)
+    : code(code), message(message) {}
 
 CaptureController* CaptureController::Create(ExecutionContext* context) {
   return MakeGarbageCollected<CaptureController>(context);
@@ -183,10 +202,10 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
   return promise;
 #else
-  std::pair<bool, DOMException*> validation_result =
-      ValidateCapturedSurfaceControlCall();
-  if (!validation_result.first) {
-    resolver->Reject(validation_result.second);
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        validation_result.code, validation_result.message));
     return promise;
   }
 
@@ -204,7 +223,7 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
       WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
 
   return promise;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 Vector<int> CaptureController::getSupportedZoomLevels() {
@@ -232,42 +251,29 @@ Vector<int> CaptureController::getSupportedZoomLevels() {
   return result;
 }
 
-ScriptPromise CaptureController::getZoomLevel(ScriptState* script_state) {
+int CaptureController::getZoomLevel(ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  ScriptPromiseResolver* const resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  const ScriptPromise promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID)
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Unsupported."));
-  return promise;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Unsupported.");
+  return 100;
 #else
-  std::pair<bool, DOMException*> validation_result =
-      ValidateCapturedSurfaceControlCall();
-  if (!validation_result.first) {
-    resolver->Reject(validation_result.second);
-    return promise;
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    exception_state.ThrowDOMException(validation_result.code,
+                                      validation_result.message);
+    return 100;
   }
 
-  base::OnceCallback<void(absl::optional<int>, const String&)> callback =
-      WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver, absl::optional<int> zoom_level,
-             const String& error) {
-            if (zoom_level) {
-              resolver->Resolve(*zoom_level);
-            } else {
-              resolver->Reject(MakeGarbageCollected<DOMException>(
-                  DOMExceptionCode::kUnknownError, error));
-            }
-          },
-          WrapPersistent(resolver));
+  if (!zoom_level_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The zoom level is not yet known.");
+    return 100;
+  }
 
-  video_track_->GetZoomLevel(std::move(callback));
-
-  return promise;
-#endif  // !BUILDFLAG(IS_ANDROID)
+  return *zoom_level_;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
@@ -283,10 +289,10 @@ ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
   return promise;
 #else
-  std::pair<bool, DOMException*> validation_result =
-      ValidateCapturedSurfaceControlCall();
-  if (!validation_result.first) {
-    resolver->Reject(validation_result.second);
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        validation_result.code, validation_result.message));
     return promise;
   }
 
@@ -301,7 +307,7 @@ ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
       zoom_level,
       WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
   return promise;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
@@ -313,7 +319,14 @@ void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
   DCHECK(descriptor_id_.empty());
 
   video_track_ = video_track;
+  // The CaptureController-Source mapping cannot change after having been set
+  // up, and the observer remains until either object is garbage collected. No
+  // explicit deregistration of the observer is necessary.
+  video_track_->Component()->AddSourceObserver(this);
   descriptor_id_ = std::move(descriptor_id);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  zoom_level_ = GetInitialZoomLevel(video_track_);
+#endif
 }
 
 const AtomicString& CaptureController::InterfaceName() const {
@@ -354,38 +367,52 @@ void CaptureController::FinalizeFocusDecision() {
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void CaptureController::SourceChangedZoomLevel(int zoom_level) {
+  DCHECK(IsMainThread());
+
+  if (zoom_level_ == zoom_level) {
+    return;
+  }
+
+  zoom_level_ = zoom_level;
+
+  if (!video_track_ || video_track_->Ended()) {
+    return;
+  }
+
+  DispatchEvent(*Event::Create(event_type_names::kCapturedzoomlevelchange));
+}
+#endif
+
 void CaptureController::Trace(Visitor* visitor) const {
   visitor->Trace(video_track_);
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 
-std::pair<bool, DOMException*>
+CaptureController::ValidationResult
 CaptureController::ValidateCapturedSurfaceControlCall() const {
   if (!is_bound_) {
-    return std::make_pair(false, MakeGarbageCollected<DOMException>(
-                                     DOMExceptionCode::kInvalidStateError,
-                                     "getDisplayMedia() not called yet."));
+    return ValidationResult(DOMExceptionCode::kInvalidStateError,
+                            "getDisplayMedia() not called yet.");
   }
 
   if (!video_track_) {
-    return std::make_pair(false, MakeGarbageCollected<DOMException>(
-                                     DOMExceptionCode::kInvalidStateError,
-                                     "Capture-session not started."));
+    return ValidationResult(DOMExceptionCode::kInvalidStateError,
+                            "Capture-session not started.");
   }
 
   if (video_track_->readyState() == "ended") {
-    return std::make_pair(
-        false, MakeGarbageCollected<DOMException>(
-                   DOMExceptionCode::kInvalidStateError, "Video track ended."));
+    return ValidationResult(DOMExceptionCode::kInvalidStateError,
+                            "Video track ended.");
   }
 
   if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
-    return std::make_pair(false, MakeGarbageCollected<DOMException>(
-                                     DOMExceptionCode::kNotSupportedError,
-                                     "Action only supported for tab-capture."));
+    return ValidationResult(DOMExceptionCode::kNotSupportedError,
+                            "Action only supported for tab-capture.");
   }
-  return std::make_pair(true, nullptr);
+  return ValidationResult(DOMExceptionCode::kNoError, "");
 }
 
 }  // namespace blink

@@ -9,15 +9,15 @@
  * release channel to notify parents of this dialog.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -28,13 +28,6 @@ import {castExists} from '../assert_extras.js';
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, BrowserChannel, isTargetChannelMoreStable} from './about_page_browser_proxy.js';
 import {getTemplate} from './channel_switcher_dialog.html.js';
 
-interface SettingsChannelSwitcherDialogElement {
-  $: {
-    dialog: CrDialogElement,
-    warningSelector: IronSelectorElement,
-  };
-}
-
 const WarningMessage = {
   NONE: -1,
   ENTERPRISE_MANAGED: 0,
@@ -42,7 +35,16 @@ const WarningMessage = {
   UNSTABLE: 2,
 };
 
-class SettingsChannelSwitcherDialogElement extends PolymerElement {
+export interface SettingsChannelSwitcherDialogElement {
+  $: {
+    changeChannel: HTMLElement,
+    changeChannelAndPowerwash: HTMLElement,
+    dialog: CrDialogElement,
+    warningSelector: IronSelectorElement,
+  };
+}
+
+export class SettingsChannelSwitcherDialogElement extends PolymerElement {
   static get is() {
     return 'settings-channel-switcher-dialog';
   }

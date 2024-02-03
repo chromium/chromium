@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -15,6 +16,14 @@ LayoutManager::~LayoutManager() = default;
 void LayoutManager::Installed(View* host) {}
 
 void LayoutManager::InvalidateLayout() {}
+
+gfx::Size LayoutManager::GetPreferredSize(
+    const View* host,
+    const SizeBounds& available_size) const {
+  NOTIMPLEMENTED() << "Subclasses of LayoutManager should implement "
+                      "GetPreferredSize(const View*, const SizeBounds&)";
+  return gfx::Size();
+}
 
 gfx::Size LayoutManager::GetMinimumSize(const View* host) const {
   // Fall back to using preferred size if no minimum size calculation is

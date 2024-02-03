@@ -12,6 +12,8 @@
 #include "base/values.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 
+namespace web_app {
+
 class IsolatedWebAppsEnabledPrefObserverLacros
     : public IsolatedWebAppsEnabledPrefObserver {
  public:
@@ -53,3 +55,5 @@ std::unique_ptr<IsolatedWebAppsEnabledPrefObserver>
 IsolatedWebAppsEnabledPrefObserver::Create(Profile* profile) {
   return std::make_unique<IsolatedWebAppsEnabledPrefObserverLacros>();
 }
+
+}  // namespace web_app

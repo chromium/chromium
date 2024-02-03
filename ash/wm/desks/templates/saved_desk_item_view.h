@@ -114,7 +114,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
 
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
   void OnFocus() override;

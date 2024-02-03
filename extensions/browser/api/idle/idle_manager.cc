@@ -13,6 +13,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/idle.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -36,7 +37,7 @@ class DefaultEventDelegate : public IdleManager::EventDelegate {
   explicit DefaultEventDelegate(content::BrowserContext* context);
   ~DefaultEventDelegate() override;
 
-  void OnStateChanged(const std::string& extension_id,
+  void OnStateChanged(const ExtensionId& extension_id,
                       ui::IdleState new_state) override;
   void RegisterObserver(EventRouter::Observer* observer) override;
   void UnregisterObserver(EventRouter::Observer* observer) override;
@@ -52,7 +53,7 @@ DefaultEventDelegate::DefaultEventDelegate(content::BrowserContext* context)
 DefaultEventDelegate::~DefaultEventDelegate() {
 }
 
-void DefaultEventDelegate::OnStateChanged(const std::string& extension_id,
+void DefaultEventDelegate::OnStateChanged(const ExtensionId& extension_id,
                                           ui::IdleState new_state) {
   base::Value::List args;
   args.Append(IdleManager::CreateIdleValue(new_state));
@@ -176,12 +177,12 @@ ui::IdleState IdleManager::QueryState(int threshold) {
   return idle_time_provider_->CalculateIdleState(threshold);
 }
 
-void IdleManager::SetThreshold(const std::string& extension_id, int threshold) {
+void IdleManager::SetThreshold(const ExtensionId& extension_id, int threshold) {
   DCHECK(thread_checker_.CalledOnValidThread());
   GetMonitor(extension_id)->threshold = threshold;
 }
 
-int IdleManager::GetThresholdForTest(const std::string& extension_id) const {
+int IdleManager::GetThresholdForTest(const ExtensionId& extension_id) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto it = monitors_.find(extension_id);
 
@@ -227,7 +228,7 @@ void IdleManager::SetIdleTimeProviderForTest(
   idle_time_provider_ = std::move(idle_time_provider);
 }
 
-IdleMonitor* IdleManager::GetMonitor(const std::string& extension_id) {
+IdleMonitor* IdleManager::GetMonitor(const ExtensionId& extension_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto it = monitors_.find(extension_id);
 

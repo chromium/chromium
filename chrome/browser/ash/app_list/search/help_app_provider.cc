@@ -96,7 +96,7 @@ void HelpAppResult::Open(int event_flags) {
 
 HelpAppProvider::HelpAppProvider(Profile* profile,
                                  ash::help_app::SearchHandler* search_handler)
-    : SearchProvider(ControlCategory::kHelp),
+    : SearchProvider(SearchCategory::kHelp),
       profile_(profile),
       search_handler_(search_handler) {
   DCHECK(profile_);

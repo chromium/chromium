@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TRACE_EVENTS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/trace_event/trace_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -507,7 +507,7 @@ struct V8ConsumeCacheResult {
 void Data(perfetto::TracedValue context,
           const String& url,
           const WTF::TextPosition&,
-          absl::optional<V8ConsumeCacheResult>,
+          std::optional<V8ConsumeCacheResult>,
           bool eager,
           bool streamed,
           ScriptStreamer::NotStreamingReason);

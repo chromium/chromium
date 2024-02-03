@@ -559,7 +559,8 @@ void IndexedDBBucketContext::OpenDatabase(
     bool was_cold_open,
     IndexedDBDataLossInfo data_loss_info,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        state_checker) {
+        state_checker,
+    base::UnguessableToken client_token) {
   auto connection = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<IndexedDBFactoryClient>(
           std::move(pending_factory_client)),
@@ -568,6 +569,7 @@ void IndexedDBBucketContext::OpenDatabase(
       transaction_id, version, std::move(transaction_receiver));
   connection->was_cold_open = was_cold_open;
   connection->data_loss_info = data_loss_info;
+  connection->client_token = client_token;
   // Null in unit tests.
   if (state_checker) {
     connection->client_state_checker.Bind(std::move(state_checker));

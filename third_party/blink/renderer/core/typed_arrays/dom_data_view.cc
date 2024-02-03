@@ -50,7 +50,7 @@ DOMDataView* DOMDataView::Create(DOMArrayBufferBase* buffer,
 }
 
 v8::Local<v8::Value> DOMDataView::Wrap(ScriptState* script_state) {
-  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+  DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));
 
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
   v8::Local<v8::Value> v8_buffer =

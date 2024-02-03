@@ -9,11 +9,11 @@
 #include <set>
 
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "url/gurl.h"
 
 namespace autofill {
 
-class PaymentsAutofillTable;
 class PaymentInstrument;
 
 // Base class for all payment instruments. A payment instrument is considered to
@@ -28,38 +28,26 @@ class PaymentInstrument {
   enum class PaymentRail {
     kUnknown = 0,
     // Payment Rail used in Brazil.
-    kPix = 1
+    kPix = 1,
+    kMaxValue = kPix,
   };
-  enum class InstrumentType { kUnknown = 0, kBankAccount = 1 };
 
   PaymentInstrument(int64_t instrument_id,
                     std::u16string_view nickname,
-                    const GURL& display_icon_url);
+                    const GURL& display_icon_url,
+                    DenseSet<PaymentInstrument::PaymentRail> supported_rails);
   PaymentInstrument(const PaymentInstrument& other);
   PaymentInstrument& operator=(const PaymentInstrument& other);
   virtual ~PaymentInstrument();
 
   friend bool operator==(const PaymentInstrument&, const PaymentInstrument&);
 
-  // Return the type of PaymentInstrument.
-  virtual InstrumentType GetInstrumentType() const = 0;
-
-  // Database operations to be implemented by derived class. The derived class
-  // is expected to call the corresponding database method on the
-  // PaymentsAutofillTable object. This is required for callers to call these
-  // methods on the base class without knowing the type of the derived class.
-  virtual bool AddToDatabase(PaymentsAutofillTable* database) const = 0;
-  virtual bool UpdateInDatabase(PaymentsAutofillTable* database) const = 0;
-  virtual bool DeleteFromDatabase(PaymentsAutofillTable* database) const = 0;
-
   int64_t instrument_id() const { return instrument_id_; }
 
-  const std::set<PaymentRail>& supported_rails() const {
+  const DenseSet<PaymentRail>& supported_rails() const {
     return supported_rails_;
   }
 
-  // Add a payment rail to the list of rails supported for this instrument.
-  void AddPaymentRail(PaymentRail payment_rail);
   // Check whether the PaymentInstrument is supported for a particular rail.
   bool IsSupported(PaymentRail payment_rail) const;
 
@@ -72,14 +60,14 @@ class PaymentInstrument {
   // PaymentInstrument.
   int64_t instrument_id_;
 
-  // All the payment rails that are supported by this instrument.
-  std::set<PaymentRail> supported_rails_;
-
   // The nickname of the PaymentInstrument. May be empty.
   std::u16string nickname_;
 
   // The url to fetch the icon for the PaymentInstrument. May be empty.
   GURL display_icon_url_;
+
+  // All the payment rails that are supported by this instrument.
+  DenseSet<PaymentRail> supported_rails_;
 };
 
 }  // namespace autofill

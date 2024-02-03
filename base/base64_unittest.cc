@@ -101,9 +101,8 @@ TEST(Base64Test, Binary) {
 
   // Check that encoding the same data through the StringPiece interface gives
   // the same results.
-  std::string string_piece_encoded;
-  Base64Encode(StringPiece(reinterpret_cast<const char*>(kData), sizeof(kData)),
-               &string_piece_encoded);
+  std::string string_piece_encoded = Base64Encode(
+      StringPiece(reinterpret_cast<const char*>(kData), sizeof(kData)));
 
   EXPECT_EQ(binary_encoded, string_piece_encoded);
 

@@ -324,7 +324,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void SaveUserDisplayEmail(const AccountId& account_id,
                                     const std::string& display_email) = 0;
 
-  // Returns stored user type or USER_TYPE_REGULAR by default.
+  // Returns stored user type or UserType::kRegular by default.
   virtual UserType GetUserType(const AccountId& account_id) = 0;
 
   // Saves user's type for |user| into local state preferences.
@@ -440,7 +440,8 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsGaiaUserAllowed(const User& user) const = 0;
 
   // Returns true if |user| is allowed depending on device policies.
-  // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST, USER_TYPE_CHILD.
+  // Accepted user types: UserType::kRegular, UserType::kGuest,
+  // UserType::kChild.
   virtual bool IsUserAllowed(const User& user) const = 0;
 
   // Explicitly non-ephemeral accounts are Owner account (on consumer-owned

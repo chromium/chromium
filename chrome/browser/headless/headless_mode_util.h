@@ -27,6 +27,10 @@ bool IsHeadlessMode();
 // most of the full fledged Chrome browser functionality.
 bool IsOldHeadlessMode();
 
+// Returns positive if headless mode can access any URL whose scheme is
+// chrome://.
+bool IsChromeSchemeUrlAllowed();
+
 // Initializes headless mode returning a handle that would clean up the state
 // upon destruction.
 std::unique_ptr<HeadlessModeHandle> InitHeadlessMode();

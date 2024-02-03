@@ -161,6 +161,11 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
         type == mojom::DisplaySettingsType::kUnifiedMode ||
         type == mojom::DisplaySettingsType::kPrimaryDisplay) {
       auto value = mojom::DisplaySettingsValue::New();
+      if (type == mojom::DisplaySettingsType::kMirrorMode) {
+        value->mirror_mode_status = true;
+      } else if (type == mojom::DisplaySettingsType::kUnifiedMode) {
+        value->unified_mode_status = true;
+      }
       provider_->RecordChangingDisplaySettings(type, std::move(value));
       histogram_tester_.ExpectBucketCount(
           DisplaySettingsProvider::kDisplaySettingsHistogramName, type, 1);
@@ -172,6 +177,11 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
         if (type == mojom::DisplaySettingsType::kOrientation) {
           value->orientation =
               mojom::DisplaySettingsOrientationOption::k90Degree;
+        } else if (type == mojom::DisplaySettingsType::kNightLight) {
+          value->night_light_status = true;
+        } else if (type == mojom::DisplaySettingsType::kNightLightSchedule) {
+          value->night_light_schedule =
+              mojom::DisplaySettingsNightLightScheduleOption::kSunsetToSunrise;
         }
         provider_->RecordChangingDisplaySettings(type, std::move(value));
 
@@ -186,13 +196,13 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
 
 // Test histogram is recorded when users change display orientation.
 TEST_F(DisplaySettingsProviderTest, ChangeDisplayOrientationHistogram) {
-  for (int orientationInt =
+  for (int orientation_int =
            static_cast<int>(mojom::DisplaySettingsOrientationOption::kMinValue);
-       orientationInt <=
+       orientation_int <=
        static_cast<int>(mojom::DisplaySettingsOrientationOption::kMaxValue);
-       orientationInt++) {
+       orientation_int++) {
     mojom::DisplaySettingsOrientationOption orientation =
-        static_cast<mojom::DisplaySettingsOrientationOption>(orientationInt);
+        static_cast<mojom::DisplaySettingsOrientationOption>(orientation_int);
     // Settings applied to either internal or external displays.
     for (bool internal : {true, false}) {
       auto value = mojom::DisplaySettingsValue::New();
@@ -207,6 +217,86 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplayOrientationHistogram) {
       histogram_name.append(".Orientation");
       histogram_tester_.ExpectBucketCount(histogram_name, orientation, 1);
     }
+  }
+}
+
+// Test histogram is recorded when users toggle display night light status.
+TEST_F(DisplaySettingsProviderTest, ToggleDisplayNightLightStatusHistogram) {
+  for (bool night_light_status : {true, false}) {
+    // Settings applied to either internal or external displays.
+    for (bool internal : {true, false}) {
+      auto value = mojom::DisplaySettingsValue::New();
+      value->is_internal_display = internal;
+      value->night_light_status = night_light_status;
+      provider_->RecordChangingDisplaySettings(
+          mojom::DisplaySettingsType::kNightLight, std::move(value));
+
+      std::string histogram_name(
+          DisplaySettingsProvider::kDisplaySettingsHistogramName);
+      histogram_name.append(internal ? ".Internal" : ".External");
+      histogram_name.append(".NightLightStatus");
+      histogram_tester_.ExpectBucketCount(histogram_name, night_light_status,
+                                          1);
+    }
+  }
+}
+
+// Test histogram is recorded when users change display night light schedule.
+TEST_F(DisplaySettingsProviderTest, ToggleDisplayNightLightScheduleHistogram) {
+  for (int night_light_schedule_int = static_cast<int>(
+           mojom::DisplaySettingsNightLightScheduleOption::kMinValue);
+       night_light_schedule_int <=
+       static_cast<int>(
+           mojom::DisplaySettingsNightLightScheduleOption::kMaxValue);
+       night_light_schedule_int++) {
+    mojom::DisplaySettingsNightLightScheduleOption night_light_schedule =
+        static_cast<mojom::DisplaySettingsNightLightScheduleOption>(
+            night_light_schedule_int);
+    // Settings applied to either internal or external displays.
+    for (bool internal : {true, false}) {
+      auto value = mojom::DisplaySettingsValue::New();
+      value->is_internal_display = internal;
+      value->night_light_schedule = night_light_schedule;
+      provider_->RecordChangingDisplaySettings(
+          mojom::DisplaySettingsType::kNightLightSchedule, std::move(value));
+
+      std::string histogram_name(
+          DisplaySettingsProvider::kDisplaySettingsHistogramName);
+      histogram_name.append(internal ? ".Internal" : ".External");
+      histogram_name.append(".NightLightSchedule");
+      histogram_tester_.ExpectBucketCount(histogram_name, night_light_schedule,
+                                          1);
+    }
+  }
+}
+
+// Test histogram is recorded when users toggle display mirror mode status.
+TEST_F(DisplaySettingsProviderTest, ToggleDisplayMirrorModeStatusHistogram) {
+  for (bool mirror_mode_status : {true, false}) {
+    auto value = mojom::DisplaySettingsValue::New();
+    value->mirror_mode_status = mirror_mode_status;
+    provider_->RecordChangingDisplaySettings(
+        mojom::DisplaySettingsType::kMirrorMode, std::move(value));
+
+    std::string histogram_name(
+        DisplaySettingsProvider::kDisplaySettingsHistogramName);
+    histogram_name.append(".MirrorModeStatus");
+    histogram_tester_.ExpectBucketCount(histogram_name, mirror_mode_status, 1);
+  }
+}
+
+// Test histogram is recorded when users toggle display unified mode status.
+TEST_F(DisplaySettingsProviderTest, ToggleDisplayUnifiedModeStatusHistogram) {
+  for (bool unified_mode_status : {true, false}) {
+    auto value = mojom::DisplaySettingsValue::New();
+    value->unified_mode_status = unified_mode_status;
+    provider_->RecordChangingDisplaySettings(
+        mojom::DisplaySettingsType::kUnifiedMode, std::move(value));
+
+    std::string histogram_name(
+        DisplaySettingsProvider::kDisplaySettingsHistogramName);
+    histogram_name.append(".UnifiedModeStatus");
+    histogram_tester_.ExpectBucketCount(histogram_name, unified_mode_status, 1);
   }
 }
 
@@ -226,6 +316,12 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
 
   // Expect not to count new display is connected since it's already saved
   // into prefs before.
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::kNewDisplayConnectedHistogram,
+      DisplaySettingsProvider::DisplayType::kExternalDisplay, 1);
+
+  // Entering unified desk mode should not count new display connected.
+  provider_->OnDisplayAdded(display::Display(display::kUnifiedDisplayId));
   histogram_tester_.ExpectBucketCount(
       DisplaySettingsProvider::kNewDisplayConnectedHistogram,
       DisplaySettingsProvider::DisplayType::kExternalDisplay, 1);

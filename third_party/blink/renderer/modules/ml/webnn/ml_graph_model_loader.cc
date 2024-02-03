@@ -271,7 +271,7 @@ void MLGraphModelLoader::OnComputeGraph(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
         outputs_info,
     ComputeResult mojo_result,
-    const absl::optional<HashMap<String, Vector<uint8_t>>>& mojo_outputs) {
+    const std::optional<HashMap<String, Vector<uint8_t>>>& mojo_outputs) {
   if (mojo_result != ComputeResult::kOk || !mojo_outputs.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError,

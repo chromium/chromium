@@ -607,9 +607,11 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3526440770046466733">Buksan ang link sa bagong tab at manatili sa kasalukuyang tab</translation>
 <translation id="353086728817903341">Nakakonekta sa <ph name="NUM_DEVICES" /> (na) device</translation>
 <translation id="3533126039236445965">Mga app sa shelf</translation>
+<translation id="3537350467437346467">Tiningnan mo</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">I-dismiss ang pag-set up sa pagtingin sa mga kamakailang larawan at media ng iyong telepono</translation>
 <translation id="3542066395059568317">Makakakita ka ng mga rekomendasyon para makapagpatuloy ka kung saan ka huminto. Puwede kang mag-right-click para alisin ang mga rekomendasyon.</translation>
+<translation id="3547318469722231257">Binago mo</translation>
 <translation id="3552189655002856821">Naka-off ang Wi-Fi</translation>
 <translation id="3554215588514239132">Ipakita o i-hide ang panel ng Mga Tool ng Developer</translation>
 <translation id="3554637740840164787">Na-pin ang <ph name="ITEM_TITLE" /></translation>
@@ -701,6 +703,7 @@ Isaksak ang iyong device.</translation>
 <translation id="385300504083504382">Simula</translation>
 <translation id="3859364108019690">Hindi makapag-stream ng mga app</translation>
 <translation id="3861651314799684201">Pindutin ang enter para mag-record nang full screen</translation>
+<translation id="3882323608730650973">Binago</translation>
 <translation id="3886872229787704059">Binuksan ngayon</translation>
 <translation id="3891340733213178823">Pindutin ang Ctrl+Shift+Q nang dalawang beses upang mag-sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (pasalitang feedback)</translation>
@@ -894,6 +897,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4582666543382004902">In-off ang hotspot para gamitin ang WiFi. Para gamitin ang hotspot, i-off ang WiFi.</translation>
 <translation id="4585337515783392668">Ihinto ang pag-cast sa isang hindi pa natutukoy na tagatanggap</translation>
 <translation id="4596144739579517758">Naka-off ang Madilim na tema</translation>
+<translation id="4596442969149038771">Na-share ni <ph name="USER" /></translation>
 <translation id="4611292653554630842">Mag-log in</translation>
 <translation id="462160925400706389">Nakonekta ang <ph name="NAME" /></translation>
 <translation id="4623167406982293031">I-verify ang account</translation>
@@ -1337,6 +1341,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6298183524022479114">I-customize ang device na ito sa app</translation>
 <translation id="6309219492973062892">I-click o i-tap ang mga icon na shelf 1-8</translation>
 <translation id="6315170314923504164">Voice</translation>
+<translation id="6319058840130157106">Magpalipat-lipat pabalik sa kanang sulok sa ibaba, Launcher, address bar, bookmarks bar, website na nakabukas, at mga download</translation>
 <translation id="6324916366299863871">I-edit ang shortcut</translation>
 <translation id="6330012934079202188">Ipinapakita ang mga window mula sa lahat ng desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa kasalukuyang desk</translation>
 <translation id="6338485349199627913">Ang <ph name="DISPLAY_NAME" /> ay isang session na pinapamahalaan ng <ph name="MANAGER" /></translation>
@@ -1500,6 +1505,7 @@ Kaka-install lang</translation>
 <translation id="6981291220124935078">I-on ang access</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">Permanenteng made-delete ang lahat ng file at lokal na data na nauugnay sa user na ito kapag inalis na ang user na ito.</translation>
+<translation id="6984028004251196682">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ginawang <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga nakaraang setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Mabilis na mag-tour para matuto kung paano i-explore ang iyong Chromebook. Makapagsimula sa 6 na hakbang.</translation>
 <translation id="7004910047186208204">Kumonekta sa mobile data</translation>
 <translation id="7005239792648594238">Magbukas ng app para magsimula</translation>
@@ -1813,6 +1819,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8314772463905284467">Naka-on ang Caps Lock</translation>
 <translation id="8315514906653279104">Ino-on...</translation>
 <translation id="8331351032546853669">Nakabinbin ang pag-download</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Napili ang window ng <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">launcher</translation>
@@ -1918,6 +1925,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="878215960996152260"><ph name="APP_NAME" />, Naka-install na App, Naka-block</translation>
 <translation id="8785070478575117577">Kumonekta sa <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Magpalipat-lipat pasulong sa kanang sulok sa ibaba, Launcher, address bar, bookmarks bar, website na nakabukas, at mga download</translation>
 <translation id="8792626944327216835">mikropono</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
@@ -2031,6 +2039,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="953431725143473984">I-shut down ang device?</translation>
 <translation id="954052413789300507">Walang sapat na espasyo para sa <ph name="FILENAME" />. Magbakante ng espasyo.</translation>
 <translation id="954520015070501466">30min</translation>
+<translation id="954786879461589145">Binago ni <ph name="USER" /></translation>
 <translation id="974545358917229949">Ipinapakita ang <ph name="RESULT_COUNT" /> (na) resulta para sa <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Walang takdang petsa</translation>
 <translation id="98120814841227350">Pumunta sa dulo ng dokumento</translation>

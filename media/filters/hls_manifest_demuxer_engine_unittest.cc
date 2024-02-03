@@ -177,7 +177,7 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
   template <typename T>
   void BindUrlToDataSource(std::string url, std::string value) {
     EXPECT_CALL(*mock_dsp_, ReadFromCombinedUrlQueue(
-                                SingleSegmentQueue(url, absl::nullopt), _))
+                                SingleSegmentQueue(url, std::nullopt), _))
         .Times(1)
         .WillOnce(RunOnceCallback<1>(T::CreateStream(value)));
   }
@@ -356,8 +356,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAsyncSeek) {
 TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
   auto rendition1 = std::make_unique<MockHlsRendition>();
   auto rendition2 = std::make_unique<MockHlsRendition>();
-  EXPECT_CALL(*rendition1, GetDuration()).WillOnce(Return(absl::nullopt));
-  EXPECT_CALL(*rendition2, GetDuration()).WillOnce(Return(absl::nullopt));
+  EXPECT_CALL(*rendition1, GetDuration()).WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*rendition2, GetDuration()).WillOnce(Return(std::nullopt));
 
   auto* rend1 = rendition1.get();
   auto* rend2 = rendition2.get();
@@ -457,15 +457,15 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
   EXPECT_CALL(*mock_dsp_,
               ReadFromCombinedUrlQueue(
                   SingleSegmentQueue("http://media.example.com/manifest.m3u8",
-                                     absl::nullopt),
+                                     std::nullopt),
                   _))
       .WillOnce(RunOnceCallback<1>(
           StringHlsDataSourceStreamFactory::CreateStream(kShortMediaPlaylist)));
-  EXPECT_CALL(*mock_dsp_,
-              ReadFromCombinedUrlQueue(
-                  SingleSegmentQueue("http://media.example.com/first.ts",
-                                     absl::nullopt),
-                  _))
+  EXPECT_CALL(
+      *mock_dsp_,
+      ReadFromCombinedUrlQueue(
+          SingleSegmentQueue("http://media.example.com/first.ts", std::nullopt),
+          _))
       .WillOnce(
           RunOnceCallback<1>(StringHlsDataSourceStreamFactory::CreateStream(
               "hey, this isn't a bitstream!")))

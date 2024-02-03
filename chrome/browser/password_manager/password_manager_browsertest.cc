@@ -68,6 +68,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1184,143 +1185,50 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, DeleteFrameBeforeSubmit) {
   // The only thing we check here is that there is no use-after-free reported.
 }
 
-// Get form data for /password/nonplaceholder_username.html
-autofill::FormData GetPlaceholderUsernameFormData(
-    password_manager::PasswordForm signin_form) {
-  // Build server predictions
-  autofill::FormData form_data;
-  constexpr autofill::FormRendererId form_id(1);
-  form_data.unique_renderer_id = form_id;
-  form_data.name_attribute = u"testform";
-  form_data.name = form_data.name_attribute;
-  form_data.action = GURL(signin_form.action.spec() + "password/done.html");
-  form_data.url = signin_form.url;
-  // Username
-  autofill::FormFieldData username_field;
-  username_field.form_control_type = autofill::FormControlType::kInputText;
-  username_field.id_attribute = u"username_field";
-  username_field.name = username_field.id_attribute;
-  username_field.value = u"example@example.com";
-  username_field.label = username_field.value;
-  username_field.unique_renderer_id = autofill::FieldRendererId(1);
-  form_data.fields.push_back(username_field);
-  // Password
-  autofill::FormFieldData password_field;
-  password_field.form_control_type = autofill::FormControlType::kInputPassword;
-  password_field.id_attribute = u"password_field";
-  password_field.name = password_field.id_attribute;
-  password_field.value = u"htmlPass";
-  password_field.label = password_field.value;
-  password_field.unique_renderer_id = autofill::FieldRendererId(2);
-  form_data.fields.push_back(password_field);
+class PasswordManagerOverwritePlaceholderTest
+    : public PasswordManagerBrowserTest {
+ public:
+  PasswordManagerOverwritePlaceholderTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kEnableOverwritingPlaceholderUsernames);
+  }
 
-  return form_data;
-}
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
-// If there is a username and password with prefilled values, do not overwrite
-// the password if the username does not look like a placeholder value
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       NonPlaceholderPasswordNotOverwritten) {
-  // Save a credential to the password store.
+// Tests that login page with prefilled credentials is overwritten if server
+// classified the placeholder value.
+IN_PROC_BROWSER_TEST_F(PasswordManagerOverwritePlaceholderTest,
+                       FillIfServerPredictionSaysUsernameIsPlaceholder) {
+  // Add credentials to the password store.
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
           browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
           .get();
-
-  // The form should not be hosted on localhost to enable using server
-  // predictions.
+  password_manager::PasswordForm saved_form;
   const std::string kTestSignonRealm =
       embedded_test_server()->GetURL("example.com", "/").spec();
+  saved_form.signon_realm = kTestSignonRealm;
+  const GURL kFormUrl = embedded_test_server()->GetURL(
+      "example.com", "/password/prefilled_username.html");
+  saved_form.url = kFormUrl;
+  saved_form.username_value = u"saved_username";
+  saved_form.password_value = u"saved_password";
+  password_store->AddLogin(saved_form);
+
   // This fixture is needed to allow filling on page load.
   SetUrlAsTrustworthy(kTestSignonRealm);
 
-  PasswordForm signin_form;
-  signin_form.signon_realm = kTestSignonRealm;
-  const GURL kFormUrl = embedded_test_server()->GetURL(
-      "example.com", "/password/nonplaceholder_username.html");
-  signin_form.url = kFormUrl;
-  signin_form.action =
-      embedded_test_server()->GetURL("example.com", "/password/done.html");
-  signin_form.username_value = u"example@example.com";
-  signin_form.password_value = u"savedPass";
-  password_store->AddLogin(signin_form);
-
   password_manager::PasswordFormManager::
       set_wait_for_server_predictions_for_filling(true);
 
-  // Get form data
-  autofill::FormData form_data = GetPlaceholderUsernameFormData(signin_form);
-
-  // Create server predictions.
-  autofill::AutofillType::ServerPrediction username_prediction;
-  username_prediction.server_predictions = {
-      CreateFieldPrediction(autofill::FieldType::USERNAME)};
-  autofill::AutofillType::ServerPrediction password_prediction;
-  password_prediction.server_predictions = {
-      CreateFieldPrediction(autofill::FieldType::PASSWORD)};
-
-  // Navigate to the page
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kFormUrl));
-
-  // Use server predictions.
-  password_manager::ContentPasswordManagerDriver* driver =
-      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-          WebContents())
-          ->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
-  const base::flat_map<autofill::FieldGlobalId,
-                       autofill::AutofillType::ServerPrediction>
-      field_predictions = {
-          {form_data.fields[0].global_id(), std::move(username_prediction)},
-          {form_data.fields[1].global_id(), std::move(password_prediction)}};
-  driver->GetPasswordManager()->ProcessAutofillPredictions(driver, form_data,
-                                                           field_predictions);
-
-  // Check original values before interaction
-  CheckElementValue("username_field", "example@example.com");
-  CheckElementValue("password_field", "htmlPass");
-
-  // Have user interact with the page
-  content::SimulateMouseClickAt(
-      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
-
-  // Now make sure the fields aren't overwritten
-  CheckElementValue("username_field", "example@example.com");
-  CheckElementValue("password_field", "htmlPass");
-}
-
-// If there is a username and password with prefilled values, overwrite the
-// password if the username looks like a placeholder value
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       PlaceholderPasswordOverwritten) {
-  // Save a credential to the password store.
-  password_manager::PasswordStoreInterface* password_store =
-      ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
-
+  // User navigates to the page.
   // The form should not be hosted on localhost to enable using server
   // predictions.
-  const std::string kTestSignonRealm =
-      embedded_test_server()->GetURL("example.com", "/").spec();
-  // This is needed to allow filling on page load.
-  SetUrlAsTrustworthy(kTestSignonRealm);
-
-  PasswordForm signin_form;
-  signin_form.signon_realm = kTestSignonRealm;
-  const GURL kFormUrl = embedded_test_server()->GetURL(
-      "example.com", "/password/nonplaceholder_username.html");
-  signin_form.url = kFormUrl;
-  signin_form.action =
-      embedded_test_server()->GetURL("example.com", "/password/done.html");
-  signin_form.username_value = u"example@example.com";
-  signin_form.password_value = u"savedPass";
-  password_store->AddLogin(signin_form);
-
-  password_manager::PasswordFormManager::
-      set_wait_for_server_predictions_for_filling(true);
-
-  // Get form data
-  autofill::FormData form_data = GetPlaceholderUsernameFormData(signin_form);
+  PasswordsNavigationObserver observer(WebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kFormUrl));
+  ASSERT_TRUE(observer.Wait());
 
   // Create server predictions.
   autofill::AutofillType::ServerPrediction username_prediction;
@@ -1330,31 +1238,119 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   autofill::AutofillType::ServerPrediction password_prediction;
   password_prediction.server_predictions = {
       autofill::test::CreateFieldPrediction(autofill::FieldType::PASSWORD)};
-
-  // Navigate to the page
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kFormUrl));
-
-  // Use server predictions.
+  // Simulate password manager receiving server predictions.
   password_manager::ContentPasswordManagerDriver* driver =
       password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
           WebContents())
           ->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
+  autofill::FormData form_data(
+      *driver->GetPasswordManager()->form_managers()[0]->observed_form());
   driver->GetPasswordManager()->ProcessAutofillPredictions(
       driver, form_data,
       {{form_data.fields[0].global_id(), std::move(username_prediction)},
        {form_data.fields[1].global_id(), std::move(password_prediction)}});
 
-  // Check original values before interaction
-  CheckElementValue("username_field", "example@example.com");
-  CheckElementValue("password_field", "htmlPass");
-
-  // Have user interact with the page
+  // Password Manager will not autofill on page load until user interacted with
+  // the page.
+  CheckElementValue("username_field", "some_username");
+  CheckElementValue("password_field", "some_password");
+  // After user clicks on the webpage, password manager will fill the password
+  // form.
   content::SimulateMouseClickAt(
       WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
+  WaitForElementValue("username_field",
+                      base::UTF16ToUTF8(saved_form.username_value));
+  WaitForElementValue("password_field",
+                      base::UTF16ToUTF8(saved_form.password_value));
+}
 
-  // Now make sure the fields are overwritten
-  CheckElementValue("username_field", "example@example.com");
-  WaitForElementValue("password_field", "savedPass");
+// Tests that prefilled credentials were not overwritten since there is no
+// signal that the values are placeholders.
+IN_PROC_BROWSER_TEST_F(PasswordManagerOverwritePlaceholderTest,
+                       NonPlaceholderPasswordNotOverwritten) {
+  // Add credentials to the password store.
+  password_manager::PasswordStoreInterface* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  password_manager::PasswordForm saved_form;
+  const std::string kTestSignonRealm =
+      embedded_test_server()->GetURL("example.com", "/").spec();
+  saved_form.signon_realm = kTestSignonRealm;
+  const GURL kFormUrl = embedded_test_server()->GetURL(
+      "example.com", "/password/prefilled_username.html");
+  saved_form.url = kFormUrl;
+  saved_form.username_value = u"saved_username";
+  saved_form.password_value = u"saved_password";
+  password_store->AddLogin(saved_form);
+
+  // This fixture is needed to allow filling on page load.
+  SetUrlAsTrustworthy(kTestSignonRealm);
+
+  password_manager::PasswordFormManager::
+      set_wait_for_server_predictions_for_filling(true);
+
+  // User navigates to the page.
+  PasswordsNavigationObserver observer(WebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kFormUrl));
+  ASSERT_TRUE(observer.Wait());
+
+  // Password Manager will not autofill on page load until user interacted with
+  // the page.
+  CheckElementValue("username_field", "some_username");
+  CheckElementValue("password_field", "some_password");
+  // After user clicks on the webpage, password manager will try to fill the
+  // password form.
+  content::SimulateMouseClickAt(
+      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
+  // Password manager doesn't fill the page.
+  WaitForElementValue("username_field", "some_username");
+  WaitForElementValue("password_field", "some_password");
+}
+
+// Tests that well-known placeholder values in the username field are
+// overwritten on page load.
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       FillIfUsernameIsPlaceholder) {
+  // Add credentials to the password store.
+  password_manager::PasswordStoreInterface* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  password_manager::PasswordForm saved_form;
+  const std::string kTestSignonRealm =
+      embedded_test_server()->GetURL("example.com", "/").spec();
+  saved_form.signon_realm = kTestSignonRealm;
+  const GURL kFormUrl = embedded_test_server()->GetURL(
+      "example.com", "/password/placeholder_username.html");
+  saved_form.url = kFormUrl;
+  saved_form.username_value = u"saved_username";
+  saved_form.password_value = u"saved_password";
+  password_store->AddLogin(saved_form);
+
+  // This fixture is needed to allow filling on page load.
+  SetUrlAsTrustworthy(kTestSignonRealm);
+
+  password_manager::PasswordFormManager::
+      set_wait_for_server_predictions_for_filling(true);
+
+  // User navigates to the page.
+  PasswordsNavigationObserver observer(WebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kFormUrl));
+  ASSERT_TRUE(observer.Wait());
+
+  // Password Manager will not autofill on page load until user interacted with
+  // the page.
+  CheckElementValue("username_field", "email");
+  CheckElementValue("password_field", "prefilled_password");
+  // After user clicks on the webpage, password manager will fill the password
+  // form.
+  content::SimulateMouseClickAt(
+      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
+  WaitForElementValue("username_field",
+                      base::UTF16ToUTF8(saved_form.username_value));
+  WaitForElementValue("password_field",
+                      base::UTF16ToUTF8(saved_form.password_value));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -4293,14 +4289,7 @@ class MockPrerenderPasswordManagerDriver
               (override));
   MOCK_METHOD(void,
               ShowPasswordSuggestions,
-              (autofill::FieldRendererId element_id,
-               const autofill::FormData& form,
-               uint64_t username_field_index,
-               uint64_t password_field_index,
-               base::i18n::TextDirection text_direction,
-               const std::u16string& typed_username,
-               int options,
-               const gfx::RectF& bounds),
+              (const autofill::PasswordSuggestionRequest&),
               (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
@@ -4369,18 +4358,14 @@ class MockPrerenderPasswordManagerDriver
               is_likely_otp);
         });
     ON_CALL(*this, ShowPasswordSuggestions)
-        .WillByDefault([this](autofill::FieldRendererId element_id,
-                              const autofill::FormData& form,
-                              uint64_t username_field_index,
-                              uint64_t password_field_index,
-                              base::i18n::TextDirection text_direction,
-                              const std::u16string& typed_username, int options,
-                              const gfx::RectF& bounds) {
-          const autofill::FormData form_data;
-          impl_->ShowPasswordSuggestions(element_id, form_data, 0, 0,
-                                         text_direction, typed_username,
-                                         options, bounds);
-        });
+        .WillByDefault(
+            [this](const autofill::PasswordSuggestionRequest& request) {
+              autofill::PasswordSuggestionRequest copy = request;
+              copy.form_data = autofill::FormData();
+              copy.username_field_index = 0;
+              copy.password_field_index = 0;
+              impl_->ShowPasswordSuggestions(copy);
+            });
 #if BUILDFLAG(IS_ANDROID)
     ON_CALL(*this, ShowKeyboardReplacingSurface)
         .WillByDefault([this](autofill::mojom::SubmissionReadinessState

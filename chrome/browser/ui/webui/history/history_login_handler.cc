@@ -71,7 +71,8 @@ void HistoryLoginHandler::HandleTurnOnSyncFlow(
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental) &&
       account_info.IsEmpty()) {
     account_info = signin_ui_util::GetSingleAccountForPromos(identity_manager);
   }

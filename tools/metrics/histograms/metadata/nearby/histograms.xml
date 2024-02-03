@@ -1198,6 +1198,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.PairedKeyVerificationError"
+    enum="NearbySharePairedKeyVerificationError" expires_after="2024-07-10">
+  <owner>cclem@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the reason why paired key verification failed. Emitted whenever the
+    PairedKeyVerificationRunner returns kFail.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.Payload.AttachmentType{Variation}"
     enum="NearbyShareAttachmentType" expires_after="2024-07-10">
   <owner>pushi@google.com</owner>

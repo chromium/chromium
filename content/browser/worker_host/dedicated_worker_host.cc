@@ -21,6 +21,7 @@
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -49,7 +50,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
@@ -58,6 +58,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -523,7 +524,6 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
   DCHECK(bypass_redirect_checks);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
 
-  network::URLLoaderFactoryBuilder factory_builder;
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
   if (GetWorkerCoepReporter()) {
@@ -549,25 +549,23 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
           ancestor_render_frame_host->GetCookieSettingOverrides(),
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
-  GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      worker_process_host_->GetBrowserContext(),
-      /*frame=*/nullptr, worker_process_host_->GetID(),
+
+  return url_loader_factory::CreatePendingRemote(
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
-      GetStorageKey().origin(), /*navigation_id=*/std::nullopt,
-      ukm::SourceIdObj::FromInt64(
-          ancestor_render_frame_host->GetPageUkmSourceId()),
-      factory_builder, &factory_params->header_client, bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, &factory_params->factory_override,
-      /*navigation_response_task_runner=*/nullptr);
-
-  devtools_instrumentation::WillCreateURLLoaderFactory(
-      ancestor_render_frame_host, /*is_navigation=*/false,
-      /*is_download=*/false, factory_builder,
-      &factory_params->factory_override);
-
-  return std::move(factory_builder)
-      .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-          worker_process_host_.get(), std::move(factory_params));
+      url_loader_factory::TerminalParams::ForNetworkContext(
+          worker_process_host_->GetStoragePartition()->GetNetworkContext(),
+          std::move(factory_params),
+          url_loader_factory::HeaderClientOption::kAllow,
+          url_loader_factory::FactoryOverrideOption::kAllow),
+      url_loader_factory::ContentClientParams(
+          worker_process_host_->GetBrowserContext(),
+          /*frame=*/nullptr, worker_process_host_->GetID(),
+          GetStorageKey().origin(),
+          ukm::SourceIdObj::FromInt64(
+              ancestor_render_frame_host->GetPageUkmSourceId()),
+          bypass_redirect_checks),
+      devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+          ancestor_render_frame_host));
 }
 
 // [spec]
@@ -1028,14 +1026,27 @@ DedicatedWorkerHost::GetWorkerCoepReporter() {
 }
 
 void DedicatedWorkerHost::EvictFromBackForwardCache(
-    blink::mojom::RendererEvictionReason reason) {
+    blink::mojom::RendererEvictionReason reason,
+    blink::mojom::BlockingDetailsPtr details) {
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!ancestor_render_frame_host) {
     // The frame may have already been closed.
     return;
   }
-  ancestor_render_frame_host->EvictFromBackForwardCache(reason);
+  if (reason == blink::mojom::RendererEvictionReason::kJavaScriptExecution) {
+    if (details.is_null()) {
+      mojo::ReportBadMessage(
+          "Details must be provided if it's JavaScript execution");
+    };
+    if (details->feature.has_value()) {
+      mojo::ReportBadMessage(
+          "Feature for scheduler shouldn't be provided if it's JavaScript "
+          "execution");
+    }
+  }
+  ancestor_render_frame_host->EvictFromBackForwardCache(std::move(reason),
+                                                        std::move(details));
 }
 
 void DedicatedWorkerHost::DidChangeBackForwardCacheDisablingFeatures(
@@ -1100,8 +1111,10 @@ blink::scheduler::WebSchedulerTrackedFeatures
 DedicatedWorkerHost::GetBackForwardCacheDisablingFeatures() const {
   blink::scheduler::WebSchedulerTrackedFeatures features;
   for (auto& details : bfcache_blocking_details_) {
-    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-        details->feature));
+    if (details->feature.has_value()) {
+      features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+          details->feature.value()));
+    }
   }
   return features;
 }

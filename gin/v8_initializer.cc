@@ -402,6 +402,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-harmony-import-attributes");
   SetV8FlagsIfOverridden(features::kJavaScriptSetMethods,
                          "--harmony-set-methods", "--no-harmony-set-methods");
+  SetV8FlagsIfOverridden(features::kJavaScriptRegExpDuplicateNamedGroups,
+                         "--js-regexp-duplicate-named-groups",
+                         "--no-js-duplicate-named-groups");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");

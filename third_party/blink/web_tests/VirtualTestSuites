@@ -65,7 +65,7 @@
     "prefix": "pna-navigations-enabled",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForNavigations,CorsSafelistedHeaderValueSizeRelaxed",
+    "args": ["--enable-features=PrivateNetworkAccessForNavigations",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jul 1, 2024"
@@ -74,7 +74,7 @@
     "prefix": "pna-navigations-warning",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly,CorsSafelistedHeaderValueSizeRelaxed",
+    "args": ["--enable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jul 1, 2024"
@@ -169,6 +169,16 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["wangxianzhu@chromium.org"],
     "expires": "Apr 1, 2024"
+  },
+  {
+    "prefix": "attribution-reporting-in-browser-migration",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["http/tests/inspector-protocol/attribution-reporting"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=KeepAliveInBrowserMigration,kAttributionReportingInBrowserMigration,AttributionReportingCrossAppWeb,PrivacySandboxAdsAPIsOverride",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["anthonygarant@chromium.org"],
+    "expires": "May 30, 2024"
   },
   {
     "prefix": "attribution-reporting-debug-mode",
@@ -1077,6 +1087,16 @@
     "expires": "Jul 1, 2024"
   },
   {
+    "prefix": "shadow-root-clonable-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/shadow-dom/shadow-root-clonable.html"
+    ],
+    "args": ["--disable-blink-features=ShadowRootClonable"],
+    "expires": "Jul 1, 2024"
+  },
+  {
     "prefix": "template-shadowroot-enabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],
@@ -1760,7 +1780,7 @@
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118,FencedFramesEnforceFocus",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 31, 2024"
   },
   {
     "prefix": "shared-storage-fenced-frame-mparch-selecturl-limit",
@@ -1773,7 +1793,7 @@
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/9,SharedStorageAPIM118",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 31, 2024"
   },
   {
     "prefix": "task-tracking",
@@ -2308,7 +2328,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/service-workers/service-worker/tentative/static-router",
-      "http/tests/inspector-protocol/service-worker/tentative/static-router"
+      "http/tests/inspector-protocol/service-worker/tentative/static-router",
+      "http/tests/serviceworker/static-router/"
     ],
     "args": ["--enable-features=ServiceWorkerStaticRouter",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
@@ -2453,6 +2474,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/storage-access-api",
+      "external/wpt/workers/same-site-cookies",
       "wpt_internal/storage-access-api"
     ],
     "args": ["--disable-blink-features=StorageAccessAPIBeyondCookies"],
@@ -2616,5 +2638,29 @@
     "args": ["--disable-features=StylableSelect"],
     "expires": "Oct 1, 2024",
     "owners": ["jarhar@chromium.org", "masonf@chromium.org"]
+  },
+  "css-custom-state-deprecated-syntax-enabled is the configuration that is",
+  "currently shipping to stable.",
+  {
+    "prefix": "css-custom-state-only-deprecated-syntax",
+    "platforms": ["Linux", "Mac", "Win"],
+    "args": ["--enable-features=CSSCustomStateDeprecatedSyntax",
+             "--disable-features=CSSCustomStateNewSyntax"],
+    "expires": "Dec 1, 2024",
+    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
+    "bases": [
+      "external/wpt/custom-elements/state"
+    ]
+  },
+  {
+    "prefix": "css-custom-state-only-new-syntax",
+    "platforms": ["Linux", "Mac", "Win"],
+    "args": ["--disable-features=CSSCustomStateDeprecatedSyntax",
+             "--enable-features=CSSCustomStateNewSyntax"],
+    "expires": "Dec 1, 2024",
+    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
+    "bases": [
+      "external/wpt/custom-elements/state"
+    ]
   }
 ]

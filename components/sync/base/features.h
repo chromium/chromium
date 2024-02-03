@@ -88,6 +88,11 @@ inline constexpr base::FeatureParam<bool>
         &kSyncEnableContactInfoDataTypeForDasherUsers,
         "enable_for_google_accounts", false};
 
+// Necessary condition for signed-in non-syncing users to be able to exchange
+// passwords with the sync server.
+// TODO(crbug.com/1509058): Expand docs when the other changes have landed.
+BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers);
+
 // Enables a separate account-scoped storage for preferences, for syncing users.
 // (Note that opposed to other "account storage" features, this one does not
 // have any effect for signed-in non-syncing users!)
@@ -100,6 +105,7 @@ BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Enables syncing the WEBAUTHN_CREDENTIAL data type.
+// Enabled by default on M123. Remove on or after M126.
 BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -138,6 +144,9 @@ constexpr bool IsReadingListAccountStorageEnabled() {
   return true;
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+// Flag to allow SHARED_TAB_GROUP_DATA to run in transport mode.
+BASE_DECLARE_FEATURE(kSyncSharedTabGroupDataInTransportMode);
 
 // Flags to allow AUTOFILL_WALLET_METADATA and AUTOFILL_WALLET_OFFER,
 // respectively, to run in transport mode.

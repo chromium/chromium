@@ -200,8 +200,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   };
 
   auto can_load_file_iframe = [this, &extension_id]() {
-    const Extension* extension = extension_registry()->GetExtensionById(
-        extension_id, ExtensionRegistry::ENABLED);
+    const Extension* extension =
+        extension_registry()->enabled_extensions().GetByID(extension_id);
 
     // Load an extension page with a file iframe.
     GURL page = extension->GetResourceURL("file_iframe.html");

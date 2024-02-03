@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -28,7 +30,11 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 public class HubProvider {
     private final @NonNull LazyOneshotSupplier<HubManager> mHubManagerSupplier;
     private final @NonNull PaneListBuilder mPaneListBuilder;
-    private final Callback<Pane> mOnPaneFocused;
+    private final @NonNull Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final @NonNull Callback<Pane> mOnPaneFocused;
+
+    private @Nullable CallbackController mCallbackController = new CallbackController();
+    private @Nullable HubTabSwitcherMetricsRecorder mHubTabSwitcherMetricsRecorder;
 
     /**
      * @param context The Android {@link Context} for the Hub.
@@ -50,6 +56,7 @@ public class HubProvider {
             @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier) {
         mPaneListBuilder = new PaneListBuilder(orderController);
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mHubManagerSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
@@ -87,21 +94,26 @@ public class HubProvider {
                     }
                 };
         mHubManagerSupplier.onAvailable(
-                hubManager -> {
-                    hubManager
-                            .getPaneManager()
-                            .getFocusedPaneSupplier()
-                            .addObserver(mOnPaneFocused);
-                });
+                mCallbackController.makeCancelable(this::onHubManagerAvailable));
     }
 
     /** Destroys the {@link HubManager} it cannot be used again. */
     public void destroy() {
-        HubManager hubManager = mHubManagerSupplier.get();
-        if (hubManager == null) return;
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
 
-        hubManager.getPaneManager().getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
-        hubManager.destroy();
+        if (mHubTabSwitcherMetricsRecorder != null) {
+            mHubTabSwitcherMetricsRecorder.destroy();
+            mHubTabSwitcherMetricsRecorder = null;
+        }
+
+        if (mHubManagerSupplier.hasValue()) {
+            HubManager hubManager = mHubManagerSupplier.get();
+            hubManager.getPaneManager().getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
+            hubManager.destroy();
+        }
     }
 
     /** Returns the lazy supplier for {@link HubManager}. */
@@ -116,5 +128,15 @@ public class HubProvider {
      */
     public @NonNull PaneListBuilder getPaneListBuilder() {
         return mPaneListBuilder;
+    }
+
+    private void onHubManagerAvailable(@NonNull HubManager hubManager) {
+        var focusedPaneSupplier = hubManager.getPaneManager().getFocusedPaneSupplier();
+        focusedPaneSupplier.addObserver(mOnPaneFocused);
+        mHubTabSwitcherMetricsRecorder =
+                new HubTabSwitcherMetricsRecorder(
+                        mTabModelSelectorSupplier.get(),
+                        hubManager.getHubVisibilitySupplier(),
+                        focusedPaneSupplier);
     }
 }

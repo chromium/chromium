@@ -8,13 +8,13 @@
  * for text-to-speech accessibility settings.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -52,9 +52,8 @@ export enum PdfOcrUserSelection {
 export enum ScreenAiInstallStatus {
   NOT_DOWNLOADED = 0,
   DOWNLOADING = 1,
-  FAILED = 2,
+  DOWNLOAD_FAILED = 2,
   DOWNLOADED = 3,
-  READY = 4,
 }
 
 const SettingsTextToSpeechSubpageElementBase =
@@ -172,12 +171,10 @@ export class SettingsTextToSpeechSubpageElement extends
         return this.pdfOcrProgress_ > 0 && this.pdfOcrProgress_ < 100 ?
             this.i18n('pdfOcrDownloadProgressLabel', this.pdfOcrProgress_) :
             this.i18n('pdfOcrDownloadingLabel');
-      case ScreenAiInstallStatus.FAILED:
+      case ScreenAiInstallStatus.DOWNLOAD_FAILED:
         return this.i18n('pdfOcrDownloadErrorLabel');
       case ScreenAiInstallStatus.DOWNLOADED:
         return this.i18n('pdfOcrDownloadCompleteLabel');
-      case ScreenAiInstallStatus.READY:
-        // No subtitle update in this case
       case ScreenAiInstallStatus.NOT_DOWNLOADED:
         // No subtitle update in this case
       default:

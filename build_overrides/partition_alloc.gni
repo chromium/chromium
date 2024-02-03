@@ -71,7 +71,7 @@ if (_default_use_allocator_shim && _is_partition_alloc_everywhere_platform &&
 use_partition_alloc_as_malloc_default = _default_allocator == "partition"
 use_allocator_shim_default = _default_use_allocator_shim
 
-_is_brp_supported = (is_win || is_android || is_linux || is_mac ||
+_is_brp_supported = (is_win || is_android || is_linux || is_mac || is_ios ||
                      is_chromeos) && use_partition_alloc_as_malloc_default
 
 enable_backup_ref_ptr_support_default = _is_brp_supported

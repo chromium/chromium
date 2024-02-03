@@ -50,7 +50,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
@@ -163,7 +162,6 @@
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 #include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/kcer/kcer_factory.h"
@@ -878,10 +876,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     g_browser_process->metrics_service()->InitPerUserMetrics();
   }
 
-  if (base::FeatureList::IsEnabled(::features::kWilcoDtc)) {
-    wilco_dtc_supportd_manager_ = std::make_unique<WilcoDtcSupportdManager>();
-  }
-
   ScreenLocker::InitClass();
 
   // This forces the ProfileManager to be created and register for the
@@ -1251,9 +1245,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
 
     misconfigured_user_cleaner_->ScheduleCleanup();
 
-    essential_search_manager_ =
-        ::app_list::EssentialSearchManager::Create(profile);
-
     g_browser_process->platform_part()->session_manager()->Initialize(
         *base::CommandLine::ForCurrentProcess(), profile,
         is_integration_test());
@@ -1557,12 +1548,10 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   auto_screen_brightness_controller_.reset();
   dark_resume_controller_.reset();
   lock_to_single_user_manager_.reset();
-  wilco_dtc_supportd_manager_.reset();
   gnubby_notification_.reset();
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
-  essential_search_manager_.reset();
   if (features::IsTrafficCountersEnabled()) {
     traffic_counters_handler_.reset();
   }

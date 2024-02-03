@@ -131,11 +131,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".NtpRealbox" summary="from the realbox on the NTP"/>
 </variants>
 
-<variants name="VoiceIntentTargetVariant">
-  <variant name="Assistant" summary="Assistant voice transcription."/>
-  <variant name="System" summary="System voice transcription."/>
-</variants>
-
 <variants name="WebContentsObserverMethods">
   <variant name="DidChangeVisibleSecurityState"/>
   <variant name="DidFinishLoad"/>
@@ -2143,7 +2138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cast.Sender.RemotePlayback.InitiationLocation"
-    enum="RemotePlaybackInitiationLocation" expires_after="2024-05-26">
+    enum="RemotePlaybackInitiationLocation" expires_after="2024-07-28">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -2709,7 +2704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.Shown{Type}" enum="BooleanPresent"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>mpearson@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3034,7 +3029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.BackgroundNavigation.Outcome"
-    enum="ConversionBackgroundNavigationOutcome" expires_after="M121">
+    enum="ConversionBackgroundNavigationOutcome" expires_after="2024-11-12">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -3439,6 +3434,59 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.OsRegistrationsBufferFlushAfterTimeout"
+    enum="Boolean" expires_after="2024-06-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    To ensure that buffered OS registrations are eventually sent to the OS, we
+    flush the buffer after 20s if we haven't had confirmation yet that the
+    navigation will no longer receive any more registrations.
+
+    When flushing an OS registrations buffer, this histogram emits the reason
+    why the buffer was flushed. It will only emit if there actually are buffered
+    registrations to flush.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationsBufferWithSameContext"
+    enum="Boolean" expires_after="2024-06-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    Registrations buffered in one buffer should all have the same context. This
+    histogram emits a boolean indicating if the context match that of the first
+    buffered registration.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationsSkipBufferRegistrationsSize"
+    units="count" expires_after="2024-06-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    To ensure that buffered OS registrations are eventually sent to the OS, we
+    flush the buffer after 20s if we haven't had confirmation yet that the
+    navigation will no longer receive any more registrations.
+
+    If we do receive registrations after a buffer has been flushed, we still
+    attempt to send them to the OS with a previously used input event and emit
+    this histogram.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ProcessRegisterDataHostDelay" units="ms"
     expires_after="2024-07-14">
   <owner>anthonygarant@chromium.org</owner>
@@ -3640,7 +3688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SchedulerReportDelay" units="ms"
-    expires_after="2024-03-10">
+    expires_after="2024-07-31">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3655,7 +3703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SentVerboseDebugReportType4"
-    enum="ConversionVerboseDebugReportType" expires_after="2024-02-20">
+    enum="ConversionVerboseDebugReportType" expires_after="2024-07-31">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3729,7 +3777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.CreationTime" units="ms"
-    expires_after="2024-03-10">
+    expires_after="2024-07-31">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -3820,7 +3868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TimeFromTriggerToReportSentSuccessfully"
-    units="hours" expires_after="2024-03-10">
+    units="hours" expires_after="2024-07-31">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -4239,6 +4287,17 @@ chromium-metrics-reviews@google.com.
     &quot;details&quot; page.
   </summary>
   <token key="HighlightsDetailsPageName" variants="HighlightsDetailsPageName"/>
+</histogram>
+
+<histogram name="DemoMode.Highlights.Error" enum="DemoModeHighlightsError"
+    expires_after="2024-05-24">
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    Unexpected Demo Mode Highlight app error. The metrics will be emitted when
+    encounting an error.
+  </summary>
 </histogram>
 
 <histogram name="DemoMode.Highlights.FirstInteraction"
@@ -5761,7 +5820,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.GoogleAppsInteraction"
-    enum="NuxGoogleAppsInteractions" expires_after="2024-05-26">
+    enum="NuxGoogleAppsInteractions" expires_after="2024-07-28">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -5828,7 +5887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.SignInInterstitialInteraction"
-    enum="NuxSignInInterstitialInteractions" expires_after="2024-05-26">
+    enum="NuxSignInInterstitialInteractions" expires_after="2024-07-28">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -7245,7 +7304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkDuration" units="ms"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7256,7 +7315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkEstimatedTokensPerSecond.{Stage}"
-    units="tk/s" expires_after="2024-05-27">
+    units="tk/s" expires_after="2024-07-28">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7271,7 +7330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkSuccess" enum="Boolean"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7292,7 +7351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.DeviceHeapSize.{GpuType}" units="MB"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7326,7 +7385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.LoadModelDuration" units="ms"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7336,7 +7395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.MaxBufferSize.{GpuType}" units="MB"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7350,7 +7409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.SystemRAM.{GpuType}" units="MB"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -10672,7 +10731,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.CompressedTraceSizeInKB" units="KB"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>etiennep@chromium.org</owner>
   <owner>tracing@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
@@ -10741,7 +10800,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.SharedBufferIsValid" enum="BooleanSuccess"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>eseckler@chromium.org</owner>
   <owner>tracing@chromium.org</owner>
   <summary>
@@ -10750,7 +10809,7 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="UI.DeviceScale" units="%" expires_after="2024-05-26">
+<histogram name="UI.DeviceScale" units="%" expires_after="2024-07-28">
   <owner>bsep@chromium.org</owner>
   <summary>
     The device scales available on the system at startup. A system may report
@@ -11192,19 +11251,8 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.DismissedEventTarget"
-    enum="VoiceIntentTarget" expires_after="2024-01-14">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of a dismissed voice search, such as the system
-    transcription dialog or Assistant. This is recorded after the dismissed
-    intent returns to Chrome.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.FailureEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2024-02-04">
+    enum="VoiceInteractionEventSource" expires_after="2024-07-04">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -11215,18 +11263,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.FailureEventTarget" enum="VoiceIntentTarget"
-    expires_after="2023-08-20">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of a failed voice search, such as the system
-    transcription dialog or Assistant. This is recorded after any intent
-    failure, which could occur before an intent is sent (if the send fails) or
-    after the intent returns unsuccessfully. It will only be recorded once.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.FinishEventSource"
     enum="VoiceInteractionEventSource" expires_after="2024-07-21">
   <owner>basiaz@google.com</owner>
@@ -11234,17 +11270,6 @@ regressions. -->
   <summary>
     Android: The source of a successful voice search, such as omnibox or NTP.
     This is recorded immediately after the successful intent returns to Chrome.
-  </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.FinishEventTarget" enum="VoiceIntentTarget"
-    expires_after="2024-07-21">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of a successful voice search, such as the system
-    transcription dialog or Assistant. This is recorded immediately after the
-    successful intent returns to Chrome.
   </summary>
 </histogram>
 
@@ -11266,20 +11291,6 @@ regressions. -->
     receiving the transcribed voice query. This is recorded after an Assistant
     intent has completed successfully.
   </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.QueryDuration.Android.Target.{Target}"
-    units="ms" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the time it takes between the user clicking the mic and chrome
-    receiving the transcribed voice query. This is recorded after an Assistant
-    intent has completed successfully. This histogram is limited to intents sent
-    to {Target}. See VoiceInteraction.QueryDuration.Android for the total count
-    across all targets.
-  </summary>
-  <token key="Target" variants="VoiceIntentTargetVariant"/>
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android{Action}" units="ms"
@@ -11314,17 +11325,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.StartEventTarget" enum="VoiceIntentTarget"
-    expires_after="2024-05-19">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of a voice search start event, such as the system
-    transcription dialog or Assistant. This is recorded immediately before the
-    voice transcription intent is sent.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.UnexpectedResultSource"
     enum="VoiceInteractionEventSource" expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>
@@ -11333,17 +11333,6 @@ regressions. -->
     Android: The source of an incoming result that doesn't align with an
     outgoing request from Chrome. This is recorded when the extraneous intent
     response is received.
-  </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.UnexpectedResultTarget"
-    enum="VoiceIntentTarget" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of an intent result that doesn't align with an outgoing
-    request from Chrome. This is recorded when the extraneous intent response is
-    received.
   </summary>
 </histogram>
 
@@ -11365,18 +11354,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.VoiceResultConfidenceValue.{Target}"
-    units="%" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: Records the confidence value of a successful voice search as a
-    percentage, limited to intents sent to {Target}. This is recorded when the
-    voice intent returns successfully.
-  </summary>
-  <token key="Target" variants="VoiceIntentTargetVariant"/>
-</histogram>
-
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
     expires_after="2024-07-21">
   <owner>basiaz@google.com</owner>
@@ -11385,18 +11362,6 @@ regressions. -->
     Android: Records whether the voice search produced results. This is recorded
     when the voice intent returns successfully.
   </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.VoiceSearchResult.{Target}"
-    enum="BooleanSuccess" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: Records whether the voice search produced results, limited to
-    intents sent to {Target}. This is recorded when the voice intent returns
-    successfully.
-  </summary>
-  <token key="Target" variants="VoiceIntentTargetVariant"/>
 </histogram>
 
 <histogram name="WebContentsObserver.{Method}" units="ms"

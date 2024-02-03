@@ -93,6 +93,14 @@ void ManagePasswordsState::OnPendingPassword(
   SetState(password_manager::ui::PENDING_PASSWORD_STATE);
 }
 
+void ManagePasswordsState::OnDefaultStoreChanged(
+    std::unique_ptr<PasswordFormManagerForUI> form_manager) {
+  // OnPendingPassword() sets the state to PENDING_PASSWORD_STATE, so
+  // TransitionToState() needs to be called second.
+  OnPendingPassword(std::move(form_manager));
+  TransitionToState(password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
+}
+
 void ManagePasswordsState::OnUpdatePassword(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager) {
   ClearData();
@@ -218,7 +226,7 @@ void ManagePasswordsState::OnPasswordMovable(
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
   origin_ = url::Origin::Create(form_manager_->GetURL());
-  SetState(password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
+  SetState(password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE);
 }
 
 void ManagePasswordsState::OnKeychainError() {
@@ -230,13 +238,17 @@ void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
   CHECK_NE(password_manager::ui::INACTIVE_STATE, state_);
   CHECK(state == password_manager::ui::MANAGE_STATE ||
+        state == password_manager::ui::PENDING_PASSWORD_STATE ||
         state == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
         state == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
         state ==
             password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE ||
         state ==
             password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE ||
-        state == password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS)
+        state == password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS ||
+        state ==
+            password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE ||
+        state == password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE)
       << state_;
   if (state_ == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
     if (!credentials_callback_.is_null()) {

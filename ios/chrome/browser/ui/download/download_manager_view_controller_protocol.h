@@ -8,6 +8,7 @@
 #import <UIKit/UIkit.h>
 
 @protocol DownloadManagerViewControllerDelegate;
+class FullscreenController;
 @class LayoutGuideCenter;
 
 // Base protocol for the DownloadManagerViewController.
@@ -23,6 +24,9 @@
 
 // View to use as source for the "Open in" popover.
 @property(nonatomic, readonly) UIView* openInSourceView;
+
+// Sets the fullscreen controller to update UI on fullscreen changes.
+- (void)setFullscreenController:(FullscreenController*)fullscreenController;
 
 @end
 

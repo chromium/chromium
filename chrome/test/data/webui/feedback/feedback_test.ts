@@ -2,47 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://feedback/app.js';
+
+import {FeedbackAppElement} from 'chrome://feedback/app.js';
 import {FeedbackBrowserProxyImpl} from 'chrome://feedback/js/feedback_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestFeedbackBrowserProxy} from './test_feedback_browser_proxy.js';
 
-declare global {
-  interface Window {
-    whenTestSetupDoneResolver: {resolve: () => Promise<void>};
-  }
-}
-
 suite('FeedbackTest', function() {
+  let app: FeedbackAppElement;
   let browserProxy: TestFeedbackBrowserProxy;
 
-  suiteSetup(function() {
-    const whenReadyForTesting =
-        eventToPromise('ready-for-testing', document.documentElement);
-
+  setup(async function() {
     // Signal to the prod page that test setup steps have completed.
     browserProxy = new TestFeedbackBrowserProxy();
     FeedbackBrowserProxyImpl.setInstance(browserProxy);
-    window.whenTestSetupDoneResolver.resolve();
 
-    // Wait for any remaining prod code executes before test cases execute.
-    return whenReadyForTesting;
-  });
-
-  teardown(function() {
-    browserProxy.reset();
-
-    // Note: The UI is not recreated between tests, so must clear any state that
-    // could leak between tests here.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('feedback-app');
+    document.body.appendChild(app);
+    await eventToPromise('ready-for-testing', app);
   });
 
   test('CloseButtonClosesDialog', function() {
-    const button = getRequiredElement('cancel-button');
+    const button = app.getRequiredElement('#cancel-button');
     button.click();
     return browserProxy.whenCalled('closeDialog');
   });
@@ -50,13 +38,11 @@ suite('FeedbackTest', function() {
 
 suite('AIFeedbackTest', function() {
   const LOG_ID: string = 'TEST_LOG_ID';
+  let app: FeedbackAppElement;
   let browserProxy: TestFeedbackBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
 
-  suiteSetup(function() {
-    const whenReadyForTesting =
-        eventToPromise('ready-for-testing', document.documentElement);
-
+  setup(async function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
@@ -68,23 +54,19 @@ suite('AIFeedbackTest', function() {
       aiMetadata: JSON.stringify({log_id: LOG_ID}),
     }));
     FeedbackBrowserProxyImpl.setInstance(browserProxy);
-    window.whenTestSetupDoneResolver.resolve();
 
-    // Wait for any remaining prod code executes before test cases execute.
-    return whenReadyForTesting;
-  });
-
-  teardown(function() {
-    browserProxy.reset();
-
-    // Note: The UI is not recreated between tests, so must clear any state that
-    // could leak between tests here.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('feedback-app');
+    document.body.appendChild(app);
+    await eventToPromise('ready-for-testing', app);
   });
 
   function simulateSendReport() {
     // Make sure description is not empty and send button is not disabled.
-    getRequiredElement<HTMLTextAreaElement>('description-text').value = 'test';
-    const button = getRequiredElement<HTMLButtonElement>('send-report-button');
+    app.getRequiredElement<HTMLTextAreaElement>('#description-text').value =
+        'test';
+    const button =
+        app.getRequiredElement<HTMLButtonElement>('#send-report-button');
     // Send button is being disabled after click in production code, but in
     // tests we want to be able to click on the button multiple times.
     button.disabled = false;
@@ -94,17 +76,17 @@ suite('AIFeedbackTest', function() {
   test('Description', function() {
     assertEquals(
         loadTimeData.getString('freeFormTextAi'),
-        getRequiredElement('free-form-text').textContent);
+        app.getRequiredElement('#free-form-text').textContent);
   });
 
   test('NoEmail', function() {
-    assertFalse(isVisible(getRequiredElement('user-email')));
-    assertFalse(isVisible(getRequiredElement('consent-container')));
+    assertFalse(isVisible(app.getRequiredElement('#user-email')));
+    assertFalse(isVisible(app.getRequiredElement('#consent-container')));
   });
 
   test('OffensiveContainerVisibility', async function() {
-    assertTrue(isVisible(getRequiredElement('offensive-container')));
-    getRequiredElement('offensive-checkbox').click();
+    assertTrue(isVisible(app.getRequiredElement('#offensive-container')));
+    app.getRequiredElement('#offensive-checkbox').click();
     simulateSendReport();
     const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
         await browserProxy.whenCalled('sendFeedback');
@@ -112,7 +94,7 @@ suite('AIFeedbackTest', function() {
   });
 
   test('IncludeServerLogs', async function() {
-    assertTrue(isVisible(getRequiredElement('log-id-container')));
+    assertTrue(isVisible(app.getRequiredElement('#log-id-container')));
     simulateSendReport();
     const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
         await browserProxy.whenCalled('sendFeedback');
@@ -120,8 +102,8 @@ suite('AIFeedbackTest', function() {
   });
 
   test('ExcludeServerLogs', async function() {
-    assertTrue(isVisible(getRequiredElement('log-id-container')));
-    getRequiredElement('log-id-checkbox').click();
+    assertTrue(isVisible(app.getRequiredElement('#log-id-container')));
+    app.getRequiredElement('#log-id-checkbox').click();
     simulateSendReport();
     const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
         await browserProxy.whenCalled('sendFeedback');

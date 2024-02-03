@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -197,7 +198,12 @@ void RecordFileCreatedFromShowSaveFilePicker(
 }
 
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
-                      ItemAction action) {
+                      ItemAction action,
+                      EventSource event_source) {
+  if (event_source == EventSource::kTest) {
+    CHECK_IS_TEST();
+  }
+
   const std::string action_string = ToString(action);
 
   for (const HoldingSpaceItem* item : items) {
@@ -221,6 +227,8 @@ void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
             {"HoldingSpace.Item.Action.", action_string, ".FileSystemType"}),
         item->file().file_system_type);
   }
+
+  // TODO(https://b/311411775): Record metrics pertaining to `event_source`.
 }
 
 void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,

@@ -50,7 +50,7 @@ std::ostream& operator<<(std::ostream& out,
   return out << PrivateNetworkAccessCheckResultToStringPiece(result);
 }
 
-absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
+std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     Result result) {
   switch (result) {
     case Result::kAllowedMissingClientSecurityState:
@@ -60,7 +60,7 @@ absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kAllowedByTargetIpAddressSpace:
     case Result::kAllowedByPolicyPreflightWarn:
     case Result::kAllowedPotentiallyTrustworthySameOrigin:
-      return absl::nullopt;
+      return std::nullopt;
     case Result::kBlockedByLoadOption:
       // TODO(https:/crbug.com/1254689): Return better error than this, which
       // does not fit.

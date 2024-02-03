@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
   // used to determine the outcome of the match.
   // top_frame_site should have a value if skip_bypass_check is false.
   MatchResult Matches(const GURL& resource_url,
-                      const absl::optional<net::SchemefulSite>& top_frame_site,
+                      const std::optional<net::SchemefulSite>& top_frame_site,
                       bool skip_bypass_check = false);
 
   // Adds a matcher rule and bypass matcher for the domain.

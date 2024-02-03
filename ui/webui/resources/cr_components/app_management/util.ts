@@ -86,7 +86,7 @@ export function getPermission(
 
 export function getSelectedApp(state: AppManagementPageState): App|null {
   const selectedAppId = state.selectedAppId;
-  return selectedAppId ? state.apps[selectedAppId] : null;
+  return selectedAppId ? state.apps[selectedAppId]! : null;
 }
 
 /**
@@ -109,7 +109,7 @@ export function getParentApp(state: AppManagementPageState): App|null {
   const selectedAppId = state.selectedAppId;
   if (selectedAppId) {
     const parentAppId = state.subAppToParentAppId[selectedAppId];
-    return parentAppId ? state.apps[parentAppId] : null;
+    return parentAppId ? state.apps[parentAppId]! : null;
   }
   return null;
 }

@@ -734,9 +734,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // enabled or having a valid trial token.
   bool IsStaticRouterEnabled();
 
-  // Check if the static routing API is used for this worker and the registered
-  // routers have the sources other than 'fetch-event'.
-  bool HasRouterWithNonFetchEventSource() const;
+  // Check if the static router should be evaluated.
+  bool NeedRouterEvaluate() const;
 
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
@@ -1223,6 +1222,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   bool force_bypass_cache_for_scripts_ = false;
   bool is_update_scheduled_ = false;
   bool in_dtor_ = false;
+
+  // If true, warms up service worker after service worker is stopped.
+  // (https://crbug.com/1431792).
+  bool will_warm_up_on_stopped_ = false;
 
   // Populated via network::mojom::URLResponseHead of the main script.
   std::unique_ptr<MainScriptResponse> main_script_response_;

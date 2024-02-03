@@ -142,13 +142,13 @@ void LabelFields(const FieldTypeMap& field_types,
     AutofillField* field = form_structure->field(i);
 
     FieldType type = autofill::UNKNOWN_TYPE;
-    if (auto iter = field_types.find(field->unique_renderer_id);
+    if (auto iter = field_types.find(field->renderer_id);
         iter != field_types.end()) {
       type = iter->second;
       available_field_types->insert(type);
     }
 
-    if (auto vote_type_iter = vote_types.find(field->unique_renderer_id);
+    if (auto vote_type_iter = vote_types.find(field->renderer_id);
         vote_type_iter != vote_types.end()) {
       field->set_vote_type(vote_type_iter->second);
     }
@@ -276,12 +276,11 @@ void GenerateSyntheticRenderIdsAndAssignThem(PasswordForm& matched_form) {
 
   std::map<std::u16string, autofill::FieldRendererId> field_name_to_renderer_id;
   for (autofill::FormFieldData& field : matched_form.form_data.fields) {
-    CHECK(field.unique_renderer_id.is_null())
-        << "Unexpected non-null unique_renderer_id in a from deserialized form "
+    CHECK(field.renderer_id.is_null())
+        << "Unexpected non-null renderer_id in a from deserialized form "
            "LoginDatabase.";
-    field.unique_renderer_id =
-        autofill::FieldRendererId(renderer_id_counter_++);
-    field_name_to_renderer_id.insert({field.name, field.unique_renderer_id});
+    field.renderer_id = autofill::FieldRendererId(renderer_id_counter_++);
+    field_name_to_renderer_id.insert({field.name, field.renderer_id});
   }
 
   FillRendererIdIfNotSet(matched_form.username_element,
@@ -586,9 +585,9 @@ bool VotesUploader::UploadPasswordVote(
                             password_attributes);
   }
 
-  std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
-      form_structure, available_field_types, /*form_was_autofilled=*/false,
-      login_form_signature, /*observed_submission=*/true);
+  std::vector<AutofillUploadContents> upload_contents =
+      EncodeUploadRequest(form_structure, available_field_types,
+                          login_form_signature, /*observed_submission=*/true);
   CHECK(!upload_contents.empty());
   upload_contents[0].set_passwords_revealed(
       should_set_passwords_were_revealed && has_passwords_revealed_vote_);
@@ -664,7 +663,7 @@ void VotesUploader::SetInitialHashValueOfUsernameField(
     return;
 
   for (const auto& field : *form_structure) {
-    if (field && field->unique_renderer_id == username_element_renderer_id) {
+    if (field && field->renderer_id == username_element_renderer_id) {
       const std::u16string form_signature =
           base::UTF8ToUTF16(form_structure->FormSignatureAsStr());
       const std::u16string seeded_input = it->second.append(form_signature);
@@ -800,7 +799,7 @@ void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     AutofillField* field = form_structure->field(i);
-    if (field->unique_renderer_id == generation_element_) {
+    if (field->renderer_id == generation_element_) {
       field->set_generation_type(type);
       if (has_generated_password_) {
         field->set_generated_password_changed(generated_password_changed_);
@@ -935,8 +934,7 @@ void VotesUploader::StoreInitialFieldValues(
     const autofill::FormData& observed_form) {
   for (const auto& field : observed_form.fields) {
     if (!field.value.empty()) {
-      initial_values_.insert(
-          std::make_pair(field.unique_renderer_id, field.value));
+      initial_values_.insert(std::make_pair(field.renderer_id, field.value));
     }
   }
 }
@@ -955,7 +953,7 @@ bool VotesUploader::StartUploadRequest(
       RandomizedEncoder::Create(client_->GetPrefs()));
   return crowdsourcing_manager->StartUploadRequest(
       EncodeUploadRequest(form_to_upload, available_field_types,
-                          /*form_was_autofilled=*/false, login_form_signature,
+                          login_form_signature,
                           /*observed_submission=*/true),
       form_to_upload.submission_source(), form_to_upload.active_field_count(),
       /*pref_service=*/nullptr);

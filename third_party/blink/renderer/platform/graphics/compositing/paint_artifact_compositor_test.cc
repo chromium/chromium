@@ -64,7 +64,7 @@ class MockScrollCallbacks : public CompositorScrollCallbacks {
   MOCK_METHOD3(DidCompositorScroll,
                void(CompositorElementId,
                     const gfx::PointF&,
-                    const absl::optional<cc::TargetSnapAreaElementIds>&));
+                    const std::optional<cc::TargetSnapAreaElementIds>&));
   MOCK_METHOD2(DidChangeScrollbarsHidden, void(CompositorElementId, bool));
 
   base::WeakPtr<MockScrollCallbacks> GetWeakPtr() {
@@ -1093,7 +1093,7 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
   EXPECT_EQ(gfx::Vector2dF(3, 5), scroll_layer->offset_to_transform_parent());
   EXPECT_EQ(scroll_layer->scroll_tree_index(), scroll_node.id);
 
-  absl::optional<cc::TargetSnapAreaElementIds> targets;
+  std::optional<cc::TargetSnapAreaElementIds> targets;
   EXPECT_CALL(
       ScrollCallbacks(),
       DidCompositorScroll(scroll_node.element_id, gfx::PointF(1, 2), targets));

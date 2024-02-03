@@ -22,8 +22,11 @@
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   HeaderSectionIdentifier = kSectionIdentifierEnumZero,
-  DataItemsSectionIdentifier,
   ActionsSectionIdentifier,
+  // Must be declared last as it is used as the starting point to dynamically
+  // create section identifiers for each data item when the
+  // kIOSKeyboardAccessoryUpgrade feature is enabled.
+  DataItemsSectionIdentifier
 };
 
 namespace {
@@ -56,7 +59,7 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
 @interface FallbackViewController ()
 // Header item to be shown when the loading indicator disappears.
-@property(nonatomic, strong) TableViewItem* queuedHeaderItem;
+@property(nonatomic, strong) TableViewHeaderFooterItem* queuedHeaderItem;
 
 // Data Items to be shown when the loading indicator disappears.
 @property(nonatomic, strong) NSArray<TableViewItem*>* queuedDataItems;
@@ -69,6 +72,9 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 @implementation FallbackViewController {
   // The time when the loading indicator started.
   base::Time _loadingIndicatorStartingTime;
+
+  // The number of data items that are currently being presented.
+  NSInteger _dataItemCount;
 }
 
 - (instancetype)init {
@@ -130,7 +136,7 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   }
 }
 
-- (void)presentHeaderItem:(TableViewItem*)item {
+- (void)presentHeaderItem:(TableViewHeaderFooterItem*)item {
   if (![self shouldPresentItems]) {
     if (self.queuedHeaderItem) {
       self.queuedHeaderItem = item;
@@ -181,6 +187,16 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   [self presentQueuedActionItems];
 }
 
+#pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  if ([self.tableViewModel headerForSectionIndex:section]) {
+    return UITableViewAutomaticDimension;
+  }
+  return kSectionHeaderHeight;
+}
+
 #pragma mark - Private
 
 // Calls `presentationBlock` to update the items in `tableView` after
@@ -201,13 +217,15 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   // If there is no header, remove section if it exists.
   if (!self.queuedHeaderItem && sectionExists) {
     [self.tableViewModel removeSectionWithIdentifier:HeaderSectionIdentifier];
-  } else if (self.queuedHeaderItem && !sectionExists) {
-    [self.tableViewModel insertSectionWithIdentifier:HeaderSectionIdentifier
-                                             atIndex:0];
+  } else if (self.queuedHeaderItem) {
+    if (!sectionExists) {
+      [self.tableViewModel insertSectionWithIdentifier:HeaderSectionIdentifier
+                                               atIndex:0];
+    }
+    [self.tableViewModel setHeader:self.queuedHeaderItem
+          forSectionWithIdentifier:HeaderSectionIdentifier];
   }
-  NSArray<TableViewItem*>* fallbackItems =
-      self.queuedHeaderItem ? @[ self.queuedHeaderItem ] : @[];
-  [self presentFallbackItems:fallbackItems inSection:HeaderSectionIdentifier];
+  [self.tableView reloadData];
   self.queuedHeaderItem = nil;
 }
 
@@ -219,24 +237,35 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
   BOOL sectionExists = [self.tableViewModel
       hasSectionForSectionIdentifier:DataItemsSectionIdentifier];
-  // If there are no passed items, remove section if it exists.
-  if (!self.queuedDataItems.count && sectionExists) {
-    [self.tableViewModel
-        removeSectionWithIdentifier:DataItemsSectionIdentifier];
-  } else if (self.queuedDataItems.count && !sectionExists) {
-    // If the header section exists, insert after it. Otherwise, insert at the
-    // start.
-    NSInteger sectionIndex =
-        [self.tableViewModel
-            hasSectionForSectionIdentifier:HeaderSectionIdentifier]
-            ? 1
-            : 0;
-    [self.tableViewModel insertSectionWithIdentifier:DataItemsSectionIdentifier
-                                             atIndex:sectionIndex];
-  }
 
-  [self presentFallbackItems:self.queuedDataItems
-                   inSection:DataItemsSectionIdentifier];
+  // Determine the index at which the next section should be inserted based on
+  // header existance.
+  NSInteger sectionIndex =
+      [self.tableViewModel
+          hasSectionForSectionIdentifier:HeaderSectionIdentifier]
+          ? 1
+          : 0;
+
+  // If the kIOSKeyboardAccessoryUpgrade feature is enabled, remove any excess
+  // data item sections, and present the queued data items.
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    [self removeUnusedDataItemSections];
+    [self presentFallbackItems:self.queuedDataItems
+             startingAtSection:DataItemsSectionIdentifier
+               startingAtIndex:sectionIndex];
+    _dataItemCount = self.queuedDataItems.count;
+  } else {
+    if (!self.queuedDataItems.count && sectionExists) {
+      [self.tableViewModel
+          removeSectionWithIdentifier:DataItemsSectionIdentifier];
+    } else if (self.queuedDataItems.count && !sectionExists) {
+      [self.tableViewModel
+          insertSectionWithIdentifier:DataItemsSectionIdentifier
+                              atIndex:sectionIndex];
+    }
+    [self presentFallbackItems:self.queuedDataItems
+                     inSection:DataItemsSectionIdentifier];
+  }
   self.queuedDataItems = nil;
 }
 
@@ -291,6 +320,50 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
     }
   }
   [self.tableView reloadData];
+}
+
+// Presents `items` in individual subsequent sections. New section identifiers
+// are generated sequentially starting from 'sectionIdentifier', and sections
+// are inserted beginning at the given 'index'.
+- (void)presentFallbackItems:(NSArray<TableViewItem*>*)items
+           startingAtSection:(NSInteger)sectionIdentifier
+             startingAtIndex:(NSInteger)index {
+  for (TableViewItem* item in items) {
+    // If the section already exists, remove all of its objects. Otherwise,
+    // create it.
+    if ([self.tableViewModel
+            hasSectionForSectionIdentifier:sectionIdentifier]) {
+      [self.tableViewModel
+          deleteAllItemsFromSectionWithIdentifier:sectionIdentifier];
+    } else {
+      [self.tableViewModel insertSectionWithIdentifier:sectionIdentifier
+                                               atIndex:index];
+    }
+    [self.tableViewModel addItem:item
+         toSectionWithIdentifier:sectionIdentifier];
+    sectionIdentifier++;
+    index++;
+  }
+  [self.tableView reloadData];
+}
+
+// Removes all data item sections that were created and that are not needed
+// anymore.
+- (void)removeUnusedDataItemSections {
+  int numberOfSectionsToDelete = _dataItemCount - self.queuedDataItems.count;
+  if (numberOfSectionsToDelete <= 0) {
+    return;
+  }
+
+  int lastSectionToDelete = _dataItemCount - 1;
+  int firstSectionToDelete = lastSectionToDelete - numberOfSectionsToDelete + 1;
+  for (int i = firstSectionToDelete; i <= lastSectionToDelete; i++) {
+    NSInteger sectionIdentifier = DataItemsSectionIdentifier + i;
+    if ([self.tableViewModel
+            hasSectionForSectionIdentifier:sectionIdentifier]) {
+      [self.tableViewModel removeSectionWithIdentifier:sectionIdentifier];
+    }
+  }
 }
 
 @end

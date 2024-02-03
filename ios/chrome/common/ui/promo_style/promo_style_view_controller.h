@@ -108,6 +108,10 @@ enum class BannerImageSizeType {
 // Must be set before the view is loaded. Defaults to `kTitleHorizontalMargin`.
 @property(nonatomic, assign) CGFloat titleHorizontalMargin;
 
+// Top margin of the title label when there is no header image set. Must be set
+// before the view is loaded. Defaults to zero.
+@property(nonatomic, assign) CGFloat titleTopMarginWhenNoHeaderImage;
+
 // The subtitle below the title. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* subtitleText;
 
@@ -134,6 +138,14 @@ enum class BannerImageSizeType {
 
 // The text for the primary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* primaryActionString;
+
+// The configuration update handler for the primaryActionButton. Must be set
+// before the view is loaded.
+@property(nonatomic, copy) UIButtonConfigurationUpdateHandler updateHandler;
+
+// The primary action button is enabled when set to YES, disabled when NO. The
+// button is enabled by default.
+@property(nonatomic, assign) BOOL primaryButtonEnabled;
 
 // The text for the secondary action. Must be set before the view is loaded. If
 // not set, there won't be a secondary action button.

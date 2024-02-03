@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1384959399684842514">Lejupielāde pārtraukta</translation>
 <translation id="1415402041810619267">URL ir saīsināts</translation>
-<translation id="1426410128494586442">Jā</translation>
 <translation id="1434873037477293673">cenas krituma kartīte</translation>
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vietne}zero{<ph name="SITE_COUNT" /> vietņu}one{<ph name="SITE_COUNT" /> vietne}other{<ph name="SITE_COUNT" /> vietnes}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu kamerai, ieslēdziet kameru arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="2238944249568001759">Pamatojoties uz jūsu pēdējo cilni, ieteiktie meklēšanas vaicājumi</translation>
+<translation id="2241587408274973373">Kartītes jaunas cilnes lapā</translation>
 <translation id="2241634353105152135">Tikai vienreiz</translation>
 <translation id="2253414712144136228">Noņemt vienumu “<ph name="NAME_OF_LIST_ITEM" />”</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Bloķēti 1 vietnē}zero{Bloķēti # vietnēs}one{Bloķēti # vietnē}other{Bloķēti # vietnēs}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Vietnēs drīkst rādīt pierakstīšanās uzvednes, ko nodrošina identitātes pakalpojumi.</translation>
 <translation id="2790501146643349491">Kad šis slēdzis ir ieslēgts, nesen aizvērtās vietnes var pabeigt datu sūtīšanu un saņemšanu. Kad šis slēdzis ir izslēgts, nesen aizvērtās vietnes nevar pabeigt datu sūtīšanu vai saņemšanu.</translation>
 <translation id="2822354292072154809">Vai tiešām vēlaties atiestatīt visas vietņu atļaujas, kas piešķirtas šim objektam: <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Pieprasiet skatu mobilajā ierīcē</translation>
 <translation id="2870560284913253234">Vietne</translation>
 <translation id="2874939134665556319">Iepriekšējais ieraksts</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Sertifikātu skatītājs</translation>
 <translation id="2979365474350987274">Trešo pušu sīkfailu izmantošana ir ierobežota</translation>
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
-<translation id="3013291976881901233">MIDI ierīces</translation>
 <translation id="301521992641321250">Automātiski bloķēta</translation>
 <translation id="3069226013421428034">Atļauja trešajai pusei pierakstīties konkrētā vietnē</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Derīguma termiņš beigsies rīt}zero{Derīguma termiņš beigsies pēc # dienām}one{Derīguma termiņš beigsies pēc # dienas}other{Derīguma termiņš beigsies pēc # dienām}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Izveidots savienojums ar USB ierīci.</translation>
 <translation id="4194328954146351878">Vaicāt, pirms ļaut vietnēm NFC ierīcēs piekļūt informācijai un to mainīt (ieteicams)</translation>
 <translation id="4200726100658658164">Atvērt atrašanās vietu iestatījumus</translation>
-<translation id="4212246570487010370">Turpiniet pārlūkošanu</translation>
 <translation id="4226663524361240545">Saņemot paziņojumu, ierīce var vibrēt.</translation>
 <translation id="4259722352634471385">Navigācija ir bloķēta: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Atļauts</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Pārvietot uz leju</translation>
 <translation id="6749077623962119521">Vai atiestatīt atļaujas?</translation>
 <translation id="6766622839693428701">Velciet uz leju, lai aizvērtu.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> No ierīces “<ph name="FROM_DEVICE" />”</translation>
 <translation id="6787751205395685251">Atlasiet opciju vietnei <ph name="SITE_NAME" />.</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6818926723028410516">Vienumu atlase</translation>

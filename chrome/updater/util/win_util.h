@@ -294,6 +294,10 @@ HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
 // spawned process.
 HRESULT RunDeElevated(const std::wstring& path, const std::wstring& parameters);
 
+// Runs `cmd_line` de-elevated.The function does not wait for the spawned
+// process.
+HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line);
+
 std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 
 // Causes the COM runtime not to handle exceptions. Failing to set this

@@ -235,7 +235,7 @@ class TestURLLoaderClient : public URLLoaderClient {
   void DidReceiveResponse(
       const WebURLResponse& response,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_receive_response_);
 
@@ -296,7 +296,7 @@ class TestURLLoaderClient : public URLLoaderClient {
   bool did_receive_response() const { return did_receive_response_; }
   bool did_receive_response_body() const { return !!response_body_; }
   bool did_finish() const { return did_finish_; }
-  const absl::optional<WebURLError>& error() const { return error_; }
+  const std::optional<WebURLError>& error() const { return error_; }
   const WebURLResponse& response() const { return response_; }
 
  private:
@@ -313,7 +313,7 @@ class TestURLLoaderClient : public URLLoaderClient {
   bool did_receive_response_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   bool did_finish_;
-  absl::optional<WebURLError> error_;
+  std::optional<WebURLError> error_;
   WebURLResponse response_;
 };
 
@@ -373,7 +373,7 @@ class URLLoaderTest : public testing::Test {
 
     resource_request_client()->OnReceivedResponse(
         network::mojom::URLResponseHead::New(), std::move(handle_to_pass),
-        /*cached_metadata=*/absl::nullopt);
+        /*cached_metadata=*/std::nullopt);
     EXPECT_TRUE(client()->did_receive_response());
   }
 
@@ -555,7 +555,7 @@ TEST_F(URLLoaderTest, SSLInfo) {
   head.ssl_info = ssl_info;
   WebURLResponse web_url_response = WebURLResponse::Create(url, head, true, -1);
 
-  const absl::optional<net::SSLInfo>& got_ssl_info =
+  const std::optional<net::SSLInfo>& got_ssl_info =
       web_url_response.ToResourceResponse().GetSSLInfo();
   ASSERT_TRUE(got_ssl_info.has_value());
   EXPECT_EQ(ssl_info.connection_status, got_ssl_info->connection_status);
@@ -588,7 +588,7 @@ TEST_F(URLLoaderTest, SyncLengths) {
   sender()->set_sync_load_response(std::move(sync_load_response));
 
   WebURLResponse response;
-  absl::optional<WebURLError> error;
+  std::optional<WebURLError> error;
   scoped_refptr<SharedBuffer> data;
   int64_t encoded_data_length = 0;
   uint64_t encoded_body_length = 0;

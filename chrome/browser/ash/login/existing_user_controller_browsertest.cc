@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerUntrustedTest,
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerUntrustedTest,
                        GuestLoginForbidden) {
   existing_user_controller()->Login(
-      UserContext(user_manager::USER_TYPE_GUEST, EmptyAccountId()),
+      UserContext(user_manager::UserType::kGuest, EmptyAccountId()),
       SigninSpecifics());
 }
 
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                        AutoLoginNoDelay) {
   // Set up mocks to check login success.
-  UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  UserContext user_context(user_manager::UserType::kPublicAccount,
                            public_session_account_id_);
   user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
   ExpectSuccessfulLogin(user_context);
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                        AutoLoginShortDelay) {
   // Set up mocks to check login success.
-  UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  UserContext user_context(user_manager::UserType::kPublicAccount,
                            public_session_account_id_);
   user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
   ExpectSuccessfulLogin(user_context);
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
 
   // Login and check that it stopped the timer.
   existing_user_controller()->Login(
-      UserContext(user_manager::USER_TYPE_GUEST, EmptyAccountId()),
+      UserContext(user_manager::UserType::kGuest, EmptyAccountId()),
       SigninSpecifics());
   EXPECT_TRUE(is_login_in_progress());
   ASSERT_TRUE(auto_login_timer());
@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                        PublicSessionLoginStopsAutoLogin) {
   // Set up mocks to check login success.
-  UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  UserContext user_context(user_manager::UserType::kPublicAccount,
                            public_session_account_id_);
   user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
   ExpectSuccessfulLogin(user_context);
@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
 
   // Login and check that it stopped the timer.
   existing_user_controller()->Login(
-      UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+      UserContext(user_manager::UserType::kPublicAccount,
                   public_session_account_id_),
       SigninSpecifics());
 

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/apple/foundation_util.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -190,6 +191,8 @@ void DistillerPageIOS::DistillPageImpl(const GURL& url,
         web::WebState::Create(web_state_create_params);
     AttachWebState(std::move(web_state_unique));
   }
+
+  distilling_navigation_ = true;
   // Load page using WebState.
   web::NavigationManager::WebLoadParams params(url_);
   web_state_->SetKeepRenderProcessAlive(true);
@@ -201,6 +204,15 @@ void DistillerPageIOS::DistillPageImpl(const GURL& url,
 
 void DistillerPageIOS::OnLoadURLDone(
     web::PageLoadCompletionStatus load_completion_status) {
+  if (!distilling_navigation_) {
+    // This is a second navigation after the distillation request.
+    // Distillation was already requested, so ignore this one.
+    // This is a tentative fix for (crbug/1216307), so create a dump here.
+    // Remove once the bug fix is validated.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+  distilling_navigation_ = false;
   // Don't attempt to distill if the page load failed or if there is no
   // WebState.
   if (load_completion_status == web::PageLoadCompletionStatus::FAILURE ||

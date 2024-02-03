@@ -33,8 +33,7 @@
 #include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -509,5 +508,4 @@ void FileSequenceHelper::OnRulesetsIndexed(LoadRulesetsUICallback ui_callback,
                  base::BindOnce(std::move(ui_callback), std::move(load_data)));
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

@@ -434,7 +434,7 @@ input, textarea, select, button {
 
 textarea {
   appearance: auto;
-  border: 1px solid -internal-light-dark(#767676, #858585);
+  border: 1px solid light-dark(#767676, #858585);
   column-count: initial !important;
   -webkit-rtl-ordering: logical;
   resize: -internal-textarea-auto;
@@ -449,7 +449,7 @@ textarea {
 input {
     appearance: auto;
     padding:1px 0;
-    border: 2px inset -internal-light-dark(#767676, #858585);
+    border: 2px inset light-dark(#767676, #858585);
     -webkit-rtl-ordering: logical;
     cursor: text;
     background-color: Field;
@@ -626,7 +626,7 @@ input[type="password" i]::-internal-reveal:focus {
 }
 
 input[type="password" i]::-internal-strong {
-  color: -internal-light-dark(#0B57D0, #A8C7FA);
+  color: light-dark(#0B57D0, #A8C7FA);
   font-family: roboto;
   -webkit-text-security: none;
 }
@@ -662,7 +662,7 @@ select:-internal-autofill-previewed,
 select:-internal-autofill-selected {
   appearance: menulist-button;
   background-image:none !important;
-  background-color: -internal-light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
+  background-color: light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
   color: FieldText !important;
 }
 
@@ -726,7 +726,7 @@ input[type="range" i] {
     border: initial;
     margin: 2px;
     cursor: default;
-    color: -internal-light-dark(#101010, #ffffff);
+    color: light-dark(#101010, #ffffff);
 }
 
 input[type="range" i]::-webkit-slider-container,
@@ -775,16 +775,16 @@ input[type="reset" i]:disabled,
 input[type="color" i]:disabled,
 input[type="file" i]:disabled::-webkit-file-upload-button,
 button:disabled {
-  background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
-  border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
-  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+  background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
+  border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
 }
 
 select:disabled,
 optgroup:disabled,
 option:disabled,
 select[disabled]>option {
-    color: -internal-light-dark(GrayText, #aaa);
+    color: light-dark(GrayText, #aaa);
 }
 
 input[type="button" i]:active, input[type="submit" i]:active, input[type="reset" i]:active, input[type="file" i]:active::-webkit-file-upload-button, button:active {
@@ -797,8 +797,8 @@ input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, 
 
 input:disabled, textarea:disabled {
     cursor: default;
-    background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
-    color: -internal-light-dark(#545454, #aaaaaa);
+    background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+    color: light-dark(#545454, #aaaaaa);
 }
 
 input:disabled,
@@ -808,7 +808,7 @@ textarea:disabled {
 }
 
 option:-internal-spatial-navigation-focus {
-    outline: -internal-light-dark(black, white) dashed 1px;
+    outline: light-dark(black, white) dashed 1px;
     outline-offset: -1px;
 }
 
@@ -945,7 +945,7 @@ select {
     -webkit-rtl-ordering: logical;
     color: FieldText;
     background-color: Field;
-    border: 1px solid -internal-light-dark(#767676, #858585);
+    border: 1px solid light-dark(#767676, #858585);
     cursor: default;
     border-radius: 0;
 }
@@ -1002,14 +1002,14 @@ select:-internal-list-box:focus option:checked:disabled {
 /* option selected, list-box not focused */
 select:-internal-list-box option:checked,
 select:-internal-list-box option:checked:hover {
-    background-color: -internal-light-dark(#cecece, #545454);
-    color: -internal-light-dark(#101010, #FFFFFF);
+    background-color: light-dark(#cecece, #545454);
+    color: light-dark(#101010, #FFFFFF);
 }
 
 select:-internal-list-box:disabled option:checked,
 select:-internal-list-box option:checked:disabled,
 select:-internal-list-box option:checked:disabled:hover {
-    color: -internal-light-dark(gray, #aaa);
+    color: light-dark(gray, #aaa);
 }
 
 select:-internal-list-box hr {
@@ -1079,8 +1079,8 @@ meter::-webkit-meter-bar {
     block-size: 100%;
     inline-size: 100%;
     -webkit-user-modify: read-only !important;
-    background: -internal-light-dark(#efefef, #3B3B3B);
-    border: thin solid -internal-light-dark(rgba(118, 118, 118, 0.3), #858585);
+    background: light-dark(#efefef, #3B3B3B);
+    border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
     grid-row-start: line1;
     grid-row-end: line2;
     border-radius: 20px;
@@ -1094,21 +1094,21 @@ meter::-webkit-meter-optimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: -internal-light-dark(#107c10, #74b374)
+    background: light-dark(#107c10, #74b374)
 }
 
 meter::-webkit-meter-suboptimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: -internal-light-dark(#ffb900, #f2c812)
+    background: light-dark(#ffb900, #f2c812)
 }
 
 meter::-webkit-meter-even-less-good-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: -internal-light-dark(#d83b01, #e98f6d)
+    background: light-dark(#d83b01, #e98f6d)
 }
 
 /* progress */
@@ -1247,7 +1247,7 @@ input[type="date" i]::-webkit-calendar-picker-indicator,
 input[type="datetime-local" i]::-webkit-calendar-picker-indicator,
 input[type="month" i]::-webkit-calendar-picker-indicator,
 input[type="week" i]::-webkit-calendar-picker-indicator {
-  background-image: -internal-light-dark(url(images/calendar_icon.svg), url(images/calendar_icon_white.svg));
+  background-image: light-dark(url(images/calendar_icon.svg), url(images/calendar_icon_white.svg));
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
@@ -1267,7 +1267,7 @@ input[type="week" i]::-webkit-calendar-picker-indicator:focus-visible {
 }
 
 input[type="time" i]::-webkit-calendar-picker-indicator {
-  background-image: -internal-light-dark(url(images/time_icon.svg), url(images/time_icon_white.svg));
+  background-image: light-dark(url(images/time_icon.svg), url(images/time_icon_white.svg));
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
@@ -1299,8 +1299,8 @@ input::-webkit-datetime-edit-month-field:focus,
 input::-webkit-datetime-edit-second-field:focus,
 input::-webkit-datetime-edit-week-field:focus,
 input::-webkit-datetime-edit-year-field:focus {
-    background-color: -internal-light-dark(highlight, #99C8FF);
-    color: -internal-light-dark(highlighttext, #000000);
+    background-color: light-dark(highlight, #99C8FF);
+    color: light-dark(highlighttext, #000000);
     outline: none;
 }
 
@@ -1313,7 +1313,7 @@ input::-webkit-datetime-edit-hour-field[disabled],
 input::-webkit-datetime-edit-millisecond-field[disabled],
 input::-webkit-datetime-edit-minute-field[disabled],
 input::-webkit-datetime-edit-second-field[disabled] {
-    color: -internal-light-dark(GrayText, rgb(165, 165, 165));
+    color: light-dark(GrayText, rgb(165, 165, 165));
 }
 
 a:-webkit-any-link {
@@ -1398,7 +1398,15 @@ details[open] > summary:first-of-type {
     list-style-type: disclosure-open;
 }
 
-bdi, output {
+/* https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering */
+/* This chunk of styles interacts with the `name == html_names::kDirAttr` case
+   in HTMLElement::CollectStyleForPresentationAttribute(). Make sure any changes
+   here are congruent with changes made there. */
+address, blockquote, center, div, figure, figcaption, footer, form, header, hr,
+legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2,
+h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col,
+thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi,
+output {
     unicode-bidi: isolate;
 }
 

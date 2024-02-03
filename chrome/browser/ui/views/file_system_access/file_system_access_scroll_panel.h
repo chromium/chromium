@@ -22,7 +22,8 @@ constexpr int MAX_SCROLL_HEIGHT = 96;
 // styles, accessibility support, etc.
 class FileSystemAccessScrollPanel {
  public:
-  std::unique_ptr<views::ScrollView> Create(const std::vector<base::FilePath>& file_paths);
+  static std::unique_ptr<views::ScrollView> Create(
+      const std::vector<base::FilePath>& file_paths);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_SCROLL_PANEL_H_

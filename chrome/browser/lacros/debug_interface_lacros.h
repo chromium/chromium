@@ -22,6 +22,8 @@ class DebugInterfaceLacros : public mojom::DebugInterface {
 
  private:
   void PrintLayerHierarchy();
+  void PrintWindowHierarchy();
+  void PrintViewHierarchy();
 
   mojo::Receiver<mojom::DebugInterface> receiver_{this};
 };

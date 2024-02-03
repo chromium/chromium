@@ -382,14 +382,14 @@ struct ClampAttributes {
 
 struct Activation {
   mojom::Activation::Tag kind;
-  absl::optional<ClampAttributes> clamp_attributes;
-  absl::optional<float> elu_alpha;
-  absl::optional<float> hard_sigmoid_alpha;
-  absl::optional<float> hard_sigmoid_beta;
-  absl::optional<float> leaky_relu_alpha;
-  absl::optional<float> linear_alpha;
-  absl::optional<float> linear_beta;
-  absl::optional<float> softplus_steepness;
+  std::optional<ClampAttributes> clamp_attributes;
+  std::optional<float> elu_alpha;
+  std::optional<float> hard_sigmoid_alpha;
+  std::optional<float> hard_sigmoid_beta;
+  std::optional<float> leaky_relu_alpha;
+  std::optional<float> linear_alpha;
+  std::optional<float> linear_beta;
+  std::optional<float> softplus_steepness;
 };
 
 template <typename T>
@@ -397,14 +397,14 @@ struct BatchNormalizationTester {
   OperandInfo<T> input;
   OperandInfo<T> mean;
   OperandInfo<T> variance;
-  absl::optional<OperandInfo<T>> scale;
-  absl::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> scale;
+  std::optional<OperandInfo<T>> bias;
   struct BatchNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     uint32_t axis = 1;
     float epsilon = 1e-5;
-    absl::optional<Activation> activation;
+    std::optional<Activation> activation;
   };
   BatchNormalizationAttributes attributes;
   OperandInfo<T> output;
@@ -515,7 +515,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .Test();
   }
   {
-    // Test batchNormalization with 4-D input with activation = hardsigmoids.
+    // Test batchNormalization with 4-D input with activation = hardsigmoid.
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 1, 3},
@@ -780,8 +780,8 @@ struct Conv2dTester {
     uint32_t groups = 1;
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
-    absl::optional<OperandInfo<T>> bias;
-    absl::optional<Activation> activation;
+    std::optional<OperandInfo<T>> bias;
+    std::optional<Activation> activation;
   };
   Conv2dAttributes attributes;
   OperandInfo<float> output;
@@ -797,7 +797,7 @@ struct Conv2dTester {
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
 
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     if (attributes.bias.has_value()) {
       bias_operand_id = builder.BuildConstant(
           attributes.bias->dimensions, attributes.bias->type,
@@ -2610,7 +2610,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
         .Test();
   }
   {
-    // Test average pool2d with nhwc layout,, float 32 data type.
+    // Test average pool2d with nhwc layout, float 32 data type.
     Pool2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 3, 3, 2},
@@ -2628,7 +2628,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
         .Test();
   }
   {
-    // Test average pool2d with nhwc layout,, float 16 data type.
+    // Test average pool2d with nhwc layout, float 16 data type.
     Pool2dTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 3, 3, 2},
@@ -2644,6 +2644,80 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 2, 2},
                    .values = {3, 12, 4, 13, 6, 15, 7, 16}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator l2Pool2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorL2Pool2d) {
+  {
+    // Test l2Pool2d with nchw layout, float 32 data type.
+    Pool2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 4, 2, 2},
+                  .values = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4}},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {2, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst},
+        .kind = mojom::Pool2d::Kind::kL2Pool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 4, 1, 1},
+                   .values = {2, 4, 6, 8}}}
+        .Test();
+  }
+  {
+    // Test l2Pool2d with nchw layout, float 16 data type.
+    Pool2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 4, 2, 2},
+                  .values = Float16FromFloat32(
+                      {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4})},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {2, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst},
+        .kind = mojom::Pool2d::Kind::kL2Pool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 4, 1, 1},
+                   .values = {2, 4, 6, 8}}}
+        .Test();
+  }
+  {
+    // Test l2Pool2d with nhwc layout, float 32 data type.
+    Pool2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 4},
+                  .values = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4}},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {2, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsLast},
+        .kind = mojom::Pool2d::Kind::kL2Pool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 4},
+                   .values = {2, 4, 6, 8}}}
+        .Test();
+  }
+  {
+    // Test l2Pool2d with nhwc layout, float 16 data type.
+    Pool2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 2, 4},
+                  .values = Float16FromFloat32(
+                      {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4})},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {2, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsLast},
+        .kind = mojom::Pool2d::Kind::kL2Pool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 1, 1, 4},
+                   .values = {2, 4, 6, 8}}}
         .Test();
   }
 }
@@ -3200,15 +3274,15 @@ template <typename T>
 struct UnaryOperatorTester {
   mojom::Operation::Tag tag;
   OperandInfo<T> input;
-  absl::optional<float> clamp_min_value;
-  absl::optional<float> clamp_max_value;
-  absl::optional<float> hard_sigmoid_alpha;
-  absl::optional<float> hard_sigmoid_beta;
-  absl::optional<float> elu_alpha;
-  absl::optional<float> leaky_relu_alpha;
-  absl::optional<float> linear_alpha;
-  absl::optional<float> linear_beta;
-  absl::optional<float> softplus_steepness;
+  std::optional<float> clamp_min_value;
+  std::optional<float> clamp_max_value;
+  std::optional<float> hard_sigmoid_alpha;
+  std::optional<float> hard_sigmoid_beta;
+  std::optional<float> elu_alpha;
+  std::optional<float> leaky_relu_alpha;
+  std::optional<float> linear_alpha;
+  std::optional<float> linear_beta;
+  std::optional<float> softplus_steepness;
   OperandInfo<T> output;
   void Test(BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
@@ -3233,6 +3307,9 @@ struct UnaryOperatorTester {
       case mojom::Operation::Tag::kHardSigmoid:
         builder.BuildHardSigmoid(input_operand_id, output_operand_id,
                                  hard_sigmoid_alpha, hard_sigmoid_beta);
+        break;
+      case mojom::Operation::Tag::kHardSwish:
+        builder.BuildHardSwish(input_operand_id, output_operand_id);
         break;
       case mojom::Operation::Tag::kLeakyRelu:
         CHECK(leaky_relu_alpha);
@@ -3356,6 +3433,34 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorHardSigmoid) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {},
                    .values = {1}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator hardSwish.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorHardSwish) {
+  // Test hardSwish with a 0-D scalar input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSwish,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {7.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {7.0}}}
+        .Test();
+  }
+  // Test hardSwish with a 4-D input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSwish,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 2},
+                  .values = {-6, -5, -4, -3, 0, 4, 5, 6}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 2},
+                   .values = {0, 0, 0, 0, 0, 4, 5, 6}}}
         .Test();
   }
 }
@@ -4351,7 +4456,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
 }
 
 struct GemmAttributes {
-  absl::optional<uint64_t> c_operand_id;
+  std::optional<uint64_t> c_operand_id;
   // TODO(crbug.com/1273291): Add test cases for below attributes.
   float alpha = 1.0;
   float beta = 1.0;
@@ -4363,7 +4468,7 @@ template <typename T>
 struct GemmTester {
   OperandInfo<T> input_a;
   OperandInfo<T> input_b;
-  absl::optional<OperandInfo<T>> input_c;
+  std::optional<OperandInfo<T>> input_c;
   GemmAttributes attributes;
   OperandInfo<float> output;
 
@@ -4677,11 +4782,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
 template <typename T>
 struct InstanceNormalizationTester {
   OperandInfo<T> input;
-  absl::optional<OperandInfo<T>> scale;
-  absl::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> scale;
+  std::optional<OperandInfo<T>> bias;
   struct InstanceNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     mojom::InputOperandLayout layout =
         mojom::InputOperandLayout::kChannelsFirst;
     float epsilon = 1e-5;
@@ -4822,11 +4927,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorInstanceNormalization) {
 template <typename T>
 struct LayerNormalizationTester {
   OperandInfo<T> input;
-  absl::optional<OperandInfo<T>> scale;
-  absl::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> scale;
+  std::optional<OperandInfo<T>> bias;
   struct LayerNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     std::vector<uint32_t> axes;
     float epsilon = 1e-5;
   };
@@ -4981,20 +5086,16 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorLayerNormalization) {
     // data type, given scale only.
     LayerNormalizationTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
-                  .dimensions = {1, 2, 1, 3},
-                  .values = Float16FromFloat32({-1, 0, 1, 2, 3, 4})},
+                  .dimensions = {1, 2, 1, 2},
+                  .values = Float16FromFloat32({-2, -2, 2, 2})},
         .scale =
-            OperandInfo<float16>{
-                .type = mojom::Operand::DataType::kFloat16,
-                .dimensions = {2, 1, 3},
-                .values = Float16FromFloat32({1, 1, 1, 1, 1, 1})},
-        .attributes = {.axes = {1, 2, 3}},
+            OperandInfo<float16>{.type = mojom::Operand::DataType::kFloat16,
+                                 .dimensions = {2, 1, 2},
+                                 .values = Float16FromFloat32({1, 1, 1, 1})},
+        .attributes = {.axes = {1, 2, 3}, .epsilon = 0},
         .output = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 2, 1, 3},
-                   .values = Float16FromFloat32(
-                       {-1.4638475999719223, -0.8783085599831534,
-                        -0.29276951999438444, 0.29276951999438444,
-                        0.8783085599831534, 1.4638475999719223})}}
+                   .dimensions = {1, 2, 1, 2},
+                   .values = Float16FromFloat32({-1, -1, 1, 1})}}
         .Test();
   }
   {
@@ -5731,7 +5832,7 @@ struct Resample2dTester {
   struct Resample2dAttributes {
     mojom::Resample2d::InterpolationMode mode =
         mojom::Resample2d::InterpolationMode::kNearestNeighbor;
-    absl::optional<std::vector<float>> scales;
+    std::optional<std::vector<float>> scales;
     std::vector<uint32_t> axes = {2, 3};
   };
   Resample2dAttributes attributes;

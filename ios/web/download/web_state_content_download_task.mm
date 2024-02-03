@@ -89,10 +89,14 @@ void WebStateContentDownloadTask::CancelInternal() {
 void WebStateContentDownloadTask::DownloadWasCreated(
     id<CRWWebViewDownload> download) {
   download_ = download;
+  // Task startup is complete, trigger observers.
+  OnDownloadUpdated();
 }
 
 void WebStateContentDownloadTask::DownloadDidFinish(NSError* error) {
   if (!error) {
+    percent_complete_ = 100;
+    received_bytes_ = total_bytes_;
     OnDownloadFinished(DownloadResult(net::OK));
   } else {
     OnDownloadFinished(DownloadResult(net::ERR_FAILED));

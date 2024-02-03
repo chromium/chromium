@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1213425325105380833">Възстановете уеб приложенията, които наскоро сте използвали на устройствата, свързани с този профил</translation>
+<translation id="1786044937610313874">Преките пътища се отварят в Chrome</translation>
+<translation id="204914487372604757">Създаване на пряк път</translation>
 <translation id="2065911435109240297">Възстановяване на уеб приложенията ви</translation>
 <translation id="2111649875343992405">Прегледайте кои уеб приложения да бъдат възстановени</translation>
 <translation id="2139186145475833000">Добавяне към началния екран</translation>
@@ -13,6 +15,7 @@
 <translation id="4338600611020922010">Добавяне към началния екран</translation>
 <translation id="4665282149850138822">Добавихте <ph name="NAME" /> към началния екран</translation>
 <translation id="5250483651202458397">Екранна снимка. Докоснете за затваряне.</translation>
+<translation id="5684726956335420505">Изберете как да добавите приложението към началния екран</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
 <translation id="6838423508083736333">Уеб приложения, използвани през последния месец</translation>
 <translation id="6990079615885386641">Изтегляне на приложението от Google Play Магазин: <ph name="APP_ACTION" /></translation>

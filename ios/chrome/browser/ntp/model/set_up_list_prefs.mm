@@ -16,7 +16,7 @@ const char kDefaultBrowserItemState[] =
     "set_up_list.default_browser_item.state";
 const char kAutofillItemState[] = "set_up_list.autofill_item.state";
 const char kFollowItemState[] = "set_up_list.follow_item.state";
-const char kContentNotificationItemState[] =
+const char kNotificationsItemState[] =
     "set_up_list.content_notification_item.state";
 const char kDisabled[] = "set_up_list.disabled";
 const char kLastInteraction[] = "set_up_list.last_interaction";
@@ -27,7 +27,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kDefaultBrowserItemState, unknown);
   registry->RegisterIntegerPref(kAutofillItemState, unknown);
   registry->RegisterIntegerPref(kFollowItemState, unknown);
-  registry->RegisterIntegerPref(kContentNotificationItemState, unknown);
+  registry->RegisterIntegerPref(kNotificationsItemState, unknown);
   registry->RegisterBooleanPref(kDisabled, false);
   registry->RegisterTimePref(kLastInteraction, base::Time());
 }
@@ -42,8 +42,8 @@ const char* PrefNameForItem(SetUpListItemType type) {
       return kAutofillItemState;
     case SetUpListItemType::kFollow:
       return kFollowItemState;
-    case SetUpListItemType::kContentNotification:
-      return kContentNotificationItemState;
+    case SetUpListItemType::kNotifications:
+      return kNotificationsItemState;
     case SetUpListItemType::kAllSet:
       NOTREACHED_NORETURN();
   }

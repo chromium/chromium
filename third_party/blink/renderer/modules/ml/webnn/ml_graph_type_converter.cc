@@ -625,6 +625,16 @@ OperationPtr CreateGemmOperation(const OperandToIdMap& operand_to_id_map,
   return webnn::mojom::blink::Operation::NewGemm(std::move(gemm_mojo));
 }
 
+OperationPtr CreateHardSwishOperation(const OperandToIdMap& operand_to_id_map,
+                                      const MLOperator* hard_swish) {
+  auto hard_swish_mojo = blink_mojom::HardSwish::New();
+  hard_swish_mojo->input_operand_id =
+      GetOperatorInputId(hard_swish, operand_to_id_map);
+  hard_swish_mojo->output_operand_id =
+      GetOperatorOutputId(hard_swish, operand_to_id_map);
+  return blink_mojom::Operation::NewHardSwish(std::move(hard_swish_mojo));
+}
+
 base::expected<OperationPtr, String> CreateLayerNormalizationOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* layer_normalization) {
@@ -1114,6 +1124,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kHardSigmoid:
       return blink_mojom::Operation::NewHardSigmoid(
           CreateHardSigmoid(operand_to_id_map, op, false));
+    case MLOperator::OperatorKind::kHardSwish:
+      return CreateHardSwishOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kInstanceNormalization:
       return CreateInstanceNormalizationOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kLayerNormalization:
@@ -1191,8 +1203,6 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateTransposeOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kWhere:
       return CreateWhereOperation(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kHardSwish:
-      break;
   }
   return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                           " is not implemented.");

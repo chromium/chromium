@@ -134,7 +134,7 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   void AddPlayoutSink(blink::WebRtcPlayoutDataSource::Sink* sink) override;
   void RemovePlayoutSink(blink::WebRtcPlayoutDataSource::Sink* sink) override;
 
-  absl::optional<webrtc::AudioDeviceModule::Stats> GetStats() const override;
+  std::optional<webrtc::AudioDeviceModule::Stats> GetStats() const override;
 
  private:
   using CapturerList = std::list<ProcessedLocalAudioSource*>;

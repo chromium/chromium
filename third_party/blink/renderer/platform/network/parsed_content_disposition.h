@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_PARSED_CONTENT_DISPOSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_PARSED_CONTENT_DISPOSITION_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/network/parsed_content_header_field_parameters.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -35,7 +36,7 @@ class PLATFORM_EXPORT ParsedContentDisposition final {
 
  private:
   String type_;
-  absl::optional<ParsedContentHeaderFieldParameters> parameters_;
+  std::optional<ParsedContentHeaderFieldParameters> parameters_;
 };
 
 }  // namespace blink

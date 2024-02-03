@@ -84,7 +84,7 @@ struct Serializer<PlatformHandle, PlatformHandle> {
   static void Serialize(PlatformHandle& input,
                         Handle_Data* output,
                         Message* message) {
-    const bool input_was_valid = input.is_valid();
+    [[maybe_unused]] const bool input_was_valid = input.is_valid();
     ScopedHandle handle = WrapPlatformHandle(std::move(input));
     DCHECK_EQ(handle.is_valid(), input_was_valid);
     SerializeHandle(std::move(handle), *message, *output);

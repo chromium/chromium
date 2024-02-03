@@ -79,10 +79,6 @@ bool IsFooterRequired(
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
     const std::optional<base::Time>& menu_last_time_shown,
     const std::optional<base::Time>& nudge_last_time_shown) {
-  if (!features::IsClipboardHistoryFooterEnabled()) {
-    return false;
-  }
-
   // A footer is always required when the menu is shown via Ctrl+V long press.
   using crosapi::mojom::ClipboardHistoryControllerShowSource;
   if (show_source == ClipboardHistoryControllerShowSource::kControlVLongpress) {

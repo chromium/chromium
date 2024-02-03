@@ -258,7 +258,7 @@ void ImeListView::Update(const std::string& current_ime_id,
     PrependKeyboardStatusRow();
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 
   if (should_focus_ime_after_selection_with_keyboard_ &&

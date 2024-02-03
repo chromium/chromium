@@ -46,7 +46,8 @@ void AttemptChromeSignin(CoreAccountId account_id,
 
   // For the non-Uno equivalent counterpart, the code takes care of in
   // `SigninManager::UpdateUnconsentedPrimaryAccount()`.
-  if (!base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)) {
     return;
   }
 

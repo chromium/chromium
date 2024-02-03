@@ -26,8 +26,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace dnr_api = api::declarative_net_request;
 
@@ -575,5 +574,4 @@ base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
   return {};
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

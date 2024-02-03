@@ -302,9 +302,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DisableRefCounts() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
-  void CreateURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      network::mojom::URLLoaderFactoryParamsPtr params) override;
 
   bool MayReuseHost() override;
   bool IsUnused() override;
@@ -790,17 +787,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   int keep_alive_ref_count() const { return keep_alive_ref_count_; }
   int worker_ref_count() const { return worker_ref_count_; }
-
-  // Allows overriding the URLLoaderFactory creation via CreateURLLoaderFactory.
-  // Passing a null callback will restore the default behavior.
-  // This method must be called either on the UI thread or before threads start.
-  // This |url_loader_factory_callback| is run on the UI thread.
-  using CreateNetworkFactoryCallback = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      int worker_process_id,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory)>;
-  static void SetNetworkFactoryForTesting(
-      const CreateNetworkFactoryCallback& url_loader_factory_callback);
 
 #if BUILDFLAG(IS_ANDROID)
   // Notifies the renderer process of memory pressure level.

@@ -5,7 +5,7 @@
 source_set("choice_api") {
   sources = [ "choice_api.h" ]
   deps = [
-    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",

@@ -37,11 +37,11 @@ namespace {
     }                                            \
   } while (0)
 
-absl::optional<VideoFrameLayout> CreateLayout(
+std::optional<VideoFrameLayout> CreateLayout(
     const ImageProcessor::PortConfig& config) {
   const VideoPixelFormat pixel_format = config.fourcc.ToVideoPixelFormat();
   if (config.planes.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (config.fourcc.IsMultiPlanar()) {
     return VideoFrameLayout::CreateWithPlanes(pixel_format, config.size,
@@ -55,7 +55,7 @@ absl::optional<VideoFrameLayout> CreateLayout(
 
 // static
 std::unique_ptr<ImageProcessorClient> ImageProcessorClient::Create(
-    absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
+    std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers,
@@ -93,7 +93,7 @@ ImageProcessorClient::~ImageProcessorClient() {
 }
 
 bool ImageProcessorClient::CreateImageProcessor(
-    absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
+    std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers) {
@@ -117,7 +117,7 @@ bool ImageProcessorClient::CreateImageProcessor(
 }
 
 void ImageProcessorClient::CreateImageProcessorTask(
-    absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
+    std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers,
@@ -139,8 +139,8 @@ void ImageProcessorClient::CreateImageProcessorTask(
   } else {
     ImageProcessorFactory::PickFormatCB pick_format_cb =
         base::BindRepeating([](const std::vector<Fourcc>& fourcc_config,
-                               absl::optional<Fourcc> fourcc) {
-          return absl::make_optional<Fourcc>(fourcc_config[0]);
+                               std::optional<Fourcc> fourcc) {
+          return std::make_optional<Fourcc>(fourcc_config[0]);
         });
 
     image_processor_ = ImageProcessorFactory::CreateWithInputCandidates(
@@ -162,7 +162,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
       image_processor_->input_config();
   const VideoFrame::StorageType input_storage_type =
       input_config.storage_type();
-  absl::optional<VideoFrameLayout> input_layout = CreateLayout(input_config);
+  std::optional<VideoFrameLayout> input_layout = CreateLayout(input_config);
   ASSERT_TRUE_OR_RETURN_NULLPTR(input_layout);
 
   if (VideoFrame::IsStorageTypeMappable(input_storage_type)) {
@@ -194,7 +194,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
       image_processor_->output_config();
   const VideoFrame::StorageType output_storage_type =
       output_config.storage_type();
-  absl::optional<VideoFrameLayout> output_layout = CreateLayout(output_config);
+  std::optional<VideoFrameLayout> output_layout = CreateLayout(output_config);
   ASSERT_TRUE_OR_RETURN_NULLPTR(output_layout);
   if (VideoFrame::IsStorageTypeMappable(output_storage_type)) {
     return VideoFrame::CreateFrameWithLayout(

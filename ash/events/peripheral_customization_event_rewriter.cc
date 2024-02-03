@@ -54,19 +54,19 @@ constexpr auto kStaticActionToMouseButtonFlag =
         {mojom::StaticShortcutAction::kMiddleClick, ui::EF_MIDDLE_MOUSE_BUTTON},
     });
 
-constexpr char* ToMetricsString(
+constexpr std::string_view ToMetricsString(
     PeripheralCustomizationEventRewriter::PeripheralCustomizationMetricsType
         peripheral_kind) {
   switch (peripheral_kind) {
     case PeripheralCustomizationEventRewriter::
         PeripheralCustomizationMetricsType::kMouse:
-      return (char*)"Mouse";
+      return "Mouse";
     case PeripheralCustomizationEventRewriter::
         PeripheralCustomizationMetricsType::kGraphicsTablet:
-      return (char*)"GraphicsTablet";
+      return "GraphicsTablet";
     case PeripheralCustomizationEventRewriter::
         PeripheralCustomizationMetricsType::kGraphicsTabletPen:
-      return (char*)"GraphicsTabletPen";
+      return "GraphicsTabletPen";
   }
 }
 
@@ -600,7 +600,7 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
 
   metrics_manager_->RecordRemappingActionWhenButtonPressed(
       *remapping_action,
-      ToMetricsString(remapping_action_result->peripheral_kind));
+      ToMetricsString(remapping_action_result->peripheral_kind).data());
 
   if (remapping_action->is_accelerator_action()) {
     if (event.type() == ui::ET_KEY_PRESSED ||

@@ -314,6 +314,12 @@
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chromium?
       </message>
+      <message name="IDS_IOS_DOCKING_PROMO_FIRST_INSTRUCTION" desc="Title of the first step instruction shown in the Docking Promo, which tells users to hold down on the Chromium icon to put their iOS device into Edit Mode.">
+        Press and hold the Chromium icon and click "Edit Home Screen"
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_TITLE" desc="Title of the fullscreen, instructional Docking Promo which shows users how to add the Chromium app to their iOS dock.">
+        Access Chromium faster from your Home Screen Dock
+      </message>
       <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Force Sign In) [iOS only]">
           Your organization requires you to sign in to use Chromium.
       </message>
@@ -625,6 +631,12 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_ALERT_MESSAGE" desc="Text for the Notifications UI Alert Prompt that redirects the user to the iOS notifications permission page">
         To receive notifications from Chromium, turn on notifications in your iOS Settings.
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_SUBTITLE" desc="The subtitle of the screen that prompts to select which notifications to opt-in to.">
+        You can update your selections anytime in Chromium Settings.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_TIPS_SETTINGS_TOGGLE_MESSSAGE" desc="The label for the notification opt-in toggle message for tips notifications.">
+        Tips on getting the most out of Chromium.
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_TITLE" desc="Text for the title of a Tips notification that encourages the user to set the app as their default browser">
         Chromium Tip: Use Chromium by Default
       </message>
@@ -922,6 +934,9 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu for the Set Up List module.">
           This card shows you suggestions on how to get the most out of Chromium.
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION" desc="Short description for the Set Up List item that encourages the user to enable Chrome notifications.">
+        Keep up with content and helpful Chromium tips.
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_TIPS_TITLE" desc="Title for the Set Up List (a variation that mentions Tips) - a list of tasks the user might want to complete when first using Chromium.">
         Chromium Tips
       </message>
@@ -996,6 +1011,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_TAILORED_SECURITY_UNCONSENTED_ENABLE_MESSAGE_DESCRIPTION" desc="Description shown in the iOS message when the account tailored security setting changes for a consented primary account">
         Get Enhanced Safe Browsing for this Chromium profile, too
+      </message>
+      <message name="IDS_IOS_TIPS_NOTIFICATIONS_SETTINGS_ALERT_SUBTITLE" desc="Subtitle of the alert to enable notifications in the iOS settings for tips.">
+        To get helpful Chromium tips, turn on notifications in your iOS settings.
+      </message>
+      <message name="IDS_IOS_TIPS_NOTIFICATION_SETTINGS_FOOTER" desc="Text for the footer of the Chromium Tips toggle in the notification settings page.">
+        Tips on getting the most out of Chromium.
       </message>
       <message name="IDS_IOS_TRANSLATE_INFOBAR_NEVER_MESSAGE" desc="Message for the Translate infobar to allow the user to opt out. [Length: 250em]">
         Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME">$1<ex>French</ex></ph> pages from this site next time?

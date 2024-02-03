@@ -47,31 +47,6 @@
     min-width: 180px;
     font-size: 13px;
   }
-  #voiceSelectionMenu::part(dialog) {
-    min-width: 304px;
-    width: 304px;
-    margin-left: var(--sp-body-padding);
-    max-height: 95%;
-  }
-  .dropdown-voice-selection {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .dropdown-voice-selection cr-icon-button {
-    margin: 0;
-  }
-  .voice-name {
-    max-width: 220px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .item-invisible-true {
-    visibility: hidden;
-  }
-  .display-false {
-    display: none;
-  }
   #font-size-decrease {
     margin-left: 12px;
   }
@@ -164,15 +139,12 @@
       iron-icon="voice-rate:1"
       on-click="onShowRateMenuClick_">
     </cr-icon-button>
-    <cr-icon-button
-      id="voice-selection"
-      on-click="onVoiceSelectionMenuClick_"
-      class="toolbar-button"
-      tabindex="-1"
-      aria-label="$i18n{voiceSelectionLabel}"
-      aria-haspopup="menu"
-      iron-icon="read-anything:voice-selection">
-    </cr-icon-button>
+    <voice-selection-menu
+      id="voiceSelectionMenu"
+      selected-voice="[[selectedVoice]]"
+      available-voices="[[availableVoices]]"
+      preview-voice-playing="[[previewVoicePlaying]]">
+    </voice-selection-menu>
     <cr-icon-button
       class="toolbar-button"
       id="highlight"
@@ -217,6 +189,7 @@
     <cr-icon-button
     tabindex="-1"
     class="toolbar-button"
+    disabled="[[!paused]]"
     id="[[item.id]]"
       aria-label="[[item.ariaLabel]]"
       iron-icon="[[item.icon]]"
@@ -262,29 +235,6 @@
         <iron-icon class="button-image check-mark"
             icon="read-anything-20:check-mark"></iron-icon>
         [[item]]x
-      </button>
-    </template>
-  </cr-action-menu>
-  <cr-action-menu id="voiceSelectionMenu">
-    <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
-      <!--  TODO(crbug.com/1474951): show a header for each locale group before
-            listing the languages of the locale -->
-      <button class="dropdown-item dropdown-voice-selection"
-        on-click="onVoiceSelectClick_">
-        <span class="voice-name">
-          <iron-icon
-          class$="button-image item-invisible-[[!item.data.selected]]"
-            icon="read-anything-20:check-mark"></iron-icon>
-          [[item.title]]
-        </span>
-        <cr-icon-button on-click="onVoicePreviewClick_"
-          class$="button-image display-[[!item.data.previewPlaying]]"
-          iron-icon="read-anything-20:play-circle"></cr-icon-button>
-        <!-- TODO(crbug.com/1474951) Pause the preview when pause button is
-                   pressed -->
-        <cr-icon-button on-click="onVoicePreviewClick_"
-          class$="button-image display-[[item.data.previewPlaying]]"
-          iron-icon="read-anything-20:pause-circle"></cr-icon-button>
       </button>
     </template>
   </cr-action-menu>

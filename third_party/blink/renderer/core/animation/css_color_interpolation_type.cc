@@ -158,7 +158,7 @@ class InheritedColorChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedColorChecker(const CSSProperty& property,
-                        const absl::optional<StyleColor>& color)
+                        const std::optional<StyleColor>& color)
       : property_(property), color_(color) {}
 
  private:
@@ -169,7 +169,7 @@ class InheritedColorChecker
   }
 
   const CSSProperty& property_;
-  const absl::optional<StyleColor> color_;
+  const std::optional<StyleColor> color_;
 };
 
 InterpolationValue CSSColorInterpolationType::MaybeConvertNeutral(
@@ -182,7 +182,7 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSColorInterpolationType::MaybeConvertInitial(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  absl::optional<StyleColor> initial_color =
+  std::optional<StyleColor> initial_color =
       ColorPropertyFunctions::GetInitialColor(
           CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle());
   if (!initial_color.has_value()) {
@@ -198,7 +198,7 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertInherit(
     return nullptr;
   // Visited color can never explicitly inherit from parent visited color so
   // only use the unvisited color.
-  absl::optional<StyleColor> inherited_color =
+  std::optional<StyleColor> inherited_color =
       ColorPropertyFunctions::GetUnvisitedColor(CssProperty(),
                                                 *state.ParentStyle());
   conversion_checkers.push_back(
@@ -268,8 +268,8 @@ PairwiseInterpolationValue CSSColorInterpolationType::MaybeMergeSingles(
 }
 
 InterpolationValue CSSColorInterpolationType::ConvertStyleColorPair(
-    const absl::optional<StyleColor>& unvisited_color,
-    const absl::optional<StyleColor>& visited_color) {
+    const std::optional<StyleColor>& unvisited_color,
+    const std::optional<StyleColor>& visited_color) {
   if (!unvisited_color.has_value() || !visited_color.has_value()) {
     return nullptr;
   }

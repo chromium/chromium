@@ -43,7 +43,7 @@ class StorageBucket final : public ScriptWrappable,
   ScriptPromise estimate(ScriptState*);
   ScriptPromise durability(ScriptState*);
   ScriptPromise setExpires(ScriptState*, const DOMHighResTimeStamp&);
-  ScriptPromise expires(ScriptState*);
+  ScriptPromiseTyped<IDLNullable<IDLDOMHighResTimeStamp>> expires(ScriptState*);
   IDBFactory* indexedDB();
   LockManager* locks();
   CacheStorage* caches(ExceptionState&);
@@ -72,9 +72,10 @@ class StorageBucket final : public ScriptWrappable,
                         mojom::blink::BucketDurability durability,
                         bool success);
   void DidSetExpires(ScriptPromiseResolver* resolver, bool success);
-  void DidGetExpires(ScriptPromiseResolver* resolver,
-                     const absl::optional<base::Time> expires,
-                     bool success);
+  void DidGetExpires(
+      ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
+      const std::optional<base::Time> expires,
+      bool success);
   void GetSandboxedFileSystem(ScriptPromiseResolver* resolver);
   void GetSandboxedFileSystemForDevtools(
       ExecutionContext* context,

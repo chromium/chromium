@@ -25,6 +25,7 @@ class CreditCard;
 struct CreditCardCloudTokenData;
 struct PaymentsCustomerData;
 class PersonalDataManager;
+struct ServerCvc;
 }  // namespace autofill
 
 namespace sync_pb {
@@ -100,9 +101,16 @@ sync_pb::SyncEntity CreateSyncCreditCardCloudTokenData(
     const std::string& cloud_token_data_id);
 sync_pb::SyncEntity CreateDefaultSyncCreditCardCloudTokenData();
 
+sync_pb::SyncEntity CreateDefaultSyncWalletCredential();
+
+sync_pb::SyncEntity CreateSyncWalletCredential(
+    const autofill::ServerCvc& server_cvc);
+
 // TODO(sebsg): Instead add a function to create a card, and one to inject in
 // the server. Then compare the cards directly.
 void ExpectDefaultCreditCardValues(const autofill::CreditCard& card);
+
+void ExpectDefaultWalletCredentialValues(const autofill::CreditCard& card);
 
 // Load current data from the database of profile |profile|.
 std::vector<autofill::CreditCard*> GetServerCreditCards(int profile);

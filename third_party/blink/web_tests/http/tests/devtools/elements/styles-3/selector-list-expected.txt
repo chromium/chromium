@@ -19,5 +19,6 @@ FOO bAr, #inspected, MOO>BAR, htML div, Foo~Moo, MOO { (<style>)
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 

@@ -16,6 +16,7 @@
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
+#include "media/capture/video/video_capture_metrics.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/video_capture/public/cpp/receiver_mojo_to_media_adapter.h"
@@ -108,14 +109,14 @@ void DeviceMediaToMojoAdapter::StartInProcess(
                "DeviceMediaToMojoAdapter::StartInProcess");
 
   StartInternal(std::move(requested_settings),
-                /*handler_pending_remote=*/absl::nullopt,
+                /*handler_pending_remote=*/std::nullopt,
                 std::move(frame_handler), /*start_in_process=*/true,
                 std::move(video_effects_manager));
 }
 
 void DeviceMediaToMojoAdapter::StartInternal(
     const media::VideoCaptureParams& requested_settings,
-    absl::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
+    std::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
         handler_pending_remote,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
     bool start_in_process,
@@ -192,6 +193,10 @@ void DeviceMediaToMojoAdapter::StartInternal(
 
   device_->AllocateAndStart(requested_settings, std::move(device_client));
   device_started_ = true;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  device_->GetPhotoState(base::BindOnce(&media::LogCaptureDeviceEffects));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 void DeviceMediaToMojoAdapter::StopInProcess() {

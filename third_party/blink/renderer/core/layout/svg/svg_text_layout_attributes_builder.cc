@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_attributes_builder.h"
 
+#include <optional>
+
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
@@ -248,7 +249,7 @@ void SvgTextLayoutAttributesBuilder::Build(
   unsigned addressable_index = 0;
   bool is_first_char = true;
   bool in_text_path = false;
-  absl::optional<unsigned> text_path_start;
+  std::optional<unsigned> text_path_start;
   bool first_char_in_text_path = false;
   const bool horizontal =
       IsHorizontalWritingMode(block_flow_->StyleRef().GetWritingMode());

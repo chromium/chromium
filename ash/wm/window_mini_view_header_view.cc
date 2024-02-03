@@ -110,8 +110,7 @@ void WindowMiniViewHeaderView::UpdateTitleLabel(aura::Window* window) {
 void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHeader,
-      GetHeaderRoundedCorners(window_mini_view_->source_window()),
-      /*for_border_thickness=*/0));
+      GetHeaderRoundedCorners(window_mini_view_->source_window())));
 }
 
 void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(

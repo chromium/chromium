@@ -22,6 +22,10 @@
 
 class BrowserView;
 
+namespace views {
+class ActionViewController;
+}
+
 // Container for pinned actions shown in the toolbar.
 // TODO(crbug.com/1514477): Re-enable animation after the race condition issue
 // is addressed.

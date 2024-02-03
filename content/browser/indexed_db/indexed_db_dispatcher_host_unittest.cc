@@ -209,6 +209,7 @@ class IndexedDBDispatcherHostTest : public testing::Test {
                   blink::StorageKey::CreateFromStringForTesting(kOrigin)),
               mojo::PendingRemote<
                   storage::mojom::IndexedDBClientStateChecker>(),
+              base::UnguessableToken(),
               idb_mojo_factory_.BindNewPipeAndPassReceiver());
           loop.Quit();
         }));

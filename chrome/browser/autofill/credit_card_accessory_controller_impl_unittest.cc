@@ -126,7 +126,7 @@ class CreditCardAccessoryControllerTest
 
   void SetFormOrigin(GURL origin) {
     FormData form;
-    form.unique_renderer_id = FormRendererId(1);
+    form.renderer_id = FormRendererId(1);
     form.action = origin;
     form.main_frame_origin = url::Origin::Create(origin);
     autofill_client().set_form_origin(origin);

@@ -34,17 +34,11 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case PpapiMsgStart:
       message_class = ChromeLegacyIpc::CLASS_PPAPI;
       break;
-    case ExtensionMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_EXTENSION;
-      break;
     case NaClHostMsgStart:
       message_class = ChromeLegacyIpc::CLASS_NACL_HOST;
       break;
     case GinJavaBridgeMsgStart:
       message_class = ChromeLegacyIpc::CLASS_GIN_JAVA_BRIDGE;
-      break;
-    case ExtensionWorkerMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_EXTENSION_WORKER;
       break;
   }
   legacy_ipc->set_message_class(message_class);

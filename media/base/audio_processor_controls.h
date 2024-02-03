@@ -5,16 +5,17 @@
 #ifndef MEDIA_BASE_AUDIO_PROCESSOR_CONTROLS_H_
 #define MEDIA_BASE_AUDIO_PROCESSOR_CONTROLS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
 // Audio processing metrics that are reported by the audio service.
 struct MEDIA_EXPORT AudioProcessingStats {
-  absl::optional<double> echo_return_loss;
-  absl::optional<double> echo_return_loss_enhancement;
+  std::optional<double> echo_return_loss;
+  std::optional<double> echo_return_loss_enhancement;
 };
 
 // Interactions with the audio service.

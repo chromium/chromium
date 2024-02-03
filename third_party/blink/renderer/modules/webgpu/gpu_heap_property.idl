@@ -5,7 +5,7 @@
 typedef [EnforceRange] unsigned long GPUHeapPropertyFlags;
 [
     RuntimeEnabled=WebGPUDeveloperFeatures,
-    Exposed=(Window, DedicatedWorker),
+    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
     SecureContext
 ] namespace GPUHeapProperty {
     const GPUFlagsConstant DEVICE_LOCAL = 1;

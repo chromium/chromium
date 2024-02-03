@@ -250,7 +250,7 @@
       // This feature is used by the Controlled Frame API and is specifically
       // enabled by //chrome.
       "internal": true,
-      "channel": "dev",
+      "channel": "stable",
       "contexts": ["web_page"],
       // This feature is only enabled if the embedder's delegated check returns
       // true.
@@ -809,7 +809,7 @@
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.
     "internal": true,
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["web_page"],
     // This feature is only enabled if the embedder's delegated check returns
     // true.
@@ -840,7 +840,7 @@
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.
     "internal": true,
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["web_page"],
     // This feature is only enabled if the embedder's delegated check returns
     // true.

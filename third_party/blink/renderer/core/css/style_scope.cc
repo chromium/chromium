@@ -52,8 +52,8 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
                               StyleSheetContents* style_sheet) {
   HeapVector<CSSSelector> arena;
 
-  absl::optional<base::span<CSSSelector>> from;
-  absl::optional<base::span<CSSSelector>> to;
+  std::optional<base::span<CSSSelector>> from;
+  std::optional<base::span<CSSSelector>> to;
 
   prelude.ConsumeWhitespace();
 

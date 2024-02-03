@@ -18,6 +18,14 @@ std::string NewlineToSpaceReplacer(std::string str) {
   return str;
 }
 
+size_t RecursiveIncludedNodeCount(AXObject* subtree) {
+  size_t count = 1;  // For |subtree| itself.
+  for (const auto& child : subtree->ChildrenIncludingIgnored()) {
+    count += RecursiveIncludedNodeCount(child);
+  }
+  return count;
+}
+
 }  // namespace
 
 std::string TreeToStringHelper(const AXObject* obj, bool verbose) {
@@ -92,6 +100,71 @@ std::string ParentChainToStringHelper(const AXObject* obj) {
     ++indent;
   }
   return builder;
+}
+
+void CheckTreeConsistency(
+    AXObjectCacheImpl& cache,
+    ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>& serializer) {
+  // If all serializations are complete, check that the number of included nodes
+  // being serialized is the same as the number of included nodes according to
+  // the AXObjectCache.
+  size_t included_node_count_from_cache = cache.GetIncludedNodeCount();
+  if (included_node_count_from_cache != serializer.ClientTreeNodeCount()) {
+    // There was an inconsistency in the node count: provide a helpful message
+    // to facilitate debugging.
+    std::ostringstream msg;
+    msg << "AXTreeSerializer should have the expected number of included nodes:"
+        << "\n* AXObjectCache: " << included_node_count_from_cache
+        << "\n* Depth first cache count: "
+        << RecursiveIncludedNodeCount(cache.Root())
+        << "\n* Serializer: " << serializer.ClientTreeNodeCount();
+    HeapHashMap<AXID, Member<AXObject>>& all_objects = cache.GetObjects();
+    for (const auto& id_to_object_entry : all_objects) {
+      AXObject* obj = id_to_object_entry.value;
+      if (obj->LastKnownIsIncludedInTreeValue()) {
+        if (!serializer.IsInClientTree(obj)) {
+          if (obj->IsMissingParent()) {
+            msg << "\n* Included node not serialized, is missing parent: "
+                << obj->ToString(true, true);
+          } else if (!obj->GetDocument()->GetFrame()) {
+            msg << "\n* Included node not serialized, in closed document: "
+                << obj->ToString(true, true);
+          } else {
+            bool included_state_stale = !obj->AccessibilityIsIncludedInTree();
+            msg << "\n* Included node not serialized: " << obj->ToString(true);
+            if (included_state_stale) {
+              msg << "\n  Included state was stale.";
+            }
+            msg << "\n  Parent: " << obj->CachedParentObject()->ToString(true);
+          }
+        }
+      }
+    }
+    for (AXID id : serializer.ClientTreeNodeIds()) {
+      AXObject* obj = cache.ObjectFromAXID(id);
+      if (!obj) {
+        msg << "\n* Serialized node does not exist: " << id;
+        if (AXObject* parent = serializer.ParentOf(id)) {
+          msg << "\n* Parent = " << parent->ToString(true);
+        }
+      } else if (!obj->LastKnownIsIncludedInTreeValue()) {
+        msg << "\n* Serialized an unincluded node: " << obj->ToString(true);
+      }
+    }
+    DCHECK(false) << msg.str();
+  }
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  constexpr size_t kMaxNodesForDeepSlowConsistencyCheck = 100;
+  if (included_node_count_from_cache > kMaxNodesForDeepSlowConsistencyCheck) {
+    return;
+  }
+
+  DCHECK_EQ(included_node_count_from_cache,
+            RecursiveIncludedNodeCount(cache.Root()))
+      << "\n* AXObjectCacheImpl's tree:\n"
+      << TreeToStringHelper(cache.Root(), /* verbose */ true);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 }
 
 }  // namespace blink

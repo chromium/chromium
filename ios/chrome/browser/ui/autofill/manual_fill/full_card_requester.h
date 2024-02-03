@@ -19,6 +19,7 @@ namespace autofill {
 class BrowserAutofillManager;
 class CreditCard;
 struct CardUnmaskPromptOptions;
+class PersonalDataManager;
 }  // namespace autofill
 
 // Receives the full credit card details. Also displays the unmask prompt UI.
@@ -49,6 +50,7 @@ class FullCardRequester
  private:
   __weak UIViewController* base_view_controller_;
   autofill::CardUnmaskPromptControllerImpl unmask_controller_;
+  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_FULL_CARD_REQUESTER_H_

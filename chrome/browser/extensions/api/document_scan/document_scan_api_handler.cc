@@ -210,25 +210,6 @@ void DocumentScanAPIHandler::GetScannerList(
     scoped_refptr<const Extension> extension,
     api::document_scan::DeviceFilter filter,
     GetScannerListCallback callback) {
-  // Invalidate any previously returned scannerId values because the underlying
-  // SANE entries aren't stable across multiple calls to sane_get_devices.
-  // Removed scannerIds don't need to be explicitly closed because there's no
-  // state associated with them on the backend.
-  // TODO(b/311196232): Once deviceUuid calculation is stable on the backend,
-  // don't erase the whole list.  Instead, preserve entries that point to the
-  // same connection string and deviceUuid so that previously-issued tokens
-  // remain valid if they still point to the same device.  This includes the
-  // `state.scanner_ids` map and the `scanner_devices_` map.
-  for (auto& [id, state] : extension_state_) {
-    state.scanner_ids.clear();
-    scanner_devices_.clear();
-    // Exclusive handles that are already open remain valid even after calling
-    // sane_get_devices, so deliberately do not clear them nor the associated
-    // job handles.
-    // TODO(b/316152239): By not clearing these scanner/job handles, they will
-    // grow unbounded.  Find the appropriate time to clean them up.
-  }
-
   auto discovery_runner = std::make_unique<ScannerDiscoveryRunner>(
       native_window, browser_context_, std::move(extension), document_scan_);
 
@@ -246,18 +227,15 @@ void DocumentScanAPIHandler::OnScannerListReceived(
     crosapi::mojom::GetScannerListResponsePtr mojo_response) {
   auto api_response =
       std::move(mojo_response).To<api::document_scan::GetScannerListResponse>();
-
-  // Replace the SANE connection strings with unguessable tokens to reduce
-  // information leakage about the user's network and specific devices.  Also,
-  // keep track of the display name for each scanner.
+  // Clear all the previously valid tokens and handles.  The backend has closed
+  // any open handles and canceled any active jobs when this extension called
+  // GetScannerList.
   ExtensionState& state = extension_state_[runner->extension_id()];
+  state.active_scanner_ids.clear();
+  state.scanner_handles.clear();
+  state.active_job_handles.clear();
   for (auto& scanner : api_response.scanners) {
-    std::string token = base::UnguessableToken::Create().ToString();
-    const std::string& scanner_id = scanner.scanner_id;
-    scanner_devices_[scanner_id] = {.connection_string = scanner_id,
-                                    .name = scanner.name};
-    state.scanner_ids[token] = scanner_id;
-    scanner.scanner_id = std::move(token);
+    state.active_scanner_ids[scanner.scanner_id] = {.name = scanner.name};
   }
 
   std::move(callback).Run(std::move(api_response));
@@ -268,12 +246,7 @@ void DocumentScanAPIHandler::OpenScanner(
     const std::string& scanner_id,
     OpenScannerCallback callback) {
   const ExtensionState& state = extension_state_[extension->id()];
-
-  // Convert the supplied scanner id to the internal connection string needed by
-  // the backend.
-  auto id_iter = state.scanner_ids.find(scanner_id);
-  if (id_iter == state.scanner_ids.end() ||
-      !base::Contains(scanner_devices_, id_iter->second)) {
+  if (!base::Contains(state.active_scanner_ids, scanner_id)) {
     auto response = crosapi::mojom::OpenScannerResponse::New();
     response->scanner_id = scanner_id;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
@@ -283,7 +256,7 @@ void DocumentScanAPIHandler::OpenScanner(
   }
 
   document_scan_->OpenScanner(
-      extension->id(), scanner_devices_[id_iter->second].connection_string,
+      extension->id(), scanner_id,
       base::BindOnce(&DocumentScanAPIHandler::OnOpenScannerResponse,
                      weak_ptr_factory_.GetWeakPtr(), extension->id(),
                      scanner_id, std::move(callback)));
@@ -305,17 +278,32 @@ void DocumentScanAPIHandler::OnOpenScannerResponse(
   }
 
   ExtensionState& state = extension_state_[extension_id];
-  if (!base::Contains(state.scanner_ids, scanner_id)) {
+  if (!base::Contains(state.active_scanner_ids, scanner_id)) {
     response_out.result = api::document_scan::OperationResult::kInvalid;
     std::move(callback).Run(std::move(response_out));
     return;
   }
 
+  // Clear any open handles that point to the same scanner.  These are no longer
+  // valid after opening a new handle.
+  for (auto it = state.scanner_handles.begin();
+       it != state.scanner_handles.end();) {
+    if (it->second == scanner_id) {
+      // Erase job handles pointing to the same scanner handle before erasing
+      // the scanner handle.
+      std::erase_if(state.active_job_handles, [&it](const auto& item) {
+        return item.second == it->first;
+      });
+      it = state.scanner_handles.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   // Track that this handle belongs to this extension.  This prevents other
   // extensions from using it.
   if (response_out.scanner_handle.has_value()) {
-    state.scanner_handles[response_out.scanner_handle.value()] =
-        state.scanner_ids[scanner_id];
+    state.scanner_handles[response_out.scanner_handle.value()] = scanner_id;
   }
 
   std::move(callback).Run(std::move(response_out));
@@ -358,19 +346,32 @@ void DocumentScanAPIHandler::CloseScanner(
     auto response = crosapi::mojom::CloseScannerResponse::New();
     response->scanner_handle = scanner_handle;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    OnCloseScannerResponse(std::move(callback), std::move(response));
+    OnCloseScannerResponse(extension->id(), std::move(callback),
+                           std::move(response));
     return;
   }
 
   document_scan_->CloseScanner(
       scanner_handle,
       base::BindOnce(&DocumentScanAPIHandler::OnCloseScannerResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), extension->id(),
+                     std::move(callback)));
 }
 
 void DocumentScanAPIHandler::OnCloseScannerResponse(
+    const ExtensionId& extension_id,
     CloseScannerCallback callback,
     crosapi::mojom::CloseScannerResponsePtr response) {
+  ExtensionState& state = extension_state_[extension_id];
+
+  // Stop tracking the handle and remove any job handles pointing to the same
+  // scanner handle.
+  const auto& scanner_handle = response->scanner_handle;
+  std::erase_if(state.active_job_handles, [&scanner_handle](const auto& item) {
+    return item.second == scanner_handle;
+  });
+  state.scanner_handles.erase(scanner_handle);
+
   std::move(callback).Run(
       response.To<api::document_scan::CloseScannerResponse>());
 }
@@ -498,7 +499,7 @@ void DocumentScanAPIHandler::StartScan(
   ExtensionState& state = extension_state_[extension->id()];
   auto handle_it = state.scanner_handles.find(scanner_handle);
   if (handle_it == state.scanner_handles.end() ||
-      !base::Contains(scanner_devices_, handle_it->second)) {
+      !base::Contains(state.active_scanner_ids, handle_it->second)) {
     auto response = crosapi::mojom::StartPreparedScanResponse::New();
     response->scanner_handle = scanner_handle;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
@@ -513,7 +514,7 @@ void DocumentScanAPIHandler::StartScan(
   StartScanRunner* raw_runner = start_runner.get();
   raw_runner->Start(
       state.approved_scanners.contains(scanner_handle),
-      scanner_devices_[handle_it->second].name, scanner_handle,
+      state.active_scanner_ids[handle_it->second].name, scanner_handle,
       crosapi::mojom::StartScanOptions::From(options),
       base::BindOnce(&DocumentScanAPIHandler::OnStartScanResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(start_runner),
@@ -538,7 +539,8 @@ void DocumentScanAPIHandler::OnStartScanResponse(
 
     // Keep track of active job handles for this extension.
     if (!api_response.job.value_or("").empty()) {
-      state.active_job_handles.insert(api_response.job.value());
+      state.active_job_handles[api_response.job.value()] =
+          api_response.scanner_handle;
     }
   }
 

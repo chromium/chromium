@@ -62,8 +62,8 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
 
   void AddReceiver(
       std::optional<storage::BucketInfo> bucket,
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          client_state_checker_remote,
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>,
+      base::UnguessableToken client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
   // blink::mojom::IDBFactory implementation:
@@ -144,7 +144,8 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
     ReceiverContext(
         std::optional<storage::BucketInfo> bucket,
         mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-            client_state_checker_remote);
+            client_state_checker_remote,
+        base::UnguessableToken token);
 
     ~ReceiverContext();
 
@@ -159,6 +160,8 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
 
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote;
+
+    base::UnguessableToken client_token;
   };
 
   // `path_base` is the directory that will contain the database directory, the

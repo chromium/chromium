@@ -614,7 +614,7 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
     return nullptr;
 
   ImageBitmap* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      image_data, absl::nullopt, ImageBitmapOptions::Create());
+      image_data, std::nullopt, ImageBitmapOptions::Create());
 
   VideoFrameInit* video_frame_init = VideoFrameInit::Create();
   video_frame_init->setTimestamp(proto.timestamp());

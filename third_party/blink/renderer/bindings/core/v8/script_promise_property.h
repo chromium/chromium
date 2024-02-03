@@ -46,32 +46,34 @@ class ScriptPromiseProperty final
   ScriptPromiseProperty(const ScriptPromiseProperty&) = delete;
   ScriptPromiseProperty& operator=(const ScriptPromiseProperty&) = delete;
 
-  ScriptPromise Promise(DOMWrapperWorld& world) {
+  ScriptPromiseTyped<IDLResolvedType> Promise(DOMWrapperWorld& world) {
     if (!GetExecutionContext()) {
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLResolvedType>();
     }
 
     v8::HandleScope handle_scope(GetExecutionContext()->GetIsolate());
     v8::Local<v8::Context> context = ToV8Context(GetExecutionContext(), world);
     if (context.IsEmpty()) {
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLResolvedType>();
     }
     ScriptState* script_state = ScriptState::From(context);
 
-    for (const auto& promise : promises_) {
+    for (auto& promise : promises_) {
       if (promise.IsAssociatedWith(script_state)) {
-        return promise;
+        return static_cast<ScriptPromiseTyped<IDLResolvedType>&>(promise);
       }
     }
 
     ScriptState::Scope scope(script_state);
 
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLResolvedType>>(
+            script_state);
     // ScriptPromiseResolver usually requires a caller to reject it before
     // releasing, but ScriptPromiseProperty doesn't have such a requirement, so
     // suppress the check forcibly.
     resolver->SuppressDetachCheck();
-    ScriptPromise promise = resolver->Promise();
+    ScriptPromiseTyped<IDLResolvedType> promise = resolver->Promise();
     if (mark_as_handled_)
       promise.MarkAsHandled();
     switch (state_) {
@@ -79,14 +81,10 @@ class ScriptPromiseProperty final
         resolvers_.push_back(resolver);
         break;
       case kResolved:
-        if (resolved_with_undefined_) {
-          resolver->Resolve();
-        } else {
-          resolver->Resolve<IDLResolvedType, MemberResolvedType>(resolved_);
-        }
+        resolver->Resolve(resolved_);
         break;
       case kRejected:
-        resolver->Reject<IDLRejectedType>(rejected_);
+        resolver->template Reject<IDLRejectedType>(rejected_);
         break;
     }
     promises_.push_back(promise);
@@ -105,7 +103,8 @@ class ScriptPromiseProperty final
     HeapVector<Member<ScriptPromiseResolver>> resolvers;
     resolvers.swap(resolvers_);
     for (const Member<ScriptPromiseResolver>& resolver : resolvers) {
-      resolver->Resolve<IDLResolvedType>(value);
+      static_cast<ScriptPromiseResolverTyped<IDLResolvedType>*>(resolver.Get())
+          ->Resolve(value);
     }
   }
 
@@ -121,11 +120,12 @@ class ScriptPromiseProperty final
       return;
     }
     state_ = kResolved;
-    resolved_with_undefined_ = true;
+    resolved_ = ToV8UndefinedGenerator();
     HeapVector<Member<ScriptPromiseResolver>> resolvers;
     resolvers.swap(resolvers_);
     for (const Member<ScriptPromiseResolver>& resolver : resolvers) {
-      resolver->Resolve();
+      static_cast<ScriptPromiseResolverTyped<IDLResolvedType>*>(resolver.Get())
+          ->Resolve(resolved_);
     }
   }
 
@@ -159,7 +159,6 @@ class ScriptPromiseProperty final
     rejected_ = DefaultPromiseResultValue<MemberRejectedType>();
     resolvers_.clear();
     promises_.clear();
-    resolved_with_undefined_ = false;
   }
 
   // Mark generated promises as handled to avoid reporting unhandled rejections.
@@ -200,9 +199,14 @@ class ScriptPromiseProperty final
   State state_ = kPending;
   MemberResolvedType resolved_{DefaultPromiseResultValue<MemberResolvedType>()};
   MemberRejectedType rejected_{DefaultPromiseResultValue<MemberRejectedType>()};
+
+  // These vectors contain ScriptPromiseResolverTyped<IDLResolvedType> and
+  // ScriptPromiseTyped<IDLResolvedType>, respectively. We save ~10KB of binary
+  // size by storing them as the untemplated base class and downcasting where
+  // needed.
   HeapVector<Member<ScriptPromiseResolver>> resolvers_;
   HeapVector<ScriptPromise> promises_;
-  bool resolved_with_undefined_ = false;
+
   bool mark_as_handled_ = false;
 };
 

@@ -151,7 +151,7 @@ class MediaStreamVideoTrackTest
       const VideoTrackAdapterSettings& adapter_settings) {
     const bool enabled = true;
     WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
-        mock_source_, adapter_settings, absl::optional<bool>(), false, 0.0,
+        mock_source_, adapter_settings, std::optional<bool>(), false, 0.0,
         nullptr, false, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         enabled);
     if (!source_started_) {
@@ -1035,11 +1035,11 @@ TEST_F(MediaStreamVideoTrackTest, DeliversConstraintsToKnownSinks) {
   WebMediaStreamTrack track = CreateTrack();
   MockMediaStreamVideoSink sink1;
   EXPECT_CALL(sink1,
-              OnVideoConstraintsChanged(Eq(absl::nullopt), Eq(absl::nullopt)));
+              OnVideoConstraintsChanged(Eq(std::nullopt), Eq(std::nullopt)));
   sink1.ConnectToTrack(track);
   MockMediaStreamVideoSink sink2;
   EXPECT_CALL(sink2,
-              OnVideoConstraintsChanged(Eq(absl::nullopt), Eq(absl::nullopt)));
+              OnVideoConstraintsChanged(Eq(std::nullopt), Eq(std::nullopt)));
   sink2.ConnectToTrack(track);
   MediaStreamVideoTrack* const native_track =
       MediaStreamVideoTrack::From(track);
@@ -1047,9 +1047,9 @@ TEST_F(MediaStreamVideoTrackTest, DeliversConstraintsToKnownSinks) {
   Mock::VerifyAndClearExpectations(&sink2);
 
   EXPECT_CALL(sink1,
-              OnVideoConstraintsChanged(Eq(absl::nullopt), Eq(absl::nullopt)));
+              OnVideoConstraintsChanged(Eq(std::nullopt), Eq(std::nullopt)));
   EXPECT_CALL(sink2,
-              OnVideoConstraintsChanged(Eq(absl::nullopt), Eq(absl::nullopt)));
+              OnVideoConstraintsChanged(Eq(std::nullopt), Eq(std::nullopt)));
   native_track->SetTrackAdapterSettings(VideoTrackAdapterSettings());
   native_track->NotifyConstraintsConfigurationComplete();
   Mock::VerifyAndClearExpectations(&sink1);
@@ -1057,9 +1057,9 @@ TEST_F(MediaStreamVideoTrackTest, DeliversConstraintsToKnownSinks) {
 
   native_track->SetMinimumFrameRate(200);
   EXPECT_CALL(sink1,
-              OnVideoConstraintsChanged(Optional(200.0), Eq(absl::nullopt)));
+              OnVideoConstraintsChanged(Optional(200.0), Eq(std::nullopt)));
   EXPECT_CALL(sink2,
-              OnVideoConstraintsChanged(Optional(200.0), Eq(absl::nullopt)));
+              OnVideoConstraintsChanged(Optional(200.0), Eq(std::nullopt)));
   native_track->SetTrackAdapterSettings(VideoTrackAdapterSettings());
   native_track->NotifyConstraintsConfigurationComplete();
   Mock::VerifyAndClearExpectations(&sink1);

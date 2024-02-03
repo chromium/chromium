@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/privacy_hub_delegate.h"
 #include "ash/shell.h"
+#include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -158,6 +159,24 @@ void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier) {
   controller->SetSensorDisabledNotificationDelegate(
       app_access_notifier ? std::make_unique<Wrapper>(app_access_notifier)
                           : nullptr);
+}
+
+std::pair<base::Time, base::Time> SunriseSunsetSchedule() {
+  const base::Time default_sunrise_time =
+      base::Time::Now().LocalMidnight() + base::Hours(6);
+  const base::Time default_sunset_time = default_sunrise_time + base::Hours(12);
+  const ash::GeolocationController* geolocation_controller =
+      ash::GeolocationController::Get();
+  const base::Time sunrise_time =
+      geolocation_controller
+          ? geolocation_controller->GetSunriseTime().value_or(
+                default_sunrise_time)
+          : default_sunrise_time;
+  const base::Time sunset_time =
+      geolocation_controller ? geolocation_controller->GetSunsetTime().value_or(
+                                   default_sunset_time)
+                             : default_sunrise_time;
+  return std::make_pair(sunrise_time, sunset_time);
 }
 
 }  // namespace ash::privacy_hub_util

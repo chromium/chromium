@@ -32,10 +32,19 @@ ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
       base::File(paths.sp_model, base::File::FLAG_OPEN | base::File::FLAG_READ);
   assets.model =
       base::File(paths.model, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  assets.ts_data =
-      base::File(paths.ts_data, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  assets.ts_sp_model = base::File(
-      paths.ts_sp_model, base::File::FLAG_OPEN | base::File::FLAG_READ);
+
+  if (paths.HasSafetyFiles()) {
+    assets.ts_data = base::File(paths.ts_data,
+                                base::File::FLAG_OPEN | base::File::FLAG_READ);
+    assets.ts_sp_model = base::File(
+        paths.ts_sp_model, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  }
+
+  if (!paths.language_detection_model.empty()) {
+    assets.language_detection_model =
+        base::File(paths.language_detection_model,
+                   base::File::FLAG_OPEN | base::File::FLAG_READ);
+  }
 
   // NOTE: Weights ultimately need to be mapped copy-on-write, but Fuchsia
   // (due to an apparent bug?) doesn't seem to support copy-on-write mapping of

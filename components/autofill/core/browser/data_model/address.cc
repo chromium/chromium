@@ -76,6 +76,9 @@ bool Address::FinalizeAfterImport() {
       result = Root()->CompleteFullTree();
     }
   }
+  // Generate synthesized node values after the tree's values were updated,
+  // whether by completion or gaps filled.
+  Root()->GenerateTreeSynthesizedNodes();
   return result;
 }
 

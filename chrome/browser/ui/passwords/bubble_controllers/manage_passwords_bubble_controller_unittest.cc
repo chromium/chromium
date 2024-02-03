@@ -171,7 +171,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnManageClicked) {
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnLocalCredentials) {
   Init();
-  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  base::span<std::unique_ptr<password_manager::PasswordForm> const>
       credentials = controller()->GetCredentials();
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
       expected_credentials =
@@ -340,4 +340,31 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnWhetherUsernameExists) {
   Init();
   EXPECT_TRUE(controller()->UsernameExists(u"User1"));
   EXPECT_FALSE(controller()->UsernameExists(u"AnotherUsername"));
+}
+
+TEST_F(ManagePasswordsBubbleControllerTest, OpenMoveBubble) {
+  base::HistogramTester histogram_tester;
+  Init();
+  password_manager::PasswordForm selected_form = CreateTestForm();
+
+  // Used to mock displaying the details view. This is needed to set the
+  // selected_form value to the one that we expect.
+  EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](PasswordsModelDelegate::AvailabilityCallback callback) {
+            // Respond with true to simulate a successful user reauth.
+            std::move(callback).Run(true);
+          })));
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+  controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
+                                                    mock_callback.Get());
+
+  EXPECT_CALL(*delegate(), ShowMovePasswordBubble(selected_form));
+  controller()->OnMovePasswordLinkClicked();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordManagementBubble.UserAction",
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kMovePasswordLinkClicked,
+      1);
 }

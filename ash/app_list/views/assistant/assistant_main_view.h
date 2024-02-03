@@ -24,9 +24,9 @@ class AssistantViewDelegate;
 class ASH_EXPORT AssistantMainView : public views::View,
                                      public AssistantControllerObserver,
                                      public AssistantUiModelObserver {
- public:
-  METADATA_HEADER(AssistantMainView);
+  METADATA_HEADER(AssistantMainView, views::View)
 
+ public:
   explicit AssistantMainView(AssistantViewDelegate* delegate);
   AssistantMainView(const AssistantMainView&) = delete;
   AssistantMainView& operator=(const AssistantMainView&) = delete;

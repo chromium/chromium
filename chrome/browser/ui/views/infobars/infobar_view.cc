@@ -146,7 +146,7 @@ void InfoBarView::RecalculateHeight() {
   SetTargetHeight(height + infobar_margins.height());
 }
 
-void InfoBarView::Layout() {
+void InfoBarView::Layout(PassKey) {
   const int spacing = GetElementSpacing();
   int start_x = 0;
   if (icon_) {

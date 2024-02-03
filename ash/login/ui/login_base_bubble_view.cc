@@ -301,12 +301,12 @@ gfx::Size LoginBaseBubbleView::CalculatePreferredSize() const {
   return size;
 }
 
-void LoginBaseBubbleView::Layout() {
-  views::View::Layout();
+void LoginBaseBubbleView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
-  // If a Layout() is called while the bubble is visible (i.e. due to Show()),
-  // its bounds may change because of the parent's LayoutManager. This allows
-  // the bubbles to always determine their own size and position.
+  // If layout occurs while the bubble is visible (i.e. due to Show()), its
+  // bounds may change because of the parent's LayoutManager. This allows the
+  // bubbles to always determine their own size and position.
   if (GetVisible()) {
     SetSize(GetPreferredSize());
     SetPosition(CalculatePosition());

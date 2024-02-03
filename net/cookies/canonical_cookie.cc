@@ -1103,13 +1103,15 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   }
   switch (cookie_access_scheme) {
     case CookieAccessScheme::kNonCryptographic:
-      if (IsSecure())
+      if (SecureAttribute()) {
         status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+      }
       break;
     case CookieAccessScheme::kTrustworthy:
       is_allowed_to_access_secure_cookies = true;
-      if (IsSecure() || (cookie_util::IsSchemeBoundCookiesEnabled() &&
-                         source_scheme_ == CookieSourceScheme::kSecure)) {
+      if (SecureAttribute() ||
+          (cookie_util::IsSchemeBoundCookiesEnabled() &&
+           source_scheme_ == CookieSourceScheme::kSecure)) {
         status.AddWarningReason(
             CookieInclusionStatus::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
@@ -1247,13 +1249,13 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   // were created before "SameSite=None requires Secure" was enabled (as
   // SameSite=None insecure cookies cannot be set while the options are on).
   if (params.access_semantics != CookieAccessSemantics::LEGACY &&
-      SameSite() == CookieSameSite::NO_RESTRICTION && !IsSecure()) {
+      SameSite() == CookieSameSite::NO_RESTRICTION && !SecureAttribute()) {
     status.AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE);
   }
 
   ApplySameSiteCookieWarningToStatus(SameSite(), effective_same_site,
-                                     IsSecure(),
+                                     SecureAttribute(),
                                      options.same_site_cookie_context(),
                                      &status, false /* is_cookie_being_set */);
 
@@ -1332,7 +1334,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
   switch (access_scheme) {
     case CookieAccessScheme::kNonCryptographic:
       access_result.is_allowed_to_access_secure_cookies = false;
-      if (IsSecure()) {
+      if (SecureAttribute()) {
         access_result.status.AddExclusionReason(
             CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
       }
@@ -1345,7 +1347,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
 
     case CookieAccessScheme::kTrustworthy:
       access_result.is_allowed_to_access_secure_cookies = true;
-      if (IsSecure()) {
+      if (SecureAttribute()) {
         // OK, but want people aware of this.
         // Note, we also want to apply this warning to cookies whose source
         // scheme is kSecure but are set by non-cryptographic (but trustworthy)
@@ -1370,7 +1372,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
   // Unless legacy access semantics are in effect, SameSite=None cookies without
   // the Secure attribute will be rejected.
   if (params.access_semantics != CookieAccessSemantics::LEGACY &&
-      SameSite() == CookieSameSite::NO_RESTRICTION && !IsSecure()) {
+      SameSite() == CookieSameSite::NO_RESTRICTION && !SecureAttribute()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() rejecting insecure cookie with SameSite=None.";
     access_result.status.AddExclusionReason(
@@ -1426,7 +1428,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
   }
 
   ApplySameSiteCookieWarningToStatus(
-      SameSite(), access_result.effective_same_site, IsSecure(),
+      SameSite(), access_result.effective_same_site, SecureAttribute(),
       options.same_site_cookie_context(), &access_result.status,
       true /* is_cookie_being_set */);
 
@@ -1594,8 +1596,9 @@ std::string CanonicalCookie::BuildCookieAttributesLine(
     cookie_line += "; path=" + cookie.Path();
   if (cookie.ExpiryDate() != base::Time())
     cookie_line += "; expires=" + HttpUtil::TimeFormatHTTP(cookie.ExpiryDate());
-  if (cookie.IsSecure())
+  if (cookie.SecureAttribute()) {
     cookie_line += "; secure";
+  }
   if (cookie.IsHttpOnly())
     cookie_line += "; httponly";
   if (cookie.IsPartitioned() &&

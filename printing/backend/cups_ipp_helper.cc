@@ -365,9 +365,21 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
   return parsed_papers;
 }
 
-// Initializes `printer_info->media_types` with available media types and
-// `printer_info->default_media_type` with default media type provided by
-// `printer`.
+// Overrides the given printer's default media type as needed.
+void CorrectDefaultMediaType(PrinterSemanticCapsAndDefaults*& printer_info) {
+  // Some Canon printers give a proprietary default media type that's frequently
+  // unavailable to users.
+  if (base::StartsWith(printer_info->default_media_type.vendor_id, "com.canon",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    for (const auto& media_type : printer_info->media_types) {
+      if (media_type.vendor_id == "stationery") {
+        printer_info->default_media_type = media_type;
+        break;
+      }
+    }
+  }
+}
+
 void ExtractMediaTypes(const CupsOptionProvider& printer,
                        PrinterSemanticCapsAndDefaults* printer_info) {
   std::vector<base::StringPiece> names =
@@ -413,6 +425,8 @@ void ExtractMediaTypes(const CupsOptionProvider& printer,
       }
     }
   }
+
+  CorrectDefaultMediaType(printer_info);
 }
 
 bool CollateCapable(const CupsOptionProvider& printer) {

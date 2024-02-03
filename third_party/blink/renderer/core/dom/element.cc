@@ -40,8 +40,8 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
@@ -210,11 +210,9 @@
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
-#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -234,8 +232,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
-
-enum class ClassStringContent { kEmpty, kWhiteSpaceOnly, kHasClasses };
 
 namespace {
 
@@ -400,6 +396,15 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
     return true;
   }
   if (name == html_names::kAriaOwnsAttr) {
+    return true;
+  }
+  if (name == html_names::kPopovertargetAttr) {
+    return true;
+  }
+  if (name == html_names::kAnchorAttr) {
+    return true;
+  }
+  if (name == html_names::kInvoketargetAttr) {
     return true;
   }
   return false;
@@ -667,49 +672,57 @@ Node* Element::Clone(Document& factory,
                      NodeCloningData& data,
                      ContainerNode* append_to,
                      ExceptionState& append_exception_state) const {
+  Element* copy;
   if (!data.Has(CloneOption::kIncludeDescendants)) {
-    CHECK(!data.Has(CloneOption::kIncludeShadowRoots));
-    Element* copy = &CloneWithoutChildren(data, &factory);
+    copy = &CloneWithoutChildren(data, &factory);
     if (append_to) {
       append_to->AppendChild(copy, append_exception_state);
     }
+  } else {
+    copy =
+        &CloneWithChildren(data, &factory, append_to, append_exception_state);
+  }
+  // 7. If node is a shadow host whose shadow root’s clonable is true:
+  auto* shadow_root = GetShadowRoot();
+  if (!shadow_root) {
     return copy;
   }
-  Element* copy =
-      &CloneWithChildren(data, &factory, append_to, append_exception_state);
-  // 7. If node is a shadow host and the clone shadows flag is set, run these
-  // steps:
-  if (data.Has(CloneOption::kIncludeShadowRoots)) {
-    auto* shadow_root = GetShadowRoot();
-    if (shadow_root && (shadow_root->GetType() == ShadowRootType::kOpen ||
-                        shadow_root->GetType() == ShadowRootType::kClosed)) {
-      // 7.1 Run attach a shadow root with shadow host equal to copy, mode equal
-      // to node’s shadow root’s mode, and delegates focus equal to node’s
-      // shadow root’s delegates focus.
-      // TODO(crbug.com/1521128): it seems like the `registry` parameter should
+  if ((RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
+       shadow_root->clonable()) ||
+      (!RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
+       data.Has(CloneOption::kIncludeAllShadowRoots))) {
+    if (shadow_root->GetType() == ShadowRootType::kOpen ||
+        shadow_root->GetType() == ShadowRootType::kClosed) {
+      // 7.1 Run attach a shadow root with copy, node’s shadow root’s mode,
+      // true, node’s shadow root’s delegates focus, and node’s shadow root’s
+      // slot assignment.
+      // TODO(crbug.com/1523816): it seems like the `registry` parameter should
       // not always be nullptr.
       ShadowRoot& cloned_shadow_root = copy->AttachShadowRootInternal(
           shadow_root->GetType(),
           shadow_root->delegatesFocus() ? FocusDelegation::kDelegateFocus
                                         : FocusDelegation::kNone,
           shadow_root->GetSlotAssignmentMode(), /*registry*/ nullptr,
-          shadow_root->serializable());
-      // 7.2 If node’s shadow root’s "is declarative shadow root" is true, then
-      // set copy’s shadow root’s "is declarative shadow root" property to true.
+          shadow_root->serializable(),
+          /*clonable*/ true);
+
+      // 7.2 Set copy’s shadow root’s declarative to node’s shadow root’s
+      // declarative.
       cloned_shadow_root.SetIsDeclarativeShadowRoot(
           shadow_root->IsDeclarativeShadowRoot());
 
-      // 7.NEW If node’s shadow root’s "is available to element internals" is
-      // true, then set copy’s shadow root’s "is available to element internals"
-      // property to true.
+      // This step is not currently spec'd.
       cloned_shadow_root.SetAvailableToElementInternals(
           shadow_root->IsAvailableToElementInternals());
 
-      // 7.3 If the clone children flag is set, clone all the children of node’s
-      // shadow root and append them to copy’s shadow root, with document as
-      // specified, the clone children flag being set, and the clone shadows
-      // flag being set.
-      cloned_shadow_root.CloneChildNodesFrom(*shadow_root, data);
+      // 7.3 If the clone children flag is set, then for each child child of
+      // node’s shadow root, in tree order: append the result of cloning child
+      // with document and the clone children flag set, to copy’s shadow root.
+      NodeCloningData shadow_data{CloneOption::kIncludeDescendants};
+      if (!RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
+        shadow_data.Put(CloneOption::kIncludeAllShadowRoots);
+      }
+      cloned_shadow_root.CloneChildNodesFrom(*shadow_root, shadow_data);
     }
   }
   return copy;
@@ -818,6 +831,10 @@ void Element::SynchronizeContentAttributeAndElementReference(
 }
 
 void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
+  DCHECK(IsElementReflectionAttribute(name))
+      << " Element attributes must be added to IsElementReflectionAttribute. "
+         "name: "
+      << name;
   ExplicitlySetAttrElementsMap* explicitly_set_attr_elements_map =
       GetDocument().GetExplicitlySetAttrElementsMap(this);
 
@@ -954,144 +971,51 @@ HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
   return result_elements;
 }
 
-static const V8PrivateProperty::SymbolKey
-    kPrivatePropertyCachedAttrAssociatedElements;
-
-v8::Local<v8::Object> Element::GetCachedAttrAssociatedElementsObject(
-    ScriptState* script_state) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  V8PrivateProperty::Symbol private_property = V8PrivateProperty::GetSymbol(
-      isolate, kPrivatePropertyCachedAttrAssociatedElements);
-  v8::Local<v8::Object> element = ToV8Traits<Element>::ToV8(script_state, this)
-                                      .As<v8::Object>();
-  v8::Local<v8::Value> cached_elements_value =
-      private_property.GetOrUndefined(element).ToLocalChecked();
-  v8::Local<v8::Object> cached_elements_object;
-  if (cached_elements_value->IsUndefined()) {
-    cached_elements_object = v8::Object::New(isolate);
-    private_property.Set(element, cached_elements_object);
-  } else {
-    DCHECK(cached_elements_value->IsObject());
-    cached_elements_object = cached_elements_value.As<v8::Object>();
-  }
-
-  return cached_elements_object;
-}
-
-v8::Local<v8::Value> Element::GetCachedAttrAssociatedElements(
-    ScriptState* script_state,
-    const QualifiedName& blink_name) {
-  v8::Local<v8::Object> cached_elements_object =
-      GetCachedAttrAssociatedElementsObject(script_state);
-
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Value> name = V8StringOrNull(isolate, blink_name.LocalName());
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::Local<v8::Value> value =
-      cached_elements_object->Get(context, name).ToLocalChecked();
-  if (value->IsUndefined()) {
-    return v8::Null(isolate);
-  }
-  return value;
-}
-
-void Element::SetCachedAttrAssociatedElements(ScriptState* script_state,
-                                              const QualifiedName& blink_name,
-                                              v8::Local<v8::Value> elements) {
-  v8::Local<v8::Object> cached_elements_object =
-      GetCachedAttrAssociatedElementsObject(script_state);
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Value> name = V8StringOrNull(isolate, blink_name.LocalName());
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  bool success =
-      cached_elements_object->Set(context, name, elements).ToChecked();
-  DCHECK(success);
-}
-
-void Element::DeleteCachedAttrAssociatedElements(
-    ScriptState* script_state,
-    const QualifiedName& blink_name) {
-  v8::Local<v8::Object> cached_elements_object =
-      GetCachedAttrAssociatedElementsObject(script_state);
-
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Value> name = V8StringOrNull(isolate, blink_name.LocalName());
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-
-  bool was_deleted = cached_elements_object->Delete(context, name).ToChecked();
-  DCHECK(was_deleted);
-}
-
-ScriptValue Element::GetElementArrayAttribute(ScriptState* script_state,
-                                              const QualifiedName& name,
-                                              const char* const property_name) {
+FrozenArray<Element>* Element::GetElementArrayAttribute(
+    const QualifiedName& name) {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
 
   // 1. Let elements be this's attr-associated elements.
   HeapVector<Member<Element>>* elements = GetAttrAssociatedElements(name);
 
-  v8::Isolate* isolate = script_state->GetIsolate();
+  CachedAttrAssociatedElementsMap* cached_attr_associated_elements_map =
+      GetDocument().GetCachedAttrAssociatedElementsMap(this);
+  DCHECK(cached_attr_associated_elements_map);
+
   if (!elements) {
     // 4. Set this's cached attr-associated elements to elementsAsFrozenArray.
-    DeleteCachedAttrAssociatedElements(script_state, name);
+    cached_attr_associated_elements_map->erase(name);
     // 5. Return elementsAsFrozenArray.
-    return ScriptValue::CreateNull(isolate);
+    return nullptr;
   }
 
-  v8::Local<v8::Value> v8_cached_attr_associated_elements =
-      GetCachedAttrAssociatedElements(script_state, name);
-  if (!v8_cached_attr_associated_elements->IsNull()) {
-    // Get native value for cached_attr_associated_elements.
-    ExceptionState exception_state(isolate, ExceptionContextType::kAttributeSet,
-                                   "Element", property_name);
-    HeapVector<Member<Element>>* cached_attr_associated_elements =
-        NativeValueTraits<IDLNullable<IDLArray<Element>>>::NativeValue(
-            isolate, v8_cached_attr_associated_elements, exception_state);
-    if (UNLIKELY(exception_state.HadException())) {
-      LOG(ERROR) << "Had exception when trying to convert cached "
-                 << "attr-associated elements: " << exception_state.Message();
-      return ScriptValue();
-    }
+  auto it = cached_attr_associated_elements_map->find(name);
+  if (it != cached_attr_associated_elements_map->end()) {
+    FrozenArray<Element>* cached_attr_associated_elements = it->value.Get();
     DCHECK(cached_attr_associated_elements);
-
-    // 2. If the contents of elements is equal to the contents of this's
-    // cached attr-associated elements, then return this's cached
-    // attr-associated elements.
-    if (*cached_attr_associated_elements == *elements) {
-      return ScriptValue(isolate, v8_cached_attr_associated_elements);
+    if (cached_attr_associated_elements->AsVector() == *elements) {
+      // 2. If the contents of elements is equal to the contents of this's
+      // cached attr-associated elements, then return this's cached
+      // attr-associated elements.
+      return cached_attr_associated_elements;
     }
   }
 
   // 3. Let elementsAsFrozenArray be elements, converted to a FrozenArray<T>?.
-  v8::Local<v8::Value> v8_elements_as_frozen_array =
-      ToV8Traits<IDLArray<Element>>::ToV8(script_state, *elements);
+  FrozenArray<Element>* elements_as_frozen_array =
+      MakeGarbageCollected<FrozenArray<Element>>(std::move(*elements));
 
   // 4. Set this's cached attr-associated elements to elementsAsFrozenArray.
-  SetCachedAttrAssociatedElements(script_state, name,
-                                  v8_elements_as_frozen_array);
+  cached_attr_associated_elements_map->Set(name, elements_as_frozen_array);
 
   // 5. Return elementsAsFrozenArray.
-  return ScriptValue(isolate, v8_elements_as_frozen_array);
+  return elements_as_frozen_array;
 }
 
-void Element::SetElementArrayAttribute(ScriptState* script_state,
-                                       const QualifiedName& name,
-                                       const ScriptValue given_value,
-                                       const char* const property_name) {
+void Element::SetElementArrayAttribute(
+    const QualifiedName& name,
+    const HeapVector<Member<Element>>* given_elements) {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
-
-  v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionContextType::kAttributeSet,
-                                 "Element", property_name);
-
-  HeapVector<Member<Element>>* given_elements =
-      NativeValueTraits<IDLNullable<IDLArray<Element>>>::NativeValue(
-          isolate, given_value.V8Value(), exception_state);
-  if (exception_state.HadException()) {
-    LOG(ERROR) << "Had exception when trying to convert given value for "
-               << name.LocalName() << ": " << exception_state.Message();
-    return;
-  }
 
   ExplicitlySetAttrElementsMap* element_attribute_map =
       GetDocument().GetExplicitlySetAttrElementsMap(this);
@@ -1109,8 +1033,8 @@ void Element::SetElementArrayAttribute(ScriptState* script_state,
   setAttribute(name, g_empty_atom);
 
   // 3. Let elements be an empty list.
-  // 4. For each element in the given value: Append a weak reference to element
-  // to elements.
+  // 4. For each element in the given value: Append a weak reference to
+  // element to elements.
   // 5. Set this's explicitly set attr-elements to elements.
   //
   // In practice, we're fetching elements from element_attribute_map, clearing
@@ -1138,76 +1062,59 @@ void Element::SetElementArrayAttribute(ScriptState* script_state,
   }
 }
 
-ScriptValue Element::ariaControlsElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaControlsAttr,
-                                  "ariaControlsElements");
+FrozenArray<Element>* Element::ariaControlsElements() {
+  return GetElementArrayAttribute(html_names::kAriaControlsAttr);
 }
-void Element::setAriaControlsElements(ScriptState* script_state,
-                                      ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaControlsAttr,
-                           given_elements, "ariaControlsElements");
+void Element::setAriaControlsElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaControlsAttr, given_elements);
 }
 
-ScriptValue Element::ariaDescribedByElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state,
-                                  html_names::kAriaDescribedbyAttr,
-                                  "ariaDescribedByElements");
+FrozenArray<Element>* Element::ariaDescribedByElements() {
+  return GetElementArrayAttribute(html_names::kAriaDescribedbyAttr);
 }
-void Element::setAriaDescribedByElements(ScriptState* script_state,
-                                         ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaDescribedbyAttr,
-                           given_elements, "ariaDescribedByElements");
+void Element::setAriaDescribedByElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaDescribedbyAttr, given_elements);
 }
 
-ScriptValue Element::ariaDetailsElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaDetailsAttr,
-                                  "ariaDetailsElements");
+FrozenArray<Element>* Element::ariaDetailsElements() {
+  return GetElementArrayAttribute(html_names::kAriaDetailsAttr);
 }
-void Element::setAriaDetailsElements(ScriptState* script_state,
-                                     ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaDetailsAttr,
-                           given_elements, "ariaDetailsElements");
+void Element::setAriaDetailsElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaDetailsAttr, given_elements);
 }
 
-ScriptValue Element::ariaErrorMessageElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state,
-                                  html_names::kAriaErrormessageAttr,
-                                  "ariaErrorMessageElements");
+FrozenArray<Element>* Element::ariaErrorMessageElements() {
+  return GetElementArrayAttribute(html_names::kAriaErrormessageAttr);
 }
-void Element::setAriaErrorMessageElements(ScriptState* script_state,
-                                          ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaErrormessageAttr,
-                           given_elements, "ariaErrorMessageElements");
+void Element::setAriaErrorMessageElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaErrormessageAttr, given_elements);
 }
 
-ScriptValue Element::ariaFlowToElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaFlowtoAttr,
-                                  "ariaFlowToElements");
+FrozenArray<Element>* Element::ariaFlowToElements() {
+  return GetElementArrayAttribute(html_names::kAriaFlowtoAttr);
 }
-void Element::setAriaFlowToElements(ScriptState* script_state,
-                                    ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaFlowtoAttr,
-                           given_elements, "ariaFlowToElements");
+void Element::setAriaFlowToElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaFlowtoAttr, given_elements);
 }
 
-ScriptValue Element::ariaLabelledByElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaLabelledbyAttr,
-                                  "ariaLabelledByElements");
+FrozenArray<Element>* Element::ariaLabelledByElements() {
+  return GetElementArrayAttribute(html_names::kAriaLabelledbyAttr);
 }
-void Element::setAriaLabelledByElements(ScriptState* script_state,
-                                        ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaLabelledbyAttr,
-                           given_elements, "ariaLabelledByElements");
+void Element::setAriaLabelledByElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaLabelledbyAttr, given_elements);
 }
 
-ScriptValue Element::ariaOwnsElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaOwnsAttr,
-                                  "ariaOwnsElements");
+FrozenArray<Element>* Element::ariaOwnsElements() {
+  return GetElementArrayAttribute(html_names::kAriaOwnsAttr);
 }
-void Element::setAriaOwnsElements(ScriptState* script_state,
-                                  ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaOwnsAttr,
-                           given_elements, "ariaOwnsElements");
+void Element::setAriaOwnsElements(HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaOwnsAttr, given_elements);
 }
 
 NamedNodeMap* Element::attributesForBindings() const {
@@ -1581,28 +1488,28 @@ bool Element::ShouldUpdateLastRememberedInlineSize() const {
              : style->ContainIntrinsicHeight().HasAuto();
 }
 
-void Element::SetLastRememberedInlineSize(absl::optional<LayoutUnit> size) {
+void Element::SetLastRememberedInlineSize(std::optional<LayoutUnit> size) {
   if (!size && !HasRareData()) {
     return;
   }
   EnsureElementRareData().SetLastRememberedInlineSize(size);
 }
 
-void Element::SetLastRememberedBlockSize(absl::optional<LayoutUnit> size) {
+void Element::SetLastRememberedBlockSize(std::optional<LayoutUnit> size) {
   if (!size && !HasRareData()) {
     return;
   }
   EnsureElementRareData().SetLastRememberedBlockSize(size);
 }
 
-absl::optional<LayoutUnit> Element::LastRememberedInlineSize() const {
+std::optional<LayoutUnit> Element::LastRememberedInlineSize() const {
   return HasRareData() ? GetElementRareData()->LastRememberedInlineSize()
-                       : absl::nullopt;
+                       : std::nullopt;
 }
 
-absl::optional<LayoutUnit> Element::LastRememberedBlockSize() const {
+std::optional<LayoutUnit> Element::LastRememberedBlockSize() const {
   return HasRareData() ? GetElementRareData()->LastRememberedBlockSize()
-                       : absl::nullopt;
+                       : std::nullopt;
 }
 
 bool Element::IsViewportScrollElement() {
@@ -1921,7 +1828,7 @@ void Element::setScrollLeft(double new_left) {
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
             scrollable_area->ScrollOffsetToPosition(end_offset), true, false);
-    absl::optional<gfx::PointF> snap_point =
+    std::optional<gfx::PointF> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       end_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
@@ -1978,7 +1885,7 @@ void Element::setScrollTop(double new_top) {
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
             scrollable_area->ScrollOffsetToPosition(end_offset), false, true);
-    absl::optional<gfx::PointF> snap_point =
+    std::optional<gfx::PointF> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       end_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
@@ -2183,7 +2090,7 @@ void Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
         cc::SnapSelectionStrategy::CreateForEndPosition(
             scrollable_area->ScrollOffsetToPosition(new_offset),
             scroll_to_options->hasLeft(), scroll_to_options->hasTop());
-    absl::optional<gfx::PointF> snap_point =
+    std::optional<gfx::PointF> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       new_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
@@ -2691,19 +2598,13 @@ void Element::setAttribute(const QualifiedName& name,
 
 DISABLE_CFI_PERF
 void Element::AttributeChanged(const AttributeModificationParams& params) {
-  const QualifiedName& name = params.name;
-  if (name == html_names::kSlotAttr && params.old_value != params.new_value) {
-    if (ShadowRoot* root = ShadowRootOfParent()) {
-      root->DidChangeHostChildSlotName(params.old_value, params.new_value);
-    }
-  }
-
   ParseAttribute(params);
 
   GetDocument().IncDOMTreeVersion();
   GetDocument().NotifyAttributeChanged(*this, params.name, params.old_value,
                                        params.new_value);
 
+  const QualifiedName& name = params.name;
   if (name == html_names::kIdAttr) {
     AtomicString lowercase_id;
     if (GetDocument().InQuirksMode() && !params.new_value.IsLowerASCII()) {
@@ -2738,6 +2639,14 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     EnsureElementRareData().SetPartNamesMap(params.new_value);
     GetDocument().GetStyleEngine().ExportpartsChangedForElement(*this);
   } else if (name == html_names::kTabindexAttr) {
+    int tabindex = 0;
+    if (params.new_value.empty() ||
+        !ParseHTMLInteger(params.new_value, tabindex)) {
+      ClearTabIndexExplicitlyIfNeeded();
+    } else {
+      // We only set when value is in integer range.
+      SetTabIndexExplicitly();
+    }
     if (params.reason == AttributeModificationReason::kDirectly &&
         AdjustedFocusedElementInTreeScope() == this) {
       // The attribute change may cause supportsFocus() to return false
@@ -2751,10 +2660,25 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
         blur();
       }
     }
-  } else if (params.name == html_names::kAnchorAttr &&
-             RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
-    EnsureAnchorElementObserver().Notify();
-    return;
+  } else if (params.name == html_names::kAnchorAttr) {
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+      EnsureAnchorElementObserver().Notify();
+      return;
+    }
+  } else if (name == html_names::kSlotAttr) {
+    if (params.old_value != params.new_value) {
+      if (ShadowRoot* root = ShadowRootOfParent()) {
+        root->DidChangeHostChildSlotName(params.old_value, params.new_value);
+      }
+    }
+  } else if (name == html_names::kFocusgroupAttr) {
+    // Only update the focusgroup flags when the node has been added to the
+    // tree. This is because the computed focusgroup value will depend on the
+    // focusgroup value of its closest ancestor node that is a focusgroup, if
+    // any.
+    if (parentNode()) {
+      UpdateFocusgroup(params.new_value);
+    }
   } else if (IsElementReflectionAttribute(name)) {
     SynchronizeContentAttributeAndElementReference(name);
   } else if (IsStyledElement()) {
@@ -2785,61 +2709,19 @@ bool Element::HasLegalLinkAttribute(const QualifiedName&) const {
   return false;
 }
 
-template <typename CharacterType>
-static inline ClassStringContent ClassStringHasClassName(
-    const CharacterType* characters,
-    unsigned length) {
-  DCHECK_GT(length, 0u);
-
-  unsigned i = 0;
-  do {
-    if (IsNotHTMLSpace<CharacterType>(characters[i])) {
-      break;
-    }
-    ++i;
-  } while (i < length);
-
-  if (i == length && length >= 1) {
-    return ClassStringContent::kWhiteSpaceOnly;
-  }
-
-  return ClassStringContent::kHasClasses;
-}
-
-static inline ClassStringContent ClassStringHasClassName(
-    const AtomicString& new_class_string) {
-  unsigned length = new_class_string.length();
-
-  if (!length) {
-    return ClassStringContent::kEmpty;
-  }
-
-  if (new_class_string.Is8Bit()) {
-    return ClassStringHasClassName(new_class_string.Characters8(), length);
-  }
-  return ClassStringHasClassName(new_class_string.Characters16(), length);
-}
-
 void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
   DCHECK(HasElementData());
-  ClassStringContent class_string_content_type =
-      ClassStringHasClassName(new_class_string);
   const bool should_fold_case = GetDocument().InQuirksMode();
-  if (class_string_content_type == ClassStringContent::kHasClasses) {
-    const SpaceSplitString old_classes = GetElementData()->ClassNames();
-    GetElementData()->SetClass(new_class_string, should_fold_case);
-    const SpaceSplitString& new_classes = GetElementData()->ClassNames();
-    GetDocument().GetStyleEngine().ClassChangedForElement(old_classes,
-                                                          new_classes, *this);
-  } else {
-    const SpaceSplitString& old_classes = GetElementData()->ClassNames();
+  const SpaceSplitString old_classes = GetElementData()->ClassNames();
+  if (UNLIKELY(new_class_string.empty())) {
     GetDocument().GetStyleEngine().ClassChangedForElement(old_classes, *this);
-    if (class_string_content_type == ClassStringContent::kWhiteSpaceOnly) {
-      GetElementData()->SetClass(new_class_string, should_fold_case);
-    } else {
-      GetElementData()->ClearClass();
-    }
+    GetElementData()->ClearClass();
+    return;
   }
+  GetElementData()->SetClass(new_class_string, should_fold_case);
+  const SpaceSplitString& new_classes = GetElementData()->ClassNames();
+  GetDocument().GetStyleEngine().ClassChangedForElement(old_classes,
+                                                        new_classes, *this);
 }
 
 void Element::UpdateClassList(const AtomicString& old_class_string,
@@ -4166,13 +4048,13 @@ void Element::ProcessContainIntrinsicSizeChanges() {
   if (ShouldUpdateLastRememberedBlockSize()) {
     should_record_new_intrinsic_sizes = true;
   } else {
-    SetLastRememberedBlockSize(absl::nullopt);
+    SetLastRememberedBlockSize(std::nullopt);
   }
 
   if (ShouldUpdateLastRememberedInlineSize()) {
     should_record_new_intrinsic_sizes = true;
   } else {
-    SetLastRememberedInlineSize(absl::nullopt);
+    SetLastRememberedInlineSize(std::nullopt);
   }
 
   if (allowed_to_record_new_intrinsic_sizes &&
@@ -4500,7 +4382,7 @@ void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
   }
 }
 
-absl::optional<TextDirection> Element::ResolveAutoDirectionality(
+std::optional<TextDirection> Element::ResolveAutoDirectionality(
     bool& is_deferred) const {
   is_deferred = false;
   if (const TextControlElement* text_element =
@@ -4516,21 +4398,21 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
     if (!assigned_nodes.empty()) {
       for (Node* slotted_node : assigned_nodes) {
         if (slotted_node->IsTextNode()) {
-          if (const absl::optional<TextDirection> text_direction =
+          if (const std::optional<TextDirection> text_direction =
                   BidiParagraph::BaseDirectionForString(
                       slotted_node->textContent(true))) {
             return *text_direction;
           }
         } else if (Element* slotted_element =
                        DynamicTo<Element>(slotted_node)) {
-          absl::optional<TextDirection> slotted_child_result =
+          std::optional<TextDirection> slotted_child_result =
               slotted_element->ResolveAutoDirectionality(is_deferred);
           if (slotted_child_result) {
             return slotted_child_result;
           }
         }
       }
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -4564,7 +4446,7 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
     }
 
     if (node->IsTextNode()) {
-      if (const absl::optional<TextDirection> text_direction =
+      if (const std::optional<TextDirection> text_direction =
               BidiParagraph::BaseDirectionForString(node->textContent(true))) {
         return *text_direction;
       }
@@ -4572,7 +4454,7 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
 
     node = NodeTraversal::Next(*node, this);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Element::AdjustDirectionalityIfNeededAfterChildrenChanged(
@@ -4583,11 +4465,11 @@ void Element::AdjustDirectionalityIfNeededAfterChildrenChanged(
 
   if (change.type == ChildrenChangeType::kTextChanged) {
     CHECK(change.old_text);
-    absl::optional<TextDirection> old_text_direction =
+    std::optional<TextDirection> old_text_direction =
         BidiParagraph::BaseDirectionForString(*change.old_text);
     auto* character_data = DynamicTo<CharacterData>(change.sibling_changed);
     DCHECK(character_data);
-    absl::optional<TextDirection> new_text_direction =
+    std::optional<TextDirection> new_text_direction =
         BidiParagraph::BaseDirectionForString(character_data->data());
     if (old_text_direction == new_text_direction) {
       return;
@@ -4618,7 +4500,7 @@ bool Element::ShouldAdjustDirectionalityForInsert(
 
 bool Element::DoesChildTextNodesDirectionMatchThis(const Node& node) const {
   if (node.IsTextNode()) {
-    const absl::optional<TextDirection> new_text_direction =
+    const std::optional<TextDirection> new_text_direction =
         BidiParagraph::BaseDirectionForString(node.textContent(true));
     if (!new_text_direction || (*new_text_direction == CachedDirectionality() &&
                                 !DirAutoInheritsFromParent())) {
@@ -5343,6 +5225,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
     UseCounter::Count(GetDocument(),
                       WebFeature::kElementAttachSerializableShadow);
   }
+  bool clonable = shadow_root_init_dict->getClonableOr(false);
 
   auto focus_delegation = (shadow_root_init_dict->hasDelegatesFocus() &&
                            shadow_root_init_dict->delegatesFocus())
@@ -5367,10 +5250,25 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   if (RuntimeEnabledFeatures::ShadowRootAttachmentNewBehaviorEnabled()) {
     if (auto* existing_shadow = GetShadowRoot()) {
       CHECK(existing_shadow->IsDeclarativeShadowRoot());
-      if (existing_shadow->GetType() != type ||
+      bool parameters_mismatch = false;
+      parameters_mismatch |= existing_shadow->GetType() != type;
+      parameters_mismatch |=
           existing_shadow->delegatesFocus() !=
-              (focus_delegation == FocusDelegation::kDelegateFocus) ||
-          existing_shadow->GetSlotAssignmentMode() != slot_assignment) {
+          (focus_delegation == FocusDelegation::kDelegateFocus);
+      parameters_mismatch |=
+          existing_shadow->GetSlotAssignmentMode() != slot_assignment;
+      // TODO(crbug.com/1523816): Not sure how to check `registry` match here.
+      parameters_mismatch |=
+          RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() &&
+          existing_shadow->serializable() != serializable;
+      // TODO(crbug.com/1521128): We'd like to check for mismatch of clonable
+      // here, but this would break the core use case of *not* breaking
+      // non-DSD-aware web components. Since declarative shadow roots have
+      // clonable:true by default, and old code doesn't know to add
+      // clonable:true to attachShadow() parameters, all old web components
+      // would break. See https://github.com/whatwg/html/issues/10107
+      // For now, this does not check for `clonable` mismatch.
+      if (parameters_mismatch) {
         exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                           "Parameters used for attachShadow() "
                                           "don't match existing declarative "
@@ -5380,8 +5278,9 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
     }
   }
 
-  ShadowRoot& shadow_root = AttachShadowRootInternal(
-      type, focus_delegation, slot_assignment, registry, serializable);
+  ShadowRoot& shadow_root =
+      AttachShadowRootInternal(type, focus_delegation, slot_assignment,
+                               registry, serializable, clonable);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
@@ -5411,11 +5310,12 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
     return false;
   }
 
-  // TODO(crbug.com/1521128): Declarative shadow roots should set the registry
+  // TODO(crbug.com/1523816): Declarative shadow roots should set the registry
   // argument here.
+  bool clonable = true;  // Declarative shadow roots are clonable by default.
   ShadowRoot& shadow_root =
       AttachShadowRootInternal(type, focus_delegation, slot_assignment,
-                               /*registry*/ nullptr, serializable);
+                               /*registry*/ nullptr, serializable, clonable);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
@@ -5436,7 +5336,8 @@ ShadowRoot& Element::AttachShadowRootInternal(
     FocusDelegation focus_delegation,
     SlotAssignmentMode slot_assignment_mode,
     CustomElementRegistry* registry,
-    bool serializable) {
+    bool serializable,
+    bool clonable) {
   // SVG <use> is a special case for using this API to create a closed shadow
   // root.
   DCHECK(CanAttachShadowRoot() || IsA<SVGUseElement>(*this));
@@ -5467,6 +5368,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
 
   shadow_root.SetRegistry(registry);
   shadow_root.setSerializable(serializable);
+  shadow_root.setClonable(clonable);
 
   // 7. If this’s custom element state is "precustomized" or "custom", then set
   // shadow’s available to element internals to true.
@@ -5677,37 +5579,20 @@ void Element::LangAttributeChanged() {
 }
 
 void Element::ParseAttribute(const AttributeModificationParams& params) {
-  if (params.name == html_names::kTabindexAttr) {
-    int tabindex = 0;
-    if (params.new_value.empty() ||
-        !ParseHTMLInteger(params.new_value, tabindex)) {
-      ClearTabIndexExplicitlyIfNeeded();
-    } else {
-      // We only set when value is in integer range.
-      SetTabIndexExplicitly();
-    }
-  } else if (params.name == html_names::kFocusgroupAttr) {
-    // Only update the focusgroup flags when the node has been added to the
-    // tree. This is because the computed focusgroup value will depend on the
-    // focusgroup value of its closest ancestor node that is a focusgroup, if
-    // any.
-    if (parentNode()) {
-      UpdateFocusgroup(params.new_value);
-    }
-  } else if (params.name.Matches(xml_names::kLangAttr)) {
+  if (params.name.Matches(xml_names::kLangAttr)) {
     LangAttributeChanged();
   }
 }
 
 // static
-absl::optional<QualifiedName> Element::ParseAttributeName(
+std::optional<QualifiedName> Element::ParseAttributeName(
     const AtomicString& namespace_uri,
     const AtomicString& qualified_name,
     ExceptionState& exception_state) {
   AtomicString prefix, local_name;
   if (!Document::ParseQualifiedName(qualified_name, prefix, local_name,
                                     exception_state)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(!exception_state.HadException());
 
@@ -5717,7 +5602,7 @@ absl::optional<QualifiedName> Element::ParseAttributeName(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNamespaceError,
         "'" + namespace_uri + "' is an invalid namespace for attributes.");
-    return absl::nullopt;
+    return std::nullopt;
   }
   return q_name;
 }
@@ -5726,7 +5611,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
                              const AtomicString& qualified_name,
                              String value,
                              ExceptionState& exception_state) {
-  absl::optional<QualifiedName> parsed_name =
+  std::optional<QualifiedName> parsed_name =
       ParseAttributeName(namespace_uri, qualified_name, exception_state);
   if (!parsed_name) {
     return;
@@ -5746,7 +5631,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
                              const AtomicString& qualified_name,
                              const V8TrustedType* trusted_string,
                              ExceptionState& exception_state) {
-  absl::optional<QualifiedName> parsed_name =
+  std::optional<QualifiedName> parsed_name =
       ParseAttributeName(namespace_uri, qualified_name, exception_state);
   if (!parsed_name) {
     return;

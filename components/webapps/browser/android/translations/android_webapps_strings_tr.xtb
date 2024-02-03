@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1213425325105380833">Bu hesaba bağlı cihazlarda son kullandığınız web uygulamalarını geri yükleyin</translation>
+<translation id="1786044937610313874">Kısayollar Chrome'da açılır</translation>
+<translation id="204914487372604757">Kısayol oluştur </translation>
 <translation id="2065911435109240297">Web uygulamalarınızı geri yükleyin</translation>
 <translation id="2111649875343992405">Hangi web uygulamalarının geri yükleneceğini inceleyin</translation>
 <translation id="2139186145475833000">Ana ekrana ekle</translation>
@@ -13,6 +15,7 @@
 <translation id="4338600611020922010">Ana ekrana ekle</translation>
 <translation id="4665282149850138822"><ph name="NAME" />, Ana ekranınıza eklendi</translation>
 <translation id="5250483651202458397">Ekran görüntüsü. Kapatmak için dokunun.</translation>
+<translation id="5684726956335420505">Uygulamanın ana ekrana nasıl ekleneceğini seçin</translation>
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>
 <translation id="6838423508083736333">Geçen ay kullanılan web uygulamaları</translation>
 <translation id="6990079615885386641">Uygulamayı Google Play Store'dan edinin: <ph name="APP_ACTION" /></translation>

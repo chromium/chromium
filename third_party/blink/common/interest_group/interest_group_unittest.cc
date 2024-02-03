@@ -16,15 +16,15 @@ TEST(InterestGroupTest, KAnonKeyForAdNameReporting) {
   ig.name = "ig_one";
   ig.bidding_url = GURL("https://example.org/bid.js");
   ig.ads = {{{/*render_url=*/GURL("https://ad1.com"),
-              /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
-              /*buyer_reporting_id=*/absl::nullopt,
-              /*buyer_and_seller_reporting_id=*/absl::nullopt},
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/std::nullopt,
+              /*buyer_and_seller_reporting_id=*/std::nullopt},
              {/*render_url=*/GURL("https://ad2.com"),
-              /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
               /*buyer_reporting_id=*/"bid",
-              /*buyer_and_seller_reporting_id=*/absl::nullopt},
+              /*buyer_and_seller_reporting_id=*/std::nullopt},
              {/*render_url=*/GURL("https://ad3.com"),
-              /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
               /*buyer_reporting_id=*/"bid",
               /*buyer_and_seller_reporting_id=*/"bsid"}}};
   EXPECT_EQ(

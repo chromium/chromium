@@ -37,7 +37,7 @@ TEST(PushSubscriptionTest, SerializesToBase64URLWithoutPadding) {
   PushSubscription subscription(
       KURL() /* endpoint */, true /* user_visible_only */,
       Vector<uint8_t>() /* application_server_key */, kP256DH, kAuthSecret,
-      absl::nullopt /* expiration_time */,
+      std::nullopt /* expiration_time */,
       nullptr /* service_worker_registration */);
 
   ScriptValue json_object =

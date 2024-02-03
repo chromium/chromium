@@ -10,9 +10,10 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy, BrowserProxyImpl, DataCollectorItem} from './browser_proxy.js';
+import type {BrowserProxy, DataCollectorItem} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './data_collectors.html.js';
-import {ScreenshotElement} from './screenshot.js';
+import type {ScreenshotElement} from './screenshot.js';
 import {SupportToolPageMixin} from './support_tool_page_mixin.js';
 
 const DataCollectorsElementBase = SupportToolPageMixin(PolymerElement);

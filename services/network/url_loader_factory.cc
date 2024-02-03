@@ -5,6 +5,7 @@
 #include "services/network/url_loader_factory.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -35,7 +36,6 @@
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/url_loader.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -188,20 +188,6 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
   // Requests with |trusted_params| when params_->is_trusted is not set should
   // have been rejected at the CorsURLLoader layer.
   DCHECK(!resource_request.trusted_params || params_->is_trusted);
-
-  std::string origin_string;
-  bool has_origin =
-      resource_request.headers.GetHeader("Origin", &origin_string) &&
-      origin_string != "null";
-  absl::optional<url::Origin> request_initiator =
-      resource_request.request_initiator;
-  if (has_origin && request_initiator.has_value()) {
-    bool origin_head_same_as_request_origin =
-        request_initiator.value().IsSameOriginWith(GURL(origin_string));
-    UMA_HISTOGRAM_BOOLEAN(
-        "NetworkService.URLLoaderFactory.OriginHeaderSameAsRequestOrigin",
-        origin_head_same_as_request_origin);
-  }
 
   if (resource_request.web_bundle_token_params.has_value() &&
       resource_request.destination !=

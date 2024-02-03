@@ -127,7 +127,7 @@ class MuxerTimestampAdapterTestBase {
         ChannelLayoutConfig::Mono(),
         /*sample_rate=*/48000,
         /*frames_per_buffer=*/480);
-    return adapter_->OnEncodedAudio(audio_params, frame.data, absl::nullopt,
+    return adapter_->OnEncodedAudio(audio_params, frame.data, std::nullopt,
                                     frame.timestamp);
   }
 
@@ -135,7 +135,7 @@ class MuxerTimestampAdapterTestBase {
     auto video_params = Muxer::VideoParameters(
         *VideoFrame::CreateBlackFrame(gfx::Size(160, 80)));
     return adapter_->OnEncodedVideo(video_params, frame.data, frame.alpha_data,
-                                    absl::nullopt, frame.timestamp,
+                                    std::nullopt, frame.timestamp,
                                     frame.keyframe);
   }
 

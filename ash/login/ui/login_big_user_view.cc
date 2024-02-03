@@ -24,7 +24,7 @@ namespace ash {
 namespace {
 
 bool IsPublicAccountUser(const LoginUserInfo& user) {
-  return user.basic_user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  return user.basic_user_info.type == user_manager::UserType::kPublicAccount;
 }
 
 // Returns true if either a or b have a value, but not both.

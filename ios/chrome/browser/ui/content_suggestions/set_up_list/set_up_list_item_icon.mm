@@ -281,7 +281,7 @@ UIView* IconInSquare(NSString* symbol,
                  : IconInCircle(kEllipsisRectangleSymbol, _compactLayout,
                                 kBlue500Color);
     }
-    case SetUpListItemType::kContentNotification: {
+    case SetUpListItemType::kNotifications: {
       return _inSquare ? IconInSquare(kBellBadgeSymbol, NO, kPink500Color)
                        : IconInCircle(kBellBadgeSymbol, _compactLayout,
                                       kPink500Color);

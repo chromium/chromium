@@ -155,7 +155,7 @@ gfx::Rect WebAppFrameToolbarView::LayoutInContainer(gfx::Rect available_space) {
 
   DCHECK_LE(GetPreferredSize().height(), available_space.height());
   SetBoundsRect(available_space);
-  Layout();
+  DeprecatedLayoutImmediately();
 
   if (!center_container_->GetVisible()) {
     return gfx::Rect();

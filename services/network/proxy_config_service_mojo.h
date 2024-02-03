@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_PROXY_CONFIG_SERVICE_MOJO_H_
 #define SERVICES_NETWORK_PROXY_CONFIG_SERVICE_MOJO_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,7 +18,6 @@
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
 #include "services/network/public/mojom/proxy_config_with_annotation.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class ProxyConfigWithAnnotation;
@@ -39,7 +40,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyConfigServiceMojo
   explicit ProxyConfigServiceMojo(
       mojo::PendingReceiver<mojom::ProxyConfigClient>
           proxy_config_client_receiver,
-      absl::optional<net::ProxyConfigWithAnnotation> initial_proxy_config,
+      std::optional<net::ProxyConfigWithAnnotation> initial_proxy_config,
       mojo::PendingRemote<mojom::ProxyConfigPollerClient> proxy_poller_client);
 
   ProxyConfigServiceMojo(const ProxyConfigServiceMojo&) = delete;

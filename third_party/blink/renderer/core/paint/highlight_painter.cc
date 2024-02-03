@@ -205,7 +205,7 @@ bool HasNonTrivialSpellingGrammarStyles(const FragmentItem& fragment_item,
 HighlightPainter::SelectionPaintState::SelectionPaintState(
     const InlineCursor& containing_block,
     const PhysicalOffset& box_offset,
-    const absl::optional<AffineTransform> writing_mode_rotation)
+    const std::optional<AffineTransform> writing_mode_rotation)
     : SelectionPaintState(containing_block,
                           box_offset,
                           writing_mode_rotation,
@@ -217,7 +217,7 @@ HighlightPainter::SelectionPaintState::SelectionPaintState(
 HighlightPainter::SelectionPaintState::SelectionPaintState(
     const InlineCursor& containing_block,
     const PhysicalOffset& box_offset,
-    const absl::optional<AffineTransform> writing_mode_rotation,
+    const std::optional<AffineTransform> writing_mode_rotation,
     const FrameSelection& frame_selection)
     : selection_status_(
           frame_selection.ComputeLayoutSelectionStatus(containing_block)),
@@ -269,7 +269,7 @@ void HighlightPainter::SelectionPaintState::PaintSelectionBackground(
     Node* node,
     const Document& document,
     const ComputedStyle& style,
-    const absl::optional<AffineTransform>& rotation) {
+    const std::optional<AffineTransform>& rotation) {
   const Color color = HighlightStyleUtils::HighlightBackgroundColor(
       document, style, node, selection_style_.current_color,
       kPseudoIdSelection);
@@ -326,7 +326,7 @@ HighlightPainter::HighlightPainter(
     const PaintInfo& paint_info,
     const InlineCursor& cursor,
     const FragmentItem& fragment_item,
-    const absl::optional<AffineTransform> writing_mode_rotation,
+    const std::optional<AffineTransform> writing_mode_rotation,
     const PhysicalOffset& box_origin,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
@@ -460,7 +460,7 @@ void HighlightPainter::Paint(Phase phase) {
   const MarkerRangeMappingContext mapping_context(*text_node,
                                                   *fragment_dom_offsets_);
   for (const DocumentMarker* marker : markers_) {
-    absl::optional<TextOffsetRange> marker_offsets =
+    std::optional<TextOffsetRange> marker_offsets =
         mapping_context.GetTextContentOffsets(*marker);
     if (!marker_offsets || (marker_offsets->start == marker_offsets->end)) {
       continue;
@@ -567,7 +567,7 @@ void HighlightPainter::Paint(Phase phase) {
         if (phase == kBackground) {
           Color background_color =
               HighlightStyleUtils::HighlightBackgroundColor(
-                  document, originating_style_, node_, absl::nullopt,
+                  document, originating_style_, node_, std::nullopt,
                   highlight_pseudo_marker.GetPseudoId(),
                   highlight_pseudo_marker.GetPseudoArgument());
 
@@ -663,7 +663,7 @@ void HighlightPainter::FastPaintSpellingGrammarDecorations(
   const MarkerRangeMappingContext mapping_context(text_node,
                                                   *fragment_dom_offsets_);
   for (const DocumentMarker* marker : markers) {
-    absl::optional<TextOffsetRange> marker_offsets =
+    std::optional<TextOffsetRange> marker_offsets =
         mapping_context.GetTextContentOffsets(*marker);
     if (!marker_offsets || (marker_offsets->start == marker_offsets->end)) {
       continue;
@@ -741,17 +741,16 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
   const HighlightRange range{paint_start_offset, paint_end_offset};
   const LineRelativeRect rect = LineRelativeWorldRect(range);
 
-  absl::optional<TextDecorationInfo> decoration_info{};
+  std::optional<TextDecorationInfo> decoration_info{};
   decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
                                            style, rect, decoration_override);
 
   GraphicsContextStateSaver saver{paint_info_.context};
   ClipToPartDecorations(rect);
 
-  const TextDecorationOffset decoration_offset(fragment_item_.Style());
-  text_painter_.PaintDecorationsExceptLineThrough(
+  decoration_painter_.PaintExceptLineThrough(
+      *decoration_info, text_style,
       fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
-      decoration_offset, paint_info_, text_style, *decoration_info,
       LineFor(marker_type));
 }
 
@@ -798,7 +797,7 @@ Vector<LayoutSelectionStatus> HighlightPainter::GetHighlights(
         if (custom->GetHighlightName() != layer.id.PseudoArgument()) {
           continue;
         }
-        absl::optional<TextOffsetRange> marker_offsets =
+        std::optional<TextOffsetRange> marker_offsets =
             mapping_context.GetTextContentOffsets(*marker);
         if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
           result.push_back(
@@ -813,7 +812,7 @@ Vector<LayoutSelectionStatus> HighlightPainter::GetHighlights(
       const MarkerRangeMappingContext mapping_context(*text_node,
                                                       *fragment_dom_offsets_);
       for (const auto& marker : grammar_) {
-        absl::optional<TextOffsetRange> marker_offsets =
+        std::optional<TextOffsetRange> marker_offsets =
             mapping_context.GetTextContentOffsets(*marker);
         if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
           result.push_back(
@@ -828,7 +827,7 @@ Vector<LayoutSelectionStatus> HighlightPainter::GetHighlights(
       const MarkerRangeMappingContext mapping_context(*text_node,
                                                       *fragment_dom_offsets_);
       for (const auto& marker : spelling_) {
-        absl::optional<TextOffsetRange> marker_offsets =
+        std::optional<TextOffsetRange> marker_offsets =
             mapping_context.GetTextContentOffsets(*marker);
         if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
           result.push_back(
@@ -843,7 +842,7 @@ Vector<LayoutSelectionStatus> HighlightPainter::GetHighlights(
       const MarkerRangeMappingContext mapping_context(*text_node,
                                                       *fragment_dom_offsets_);
       for (const auto& marker : target_) {
-        absl::optional<TextOffsetRange> marker_offsets =
+        std::optional<TextOffsetRange> marker_offsets =
             mapping_context.GetTextContentOffsets(*marker);
         if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
           result.push_back(
@@ -882,7 +881,7 @@ void HighlightPainter::PaintHighlightOverlays(
     const TextPaintStyle& originating_text_style,
     DOMNodeId node_id,
     bool paint_marker_backgrounds,
-    absl::optional<AffineTransform> rotation) {
+    std::optional<AffineTransform> rotation) {
   DCHECK_EQ(paint_case_, kOverlay);
 
   // |node_| might not be a Text node (e.g. <br>), or it might be nullptr (e.g.
@@ -987,7 +986,7 @@ void HighlightPainter::PaintHighlightBackground(
     const ComputedStyle& style,
     Color color,
     const PhysicalRect& rect,
-    const absl::optional<AffineTransform>& rotation) {
+    const std::optional<AffineTransform>& rotation) {
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kSelection));
 
@@ -1071,6 +1070,13 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
   DCHECK_NE(from_info, edges_info_.end());
   DCHECK_NE(to_info, edges_info_.end());
 
+  // This rect is used for 2 purposes: To set the offset and width for
+  // text decoration painting, and the set the clip. The former uses the
+  // offset and width, but not height, and the offset should be the
+  // fragment offset. The latter uses offset and size, but the offset should
+  // be the corner of the painted region. Return the origin for text decorations
+  // and the height for clipping, then update the offset for clipping in the
+  // calling code.
   const LayoutUnit height = fragment_item_.InkOverflowRect().Height();
   if (from_info->x > to_info->x) {
     return {{to_info->x, LayoutUnit{}}, {from_info->x - to_info->x, height}};
@@ -1080,8 +1086,12 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
 
 void HighlightPainter::ClipToPartDecorations(
     const LineRelativeRect& part_rect) {
-  const gfx::RectF clip_rect =
-      TextDecorationPainter::ExpandRectForDecorations(part_rect);
+  gfx::RectF clip_rect{part_rect};
+  if (UNLIKELY(fragment_item_.IsSvgText())) {
+    clip_rect = TextDecorationPainter::ExpandRectForSVGDecorations(part_rect);
+  } else {
+    clip_rect.Offset(0, fragment_item_.InkOverflowRect().Y());
+  }
   paint_info_.context.Clip(clip_rect);
 }
 
@@ -1127,17 +1137,17 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
     // highlight, but clip it to the range of the part.
     const LineRelativeRect decoration_rect =
         LineRelativeWorldRect(decoration.range);
-    const LineRelativeRect part_rect = part.range != decoration.range
-                                           ? LineRelativeWorldRect(part.range)
-                                           : decoration_rect;
 
-    absl::optional<TextDecorationInfo> decoration_info{};
+    std::optional<TextDecorationInfo> decoration_info{};
     decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
                                              *decoration_layer.style,
                                              decoration_rect);
 
     if (!state_saver.Saved()) {
       state_saver.Save();
+      const LineRelativeRect part_rect = part.range != decoration.range
+                                             ? LineRelativeWorldRect(part.range)
+                                             : decoration_rect;
       ClipToPartDecorations(part_rect);
     }
 
@@ -1156,11 +1166,10 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
       }
     }
 
-    const TextDecorationOffset decoration_offset(fragment_item_.Style());
-    text_painter_.PaintDecorationsExceptLineThrough(
+    decoration_painter_.PaintExceptLineThrough(
+        *decoration_info, decoration_layer.text_style,
         fragment_paint_info_.Slice(part.range.from, part.range.to),
-        decoration_offset, paint_info_, decoration_layer.text_style,
-        *decoration_info, lines_to_paint);
+        lines_to_paint);
   }
 }
 
@@ -1194,17 +1203,17 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
     // highlight, but clip it to the range of the part.
     const LineRelativeRect decoration_rect =
         LineRelativeWorldRect(decoration.range);
-    const LineRelativeRect part_rect = part.range != decoration.range
-                                           ? LineRelativeWorldRect(part.range)
-                                           : decoration_rect;
 
-    absl::optional<TextDecorationInfo> decoration_info{};
+    std::optional<TextDecorationInfo> decoration_info{};
     decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
                                              *decoration_layer.style,
                                              decoration_rect);
 
     if (!state_saver.Saved()) {
       state_saver.Save();
+      const LineRelativeRect part_rect = part.range != decoration.range
+                                             ? LineRelativeWorldRect(part.range)
+                                             : decoration_rect;
       ClipToPartDecorations(part_rect);
     }
 
@@ -1223,8 +1232,8 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
       }
     }
 
-    text_painter_.PaintDecorationsOnlyLineThrough(
-        paint_info_, decoration_layer.text_style, *decoration_info);
+    decoration_painter_.PaintOnlyLineThrough(*decoration_info,
+                                             decoration_layer.text_style);
   }
 }
 
@@ -1234,7 +1243,7 @@ void HighlightPainter::PaintSpellingGrammarDecorations(
     return;
 
   const StringView text = cursor_.CurrentText();
-  absl::optional<LineRelativeRect> marker_rect;
+  std::optional<LineRelativeRect> marker_rect;
 
   for (const HighlightDecoration& decoration : part.decorations) {
     switch (decoration.layer.type) {

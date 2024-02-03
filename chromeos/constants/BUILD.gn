@@ -13,6 +13,7 @@ component("constants") {
     "devicetype.cc",
     "devicetype.h",
     "pkcs11_definitions.h",
+    "pref_names.h",
   ]
   deps = [
     "//base",

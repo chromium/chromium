@@ -89,7 +89,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   WebString Encoding() const;
   WebString ContentLanguage() const;
   WebString GetReferrer() const;
-  absl::optional<SkColor> ThemeColor();
+  std::optional<SkColor> ThemeColor();
   // The url of the OpenSearch Description Document (if any).
   WebURL OpenSearchDescriptionURL() const;
 

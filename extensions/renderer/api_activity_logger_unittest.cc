@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/utils/extension_utils.h"

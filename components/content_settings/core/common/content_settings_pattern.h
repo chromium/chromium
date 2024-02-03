@@ -52,6 +52,10 @@ class ContentSettingsPattern {
   // - PREDECESSOR:
   //   Pattern A and B have an intersection. But pattern A has a higher
   //   precedence than pattern B for URLs that are matched by both pattern.
+  //
+  //  See the url below for more details about pattern precedence.
+  //  https://developer.chrome.com/docs/extensions/reference/api/contentSettings#content_setting_patterns
+  //
   enum Relation {
     DISJOINT_ORDER_POST = -2,
     SUCCESSOR = -1,
@@ -204,9 +208,12 @@ class ContentSettingsPattern {
   static ContentSettingsPattern ToHostOnlyPattern(
       const ContentSettingsPattern& pattern);
 
-  // Expose an comparator to sort domains by precedence. Highest precedence
-  // first.
+  // Expose a comparator to sort domains by precedence. Highest precedence
+  // first. Returns true if |domain_a| has a higher precedence than |domain_b|.
+  // If there is no difference in precedence, then the domains are compared
+  // alphabetically.
   struct CompareDomains {
+    using is_transparent = void;
     bool operator()(const std::string_view& domain_a,
                     const std::string_view& domain_b) const;
   };

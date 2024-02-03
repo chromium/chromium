@@ -77,7 +77,9 @@ bool MatchesURL(const std::set<url::Origin>& origins,
                 BrowsingDataFilterBuilder::OriginMatchingMode origin_mode,
                 bool is_cross_site_clear_site_data,
                 const GURL& url) {
-  DCHECK(!is_cross_site_clear_site_data);
+  // TODO(https://crbug.com/1420402): Re-enable this check when it is actually
+  // a valid precondition.
+  // DCHECK(!is_cross_site_clear_site_data);
   return MatchesStorageKey(
       origins, registerable_domains, mode, origin_mode,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));

@@ -42,7 +42,7 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       VideoDecodeAccelerator::Config::OutputMode::kAllocate);
 }
 
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
     base::WeakPtr<MediaGpuChannelManager> manager,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,

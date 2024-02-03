@@ -1282,7 +1282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.StatusAtLogin"
-    enum="NetworkCellularESimProfileStatus" expires_after="2024-05-26">
+    enum="NetworkCellularESimProfileStatus" expires_after="2024-07-28">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -2159,7 +2159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.PortalSuspectedToOnlineTime" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2170,7 +2170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.RedirectFoundToOnlineTime" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2340,7 +2340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeOnline" units="seconds"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2351,7 +2351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToConfig" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2361,7 +2361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToConnect" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2371,7 +2371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToDisable" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2381,7 +2381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToEnable" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2401,7 +2401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToOnline" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -4286,7 +4286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.CorsURLLoaderFactoryStart" enum="Boolean"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>yoichio@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4323,7 +4323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.InitializedTime" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>yoichio@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4367,6 +4367,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.IsProxyListAvailable"
+    enum="BooleanAvailable" expires_after="2024-07-29">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    The result of a call to `IpProtectionConfigCache::IsProxyListAvailable()`
+    when `NetworkServiceProxyDelegate::OnResolveProxy()` is determining if the
+    request is eligible for IP Protection. If this fails, the proxy list was not
+    available and the request will not be routed via any IP Protection proxy.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.OAuthTokenFetchTime" units="ms"
     expires_after="2024-07-07">
   <owner>djmitche@chromium.org</owner>
@@ -4377,8 +4390,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.ProtectionIsAvailableForRequest"
+    enum="BooleanAvailable" expires_after="2024-07-29">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Whether IP Protection was considered available at the time
+    IpProtectionProxyDelegate::OnResolveProxy identified an IP
+    Protection-eligible request.
+
+    The reasons for why protection is unavailable are not captured by this
+    histogram and are instead each measured in independent histograms.
+
+    This histogram can only be emitted if both the MaskedDomainList and
+    EneableIpProtectionProxy features are enabled.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.RequestIsEligibleForProtection"
+    enum="IpProtectionEligibility" expires_after="2024-07-29">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Whether IpProtectionProxyDelegate::OnResolveProxy determined that a request
+    is eligible for IP Protection, meaning it has matched the network service
+    proxy allowlist (Masked Domain List) and doesn't have an exemption. This
+    histogram also records when the allowlist isn't sufficiently set up to
+    determine eligibility, and the eligibility is therefore unknown.
+
+    The reasons for why the network service proxy allowlist may not be ready are
+    not captured by this histogram. The lack of a Masked Domain List is only one
+    possible reason, whilst an inconclusive bypass policy could be another. Such
+    failure cases should probably be measured via separate histograms as
+    necessary.
+
+    The code path which emits this histogram is only reached if the
+    MaskedDomainList feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.TokenBatchRequestTime" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>djmitche@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -4594,17 +4648,6 @@ chromium-metrics-reviews@google.com.
     This could include several logs from the same client for the same network
     context if the migration fails, since this is reported each time the
     migration is attempted.
-  </summary>
-</histogram>
-
-<histogram
-    name="NetworkService.URLLoaderFactory.OriginHeaderSameAsRequestOrigin"
-    enum="BooleanOriginHeaderSameAsRequestOrigin" expires_after="2019-06-30">
-  <owner>jam@chromium.org</owner>
-  <owner>mmenke@chromium.org</owner>
-  <summary>
-    Whether the Origin header is the same as the request origin in the
-    URLLoaderFactory when it creates a URLLoader.
   </summary>
 </histogram>
 

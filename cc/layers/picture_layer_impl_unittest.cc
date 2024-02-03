@@ -197,8 +197,7 @@ class PictureLayerImplTest : public TestLayerTreeHostBase {
     auto prioritized_tiles =
         tiling->UpdateAndGetAllPrioritizedTilesForTesting();
     for (PictureLayerTiling::CoverageIterator iter(
-             tiling, tiling->contents_scale_key(),
-             gfx::Rect(tiling->tiling_size()));
+             tiling, tiling->contents_scale_key(), tiling->tiling_rect());
          iter; ++iter) {
       EXPECT_TRUE(*iter);
       EXPECT_EQ(raster_source, prioritized_tiles[*iter].raster_source());
@@ -476,8 +475,7 @@ TEST_F(LegacySWPictureLayerImplTest, ClonePartialInvalidation) {
     auto prioritized_tiles =
         tiling->UpdateAndGetAllPrioritizedTilesForTesting();
     for (PictureLayerTiling::CoverageIterator iter(
-             tiling, tiling->contents_scale_key(),
-             gfx::Rect(tiling->tiling_size()));
+             tiling, tiling->contents_scale_key(), tiling->tiling_rect());
          iter; ++iter) {
       // We don't always have a tile, but when we do it's because it was
       // invalidated and it has the latest raster source.
@@ -500,8 +498,7 @@ TEST_F(LegacySWPictureLayerImplTest, ClonePartialInvalidation) {
     auto prioritized_tiles =
         tiling->UpdateAndGetAllPrioritizedTilesForTesting();
     for (PictureLayerTiling::CoverageIterator iter(
-             tiling, tiling->contents_scale_key(),
-             gfx::Rect(tiling->tiling_size()));
+             tiling, tiling->contents_scale_key(), tiling->tiling_rect());
          iter; ++iter) {
       EXPECT_TRUE(*iter);
       EXPECT_FALSE(iter.geometry_rect().IsEmpty());
@@ -1615,18 +1612,19 @@ TEST_F(LegacySWPictureLayerImplTest, ResourcelessPartialRecording) {
   EXPECT_FALSE(quad->needs_blending);
 }
 
-TEST_F(LegacySWPictureLayerImplTest, ResourcelessEmptyRecording) {
+TEST_F(LegacySWPictureLayerImplTest, ResourcelessRecordingNotVisible) {
   auto render_pass = viz::CompositorRenderPass::Create();
 
-  gfx::Size layer_bounds(700, 650);
+  gfx::Size layer_bounds(1000, 1000);
   scoped_refptr<FakeRasterSource> active_raster_source =
-      FakeRasterSource::CreatePartiallyFilled(layer_bounds, gfx::Rect());
+      FakeRasterSource::CreatePartiallyFilled(layer_bounds,
+                                              gfx::Rect(0, 0, 300, 300));
   SetupPendingTree(active_raster_source);
   ActivateTree();
 
   active_layer()->SetContentsOpaque(true);
   active_layer()->draw_properties().visible_layer_rect =
-      gfx::Rect(layer_bounds);
+      gfx::Rect(500, 0, 1000, 500);
 
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_RESOURCELESS_SOFTWARE, nullptr);
@@ -2137,10 +2135,10 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
 
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(200, 200);
-  gfx::Rect recorded_viewport(0, 0, 150, 150);
+  gfx::Rect recorded_bounds(0, 0, 150, 150);
 
   scoped_refptr<FakeRasterSource> pending_raster_source =
-      FakeRasterSource::CreatePartiallyFilled(layer_bounds, recorded_viewport);
+      FakeRasterSource::CreatePartiallyFilled(layer_bounds, recorded_bounds);
   SetupPendingTreeWithFixedTileSize(pending_raster_source, tile_size, Region());
   ActivateTree();
 
@@ -2150,6 +2148,29 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   active_layer()->AppendQuads(render_pass.get(), &data);
   active_layer()->DidDraw(nullptr);
 
+  EXPECT_EQ(recorded_bounds, active_layer()->HighResTiling()->tiling_rect());
+  EXPECT_EQ(1u, render_pass->quad_list.size());
+  EXPECT_EQ(1u, data.num_missing_tiles);
+  EXPECT_EQ(0u, data.num_incomplete_tiles);
+  EXPECT_EQ(22500, data.checkerboarded_visible_content_area);
+  EXPECT_EQ(0, data.checkerboarded_no_recording_content_area);
+  EXPECT_EQ(22500, data.checkerboarded_needs_raster_content_area);
+  EXPECT_TRUE(active_layer()->only_used_low_res_last_append_quads());
+
+  recorded_bounds = gfx::Rect(30, 30, 150, 150);
+  active_layer()->SetRasterSource(
+      FakeRasterSource::CreatePartiallyFilled(layer_bounds, recorded_bounds),
+      Region());
+
+  render_pass = viz::CompositorRenderPass::Create();
+  active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
+  data = AppendQuadsData();
+  active_layer()->AppendQuads(render_pass.get(), &data);
+  active_layer()->DidDraw(nullptr);
+
+  // Changed tiling rect is snapped.
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
+            active_layer()->HighResTiling()->tiling_rect());
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1u, data.num_missing_tiles);
   EXPECT_EQ(0u, data.num_incomplete_tiles);
@@ -2248,32 +2269,33 @@ TEST_F(LegacySWPictureLayerImplTest, DisallowRequiredForActivation) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, NothingRequiredIfActiveMissingTiles) {
-  gfx::Size layer_bounds(400, 400);
+  gfx::Size layer_bounds(1000, 4000);
   gfx::Size tile_size(100, 100);
 
   scoped_refptr<FakeRasterSource> pending_raster_source =
       FakeRasterSource::CreateFilled(layer_bounds);
-  // This raster source will create tilings, but has no recordings so will not
-  // create any tiles.  This is attempting to simulate scrolling past the end of
-  // recorded content on the active layer, where the recordings are so far away
-  // that no tiles are created.
   scoped_refptr<FakeRasterSource> active_raster_source =
-      FakeRasterSource::CreatePartiallyFilled(layer_bounds, gfx::Rect());
+      FakeRasterSource::CreatePartiallyFilled(layer_bounds,
+                                              gfx::Rect(500, 500));
 
   SetupTreesWithFixedTileSize(pending_raster_source, active_raster_source,
                               tile_size, Region());
 
-  // Active layer has tilings, but no tiles due to missing recordings.
+  // Active layer has tilings.
   EXPECT_TRUE(active_layer()->CanHaveTilings());
   EXPECT_EQ(active_layer()->tilings()->num_tilings(), 2u);
+  // Simulate scrolling past the end of recorded content on the active layer,
+  // where the recordings are so far away that no tiles are created.
+  gfx::Rect visible_rect(0, 3000, 1000, 1000);
+  active_layer()->HighResTiling()->ComputeTilePriorityRects(
+      visible_rect, visible_rect, visible_rect, visible_rect, 1, Occlusion());
   EXPECT_EQ(active_layer()->HighResTiling()->AllTilesForTesting().size(), 0u);
 
   // Since the active layer has no tiles at all, the pending layer doesn't
   // need content in order to activate.
   pending_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
   EXPECT_FALSE(pending_layer()->LowResTiling());
-
-  AssertNoTilesRequired(pending_layer()->HighResTiling());
+  EXPECT_EQ(pending_layer()->HighResTiling()->AllTilesForTesting().size(), 0u);
 }
 
 TEST_F(LegacySWPictureLayerImplTest, HighResRequiredIfActiveCantHaveTiles) {
@@ -4006,25 +4028,27 @@ TEST_F(NoLowResPictureLayerImplTest, AllHighResRequiredEvenIfNotChanged) {
 }
 
 TEST_F(NoLowResPictureLayerImplTest, NothingRequiredIfActiveMissingTiles) {
-  gfx::Size layer_bounds(400, 400);
+  gfx::Size layer_bounds(1000, 4000);
   gfx::Size tile_size(100, 100);
 
   scoped_refptr<FakeRasterSource> pending_raster_source =
       FakeRasterSource::CreateFilled(layer_bounds);
-  // This raster source will create tilings, but has no recordings so will not
-  // create any tiles.  This is attempting to simulate scrolling past the end of
-  // recorded content on the active layer, where the recordings are so far away
-  // that no tiles are created.
   scoped_refptr<FakeRasterSource> active_raster_source =
-      FakeRasterSource::CreatePartiallyFilled(layer_bounds, gfx::Rect());
+      FakeRasterSource::CreatePartiallyFilled(layer_bounds,
+                                              gfx::Rect(500, 500));
 
   SetupTreesWithFixedTileSize(pending_raster_source, active_raster_source,
                               tile_size, Region());
 
-  // Active layer has tilings, but no tiles due to missing recordings.
+  // Active layer has tilings.
   EXPECT_TRUE(active_layer()->CanHaveTilings());
   EXPECT_EQ(active_layer()->tilings()->num_tilings(),
             host_impl()->settings().create_low_res_tiling ? 2u : 1u);
+  // Simulate scrolling past the end of recorded content on the active layer,
+  // where the recordings are so far away that no tiles are created.
+  gfx::Rect visible_rect(0, 3000, 1000, 1000);
+  active_layer()->HighResTiling()->ComputeTilePriorityRects(
+      visible_rect, visible_rect, visible_rect, visible_rect, 1, Occlusion());
   EXPECT_EQ(active_layer()->HighResTiling()->AllTilesForTesting().size(), 0u);
 
   // Since the active layer has no tiles at all, the pending layer doesn't
@@ -4033,9 +4057,10 @@ TEST_F(NoLowResPictureLayerImplTest, NothingRequiredIfActiveMissingTiles) {
   if (host_impl()->settings().create_low_res_tiling)
     pending_layer()->LowResTiling()->UpdateAllRequiredStateForTesting();
 
-  AssertNoTilesRequired(pending_layer()->HighResTiling());
-  if (host_impl()->settings().create_low_res_tiling)
-    AssertNoTilesRequired(pending_layer()->LowResTiling());
+  EXPECT_EQ(pending_layer()->HighResTiling()->AllTilesForTesting().size(), 0u);
+  if (host_impl()->settings().create_low_res_tiling) {
+    EXPECT_EQ(pending_layer()->LowResTiling()->AllTilesForTesting().size(), 0u);
+  }
 }
 
 TEST_F(NoLowResPictureLayerImplTest, CleanUpTilings) {
@@ -4896,6 +4921,7 @@ TEST_F(LegacySWPictureLayerImplTest, PendingOrActiveTwinLayer) {
 
   // Make an empty pending tree.
   host_impl()->CreatePendingTree();
+  pending_layer_ = old_pending_layer_ = nullptr;
   host_impl()->pending_tree()->DetachLayers();
   EXPECT_FALSE(active_layer()->GetPendingOrActiveTwinLayer());
 }
@@ -5125,9 +5151,6 @@ TEST_F(LegacySWPictureLayerImplTest, CloneMissingRecordings) {
   SetupPendingTreeWithFixedTileSize(partial_raster_source, tile_size,
                                     Region(gfx::Rect(layer_bounds)));
   EXPECT_EQ(4u * 4u, pending_tiling->AllTilesForTesting().size());
-  EXPECT_FALSE(pending_tiling->TileAt(0, 0));
-  EXPECT_TRUE(pending_tiling->TileAt(1, 1));
-  EXPECT_TRUE(pending_tiling->TileAt(2, 2));
 
   // Active is not affected yet.
   EXPECT_EQ(5u * 5u, active_tiling->AllTilesForTesting().size());
@@ -5135,9 +5158,6 @@ TEST_F(LegacySWPictureLayerImplTest, CloneMissingRecordings) {
   // Activate the tree. The same tiles go missing on the active tree.
   ActivateTree();
   EXPECT_EQ(4u * 4u, active_tiling->AllTilesForTesting().size());
-  EXPECT_FALSE(active_tiling->TileAt(0, 0));
-  EXPECT_TRUE(active_tiling->TileAt(1, 1));
-  EXPECT_TRUE(active_tiling->TileAt(2, 2));
 
   // Now put a full recording on the pending tree again. We'll get all our tiles
   // back.

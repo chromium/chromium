@@ -332,7 +332,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, EncodingParametersChange) {
   const uint32_t kNewFramerate = 321321u;
 
   mojo_vea()->RequestEncodingParametersChange(kNewBitrate, kNewFramerate,
-                                              absl::nullopt);
+                                              std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kNewBitrate, fake_vea()->stored_bitrates().back());
   EXPECT_TRUE(fake_vea()->stored_frame_sizes().empty());
@@ -360,7 +360,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
     }
 
     mojo_vea()->RequestEncodingParametersChange(bitrate_allocation,
-                                                kNewFramerate, absl::nullopt);
+                                                kNewFramerate, std::nullopt);
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(bitrate_allocation,
               fake_vea()->stored_bitrate_allocations().back());
@@ -425,7 +425,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
     // remote end has been torn down and needs to be re Initialize()d.
     mojo_vea()->RequestEncodingParametersChange(
         Bitrate::ConstantBitrate(1234u) /* bitrate */, 3321 /* framerate */,
-        absl::nullopt);
+        std::nullopt);
     base::RunLoop().RunUntilIdle();
   }
 }

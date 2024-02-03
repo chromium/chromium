@@ -181,10 +181,10 @@ void ResetHistorySyncPreferencesForTesting() {
   history_sync::ResetDeclinePrefs(prefs);
 }
 
-void ResetSyncSelectedDataTypes() {
+void ResetSyncAccountSettingsPrefs() {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
-  // Clear the new per-account selected types.
+  // Clear the new per-account selected types and per-account passphrase.
   SyncServiceFactory::GetForBrowserState(browser_state)
       ->GetUserSettings()
       ->KeepAccountSettingsPrefsOnlyForUsers({});

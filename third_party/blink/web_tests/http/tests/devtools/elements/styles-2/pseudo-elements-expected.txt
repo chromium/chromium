@@ -28,6 +28,7 @@ element.style { ()
 [expanded] 
 [$div$] { (user agent stylesheet)
 /-- overloaded --/     display: block;
+    unicode-bidi: isolate;
 
 ======== Pseudo ::before element ========
 [expanded] 

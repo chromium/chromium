@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
 #include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <string>
@@ -43,7 +42,6 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -127,18 +125,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // StoragePartition uses. This method generates that representation.
   static storage::QuotaClientTypes GenerateQuotaClientTypes(
       uint32_t remove_mask);
-
-  // Allows overriding the URLLoaderFactory creation for
-  // GetURLLoaderFactoryForBrowserProcess.
-  // Passing a null callback will restore the default behavior.
-  // This method must be called either on the UI thread or before threads start.
-  // This callback is run on the UI thread.
-  using CreateNetworkFactoryCallback = base::RepeatingCallback<
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>(
-          mojo::PendingRemote<network::mojom::URLLoaderFactory>
-              original_factory)>;
-  static void SetGetURLLoaderFactoryForBrowserProcessCallbackForTesting(
-      CreateNetworkFactoryCallback url_loader_factory_callback);
 
   // Forces Storage Service instances to be run in-process.
   static void ForceInProcessStorageServiceForTesting();

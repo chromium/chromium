@@ -18,10 +18,11 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace {
 
-std::string GetFullKey(const std::string& extension_id,
+std::string GetFullKey(const extensions::ExtensionId& extension_id,
                        const std::string& key) {
   return extension_id + "." + key;
 }
@@ -113,7 +114,7 @@ void StateStore::RegisterKey(const std::string& key) {
   registered_keys_.insert(key);
 }
 
-void StateStore::GetExtensionValue(const std::string& extension_id,
+void StateStore::GetExtensionValue(const ExtensionId& extension_id,
                                    const std::string& key,
                                    ReadCallback callback) {
   task_queue_->InvokeWhenReady(base::BindOnce(
@@ -121,7 +122,7 @@ void StateStore::GetExtensionValue(const std::string& extension_id,
       GetFullKey(extension_id, key), std::move(callback)));
 }
 
-void StateStore::SetExtensionValue(const std::string& extension_id,
+void StateStore::SetExtensionValue(const ExtensionId& extension_id,
                                    const std::string& key,
                                    base::Value value) {
   for (TestObserver& observer : observers_)
@@ -132,7 +133,7 @@ void StateStore::SetExtensionValue(const std::string& extension_id,
       GetFullKey(extension_id, key), std::move(value)));
 }
 
-void StateStore::RemoveExtensionValue(const std::string& extension_id,
+void StateStore::RemoveExtensionValue(const ExtensionId& extension_id,
                                       const std::string& key) {
   task_queue_->InvokeWhenReady(base::BindOnce(
       &value_store::ValueStoreFrontend::Remove, base::Unretained(store_.get()),
@@ -185,7 +186,7 @@ void StateStore::Init() {
   task_queue_->SetReady();
 }
 
-void StateStore::RemoveKeysForExtension(const std::string& extension_id) {
+void StateStore::RemoveKeysForExtension(const ExtensionId& extension_id) {
   for (auto key = registered_keys_.begin(); key != registered_keys_.end();
        ++key) {
     task_queue_->InvokeWhenReady(base::BindOnce(

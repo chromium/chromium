@@ -10,15 +10,18 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/fb/openxr_hand_tracker_fb.h"
+#include "device/vr/openxr/msft/openxr_anchor_manager_msft.h"
 #include "device/vr/openxr/msft/openxr_scene_understanding_manager_msft.h"
 #include "device/vr/openxr/msft/openxr_unbounded_space_provider_msft.h"
-#include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_hand_tracker.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "device/vr/openxr/android/openxr_anchor_manager_android.h"
 #include "device/vr/openxr/android/openxr_hand_tracker_android.h"
+#include "device/vr/openxr/android/openxr_scene_understanding_manager_android.h"
 #include "device/vr/openxr/android/openxr_stage_bounds_provider_android.h"
+#include "device/vr/openxr/android/openxr_unbounded_space_provider_android.h"
 #endif
 
 namespace device {
@@ -33,6 +36,11 @@ GetExtensionHandlerFactories() {
 
           new OpenXrStageBoundsProviderAndroidFactory(),
 
+          new OpenXrUnboundedSpaceProviderAndroidFactory(),
+
+          new OpenXrSceneUnderstandingManagerAndroidFactory(),
+
+          new OpenXrAnchorManagerAndroidFactory(),
 #endif
 
           // List the hand trackers that can supply hand interaction data (e.g.
@@ -50,7 +58,7 @@ GetExtensionHandlerFactories() {
 
           new OpenXrSceneUnderstandingManagerMsftFactory(),
 
-          new OpenXrAnchorManagerFactory(),
+          new OpenXrAnchorManagerMsftFactory(),
       }};
 
   return *kFactories;

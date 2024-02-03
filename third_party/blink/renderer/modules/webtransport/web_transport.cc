@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -468,7 +468,7 @@ class WebTransport::DatagramUnderlyingSource final
     DVLOG(1) << "DatagramUnderlyingSource::MaybeExpireDatagrams() now=" << now
              << " queue_.size=" << queue_.size();
 
-    absl::optional<double> optional_max_age =
+    std::optional<double> optional_max_age =
         datagram_duplex_stream_->incomingMaxAge();
     bool max_age_is_default = false;
     base::TimeDelta max_age;
@@ -886,7 +886,7 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
   if (!transport_remote_.is_bound()) {
     // The state is "connecting".
     v8::Local<v8::Value> error =
-        WebTransportError::Create(isolate, /*stream_error_code=*/absl::nullopt,
+        WebTransportError::Create(isolate, /*stream_error_code=*/std::nullopt,
                                   "close() is called while connecting.",
                                   WebTransportError::Source::kSession);
     Cleanup(error, error, /*abruptly=*/true);
@@ -901,7 +901,7 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
   }
 
   v8::Local<v8::Value> error = WebTransportError::Create(
-      isolate, /*stream_error_code=*/absl::nullopt, "The session is closed.",
+      isolate, /*stream_error_code=*/std::nullopt, "The session is closed.",
       WebTransportError::Source::kSession);
 
   network::mojom::blink::WebTransportCloseInfoPtr close_info_to_pass;
@@ -969,7 +969,7 @@ void WebTransport::OnHandshakeFailed(
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Value> error_to_pass = WebTransportError::Create(
       script_state_->GetIsolate(),
-      /*stream_error_code=*/absl::nullopt, "Opening handshake failed.",
+      /*stream_error_code=*/std::nullopt, "Opening handshake failed.",
       WebTransportError::Source::kSession);
   Cleanup(error_to_pass, error_to_pass, /*abruptly=*/true);
 }
@@ -1053,7 +1053,7 @@ void WebTransport::OnClosed(
       ToV8Traits<WebTransportCloseInfo>::ToV8(script_state_, &idl_close_info);
 
   v8::Local<v8::Value> error = WebTransportError::Create(
-      isolate, /*stream_error_code=*/absl::nullopt, "The session is closed.",
+      isolate, /*stream_error_code=*/std::nullopt, "The session is closed.",
       WebTransportError::Source::kSession);
 
   Cleanup(reason, error, /*abruptly=*/false);
@@ -1207,7 +1207,7 @@ void WebTransport::Init(const String& url_for_diagnostics,
            ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
     v8::Local<v8::Value> error = WebTransportError::Create(
         script_state_->GetIsolate(),
-        /*stream_error_code=*/absl::nullopt,
+        /*stream_error_code=*/std::nullopt,
         "Refused to connect to '" + url_.ElidedString() +
             "' because it violates the document's Content Security Policy",
         WebTransportError::Source::kSession);
@@ -1409,7 +1409,7 @@ void WebTransport::OnConnectionError() {
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate,
-      /*stream_error_code=*/absl::nullopt, "Connection lost.",
+      /*stream_error_code=*/std::nullopt, "Connection lost.",
       WebTransportError::Source::kSession);
 
   Cleanup(error, error, /*abruptly=*/true);

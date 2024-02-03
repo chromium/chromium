@@ -1863,7 +1863,7 @@ const cc::SnapContainerData* PaintLayerScrollableArea::GetSnapContainerData()
 }
 
 void PaintLayerScrollableArea::SetSnapContainerData(
-    absl::optional<cc::SnapContainerData> data) {
+    std::optional<cc::SnapContainerData> data) {
   EnsureRareData().snap_container_data_ = data;
 }
 
@@ -1887,7 +1887,7 @@ const cc::SnappedTargetData* PaintLayerScrollableArea::GetSnappedTargetData()
 }
 
 void PaintLayerScrollableArea::SetSnappedTargetData(
-    absl::optional<cc::SnappedTargetData> data) {
+    std::optional<cc::SnappedTargetData> data) {
   EnsureRareData().snapped_target_data_ = data;
 }
 
@@ -1908,15 +1908,15 @@ void PaintLayerScrollableArea::SetImplSnapStrategy(
   EnsureRareData().impl_snap_strategy_ = std::move(strategy);
 }
 
-absl::optional<gfx::PointF>
+std::optional<gfx::PointF>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   if (!RareData() || !RareData()->snap_container_data_)
-    return absl::nullopt;
+    return std::nullopt;
 
   cc::SnapContainerData& data = RareData()->snap_container_data_.value();
   if (!data.size())
-    return absl::nullopt;
+    return std::nullopt;
 
   // If the document has a focused element that is coincident with the snap
   // target, update the snap target to point to the focused element. This
@@ -1930,7 +1930,7 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
         CompositorElementIdFromDOMNodeId(active_element->GetDomNodeId());
   }
 
-  absl::optional<gfx::PointF> snap_point;
+  std::optional<gfx::PointF> snap_point;
   cc::SnapPositionData snap =
       data.FindSnapPosition(strategy, active_element_id);
   if (snap.type != cc::SnapPositionData::Type::kNone) {
@@ -2099,6 +2099,12 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
   }
 
   if (scroll_corner_ && ScrollCornerRect().Contains(local_point)) {
+    if (GetLayoutBox() && GetLayoutBox()->GetFrame()) {
+      base::debug::CrashKeyString* crash_key =
+          GetLayoutBox()->GetFrame()->GetEventHandler().CrashKeyForBug1519197();
+      base::debug::SetCrashKeyString(crash_key,
+                                     GetLayoutBox()->DebugName().Utf8());
+    }
     result.SetIsOverScrollCorner(true);
     return true;
   }
@@ -2342,7 +2348,6 @@ void PaintLayerScrollableArea::Resize(const gfx::Point& pos,
 
 PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     const PhysicalRect& absolute_rect,
-    const PhysicalBoxStrut& scroll_margin,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
   // Ignore sticky position offsets for the purposes of scrolling elements into
   // view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
@@ -2368,8 +2373,8 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   PhysicalRect scroll_snapport_rect = VisibleScrollSnapportRect();
 
   ScrollOffset target_offset = ScrollAlignment::GetScrollOffsetToExpose(
-      scroll_snapport_rect, local_expose_rect, scroll_margin,
-      *params->align_x.get(), *params->align_y.get(), GetScrollOffset());
+      scroll_snapport_rect, local_expose_rect, *params->align_x.get(),
+      *params->align_y.get(), GetScrollOffset());
   ScrollOffset new_scroll_offset(
       ClampScrollOffset(gfx::ToRoundedVector2d(target_offset)));
 
@@ -3044,8 +3049,10 @@ gfx::Size PaintLayerScrollableArea::PixelSnappedBorderBoxSize() const {
   // This can be fixed only after we support subpixels in overflow control
   // geometry. For now we ensure correct pixel snapping of overflow controls by
   // calling PositionOverflowControls() again when paint offset is updated.
-  return GetLayoutBox()->PixelSnappedBorderBoxSize(
-      GetLayoutBox()->FirstFragment().PaintOffset());
+  // TODO(crbug.com/962299): Only correct if the paint offset is correct.
+  return ToPixelSnappedSize(
+      GetLayoutBox()->Size().ToLayoutSize(),
+      GetLayoutBox()->FirstFragment().PaintOffset().ToLayoutPoint());
 }
 
 gfx::Rect PaintLayerScrollableArea::ScrollingBackgroundVisualRect(
@@ -3141,7 +3148,7 @@ void PaintLayerScrollableArea::UpdateSnappedTargetsAndEnqueueSnapChanged() {
 }
 
 void PaintLayerScrollableArea::SetSnapChangingTargetData(
-    absl::optional<cc::SnappedTargetData> data) {
+    std::optional<cc::SnappedTargetData> data) {
   EnsureRareData().snapchanging_target_data_ = data;
 }
 

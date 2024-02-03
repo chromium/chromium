@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1213425325105380833">Bu hisobga ulangan qurilmalarda yaqinda foydalangan veb-ilovalarni tiklang</translation>
+<translation id="1786044937610313874">Yorliqlar Chrome ichida ochiladi</translation>
+<translation id="204914487372604757">Yorliq yaratish</translation>
 <translation id="2065911435109240297">Veb-ilovalarni tiklash</translation>
 <translation id="2111649875343992405">Qaysi veb-ilovalar tiklanishini tekshiring</translation>
 <translation id="2139186145475833000">Bosh ekranga qo‘shish</translation>
@@ -10,8 +12,10 @@
 <translation id="3789841737615482174">O‘rnatish</translation>
 <translation id="3910402514791813257">Oʻrnatilmadi.</translation>
 <translation id="4250229828105606438">Skrinshot</translation>
+<translation id="4338600611020922010">Bosh ekranga chiqarish</translation>
 <translation id="4665282149850138822"><ph name="NAME" /> sayti bosh ekranga qo‘shildi</translation>
 <translation id="5250483651202458397">Skrinshot. Bosib yopish.</translation>
+<translation id="5684726956335420505">Ilovani bosh ekranga qanday chiqarishni tanlang</translation>
 <translation id="5972844218283131174">Tanlamani bekor qilish</translation>
 <translation id="6838423508083736333">Oxirgi oy ishlatilgan veb ilovalar</translation>
 <translation id="6990079615885386641">Google Play do‘konidagi ilova: <ph name="APP_ACTION" /></translation>

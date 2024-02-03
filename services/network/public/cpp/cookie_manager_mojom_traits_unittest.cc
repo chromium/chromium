@@ -24,7 +24,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   auto original = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
       base::Time(), false, false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_LOW, absl::nullopt, net::CookieSourceScheme::kSecure,
+      net::COOKIE_PRIORITY_LOW, std::nullopt, net::CookieSourceScheme::kSecure,
       8433);
 
   net::CanonicalCookie copied;
@@ -40,11 +40,11 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   EXPECT_EQ(original->LastAccessDate(), copied.LastAccessDate());
   EXPECT_EQ(original->ExpiryDate(), copied.ExpiryDate());
   EXPECT_EQ(original->LastUpdateDate(), copied.LastUpdateDate());
-  EXPECT_EQ(original->IsSecure(), copied.IsSecure());
+  EXPECT_EQ(original->SecureAttribute(), copied.SecureAttribute());
   EXPECT_EQ(original->IsHttpOnly(), copied.IsHttpOnly());
   EXPECT_EQ(original->SameSite(), copied.SameSite());
   EXPECT_EQ(original->Priority(), copied.Priority());
-  EXPECT_EQ(absl::nullopt, copied.PartitionKey());
+  EXPECT_EQ(std::nullopt, copied.PartitionKey());
   EXPECT_EQ(original->SourceScheme(), copied.SourceScheme());
   EXPECT_EQ(original->SourcePort(), copied.SourcePort());
 
@@ -53,7 +53,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
           base::Time(), false, false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_LOW, absl::nullopt,
+          net::COOKIE_PRIORITY_LOW, std::nullopt,
           net::CookieSourceScheme::kSecure, url::PORT_UNSPECIFIED);
   net::CanonicalCookie copied_unspecified;
 
@@ -67,7 +67,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   auto original_invalid = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
       base::Time(), false, false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_LOW, absl::nullopt, net::CookieSourceScheme::kSecure,
+      net::COOKIE_PRIORITY_LOW, std::nullopt, net::CookieSourceScheme::kSecure,
       url::PORT_INVALID);
   net::CanonicalCookie copied_invalid;
 
@@ -137,7 +137,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
   EXPECT_EQ(original.cookie.LastAccessDate(), copied.cookie.LastAccessDate());
   EXPECT_EQ(original.cookie.ExpiryDate(), copied.cookie.ExpiryDate());
   EXPECT_EQ(original.cookie.LastUpdateDate(), copied.cookie.LastUpdateDate());
-  EXPECT_EQ(original.cookie.IsSecure(), copied.cookie.IsSecure());
+  EXPECT_EQ(original.cookie.SecureAttribute(), copied.cookie.SecureAttribute());
   EXPECT_EQ(original.cookie.IsHttpOnly(), copied.cookie.IsHttpOnly());
   EXPECT_EQ(original.cookie.SameSite(), copied.cookie.SameSite());
   EXPECT_EQ(original.cookie.Priority(), copied.cookie.Priority());
@@ -169,7 +169,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAndLineWithAccessResult) {
   EXPECT_EQ(original.cookie->LastAccessDate(), copied.cookie->LastAccessDate());
   EXPECT_EQ(original.cookie->ExpiryDate(), copied.cookie->ExpiryDate());
   EXPECT_EQ(original.cookie->LastUpdateDate(), copied.cookie->LastUpdateDate());
-  EXPECT_EQ(original.cookie->IsSecure(), copied.cookie->IsSecure());
+  EXPECT_EQ(original.cookie->SecureAttribute(),
+            copied.cookie->SecureAttribute());
   EXPECT_EQ(original.cookie->IsHttpOnly(), copied.cookie->IsHttpOnly());
   EXPECT_EQ(original.cookie->SameSite(), copied.cookie->SameSite());
   EXPECT_EQ(original.cookie->Priority(), copied.cookie->Priority());
@@ -508,7 +509,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   EXPECT_EQ(original.cookie.LastAccessDate(), copied.cookie.LastAccessDate());
   EXPECT_EQ(original.cookie.ExpiryDate(), copied.cookie.ExpiryDate());
   EXPECT_EQ(original.cookie.LastUpdateDate(), copied.cookie.LastUpdateDate());
-  EXPECT_EQ(original.cookie.IsSecure(), copied.cookie.IsSecure());
+  EXPECT_EQ(original.cookie.SecureAttribute(), copied.cookie.SecureAttribute());
   EXPECT_EQ(original.cookie.IsHttpOnly(), copied.cookie.IsHttpOnly());
   EXPECT_EQ(original.cookie.SameSite(), copied.cookie.SameSite());
   EXPECT_EQ(original.cookie.Priority(), copied.cookie.Priority());

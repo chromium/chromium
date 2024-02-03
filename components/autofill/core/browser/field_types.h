@@ -327,10 +327,7 @@ enum FieldType {
 
   // NAME_FULL_WITH_HONORIFIC_PREFIX value 117 is deprecated.
 
-  // Types to represent a birthdate.
-  BIRTHDATE_DAY = 118,
-  BIRTHDATE_MONTH = 119,
-  BIRTHDATE_4_DIGIT_YEAR = 120,
+  // Birthdates 118, 119 and 120 are deprecated.
 
   // Types for better trunk prefix support for phone numbers.
   // Like PHONE_HOME_CITY_CODE, but with a trunk prefix, if applicable in the
@@ -484,7 +481,6 @@ enum class FieldTypeGroup {
   kTransaction,
   kUsernameField,
   kUnfillable,
-  kBirthdateField,
   kIban,
   kMaxValue = kIban,
 };
@@ -556,6 +552,8 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            !(20 <= t && t <= 24) &&
            // UPI VPA type (value 102) is deprecated.
            !(t == 102) &&
+           // Birthdates (values [118, 120]) are deprecated.
+           !(118 <= t && t <= 120) &&
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 117 && t != 127 &&
            !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&

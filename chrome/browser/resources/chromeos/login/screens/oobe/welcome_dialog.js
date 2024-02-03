@@ -4,7 +4,7 @@
 
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/js/action_link.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/oobe_illo_icons.html.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';

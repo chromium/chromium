@@ -296,6 +296,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     }
 
     if (_baseNavigationController) {
+      if (self.viewController.presentedViewController) {
+        [self.viewController.presentedViewController
+            dismissViewControllerAnimated:YES
+                               completion:nil];
+      }
       [self.baseNavigationController popToViewController:self.viewController
                                                 animated:NO];
       [self.baseNavigationController popViewControllerAnimated:YES];
@@ -450,8 +455,24 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 #pragma mark - SyncErrorSettingsCommandHandler
 
-- (void)openPassphraseDialog {
+- (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
   DCHECK(self.mediator.shouldEncryptionItemBeEnabled);
+  if (presentModally) {
+    CHECK(self.syncService->GetUserSettings()->IsPassphraseRequired());
+    SyncEncryptionPassphraseTableViewController* controllerToPresent =
+        [[SyncEncryptionPassphraseTableViewController alloc]
+            initWithBrowser:self.browser];
+    controllerToPresent.presentModally = YES;
+    UINavigationController* navigationController =
+        [[UINavigationController alloc]
+            initWithRootViewController:controllerToPresent];
+    [self.viewController
+        configureHandlersForRootViewController:controllerToPresent];
+    [self.viewController presentViewController:navigationController
+                                      animated:YES
+                                    completion:nil];
+    return;
+  }
   UIViewController<SettingsRootViewControlling>* controllerToPush;
   // If there was a sync error, prompt the user to enter the passphrase.
   // Otherwise, show the full encryption options.

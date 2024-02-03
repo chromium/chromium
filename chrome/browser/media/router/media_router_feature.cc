@@ -179,7 +179,7 @@ std::string GetReceiverIdHashToken(PrefService* pref_service) {
   if (token.empty()) {
     crypto::RandBytes(base::WriteInto(&token, kHashTokenSize + 1),
                       kHashTokenSize);
-    base::Base64Encode(token, &token);
+    token = base::Base64Encode(token);
     pref_service->SetString(prefs::kMediaRouterReceiverIdHashToken, token);
   }
   return token;

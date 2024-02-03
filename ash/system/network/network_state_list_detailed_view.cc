@@ -232,7 +232,7 @@ void NetworkStateListDetailedView::Update() {
   UpdateNetworkList();
   UpdateHeaderButtons();
   UpdateScanningBar();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void NetworkStateListDetailedView::ActiveNetworkStateChanged() {

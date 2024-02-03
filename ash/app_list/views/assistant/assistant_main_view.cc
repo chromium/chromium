@@ -57,7 +57,7 @@ void AssistantMainView::ChildPreferredSizeChanged(views::View* child) {
   // For this reason, we need to explicitly trigger a layout pass so that the
   // children of |main_stage_| are properly updated.
   if (child == main_stage_) {
-    Layout();
+    DeprecatedLayoutImmediately();
     SchedulePaint();
   }
 }
@@ -133,7 +133,7 @@ void AssistantMainView::InitLayout() {
   layout->SetFlexForView(main_stage_, 1);
 }
 
-BEGIN_METADATA(AssistantMainView, views::View)
+BEGIN_METADATA(AssistantMainView)
 END_METADATA
 
 }  // namespace ash

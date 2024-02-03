@@ -29,6 +29,11 @@ BASE_FEATURE(kBluetoothPhoneFilter,
              "BluetoothPhoneFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables show captive portal signin in a specially flagged popup window.
+BASE_FEATURE(kCaptivePortalPopupWindow,
+             "CaptivePortalPopupWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables updated UI for the clipboard history menu and new system behavior
 // related to clipboard history.
 BASE_FEATURE(kClipboardHistoryRefresh,
@@ -152,6 +157,11 @@ BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 // controls all system UI updates and new system components. go/jelly-flags
 BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Makes Kiosk close all tabs instead of closing the window.
+BASE_FEATURE(kKioskCloseAllTabs,
+             "KioskCloseAllTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
 BASE_FEATURE(kKioskHeartbeatsViaERP,
@@ -226,6 +236,10 @@ bool IsAppInstallServiceUriEnabled() {
 #else
   return base::FeatureList::IsEnabled(kAppInstallServiceUri);
 #endif
+}
+
+bool IsCaptivePortalPopupWindowEnabled() {
+  return base::FeatureList::IsEnabled(kCaptivePortalPopupWindow);
 }
 
 bool IsClipboardHistoryRefreshEnabled() {

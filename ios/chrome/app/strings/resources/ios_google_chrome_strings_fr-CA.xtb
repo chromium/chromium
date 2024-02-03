@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
-<translation id="1066101356081285416">Chrome détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Le numéro de suivi du colis et le nom du site Web seront envoyés à Google pour fournir cette fonctionnalité et améliorer les fonctionnalités de Google Shopping pour tous. Vous pouvez mettre à jour cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
+<translation id="1021782183249308751">Maintenez l'icône de Chrome enfoncée et cliquez sur « Modifier l'écran d'accueil »</translation>
+<translation id="1066101356081285416">Chrome détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Le numéro de suivi du colis et le nom du site Web seront envoyés à Google pour fournir cette fonctionnalité et améliorer les fonctionnalités d'achat Google pour tous. Vous pouvez mettre à jour cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1105362920864247682">Effacez les données de navigation dans Chrome.</translation>
 <translation id="1113057722807951993">Le chiffrement de la phrase de passe n'inclut pas les modes de paiement et les adresses de Google Pay.
@@ -96,6 +97,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3345341804167540816">Utiliser Chrome sur toutes les plateformes</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minute}one{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minute}other{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minutes}}</translation>
 <translation id="3399930248910934354">Ouvrir les paramètres de Chrome</translation>
+<translation id="344736123700721678">Accéder plus rapidement à Chrome à partir du Dock de l'écran d'accueil</translation>
 <translation id="3472587960215700950">Chrome utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="3503014945441706099">Bénéficiez également de la navigation sécurisée améliorée pour ce profil Chrome</translation>
 <translation id="3522659714780527202">Pour voir vos onglets partout où vous utilisez Chrome, activez la synchronisation</translation>
@@ -177,12 +179,15 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="6054613632208573261">Utiliser Chrome par défaut</translation>
 <translation id="6063091872902370735">Autoriser la connexion dans Chrome</translation>
 <translation id="6110625574506755980">Certaines fonctionnalités de Chrome ne seront plus offertes.</translation>
+<translation id="6132149203299792222">Connectez-vous avec votre compte Google pour synchroniser vos mots de passe, vos favoris et bien plus encore.</translation>
 <translation id="6177442314419606057">Rechercher dans Chrome</translation>
 <translation id="6181930887571472871">Passer à Chrome</translation>
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
+<translation id="6272822675004864999">Pour recevoir des notifications de Chrome, activez les notifications dans vos réglages iOS.</translation>
 <translation id="630693926528731525">Votre mot de passe n'a pas été partagé. Vérifiez votre connexion Internet et assurez-vous que vous êtes connecté à Chrome. Ensuite, réessayez.</translation>
 <translation id="6348855835728304880">Accédez à vos mots de passe Chrome et plus encore dans d'autres applications sur cet appareil.</translation>
+<translation id="6389317667633680932">Découvrez de nouvelles fonctionnalités qui vous aident à tirer le meilleur parti de Chrome.</translation>
 <translation id="6412673304250309937">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
 <translation id="6427126399757991875">Votre organisation est en train de configurer Chrome…</translation>
 <translation id="6484712497741564393">Connecté en tant que <ph name="EMAIL" />.
@@ -214,8 +219,10 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
 <translation id="7161390184744336561">Google Chrome n'est pas à jour</translation>
 <translation id="7165736900384873061">Commencer à utiliser le lecteur de code QR Google Chrome</translation>
+<translation id="7175129790242719365">Astuce Chrome : Connectez-vous à Chrome</translation>
 <translation id="7187993566681480880">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte.</translation>
 <translation id="7200524487407690471">Chrome exécute automatiquement la Vérification de sécurité tous les jours pour vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires. Vous trouverez plus d'information sur la Vérification de sécurité dans Paramètres.</translation>
+<translation id="7203324561587388418">Restez au fait du contenu et des conseils utiles sur Chrome.</translation>
 <translation id="72119412072970160">Vous pouvez utiliser les mots de passe que vous avez enregistrés dans le gestionnaire de mots de passe Google pour d'autres applications sur votre iPad.</translation>
 <translation id="723787869754590019">Utilisez Chrome pour le remplissage automatique</translation>
 <translation id="7254380941803999489">Définir Chrome comme navigateur par défaut</translation>
@@ -244,6 +251,8 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="7897703007638178753">Voir les onglets récents de Chrome</translation>
 <translation id="7925119591961387184">Sélectionnez « Chrome ».</translation>
 <translation id="7933491483529363150">Ouvrez mon dernier onglet dans Chrome.</translation>
+<translation id="7948283758957877064">Quoi de neuf dans Chrome</translation>
+<translation id="8006014511203279255">Utilisez Chrome chaque fois que vous touchez des liens dans les messages ou dans d'autres applications.</translation>
 <translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="804638182476029347">Autoriser les notifications de Chrome à vous envoyer des alertes relatives aux réductions de prix</translation>
 <translation id="8065292699993359127">Ouvrir les URL dans Chrome en mode de navigation privée</translation>
@@ -280,6 +289,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="8772179140489533211">Affiche l'invite de connexion dans Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Astuce Chrome : Utilisez Chrome par défaut</translation>
 <translation id="8808828119384186784">Paramètres Chrome</translation>
 <translation id="8855781063981781621">Pour désactiver le mode de verrouillage dans Chrome, désactivez-le sur votre iPad.</translation>
 <translation id="8856877214925961642">Le chiffrement de la phrase de passe n'inclut pas les modes de paiement et les adresses.

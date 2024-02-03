@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType} from '../dialog_type.js';
+import {DialogType} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, EntryType, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
@@ -230,7 +230,7 @@ testcase.dlpShowManagedIcon = async () => {
       'to restrictions by administrator policy.';
   const label = await remoteCall.waitForElement(
       appId, ['files-tooltip[visible=true]', '#label']);
-  chrome.test.assertTrue(label.text.startsWith(labelTextPrefix));
+  chrome.test.assertTrue((label.text ?? '').startsWith(labelTextPrefix));
 };
 
 /**

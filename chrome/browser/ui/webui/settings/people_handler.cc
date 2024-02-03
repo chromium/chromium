@@ -670,7 +670,8 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
   bool is_clear_primary_account_allowed =
       signin_client->IsClearPrimaryAccountAllowed(is_syncing);
   if (!is_syncing && !is_clear_primary_account_allowed &&
-      !base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+      !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)) {
     // 'Signout' should not be offered in the UI if clear primary account is not
     // allowed.
     NOTREACHED()

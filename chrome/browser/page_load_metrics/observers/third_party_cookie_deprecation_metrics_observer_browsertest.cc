@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
@@ -40,6 +41,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -188,6 +190,22 @@ class ThirdPartyCookieDeprecationObserverBaseBrowserTest
         browser()->profile());
   }
 
+  void FetchCookies(const std::string& host, const std::string& path) {
+    // Fetch a subresrouce.
+    std::string fetch_subresource_script = R"(
+        const imgElement = document.createElement('img');
+        imgElement.src = $1;
+        document.body.appendChild(imgElement);
+  )";
+
+    content::CookieChangeObserver observer(web_contents());
+    std::ignore =
+        ExecJs(web_contents(),
+               content::JsReplace(fetch_subresource_script,
+                                  https_server()->GetURL(host, path).spec()));
+    observer.Wait();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -249,22 +267,6 @@ class ThirdPartyCookieDeprecationObserverBrowserTest
                                           ContentSettingsType::COOKIES,
                                           CONTENT_SETTING_ALLOW);
     }
-  }
-
-  void FetchCookies(const std::string& host, const std::string& path) {
-    // Fetch a subresrouce.
-    std::string fetch_subresource_script = R"(
-        const imgElement = document.createElement('img');
-        imgElement.src = $1;
-        document.body.appendChild(imgElement);
-  )";
-
-    content::CookieChangeObserver observer(web_contents());
-    std::ignore =
-        ExecJs(web_contents(),
-               content::JsReplace(fetch_subresource_script,
-                                  https_server()->GetURL(host, path).spec()));
-    observer.Wait();
   }
 
   bool IsRecordThirdPartyCookiesExperimentMetrics() {
@@ -1084,4 +1086,240 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverSSABrowserTest,
       blink::mojom::WebFeature::
           kThirdPartyCookieDeprecation_AllowByStorageAccess,
       GetParam() ? 1 : 0);
+}
+
+class ThirdPartyCookieDeprecationObserverCookieReadBrowserTest
+    : public ThirdPartyCookieDeprecationObserverBaseBrowserTest {
+ public:
+  ThirdPartyCookieDeprecationObserverCookieReadBrowserTest() = default;
+
+  ThirdPartyCookieDeprecationObserverCookieReadBrowserTest(
+      const ThirdPartyCookieDeprecationObserverCookieReadBrowserTest&) = delete;
+  ThirdPartyCookieDeprecationObserverCookieReadBrowserTest& operator=(
+      const ThirdPartyCookieDeprecationObserverCookieReadBrowserTest&) = delete;
+
+  ~ThirdPartyCookieDeprecationObserverCookieReadBrowserTest() override =
+      default;
+
+  void SetUp() override {
+    SetUpThirdPartyCookieExperimentWithAdsMitigations();
+    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+  }
+
+  void SetUpThirdPartyCookieExperimentWithAdsMitigations() {
+    // Experiment feature param requests 3PCs blocked.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kCookieDeprecationFacilitatedTesting,
+          {{tpcd::experiment::kDisable3PCookiesName, "true"}}},
+         {subresource_filter::kTPCDAdHeuristicSubframeRequestTagging, {}},
+         {network::features::kSkipTpcdMitigationsForAds,
+          {{"SkipTpcdMitigationsForAdsMetadata", "true"},
+           {"SkipTpcdMitigationsForAdsHeuristics", "true"},
+           {"SkipTpcdMitigationsForAdsSupport", "true"},
+           {"SkipTpcdMitigationsForAdsTopLevelTrial", "true"}}}},
+        {content_settings::features::kTrackingProtection3pcd});
+  }
+
+  void SetUpThirdPartyCookieExperimentWithClientState() {
+    Wait();
+    g_browser_process->local_state()->SetInteger(
+        tpcd::experiment::prefs::kTPCDExperimentClientState,
+        static_cast<int>(tpcd::experiment::utils::ExperimentState::kEligible));
+  }
+
+  void SetUpTrackingProtectionOnboardWith3PCAllow(
+      const std::vector<GURL>& third_party_urls) {
+    SetUpTrackingProtectionOnboard();
+    // If tracking protection is onboard, observer's OnCookieAccess won't be
+    // triggered without any re-enable mechanisms. For testing purpose, we
+    // explicitly set allowing third party cookie access for test URLs.
+    for (const auto& third_party_url : third_party_urls) {
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+          ->SetContentSettingDefaultScope(third_party_url, GURL(),
+                                          ContentSettingsType::COOKIES,
+                                          CONTENT_SETTING_ALLOW);
+    }
+  }
+
+  void Reset3PCSetting(const GURL& url) {
+    SetCookieSetting(url, CONTENT_SETTING_DEFAULT);
+  }
+
+  void Disallow3PC(const GURL& url) {
+    SetCookieSetting(url, CONTENT_SETTING_BLOCK);
+  }
+
+  void Allow3PC(const GURL& url) {
+    SetCookieSetting(url, CONTENT_SETTING_ALLOW);
+  }
+
+  void SetCookieSetting(const GURL& url, ContentSetting setting) {
+    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->SetContentSettingDefaultScope(url, GURL(),
+                                        ContentSettingsType::COOKIES, setting);
+  }
+
+  void SetHeuristicsGrant(const GURL& third_party_url,
+                          const GURL& first_party_url) {
+    CookieSettingsFactory::GetForProfile(browser()->profile())
+        ->SetTemporaryCookieGrantForHeuristic(third_party_url, first_party_url,
+                                              base::Seconds(60));
+    EXPECT_EQ(CookieSettingsFactory::GetForProfile(browser()->profile())
+                  ->GetCookieSetting(third_party_url, first_party_url,
+                                     net::CookieSettingOverrides()),
+              ContentSetting::CONTENT_SETTING_ALLOW);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
+                       NotOnboarded_CookieStatusRecorded) {
+  SetUpThirdPartyCookieExperimentWithClientState();
+
+  NavigateToPageWithFrame(kHostA);
+  // 3p cookie write
+  FetchCookies(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure&isad=1");
+
+  struct {
+    std::string name;
+    std::string path;
+    bool disallowed;
+    int expected_status;
+  } kTestCases[] = {
+      {"Ad cookie allowed", "/empty.html?isad=1", /*disallowed=*/false,
+       /*expected_status=*/3},
+      {"Non-ad cookie allowed", "/empty.html", /*disallowed=*/false,
+       /*expected_status=*/1},
+      {"Ad cookie blocked", "/empty.html?isad=1", /*disallowed=*/true,
+       /*expected_status=*/4},
+      {"Non-ad cookie blocked", "/empty.html", /*disallowed=*/true,
+       /*expected_status=*/2},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    if (test_case.disallowed) {
+      Disallow3PC(GetURL(kHostB));
+    } else {
+      Reset3PCSetting(GetURL(kHostB));
+    }
+
+    NavigateToPageWithFrame(kHostA);
+    base::HistogramTester histogram_tester;
+
+    // 3p cookie read
+    FetchCookies(kHostB, test_case.path);
+    NavigateToUntrackedUrl();
+
+    histogram_tester.ExpectBucketCount(
+        "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus",
+        test_case.expected_status, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
+                       CookieWithHeuristics_StatusRecorded) {
+  SetUpThirdPartyCookieExperimentWithClientState();
+  // Allow cookies to be set.
+  SetUpTrackingProtectionOnboardWith3PCAllow({GetURL(kHostB)});
+
+  NavigateToPageWithFrame(kHostA);
+  // 3p cookie write
+  FetchCookies(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure&isad=1");
+
+  Reset3PCSetting(GetURL(kHostB));
+  SetHeuristicsGrant(GetURL(kHostB), GetURL(kHostA));
+
+  struct {
+    std::string path;
+    int expected_status;
+  } kTestCases[] = {
+      {"/empty.html?isad=1", /*expected_status=*/20},
+      {"/empty.html", /*expected_status=*/9},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.path);
+    NavigateToPageWithFrame(kHostA);
+    base::HistogramTester histogram_tester;
+
+    // 3p cookie read
+    FetchCookies(kHostB, test_case.path);
+    NavigateToUntrackedUrl();
+
+    histogram_tester.ExpectBucketCount(
+        "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus",
+        test_case.expected_status, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
+                       CookiesBlockedAndAllowed_StatusRecorded) {
+  struct {
+    std::string name;
+    std::string path;
+    bool explicit_allow;
+    int expected_status;
+  } kTestCases[] = {
+      {"Ad cookie blocked", "/empty.html?isad=1", /*explicit_allow=*/false,
+       /*expected_status=*/18},
+      {"Non-ad cookie blocked", "/empty.html", /*explicit_allow=*/false,
+       /*expected_status=*/17},
+      {"Ad cookie allowed", "/empty.html?isad=1", /*explicit_allow=*/true,
+       /*expected_status=*/8},
+      {"Non-ad cookie allowed", "/empty.html", /*explicit_allow=*/true,
+       /*expected_status=*/7},
+  };
+
+  SetUpThirdPartyCookieExperimentWithClientState();
+  // Allow cookies to be set.
+  SetUpTrackingProtectionOnboardWith3PCAllow({GetURL(kHostB)});
+
+  NavigateToPageWithFrame(kHostA);
+  // 3p cookie write
+  FetchCookies(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure&isad=1;");
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    if (test_case.explicit_allow) {
+      Allow3PC(GetURL(kHostB));
+    } else {
+      Reset3PCSetting(GetURL(kHostB));
+    }
+
+    NavigateToPageWithFrame(kHostA);
+    base::HistogramTester histogram_tester;
+
+    // 3p cookie read
+    FetchCookies(kHostB, test_case.path);
+    NavigateToUntrackedUrl();
+
+    histogram_tester.ExpectBucketCount(
+        "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus",
+        test_case.expected_status, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
+                       PartitionedCookies_StatusNotRecorded) {
+  SetUpThirdPartyCookieExperimentWithClientState();
+  // Allow cookies to be set.
+  SetUpTrackingProtectionOnboardWith3PCAllow({GetURL(kHostB)});
+
+  NavigateToPageWithFrame(kHostA);
+  // 3p cookie write
+  FetchCookies(
+      kHostB,
+      "/set-cookie?thirdparty=1;SameSite=None;Secure;Partitioned;&isad=1;");
+  Reset3PCSetting(GetURL(kHostB));
+
+  NavigateToPageWithFrame(kHostA);
+  base::HistogramTester histogram_tester;
+
+  // 3p cookie read
+  FetchCookies(kHostB, "/empty.html?isad=1");
+  FetchCookies(kHostB, "/empty.html");
+  NavigateToUntrackedUrl();
+
+  histogram_tester.ExpectTotalCount(
+      "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus", 0);
 }

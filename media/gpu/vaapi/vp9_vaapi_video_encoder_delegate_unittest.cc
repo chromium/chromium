@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <tuple>
 
 #include "base/functional/callback.h"
@@ -23,7 +24,6 @@
 #include "media/gpu/vp9_svc_layers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libvpx/source/libvpx/vp9/common/vp9_blockd.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
@@ -278,7 +278,7 @@ class VP9VaapiVideoEncoderDelegateTest
       bool end_of_picture,
       base::TimeDelta timestamp,
       const gfx::Size& layer_size,
-      absl::optional<std::array<bool, kVp9NumRefsPerFrame>>
+      std::optional<std::array<bool, kVp9NumRefsPerFrame>>
           expected_ref_frames_used,
       uint8_t expected_temporal_layer_id,
       uint8_t expected_spatial_layer_id,
@@ -400,7 +400,7 @@ void VP9VaapiVideoEncoderDelegateTest::
         bool end_of_picture,
         base::TimeDelta timestamp,
         const gfx::Size& layer_size,
-        absl::optional<std::array<bool, kVp9NumRefsPerFrame>>
+        std::optional<std::array<bool, kVp9NumRefsPerFrame>>
             expected_ref_frames_used,
         uint8_t expected_temporal_layer_id,
         uint8_t expected_spatial_layer_id,
@@ -591,6 +591,12 @@ struct VP9VaapiVideoEncoderDelegateTestParam {
   size_t num_temporal_layers;
 } kTestCasesForVP9VaapiVideoEncoderDelegateTest[] = {
     // {inter_layer_pred, num_of_spatial_layers, num_of_temporal_layers}
+    {SVCInterLayerPredMode::kOn, 1u, 1u},
+    {SVCInterLayerPredMode::kOn, 1u, 2u},
+    {SVCInterLayerPredMode::kOn, 1u, 3u},
+    {SVCInterLayerPredMode::kOnKeyPic, 1u, 1u},
+    {SVCInterLayerPredMode::kOnKeyPic, 1u, 2u},
+    {SVCInterLayerPredMode::kOnKeyPic, 1u, 3u},
     {SVCInterLayerPredMode::kOnKeyPic, 2u, 1u},
     {SVCInterLayerPredMode::kOnKeyPic, 2u, 2u},
     {SVCInterLayerPredMode::kOnKeyPic, 2u, 3u},

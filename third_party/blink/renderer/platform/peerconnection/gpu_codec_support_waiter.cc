@@ -32,9 +32,9 @@ class RefCountedWaitableEvent
   ~RefCountedWaitableEvent() = default;
 };
 
-absl::optional<base::TimeDelta> GetCodecSupportWaitTimeoutMs() {
+std::optional<base::TimeDelta> GetCodecSupportWaitTimeoutMs() {
   if (!base::FeatureList::IsEnabled(features::kRTCGpuCodecSupportWaiter)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   int timeout_ms = base::GetFieldTrialParamByFeatureAsInt(
       features::kRTCGpuCodecSupportWaiter,

@@ -59,13 +59,13 @@ int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
              : 0;
 }
 
-void BrowserFrameViewLinuxNative::Layout() {
-  // Calling MaybeUpdateCachedFrameButtonImages() from Layout() is sufficient to
-  // catch all cases that could update the appearance, since
+void BrowserFrameViewLinuxNative::Layout(PassKey) {
+  // Calling MaybeUpdateCachedFrameButtonImages() here is sufficient to catch
+  // all cases that could update the appearance, since
   // DesktopWindowTreeHostPlatform::On{Window,Activation}StateChanged() does a
   // layout any time the maximized and activation state changes, respectively.
   MaybeUpdateCachedFrameButtonImages();
-  OpaqueBrowserFrameView::Layout();
+  LayoutSuperclass<OpaqueBrowserFrameView>(this);
 }
 
 BrowserFrameViewLinuxNative::FrameButtonStyle

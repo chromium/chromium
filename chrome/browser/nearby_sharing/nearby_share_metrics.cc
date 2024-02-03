@@ -932,3 +932,9 @@ void RecordNearbyShareInitiatedToAllFilesSentDuration(base::TimeDelta delta) {
 void RecordNearbyShareError(NearbyShareError error_code) {
   base::UmaHistogramEnumeration("Nearby.Share.Error", error_code);
 }
+
+void RecordNearbySharePairedKeyVerificationError(
+    NearbySharePairedKeyVerificationError error) {
+  base::UmaHistogramEnumeration("Nearby.Share.PairedKeyVerificationError",
+                                error);
+}

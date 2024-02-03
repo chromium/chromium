@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_ANIMATION_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 
@@ -32,7 +32,7 @@ class PLATFORM_EXPORT CompositorAnimationDelegate {
       double animation_start_time,
       std::unique_ptr<gfx::AnimationCurve> curve) {}
   virtual void NotifyLocalTimeUpdated(
-      absl::optional<base::TimeDelta> local_time) {}
+      std::optional<base::TimeDelta> local_time) {}
 };
 
 }  // namespace blink

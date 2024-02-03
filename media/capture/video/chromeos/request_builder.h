@@ -6,6 +6,7 @@
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_REQUEST_BUILDER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -35,7 +35,7 @@ struct BufferInfo {
 class CAPTURE_EXPORT RequestBuilder {
  public:
   using RequestBufferCallback =
-      base::RepeatingCallback<absl::optional<BufferInfo>(StreamType)>;
+      base::RepeatingCallback<std::optional<BufferInfo>(StreamType)>;
 
   RequestBuilder(CameraDeviceContext* device_context,
                  // Callback to request buffer from StreamBufferManager. Having
@@ -54,7 +54,7 @@ class CAPTURE_EXPORT RequestBuilder {
   // Camera3StreamBufferRet.
   cros::mojom::Camera3StreamBufferPtr CreateStreamBuffer(
       StreamType stream_type,
-      absl::optional<BufferInfo> buffer_info);
+      std::optional<BufferInfo> buffer_info);
 
  private:
   cros::mojom::CameraBufferHandlePtr CreateCameraBufferHandle(

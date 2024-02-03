@@ -111,25 +111,12 @@ enum class Microsoft365Availability {
 
 // Opens the file specified by |url| in a new tab. |url| must be a
 // docs.google.com URL for an office file.
-OfficeDriveOpenErrors OpenDriveUrl(const GURL& url) {
-  if (!url.is_valid()) {
-    LOG(ERROR) << "Invalid URL";
-    return OfficeDriveOpenErrors::kInvalidAlternateUrl;
-  }
-  if (url.host() == "drive.google.com") {
-    LOG(ERROR) << "URL was from drive.google.com";
-    return OfficeDriveOpenErrors::kDriveAlternateUrl;
-  }
-  if (url.host() != "docs.google.com") {
-    LOG(ERROR) << "URL was not from docs.google.com";
-    return OfficeDriveOpenErrors::kUnexpectedAlternateUrl;
-  }
-
+void OpenDriveUrl(const GURL& url) {
+  DCHECK(url.host() == "docs.google.com");
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       net::AppendOrReplaceQueryParameter(url, "cros_files", "true"),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-  return OfficeDriveOpenErrors::kSuccess;
 }
 
 // Handle system error notification "Sign in" click.
@@ -524,12 +511,28 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
   OfficeDriveOpenErrors open_result = OfficeDriveOpenErrors::kSuccess;
-  if (error == drive::FILE_ERROR_OK) {
-    GURL hosted_url(metadata->alternate_url);
-    open_result = OpenDriveUrl(hosted_url);
-  } else {
+  GURL hosted_url(metadata->alternate_url);
+  if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Drive metadata error: " << error;
     open_result = OfficeDriveOpenErrors::kNoMetadata;
+  } else if (hosted_url.is_empty() &&
+             metadata->item_id.value_or("").starts_with("local-")) {
+    LOG(ERROR) << "Local item id, the file hasn't been uploaded";
+    open_result = OfficeDriveOpenErrors::kWaitingForUpload;
+  } else if (hosted_url.is_empty()) {
+    LOG(ERROR) << "Empty URL";
+    open_result = OfficeDriveOpenErrors::kEmptyAlternateUrl;
+  } else if (!hosted_url.is_valid()) {
+    LOG(ERROR) << "Invalid URL";
+    open_result = OfficeDriveOpenErrors::kInvalidAlternateUrl;
+  } else if (hosted_url.host() == "drive.google.com") {
+    LOG(ERROR) << "URL was from drive.google.com";
+    open_result = OfficeDriveOpenErrors::kDriveAlternateUrl;
+  } else if (hosted_url.host() != "docs.google.com") {
+    LOG(ERROR) << "URL was not from docs.google.com";
+    open_result = OfficeDriveOpenErrors::kUnexpectedAlternateUrl;
+  } else {
+    OpenDriveUrl(hosted_url);
   }
   LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened, open_result);
 }
@@ -541,8 +544,8 @@ void CloudOpenTask::OpenUploadedDriveUrl(const GURL& url,
   // TODO(b/296950967): This function logs both open result and task result (but
   // only if open fails) metrics internally, pull them up to a higher level so
   // all the metrics are logged in one place.
-  OfficeDriveOpenErrors open_result = OpenDriveUrl(url);
-  LogGoogleDriveOpenResultUMA(task_result, open_result);
+  OpenDriveUrl(url);
+  LogGoogleDriveOpenResultUMA(task_result, OfficeDriveOpenErrors::kSuccess);
 }
 
 void CloudOpenTask::OpenODFSUrls(const OfficeTaskResult task_result_uma) {
@@ -758,7 +761,8 @@ void CloudOpenTask::CheckEmailAndOpenURLs(
   }
   // Query whether the account logged into Android OneDrive is the
   // same as ODFS.
-  if (android_onedrive_email == metadata_or_error->user_email) {
+  if (base::ToLowerASCII(android_onedrive_email) ==
+      base::ToLowerASCII(metadata_or_error->user_email)) {
     OpenAndroidOneDriveUrls(profile_, file_urls_, std::move(callback));
   } else {
     LOG(ERROR) << "Email accounts associated with ODFS and "

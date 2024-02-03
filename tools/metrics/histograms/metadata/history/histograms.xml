@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Backend.TransactionCommitError"
-    enum="SqliteLoggedResultCode" expires_after="2024-02-04">
+    enum="SqliteLoggedResultCode" expires_after="2025-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>asully@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Backend.TransactionCommitSuccess"
-    enum="BooleanSuccess" expires_after="2024-02-04">
+    enum="BooleanSuccess" expires_after="2025-02-04">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1651,7 +1651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V3" units="domains"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>

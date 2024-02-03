@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 
@@ -51,6 +52,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
 
     // TargetDeviceConnectionBrokerFactory:
     std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
+        SessionContext* session_context,
         QuickStartConnectivityService* quick_start_connectivity_service)
         override;
 
@@ -59,6 +61,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   };
 
   explicit FakeTargetDeviceConnectionBroker(
+      SessionContext* session_context,
       QuickStartConnectivityService* quick_start_connectivity_service);
   FakeTargetDeviceConnectionBroker(FakeTargetDeviceConnectionBroker&) = delete;
   FakeTargetDeviceConnectionBroker& operator=(
@@ -115,6 +118,10 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     return start_advertising_use_pin_authentication_;
   }
 
+  SessionContext::SessionId session_id() {
+    return session_context_->session_id();
+  }
+
   FakeConnection* GetFakeConnection();
 
  private:
@@ -124,6 +131,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
       FeatureSupportStatus::kSupported;
   ResultCallback on_start_advertising_callback_;
   base::OnceClosure on_stop_advertising_callback_;
+  raw_ptr<SessionContext> session_context_;
   raw_ptr<QuickStartConnectivityService> quick_start_connectivity_service_;
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<FakeConnection> connection_;

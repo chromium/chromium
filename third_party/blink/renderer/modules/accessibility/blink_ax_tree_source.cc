@@ -125,7 +125,7 @@ void BlinkAXTreeSource::Selection(
 }
 
 static ui::AXTreeID GetAXTreeID(LocalFrame* local_frame) {
-  const absl::optional<base::UnguessableToken>& embedding_token =
+  const std::optional<base::UnguessableToken>& embedding_token =
       local_frame->GetEmbeddingToken();
   if (embedding_token && !embedding_token->is_empty())
     return ui::AXTreeID::FromToken(embedding_token.value());

@@ -78,6 +78,7 @@ void AsyncCheckTracker::TransferUrlChecker(
   std::optional<int64_t> navigation_id = checker->navigation_id();
   CHECK(navigation_id.has_value());
   int64_t id = navigation_id.value();
+  DVLOG(1) << __func__ << " : navigation id: " << id;
   // If there is an old checker with the same navigation_id, we should delete
   // the old one since the navigation only holds one url_loader and it has
   // decided to delete the old one.
@@ -92,8 +93,17 @@ void AsyncCheckTracker::TransferUrlChecker(
 void AsyncCheckTracker::PendingCheckerCompleted(
     int64_t navigation_id,
     UrlCheckerOnSB::OnCompleteCheckResult result) {
+  DVLOG(1) << __func__ << " : navigation id: " << navigation_id
+           << " proceed: " << result.proceed
+           << " has_post_commit_interstitial_skipped: "
+           << result.has_post_commit_interstitial_skipped;
   if (!base::Contains(pending_checkers_, navigation_id)) {
     return;
+  }
+  if (!result.proceed) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.AsyncCheck.HasPostCommitInterstitialSkipped",
+        result.has_post_commit_interstitial_skipped);
   }
   if (result.has_post_commit_interstitial_skipped) {
     CHECK(!result.proceed);
@@ -139,6 +149,10 @@ void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
   base::UmaHistogramCounts10000(
       "SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize",
       committed_navigation_timestamps_.size());
+  DVLOG(1) << __func__ << " : navigation id: " << navigation_id
+           << " url: " << handle->GetURL()
+           << " show_interstitial_after_finish_navigation_: "
+           << show_interstitial_after_finish_navigation_;
 
   if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument() ||
       !handle->HasCommitted()) {
@@ -175,6 +189,9 @@ void AsyncCheckTracker::MaybeDisplayBlockingPage(
   auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
   resource.render_process_id = primary_main_frame->GetGlobalId().child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+  // Reports were already sent when BaseUIManager attempted to trigger post
+  // commit error page, so don't send it again.
+  resource.should_send_reports = false;
   // The callback has already been run when BaseUIManager attempts to
   // trigger post commit error page, so there is no need to run again.
   resource.callback = base::DoNothing();

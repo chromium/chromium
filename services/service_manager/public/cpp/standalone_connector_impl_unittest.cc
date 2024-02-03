@@ -4,6 +4,8 @@
 
 #include "services/service_manager/public/cpp/standalone_connector_impl.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -12,7 +14,6 @@
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/standalone_connector_impl_unittest.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 namespace standalone_connector_impl_unittest {
@@ -57,7 +58,7 @@ TEST_F(StandaloneConnectorImplTest, Connect) {
   const std::string kBarServiceName = "bar_service";
 
   int requests_processed = 0;
-  absl::optional<base::RunLoop> loop;
+  std::optional<base::RunLoop> loop;
   TestConnectorDelegate delegate([&](const std::string& service_name,
                                      mojo::GenericPendingReceiver receiver) {
     ASSERT_TRUE(receiver);

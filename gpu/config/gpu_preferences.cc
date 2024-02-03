@@ -73,13 +73,7 @@ GpuPreferences::~GpuPreferences() = default;
 
 std::string GpuPreferences::ToSwitchValue() {
   std::vector<uint8_t> serialized = gpu::mojom::GpuPreferences::Serialize(this);
-
-  std::string encoded;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(serialized.data()),
-                        serialized.size()),
-      &encoded);
-  return encoded;
+  return base::Base64Encode(serialized);
 }
 
 bool GpuPreferences::FromSwitchValue(const std::string& data) {

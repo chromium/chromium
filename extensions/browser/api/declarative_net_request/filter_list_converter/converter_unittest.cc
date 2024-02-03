@@ -14,9 +14,7 @@
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
-namespace declarative_net_request {
-namespace filter_list_converter {
+namespace extensions::declarative_net_request::filter_list_converter {
 namespace {
 
 void TestConversion(std::vector<std::string> filter_list_rules,
@@ -165,6 +163,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            WriteType::kJSONRuleset));
 
 }  // namespace
-}  // namespace filter_list_converter
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request::filter_list_converter

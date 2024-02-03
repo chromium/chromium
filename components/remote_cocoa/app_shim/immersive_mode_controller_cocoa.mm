@@ -4,6 +4,8 @@
 
 #include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 
+#include <utility>
+
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -260,8 +262,7 @@ void ImmersiveModeControllerCocoa::Init() {
 
 void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
   fullscreen_transition_complete_ = true;
-  UpdateToolbarVisibility(last_used_style_);
-
+  ForceToolbarVisibilityUpdate();
   //  Establish reveal locks for windows that exist before entering fullscreen,
   //  such as permission popups and the find bar. Do this after the fullscreen
   //  transition has ended to avoid graphical flashes during the animation.
@@ -309,31 +310,35 @@ void ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(
     [overlay_view setFrameSize:size];
   }
 
-  UpdateToolbarVisibility(last_used_style_);
-
   // If the toolbar is always visible, update the fullscreen min height.
   // Also update the fullscreen min height if the toolbar auto hides, but only
   // if the toolbar is currently revealed.
-  if (last_used_style_ == mojom::ToolbarVisibilityStyle::kAlways ||
-      (last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide &&
-       reveal_lock_count_ > 0)) {
+  if (fullscreen_transition_complete_ &&
+      (last_used_style_ == mojom::ToolbarVisibilityStyle::kAlways ||
+       (last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide &&
+        reveal_lock_count_ > 0))) {
     [immersive_mode_titlebar_view_controller_
         setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
   }
 }
 
 void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
-    mojom::ToolbarVisibilityStyle style) {
+    std::optional<mojom::ToolbarVisibilityStyle> style) {
   // Remember the last used style for internal use of UpdateToolbarVisibility.
-  last_used_style_ = style;
+  std::optional<mojom::ToolbarVisibilityStyle> old_style =
+      std::exchange(last_used_style_, style);
+  if (!style.has_value() || old_style == style) {
+    return;
+  }
 
   // Only make changes if there are no outstanding reveal locks.
   if (reveal_lock_count_ > 0) {
     return;
   }
 
-  switch (style) {
+  switch (style.value()) {
     case mojom::ToolbarVisibilityStyle::kAlways:
+      SetIgnoreRevealLocks(false);
       [immersive_mode_titlebar_view_controller_
           setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
 
@@ -349,27 +354,40 @@ void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
       // displayed z-order on top of the content view. This will cover up any
       // perceived jank.
       // TODO(https://crbug.com/1375995): Handle fullscreen exit.
-      if (fullscreen_transition_complete_) {
-        browser_window_.styleMask &= ~NSWindowStyleMaskFullSizeContentView;
-      } else {
-        browser_window_.styleMask |= NSWindowStyleMaskFullSizeContentView;
+      if (!fullscreen_transition_complete_) {
+        break;
       }
 
-      // Toggling the controller will allow the content view to resize below Top
-      // Chrome.
-      [immersive_mode_titlebar_view_controller_ forceVisibilityRefresh];
+      // Only force a visibility refresh if necessary.
+      if (browser_window_.styleMask & NSWindowStyleMaskFullSizeContentView) {
+        browser_window_.styleMask &= ~NSWindowStyleMaskFullSizeContentView;
+        [immersive_mode_titlebar_view_controller_ forceVisibilityRefresh];
+      }
       break;
     case mojom::ToolbarVisibilityStyle::kAutohide:
+      SetIgnoreRevealLocks(false);
       [immersive_mode_titlebar_view_controller_
           setVisibility:mojom::ToolbarVisibilityStyle::kAutohide];
       browser_window_.styleMask |= NSWindowStyleMaskFullSizeContentView;
       break;
     case mojom::ToolbarVisibilityStyle::kNone:
+      SetIgnoreRevealLocks(true);
       [immersive_mode_titlebar_view_controller_
           setVisibility:mojom::ToolbarVisibilityStyle::kNone];
       UpdateThinControllerVisibility();
       break;
   }
+}
+
+void ImmersiveModeControllerCocoa::ForceToolbarVisibilityUpdate() {
+  // If a style has not been set, there is nothing else to do.
+  if (!last_used_style_.has_value()) {
+    return;
+  }
+
+  // Set `last_used_style_` to std::nullopt so that the passed in style and
+  // `last_used_style_` are different, forcing a visibility update.
+  UpdateToolbarVisibility(std::exchange(last_used_style_, std::nullopt));
 }
 
 void ImmersiveModeControllerCocoa::ObserveChildWindows(NSWindow* window) {
@@ -440,24 +458,52 @@ void ImmersiveModeControllerCocoa::OnChildWindowRemoved(NSWindow* child) {
 
 void ImmersiveModeControllerCocoa::RevealLock() {
   reveal_lock_count_++;
+  if (ignore_reveal_locks_) {
+    return;
+  }
+  ApplyRevealLockState();
+}
+
+void ImmersiveModeControllerCocoa::RevealUnlock() {
+  reveal_lock_count_--;
+  CHECK(reveal_lock_count_ >= 0);
+  if (ignore_reveal_locks_) {
+    return;
+  }
+  ApplyRevealLockState();
+}
+
+void ImmersiveModeControllerCocoa::ApplyRevealLockState() {
+  if (reveal_lock_count_) {
+    RevealLocked();
+  } else {
+    RevealUnlocked();
+  }
+}
+
+void ImmersiveModeControllerCocoa::SetIgnoreRevealLocks(bool ignore) {
+  // Set the new ignore value. If the value is same, return. If ignore is true
+  // all we needed to do is update the ignore_reveal_locks_, which we just did
+  // so also return.
+  bool was_ignore = std::exchange(ignore_reveal_locks_, ignore);
+  if (was_ignore == ignore_reveal_locks_ || ignore_reveal_locks_) {
+    return;
+  }
+
+  // If we make it here, we are disabling ignore reveal locks. In other words we
+  // are going to stop ignoring the reveal locks. We need to visually apply the
+  // correct reveal state to make up for any missed calls to RevealLocked() /
+  // RevealUnlocked() while the ignore was in place.
+  ApplyRevealLockState();
+}
+
+void ImmersiveModeControllerCocoa::RevealLocked() {
   [immersive_mode_titlebar_view_controller_
       setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
 }
 
-void ImmersiveModeControllerCocoa::RevealUnlock() {
-  // Re-hide the toolbar if appropriate.
-  if (--reveal_lock_count_ < 1 &&
-      immersive_mode_titlebar_view_controller_.fullScreenMinHeight > 0 &&
-      last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide) {
-    [immersive_mode_titlebar_view_controller_
-        setVisibility:mojom::ToolbarVisibilityStyle::kAutohide];
-  }
-
-  // Account for last_used_style_ changing while a reveal lock was active.
-  if (reveal_lock_count_ < 1) {
-    UpdateToolbarVisibility(last_used_style_);
-  }
-  DCHECK(reveal_lock_count_ >= 0);
+void ImmersiveModeControllerCocoa::RevealUnlocked() {
+  ForceToolbarVisibilityUpdate();
 }
 
 bool ImmersiveModeControllerCocoa::IsToolbarRevealed() {
@@ -522,9 +568,12 @@ bool ImmersiveModeControllerCocoa::IsContentFullscreen() {
 }
 
 double ImmersiveModeControllerCocoa::GetOffscreenYOrigin() {
-  // Get the height of the screen. Using this as the y origin will move a window
-  // offscreen.
-  double y = browser_window_.screen.frame.size.height;
+  // Get the height of the screen plus the browser window's y origin. Use this
+  // as the y origin for the overlay windows, it will move them offscreen. The
+  // browser window's y origin is especially important for external displays
+  // where the y origin is not 0, such as vertically aligned displays.
+  double y =
+      browser_window_.screen.frame.size.height + browser_window_.frame.origin.y;
 
   // Make sure to make it past the safe area insets, otherwise some portion
   // of the window may still be displayed.

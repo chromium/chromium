@@ -6,10 +6,11 @@
 
 #include "base/strings/string_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
-const std::string& MaybeGetExtensionId(const Extension* extension) {
+const ExtensionId& MaybeGetExtensionId(const Extension* extension) {
   return extension ? extension->id() : base::EmptyString();
 }
 

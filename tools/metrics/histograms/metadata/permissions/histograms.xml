@@ -52,6 +52,17 @@ chromium-metrics-reviews@google.com.
   <variant name="WindowPlacement"/>
 </variants>
 
+<variants name="ContentSettingSource">
+  <variant name="FromAllowlist"/>
+  <variant name="FromExtension"/>
+  <variant name="FromInstalledWebApp"/>
+  <variant name="FromNone"/>
+  <variant name="FromPolicy"/>
+  <variant name="FromSourceTpcdGrant"/>
+  <variant name="FromSupervised"/>
+  <variant name="FromUser"/>
+</variants>
+
 <variants name="PermissionTypesSupportPermissionsPolicy">
   <variant name="AR"/>
   <variant name="AudioCapture"/>
@@ -260,24 +271,6 @@ chromium-metrics-reviews@google.com.
     prompt has been shown and it is placed under embargo for repeated
     dismissals, or when a permission prompt is shown and not embargoed.
   </summary>
-</histogram>
-
-<histogram name="Permissions.Chip.TimeToDecision.{RequestAction}" units="ms"
-    expires_after="2024-07-31">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records how long it takes for the user to make a decision about permission
-    request when chip request UI is shown, from when permission prompt is shown
-    until when the user clicks on one of the buttons in the prompt (accept,
-    block or close).
-  </summary>
-  <token key="RequestAction">
-    <variant name="Accepted"/>
-    <variant name="AcceptedOnce"/>
-    <variant name="Denied"/>
-    <variant name="Dismissed"/>
-  </token>
 </histogram>
 
 <histogram name="Permissions.Chip.TimeToInteraction" units="ms"
@@ -864,25 +857,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.Prompt.TimeToDecision.{RequestAction}" units="ms"
-    expires_after="2024-07-31">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records how long it takes for the user to make a decision about permission
-    request when prompt request UI is shown, from when permission prompt is
-    shown until when the user clicks on one of the buttons in the prompt
-    (accept, block or close). Warning: this histogram was expired from
-    2023-05-30 to 2023-07-04; data may be missing.
-  </summary>
-  <token key="RequestAction">
-    <variant name="Accepted"/>
-    <variant name="AcceptedOnce"/>
-    <variant name="Denied"/>
-    <variant name="Dismissed"/>
-  </token>
-</histogram>
-
 <histogram name="Permissions.Prompt.{PermissionType}.{Disposition}.Action"
     enum="PermissionAction" expires_after="2024-06-30">
   <owner>elklm@chromium.org</owner>
@@ -954,7 +928,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.{Disposition}.{Action}.TimeToAction"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2025-06-30">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -973,6 +947,7 @@ chromium-metrics-reviews@google.com.
   <token key="Disposition">
     <variant name="AnchoredBubble"/>
     <variant name="CustomModalDialog"/>
+    <variant name="ElementAnchoredBubble"/>
     <variant name="LocationBarLeftChip"/>
     <variant name="LocationBarLeftChipAutoBubble"/>
     <variant name="LocationBarLeftQuietAbusiveChip"/>
@@ -1004,7 +979,7 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Recrods {ButtonClick} if a user clicked on &quot;Leanr More&quot; or
+    Records {ButtonClick} if a user clicked on &quot;Learn More&quot; or
     &quot;Manage&quot; buttons on the quiet chip of type {PermissionType} with
     {Disposition} disposition. Recorded when the permission prompt gets resolved
     with {Action} action and only for the quiet chip.
@@ -1033,7 +1008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.{PermissionType}.{Gesture}.Attempt"
-    enum="Boolean" expires_after="2024-04-28">
+    enum="Boolean" expires_after="2024-07-28">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>Recorded when a permission prompt creation is in progress.</summary>
@@ -1113,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Request.CrossOrigin" enum="PermissionType"
-    expires_after="2024-05-19">
+    expires_after="2024-07-28">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1201,6 +1176,21 @@ chromium-metrics-reviews@google.com.
     usage. This histogram will be recorded only for the first usage of a given
     permission after the site has loaded.
   </summary>
+</histogram>
+
+<histogram base="true"
+    name="Permissions.Usage.ElapsedTimeSinceGrant.{PermissionType}.{Source}"
+    units="seconds" expires_after="2024-07-21">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time elapsed since the grant of the permission until it's latest
+    usage for a particular content setting source. This histogram will be
+    recorded only for the first usage of a given permission after the site has
+    loaded.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="Source" variants="ContentSettingSource"/>
 </histogram>
 
 <histogram name="Permissions.Usage.Notifications.DidRecordUkm" enum="Boolean"

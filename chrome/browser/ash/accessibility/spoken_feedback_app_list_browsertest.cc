@@ -74,13 +74,12 @@ class TestSearchProvider : public app_list::SearchProvider {
                      ChromeSearchResult::DisplayType display_type,
                      ChromeSearchResult::Category category,
                      ChromeSearchResult::ResultType result_type,
-                     ash::AppListSearchControlCategory control_category)
-      : prefix_(prefix),
+                     app_list::SearchCategory search_category)
+      : SearchProvider(search_category),
+        prefix_(prefix),
         display_type_(display_type),
         category_(category),
-        result_type_(result_type) {
-    set_control_category(control_category);
-  }
+        result_type_(result_type) {}
 
   TestSearchProvider(const TestSearchProvider&) = delete;
   TestSearchProvider& operator=(const TestSearchProvider&) = delete;
@@ -147,7 +146,7 @@ void InitializeTestSearchProviders(
           "app", ChromeSearchResult::DisplayType::kList,
           ChromeSearchResult::Category::kApps,
           ChromeSearchResult::ResultType::kInstalledApp,
-          ash::AppListSearchControlCategory::kApps);
+          app_list::SearchCategory::kApps);
   *apps_provider_ptr = apps_provider.get();
   search_controller->AddProvider(std::move(apps_provider));
 
@@ -156,7 +155,7 @@ void InitializeTestSearchProviders(
           "item", ChromeSearchResult::DisplayType::kList,
           ChromeSearchResult::Category::kWeb,
           ChromeSearchResult::ResultType::kOmnibox,
-          ash::AppListSearchControlCategory::kWeb);
+          app_list::SearchCategory::kWeb);
   *web_provider_ptr = web_provider.get();
   search_controller->AddProvider(std::move(web_provider));
 
@@ -165,7 +164,7 @@ void InitializeTestSearchProviders(
           "image", ChromeSearchResult::DisplayType::kImage,
           ChromeSearchResult::Category::kFiles,
           ChromeSearchResult::ResultType::kImageSearch,
-          ash::AppListSearchControlCategory::kImages);
+          app_list::SearchCategory::kImages);
   *image_provider_ptr = image_provider.get();
   search_controller->AddProvider(std::move(image_provider));
 }

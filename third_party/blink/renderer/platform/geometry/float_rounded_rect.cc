@@ -66,12 +66,12 @@ void FloatRoundedRect::Radii::SetMinimumRadius(float minimum_radius) {
   bottom_right_.set_height(std::max(minimum_radius, bottom_right_.height()));
 }
 
-absl::optional<float> FloatRoundedRect::Radii::UniformRadius() const {
+std::optional<float> FloatRoundedRect::Radii::UniformRadius() const {
   if (top_left_.width() == top_left_.height() && top_left_ == top_right_ &&
       top_left_ == bottom_left_ && top_left_ == bottom_right_) {
     return top_left_.width();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FloatRoundedRect::Radii::Scale(float factor) {

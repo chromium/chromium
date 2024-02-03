@@ -8,6 +8,7 @@
 #include <cstring>
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <set>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

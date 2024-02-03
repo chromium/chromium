@@ -22,7 +22,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "components/supervised_user/core/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/signin_helper_lacros.h"
@@ -123,7 +122,8 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
   CoreAccountInfo account = ComputeUnconsentedPrimaryAccountInfo();
 
   if (!account.IsEmpty()) {
-    if (!base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+            switches::ExplicitBrowserSigninPhase::kExperimental) &&
         identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin) != account) {
       DCHECK(
@@ -231,9 +231,7 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
     bool is_subject_to_parental_controls =
         extended_account_info.capabilities.is_subject_to_parental_controls() ==
         signin::Tribool::kTrue;
-    if (is_subject_to_parental_controls &&
-        base::FeatureList::IsEnabled(
-            supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+    if (is_subject_to_parental_controls) {
       // For supervised users, in some cases like clear browsing data including
       // cookies, they shouldn't be signed out. If the refresh token is valid
       // and not in error state, the account reconcilor will rebuild cookies.

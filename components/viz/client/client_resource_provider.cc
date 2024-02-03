@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -291,6 +292,7 @@ void ClientResourceProvider::PrepareSendToParentInternal(
 
 void ClientResourceProvider::ReceiveReturnsFromParent(
     std::vector<ReturnedResource> resources) {
+  TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // |imported_resources_| is a set sorted by id, so if we sort the incoming

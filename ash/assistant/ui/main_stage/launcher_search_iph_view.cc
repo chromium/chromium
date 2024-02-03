@@ -203,8 +203,7 @@ LauncherSearchIphView::LauncherSearchIphView(
     box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,
         base::i18n::IsRTL() ? kBackgroundRadiiClamshellRTL
-                            : kBackgroundRadiiClamshellLTR,
-        /*for_border_thickness=*/0));
+                            : kBackgroundRadiiClamshellLTR));
   }
 }
 

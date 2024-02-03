@@ -37,6 +37,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
 
+import java.util.function.DoubleConsumer;
+
 /** A {@link Pane} representing the regular tab switcher. */
 public class TabSwitcherPane extends TabSwitcherPaneBase {
     private final TabModelObserver mTabModelObserver =
@@ -62,6 +64,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
      * @param tabModelFilterSupplier The supplier of the regular {@link TabModelFilter}.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param tabSwitcherDrawableCoordinator The drawable to represent the pane.
+     * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      */
     TabSwitcherPane(
             @NonNull Context context,
@@ -70,11 +73,9 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull Supplier<TabModelFilter> tabModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
-            @NonNull TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator) {
-        super(
-                context,
-                factory,
-                /* isIncognito= */ false);
+            @NonNull TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator,
+            @NonNull DoubleConsumer onToolbarAlphaChange) {
+        super(context, factory, /* isIncognito= */ false, onToolbarAlphaChange);
         mSharedPreferences = sharedPreferences;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;

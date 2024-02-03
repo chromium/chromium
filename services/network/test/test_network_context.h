@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TEST_TEST_NETWORK_CONTEXT_H_
 
 #include <cstdint>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
@@ -134,9 +134,9 @@ class TestNetworkContext : public mojom::NetworkContext {
       const std::string& type,
       const std::string& group,
       const GURL& url,
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const absl::optional<std::string>& user_agent,
+      const std::optional<std::string>& user_agent,
       base::Value::Dict body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
@@ -170,7 +170,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojo::PendingReceiver<mojom::TCPServerSocket> socket,
       CreateTCPServerSocketCallback callback) override {}
   void CreateTCPConnectedSocket(
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -201,7 +201,7 @@ class TestNetworkContext : public mojom::NetworkContext {
           url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
-      const absl::optional<base::UnguessableToken>& throttling_profile_id)
+      const std::optional<base::UnguessableToken>& throttling_profile_id)
       override {}
   void CreateWebTransport(
       const GURL& url,
@@ -223,7 +223,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojom::ResolveHostParametersPtr optional_parameters,
       mojo::PendingRemote<mojom::ResolveHostClient> response_client) override {}
   void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
+      const std::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<mojom::HostResolver> receiver) override {}
   void NotifyExternalCacheHit(const GURL& url,
                               const std::string& http_method,
@@ -339,7 +339,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate) override {}
   void SetCookieDeprecationLabel(
-      const absl::optional<std::string>& label) override {}
+      const std::optional<std::string>& label) override {}
 };
 
 }  // namespace network

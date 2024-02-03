@@ -14,7 +14,7 @@
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/web_state_observer.h"

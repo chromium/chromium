@@ -45,7 +45,7 @@ mojom::TrustTokenOperationStatus
 TrustTokenRequestHelperTest::ExecuteBeginOperationAndWaitForResult(
     TrustTokenRequestHelper* helper,
     net::URLRequest* request) {
-  base::test::TestFuture<absl::optional<net::HttpRequestHeaders>,
+  base::test::TestFuture<std::optional<net::HttpRequestHeaders>,
                          mojom::TrustTokenOperationStatus>
       future;
   helper->Begin(request->url(), future.GetCallback());
@@ -120,8 +120,8 @@ TrustTokenTestParameters& TrustTokenTestParameters::operator=(
 TrustTokenTestParameters::TrustTokenTestParameters(
     int version,
     network::mojom::TrustTokenOperationType operation,
-    absl::optional<network::mojom::TrustTokenRefreshPolicy> refresh_policy,
-    absl::optional<std::vector<std::string>> issuer_specs)
+    std::optional<network::mojom::TrustTokenRefreshPolicy> refresh_policy,
+    std::optional<std::vector<std::string>> issuer_specs)
     : version(version),
       operation(operation),
       refresh_policy(refresh_policy),

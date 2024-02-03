@@ -243,20 +243,6 @@ void BlocklistAddOneDll(const wchar_t* module_name,
   }
 }
 
-DWORD GetSessionId() {
-  DWORD session_id;
-  CHECK(::ProcessIdToSessionId(::GetCurrentProcessId(), &session_id));
-  return session_id;
-}
-
-// Returns the object path prepended with the current logon session.
-std::wstring PrependWindowsSessionPath(const wchar_t* object) {
-  // Cache this because it can't change after process creation.
-  static DWORD s_session_id = GetSessionId();
-  return base::StrCat(
-      {L"\\Sessions\\", base::NumberToWString(s_session_id), object});
-}
-
 // Adds the generic config rules to a sandbox TargetConfig.
 ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
@@ -323,11 +309,7 @@ ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
     return result;
 
   config->SetLockdownDefaultDacl();
-
-  result = config->AddKernelObjectToClose(L"File", L"\\Device\\DeviceApi");
-  if (result != SBOX_ALL_OK)
-    return result;
-
+  config->AddKernelObjectToClose(HandleToClose::kDeviceApi);
   config->SetDesktop(Desktop::kAlternateWinstation);
 
   if (base::FeatureList::IsEnabled(
@@ -468,8 +450,8 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
   }
 
   auto sha1 = base::SHA1HashString(appcontainer_id);
-  std::string profile_name = base::StrCat(
-      {sandbox_base_name, base::HexEncode(sha1.data(), sha1.size())});
+  std::string profile_name =
+      base::StrCat({sandbox_base_name, base::HexEncode(sha1)});
   // CreateAppContainerProfile requires that the profile name is at most 64
   // characters but 50 on WCOS systems.  The size of sha1 is a constant 40,
   // so validate that the base names are sufficiently short that the total
@@ -614,13 +596,8 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     return result;
 
   if (process_type == switches::kRendererProcess) {
-    if (base::FeatureList::IsEnabled(features::kWinSboxRendererCloseKsecDD)) {
-      // TODO(crbug.com/74242) Remove if we can avoid loading cryptbase.dll.
-      result = config->AddKernelObjectToClose(L"File", L"\\Device\\KsecDD");
-      if (result != SBOX_ALL_OK) {
-        return result;
-      }
-    }
+    // TODO(crbug.com/74242) Remove if we can reliably not load cryptbase.dll.
+    config->AddKernelObjectToClose(HandleToClose::kKsecDD);
     result = SandboxWin::AddWin32kLockdownPolicy(config);
     if (result != SBOX_ALL_OK) {
       return result;
@@ -786,20 +763,15 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
 }
 
 // static
-ResultCode SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
+void SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
 
   if (base::FeatureList::IsEnabled(kEnableCsrssLockdownFeature)) {
     // Close all ALPC ports.
-    ResultCode ret = config->SetDisconnectCsrss();
-    if (ret != SBOX_ALL_OK)
-      return ret;
+    config->SetDisconnectCsrss();
   }
 
-  // TODO(cpu): Add back the BaseNamedObjects policy.
-  std::wstring object_path = PrependWindowsSessionPath(
-      L"\\BaseNamedObjects\\windows_shell_global_counters");
-  return config->AddKernelObjectToClose(L"Section", object_path.data());
+  config->AddKernelObjectToClose(HandleToClose::kWindowsShellGlobalCounters);
 }
 
 // static

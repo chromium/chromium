@@ -15,8 +15,29 @@ source_set("model") {
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/ui/search_engine_choice:ui_util",
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "search_engine_choice_util_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/search_engines",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/policy/model:test_support",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/search_engine_choice:constants",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
 }

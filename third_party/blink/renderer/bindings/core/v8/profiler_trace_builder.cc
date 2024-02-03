@@ -67,20 +67,22 @@ void ProfilerTraceBuilder::AddSample(
       /*cross_origin_isolated_capability=*/true);
 
   sample->setTimestamp(relative_timestamp);
-  if (absl::optional<wtf_size_t> stack_id = GetOrInsertStackId(node))
+  if (std::optional<wtf_size_t> stack_id = GetOrInsertStackId(node)) {
     sample->setStackId(*stack_id);
+  }
 
-  if (absl::optional<blink::V8ProfilerMarker> marker =
-          BlinkStateToMarker(embedder_state, state))
+  if (std::optional<blink::V8ProfilerMarker> marker =
+          BlinkStateToMarker(embedder_state, state)) {
     sample->setMarker(*marker);
+  }
 
   samples_.push_back(sample);
 }
 
-absl::optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
+std::optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
     const v8::CpuProfileNode* node) {
   if (!node)
-    return absl::optional<wtf_size_t>();
+    return std::optional<wtf_size_t>();
 
   if (!ShouldIncludeStackFrame(node))
     return GetOrInsertStackId(node->GetParent());
@@ -95,9 +97,10 @@ absl::optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
   auto* stack = ProfilerStack::Create();
   wtf_size_t frame_id = GetOrInsertFrameId(node);
   stack->setFrameId(frame_id);
-  if (absl::optional<int> parent_stack_id =
-          GetOrInsertStackId(node->GetParent()))
+  if (std::optional<int> parent_stack_id =
+          GetOrInsertStackId(node->GetParent())) {
     stack->setParentId(*parent_stack_id);
+  }
 
   wtf_size_t stack_id = stacks_.size();
   stacks_.push_back(stack);

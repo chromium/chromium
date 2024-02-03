@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
@@ -36,22 +35,13 @@
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "media/media_buildflags.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace content {
 
 namespace {
-
-MockRenderProcessHost::CreateNetworkFactoryCallback&
-GetNetworkFactoryCallback() {
-  static base::NoDestructor<MockRenderProcessHost::CreateNetworkFactoryCallback>
-      callback;
-  return *callback;
-}
 
 StoragePartitionConfig GetOrCreateStoragePartitionConfig(
     BrowserContext* browser_context,
@@ -92,8 +82,7 @@ MockRenderProcessHost::MockRenderProcessHost(
       keep_alive_ref_count_(0),
       worker_ref_count_(0),
       pending_reuse_ref_count_(0),
-      foreground_service_worker_count_(0),
-      url_loader_factory_(std::make_unique<FakeNetworkURLLoaderFactory>()) {
+      foreground_service_worker_count_(0) {
   // Child process security operations can't be unit tested unless we add
   // ourselves as an existing child process.
   ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
@@ -134,12 +123,6 @@ void MockRenderProcessHost::SimulateReady() {
   is_ready_ = true;
   for (auto& observer : observers_)
     observer.RenderProcessReady(this);
-}
-
-// static
-void MockRenderProcessHost::SetNetworkFactory(
-    const CreateNetworkFactoryCallback& create_network_factory_callback) {
-  GetNetworkFactoryCallback() = create_network_factory_callback;
 }
 
 bool MockRenderProcessHost::Init() {
@@ -516,20 +499,6 @@ mojom::Renderer* MockRenderProcessHost::GetRendererInterface() {
         renderer_interface_->BindNewEndpointAndPassDedicatedReceiver();
   }
   return renderer_interface_->get();
-}
-
-void MockRenderProcessHost::CreateURLLoaderFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    network::mojom::URLLoaderFactoryParamsPtr params) {
-  if (GetNetworkFactoryCallback().is_null()) {
-    url_loader_factory_->Clone(std::move(receiver));
-    return;
-  }
-
-  mojo::Remote<network::mojom::URLLoaderFactory> original_factory;
-  url_loader_factory_->Clone(original_factory.BindNewPipeAndPassReceiver());
-  GetNetworkFactoryCallback().Run(std::move(receiver), GetID(),
-                                  original_factory.Unbind());
 }
 
 bool MockRenderProcessHost::MayReuseHost() {

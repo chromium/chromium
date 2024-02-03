@@ -190,9 +190,9 @@ gfx::Rect ConvertToPaintingRect(const LayoutObject& input_layout_object,
   return ToPixelSnappedRect(part_rect);
 }
 
-absl::optional<SkColor> GetAccentColor(const ComputedStyle& style,
-                                       const Document& document) {
-  absl::optional<Color> css_accent_color = style.AccentColorResolved();
+std::optional<SkColor> GetAccentColor(const ComputedStyle& style,
+                                      const Document& document) {
+  std::optional<Color> css_accent_color = style.AccentColorResolved();
   if (css_accent_color)
     return css_accent_color->Rgb();
 
@@ -207,7 +207,7 @@ absl::optional<SkColor> GetAccentColor(const ComputedStyle& style,
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -519,7 +519,7 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
       DynamicTo<SliderThumbElement>(&element);
   DCHECK(slider_element);  // PaintSliderThumb should always be passed a
                            // SliderThumbElement
-  absl::optional<SkColor> accent_color =
+  std::optional<SkColor> accent_color =
       GetAccentColor(*slider_element->HostInput()->EnsureComputedStyle(),
                      element.GetDocument());
   WebThemeEngine::ExtraParams extra_params(slider);

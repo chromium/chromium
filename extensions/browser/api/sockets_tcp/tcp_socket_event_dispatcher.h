@@ -11,6 +11,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/sockets_tcp/sockets_tcp_api.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -32,10 +33,10 @@ class TCPSocketEventDispatcher : public BrowserContextKeyedAPI {
   ~TCPSocketEventDispatcher() override;
 
   // Socket is active, start receving from it.
-  void OnSocketConnect(const std::string& extension_id, int socket_id);
+  void OnSocketConnect(const ExtensionId& extension_id, int socket_id);
 
   // Socket is active again, start receiving data from it.
-  void OnSocketResume(const std::string& extension_id, int socket_id);
+  void OnSocketResume(const ExtensionId& extension_id, int socket_id);
 
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<TCPSocketEventDispatcher>*
@@ -61,13 +62,13 @@ class TCPSocketEventDispatcher : public BrowserContextKeyedAPI {
 
     content::BrowserThread::ID thread_id;
     raw_ptr<void> browser_context_id;
-    std::string extension_id;
+    ExtensionId extension_id;
     scoped_refptr<SocketData> sockets;
     int socket_id;
   };
 
   // Start a receive and register a callback.
-  void StartSocketRead(const std::string& extension_id, int socket_id);
+  void StartSocketRead(const ExtensionId& extension_id, int socket_id);
 
   // Start a receive and register a callback.
   static void StartRead(const ReadParams& params);
@@ -83,7 +84,7 @@ class TCPSocketEventDispatcher : public BrowserContextKeyedAPI {
 
   // Dispatch an extension event on to EventRouter instance on UI thread.
   static void DispatchEvent(void* browser_context_id,
-                            const std::string& extension_id,
+                            const ExtensionId& extension_id,
                             std::unique_ptr<Event> event);
 
   // Usually IO thread (except for unit testing).

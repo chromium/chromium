@@ -110,10 +110,13 @@ named using `snake_case()`. Virtual functions should never be declared this way.
 
 ## Logging
 
-Remove most logging calls before checking in. Unless you're adding temporary
-logging to track down a specific bug, and you have a plan for how to collect
-the logged data from user machines, you should generally not add logging
-statements.
+Remove all logging before checking in code. The exception is temporary logging
+to track down a specific bug. This should be a rare exception, and you should
+have a plan for how to manually collect/use the logged data. Afterwards you
+should remove the logging. Note that logs are not present in crashes. Use
+`base::debug::ScopedCrashKeyString`
+([link](https://chromium.googlesource.com/chromium/src/+/main/base/debug/crash_logging.h))
+for that.
 
 For the rare case when logging needs to stay in the codebase for a while,
 prefer `DVLOG(1)` to other logging methods. This avoids bloating the release
@@ -125,6 +128,14 @@ arguments:
     mod. Supplying the string foo for mod will affect all files named foo.cc,
     while supplying a wildcard like `*bar/baz*` will affect all files with
     `bar/baz` in their full pathnames.
+
+Rationale:
+* Logging is expensive: binary size, runtime.
+* Logging quickly loses utility as more components emit logs: too much noise,
+  not enough signal.
+* Logging is often used to document impossible edge cases which should be
+  enforced with CHECKs. The latter makes it easier to reason about the code, and
+  can result in more performant binaries.
 
 ## Platform-specific code
 

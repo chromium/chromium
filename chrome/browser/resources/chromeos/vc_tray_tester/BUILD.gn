@@ -13,7 +13,7 @@ build_webui("build") {
   html_to_wrapper_template = "native"
 
   ts_deps = [
-    "//ui/webui/resources/cr_elements:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

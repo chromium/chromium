@@ -16,11 +16,11 @@
 
 // Arguments from the js2gtest template in chrome/test/base/js2gtest.gni
 // are passed in through python script v8sh.py.
-if (arguments.length != 6) {
+if (arguments.length != 7) {
   print(
       'usage: ' + arguments[0] +
       ' path-to-testfile.js path-to-src-root/ path-to-deps.js output.cc' +
-      ' test-type');
+      ' test-type parameterized');
   quit(-1);
 }
 
@@ -36,8 +36,12 @@ const [_,
  outputFile,
  // Type of this test. One of 'extension', 'unit', 'webui', 'mojo_lite_webui',
  // 'mojo_webui'.
- testType] = arguments;
+ testType,
+ // Whether the test is parameterized. Either "true" or "false".
+ parameterizedStr,
+] = arguments;
 
+const parameterized = parameterizedStr === 'true';
 
 if (!fullTestFilePath.startsWith(srcRootPath)) {
   print('Test file must be a descendant of source root directory');
@@ -150,7 +154,11 @@ ${argHint}
     output('#include "chrome/test/base/ash/extension_js_browser_test.h"');
     testing.Test.prototype.typedefCppFixture = 'ExtensionJSBrowserTest';
     addSetPreloadInfo = false;
-    testF = 'IN_PROC_BROWSER_TEST_F';
+    if (parameterized) {
+      testF = 'IN_PROC_BROWSER_TEST_P'
+    } else {
+      testF = 'IN_PROC_BROWSER_TEST_F';
+    }
   } else if (testType === 'unit') {
     output('#include "chrome/test/base/ash/v8_unit_test.h"');
     testing.Test.prototype.typedefCppFixture = 'V8UnitTest';
@@ -181,8 +189,12 @@ ${argHint}
       output('#include "base/command_line.h"');
     }
     if (this[testFixture].prototype.featureList ||
-        this[testFixture].prototype.featuresWithParameters) {
+        this[testFixture].prototype.featuresWithParameters ||
+        this[testFixture].prototype.paramFeature) {
       output('#include "base/test/scoped_feature_list.h"');
+    }
+    if (this[testFixture].prototype.paramCommandLineSwitch) {
+      output('#include "base/test/scoped_command_line.h"');
     }
   }
   output();
@@ -411,14 +423,20 @@ function TEST_F(testFixture, testFunction, testBody, opt_preamble) {
     const featuresWithParameters =
         this[testFixture].prototype.featuresWithParameters;
     if ((!hasSwitches && !featureList && !featuresWithParameters &&
-         !testServer) || typedefCppFixture == 'V8UnitTest') {
+         !testServer && !parameterized) ||
+        typedefCppFixture == 'V8UnitTest') {
       output(`
 typedef ${typedefCppFixture} ${testFixture};
 `);
     } else {
+      let ancestors = `public ${typedefCppFixture}`;
+      if (parameterized) {
+        ancestors += `, public testing::WithParamInterface<bool>`;
+      }
+
       // Make the testFixture a class inheriting from the base fixture.
       output(`
-class ${testFixture} : public ${typedefCppFixture} {
+class ${testFixture} : ${ancestors} {
  protected:`);
       if (featureList || featuresWithParameters || testServer) {
         output(`
@@ -485,6 +503,37 @@ class ${testFixture} : public ${typedefCppFixture} {
       output(`
   ~${testFixture}() override {}
  private:`);
+      if (parameterized) {
+        output(`
+  void SetUp() override {
+    `);
+        if (this[testFixture].prototype.paramCommandLineSwitch) {
+          const switchName = this[testFixture].prototype.paramCommandLineSwitch;
+          output(`
+    if (GetParam()) {
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(${switchName});
+    } else {
+      scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(${switchName});
+    }
+    ${typedefCppFixture}::SetUp();
+  }
+
+  base::test::ScopedCommandLine scoped_command_line_;`);
+        } else if (this[testFixture].prototype.paramFeature) {
+          const feature = this[testFixture].prototye.paramFeature;
+          output(`
+    scoped_feature_list_.InitWithFeatureState(${feature}, GetParam());
+    ${typedefCppFixture}::SetUp();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+        `)
+        } else {
+          output(`
+    ${typedefCppFixture}::SetUp();
+  }`);
+        }
+      }
       if (hasSwitches) {
         // Override SetUpCommandLine and add each switch.
         output(`
@@ -500,7 +549,7 @@ class ${testFixture} : public ${typedefCppFixture} {
   }`);
       }
       if (featureList || featuresWithParameters) {
-        if (featureList) {
+        if (featureList && !this[testFixture].prototype.paramFeature) {
           output(`
   base::test::ScopedFeatureList scoped_feature_list_;`);
         }
@@ -514,6 +563,10 @@ class ${testFixture} : public ${typedefCppFixture} {
       output(`
 };
 `);
+      if (parameterized) {
+        output(`
+INSTANTIATE_TEST_SUITE_P(All, ${testFixture}, testing::Bool());`);
+      }
     }
     typedeffedCppFixtures.set(testFixture, typedefCppFixture);
   }

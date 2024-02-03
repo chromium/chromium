@@ -280,20 +280,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                         ClientHeight());
   }
 
-  // TODO(crbug.com/962299): This method snaps to pixels incorrectly because
-  // PhysicalLocation() is not the correct paint offset.
-  gfx::Rect DeprecatedPixelSnappedBorderBoxRect() const {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled());
-    return gfx::Rect(PixelSnappedBorderBoxSize(PhysicalLocation()));
-  }
-  // TODO(crbug.com/962299): This method is only correct when |offset| is the
-  // correct paint offset.
-  gfx::Size PixelSnappedBorderBoxSize(const PhysicalOffset& offset) const {
-    NOT_DESTROYED();
-    return ToPixelSnappedSize(Size().ToLayoutSize(), offset.ToLayoutPoint());
-  }
-
   // The content area of the box (excludes padding - and intrinsic padding for
   // table cells, etc... - and scrollbars and border).
   // TODO(crbug.com/877518): Some callers of this method may actually want
@@ -667,7 +653,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const LayoutResult* GetCachedLayoutResult(const BlockBreakToken*) const;
   const LayoutResult* GetCachedMeasureResult(
       const ConstraintSpace&,
-      absl::optional<FragmentGeometry>* fragment_geometry) const;
+      std::optional<FragmentGeometry>* fragment_geometry) const;
 
   // Call in situations where we know that there's at most one fragment. A
   // DCHECK will fail if there are multiple fragments.
@@ -692,7 +678,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const BlockBreakToken*,
       const EarlyBreak*,
       const ColumnSpannerPath*,
-      absl::optional<FragmentGeometry>* initial_fragment_geometry,
+      std::optional<FragmentGeometry>* initial_fragment_geometry,
       LayoutCacheStatus* out_cache_status);
 
   using LayoutResultList = HeapVector<Member<const LayoutResult>, 1>;
@@ -1171,33 +1157,25 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Returns the cached intrinsic logical widths if the initial block-size
   // matches.
-  absl::optional<MinMaxSizesResult> CachedIntrinsicLogicalWidths(
+  std::optional<MinMaxSizesResult> CachedIntrinsicLogicalWidths(
       LayoutUnit initial_block_size) const {
     NOT_DESTROYED();
     DCHECK(!IntrinsicLogicalWidthsDirty());
-    if (RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled()) {
-      if (initial_block_size == kIndefiniteSize) {
-        if (IndefiniteIntrinsicLogicalWidthsDirty()) {
-          return absl::nullopt;
-        }
-        return MinMaxSizesResult(
-            intrinsic_logical_widths_,
-            IntrinsicLogicalWidthsDependsOnBlockConstraints());
+    if (initial_block_size == kIndefiniteSize) {
+      if (IndefiniteIntrinsicLogicalWidthsDirty()) {
+        return std::nullopt;
       }
-      if (min_max_sizes_cache_) {
-        if (DefiniteIntrinsicLogicalWidthsDirty()) {
-          return absl::nullopt;
-        }
-        return min_max_sizes_cache_->Find(initial_block_size);
-      }
-    } else {
-      if (initial_block_size == intrinsic_logical_widths_initial_block_size_) {
-        return MinMaxSizesResult(
-            intrinsic_logical_widths_,
-            IntrinsicLogicalWidthsDependsOnBlockConstraints());
-      }
+      return MinMaxSizesResult(
+          intrinsic_logical_widths_,
+          IntrinsicLogicalWidthsDependsOnBlockConstraints());
     }
-    return absl::nullopt;
+    if (min_max_sizes_cache_) {
+      if (DefiniteIntrinsicLogicalWidthsDirty()) {
+        return std::nullopt;
+      }
+      return min_max_sizes_cache_->Find(initial_block_size);
+    }
+    return std::nullopt;
   }
 
   // Sets the min/max sizes for this box.
@@ -1210,11 +1188,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     //  - If the initial block-size is indefinite.
     //  - If we don't have any children which depend on the initial block-size
     //    (it can change and we wouldn't give a different answer).
-    if (!RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled() ||
-        initial_block_size == kIndefiniteSize ||
+    if (initial_block_size == kIndefiniteSize ||
         !child_depends_on_block_constraints) {
       intrinsic_logical_widths_ = sizes;
-      intrinsic_logical_widths_initial_block_size_ = initial_block_size;
       SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
           depends_on_block_constraints);
       SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
@@ -1289,7 +1265,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const LayoutObject* AcceptableImplicitAnchor() const;
 
   // Returns position fallback results for anchor positioned element.
-  absl::optional<wtf_size_t> PositionFallbackIndex() const;
+  std::optional<wtf_size_t> PositionFallbackIndex() const;
   const Vector<NonOverflowingScrollRange>*
   PositionFallbackNonOverflowingRanges() const;
 
@@ -1492,10 +1468,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
  protected:
   MinMaxSizes intrinsic_logical_widths_;
-  LayoutUnit intrinsic_logical_widths_initial_block_size_;
   Member<MinMaxSizesCache> min_max_sizes_cache_;
 
-  Member<const LayoutResult> measure_result_;
   Member<MeasureCache> measure_cache_;
   LayoutResultList layout_results_;
 

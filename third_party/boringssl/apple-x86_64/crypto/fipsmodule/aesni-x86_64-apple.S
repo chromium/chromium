@@ -969,10 +969,7 @@ L$ctr32_bulk:
 	leaq	7(%r8),%r9
 	movl	%r10d,96+12(%rsp)
 	bswapl	%r9d
-	leaq	_OPENSSL_ia32cap_P(%rip),%r10
-	movl	4(%r10),%r10d
 	xorl	%ebp,%r9d
-	andl	$71303168,%r10d
 	movl	%r9d,112+12(%rsp)
 
 	movups	16(%rcx),%xmm1
@@ -983,103 +980,9 @@ L$ctr32_bulk:
 	cmpq	$8,%rdx
 	jb	L$ctr32_tail
 
-	subq	$6,%rdx
-	cmpl	$4194304,%r10d
-	je	L$ctr32_6x
-
 	leaq	128(%rcx),%rcx
-	subq	$2,%rdx
+	subq	$8,%rdx
 	jmp	L$ctr32_loop8
-
-.p2align	4
-L$ctr32_6x:
-	shll	$4,%eax
-	movl	$48,%r10d
-	bswapl	%ebp
-	leaq	32(%rcx,%rax,1),%rcx
-	subq	%rax,%r10
-	jmp	L$ctr32_loop6
-
-.p2align	4
-L$ctr32_loop6:
-	addl	$6,%r8d
-	movups	-48(%rcx,%r10,1),%xmm0
-.byte	102,15,56,220,209
-	movl	%r8d,%eax
-	xorl	%ebp,%eax
-.byte	102,15,56,220,217
-.byte	0x0f,0x38,0xf1,0x44,0x24,12
-	leal	1(%r8),%eax
-.byte	102,15,56,220,225
-	xorl	%ebp,%eax
-.byte	0x0f,0x38,0xf1,0x44,0x24,28
-.byte	102,15,56,220,233
-	leal	2(%r8),%eax
-	xorl	%ebp,%eax
-.byte	102,15,56,220,241
-.byte	0x0f,0x38,0xf1,0x44,0x24,44
-	leal	3(%r8),%eax
-.byte	102,15,56,220,249
-	movups	-32(%rcx,%r10,1),%xmm1
-	xorl	%ebp,%eax
-
-.byte	102,15,56,220,208
-.byte	0x0f,0x38,0xf1,0x44,0x24,60
-	leal	4(%r8),%eax
-.byte	102,15,56,220,216
-	xorl	%ebp,%eax
-.byte	0x0f,0x38,0xf1,0x44,0x24,76
-.byte	102,15,56,220,224
-	leal	5(%r8),%eax
-	xorl	%ebp,%eax
-.byte	102,15,56,220,232
-.byte	0x0f,0x38,0xf1,0x44,0x24,92
-	movq	%r10,%rax
-.byte	102,15,56,220,240
-.byte	102,15,56,220,248
-	movups	-16(%rcx,%r10,1),%xmm0
-
-	call	L$enc_loop6
-
-	movdqu	(%rdi),%xmm8
-	movdqu	16(%rdi),%xmm9
-	movdqu	32(%rdi),%xmm10
-	movdqu	48(%rdi),%xmm11
-	movdqu	64(%rdi),%xmm12
-	movdqu	80(%rdi),%xmm13
-	leaq	96(%rdi),%rdi
-	movups	-64(%rcx,%r10,1),%xmm1
-	pxor	%xmm2,%xmm8
-	movaps	0(%rsp),%xmm2
-	pxor	%xmm3,%xmm9
-	movaps	16(%rsp),%xmm3
-	pxor	%xmm4,%xmm10
-	movaps	32(%rsp),%xmm4
-	pxor	%xmm5,%xmm11
-	movaps	48(%rsp),%xmm5
-	pxor	%xmm6,%xmm12
-	movaps	64(%rsp),%xmm6
-	pxor	%xmm7,%xmm13
-	movaps	80(%rsp),%xmm7
-	movdqu	%xmm8,(%rsi)
-	movdqu	%xmm9,16(%rsi)
-	movdqu	%xmm10,32(%rsi)
-	movdqu	%xmm11,48(%rsi)
-	movdqu	%xmm12,64(%rsi)
-	movdqu	%xmm13,80(%rsi)
-	leaq	96(%rsi),%rsi
-
-	subq	$6,%rdx
-	jnc	L$ctr32_loop6
-
-	addq	$6,%rdx
-	jz	L$ctr32_done
-
-	leal	-48(%r10),%eax
-	leaq	-80(%rcx,%r10,1),%rcx
-	negl	%eax
-	shrl	$4,%eax
-	jmp	L$ctr32_tail
 
 .p2align	5
 L$ctr32_loop8:
@@ -1582,16 +1485,10 @@ L$cbc_decrypt_bulk:
 	movdqa	%xmm5,%xmm14
 	movdqu	80(%rdi),%xmm7
 	movdqa	%xmm6,%xmm15
-	leaq	_OPENSSL_ia32cap_P(%rip),%r9
-	movl	4(%r9),%r9d
 	cmpq	$0x70,%rdx
 	jbe	L$cbc_dec_six_or_seven
 
-	andl	$71303168,%r9d
-	subq	$0x50,%rdx
-	cmpl	$4194304,%r9d
-	je	L$cbc_dec_loop6_enter
-	subq	$0x20,%rdx
+	subq	$0x70,%rdx
 	leaq	112(%rcx),%rcx
 	jmp	L$cbc_dec_loop8_enter
 .p2align	4
@@ -1861,51 +1758,6 @@ L$cbc_dec_seven:
 	pxor	%xmm8,%xmm8
 	pxor	%xmm9,%xmm9
 	jmp	L$cbc_dec_tail_collected
-
-.p2align	4
-L$cbc_dec_loop6:
-	movups	%xmm7,(%rsi)
-	leaq	16(%rsi),%rsi
-	movdqu	0(%rdi),%xmm2
-	movdqu	16(%rdi),%xmm3
-	movdqa	%xmm2,%xmm11
-	movdqu	32(%rdi),%xmm4
-	movdqa	%xmm3,%xmm12
-	movdqu	48(%rdi),%xmm5
-	movdqa	%xmm4,%xmm13
-	movdqu	64(%rdi),%xmm6
-	movdqa	%xmm5,%xmm14
-	movdqu	80(%rdi),%xmm7
-	movdqa	%xmm6,%xmm15
-L$cbc_dec_loop6_enter:
-	leaq	96(%rdi),%rdi
-	movdqa	%xmm7,%xmm8
-
-	call	_aesni_decrypt6
-
-	pxor	%xmm10,%xmm2
-	movdqa	%xmm8,%xmm10
-	pxor	%xmm11,%xmm3
-	movdqu	%xmm2,(%rsi)
-	pxor	%xmm12,%xmm4
-	movdqu	%xmm3,16(%rsi)
-	pxor	%xmm13,%xmm5
-	movdqu	%xmm4,32(%rsi)
-	pxor	%xmm14,%xmm6
-	movq	%rbp,%rcx
-	movdqu	%xmm5,48(%rsi)
-	pxor	%xmm15,%xmm7
-	movl	%r10d,%eax
-	movdqu	%xmm6,64(%rsi)
-	leaq	80(%rsi),%rsi
-	subq	$0x60,%rdx
-	ja	L$cbc_dec_loop6
-
-	movdqa	%xmm7,%xmm2
-	addq	$0x50,%rdx
-	jle	L$cbc_dec_clear_tail_collected
-	movups	%xmm7,(%rsi)
-	leaq	16(%rsi),%rsi
 
 L$cbc_dec_tail:
 	movups	(%rdi),%xmm2

@@ -58,6 +58,8 @@ class CrxUpdateService : public ComponentUpdateService,
   bool GetComponentDetails(const std::string& id,
                            CrxUpdateItem* item) const override;
   base::Version GetRegisteredVersion(const std::string& app_id) override;
+  base::Version GetMaxPreviousProductVersion(
+      const std::string& app_id) override;
 
   // Overrides for Observer.
   void OnEvent(Events event, const std::string& id) override;

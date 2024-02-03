@@ -18,6 +18,24 @@ enum class ToggleSource {
   kMaxValue = kFeaturePod,
 };
 
+// This enum is used for metrics, so enum values should not be changed. New enum
+// values can be added, but existing enums must never be renumbered or deleted
+// and reused.
+enum class StartSessionSource {
+  kFocusPanel = 0,  // Toggle focus mode through the focus panel.
+  kFeaturePod = 1,  // Toggle focus mode through the feature pod in quick
+                    // settings.
+  kMaxValue = kFeaturePod,
+};
+
+// Histogram names start session.
+constexpr char kHasSelectedTaskOnSessionStartHistogramName[] =
+    "Ash.FocusMode.StartSession.HasSelectedTask";
+constexpr char kInitialDurationOnSessionStartsHistogramName[] =
+    "Ash.FocusMode.StartSession.InitialDuration";
+constexpr char kStartSessionSourceHistogramName[] =
+    "Ash.FocusMode.StartSession.ToggleSource";
+
 // Histogram names during session.
 constexpr char kToggleEndButtonDuringSessionHistogramName[] =
     "Ash.FocusMode.DuringSession.ToggleEndSessionSource";

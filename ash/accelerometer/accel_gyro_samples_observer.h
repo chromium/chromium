@@ -20,16 +20,16 @@
 
 namespace ash {
 
-// A AccelGryoSamplesObserver for an accelerometer/gyroscope device.
-// AccelGryoSamplesObserver should only be used on the UI thread.
-class ASH_EXPORT AccelGryoSamplesObserver
+// A AccelGyroSamplesObserver for an accelerometer/gyroscope device.
+// AccelGyroSamplesObserver should only be used on the UI thread.
+class ASH_EXPORT AccelGyroSamplesObserver
     : public chromeos::sensors::mojom::SensorDeviceSamplesObserver {
  public:
   using OnSampleUpdatedCallback =
       base::RepeatingCallback<void(int iio_device_id,
                                    std::vector<float> sample)>;
 
-  AccelGryoSamplesObserver(
+  AccelGyroSamplesObserver(
       int iio_device_id,
       mojo::Remote<chromeos::sensors::mojom::SensorDevice> sensor_device_remote,
       float scale,
@@ -37,9 +37,9 @@ class ASH_EXPORT AccelGryoSamplesObserver
       chromeos::sensors::mojom::DeviceType device_type =
           chromeos::sensors::mojom::DeviceType::ACCEL,
       float frequency = kReadFrequencyInHz);
-  AccelGryoSamplesObserver(const AccelGryoSamplesObserver&) = delete;
-  AccelGryoSamplesObserver& operator=(const AccelGryoSamplesObserver&) = delete;
-  ~AccelGryoSamplesObserver() override;
+  AccelGyroSamplesObserver(const AccelGyroSamplesObserver&) = delete;
+  AccelGyroSamplesObserver& operator=(const AccelGyroSamplesObserver&) = delete;
+  ~AccelGyroSamplesObserver() override;
 
   // Sets the observer |enabled| by setting the frequency to iioservice.
   // Should be called on |task_runner_|.
@@ -100,7 +100,7 @@ class ASH_EXPORT AccelGryoSamplesObserver
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<AccelGryoSamplesObserver> weak_factory_{this};
+  base::WeakPtrFactory<AccelGyroSamplesObserver> weak_factory_{this};
 };
 
 }  // namespace ash

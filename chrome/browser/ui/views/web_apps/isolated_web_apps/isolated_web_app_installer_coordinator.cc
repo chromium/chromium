@@ -36,12 +36,25 @@ IsolatedWebAppInstallerCoordinator* LaunchIsolatedWebAppInstaller(
     Profile* profile,
     const base::FilePath& bundle_path,
     base::OnceClosure on_closed_callback) {
-  auto coordinator = std::make_unique<IsolatedWebAppInstallerCoordinator>(
-      profile, bundle_path, std::move(on_closed_callback));
+  return IsolatedWebAppInstallerCoordinator::CreateAndStart(
+      profile, bundle_path, std::move(on_closed_callback),
+      IsolatedWebAppsEnabledPrefObserver::Create(profile));
+}
+
+// static
+IsolatedWebAppInstallerCoordinator*
+IsolatedWebAppInstallerCoordinator::CreateAndStart(
+    Profile* profile,
+    const base::FilePath& bundle_path,
+    base::OnceClosure on_closed_callback,
+    std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer) {
+  auto coordinator = base::WrapUnique(new IsolatedWebAppInstallerCoordinator(
+      profile, bundle_path, std::move(on_closed_callback),
+      std::move(pref_observer)));
   IsolatedWebAppInstallerCoordinator* raw_coordinator = coordinator.get();
   base::OnceClosure delete_callback =
       base::BindOnce(&DeleteCoordinatorHelper, std::move(coordinator));
-  raw_coordinator->Show(base::IgnoreArgs<std::optional<webapps::AppId>>(
+  raw_coordinator->Start(base::IgnoreArgs<std::optional<webapps::AppId>>(
       std::move(delete_callback)));
   return raw_coordinator;
 }
@@ -54,19 +67,20 @@ void FocusIsolatedWebAppInstaller(
 IsolatedWebAppInstallerCoordinator::IsolatedWebAppInstallerCoordinator(
     Profile* profile,
     const base::FilePath& bundle_path,
-    base::OnceClosure on_closed_callback)
+    base::OnceClosure on_closed_callback,
+    std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer)
     : on_closed_callback_(std::move(on_closed_callback)),
       model_(std::make_unique<IsolatedWebAppInstallerModel>(bundle_path)),
       controller_(std::make_unique<IsolatedWebAppInstallerViewController>(
           profile,
           WebAppProvider::GetForWebApps(profile),
           model_.get(),
-          IsolatedWebAppsEnabledPrefObserver::Create(profile))) {}
+          std::move(pref_observer))) {}
 
 IsolatedWebAppInstallerCoordinator::~IsolatedWebAppInstallerCoordinator() =
     default;
 
-void IsolatedWebAppInstallerCoordinator::Show(
+void IsolatedWebAppInstallerCoordinator::Start(
     base::OnceCallback<void(std::optional<webapps::AppId>)> callback) {
   controller_->Start(
       base::BindOnce(&IsolatedWebAppInstallerViewController::Show,
@@ -89,6 +103,16 @@ void IsolatedWebAppInstallerCoordinator::OnDialogClosed(
   } else {
     std::move(callback).Run(std::nullopt);
   }
+}
+
+IsolatedWebAppInstallerModel*
+IsolatedWebAppInstallerCoordinator::GetModelForTesting() {
+  return model_.get();
+}
+
+IsolatedWebAppInstallerViewController*
+IsolatedWebAppInstallerCoordinator::GetControllerForTesting() {
+  return controller_.get();
 }
 
 }  // namespace web_app

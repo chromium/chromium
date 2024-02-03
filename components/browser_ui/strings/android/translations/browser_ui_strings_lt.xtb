@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1384959399684842514">Atsisiuntimas pristabdytas</translation>
 <translation id="1415402041810619267">URL sutrumpintas</translation>
-<translation id="1426410128494586442">Taip</translation>
 <translation id="1434873037477293673">sumažintos kainos kortelė</translation>
 <translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> svetainė}one{<ph name="SITE_COUNT" /> svetainė}few{<ph name="SITE_COUNT" /> svetainės}many{<ph name="SITE_COUNT" /> svetainės}other{<ph name="SITE_COUNT" /> svetainių}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų kamerą, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
 <translation id="2238944249568001759">Siūlomos paieškos atsižvelgiant į paskutinį skirtuką</translation>
+<translation id="2241587408274973373">Naujų skirtukų puslapių kortelės</translation>
 <translation id="2241634353105152135">Tik vieną kartą</translation>
 <translation id="2253414712144136228">Pašalinti „<ph name="NAME_OF_LIST_ITEM" />“</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Užblokuota viena svetainė}one{Užblokuota # svetainė}few{Užblokuotos # svetainės}many{Užblokuota # svetainės}other{Užblokuota # svetainių}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Svetainėse gali būti rodomi raginimai prisijungti iš tapatybės nustatymo paslaugų.</translation>
 <translation id="2790501146643349491">Įjungus neseniai uždarytose svetainėse galima baigti siųsti ir gauti duomenis. Išjungus neseniai uždarytose svetainėse negalima baigti siųsti ar gauti duomenų.</translation>
 <translation id="2822354292072154809">Ar tikrai norite iš naujo nustatyti visus „<ph name="CHOSEN_OBJECT_NAME" />“ svetainės leidimus?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Pateikti užklausą dėl rodinio versijos mobiliesiems</translation>
 <translation id="2870560284913253234">Svetainė</translation>
 <translation id="2874939134665556319">Ankstesnis takelis</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Sertifikato peržiūros priemonė</translation>
 <translation id="2979365474350987274">Trečiųjų šalių slapukai ribojami</translation>
 <translation id="3008272652534848354">Iš naujo nustatyti leidimus</translation>
-<translation id="3013291976881901233">MIDI įrenginiai</translation>
 <translation id="301521992641321250">Automatiškai užblokuota</translation>
 <translation id="3069226013421428034">Leisti trečiajai šaliai prisijungti prie konkrečios svetainės.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Galiojimo laikas baigsis rytoj}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Prisijungta prie USB įrenginio</translation>
 <translation id="4194328954146351878">Klausti prieš leidžiant svetainėms peržiūrėti ir keisti informaciją NFC įrenginiuose (rekomenduojama)</translation>
 <translation id="4200726100658658164">Atidaryti vietovės nustatymus</translation>
-<translation id="4212246570487010370">Tęsti naršymą</translation>
 <translation id="4226663524361240545">Gavus pranešimą įrenginys gali vibruoti</translation>
 <translation id="4259722352634471385">Naršymas užblokuotas: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Leidžiama</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Perkelti žemyn</translation>
 <translation id="6749077623962119521">Iš naujo nustatyti leidimus?</translation>
 <translation id="6766622839693428701">Perbraukite žemyn, kad uždarytumėte.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Iš „<ph name="FROM_DEVICE" />“</translation>
 <translation id="6787751205395685251">Pasirinkite <ph name="SITE_NAME" /> parinktį</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6818926723028410516">Pasirinkite elementus</translation>

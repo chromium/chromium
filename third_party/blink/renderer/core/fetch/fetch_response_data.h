@@ -127,7 +127,7 @@ class CORE_EXPORT FetchResponseData final
     has_range_requested_ = has_range_requested;
   }
   void SetAuthChallengeInfo(
-      const absl::optional<net::AuthChallengeInfo>& auth_challenge_info);
+      const std::optional<net::AuthChallengeInfo>& auth_challenge_info);
   void SetRequestIncludeCredentials(bool request_include_credentials);
 
   // If the type is Default, replaces |buffer_|.
@@ -169,7 +169,7 @@ class CORE_EXPORT FetchResponseData final
   HTTPHeaderSet cors_exposed_header_names_;
   net::HttpConnectionInfo connection_info_ = net::HttpConnectionInfo::kUNKNOWN;
   AtomicString alpn_negotiated_protocol_;
-  // |auth_challenge_info_| is a std::unique_ptr instead of absl::optional
+  // |auth_challenge_info_| is a std::unique_ptr instead of std::optional
   // |because this member is empty in most cases.
   std::unique_ptr<net::AuthChallengeInfo> auth_challenge_info_;
 

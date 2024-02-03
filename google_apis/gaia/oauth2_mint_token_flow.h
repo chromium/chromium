@@ -108,7 +108,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
         base::span<const std::string_view> scopes,
         std::string_view version,
         std::string_view channel,
-        std::string_view device_id = {});
+        std::string_view device_id = {},
+        std::string_view bound_oauth_token = {});
 
     Parameters(Parameters&& other) noexcept;
     Parameters& operator=(Parameters&& other) noexcept;
@@ -131,6 +132,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
     std::string device_id;
     std::string selected_user_id;
     std::string consent_result;
+    std::string bound_oauth_token;
 
    private:
     // Only an explicit copy with `Clone()` is allowed.
@@ -166,6 +168,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
   // Implementation of template methods in OAuth2ApiCallFlow.
   GURL CreateApiCallUrl() override;
   std::string CreateApiCallBody() override;
+  std::string CreateAuthorizationHeaderValue(
+      const std::string& access_token) override;
 
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;

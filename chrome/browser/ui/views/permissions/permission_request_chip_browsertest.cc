@@ -94,8 +94,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   if (!features::IsChromeRefresh2023() &&
       !OmniboxFieldTrial::IsCr23LayoutEnabled()) {
     // CR2023 has a few experimental flavors of LocationIconView positioning.
-    // It does not make sense to test them here.
-    // See LocationBarView::Layout().
+    // It does not make sense to test them here. See LocationBarView::Layout().
     EXPECT_EQ(lbv->location_icon_view()->bounds().x(),
               GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING));
   }

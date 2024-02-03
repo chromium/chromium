@@ -191,16 +191,23 @@ TabSearchPageHandler::TabSearchPageHandler(
                               base::Unretained(this)))) {
   browser_tab_strip_tracker_.Init();
   Profile* profile = Profile::FromWebUI(web_ui_);
+  pref_change_registrar_.Init(profile->GetPrefs());
+  pref_change_registrar_.Add(
+      tab_search_prefs::kTabSearchTabIndex,
+      base::BindRepeating(&TabSearchPageHandler::NotifyTabIndexPrefChanged,
+                          base::Unretained(this), profile));
+  pref_change_registrar_.Add(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      base::BindRepeating(
+          &TabSearchPageHandler::NotifySettingEnabledPrefChanged,
+          base::Unretained(this), profile));
   if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
     organization_service_ =
         TabOrganizationServiceFactory::GetForProfile(profile);
     if (organization_service_) {
       organization_service_->AddObserver(this);
-      pref_change_registrar_.Init(profile->GetPrefs());
-      pref_change_registrar_.Add(
-          tab_search_prefs::kTabSearchTabIndex,
-          base::BindRepeating(&TabSearchPageHandler::NotifyTabIndexPrefChanged,
-                              base::Unretained(this), profile));
     }
   }
 }
@@ -218,6 +225,7 @@ TabSearchPageHandler::~TabSearchPageHandler() {
   for (TabOrganizationSession* session : listened_sessions_) {
     session->RemoveObserver(this);
   }
+  pref_change_registrar_.Reset();
 }
 
 void TabSearchPageHandler::CloseTab(int32_t tab_id) {
@@ -1014,6 +1022,22 @@ void TabSearchPageHandler::NotifyTabIndexPrefChanged(const Profile* profile) {
   const int32_t index =
       profile->GetPrefs()->GetInteger(tab_search_prefs::kTabSearchTabIndex);
   page_->TabSearchTabIndexChanged(index);
+}
+
+void TabSearchPageHandler::NotifySettingEnabledPrefChanged(Profile* profile) {
+  bool enabled = false;
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
+    organization_service_ =
+        TabOrganizationServiceFactory::GetForProfile(profile);
+    if (organization_service_) {
+      enabled = true;
+      organization_service_->AddObserver(this);
+    }
+  } else if (organization_service_) {
+    organization_service_->RemoveObserver(this);
+    organization_service_ = nullptr;
+  }
+  page_->TabOrganizationEnabledChanged(enabled);
 }
 
 bool TabSearchPageHandler::IsWebContentsVisible() {

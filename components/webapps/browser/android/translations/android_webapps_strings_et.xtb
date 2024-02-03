@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1213425325105380833">Taastage veebirakendused, mida olete hiljuti selle kontoga ühendatud seadmetes kasutanud</translation>
+<translation id="1786044937610313874">Otseteed avanevad Chrome'is</translation>
+<translation id="204914487372604757">Loo otsetee</translation>
 <translation id="2065911435109240297">Veebirakenduste taastamine</translation>
 <translation id="2111649875343992405">Vaadake üle, millised veebirakendused taastada</translation>
 <translation id="2139186145475833000">Avaekraanile lisamine</translation>
@@ -13,6 +15,7 @@
 <translation id="4338600611020922010">Lisa avalehele</translation>
 <translation id="4665282149850138822"><ph name="NAME" /> lisati teie avaekraanile</translation>
 <translation id="5250483651202458397">Ekraanipilt. Puudutage sulgemiseks.</translation>
+<translation id="5684726956335420505">Valige, kuidas rakendus avakuvale lisada</translation>
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
 <translation id="6838423508083736333">Viimase kuu jooksul kasutatud veebirakendused</translation>
 <translation id="6990079615885386641">Hankige rakendus Google Play poest: <ph name="APP_ACTION" /></translation>

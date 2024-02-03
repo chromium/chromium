@@ -430,8 +430,8 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     session_deps_.socket_factory->AddSocketDataProvider(sequenced_data_.get());
     session_deps_.net_log = NetLog::Get();
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-    SpdySessionKey key(host_port_pair_, ProxyChain::Direct(),
-                       PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+    SpdySessionKey key(host_port_pair_, PRIVACY_MODE_DISABLED,
+                       ProxyChain::Direct(), SessionUsage::kDestination,
                        socket_tag, NetworkAnonymizationKey(),
                        SecureDnsPolicy::kAllow);
     session_ =
@@ -619,8 +619,8 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   session_deps_.socket_factory->AddSocketDataProvider(&socket_data2);
 
   http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-  SpdySessionKey key(host_port_pair_, ProxyChain::Direct(),
-                     PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+  SpdySessionKey key(host_port_pair_, PRIVACY_MODE_DISABLED,
+                     ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow);
   auto request_info = std::make_unique<BidirectionalStreamRequestInfo>();

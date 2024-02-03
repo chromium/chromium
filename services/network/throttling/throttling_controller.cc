@@ -60,12 +60,12 @@ void ThrottlingController::Unregister(uint32_t net_log_source_id) {
   net_log_source_profile_map_.erase(net_log_source_id);
 }
 
-absl::optional<base::UnguessableToken> ThrottlingController::GetProfileID(
+std::optional<base::UnguessableToken> ThrottlingController::GetProfileID(
     uint32_t net_log_source_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = net_log_source_profile_map_.find(net_log_source_id);
   if (it == net_log_source_profile_map_.end())
-    return absl::nullopt;
+    return std::nullopt;
   return it->second;
 }
 

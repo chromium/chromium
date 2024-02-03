@@ -4,6 +4,7 @@
 
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -1043,4 +1044,30 @@ TEST(ContentSettingsPatternTest, ToRepresentativeUrl) {
   EXPECT_EQ(Pattern("file:///*").ToRepresentativeUrl(), GURL());
   EXPECT_EQ(Pattern("file:///foo/bar/example.txt").ToRepresentativeUrl(),
             GURL("file:///foo/bar/example.txt"));
+}
+
+TEST(ContentSettingsPatternTest, CompareDomains) {
+  ContentSettingsPattern::CompareDomains less;
+  EXPECT_TRUE(less("a", "b"));
+  EXPECT_FALSE(less("b", "a"));
+  EXPECT_TRUE(less("a.b", "b"));
+  EXPECT_FALSE(less("b", "a.b"));
+  EXPECT_TRUE(less("c.b", "b"));
+  EXPECT_FALSE(less("b", "c.b"));
+  EXPECT_FALSE(less("c.b", "a.b"));
+
+  std::vector<std::string> domains{
+      "b",
+      "a",
+      "c.b",
+      "a.b",
+  };
+  std::sort(domains.begin(), domains.end(), less);
+  std::vector<std::string> expected{
+      "a",
+      "a.b",
+      "c.b",
+      "b",
+  };
+  EXPECT_THAT(domains, testing::ContainerEq(expected));
 }

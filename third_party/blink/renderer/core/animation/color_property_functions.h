@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COLOR_PROPERTY_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COLOR_PROPERTY_FUNCTIONS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 
@@ -17,15 +18,15 @@ class CSSProperty;
 
 class ColorPropertyFunctions {
  public:
-  static absl::optional<StyleColor> GetInitialColor(
+  static std::optional<StyleColor> GetInitialColor(
       const CSSProperty&,
       const ComputedStyle& initial_style);
   template <typename ComputedStyleOrBuilder>
-  static absl::optional<StyleColor> GetUnvisitedColor(
+  static std::optional<StyleColor> GetUnvisitedColor(
       const CSSProperty&,
       const ComputedStyleOrBuilder&);
   template <typename ComputedStyleOrBuilder>
-  static absl::optional<StyleColor> GetVisitedColor(
+  static std::optional<StyleColor> GetVisitedColor(
       const CSSProperty&,
       const ComputedStyleOrBuilder&);
   static void SetUnvisitedColor(const CSSProperty&,

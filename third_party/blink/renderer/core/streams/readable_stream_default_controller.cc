@@ -207,7 +207,7 @@ void ReadableStreamDefaultController::Enqueue(
     //   a. Let result be the result of performing controller.
     //      [[strategySizeAlgorithm]], passing in chunk, and interpreting the
     //      result as an ECMAScript completion value.
-    absl::optional<double> chunk_size =
+    std::optional<double> chunk_size =
         controller->strategy_size_algorithm_->Run(script_state, chunk,
                                                   exception_state);
 
@@ -266,12 +266,12 @@ void ReadableStreamDefaultController::Error(
 
 // This is an instance method rather than the static function in the standard,
 // so |this| is |controller|.
-absl::optional<double> ReadableStreamDefaultController::GetDesiredSize() const {
+std::optional<double> ReadableStreamDefaultController::GetDesiredSize() const {
   // https://streams.spec.whatwg.org/#readable-stream-default-controller-get-desired-size
   switch (controlled_readable_stream_->state_) {
     // 3. If state is "errored", return null.
     case ReadableStream::kErrored:
-      return absl::nullopt;
+      return std::nullopt;
 
     // 4. If state is "closed", return 0.
     case ReadableStream::kClosed:
@@ -466,7 +466,7 @@ bool ReadableStreamDefaultController::ShouldCallPull(
 
   // 5. Let desiredSize be ! ReadableStreamDefaultControllerGetDesiredSize
   //    (controller).
-  absl::optional<double> desired_size = controller->GetDesiredSize();
+  std::optional<double> desired_size = controller->GetDesiredSize();
 
   // 6. Assert: desiredSize is not null.
   DCHECK(desired_size.has_value());

@@ -79,6 +79,7 @@ android_resources("java_resources") {
     "java/res/layout/tab_grid_card_item.xml",
     "java/res/layout/tab_grid_dialog_layout.xml",
     "java/res/layout/tab_grid_message_card_item.xml",
+    "java/res/layout/tab_group_color_picker_container.xml",
     "java/res/layout/tab_group_creation_dialog.xml",
     "java/res/layout/tab_hover_card_holder.xml",
     "java/res/layout/tab_list_card_item.xml",

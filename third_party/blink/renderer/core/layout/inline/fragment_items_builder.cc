@@ -311,7 +311,7 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
         // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
         // Such block needs to copy PostLayout fragment while running simplified
         // layout.
-        absl::optional<PhysicalBoxFragment::AllowPostLayoutScope>
+        std::optional<PhysicalBoxFragment::AllowPostLayoutScope>
             allow_post_layout;
         if (line_child.IsRelayoutBoundary())
           allow_post_layout.emplace();
@@ -398,15 +398,6 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
   is_converted_to_physical_ = true;
 }
 
-absl::optional<LogicalOffset> FragmentItemsBuilder::LogicalOffsetFor(
-    const LayoutObject& layout_object) const {
-  for (const ItemWithOffset& item : items_) {
-    if (item->GetLayoutObject() == &layout_object)
-      return item.offset;
-  }
-  return absl::nullopt;
-}
-
 void FragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   DCHECK(!is_converted_to_physical_);
   for (ItemWithOffset* iter = items_.begin(); iter != items_.end(); ++iter) {
@@ -420,12 +411,12 @@ void FragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   }
 }
 
-absl::optional<PhysicalSize> FragmentItemsBuilder::ToFragmentItems(
+std::optional<PhysicalSize> FragmentItemsBuilder::ToFragmentItems(
     const PhysicalSize& outer_size,
     void* data) {
   DCHECK(text_content_);
   ConvertToPhysical(outer_size);
-  absl::optional<PhysicalSize> new_size;
+  std::optional<PhysicalSize> new_size;
   if (node_.IsSvgText()) {
     new_size = SvgTextLayoutAlgorithm(node_, GetWritingMode())
                    .Layout(TextContent(false), items_);

@@ -351,6 +351,12 @@ struct BLINK_COMMON_EXPORT
       case blink::WebGPUExecutionContextToken::IndexOf<
           blink::DedicatedWorkerToken>():
         return DataView::Tag::kDedicatedWorkerToken;
+      case blink::WebGPUExecutionContextToken::IndexOf<
+          blink::SharedWorkerToken>():
+        return DataView::Tag::kSharedWorkerToken;
+      case blink::WebGPUExecutionContextToken::IndexOf<
+          blink::ServiceWorkerToken>():
+        return DataView::Tag::kServiceWorkerToken;
     }
     base::ImmediateCrash();
   }
@@ -362,6 +368,14 @@ struct BLINK_COMMON_EXPORT
   static const blink::DedicatedWorkerToken& dedicated_worker_token(
       const blink::WebGPUExecutionContextToken& token) {
     return token.GetAs<blink::DedicatedWorkerToken>();
+  }
+  static const blink::SharedWorkerToken& shared_worker_token(
+      const blink::WebGPUExecutionContextToken& token) {
+    return token.GetAs<blink::SharedWorkerToken>();
+  }
+  static const blink::ServiceWorkerToken& service_worker_token(
+      const blink::WebGPUExecutionContextToken& token) {
+    return token.GetAs<blink::ServiceWorkerToken>();
   }
 };
 

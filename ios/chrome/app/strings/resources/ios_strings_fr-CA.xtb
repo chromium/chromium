@@ -148,6 +148,8 @@
 <translation id="1753905327828125965">Les plus visités</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} mot de passe faible}one{{count} mot de passe faible}other{{count} mots de passe faibles}}</translation>
 <translation id="1767766085187034454">Google Traduction</translation>
+<translation id="1769106850515800431">Contenu personnalisé</translation>
+<translation id="1780152987505130652">Fermer le groupe</translation>
 <translation id="1789803444939621101">Rebonjour, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nom du titulaire de la carte</translation>
 <translation id="1809939268435598390">Supprimer le dossier</translation>
@@ -163,6 +165,7 @@
 <translation id="1847795903283049083">Vous pouvez également afficher et gérer ces éléments dans vos favoris, votre liste de lecture ou votre gestionnaire de mots de passe.</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe de poche</translation>
+<translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1876851015978093044">Affiche cet élément</translation>
 <translation id="1882901927376062252">{count,plural, =1{Favori enregistré dans votre compte Google, {email}}one{{count} favori enregistré dans votre compte Google, {email}}other{{count} favoris enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="1883255238294161206">Réduire la liste</translation>
@@ -173,6 +176,7 @@
 <translation id="189531189292803889">Votre iPad a été récemment restauré, ce qui a peut-être modifié votre navigateur par défaut.</translation>
 <translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
+<translation id="1919752845298942932">La connexion n'est pas sécurisée</translation>
 <translation id="1923342640370224680">Dernière heure</translation>
 <translation id="1930989359703290198">Votre organisation vous autorise à vous connecter à certains comptes seulement. Les comptes qui ne sont pas autorisés seront masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
@@ -182,6 +186,7 @@
 <translation id="1956138802718275401">Accédez aux mots de passe à partir de l'écran d'accueil</translation>
 <translation id="1959441496380398824">Maintenez le doigt sur une date.</translation>
 <translation id="1959679933317802873">En attente de contenu…</translation>
+<translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> a partagé un mot de passe avec vous pour <ph name="WEBSITE" /></translation>
 <translation id="1967461193809857427">{count,plural, =1{Reprendre l'onglet que vous avez laissé sur Android?}one{Reprendre les onglets que vous avez laissés sur Android?}other{Reprendre les onglets que vous avez laissés sur Android?}}</translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement parce que le contenu sera chargé à l'avance en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="1973912524893600642">Conserver les données</translation>
@@ -211,11 +216,11 @@
 <translation id="2080769225927880590">Se connecter au moyen d'un compte valide</translation>
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés</translation>
 <translation id="2122754583996902531">Votre navigateur est géré. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Activer les alertes de prix?</translation>
 <translation id="2139867232736819575">Rechercher le texte que vous avez copié</translation>
 <translation id="214201757571129614">Connexion…</translation>
+<translation id="2147127444698817042">Uniquement accessible sur iPhone</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2175927920773552910">Code QR</translation>
@@ -228,6 +233,7 @@
 <translation id="2239626343334228536">Effacement des données de navigation en cours…</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
 <translation id="2252674110805316998">Recherche Web</translation>
+<translation id="2252749852083403809">Enregistrement dans Disque pour <ph name="USER_EMAIL" /> en cours…</translation>
 <translation id="2256933947031277845">Votre organisation vous autorise à vous connecter à certains comptes seulement.</translation>
 <translation id="2258326562203545455">{count,plural, =1{Vous pouvez enregistrer votre favori dans votre compte Google, {email}.}one{Vous pouvez enregistrer votre favori dans votre compte Google, {email}.}other{Vous pouvez enregistrer vos favoris dans votre compte Google, {email}.}}</translation>
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
@@ -390,6 +396,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2982481275546140226">Effacer les données</translation>
 <translation id="298306318844797842">Ajouter un mode de paiement…</translation>
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
+<translation id="300455800299409273">Masquez « Continuer avec cet onglet »</translation>
 <translation id="3010025794097054078">Protégez-vous contre les violations de données, les sites Web dangereux et plus encore.</translation>
 <translation id="3010171936431626919">Afficher la marche à suivre</translation>
 <translation id="3020183492814296499">Raccourcis</translation>
@@ -412,6 +419,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3130863904455712965">Historique et plus</translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="313283613037595347">Ouvrir un nouvel onglet de navigation privée.</translation>
+<translation id="314837624430314508">Restez au fait des dernières nouvelles, des mises à jour du suivi des prix et bien plus encore.</translation>
 <translation id="3148946345238989659">Certaines fonctionnalités ne sont plus accessibles</translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
@@ -456,6 +464,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3371831930909698441">La traduction est disponible. Vous trouverez les options vers le bas de l'écran.</translation>
 <translation id="3377063233124932127">Désormais, vos favoris, vos mots de passe et d'autres éléments que vous avez enregistrés s'affichent en haut.</translation>
 <translation id="3393920035788932672">Fenêtr context autor</translation>
+<translation id="3398509000872871492">Connexion sécurisée</translation>
 <translation id="3404232721752787413">Enregistrer dans Google Photos</translation>
 <translation id="3404744938087714423">La déconnexion désactive la synchronisation.</translation>
 <translation id="3409785640040772790">Google Maps</translation>
@@ -537,6 +546,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3819183753496523827">Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez.</translation>
 <translation id="3832419617903252251">Mot de passe enregistré uniquement sur cet appareil</translation>
 <translation id="3835964409414434850">Accéder à l'onglet suivant</translation>
+<translation id="383781833195845844">Continuer avec cet onglet</translation>
 <translation id="3838691874161539578">Vérifiez vos mots de passe enregistrés pour renforcer votre sécurité et mieux vous protéger en ligne</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3851938967634752633">Les mots de passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et de<ph name="NUMBER_OF_ACCOUNTS" /> autres comptes seront supprimés. Vos comptes ne seront pas supprimés.</translation>
@@ -559,6 +569,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3948600256434252210">Vous pouvez balayer l'écran vers la droite pour naviguer en mode Navigation privée.</translation>
 <translation id="3955822496205734389">Vous avez des mots de passe faibles.</translation>
+<translation id="3958312024468322930">Faites-la glisser jusqu'au Dock situé dans la partie inférieure de votre écran d'accueil</translation>
 <translation id="3959736869653157332">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="3962326069546168954">Enregistrer</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -576,6 +587,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4045648459118332842">Utilisez vos mots de passe enregistrés dans n'importe quelle application en un seul clic</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4054572406751135230">Tenez-vous au courant des actualités, des sports et bien plus encore.</translation>
+<translation id="4057531989585132525">Sécurité de connexion</translation>
 <translation id="4066639687323968621">Connectez-vous avec votre compte Google pour synchroniser vos favoris, votre historique et bien plus encore.</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4105841739161771091">{count,plural, =1{Supprimer l'adresse}one{Supprimer les adresses}other{Supprimer les adresses}}</translation>
@@ -640,6 +652,8 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4431224949908513835">Sélectionner un mode de paiement à entrer.</translation>
 <translation id="4442550905108052454">Ouvrez <ph name="BEGIN_BOLD" />Paramètres<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Ajouter une langue</translation>
+<translation id="4455710003856931944">Vous pouvez balayer l'écran à partir du bord pour revenir en arrière ou en avant.</translation>
+<translation id="4460014764210899310">Dégrouper</translation>
 <translation id="4461286950227634995">Proposer l'enregistrement des mots de passe</translation>
 <translation id="4462491365653392320">Suivi des prix dans des onglets</translation>
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
@@ -755,6 +769,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4958444002117714549">Développer la liste</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe. Pour ce faire, les données de navigation doivent être envoyées à Google.</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
+<translation id="4989065233040279145">Choisissez l'endroit où enregistrer <ph name="FILENAME" /></translation>
 <translation id="4996567535980789550">Activez la synchronisation pour gérer le contenu que vous voyez</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
@@ -811,7 +826,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5245322853195994030">Annuler la synchronisation</translation>
 <translation id="5248640482715684545">Ce site essaie d'ouvrir une autre application.</translation>
 <translation id="5256661381001734217">Ce site essaie d'ouvrir une application.  Vous serez redirigé en dehors de la Navigation privée.</translation>
-<translation id="5266104675489036658">Ajouter un onglet au nouveau groupe</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un champ obligatoire est vide. Remplissez-le avant d'enregistrer.}one{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}other{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5283494734135414249">Touchez le raccourci qui s'affiche sous la barre d'adresse.</translation>
@@ -822,6 +836,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5327753393331509826">Recevoir des notifications de contenu</translation>
 <translation id="5329451663851195956">Vous pouvez tirer l'écran vers le bas pour actualiser la page.</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
+<translation id="5343472494710226394">Actualités, sports et contenu en fonction de vos champs d'intérêt.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Suivre ce colis?}one{Suivre {COUNT} colis?}other{Suivre {COUNT} colis?}}</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
@@ -881,6 +896,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Pour utiliser et enregistrer des mots de passe dans votre compte Google, confirmez qu'il s'agit bien de vous.</translation>
 <translation id="5684761169742812828">Ce mot de passe a été exposé lors d'une violation de données sur Internet. Si vous n'avez pas le temps de le modifier maintenant, Google vous recommande de conserver cet avertissement pour vous en souvenir plus tard.</translation>
+<translation id="5694848685995373177">Enregistré dans Disque pour <ph name="USER_EMAIL" />.</translation>
 <translation id="5701270923492462699">Accès à l'appareil photo autorisé</translation>
 <translation id="5702108177581350218">Lorsque vous partagez une copie de votre nom d'utilisateur et de votre mot de passe, le membre de votre famille peut les saisir en utilisant le gestionnaire de mots de passe Google.</translation>
 <translation id="5704908597376970822">Impossible de se connecter.</translation>
@@ -891,6 +907,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5737974891429562743">Les renseignements de connexion au compte ne sont plus à jour. Mettez-les à jour pour commencer la synchronisation.</translation>
 <translation id="5738385766833540397">Gérez la façon dont vous recevez des alertes de réduction pour les produits que vous suivez</translation>
 <translation id="5738887413654608789">Cela vous permet de découvrir des pages Web pertinentes en fonction de votre environnement.</translation>
+<translation id="5744274077973758795">Notifications de <ph name="FEATURE_NAME" /> activées</translation>
 <translation id="5745916533876677730">Accéder à l'onglet précédent</translation>
 <translation id="574762237186762643">Événements</translation>
 <translation id="5748177854685749242">Arrivée : <ph name="DATE" /></translation>
@@ -915,10 +932,10 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5850913622988109693">Options pour suivre les colis</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5857090052475505287">Nouveau dossier</translation>
+<translation id="5857361196621230935">Ajouter un onglet au groupe</translation>
 <translation id="5857770089550859117">Une phrase de passe est requise pour commencer la synchronisation.</translation>
 <translation id="5859715514067755465">Avancer</translation>
 <translation id="5860033963881614850">Désactivé</translation>
-<translation id="5871497086027727873">1 élément déplacé</translation>
 <translation id="5896576662943111387">Conçu pour iOS</translation>
 <translation id="5897749768294722429">Pour revenir rapidement aux sites déjà visités, synchronisez vos onglets et votre historique.</translation>
 <translation id="5897956970858271241">Consulter le lien copié</translation>
@@ -1202,6 +1219,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7291368939935408496">Préparation des mots de passe en cours…</translation>
 <translation id="7302503784943202842">Utiliser des mots de passe sur tous vos appareils</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
+<translation id="7335132237885014335">Recevoir des notifications</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
 <translation id="7340958967809483333">Options pour Découvertes</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
@@ -1220,6 +1238,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articles non lus.</translation>
 <translation id="7412027924265291969">Continuer</translation>
 <translation id="741204030948306876">Oui, j'accepte</translation>
+<translation id="7418640008860669073">Enregistrer dans…</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et aux autres paramètres ne seront plus synchronisées avec votre compte Google. Cependant, vos données actuelles resteront stockées dans votre compte Google.</translation>
 <translation id="7431991332293347422">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser, entre autres, la recherche</translation>
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
@@ -1238,6 +1257,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="750149195207506638">Les favoris sont masqués</translation>
 <translation id="750228856503700085">Les mises à jour ne sont pas accessibles</translation>
 <translation id="750493650310597496">0 sélectionné</translation>
+<translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pour verrouiller vos onglets de navigation privée, configurez Touch ID, Face ID ou un mot de passe.</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7524055474074101597">Accédez à vos mots de passe et plus encore dans toutes les applications.</translation>
@@ -1251,6 +1271,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7557508262441527045">Déconnecté</translation>
 <translation id="7561196759112975576">Toujours</translation>
+<translation id="7564917801238348224">ENREGISTRER…</translation>
 <translation id="7582857256643797524">Ce paramètre est activé sur votre appareil</translation>
 <translation id="7583004045319035904">Utiliser <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> pour déverrouiller vos onglets de navigation privée.</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
@@ -1264,6 +1285,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7666861622396822790">Vous pouvez gérer cela dans les <ph name="BEGIN_LINK" />paramètres de contenu<ph name="END_LINK" />.</translation>
+<translation id="7669493687462784703">Continuer à télécharger un profil de configuration à partir de <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
 <translation id="7673346542062368520">Vous pouvez balayer l'écran vers la gauche pour naviguer en mode Navigation privée.</translation>
 <translation id="7679915578945954324">Adresses de site copiées</translation>
@@ -1416,6 +1438,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8428045167754449968">Ville</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428634594422941299">OK</translation>
+<translation id="8430694217306051839">Choisissez l'endroit où enregistrer <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8449347986464073209">Supprimer et se déconnecter</translation>
 <translation id="8459333855531264009">Pas sécuritaire</translation>
@@ -1450,6 +1473,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8620640915598389714">Modifier</translation>
 <translation id="8624447588354561276">Numéro de colis</translation>
 <translation id="8624753446837753970">Définir la position</translation>
+<translation id="8625706492572042370">Modifier l'écran d'accueil</translation>
 <translation id="8626393685701737946">Vous pouvez modifier l'affichage du site par défaut pour le mode Bureau dans Paramètres &gt; Paramètres de contenu</translation>
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>
 <translation id="8637431369725868556">Protégez-vous contre les sites Web dangereux.</translation>
@@ -1481,6 +1505,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8766790350274092814">Les mots de passe de <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="8775144690796719618">URL non valide</translation>
 <translation id="8780076847684176174">{count,plural, =1{Vérifier l'onglet…}one{Vérifier l'onglet…}other{Vérifier tous les onglets…}}</translation>
+<translation id="8781834595282316166">Nouvel onglet dans le groupe</translation>
 <translation id="8782570580170191813">Toujours suivre les colis</translation>
 <translation id="8787968206789828143">Recherchez sur le Web</translation>
 <translation id="8792626944327216835">Microphone</translation>
@@ -1511,6 +1536,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="891282356902782456">Ce mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, <ph name="EMAIL" />.</translation>
 <translation id="8917490105272468696">Oui, j'accepte</translation>
 <translation id="8928133177108699615">Bureau</translation>
+<translation id="8937676484307616731">Activer les notifications pour <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Créez des mots de passe forts</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>

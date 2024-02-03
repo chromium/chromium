@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Отваряне на връзката в нов раздел и оставане в текущия раздел</translation>
 <translation id="353086728817903341">Установена е връзка с(ъс) <ph name="NUM_DEVICES" /> устройства</translation>
 <translation id="3533126039236445965">Приложения в лентата</translation>
+<translation id="3537350467437346467">Прегледано от вас</translation>
 <translation id="3539957339480430241">Точка за достъп на <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Отхвърляне на настройването на прегледа на скорошните снимки и мултимедийни файлове на телефона ви</translation>
 <translation id="3542066395059568317">Ще виждате препоръки, така че да можете да продължавате оттам, откъдето сте прекъснали. Имате възможност да кликнете с десния бутон върху дадена препоръка, за да я премахнете.</translation>
+<translation id="3547318469722231257">Променено от вас</translation>
 <translation id="3552189655002856821">Функцията за Wi-Fi е изключена</translation>
 <translation id="3554215588514239132">Показване или скриване на панела с инструменти за програмисти</translation>
 <translation id="3554637740840164787">Фиксирахте <ph name="ITEM_TITLE" /></translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">Началото</translation>
 <translation id="3859364108019690">Поточното предаване на приложения не е възможно</translation>
 <translation id="3861651314799684201">Натиснете Enter за записване на целия екран</translation>
+<translation id="3882323608730650973">Променено</translation>
 <translation id="3886872229787704059">Отваряно днес</translation>
 <translation id="3891340733213178823">Натиснете два пъти „Ctrl+Shift+Q“ за изход.</translation>
 <translation id="3893630138897523026">ChromeVox (обратна връзка с говор)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Точката за достъп е изключена с цел ползване на Wi-Fi. За да я използвате, изключете Wi-Fi.</translation>
 <translation id="4585337515783392668">Спиране на предаването към неизвестен приемник</translation>
 <translation id="4596144739579517758">Тъмната тема е изключена</translation>
+<translation id="4596442969149038771">Споделено от <ph name="USER" /></translation>
 <translation id="4611292653554630842">Вход</translation>
 <translation id="462160925400706389">Установена е връзка с(ъс) <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Потвърждаване на профила</translation>
@@ -1337,6 +1341,7 @@
 <translation id="6298183524022479114">Персонализирайте това устройство в приложението</translation>
 <translation id="6309219492973062892">Докосване или кликване върху икони от 1 до 8 в лентата</translation>
 <translation id="6315170314923504164">Глас</translation>
+<translation id="6319058840130157106">Придвижване назад между долния десен ъгъл, стартовия панел, адресната лента, лентата на отметките, отворения уебсайт и изтеглянията</translation>
 <translation id="6324916366299863871">Редактиране на прекия път</translation>
 <translation id="6330012934079202188">Показани са прозорци от всички работни кътове. Натиснете клавиша със стрелка за нагоре, за да се покажат прозорците от текущия работен кът</translation>
 <translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ е сесия, управлявана от <ph name="MANAGER" /></translation>
@@ -1500,6 +1505,7 @@
 <translation id="6981291220124935078">Включване на достъпа</translation>
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="698231206551913481">След като този потребител бъде премахнат, всички свързани с него файлове и локални данни ще се изтрият за постоянно.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Направете бърза обиколка, за да научите как да се придвижвате в своя Chromebook. Подгответе се за работа в 6 стъпки.</translation>
 <translation id="7004910047186208204">Свързване с мрежа за мобилни данни</translation>
 <translation id="7005239792648594238">Отворете приложение, за да започнете</translation>
@@ -1814,6 +1820,7 @@
 <translation id="8314772463905284467">„Caps Lock“ е включен</translation>
 <translation id="8315514906653279104">Включва се...</translation>
 <translation id="8331351032546853669">Предстои изтегляне</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Избран е прозорецът <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">стартов панел</translation>
@@ -1920,6 +1927,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирано приложение, блокирано</translation>
 <translation id="8785070478575117577">Свързване със <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Придвижване напред между долния десен ъгъл, стартовия панел, адресната лента, лентата на отметките, отворения уебсайт и изтеглянията</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Папка „<ph name="FOLDER_NAME" />“</translation>
@@ -2033,6 +2041,7 @@
 <translation id="953431725143473984">Да се изключи ли устройството?</translation>
 <translation id="954052413789300507">Няма достатъчно място за <ph name="FILENAME" />. Освободете място.</translation>
 <translation id="954520015070501466">30 мин</translation>
+<translation id="954786879461589145">Променено от <ph name="USER" /></translation>
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="981011780479609956">Няма крайна дата</translation>
 <translation id="98120814841227350">Преместване в края на документа</translation>

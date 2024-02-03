@@ -71,12 +71,11 @@ MarkerRangeMappingContext::DOMToTextContentOffsetMapper::FindUnit(
                        }));
 }
 
-absl::optional<TextOffsetRange>
-MarkerRangeMappingContext::GetTextContentOffsets(
+std::optional<TextOffsetRange> MarkerRangeMappingContext::GetTextContentOffsets(
     const DocumentMarker& marker) const {
   if (marker.EndOffset() <= fragment_dom_range_.start ||
       marker.StartOffset() >= fragment_dom_range_.end) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Clamp the marker to the fragment in DOM space

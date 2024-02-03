@@ -17,6 +17,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -38,6 +39,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.Tribool;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -184,7 +187,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private void configureSignOutSwitch() {
         Preference signOutPreference = findPreference(PREF_SIGN_OUT);
-        if (getProfile().isChild()) {
+        if (isSupervisedUser()) {
             getPreferenceScreen().removePreference(signOutPreference);
             getPreferenceScreen().removePreference(findPreference(PREF_SIGN_OUT_DIVIDER));
         } else {
@@ -230,7 +233,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private void configureChildAccountPreferences() {
         Preference parentAccounts = findPreference(PREF_PARENT_ACCOUNT_CATEGORY);
-        if (getProfile().isChild()) {
+        if (isSupervisedUser()) {
             PrefService prefService = UserPrefs.get(getProfile());
 
             String firstParent = prefService.getString(Pref.SUPERVISED_USER_CUSTODIAN_EMAIL);
@@ -455,5 +458,20 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(
                 context, AccountManagementFragment.class, arguments);
+    }
+
+    private boolean isSupervisedUser() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES)) {
+            assert mSignedInCoreAccountInfo != null;
+            AccountInfo accountinfo =
+                    IdentityServicesProvider.get()
+                            .getIdentityManager(getProfile())
+                            .findExtendedAccountInfoByEmailAddress(
+                                    mSignedInCoreAccountInfo.getEmail());
+            return accountinfo.getAccountCapabilities().isSubjectToParentalControls()
+                    == Tribool.TRUE;
+        }
+        return getProfile().isChild();
     }
 }

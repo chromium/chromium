@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -170,12 +171,8 @@ IN_PROC_BROWSER_TEST_P(SyntheticInputTest, DestroyWidgetWithOngoingGesture) {
              "chrome.gpuBenchmarking.smoothScrollByXY(0, 10000, ()=>{}, "
              "100, 100, chrome.gpuBenchmarking.TOUCH_INPUT);"));
 
-  while (!gesture_observer.HasSeenGestureScrollBegin()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return gesture_observer.HasSeenGestureScrollBegin(); }));
 
   shell()->Close();
 }

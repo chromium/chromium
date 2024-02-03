@@ -140,37 +140,6 @@ TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserFullscreenPromo) {
   EXPECT_OCMOCK_VERIFY(mock);
 }
 
-// Tests that the DefaultPromoTypeVideo promo is shown when it was detected
-// that the user is likely interested in the promo.
-TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserVideoPromo) {
-  std::map<std::string, std::string> parameters;
-  base::test::ScopedFeatureList feature_list;
-  parameters[kDefaultBrowserVideoPromoVariant] =
-      kVideoConditionsFullscreenPromo;
-  feature_list.InitAndEnableFeatureWithParameters(kDefaultBrowserVideoPromo,
-                                                  parameters);
-  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
-  feature_engagement::test::MockTracker* mock_tracker =
-      static_cast<feature_engagement::test::MockTracker*>(
-          feature_engagement::TrackerFactory::GetForBrowserState(
-              browser_state_.get()));
-  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeVideo);
-  EXPECT_CALL(
-      *mock_tracker,
-      WouldTriggerHelpUI(testing::Ref(
-          feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature)))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(
-      *mock_tracker,
-      ShouldTriggerHelpUI(testing::Ref(
-          feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature)))
-      .WillOnce(testing::Return(true));
-  [[mock expect] showPromoForTesting:DefaultPromoTypeVideo];
-  [default_browser_promo_manager_ start];
-  EXPECT_OCMOCK_VERIFY(mock);
-}
-
 // Tests that the DefaultPromoTypeGeneral promo is shown if the trigger criteria
 // experiment is enabled.
 TEST_F(DefaultBrowserPromoManagerTest,

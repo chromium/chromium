@@ -141,6 +141,8 @@ public abstract class NotificationBuilderBase {
 
     protected PendingIntentProvider mContentIntent;
     protected PendingIntentProvider mDeleteIntent;
+    protected @NotificationUmaTracker.ActionType int mDeleteIntentActionType =
+            NotificationUmaTracker.ActionType.UNKNOWN;
     protected List<Action> mActions = new ArrayList<>(MAX_AUTHOR_PROVIDED_ACTION_BUTTONS);
     protected List<Action> mSettingsActions = new ArrayList<>(1);
     protected int mDefaults;
@@ -301,6 +303,22 @@ public abstract class NotificationBuilderBase {
      */
     public NotificationBuilderBase setDeleteIntent(@Nullable PendingIntentProvider intent) {
         mDeleteIntent = intent;
+        return this;
+    }
+
+    /**
+     * Sets the PendingIntent to send when the notification is cleared by the user directly from the
+     * notification panel.
+     *
+     * <p>Records the intent in UMA as a special action instead of a dismissal.
+     *
+     * @param actionType The `ActionType` to record in UMA.
+     */
+    public NotificationBuilderBase setDeleteIntent(
+            @Nullable PendingIntentProvider intent,
+            @NotificationUmaTracker.ActionType int actionType) {
+        mDeleteIntent = intent;
+        mDeleteIntentActionType = actionType;
         return this;
     }
 

@@ -246,7 +246,7 @@ void MediaRecorderEncoderWrapper::EncodeDone(media::EncoderStatus status) {
 
 void MediaRecorderEncoderWrapper::OutputEncodeData(
     media::VideoEncoderOutput output,
-    absl::optional<media::VideoEncoder::CodecDescription> description) {
+    std::optional<media::VideoEncoder::CodecDescription> description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media", "MediaRecorderEncoderWrapper::OutputEncodeData");
   if (state_ == State::kInError) {

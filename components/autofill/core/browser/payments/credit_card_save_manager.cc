@@ -222,7 +222,8 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   if (!payments_network_interface) {
     return;
   }
-  upload_request_ = payments::PaymentsNetworkInterface::UploadRequestDetails();
+  upload_request_ =
+      payments::PaymentsNetworkInterface::UploadCardRequestDetails();
   upload_request_.card = card;
   uploading_local_card_ = uploading_local_card;
   show_save_prompt_.reset();
@@ -376,7 +377,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
         ClientBehaviorConstants::kOfferingToSaveCvc);
   }
 
-  payments_network_interface->GetUploadDetails(
+  payments_network_interface->GetCardUploadDetails(
       country_only_profiles, upload_request_.detected_values,
       upload_request_.client_behavior_signals, app_locale_,
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
@@ -455,9 +456,12 @@ void CreditCardSaveManager::OnDidUploadCard(
     // |personal_data_manager_|. PDM uses this information to update the avatar
     // button UI.
     personal_data_manager_->OnCreditCardSaved(/*is_local_card=*/false);
-
+#if BUILDFLAG(IS_IOS)
+    if (base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards)) {
+#else
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableUpdateVirtualCardEnrollment)) {
+#endif
       // After a card is successfully saved to the server, offer virtual card
       // enrollment if the card is eligible. |upload_card_response_details| has
       // fields in the response that will be required for server requests in the
@@ -844,7 +848,8 @@ void CreditCardSaveManager::LogStrikesPresentWhenCardSaved(
 
 void CreditCardSaveManager::SetProfilesForCreditCardUpload(
     const CreditCard& card,
-    payments::PaymentsNetworkInterface::UploadRequestDetails* upload_request) {
+    payments::PaymentsNetworkInterface::UploadCardRequestDetails*
+        upload_request) {
   std::vector<AutofillProfile> candidate_profiles;
   const base::Time now = AutofillClock::Now();
   const base::TimeDelta fifteen_minutes = base::Minutes(15);
@@ -1208,8 +1213,12 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
         user_provided_card_details.expiration_date_year, app_locale_);
   }
 
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards)) {
+#else
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableUpdateVirtualCardEnrollment)) {
+#endif
     client_->GetVirtualCardEnrollmentManager()
         ->SetSaveCardBubbleAcceptedTimestamp(AutofillClock::Now());
   }

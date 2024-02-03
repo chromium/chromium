@@ -246,7 +246,7 @@ bool IsNaN(PixelsAndPercent value, bool allows_negative_percentage_reference) {
   return false;
 }
 
-absl::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
+std::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
     scoped_refptr<const blink::CalculationExpressionNode> value,
     bool allows_negative_percentage_reference) {
   // |anchor_evaluator| is not needed because this function is just for handling
@@ -261,7 +261,7 @@ absl::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
       return CreateClampedSamePixelsAndPercent(evaluated_value);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
@@ -722,7 +722,7 @@ String CSSMathExpressionNumericLiteral::CustomCSSText() const {
   return value_->CssText();
 }
 
-absl::optional<PixelsAndPercent>
+std::optional<PixelsAndPercent>
 CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
     const CSSLengthResolver& length_resolver) const {
   switch (category_) {
@@ -767,7 +767,7 @@ double CSSMathExpressionNumericLiteral::DoubleValue() const {
   return 0;
 }
 
-absl::optional<double>
+std::optional<double>
 CSSMathExpressionNumericLiteral::ComputeValueInCanonicalUnit() const {
   switch (category_) {
     case kCalcNumber:
@@ -775,7 +775,7 @@ CSSMathExpressionNumericLiteral::ComputeValueInCanonicalUnit() const {
       return value_->DoubleValue();
     case kCalcLength:
       if (CSSPrimitiveValue::IsRelativeUnit(value_->GetType())) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       [[fallthrough]];
     case kCalcAngle:
@@ -786,7 +786,7 @@ CSSMathExpressionNumericLiteral::ComputeValueInCanonicalUnit() const {
              CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
                  value_->GetType());
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -1043,7 +1043,7 @@ CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
     Vector<double> canonical_values;
     canonical_values.reserve(operands.size());
     for (const CSSMathExpressionNode* operand : operands) {
-      absl::optional<double> canonical_value =
+      std::optional<double> canonical_value =
           operand->ComputeValueInCanonicalUnit();
 
       DCHECK(canonical_value.has_value());
@@ -1218,8 +1218,8 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSteppedValueFunction(
     return nullptr;
   }
   if (CanEagerlySimplify(operands)) {
-    absl::optional<double> a = operands[0]->ComputeValueInCanonicalUnit();
-    absl::optional<double> b = operands[1]->ComputeValueInCanonicalUnit();
+    std::optional<double> a = operands[0]->ComputeValueInCanonicalUnit();
+    std::optional<double> b = operands[1]->ComputeValueInCanonicalUnit();
     DCHECK(a.has_value());
     DCHECK(b.has_value());
     double value = EvaluateSteppedValueFunction(op, a.value(), b.value());
@@ -1265,7 +1265,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
       }
       if (CanEagerlySimplify(operands)) {
         for (const CSSMathExpressionNode* operand : operands) {
-          absl::optional<double> a = operand->ComputeValueInCanonicalUnit();
+          std::optional<double> a = operand->ComputeValueInCanonicalUnit();
           DCHECK(a.has_value());
           value = std::hypot(value, a.value());
         }
@@ -1318,7 +1318,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
   switch (function_id) {
     case CSSValueID::kAbs: {
       if (CanEagerlySimplify(operand)) {
-        const absl::optional<double> opt =
+        const std::optional<double> opt =
             operand->ComputeValueInCanonicalUnit();
         DCHECK(opt.has_value());
         return CSSMathExpressionNumericLiteral::Create(
@@ -1329,7 +1329,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
     }
     case CSSValueID::kSign: {
       if (CanEagerlySimplify(operand)) {
-        const absl::optional<double> opt =
+        const std::optional<double> opt =
             operand->ComputeValueInCanonicalUnit();
         DCHECK(opt.has_value());
         const double value = opt.value();
@@ -1512,26 +1512,26 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
       operator_(op) {}
 
 bool CSSMathExpressionOperation::IsZero() const {
-  absl::optional<double> maybe_value = ComputeValueInCanonicalUnit();
+  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
   return maybe_value && !*maybe_value;
 }
 
-absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
+std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     const CSSLengthResolver& length_resolver) const {
-  absl::optional<PixelsAndPercent> result;
+  std::optional<PixelsAndPercent> result;
   switch (operator_) {
     case CSSMathOperator::kAdd:
     case CSSMathOperator::kSubtract: {
       DCHECK_EQ(operands_.size(), 2u);
       result = operands_[0]->ToPixelsAndPercent(length_resolver);
       if (!result) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
-      absl::optional<PixelsAndPercent> other_side =
+      std::optional<PixelsAndPercent> other_side =
           operands_[1]->ToPixelsAndPercent(length_resolver);
       if (!other_side) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       if (operator_ == CSSMathOperator::kAdd) {
         result.value() += other_side.value();
@@ -1546,13 +1546,13 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
       const CSSMathExpressionNode* number_side =
           GetNumericLiteralSide(operands_[0], operands_[1]);
       if (!number_side) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       const CSSMathExpressionNode* other_side =
           operands_[0] == number_side ? operands_[1] : operands_[0];
       result = other_side->ToPixelsAndPercent(length_resolver);
       if (!result) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       float number = number_side->DoubleValue();
       if (operator_ == CSSMathOperator::kDivide) {
@@ -1574,7 +1574,7 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kAbs:
     case CSSMathOperator::kProgress:
     case CSSMathOperator::kSign:
-      return absl::nullopt;
+      return std::nullopt;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
   }
@@ -1700,18 +1700,18 @@ static bool HasCanonicalUnit(CalculationResultCategory category) {
          category == kCalcResolution;
 }
 
-absl::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
+std::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
     const {
   if (!HasCanonicalUnit(category_)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Vector<double> double_values;
   double_values.reserve(operands_.size());
   for (const CSSMathExpressionNode* operand : operands_) {
-    absl::optional<double> maybe_value = operand->ComputeValueInCanonicalUnit();
+    std::optional<double> maybe_value = operand->ComputeValueInCanonicalUnit();
     if (!maybe_value) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     double_values.push_back(*maybe_value);
   }
@@ -2496,7 +2496,7 @@ class CSSMathExpressionNodeParser {
       for (const CSSMathExpressionNode* operand : nodes) {
         if (status ==
             ProgressArgsSimplificationStatus::kAllArgsResolveToCanonical) {
-          absl::optional<double> canonical_value =
+          std::optional<double> canonical_value =
               operand->ComputeValueInCanonicalUnit();
           CHECK(canonical_value.has_value());
           double_values.push_back(canonical_value.value());
@@ -2945,7 +2945,7 @@ scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
   }
 
   auto value = ToCalculationExpression(length_resolver);
-  absl::optional<PixelsAndPercent> evaluated_value =
+  std::optional<PixelsAndPercent> evaluated_value =
       EvaluateValueIfNaNorInfinity(value, allows_negative_percentage_reference);
   if (evaluated_value.has_value()) {
     return CalculationValue::Create(evaluated_value.value(), range);

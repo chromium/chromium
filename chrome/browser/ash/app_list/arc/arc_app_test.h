@@ -37,7 +37,12 @@ class Profile;
 // Helper class to initialize arc bridge to work with arc apps in unit tests.
 class ArcAppTest {
  public:
-  ArcAppTest();
+  enum UserManagerMode {
+    kDoNothing,
+    kCreate,
+  };
+  explicit ArcAppTest(
+      UserManagerMode user_manager_mode = UserManagerMode::kCreate);
 
   ArcAppTest(const ArcAppTest&) = delete;
   ArcAppTest& operator=(const ArcAppTest&) = delete;
@@ -175,7 +180,7 @@ class ArcAppTest {
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+      fake_user_manager_;
   std::vector<arc::mojom::AppInfoPtr> fake_apps_;
   std::vector<arc::mojom::AppInfoPtr> fake_default_apps_;
   std::vector<arc::mojom::ArcPackageInfoPtr> fake_packages_;

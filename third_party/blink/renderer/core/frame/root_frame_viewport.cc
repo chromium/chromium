@@ -361,7 +361,6 @@ ScrollOffset RootFrameViewport::ClampToUserScrollableOffset(
 
 PhysicalRect RootFrameViewport::ScrollIntoView(
     const PhysicalRect& rect_in_absolute,
-    const PhysicalBoxStrut& scroll_margin,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
   PhysicalRect scroll_snapport_rect = VisibleScrollSnapportRect();
 
@@ -371,8 +370,8 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
 
   ScrollOffset new_scroll_offset =
       ClampScrollOffset(ScrollAlignment::GetScrollOffsetToExpose(
-          scroll_snapport_rect, rect_in_document, scroll_margin,
-          *params->align_x.get(), *params->align_y.get(), GetScrollOffset()));
+          scroll_snapport_rect, rect_in_document, *params->align_x.get(),
+          *params->align_y.get(), GetScrollOffset()));
   if (params->type == mojom::blink::ScrollType::kUser)
     new_scroll_offset = ClampToUserScrollableOffset(new_scroll_offset);
 
@@ -705,7 +704,7 @@ const cc::SnapContainerData* RootFrameViewport::GetSnapContainerData() const {
 }
 
 void RootFrameViewport::SetSnapContainerData(
-    absl::optional<cc::SnapContainerData> data) {
+    std::optional<cc::SnapContainerData> data) {
   LayoutViewport().SetSnapContainerData(data);
 }
 
@@ -722,7 +721,7 @@ void RootFrameViewport::SetSnapContainerDataNeedsUpdate(bool needs_update) {
   LayoutViewport().SetSnapContainerDataNeedsUpdate(needs_update);
 }
 
-absl::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(
+std::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   return LayoutViewport().GetSnapPositionAndSetTarget(strategy);
 }
@@ -753,7 +752,7 @@ const cc::SnappedTargetData* RootFrameViewport::GetSnapChangingTargetData()
 }
 
 void RootFrameViewport::SetSnapChangingTargetData(
-    absl::optional<cc::SnappedTargetData> data) {
+    std::optional<cc::SnappedTargetData> data) {
   LayoutViewport().SetSnapChangingTargetData(data);
 }
 

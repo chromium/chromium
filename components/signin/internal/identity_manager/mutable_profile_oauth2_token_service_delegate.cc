@@ -262,9 +262,12 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_ &&
       token_binding_helper_->HasBindingKey(account_id)) {
+    const std::string gaia_id =
+        account_tracker_service_->GetAccountInfo(account_id).gaia;
+    CHECK(!gaia_id.empty());
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
-        consumer, url_loader_factory, refresh_token,
+        consumer, url_loader_factory, gaia_id, refresh_token,
         signin::GetSigninScopedDeviceId(client_->GetPrefs()),
         std::string(version_info::GetVersionNumber()),
         std::string(
@@ -494,7 +497,8 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       case RevokeAllTokensOnLoad::kNo:
         break;
       case RevokeAllTokensOnLoad::kDeleteSiteDataOnExit:
-        if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                switches::ExplicitBrowserSigninPhase::kExperimental)) {
           // With Uno, tokens are not revoked when clearing cookies if the user
           // is signed in non-syncing.
           revoke_token =

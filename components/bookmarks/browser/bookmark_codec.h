@@ -18,8 +18,6 @@
 
 namespace bookmarks {
 
-class BookmarkModel;
-
 // BookmarkCodec is responsible for encoding and decoding the BookmarkModel
 // into JSON values. The encoded values are written to disk via the
 // BookmarkStorage.
@@ -36,11 +34,6 @@ class BookmarkCodec {
 
   ~BookmarkCodec();
 
-  // Encodes the model to a JSON value. This is invoked to encode the contents
-  // of the bookmark bar model and is currently a convenience to invoking Encode
-  // that takes the bookmark bar node and other folder node.
-  base::Value::Dict Encode(BookmarkModel* model, std::string sync_metadata_str);
-
   // Encodes the bookmark bar and other folders returning the JSON value.
   base::Value::Dict Encode(
       const BookmarkNode* bookmark_bar_node,
@@ -49,34 +42,40 @@ class BookmarkCodec {
       std::string sync_metadata_str);
 
   // Decodes the previously encoded value to the specified nodes as well as
-  // setting |max_node_id| to the greatest node id. Returns true on success,
+  // setting `max_node_id` to the greatest node id. Returns true on success,
   // false otherwise. If there is an error (such as unexpected version) all
   // children are removed from the bookmark bar and other folder nodes. On exit
-  // |max_node_id| is set to the max id of the nodes.
+  // `max_node_id` is set to the max id of the nodes.
+  //
+  // `already_assigned_ids` can be used to consider certain node ids as
+  // reserved, and ensure that decoding won't produce nodes that collide with
+  // these ids. If such collisions exist, ids will be reassigned as if the file
+  // itself contained id collisions, noticeable via `ids_reassigned()` returning
+  // true.
   bool Decode(const base::Value::Dict& value,
+              std::set<int64_t> already_assigned_ids,
               BookmarkNode* bb_node,
               BookmarkNode* other_folder_node,
               BookmarkNode* mobile_folder_node,
               int64_t* max_node_id,
               std::string* sync_metadata_str);
 
-  // Returns the checksum computed during last encoding/decoding call.
-  const std::string& computed_checksum() const { return computed_checksum_; }
-
-  // Returns the checksum that's stored in the file. After a call to Encode,
-  // the computed and stored checksums are the same since the computed checksum
-  // is stored to the file. After a call to decode, the computed checksum can
-  // differ from the stored checksum if the file contents were changed by the
-  // user.
-  const std::string& stored_checksum() const { return stored_checksum_; }
+  // The required-recovery bit represents whether the on-disk state was corrupt
+  // and had to be recovered. Scenarios include ID or UUID collisions and
+  // checksum mismatches.
+  bool required_recovery() const;
 
   // Returns whether the IDs were reassigned during decoding. Always returns
   // false after encoding.
   bool ids_reassigned() const { return ids_reassigned_; }
 
-  // Returns whether the UUIDs were reassigned during decoding. Always returns
-  // false after encoding.
-  bool uuids_reassigned() const { return uuids_reassigned_; }
+  // Test-only APIs.
+  const std::string& ComputedChecksumForTest() const {
+    return computed_checksum_;
+  }
+  const std::string& StoredChecksumForTest() const { return stored_checksum_; }
+
+  std::set<int64_t> release_assigned_ids() { return std::move(ids_); }
 
   // Names of the various keys written to the Value.
   static const char kRootsKey[];
@@ -118,8 +117,7 @@ class BookmarkCodec {
                     const base::Value::Dict& value,
                     std::string* sync_metadata_str);
 
-  // Decodes the children of the specified node. |child_value_list| needs to be
-  // a list value. Returns true on success.
+  // Decodes the children of the specified node. Returns true on success.
   bool DecodeChildren(const base::Value::List& child_value_list,
                       BookmarkNode* parent);
 
@@ -192,8 +190,14 @@ class BookmarkCodec {
   // MD5 context used to compute MD5 hash of all bookmark data.
   base::MD5Context md5_context_;
 
-  // Checksums.
+  // Checksum computed during last encoding/decoding call.
   std::string computed_checksum_;
+
+  // The checksum that's stored in the file. After a call to Encode, the
+  // computed and stored checksums are the same since the computed checksum is
+  // stored to the file. After a call to decode, the computed checksum can
+  // differ from the stored checksum if the file contents were changed by the
+  // user.
   std::string stored_checksum_;
 
   // Maximum ID assigned when decoding data.

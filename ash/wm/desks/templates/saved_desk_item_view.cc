@@ -413,8 +413,8 @@ void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
           IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION));
 }
 
-void SavedDeskItemView::Layout() {
-  views::View::Layout();
+void SavedDeskItemView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   if (delete_button_) {
     const gfx::Size delete_button_size = delete_button_->GetPreferredSize();

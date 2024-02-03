@@ -25,13 +25,17 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/login/localized_values_builder.h"
+#include "components/user_manager/user_manager.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 #include "ui/display/screen.h"
 
@@ -115,6 +119,23 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 
   dict->Set("testapi_shouldSkipGaiaInfoScreen",
             !features::IsOobeGaiaInfoScreenEnabled());
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The current method is called early, before the user logs-in,
+  // If Chrome was launched in OOBE, `is_owner` will be set to true since
+  // `user_manager->GetUsers().size()` would return 0.
+  // If it's launched in the login screen to test the add person flow, then
+  // the number of existing users before the new user logs-in should be > 0.
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  auto* user_manager = user_manager::UserManager::Get();
+  bool is_owner = !connector->IsDeviceEnterpriseManaged() &&
+                  user_manager->GetUsers().size() == 0;
+  dict->Set("testapi_shouldSkipHwDataCollection",
+            !is_owner || !switches::IsRevenBranding());
+#else
+  dict->Set("testapi_shouldSkipHwDataCollection", true);
+#endif
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,
@@ -181,7 +202,7 @@ void OobeTestAPIHandler::LoginAsGuest() {
   VLOG(1) << "LoginAsGuest";
   WizardController::default_controller()->SkipToLoginForTesting();  // IN-TEST
   CHECK(ExistingUserController::current_controller());
-  UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
+  UserContext context(user_manager::UserType::kGuest, EmptyAccountId());
   ExistingUserController::current_controller()->Login(context,
                                                       SigninSpecifics());
 }

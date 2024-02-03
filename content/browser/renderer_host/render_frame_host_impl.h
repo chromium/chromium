@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
 #include <cstdint>
 #include <deque>
 #include <list>
@@ -226,7 +225,6 @@ class UrgentMessageScope;
 
 namespace network {
 class ResourceRequestBody;
-class URLLoaderFactoryBuilder;
 }  // namespace network
 
 namespace ukm {
@@ -266,12 +264,12 @@ class FileSystemManagerImpl;
 class FrameTree;
 class FrameTreeNode;
 class GeolocationServiceImpl;
-class PrerenderCancellationReason;
 class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
 class PeerConnectionTrackerHost;
 class PrefetchedSignedExchangeCache;
+class PrerenderCancellationReason;
 class PresentationServiceImpl;
 class PushMessagingManager;
 class RenderAccessibilityHost;
@@ -2469,7 +2467,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      blink::mojom::DragEventSourceInfoPtr event_info) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
-  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason,
+                                 blink::mojom::BlockingDetailsPtr) override;
 
   void DidChangeBackForwardCacheDisablingFeatures(
       BackForwardCacheBlockingDetails details) override;
@@ -3500,18 +3499,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
           default_factory_receiver);
 
-  // Lets ContentBrowserClient and devtools_instrumentation wrap the subresource
-  // factories before they are sent to a renderer process.
-  void WillCreateURLLoaderFactory(
-      const url::Origin& request_initiator,
-      network::URLLoaderFactoryBuilder& factory_builder,
-      ukm::SourceIdObj ukm_source_id,
-      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
-          header_client = nullptr,
-      bool* bypass_redirect_checks = nullptr,
-      bool* disable_secure_dns = nullptr,
-      network::mojom::URLLoaderFactoryOverridePtr* factory_override = nullptr);
-
   // Returns true if the ExecuteJavaScript() API can be used on this host.
   // The checks do not apply to ExecuteJavaScriptInIsolatedWorld, nor to
   // ExecuteJavaScriptForTests.  See also AssertFrameWasCommitted method.
@@ -4478,6 +4465,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // std::nullopt means that accessibility has never been turned on for
   // this renderer (delegate_->GetAccessibilityMode().is_mode_off()).
   std::optional<uint32_t> accessibility_reset_token_;
+
+  // The instant just before a set of accessibility mode flags are sent to the
+  // renderer. This is used at the starting point when measuring the time to
+  // receive and process a response from the renderer. When
+  // `is_first_accessibility_request_` is true, this includes the time to bind
+  // to the renderer's `RenderAccessibility` interface.
+  base::TimeTicks accessibility_reset_start_;
+
+  // True when the first set of accessibility mode flags are sent to the
+  // renderer. This is used to split timing-related accessibility metrics into
+  // two groups: one for the initial request when accessibility is first enabled
+  // for a WebContents' frames, and one for all subsequent requests.
+  bool is_first_accessibility_request_ = true;
 
   // A count of the number of times we received an unexpected fatal
   // accessibility error and needed to reset accessibility, so we don't keep

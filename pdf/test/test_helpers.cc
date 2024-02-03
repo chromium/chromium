@@ -59,4 +59,14 @@ sk_sp<SkImage> CreateSkiaImageForTesting(const gfx::Size& size, SkColor color) {
   return CreateSkiaSurfaceForTesting(size, color)->makeImageSnapshot();
 }
 
+static v8::Isolate* g_isolate = nullptr;
+
+v8::Isolate* GetBlinkIsolate() {
+  return g_isolate;
+}
+
+void SetBlinkIsolate(v8::Isolate* isolate) {
+  g_isolate = isolate;
+}
+
 }  // namespace chrome_pdf

@@ -567,7 +567,7 @@ public class FeedSurfaceCoordinator
     public void maybeShowWebFeedAwarenessIph() {
         if (mWebFeedHasContent
                 && FeedFeatures.shouldUseWebFeedAwarenessIPH()
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)) {
+                && !FeedFeatures.isFeedFollowUiUpdateEnabled()) {
             UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
             mSectionHeaderView.showWebFeedAwarenessIph(
                     helper, StreamTabId.FOLLOWING, new Scroller());

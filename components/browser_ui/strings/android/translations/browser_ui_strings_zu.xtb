@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Sesha</translation>
 <translation id="1384959399684842514">Ukulayisha kumiswe isikhashana</translation>
 <translation id="1415402041810619267">I-URL inciphisiwe</translation>
-<translation id="1426410128494586442">Yebo</translation>
 <translation id="1434873037477293673">ikhadi lokwehla kwentengo</translation>
 <translation id="1448064542941920355">Nciphisa ukusondeza</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{Isayithi engu-<ph name="SITE_COUNT" />}one{Amasayithi angu-<ph name="SITE_COUNT" />}other{Amasayithi angu-<ph name="SITE_COUNT" />}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Ukuze uvumele i-<ph name="APP_NAME" /> ifinyelele ikhamera yakho, vula nekhamera <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Amakhukhi enkampani yangaphandle avinjiwe</translation>
 <translation id="2238944249568001759">Usesho oluphakanyisiwe ngokususelwe kuthebhu yakho yokugcina</translation>
+<translation id="2241587408274973373">Amakhadi ekhasi lethebhu entsha</translation>
 <translation id="2241634353105152135">Kanye nje</translation>
 <translation id="2253414712144136228">Susa i-<ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Isayithi eli-1 livinjiwe}one{Amasayithi angu-# avinjiwe}other{Amasayithi angu-# avinjiwe}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Amasayithi angabonisa imiyalo yokungena ngemvume kusukela kumasevisi kamazisi.</translation>
 <translation id="2790501146643349491">Lapho ivuliwe, amasayithi asanda kuvalwa angaqedela ukuthumela nokwamukela idatha. Lapho ivaliwe, amasayithi asanda kuvalwa awakwazi ukuqedela ukuthumela noma ukwamukela idatha.</translation>
 <translation id="2822354292072154809">Ingabe uqinisekile ukuthi ufuna ukusetha kabusha zonke izimvume zesayithi le-<ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Cela ukubuka kweselula</translation>
 <translation id="2870560284913253234">Isayithi</translation>
 <translation id="2874939134665556319">Ithrekhi yangaphambilini</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Isibukeli sesitifiketi</translation>
 <translation id="2979365474350987274">Amakhukhi avela kwamanye amawebhusayithi alinganiselwe</translation>
 <translation id="3008272652534848354">Setha kabusha izimvume</translation>
-<translation id="3013291976881901233">Amadivayisi e-MIDI</translation>
 <translation id="301521992641321250">Kuvinjelwe ngokuzenzakalelayo</translation>
 <translation id="3069226013421428034">Vumela ukungena ngemvume kwenkampani yangaphandle kusayithi elithile.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Kuphelelwa yisikhathi kusasa}one{Kuphelelwa isikhathi ezinsukwini ezingu-#}other{Kuphelelwa isikhathi ezinsukwini ezingu-#}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Ixhumeke kudivayisi ye-USB</translation>
 <translation id="4194328954146351878">Buza ngaphambi kokuvumela amasayithi ukuthi abone futhi aguqule ulwazi kumadivayisi e-NFC (kuyanconywa)</translation>
 <translation id="4200726100658658164">Vula Izilungiselelo zendawo</translation>
-<translation id="4212246570487010370">Qhubeka nokuphequlula</translation>
 <translation id="4226663524361240545">Izaziso zingadlidliza idivayisi</translation>
 <translation id="4259722352634471385">Ukuzulazula kuvinjiwe: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Kuvunyelwe</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Hambisa phansi</translation>
 <translation id="6749077623962119521">Setha kabusha izimvume?</translation>
 <translation id="6766622839693428701">Swayiphela phansi ukuze uvale.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Ukusuka ku-<ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Khetha ongakukhetha kwe-<ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Dlala</translation>
 <translation id="6818926723028410516">Khetha izinto</translation>

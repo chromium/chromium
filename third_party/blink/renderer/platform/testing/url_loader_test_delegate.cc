@@ -20,7 +20,7 @@ void URLLoaderTestDelegate::DidReceiveResponse(URLLoaderClient* original_client,
   original_client->DidReceiveResponse(
       response,
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-      /*cached_metadata=*/absl::nullopt);
+      /*cached_metadata=*/std::nullopt);
 }
 
 void URLLoaderTestDelegate::DidReceiveData(URLLoaderClient* original_client,

@@ -129,10 +129,12 @@ using V8ContextToken = base::TokenType<class V8ContextTokenTypeMarker>;
 // Identifies possible contexts used for WebGPU. Used in cross-process mojo
 // interfaces for isolation key coordination.
 // TODO(dawn:549) Might be able to eventually swap this out to use
-//     ExecutionContextToken from above whif DocumentToken gets encapsulated
+//     ExecutionContextToken from above with DocumentToken gets encapsulated
 //     there later on.
-using WebGPUExecutionContextToken =
-    MultiToken<DocumentToken, DedicatedWorkerToken>;
+using WebGPUExecutionContextToken = MultiToken<DocumentToken,
+                                               DedicatedWorkerToken,
+                                               SharedWorkerToken,
+                                               ServiceWorkerToken>;
 
 }  // namespace blink
 

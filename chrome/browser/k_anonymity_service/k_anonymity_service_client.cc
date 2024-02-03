@@ -552,9 +552,7 @@ void KAnonymityServiceClient::QuerySetsSendRequest(
   base::Value::List request_hashes;
   for (const auto& id : query_queue_.front()->ids) {
     std::string hashed_id = crypto::SHA256HashString(id);
-    std::string encoded_name;
-    base::Base64Encode(hashed_id, &encoded_name);
-    request_hashes.Append(encoded_name);
+    request_hashes.Append(base::Base64Encode(hashed_id));
   }
   base::Value::Dict sets_for_type;
   sets_for_type.Set("type", kKAnonType);

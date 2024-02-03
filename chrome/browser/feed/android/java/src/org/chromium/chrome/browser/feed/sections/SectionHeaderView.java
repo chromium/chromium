@@ -25,6 +25,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -649,7 +650,7 @@ public class SectionHeaderView extends LinearLayout {
         adjustTouchDelegate(tab.view);
 
         // Unread indicator is removed in the updated UI.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)) {
+        if (FeedFeatures.isFeedFollowUiUpdateEnabled()) {
             return;
         }
 

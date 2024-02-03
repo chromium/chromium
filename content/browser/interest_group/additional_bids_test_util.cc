@@ -44,8 +44,7 @@ std::string GenerateSignedAdditionalBidHeaderPayloadPortion(
     CHECK(ok);
     base::Value::Dict sig_dict;
     sig_dict.Set("key", base64_public_keys[i]);
-    sig_dict.Set("signature",
-                 base::Base64Encode(base::make_span(sig, sizeof(sig))));
+    sig_dict.Set("signature", base::Base64Encode(sig));
     signatures_list.Append(std::move(sig_dict));
 
     if (inject_fault == SignedAdditionalBidFault::kOneInvalidSignature) {
@@ -65,8 +64,8 @@ std::string GenerateSignedAdditionalBidHeaderPayloadPortion(
     signed_additional_bid_str = "}" + signed_additional_bid_str;
   }
 
-  std::string encoded_signed_additional_bid;
-  base::Base64Encode(signed_additional_bid_str, &encoded_signed_additional_bid);
+  std::string encoded_signed_additional_bid =
+      base::Base64Encode(signed_additional_bid_str);
   // Prepend some whitespace to make sure the decoder is forgiving.
   encoded_signed_additional_bid = " " + encoded_signed_additional_bid;
 

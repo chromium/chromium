@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] attachShadow with clonable: true
-  assert_true: clonable attribute expected true got undefined
-Harness: the test ran to completion.
-

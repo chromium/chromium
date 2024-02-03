@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -213,7 +214,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     @Override
-    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+    public void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
         // If a distiller URL was loaded and this is a custom tab, add a navigation
         // handler to bring any navigations back to the main chrome activity.
         Activity activity = TabUtils.getActivity(tab);

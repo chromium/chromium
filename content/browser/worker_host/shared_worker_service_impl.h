@@ -56,7 +56,9 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   void EnumerateSharedWorkers(Observer* observer) override;
   bool TerminateWorker(const GURL& url,
                        const std::string& name,
-                       const blink::StorageKey& storage_key) override;
+                       const blink::StorageKey& storage_key,
+                       const blink::mojom::SharedWorkerSameSiteCookies
+                           same_site_cookies) override;
   void Shutdown() override;
 
   // Uses |url_loader_factory| to load workers' scripts instead of
@@ -130,7 +132,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   SharedWorkerHost* FindMatchingSharedWorkerHost(
       const GURL& url,
       const std::string& name,
-      const blink::StorageKey& storage_key);
+      const blink::StorageKey& storage_key,
+      const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies);
 
   void ScriptLoadFailed(
       mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,

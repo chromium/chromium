@@ -163,7 +163,8 @@ class TestSearchEngineTabHelper : public SearchEngineTabHelper {
 };
 
 class SearchEngineTabHelperPrerenderingBrowserTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<std::string> {
  public:
   SearchEngineTabHelperPrerenderingBrowserTest()
       : osdd_seeding_path_("/"),
@@ -218,6 +219,9 @@ class SearchEngineTabHelperPrerenderingBrowserTest
     }
   }
 
+ protected:
+  const std::string& GetTargetHint() { return GetParam(); }
+
  private:
   const std::string osdd_seeding_path_;
   const std::string osdd_path_;
@@ -225,7 +229,14 @@ class SearchEngineTabHelperPrerenderingBrowserTest
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchEngineTabHelperPrerenderingBrowserTest,
+                         testing::Values("_self", "_blank"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param;
+                         });
+
+IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
                        GenerateKeywordInPrerendering) {
   GetNewTabWithTestSearchEngineTabHelper();
   TemplateURLService* url_service =
@@ -240,11 +251,15 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/form_search.html");
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
-  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+  int host_id = prerender_helper()->AddPrerender(
+      prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(host_id);
+  content::test::PrerenderHostObserver host_observer(*prerender_web_contents,
                                                      host_id);
   content::RenderFrameHost* render_frame_host =
-      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+      content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, host_id);
   EXPECT_EQ(nullptr, content::EvalJs(render_frame_host, "submit_form();"));
   // Since navigation from a prerendering page is disallowed, prerendering is
   // canceled.
@@ -266,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
   EXPECT_NE(template_urls, url_service->GetTemplateURLs());
 }
 
-IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
                        DeferOSDDRegistrationInPrerendering) {
   // Navigate to a prerendering initiator page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
@@ -274,8 +289,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
 
   // Prerender a page that contains a opensearch descriptor.
   auto prerender_url = embedded_test_server()->GetURL(osdd_seeding_path());
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
-  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+  int host_id = prerender_helper()->AddPrerender(
+      prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(host_id);
+  content::test::PrerenderHostObserver host_observer(*prerender_web_contents,
                                                      host_id);
 
   // No request for the osdd url was made.
@@ -285,8 +303,14 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
   auto osdd_url = embedded_test_server()->GetURL(osdd_path());
   EXPECT_EQ(0, prerender_helper()->GetRequestCount(osdd_url));
 
-  // Navigates the primary page to the URL.
-  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Activate the prerendered page.
+  if (GetTargetHint() == "_blank") {
+    content::test::PrerenderTestHelper::OpenNewWindowWithoutOpener(
+        *GetWebContents(), prerender_url);
+  } else {
+    prerender_helper()->NavigatePrimaryPage(prerender_url);
+  }
+  host_observer.WaitForActivation();
   // Makes sure that the page is from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
 

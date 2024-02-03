@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "net/android/dummy_spnego_authenticator.h"
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/base64.h"
 #include "net/android/net_test_support_provider_jni/DummySpnegoAuthenticator_jni.h"

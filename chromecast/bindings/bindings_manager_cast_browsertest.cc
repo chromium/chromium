@@ -5,7 +5,10 @@
 #ifndef CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_BROWSERTEST_H_
 #define CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_BROWSERTEST_H_
 
+#include "chromecast/bindings/bindings_manager_cast.h"
+
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -14,12 +17,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
-#include "chromecast/bindings/bindings_manager_cast.h"
 #include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -76,7 +77,7 @@ class TitleChangeObserver : public CastWebContentsObserver {
 
   // Spins a Runloop until the title of the page matches the |expected_title|
   // that have been set.
-  void RunUntilTitleEquals(base::StringPiece expected_title) {
+  void RunUntilTitleEquals(std::string_view expected_title) {
     expected_title_ = std::string(expected_title);
     // Spin the runloop until the expected conditions are met.
     if (current_title_ != expected_title_) {

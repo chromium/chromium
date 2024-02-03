@@ -268,29 +268,8 @@ ServiceWorkerMainResourceLoaderInterceptor::
   if (!handle_) {
     return std::nullopt;
   }
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      handle_->container_host();
-
-  // We didn't find a matching service worker for this request, and
-  // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
-  if (!container_host || !container_host->controller()) {
-    return std::nullopt;
-  }
-
-  // Otherwise let's send the controller service worker information along
-  // with the navigation commit.
-  SubresourceLoaderParams params;
-  params.controller_service_worker_info =
-      container_host->CreateControllerServiceWorkerInfo();
-  if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
-          container_host->GetOrCreateServiceWorkerObjectHost(
-              container_host->controller())) {
-    params.controller_service_worker_object_host = object_host;
-    params.controller_service_worker_info->object_info =
-        object_host->CreateIncompleteObjectInfo();
-  }
-
-  return std::optional<SubresourceLoaderParams>(std::move(params));
+  return ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
+      handle_->container_host());
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::

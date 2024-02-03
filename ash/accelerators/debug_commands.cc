@@ -252,7 +252,9 @@ void HandleToggleVirtualTrackpad() {
 }
 
 void HandleShowInformedRestore() {
-  Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
+  if (features::IsForestFeatureEnabled()) {
+    Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
+  }
 }
 
 // Toast debug shortcut constants.

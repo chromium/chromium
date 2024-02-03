@@ -15,16 +15,16 @@ import '../settings_vars.css.js';
 import '../controls/settings_slider.js';
 import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_toggle_button.js';
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {DisplaySettingsProviderInterface, DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {DisplaySettingsNightLightScheduleOption, DisplaySettingsProviderInterface, DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 
@@ -172,13 +172,13 @@ export class SettingsDisplayNightLightElement extends
     // undefined.
     if (this.currentScheduleType !== scheduleType &&
         this.currentScheduleType !== undefined) {
-      this.recordNightLightSettingsMetrics(
-          DisplaySettingsType.kNightLightSchedule, this.isInternalDisplay);
+      this.recordChangingNightLightSchedule(
+          this.isInternalDisplay, scheduleType);
     }
     if (this.currentNightLightStatus !== nightLightStatus &&
         this.currentNightLightStatus !== undefined) {
-      this.recordNightLightSettingsMetrics(
-          DisplaySettingsType.kNightLight, this.isInternalDisplay);
+      this.recordTogglingNightLightStatus(
+          this.isInternalDisplay, nightLightStatus);
     }
 
     // Updates current schedule type and night light status.
@@ -186,12 +186,20 @@ export class SettingsDisplayNightLightElement extends
     this.currentNightLightStatus = nightLightStatus;
   }
 
-  // Records metrics when users change the night light settings.
-  private recordNightLightSettingsMetrics(
-      displaySettingsType: DisplaySettingsType,
-      isInternalDisplay: boolean): void {
+  // Records metrics when users change the night light schedule.
+  private recordChangingNightLightSchedule(
+      isInternalDisplay: boolean,
+      nightLightSchedule: DisplaySettingsNightLightScheduleOption): void {
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        displaySettingsType, {isInternalDisplay});
+        DisplaySettingsType.kNightLightSchedule,
+        {isInternalDisplay, nightLightSchedule});
+  }
+
+  // Records metrics when users toggle the night light status.
+  private recordTogglingNightLightStatus(
+      isInternalDisplay: boolean, nightLightStatus: boolean): void {
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        DisplaySettingsType.kNightLight, {isInternalDisplay, nightLightStatus});
   }
 
   private computeShouldShowGeolocationWarningText_(): boolean {

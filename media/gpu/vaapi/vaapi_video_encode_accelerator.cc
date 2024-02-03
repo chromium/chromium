@@ -70,8 +70,8 @@ std::unique_ptr<ScopedVASurface> CreateScopedSurface(
     const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints) {
   auto surfaces = vaapi_wrapper.CreateScopedVASurfaces(
       kVaSurfaceFormat, encode_size, surface_usage_hints, 1u,
-      /*visible_size=*/absl::nullopt,
-      /*va_fourcc=*/absl::nullopt);
+      /*visible_size=*/std::nullopt,
+      /*va_fourcc=*/std::nullopt);
   return surfaces.empty() ? nullptr : std::move(surfaces.front());
 }
 
@@ -101,7 +101,8 @@ VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
       // TODO(akahuang): Change to use SequencedTaskRunner to see if the
       // performance is affected.
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
+          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock(),
+           base::TaskPriority::USER_VISIBLE},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
@@ -475,7 +476,7 @@ void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
     // vaSyncSurface() is not necessary because GetEncodedChunkSize() has been
     // called in VaapiVideoEncoderDelegate::Encode().
     if (!vaapi_wrapper_->DownloadFromVABuffer(
-            encode_result.coded_buffer_id(), /*sync_surface_id=*/absl::nullopt,
+            encode_result.coded_buffer_id(), /*sync_surface_id=*/std::nullopt,
             target_data, shm_mapping.size(), &data_size)) {
       NotifyError({EncoderStatus::Codes::kEncoderHardwareDriverError,
                    "Failed downloading coded buffer"});
@@ -863,9 +864,9 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     const InputFrameRef& input_frame = input_queue_.front();
     if (!input_frame.frame) {
       // If this is a flush (null) frame, don't create/submit a new encode
-      // result for it, but forward absl::nulloptto the
+      // result for it, but forward std::nulloptto the
       // |pending_encode_results_| queue.
-      pending_encode_results_.push(absl::nullopt);
+      pending_encode_results_.push(std::nullopt);
       input_queue_.pop();
       TryToReturnBitstreamBuffers();
       continue;
@@ -922,7 +923,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       }
     }
     for (size_t i = 0; i < jobs.size(); i++) {
-      absl::optional<EncodeResult> result =
+      std::optional<EncodeResult> result =
           encoder_->GetEncodeResult(std::move(jobs[i]));
       if (!result) {
         NotifyError({EncoderStatus::Codes::kEncoderFailedEncode,
@@ -986,7 +987,7 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   VideoBitrateAllocation allocation;
@@ -1001,7 +1002,7 @@ void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   encoder_task_runner_->PostTask(
@@ -1014,7 +1015,7 @@ void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     VideoBitrateAllocation bitrate_allocation,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK_NE(state_, kUninitialized);
 

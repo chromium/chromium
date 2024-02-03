@@ -1903,7 +1903,7 @@ gfx::Size TabStrip::CalculatePreferredSize() const {
   return preferred_size;
 }
 
-void TabStrip::Layout() {
+void TabStrip::Layout(PassKey) {
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     // With tab scrolling, the TabStrip is the contents view of a ScrollView and
     // as such is expected to set its own bounds during layout.
@@ -1929,7 +1929,7 @@ void TabStrip::Layout() {
     // visibility). See https://crbug.com/1370459.
     // TODO(crbug.com/1371301): TabContainer should observe available width
     // changes and invalidate its layout when needed.
-    tab_container_->Layout();
+    tab_container_->DeprecatedLayoutImmediately();
   }
   drag_context_->SetBoundsRect(GetLocalBounds());
 }
@@ -2012,14 +2012,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
       return;
     }
   }
-  const int tab_count = GetTabCount();
   controller_->CreateNewTab();
-
-  if (GetTabCount() != tab_count + 1) {
-    UMA_HISTOGRAM_ENUMERATION("TabStrip.Failures.Action",
-                              TabFailureContext::kNewTabOpen,
-                              TabFailureContext::kMaxValue);
-  }
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
@@ -2211,34 +2204,31 @@ void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
   gfx::Range tabs_in_group = controller_->ListTabsInGroup(group);
 
   const int start_index = tabs_in_group.start();
-  int target_index = start_index + offset;
+  const int index_of_skipped_over_tab =
+      offset == 1 ? start_index + tabs_in_group.length() : start_index - 1;
 
-  if (offset > 0) {
-    target_index += tabs_in_group.length() - 1;
+  if (!IsValidModelIndex(start_index) ||
+      !IsValidModelIndex(index_of_skipped_over_tab)) {
+    return;
   }
 
-  if (!IsValidModelIndex(start_index) || !IsValidModelIndex(target_index)) {
+  if (controller_->IsTabPinned(index_of_skipped_over_tab)) {
     return;
   }
 
   // Avoid moving into the middle of another group by accounting for its size.
   std::optional<tab_groups::TabGroupId> target_group =
-      tab_at(target_index)->group();
+      tab_at(index_of_skipped_over_tab)->group();
   if (target_group.has_value()) {
-    target_index +=
-        offset *
-        (controller_->ListTabsInGroup(target_group.value()).length() - 1);
+    CHECK_NE(target_group.value(), group);
   }
 
-  if (!IsValidModelIndex(target_index)) {
-    return;
-  }
+  const int num_skipped_tabs =
+      target_group.has_value()
+          ? controller_->ListTabsInGroup(target_group.value()).length()
+          : 1;
 
-  if (controller_->IsTabPinned(start_index) !=
-      controller_->IsTabPinned(target_index)) {
-    return;
-  }
-
+  const int target_index = start_index + offset * num_skipped_tabs;
   controller_->MoveGroup(group, target_index);
 }
 

@@ -210,7 +210,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
   VideoColorSpace GetVideoColorSpace() const override;
-  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -388,7 +388,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Video color space of input bitstream.
   VideoColorSpace picture_color_space_;
   // HDR metadata in the bitstream.
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   const std::unique_ptr<H265Accelerator> accelerator_;
 };

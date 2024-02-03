@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "build/branding_buildflags.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -14,20 +15,37 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 // Spacing between elements.
 const CGFloat kUISpacing = 5;
+
 // Height of the Google pay badge.
 const CGFloat kGooglePayBadgeHeight = 16;
+
+BOOL VirtualCardFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillEnableVirtualCards);
+}
+
 }  // namespace
 
-@implementation CVCHeaderItem
+@implementation CVCHeaderItem {
+}
 
-- (instancetype)initWithType:(NSInteger)type {
+- (instancetype)initWithType:(NSInteger)type
+                   titleText:(NSString*)titleText
+            instructionsText:(NSString*)instructionsText {
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [CVCHeaderView class];
+    _titleText = titleText;
+    _instructionsText = instructionsText;
   }
   return self;
+}
+
+- (NSString*)accessibilityLabels {
+  return [NSString stringWithFormat:@"%@\n%@", _titleText, _instructionsText];
 }
 
 #pragma mark - TableViewHeaderFooterItem
@@ -35,8 +53,8 @@ const CGFloat kGooglePayBadgeHeight = 16;
 - (void)configureHeaderFooterView:(CVCHeaderView*)cvcHeaderView
                        withStyler:(ChromeTableViewStyler*)styler {
   [super configureHeaderFooterView:cvcHeaderView withStyler:styler];
-
-  cvcHeaderView.instructionsLabel.text = self.instructionsText;
+  cvcHeaderView.titleLabel.text = _titleText;
+  cvcHeaderView.instructionsLabel.text = _instructionsText;
 }
 
 @end
@@ -53,12 +71,6 @@ const CGFloat kGooglePayBadgeHeight = 16;
     [self.contentView addSubview:_instructionsLabel];
 
     _googlePayBadgeImageView = [self createGooglePayBadge];
-    _googlePayBadgeImageView.image = [self googlePayBadgeImage];
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    _googlePayBadgeImageView.isAccessibilityElement = YES;
-    _googlePayBadgeImageView.accessibilityLabel =
-        l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
-#endif
     [self.contentView addSubview:_googlePayBadgeImageView];
 
     // Badge image aspect ratio (width / height).
@@ -67,38 +79,85 @@ const CGFloat kGooglePayBadgeHeight = 16;
     CGFloat badgeAspectRatio = _googlePayBadgeImageView.image.size.width /
                                _googlePayBadgeImageView.image.size.height;
 
-    [NSLayoutConstraint activateConstraints:@[
-      // Instructions label
-      [_instructionsLabel.topAnchor
-          constraintEqualToAnchor:self.contentView.topAnchor
-                         constant:kTableViewVerticalSpacing],
-      [_instructionsLabel.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:HorizontalPadding()],
-      [_instructionsLabel.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-HorizontalPadding()],
-      // Google Pay Badge
-      [_googlePayBadgeImageView.topAnchor
-          constraintEqualToAnchor:_instructionsLabel.bottomAnchor
-                         constant:kUISpacing],
-      [_googlePayBadgeImageView.leadingAnchor
-          constraintEqualToAnchor:_instructionsLabel.leadingAnchor],
-      [_googlePayBadgeImageView.heightAnchor
-          constraintEqualToConstant:kGooglePayBadgeHeight],
-      [_googlePayBadgeImageView.widthAnchor
-          constraintEqualToAnchor:_googlePayBadgeImageView.heightAnchor
-                       multiplier:badgeAspectRatio],
-      [_googlePayBadgeImageView.bottomAnchor
-          constraintEqualToAnchor:self.contentView.bottomAnchor
-                         constant:-kTableViewVerticalSpacing],
-    ]];
+    // If the virtual card feature is enabled, show the updated layout.
+    if (VirtualCardFeatureEnabled()) {
+      _titleLabel = [self createTitleLabel];
+      [self.contentView addSubview:_titleLabel];
+
+      [NSLayoutConstraint activateConstraints:@[
+        // Google Pay Badge
+        [_googlePayBadgeImageView.topAnchor
+            constraintEqualToAnchor:self.contentView.topAnchor
+                           constant:kTableViewImagePadding],
+        [_googlePayBadgeImageView.centerXAnchor
+            constraintEqualToAnchor:self.contentView.centerXAnchor],
+        [_googlePayBadgeImageView.heightAnchor
+            constraintEqualToConstant:kTableViewIconImageSize],
+        [_googlePayBadgeImageView.widthAnchor
+            constraintEqualToAnchor:_googlePayBadgeImageView.heightAnchor
+                         multiplier:badgeAspectRatio],
+
+        // Title label
+        [_titleLabel.topAnchor
+            constraintEqualToAnchor:_googlePayBadgeImageView.bottomAnchor
+                           constant:kTableViewImagePadding],
+        [_titleLabel.leadingAnchor
+            constraintEqualToAnchor:self.contentView.leadingAnchor
+                           constant:HorizontalPadding()],
+        [_titleLabel.trailingAnchor
+            constraintEqualToAnchor:self.contentView.trailingAnchor
+                           constant:-HorizontalPadding()],
+
+        // Instructions label
+        [_instructionsLabel.topAnchor
+            constraintEqualToAnchor:_titleLabel.bottomAnchor
+                           constant:kUISpacing],
+        [_instructionsLabel.leadingAnchor
+            constraintEqualToAnchor:self.contentView.leadingAnchor
+                           constant:HorizontalPadding()],
+        [_instructionsLabel.trailingAnchor
+            constraintEqualToAnchor:self.contentView.trailingAnchor
+                           constant:-HorizontalPadding()],
+        [_instructionsLabel.bottomAnchor
+            constraintEqualToAnchor:self.contentView.bottomAnchor
+                           constant:-kTableViewLargeVerticalSpacing],
+      ]];
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        // Instructions label
+        [_instructionsLabel.topAnchor
+            constraintEqualToAnchor:self.contentView.topAnchor
+                           constant:kTableViewVerticalSpacing],
+        [_instructionsLabel.leadingAnchor
+            constraintEqualToAnchor:self.contentView.leadingAnchor
+                           constant:HorizontalPadding()],
+        [_instructionsLabel.trailingAnchor
+            constraintEqualToAnchor:self.contentView.trailingAnchor
+                           constant:-HorizontalPadding()],
+
+        // Google Pay Badge
+        [_googlePayBadgeImageView.topAnchor
+            constraintEqualToAnchor:_instructionsLabel.bottomAnchor
+                           constant:kUISpacing],
+        [_googlePayBadgeImageView.leadingAnchor
+            constraintEqualToAnchor:_instructionsLabel.leadingAnchor],
+        [_googlePayBadgeImageView.heightAnchor
+            constraintEqualToConstant:kGooglePayBadgeHeight],
+        [_googlePayBadgeImageView.widthAnchor
+            constraintEqualToAnchor:_googlePayBadgeImageView.heightAnchor
+                         multiplier:badgeAspectRatio],
+        [_googlePayBadgeImageView.bottomAnchor
+            constraintEqualToAnchor:self.contentView.bottomAnchor
+                           constant:-kTableViewVerticalSpacing],
+      ]];
+    }
   }
   return self;
 }
 
 - (void)prepareForReuse {
   [super prepareForReuse];
+  _titleLabel.text = nil;
   _instructionsLabel.text = nil;
 }
 
@@ -112,6 +171,18 @@ const CGFloat kGooglePayBadgeHeight = 16;
 }
 
 #pragma mark - Private
+// Returns a new UILabel to be used as the view's title label.
+- (UILabel*)createTitleLabel {
+  UILabel* label = [[UILabel alloc] init];
+  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  label.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  label.numberOfLines = 0;
+  label.lineBreakMode = NSLineBreakByWordWrapping;
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.textAlignment = NSTextAlignmentCenter;
+  return label;
+}
+
 // Returns a new UILabel to be used as the view's instruction label.
 - (UILabel*)createInstructionsLabel {
   UILabel* label = [[UILabel alloc] init];
@@ -120,6 +191,7 @@ const CGFloat kGooglePayBadgeHeight = 16;
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.textAlignment = NSTextAlignmentCenter;
   return label;
 }
 
@@ -128,7 +200,12 @@ const CGFloat kGooglePayBadgeHeight = 16;
   UIImageView* googlePayBadge = [[UIImageView alloc] init];
   googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
   googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
-
+  googlePayBadge.image = [self googlePayBadgeImage];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  googlePayBadge.isAccessibilityElement = YES;
+  googlePayBadge.accessibilityLabel =
+      l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
+#endif
   return googlePayBadge;
 }
 

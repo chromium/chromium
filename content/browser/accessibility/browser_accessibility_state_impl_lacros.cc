@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "content/public/browser/scoped_accessibility_mode.h"
+
 namespace content {
 
 BrowserAccessibilityStateImplLacros::BrowserAccessibilityStateImplLacros()
@@ -20,10 +22,11 @@ BrowserAccessibilityStateImplLacros::~BrowserAccessibilityStateImplLacros() =
 
 void BrowserAccessibilityStateImplLacros::OnSpokenFeedbackPrefChanged(
     base::Value value) {
-  if (value.GetIfBool().value_or(false))
-    AddAccessibilityModeFlags(ui::AXMode::kScreenReader);
-  else
-    RemoveAccessibilityModeFlags(ui::AXMode::kScreenReader);
+  if (!value.GetIfBool().value_or(false)) {
+    screen_reader_mode_.reset();
+  } else if (!screen_reader_mode_) {
+    screen_reader_mode_ = CreateScopedModeForProcess(ui::AXMode::kScreenReader);
+  }
 }
 
 // static

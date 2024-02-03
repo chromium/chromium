@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ToolbarManager, ViewerZoomToolbarElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
+import type {ViewerZoomToolbarElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
+import {ToolbarManager} from 'chrome://print/pdf/pdf_print_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

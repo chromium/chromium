@@ -106,7 +106,7 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
   cookie.path = base::IsStringUTF8(canonical_cookie.Path())
                     ? canonical_cookie.Path()
                     : std::string();
-  cookie.secure = canonical_cookie.IsSecure();
+  cookie.secure = canonical_cookie.SecureAttribute();
   cookie.http_only = canonical_cookie.IsHttpOnly();
 
   switch (canonical_cookie.SameSite()) {
@@ -183,7 +183,7 @@ GURL GetURLFromCanonicalCookie(const net::CanonicalCookie& cookie) {
   DCHECK(!cookie.Domain().empty());
 
   return net::cookie_util::CookieOriginToURL(cookie.Domain(),
-                                             cookie.IsSecure());
+                                             cookie.SecureAttribute());
 }
 
 void AppendMatchingCookiesFromCookieListToVector(
@@ -312,8 +312,9 @@ bool MatchFilter::MatchesCookie(
   if (details_->path && *details_->path != cookie.Path())
     return false;
 
-  if (details_->secure && *details_->secure != cookie.IsSecure())
+  if (details_->secure && *details_->secure != cookie.SecureAttribute()) {
     return false;
+  }
 
   if (details_->session && *details_->session != !cookie.IsPersistent())
     return false;

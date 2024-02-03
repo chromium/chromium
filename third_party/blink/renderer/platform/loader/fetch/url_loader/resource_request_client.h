@@ -57,7 +57,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestClient
   virtual void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) = 0;
+      std::optional<mojo_base::BigBuffer> cached_metadata) = 0;
 
   // Called when the transfer size is updated. This method may be called
   // multiple times or not at all. The transfer size is the length of the

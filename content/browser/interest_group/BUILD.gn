@@ -5,5 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("interest_group_proto") {
-  sources = [ "interest_group_ad.proto" ]
+  sources = [ "interest_group_storage.proto" ]
 }

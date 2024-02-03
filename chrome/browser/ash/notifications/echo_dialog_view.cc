@@ -140,7 +140,7 @@ void EchoDialogView::SetBorderAndLabel(std::unique_ptr<views::View> label,
   AddChildView(std::move(label));
 }
 
-BEGIN_METADATA(EchoDialogView, views::DialogDelegateView)
+BEGIN_METADATA(EchoDialogView)
 END_METADATA
 
 }  // namespace ash

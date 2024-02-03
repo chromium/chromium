@@ -314,22 +314,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     low_latency_enabled_ = low_latency_enabled;
   }
 
-  // This class helps implement correct semantics for BlitFramebuffer
-  // when the DrawingBuffer is using a CHROMIUM image for its backing
-  // store and RGB emulation is in use (basically, macOS only).
-  class PLATFORM_EXPORT ScopedRGBEmulationForBlitFramebuffer {
-    STACK_ALLOCATED();
-
-   public:
-    ScopedRGBEmulationForBlitFramebuffer(DrawingBuffer*,
-                                         bool is_user_draw_framebuffer_bound);
-    ~ScopedRGBEmulationForBlitFramebuffer();
-
-   private:
-    scoped_refptr<DrawingBuffer> drawing_buffer_;
-    bool doing_work_ = false;
-  };
-
   scoped_refptr<CanvasResource> ExportCanvasResource();
 
   scoped_refptr<CanvasResource> ExportLowLatencyCanvasResource(

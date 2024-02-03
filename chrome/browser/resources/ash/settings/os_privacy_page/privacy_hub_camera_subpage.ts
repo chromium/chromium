@@ -13,9 +13,9 @@ import './privacy_hub_app_permission_row.js';
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -64,14 +64,14 @@ export class SettingsPrivacyHubCameraSubpage extends
         value: [],
       },
 
-      connectedCameras_: {
+      connectedCameraNames_: {
         type: Array,
         value: [],
       },
 
       isCameraListEmpty_: {
         type: Boolean,
-        computed: 'computeIsCameraListEmpty_(connectedCameras_)',
+        computed: 'computeIsCameraListEmpty_(connectedCameraNames_)',
       },
 
       /**
@@ -107,7 +107,7 @@ export class SettingsPrivacyHubCameraSubpage extends
   private cameraAccessStateText_: string;
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraSwitchForceDisabled_: boolean;
-  private connectedCameras_: string[];
+  private connectedCameraNames_: string[];
   private isCameraListEmpty_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
   private shouldDisableCameraToggle_: boolean;
@@ -213,21 +213,21 @@ export class SettingsPrivacyHubCameraSubpage extends
   }
 
   private async updateCameraList_(): Promise<void> {
-    const connectedCameras: string[] = [];
+    const connectedCameraNames: string[] = [];
     const devices: MediaDeviceInfo[] =
         await MediaDevicesProxy.getMediaDevices().enumerateDevices();
 
     devices.forEach((device) => {
       if (device.kind === 'videoinput') {
-        connectedCameras.push(device.label);
+        connectedCameraNames.push(device.label);
       }
     });
 
-    this.connectedCameras_ = connectedCameras;
+    this.connectedCameraNames_ = connectedCameraNames;
   }
 
   private computeIsCameraListEmpty_(): boolean {
-    return this.connectedCameras_.length === 0;
+    return this.connectedCameraNames_.length === 0;
   }
 
   private computeOnOffText_(): string {
@@ -268,7 +268,8 @@ export class SettingsPrivacyHubCameraSubpage extends
         PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED,
         NUMBER_OF_POSSIBLE_USER_ACTIONS);
 
-    window.open('chrome://settings/content/camera');
+    this.mojoInterfaceProvider_.openBrowserPermissionSettings(
+        PermissionType.kCamera);
   }
 
   private onCameraToggleClick_(): void {

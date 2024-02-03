@@ -11,8 +11,8 @@
 
 namespace app_list {
 
-SearchProvider::SearchProvider(ControlCategory control_category)
-    : control_category_(control_category) {}
+SearchProvider::SearchProvider(SearchCategory search_category)
+    : search_category_(search_category) {}
 SearchProvider::~SearchProvider() = default;
 
 void SearchProvider::Start(const std::u16string& query,

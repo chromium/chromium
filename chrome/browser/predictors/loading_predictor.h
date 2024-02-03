@@ -132,6 +132,12 @@ class LoadingPredictor : public KeyedService,
     base::TimeTicks creation_time;
   };
 
+  struct PreconnectData {
+    url::Origin last_origin_;
+    base::TimeTicks last_preconnect_time_;
+    base::TimeTicks last_preresolve_time_;
+  };
+
   // Cancels an active hint, from its iterator inside |active_hints_|. If the
   // iterator is .end(), does nothing. Returns the iterator after deletion of
   // the entry.
@@ -139,22 +145,21 @@ class LoadingPredictor : public KeyedService,
       std::map<GURL, base::TimeTicks>::iterator hint_it);
   void CleanupAbandonedHintsAndNavigations(NavigationId navigation_id);
 
-  // May start preconnect and preresolve jobs according to |prediction| for
-  // |url|.
+  // May start preconnect and preresolve jobs according to `prediction` for
+  // `url`.
   //
-  // When LoadingPredictorPrefetch is enabled, starts prefetch
-  // jobs if |prediction| has prefetch requests.
+  // When LoadingPredictorPrefetch is enabled, starts prefetch jobs if
+  // `prediction` has prefetch requests.
   void MaybeAddPreconnect(const GURL& url, PreconnectPrediction prediction);
-  // If a preconnect or prefetch exists for |url|, stop it.
+  // If a preconnect or prefetch exists for `url`, stop it.
   void MaybeRemovePreconnect(const GURL& url);
 
-  // May start a preconnect or a preresolve for |url|. |preconnectable|
-  // indicates if preconnect is possible.
-  void HandleOmniboxHint(const GURL& url, bool preconnectable);
-
-  // May start a preconnect or a preresolve for |url|. |preconnectable|
-  // indicates if preconnect is possible.
-  void HandleBookmarkBarHint(const GURL& url, bool preconnectable);
+  // May start a preconnect or a preresolve for `url`. `preconnectable`
+  // indicates if preconnect is possible, or only preresolve will be performed.
+  void HandleHintByOrigin(const GURL& url,
+                          bool preconnectable,
+                          bool only_allow_https,
+                          PreconnectData& preconnect_data);
 
   // For testing.
   void set_mock_resource_prefetch_predictor(
@@ -188,13 +193,11 @@ class LoadingPredictor : public KeyedService,
   bool shutdown_ = false;
   size_t total_hints_activated_ = 0;
 
-  url::Origin last_omnibox_origin_;
-  base::TimeTicks last_omnibox_preconnect_time_;
-  base::TimeTicks last_omnibox_preresolve_time_;
+  PreconnectData omnibox_preconnect_data_;
 
-  url::Origin last_bookmark_bar_origin_;
-  base::TimeTicks last_bookmark_bar_preconnect_time_;
-  base::TimeTicks last_bookmark_bar_preresolve_time_;
+  PreconnectData bookmark_bar_preconnect_data_;
+
+  PreconnectData new_tab_page_preconnect_data_;
 
   friend class LoadingPredictorTest;
   friend class LoadingPredictorPreconnectTest;

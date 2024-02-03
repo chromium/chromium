@@ -23,8 +23,6 @@ MultitaskButton::MultitaskButton(PressedCallback callback,
       type_(type),
       is_portrait_mode_(is_portrait_mode),
       paint_as_active_(paint_as_active) {
-  SetPreferredSize(is_portrait_mode_ ? kMultitaskButtonPortraitSize
-                                     : kMultitaskButtonLandscapeSize);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kMultitaskBaseButtonBorderRadius);
   SetAccessibleName(name);

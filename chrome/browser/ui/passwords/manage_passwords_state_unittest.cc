@@ -481,6 +481,22 @@ TEST_F(ManagePasswordsStateTest, PendingPasswordAddBlocklisted) {
   TestBlocklistedUpdates();
 }
 
+TEST_F(ManagePasswordsStateTest, DefaultStoreChanged) {
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches = {
+      &saved_match(), &psl_match()};
+  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
+      CreateFormManager(&best_matches, {}));
+  passwords_data().OnDefaultStoreChanged(std::move(test_form_manager));
+
+  EXPECT_THAT(passwords_data().GetCurrentForms(),
+              ElementsAre(Pointee(saved_match())));
+  EXPECT_EQ(password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE,
+            passwords_data().state());
+  EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
+  ASSERT_TRUE(passwords_data().form_manager());
+  TestAllUpdates();
+}
+
 TEST_F(ManagePasswordsStateTest, RequestCredentialsAddBlocklisted) {
   std::vector<std::unique_ptr<PasswordForm>> local_credentials;
   local_credentials.emplace_back(new PasswordForm(saved_match()));
@@ -682,7 +698,7 @@ TEST_F(ManagePasswordsStateTest, OnMovablePasswordSubmitted) {
       passwords_data().GetCurrentForms(),
       ElementsAre(Pointee(saved_match()), Pointee(local_federated_form())));
   EXPECT_EQ(passwords_data().state(),
-            password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
+            password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE);
   EXPECT_EQ(passwords_data().origin(), url::Origin::Create(GURL(kTestOrigin)));
 
   TestAllUpdates();

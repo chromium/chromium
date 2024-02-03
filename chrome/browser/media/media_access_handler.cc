@@ -53,19 +53,21 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
   // Get the exact audio or video device if an id is specified.
   // We only set any error result here and before running the callback change
   // it to OK if we have any device.
-  if (audio_allowed && !request.requested_audio_device_id.empty()) {
+  if (audio_allowed && !request.requested_audio_device_ids.empty() &&
+      !request.requested_audio_device_ids.front().empty()) {
     const blink::MediaStreamDevice* audio_device =
         MediaCaptureDevicesDispatcher::GetInstance()->GetRequestedAudioDevice(
-            request.requested_audio_device_id);
+            request.requested_audio_device_ids.front());
     if (audio_device) {
       stream_devices.audio_device = *audio_device;
       get_default_audio_device = false;
     }
   }
-  if (video_allowed && !request.requested_video_device_id.empty()) {
+  if (video_allowed && !request.requested_video_device_ids.empty() &&
+      !request.requested_video_device_ids.front().empty()) {
     const blink::MediaStreamDevice* video_device =
         MediaCaptureDevicesDispatcher::GetInstance()->GetRequestedVideoDevice(
-            request.requested_video_device_id);
+            request.requested_video_device_ids.front());
     if (video_device) {
       stream_devices.video_device = *video_device;
       get_default_video_device = false;

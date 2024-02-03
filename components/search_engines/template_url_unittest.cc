@@ -273,9 +273,8 @@ TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
                               "image/jpeg");
             break;
           case TemplateURLRef::GOOGLE_IMAGE_THUMBNAIL_BASE64: {
-            std::string base64_image_content;
-            base::Base64Encode(search_args.image_thumbnail_content,
-                               &base64_image_content);
+            std::string base64_image_content =
+                base::Base64Encode(search_args.image_thumbnail_content);
             ExpectPostParamIs(*i, "base64_image_content", base64_image_content,
                               "image/jpeg");
             break;
@@ -322,9 +321,8 @@ TEST_F(TemplateURLTest, ImageThumbnailContentTypePostParams) {
       url.image_url_ref().post_params_;
   ExpectContainsPostParam(post_params, "image_content",
                           search_args.image_thumbnail_content, "image/tiff");
-  std::string base64_image_content;
-  base::Base64Encode(search_args.image_thumbnail_content,
-                     &base64_image_content);
+  std::string base64_image_content =
+      base::Base64Encode(search_args.image_thumbnail_content);
   ExpectContainsPostParam(post_params, "base64_image_content",
                           base64_image_content, "image/tiff");
 }

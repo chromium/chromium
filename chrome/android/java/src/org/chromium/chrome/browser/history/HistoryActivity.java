@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.base.IntentUtils;
@@ -28,9 +29,13 @@ public class HistoryActivity extends SnackbarActivity {
         boolean showHistoryClustersImmediately =
                 IntentUtils.safeGetBooleanExtra(
                         getIntent(), HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, false);
+        boolean isFromCustomTabActivity =
+                getIntent().getBooleanExtra(Intent.EXTRA_RETURN_RESULT, false);
         String historyClustersQuery =
                 IntentUtils.safeGetStringExtra(
                         getIntent(), HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY);
+        String clientPackageName =
+                IntentUtils.safeGetStringExtra(getIntent(), Intent.EXTRA_PACKAGE_NAME);
         Profile profile = Profile.getLastUsedRegularProfile();
         mHistoryManager =
                 new HistoryManager(
@@ -41,7 +46,9 @@ public class HistoryActivity extends SnackbarActivity {
                         /* Supplier<Tab>= */ null,
                         showHistoryClustersImmediately,
                         historyClustersQuery,
-                        new BrowsingHistoryBridge(profile));
+                        new BrowsingHistoryBridge(profile),
+                        clientPackageName,
+                        !isFromCustomTabActivity);
         setContentView(mHistoryManager.getView());
         BackPressHelper.create(
                 this, getOnBackPressedDispatcher(), mHistoryManager, SecondaryActivity.HISTORY);

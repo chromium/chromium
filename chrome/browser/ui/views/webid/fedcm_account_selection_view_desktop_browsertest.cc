@@ -29,14 +29,14 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     std::vector<content::IdentityRequestAccount> accounts = {
-        {"id", "email", "name", "given_name", GURL::EmptyGURL(),
+        {"id", "email", "name", "given_name", GURL(),
          /*login_hints=*/std::vector<std::string>(),
          /*domain_hints=*/std::vector<std::string>()}};
     account_selection_view()->Show(
         "top-frame-example.com",
         std::make_optional<std::string>("iframe-example.com"),
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL()),
+          content::ClientMetadata(GURL(), GURL()),
           blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
           /*has_login_status_mismatch=*/false}},
         Account::SignInMode::kExplicit, blink::mojom::RpMode::kWidget,
@@ -49,7 +49,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
   }
 
   base::WeakPtr<views::Widget> GetDialog() {
-    return account_selection_view_->dialog_widget_;
+    return account_selection_view_->GetDialogWidget();
   }
 
   FakeDelegate* delegate() { return delegate_.get(); }

@@ -16,11 +16,6 @@ BASE_FEATURE(kRecordIDNA2008Metrics,
              "RecordIDNA2008Metrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for crbug.com/1220361.
-BASE_FEATURE(kResolveBareFragmentWithColonOnNonHierarchical,
-             "ResolveBareFragmentWithColonOnNonHierarchical",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for crbug.com/1416006.
 BASE_FEATURE(kStandardCompliantNonSpecialSchemeURLParsing,
              "StandardCompliantNonSpecialSchemeURLParsing",

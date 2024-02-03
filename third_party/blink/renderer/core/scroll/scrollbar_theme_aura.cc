@@ -34,7 +34,6 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_fluent.h"
@@ -312,24 +311,18 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
 
   WebThemeEngine::State state;
   cc::PaintCanvas* canvas = gc.Canvas();
-  if (scrollbar.PressedPart() == kThumbPart)
+  if (scrollbar.PressedPart() == kThumbPart) {
     state = WebThemeEngine::kStatePressed;
-  else if (scrollbar.HoveredPart() == kThumbPart)
+  } else if (scrollbar.HoveredPart() == kThumbPart) {
     state = WebThemeEngine::kStateHover;
-  else
+  } else {
     state = WebThemeEngine::kStateNormal;
-
-  WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
-
-  if (scrollbar.ScrollbarThumbColor().has_value()) {
-    scrollbar_thumb.thumb_color =
-        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
   }
 
-  WebThemeEngine::ExtraParams params(scrollbar_thumb);
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   const ui::ColorProvider* color_provider =
       scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
+  WebThemeEngine::ExtraParams params(BuildScrollbarThumbExtraParams(scrollbar));
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       canvas,
@@ -337,6 +330,18 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
           ? WebThemeEngine::kPartScrollbarHorizontalThumb
           : WebThemeEngine::kPartScrollbarVerticalThumb,
       state, rect, &params, color_scheme, color_provider);
+}
+
+WebThemeEngine::ScrollbarThumbExtraParams
+ScrollbarThemeAura::BuildScrollbarThumbExtraParams(const Scrollbar& scrollbar) {
+  WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
+
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_thumb.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
+
+  return scrollbar_thumb;
 }
 
 bool ScrollbarThemeAura::ShouldRepaintAllPartsOnInvalidation() const {

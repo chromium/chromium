@@ -14,11 +14,6 @@
 namespace ash {
 namespace {
 
-using DetectionResult = ui::PalmDetector::DetectionResult;
-
-constexpr double kExpectedResult = 0.968;
-constexpr int kExpectedDataLength = 3648;
-
 class HeatmapPalmDetectorTest : public testing::Test {
  public:
   void SetUp() override {
@@ -26,8 +21,6 @@ class HeatmapPalmDetectorTest : public testing::Test {
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
-    fake_service_connection_.SetOutputValue(
-        std::vector<int64_t>{1L, 1L}, std::vector<double>{kExpectedResult});
   }
 
   void TearDown() override { chromeos::MachineLearningClient::Shutdown(); }
@@ -38,38 +31,22 @@ class HeatmapPalmDetectorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(HeatmapPalmDetectorTest, DetectsPalm) {
+TEST_F(HeatmapPalmDetectorTest, StartsService) {
   HeatmapPalmDetector detector;
-  std::vector<double> data(kExpectedDataLength, 0);
-
-  bool callback_done = false;
-  detector.DetectPalm(data,
-                      base::BindOnce(
-                          [](bool* callback_done, DetectionResult result) {
-                            EXPECT_EQ(result, DetectionResult::kPalm);
-                            *callback_done = true;
-                          },
-                          &callback_done));
-
+  EXPECT_FALSE(detector.IsReady());
+  detector.Start(HeatmapPalmDetector::DeviceId::kRex, "/dev/hidraw0");
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(callback_done);
-}
+  EXPECT_TRUE(detector.IsReady());
+  EXPECT_EQ(detector.GetDetectionResult(),
+            HeatmapPalmDetector::DetectionResult::kNoPalm);
 
-TEST_F(HeatmapPalmDetectorTest, ReturnsNoPalmOnInvalidData) {
-  HeatmapPalmDetector detector;
-  std::vector<double> data;
-
-  bool callback_done = false;
-  detector.DetectPalm(data,
-                      base::BindOnce(
-                          [](bool* callback_done, DetectionResult result) {
-                            EXPECT_EQ(result, DetectionResult::kNoPalm);
-                            *callback_done = true;
-                          },
-                          &callback_done));
-
+  auto palm_event =
+      chromeos::machine_learning::mojom::HeatmapProcessedEvent::New();
+  palm_event->is_palm = true;
+  fake_service_connection_.SendHeatmapPalmRejectionEvent(std::move(palm_event));
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(callback_done);
+  EXPECT_EQ(detector.GetDetectionResult(),
+            HeatmapPalmDetector::DetectionResult::kPalm);
 }
 
 }  // namespace

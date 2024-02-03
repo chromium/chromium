@@ -5,7 +5,6 @@
 #include "content/public/browser/synthetic_trial_syncer.h"
 
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/common/synthetic_trial_configuration.mojom.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -13,7 +12,6 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -35,78 +33,23 @@ void NotifyChildProcess(
         synthetic_trial_configuration,
     const std::vector<variations::SyntheticTrialGroup>& trials_updated,
     const std::vector<variations::SyntheticTrialGroup>& trials_removed) {
-  synthetic_trial_configuration->AddOrUpdateSyntheticTrialGroups(
-      ConvertTrialGroupsToMojo(trials_updated));
-  synthetic_trial_configuration->RemoveSyntheticTrialGroups(
-      ConvertTrialGroupsToMojo(trials_removed));
+  if (trials_updated.size() > 0) {
+    synthetic_trial_configuration->AddOrUpdateSyntheticTrialGroups(
+        ConvertTrialGroupsToMojo(trials_updated));
+  }
+  if (trials_removed.size() > 0) {
+    synthetic_trial_configuration->RemoveSyntheticTrialGroups(
+        ConvertTrialGroupsToMojo(trials_removed));
+  }
 }
 
-class RenderProcessIterator {
- public:
-  using HostType = RenderProcessHost;
-
-  RenderProcessIterator() : iter_(RenderProcessHost::AllHostsIterator()) {}
-
-  bool IsAtEnd() { return iter_.IsAtEnd(); }
-
-  void Advance() { iter_.Advance(); }
-
-  const base::Process& GetProcess() {
-    return iter_.GetCurrentValue()->GetProcess();
-  }
-
-  HostType* GetHost() { return iter_.GetCurrentValue(); }
-
- private:
-  RenderProcessHost::iterator iter_;
-};
-
-class NonRenderProcessIterator {
- public:
-  using HostType = ChildProcessHost;
-
-  NonRenderProcessIterator() = default;
-
-  bool IsAtEnd() { return iter_.Done(); }
-
-  void Advance() { ++iter_; }
-
-  const base::Process& GetProcess() { return iter_.GetData().GetProcess(); }
-
-  HostType* GetHost() { return iter_.GetHost(); }
-
- private:
-  BrowserChildProcessHostIterator iter_;
-};
-
-template <typename Iterator>
-void NotifySyntheticTrialsChange(
-    base::ProcessId process_id,
-    const std::vector<variations::SyntheticTrialGroup>& trials_updated,
-    const std::vector<variations::SyntheticTrialGroup>& trials_removed) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  base::ProcessId current_pid = base::Process::Current().Pid();
-  for (Iterator iter; !iter.IsAtEnd(); iter.Advance()) {
-    const base::Process& process = iter.GetProcess();
-    if (!process.IsValid() ||
-        (process_id != base::kNullProcessId && process_id != process.Pid())) {
-      continue;
+ChildProcessHost* FindChildProcessHost(int unique_id) {
+  for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+    if (iter.GetData().id == unique_id) {
+      return iter.GetHost();
     }
-
-    // Skip if in-browser process mode, because the browser process
-    // manages synthetic trial groups properly.
-    if (process.Pid() == current_pid) {
-      continue;
-    }
-
-    mojo::Remote<mojom::SyntheticTrialConfiguration>
-        synthetic_trial_configuration;
-    iter.GetHost()->BindReceiver(
-        synthetic_trial_configuration.BindNewPipeAndPassReceiver());
-    NotifyChildProcess(synthetic_trial_configuration, trials_updated,
-                       trials_removed);
   }
+  return nullptr;
 }
 
 }  // namespace
@@ -124,6 +67,10 @@ std::unique_ptr<SyntheticTrialSyncer> SyntheticTrialSyncer::Create(
   return instance;
 }
 
+void SyntheticTrialSyncer::OnDisconnected(int unique_child_process_id) {
+  child_process_unique_id_to_mojo_connections_.erase(unique_child_process_id);
+}
+
 SyntheticTrialSyncer::SyntheticTrialSyncer(
     variations::SyntheticTrialRegistry* registry)
     : registry_(registry) {}
@@ -132,9 +79,10 @@ SyntheticTrialSyncer::~SyntheticTrialSyncer() {
   registry_->RemoveObserver(this);
   BrowserChildProcessObserver::Remove(this);
 
-  for (RenderProcessIterator it; !it.IsAtEnd(); it.Advance()) {
-    if (it.GetHost()) {
-      it.GetHost()->RemoveObserver(this);
+  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
+       !it.IsAtEnd(); it.Advance()) {
+    if (RenderProcessHost* host = it.GetCurrentValue()) {
+      host->RemoveObserver(this);
     }
   }
 }
@@ -143,10 +91,9 @@ void SyntheticTrialSyncer::OnSyntheticTrialsChanged(
     const std::vector<variations::SyntheticTrialGroup>& trials_updated,
     const std::vector<variations::SyntheticTrialGroup>& trials_removed,
     const std::vector<variations::SyntheticTrialGroup>& groups) {
-  NotifySyntheticTrialsChange<RenderProcessIterator>(
-      base::kNullProcessId, trials_updated, trials_removed);
-  NotifySyntheticTrialsChange<NonRenderProcessIterator>(
-      base::kNullProcessId, trials_updated, trials_removed);
+  for (auto& it : child_process_unique_id_to_mojo_connections_) {
+    NotifyChildProcess(it.second, trials_updated, trials_removed);
+  }
 }
 
 void SyntheticTrialSyncer::BrowserChildProcessLaunchedAndConnected(
@@ -155,8 +102,35 @@ void SyntheticTrialSyncer::BrowserChildProcessLaunchedAndConnected(
     return;
   }
 
-  NotifySyntheticTrialsChange<NonRenderProcessIterator>(
-      data.GetProcess().Pid(), registry_->GetSyntheticTrialGroups(), {});
+  const int unique_id = data.id;
+  ChildProcessHost* host = FindChildProcessHost(unique_id);
+  if (host == nullptr) {
+    return;
+  }
+  mojo::Remote<mojom::SyntheticTrialConfiguration>
+      synthetic_trial_configuration;
+  host->BindReceiver(
+      synthetic_trial_configuration.BindNewPipeAndPassReceiver());
+  // SyntheticTrialSyncer will be destroyed at PostMainMessageLoopRun() while
+  // BrowserMainRunner's shutdown. So the disconnect handler task will not
+  // be invoked after the destruction.
+  synthetic_trial_configuration.set_disconnect_handler(
+      base::BindOnce(&SyntheticTrialSyncer::OnDisconnected,
+                     base::Unretained(this), unique_id));
+  NotifyChildProcess(synthetic_trial_configuration,
+                     registry_->GetSyntheticTrialGroups(), {});
+
+  // Keep the mojo connection not to repeatedly create and destroy the child
+  // process synthetic trial syncer.
+  child_process_unique_id_to_mojo_connections_[unique_id] =
+      std::move(synthetic_trial_configuration);
+}
+
+void SyntheticTrialSyncer::BrowserChildProcessHostDisconnected(
+    const ChildProcessData& data) {
+  // Since data.GetProcess().IsValid() returns false, we cannot get the child
+  // process' pid here.
+  child_process_unique_id_to_mojo_connections_.erase(data.id);
 }
 
 void SyntheticTrialSyncer::OnRenderProcessHostCreated(RenderProcessHost* host) {
@@ -169,17 +143,39 @@ void SyntheticTrialSyncer::RenderProcessReady(RenderProcessHost* host) {
     return;
   }
 
-  NotifySyntheticTrialsChange<RenderProcessIterator>(
-      process.Pid(), registry_->GetSyntheticTrialGroups(), {});
+  const int unique_id = host->GetID();
+  mojo::Remote<mojom::SyntheticTrialConfiguration>
+      synthetic_trial_configuration;
+  host->BindReceiver(
+      synthetic_trial_configuration.BindNewPipeAndPassReceiver());
+  // SyntheticTrialSyncer will be destroyed at PostMainMessageLoopRun() while
+  // BrowserMainRunner's shutdown. So the disconnect handler task will not
+  // be invoked after the destruction.
+  synthetic_trial_configuration.set_disconnect_handler(
+      base::BindOnce(&SyntheticTrialSyncer::OnDisconnected,
+                     base::Unretained(this), unique_id));
+  NotifyChildProcess(synthetic_trial_configuration,
+                     registry_->GetSyntheticTrialGroups(), {});
+
+  // Keep the mojo connection not to repeatedly create and destroy the child
+  // process synthetic trial syncer.
+  child_process_unique_id_to_mojo_connections_[unique_id] =
+      std::move(synthetic_trial_configuration);
 }
 
 void SyntheticTrialSyncer::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
+  child_process_unique_id_to_mojo_connections_.erase(host->GetID());
+
+  // To ensure this is removed from the observer list, call RemoveObserver()
+  // again.
   host->RemoveObserver(this);
 }
 
 void SyntheticTrialSyncer::RenderProcessHostDestroyed(RenderProcessHost* host) {
+  child_process_unique_id_to_mojo_connections_.erase(host->GetID());
+
   // To ensure this is removed from the observer list, call RemoveObserver()
   // again.
   host->RemoveObserver(this);

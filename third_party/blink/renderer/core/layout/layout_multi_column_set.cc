@@ -316,9 +316,10 @@ LayoutUnit LayoutMultiColumnSet::ColumnGap() const {
   NOT_DESTROYED();
   LayoutBlockFlow* parent_block = MultiColumnBlockFlow();
 
-  if (const absl::optional<Length>& column_gap =
-          parent_block->StyleRef().ColumnGap())
+  if (const std::optional<Length>& column_gap =
+          parent_block->StyleRef().ColumnGap()) {
     return ValueForLength(*column_gap, AvailableLogicalWidth());
+  }
 
   // "1em" is recommended as the normal gap setting. Matches <p> margins.
   return LayoutUnit(

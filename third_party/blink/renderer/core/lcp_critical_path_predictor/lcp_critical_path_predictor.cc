@@ -38,7 +38,8 @@ LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
 LCPCriticalPathPredictor::~LCPCriticalPathPredictor() = default;
 
 bool LCPCriticalPathPredictor::HasAnyHintData() const {
-  return !lcp_element_locators_.empty() || !lcp_influencer_scripts_.empty();
+  return !lcp_element_locators_.empty() || !lcp_influencer_scripts_.empty() ||
+         !preconnected_origins_.empty();
 }
 
 void LCPCriticalPathPredictor::set_lcp_element_locators(
@@ -79,11 +80,17 @@ void LCPCriticalPathPredictor::set_fetched_fonts(Vector<KURL> fonts) {
   fetched_fonts_ = std::move(fonts);
 }
 
+void LCPCriticalPathPredictor::set_preconnected_origins(
+    const Vector<url::Origin>& origins) {
+  preconnected_origins_ = std::move(origins);
+}
+
 void LCPCriticalPathPredictor::Reset() {
   lcp_element_locators_.clear();
   lcp_element_locator_strings_.clear();
   lcp_influencer_scripts_.clear();
   fetched_fonts_.clear();
+  preconnected_origins_.clear();
 
   lcp_predicted_callbacks_.clear();
   called_predicted_callbacks_ = false;
@@ -159,8 +166,46 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
         GetHost().SetLcpElementLocator(
             lcp_element_locator_string,
             predicted_lcp_index == kNotFound
-                ? absl::nullopt
-                : absl::optional<wtf_size_t>(predicted_lcp_index));
+                ? std::nullopt
+                : std::optional<wtf_size_t>(predicted_lcp_index));
+      }
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kLCPPAutoPreconnectLcpOrigin)) {
+    auto root_origin =
+        url::Origin::Create((GURL)lcp_element.GetDocument().Url());
+    if (const HTMLImageElement* image_element =
+            DynamicTo<HTMLImageElement>(lcp_element)) {
+      const KURL& lcp_image_url = image_element->SourceURL();
+
+      if (!lcp_image_url.IsEmpty() && lcp_image_url.IsValid() &&
+          lcp_image_url.ProtocolIsInHTTPFamily()) {
+        auto lcp_origin = url::Origin::Create((GURL)lcp_image_url);
+        bool is_lcp_cross_origin = !lcp_origin.IsSameOriginWith(root_origin);
+        base::UmaHistogramBoolean("Blink.LCPP.CrossOriginLcpImage",
+                                  is_lcp_cross_origin);
+        if (is_lcp_cross_origin) {
+          GetHost().SetPreconnectOrigins({(KURL)lcp_origin.GetURL()});
+        }
+
+        // Calculate accuracy against predicted.
+        int count_prediction_matches = 0;
+        for (const auto& predicted_origin : preconnected_origins_) {
+          if (lcp_origin.IsSameOriginWith(predicted_origin)) {
+            count_prediction_matches++;
+          }
+        }
+
+        base::UmaHistogramCounts1000(
+            "Blink.LCPP.PreconnectPredictionMatchCount",
+            base::checked_cast<int>(preconnected_origins_.size()));
+        if (!preconnected_origins_.empty()) {
+          base::UmaHistogramCounts100(
+              "Blink.LCPP.PreconnectPredictionMatchPercent",
+              base::checked_cast<int>((double)count_prediction_matches /
+                                      preconnected_origins_.size() * 100));
+        }
       }
     }
   }

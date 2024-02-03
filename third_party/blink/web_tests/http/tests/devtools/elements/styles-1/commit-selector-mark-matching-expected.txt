@@ -13,6 +13,7 @@ foo, [$#inspected$], .bar, [$#inspected$] { (inspector-stylesheet:1 -> inspector
 [expanded] 
 [$div$] { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 
 Running: changeSelector
@@ -25,5 +26,6 @@ element.style { ()
 [expanded] 
 [$div$] { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 

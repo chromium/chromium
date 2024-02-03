@@ -93,7 +93,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::UserAgentOverrideDataView,
     return data.ua_string_override;
   }
 
-  static const absl::optional<::blink::UserAgentMetadata>& ua_metadata_override(
+  static const std::optional<::blink::UserAgentMetadata>& ua_metadata_override(
       const ::blink::UserAgentOverride& data) {
     return data.ua_metadata_override;
   }

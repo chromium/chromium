@@ -473,7 +473,6 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     return OK;
   }
 
-  const std::string& host = params_->host_and_port().host();
   if (is_ech_capable && ech_enabled) {
     // These values are persisted to logs. Entries should not be renumbered
     // and numeric values should never be reused.
@@ -527,14 +526,6 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
         SSLConnectionStatusToVersion(ssl_info.connection_status);
     UMA_HISTOGRAM_ENUMERATION("Net.SSLVersion", version,
                               SSL_CONNECTION_VERSION_MAX);
-    if (IsGoogleHost(host)) {
-      // Google hosts all support TLS 1.2, so any occurrences of TLS 1.0 or TLS
-      // 1.1 will be from an outdated insecure TLS MITM proxy, such as some
-      // antivirus configurations. TLS 1.0 and 1.1 are deprecated, so record
-      // these to see how prevalent they are. See https://crbug.com/896013.
-      UMA_HISTOGRAM_ENUMERATION("Net.SSLVersionGoogle", version,
-                                SSL_CONNECTION_VERSION_MAX);
-    }
 
     uint16_t cipher_suite =
         SSLConnectionStatusToCipherSuite(ssl_info.connection_status);

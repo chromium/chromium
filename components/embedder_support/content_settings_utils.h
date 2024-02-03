@@ -9,6 +9,7 @@
 
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "url/origin.h"
 
 class GURL;
@@ -38,14 +39,16 @@ content::AllowServiceWorkerResult AllowServiceWorker(
 
 // See ContentBrowserClient::AllowSharedWorker. This also notifies content
 // settings of shared worker access.
-bool AllowSharedWorker(const GURL& worker_url,
-                       const net::SiteForCookies& site_for_cookies,
-                       const std::optional<url::Origin>& top_frame_origin,
-                       const std::string& name,
-                       const blink::StorageKey& storage_key,
-                       int render_process_id,
-                       int render_frame_id,
-                       const content_settings::CookieSettings* cookie_settings);
+bool AllowSharedWorker(
+    const GURL& worker_url,
+    const net::SiteForCookies& site_for_cookies,
+    const std::optional<url::Origin>& top_frame_origin,
+    const std::string& name,
+    const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
+    int render_process_id,
+    int render_frame_id,
+    const content_settings::CookieSettings* cookie_settings);
 
 // See ContentBrowserClient::AllowWorkerFileSystem. This also notifies content
 // settings of file system access.

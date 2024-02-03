@@ -118,8 +118,8 @@ void SelectedKeywordView::SetKeyword(const std::u16string& keyword) {
   partial_label_.SetText(names.short_name);
 
   // Update the label now so ShouldShowLabel() works correctly when the parent
-  // class is calculating the preferred size. It will be updated again in
-  // Layout(), taking into account how much space has actually been allotted.
+  // class is calculating the preferred size. It will be updated again during
+  // layout, taking into account how much space has actually been allotted.
   SetLabelForCurrentWidth();
   NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged, true);
 }

@@ -12,6 +12,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
+#include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/predictors/loading_predictor_config.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -208,6 +211,25 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
         tile->url, is_hover_trigger
                        ? chrome_preloading_predictor::kMouseHoverOnNewTabPage
                        : chrome_preloading_predictor::kPointerDownOnNewTabPage);
+  }
+}
+
+void MostVisitedHandler::PreconnectMostVisitedTile(
+    most_visited::mojom::MostVisitedTilePtr tile) {
+  if (!base::FeatureList::IsEnabled(
+          features::kNewTabPageTriggerForPrerender2)) {
+    page_handler_.ReportBadMessage(
+        "PreconnectMostVisitedTile is only expected to be called "
+        "when kNewTabPageTriggerForPrerender2 is true.");
+    return;
+  }
+
+  auto* loading_predictor =
+      predictors::LoadingPredictorFactory::GetForProfile(profile_);
+  if (loading_predictor) {
+    loading_predictor->PrepareForPageLoad(tile->url,
+                                          predictors::HintOrigin::NEW_TAB_PAGE,
+                                          /*preconnectable=*/true);
   }
 }
 

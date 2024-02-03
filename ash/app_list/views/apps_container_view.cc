@@ -480,7 +480,7 @@ void AppsContainerView::ResetForShowApps() {
   if (needs_layout()) {
     // Layout might be needed if `ResetForShowApps` was called during animation
     // (specifically, during tablet ->(aborted) clamshell -> tablet transition).
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 
@@ -547,7 +547,7 @@ void AppsContainerView::OnAppListVisibilityChanged(bool shown) {
   // TODO(https://crbug.com/1306613): Remove explicit layout once the linked
   // issue gets fixed.
   if (shown && needs_layout())
-    Layout();
+    DeprecatedLayoutImmediately();
 }
 
 // PaginationModelObserver:
@@ -749,12 +749,12 @@ void AppsContainerView::UpdateContinueSectionVisibility() {
   if (!continue_container_)
     return;
 
-  // Get the continue container's height before Layout().
+  // Get the continue container's height before DeprecatedLayoutImmediately().
   const int initial_height = continue_container_->height();
 
   // Update continue container visibility and bounds.
   continue_container_->UpdateContinueSectionVisibility();
-  Layout();
+  DeprecatedLayoutImmediately();
 
   // Only play animations if the tablet mode app list is visible. This function
   // can be called in clamshell mode when the tablet app list is cached.
@@ -780,7 +780,7 @@ void AppsContainerView::UpdateContinueSectionVisibility() {
   }
 
   // Continue section is being shown. Transform the apps grid view up to its
-  // original pre-Layout() position.
+  // original pre-layout position.
   gfx::Transform transform;
   transform.Translate(0, vertical_offset);
   apps_grid_view_->SetTransform(transform);
@@ -833,12 +833,12 @@ void AppsContainerView::UpdateControlVisibility(
       app_list_state == AppListViewState::kFullscreenSearch);
 }
 
-void AppsContainerView::Layout() {
+void AppsContainerView::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty())
     return;
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   const int app_list_y =
       GetAppListY(contents_view_->app_list_view()->app_list_state());
@@ -930,7 +930,7 @@ void AppsContainerView::Layout() {
     // Apps grid layout depends on the continue container bounds, so explicitly
     // call layout to ensure apps grid view gets laid out even if its bounds do
     // not change.
-    apps_grid_view_->Layout();
+    apps_grid_view_->DeprecatedLayoutImmediately();
   }
 
   if (separator_) {
@@ -1275,7 +1275,7 @@ void AppsContainerView::SetShowState(ShowState show_state,
 
   // Layout before showing animation because the animation's target bounds are
   // calculated based on the layout.
-  Layout();
+  DeprecatedLayoutImmediately();
 
   switch (show_state_) {
     case SHOW_APPS:
@@ -1452,7 +1452,7 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEnded(
   // (because of calculating the visible items). Therefore trigger layout before
   // starting the fade in animation.
   if (toast_visibility_change)
-    Layout();
+    DeprecatedLayoutImmediately();
 
   ash::PaginationModel* pagination_model = apps_grid_view_->pagination_model();
   bool page_change = (pagination_model->selected_page() != 0);
@@ -1541,7 +1541,7 @@ void AppsContainerView::OnZeroStateSearchDone() {
     // so invalidating recent apps layout when recent apps visibiltiy changes
     // will not work well).
     // TODO(b/261662349): Remove explicit layout once the linked issue is fixed.
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 

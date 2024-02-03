@@ -255,20 +255,20 @@
     <div class="upload-button-container">
       <cr-icon-button class="action-button" title="Upload Trace"
           iron-icon="trace-report-icons:cloud_upload" aria-label="Upload Trace"
-          on-click="onUploadTraceClick_" aria-disabled="[[isLoading]]"
-          hidden$="[[!uploadStateEqual(trace.uploadState,
+          on-click="onUploadTraceClick_"
+          hidden="[[!uploadStateEqual(trace.uploadState,
               uploadStateEnum_.NOT_UPLOADED)]]"
-          disabled$="[[!isManualUploadPermitted_(trace.skipReason)]]">
+          disabled="[[!isManualUploadPermitted_(trace.skipReason)]]">
       </cr-icon-button>
     </div>
     <cr-icon-button class="action-button" iron-icon="cr:file-download"
         title="Download Trace" on-click="onDownloadTraceClick_"
-        disabled="[[isLoading]]" aria-disabled="[[isLoading]]"
+        disabled="[[isDownloadDisabled_(isLoading, trace.uploadState)]]"
         aria-label="Download Trace">
     </cr-icon-button>
     <cr-icon-button class="action-button" iron-icon="cr:delete"
         title="Delete Trace" on-click="onDeleteTraceClick_"
-        disabled="[[isLoading]]" aria-disabled="[[isLoading]]"
+        disabled="[[isLoading]]"
         aria-label="Delete Trace">
     </cr-icon-button>
   </div>

@@ -120,9 +120,9 @@ ArcCameraBridge::~ArcCameraBridge() {
 }
 
 void ArcCameraBridge::StartCameraService(StartCameraServiceCallback callback) {
-  char random_bytes[16];
-  crypto::RandBytes(random_bytes, 16);
-  std::string token = base::HexEncode(random_bytes, 16);
+  uint8_t random_bytes[16];
+  crypto::RandBytes(random_bytes);
+  std::string token = base::HexEncode(random_bytes);
 
   mojo::OutgoingInvitation invitation;
   mojo::PlatformChannel channel;

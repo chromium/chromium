@@ -42,19 +42,19 @@ bool IsDrawerLayout(ax::android::mojom::AccessibilityNodeInfoData* node) {
 namespace ax::android {
 
 // static
-absl::optional<std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
+std::optional<std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
 DrawerLayoutHandler::CreateIfNecessary(
     AXTreeSourceAndroid* tree_source,
     const mojom::AccessibilityEventData& event_data) {
   if (event_data.event_type !=
       mojom::AccessibilityEventType::WINDOW_STATE_CHANGED) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AccessibilityInfoDataWrapper* source_node =
       tree_source->GetFromId(event_data.source_id);
   if (!source_node || !IsDrawerLayout(source_node->GetNode())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Find a node with accessibility importance. That is a menu node opened now.
@@ -74,7 +74,7 @@ DrawerLayoutHandler::CreateIfNecessary(
             event_data.event_text.value_or<std::vector<std::string>>({}),
             " ")));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool DrawerLayoutHandler::PreDispatchEvent(

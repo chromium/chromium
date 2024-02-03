@@ -81,7 +81,7 @@ class SCTAuditingHandlerTest : public testing::Test {
         std::move(context_params));
 
     // Set up fake CT logs.
-    mojom::CTLogInfoPtr log(absl::in_place);
+    mojom::CTLogInfoPtr log(std::in_place);
     log->id = kTestLogIdAsString;
     log->mmd = kTestLogMMD;
     std::vector<mojom::CTLogInfoPtr> log_list;
@@ -101,7 +101,7 @@ class SCTAuditingHandlerTest : public testing::Test {
 
     // Set up SCT auditing configuration.
     auto* cache = network_service_->sct_auditing_cache();
-    mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
+    mojom::SCTAuditingConfigurationPtr configuration(std::in_place);
     configuration->sampling_rate = 1.0;
     configuration->report_uri = GURL("https://example.test");
     configuration->traffic_annotation =
@@ -620,7 +620,7 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithPersistencePath) {
   // Fake a HashValue to use as the key.
   net::HashValue reporter_key(net::HASH_VALUE_SHA256);
 
-  handler.AddReporter(reporter_key, std::move(report), absl::nullopt);
+  handler.AddReporter(reporter_key, std::move(report), std::nullopt);
   ASSERT_EQ(handler.GetPendingReportersForTesting()->size(), 1u);
   ASSERT_TRUE(file_writer->HasPendingWrite());
 
@@ -719,8 +719,8 @@ TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
       EXPECT_EQ(origin.hostname(), "example.test");
       EXPECT_EQ(origin.port(), 443);
 
-      const absl::optional<SCTAuditingReporter::SCTHashdanceMetadata>&
-          metadata = reporter.second->sct_hashdance_metadata();
+      const std::optional<SCTAuditingReporter::SCTHashdanceMetadata>& metadata =
+          reporter.second->sct_hashdance_metadata();
       ASSERT_TRUE(metadata);
       EXPECT_EQ(metadata->leaf_hash, "leaf hash");
       EXPECT_EQ(metadata->log_id, "log id");

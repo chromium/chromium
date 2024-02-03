@@ -141,12 +141,12 @@ wtf_size_t EstimateNumLines(const String& text_content,
 }  // namespace
 
 // static
-absl::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
+std::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
     const InlineNode& node,
     const ConstraintSpace& space,
     const LineLayoutOpportunity& line_opportunity) {
   if (node.IsBisectLineBreakDisabled()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const ComputedStyle& block_style = node.Style();
@@ -157,13 +157,13 @@ absl::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
   if (lines_until_clamp > 0 &&
       static_cast<unsigned>(lines_until_clamp) <= max_lines) {
     if (lines_until_clamp == 1) {
-      return absl::nullopt;  // Balancing not needed for single line paragraphs.
+      return std::nullopt;  // Balancing not needed for single line paragraphs.
     }
 
     const LineBreakResults::Status status =
         normal_lines.BreakLines(available_width, lines_until_clamp);
     if (status == LineBreakResults::Status::kNotApplicable) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   } else {
     // Estimate the number of lines to see if the text is too long to balance.
@@ -174,21 +174,21 @@ absl::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
         items_data.text_content, block_style.GetFont().PrimaryFont(),
         line_opportunity.AvailableInlineSize());
     if (estimated_num_lines > max_lines * 2) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const LineBreakResults::Status status =
         normal_lines.BreakLines(available_width, max_lines);
     if (status != LineBreakResults::Status::kFinished) {
       // Abort if not applicable or `max_lines` exceeded.
-      return absl::nullopt;
+      return std::nullopt;
     }
     DCHECK(!normal_lines.BreakToken());
   }
   const wtf_size_t num_lines = normal_lines.Size();
   DCHECK_LE(num_lines, max_lines);
   if (num_lines <= 1) {
-    return absl::nullopt;  // Balancing not needed for single line paragraphs.
+    return std::nullopt;  // Balancing not needed for single line paragraphs.
   }
 
   // The bisect less than 1 pixel is worthless, so ignore. Use CSS pixels

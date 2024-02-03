@@ -30,28 +30,10 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_no_gtests',
-        },
-        'swarming': {
-          'dimensions': {
-            'pool': 'chrome.tests',
-            # Due to the nature of the ARC VM inside CrOS, betty-arc-r tests
-            # can't run on GCE images. GCE VM -> CrOS VM -> Android VM proves
-            # to be too many layers of virtualization for the tests. However,
-            # we can use KVM-enable baremetal machines in the lab, which
-            # avoids the GCE VM layer and makes the tests happier. Use the
-            # device hosts in the CrOS device pool for this purpose since
-            # they're all running CrOS tests anyway.
-            'os': 'ChromeOS',
-            # The eve-arc-r and kevin pools aren't very busy, use those. Note
-            # that the devices themselves will be unused for the duration of
-            # these tests.
-            # FIXME: Allocate dedicated baremetal machines for these tests
-            # rather than using CrOS device bots.
-            'device_type': 'eve-arc-r|kevin',
-          },
-        },
+        # Temporarily stop running tests on betty-arc-r builders, because of ARC
+        # VM. Due to the nature of the ARC VM inside CrOS, betty-arc-r tests
+        # can't run on GCE images. GCE VM -> CrOS VM -> Android VM proves to be
+        # too many layers of virtualization for the tests.
       },
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {
         'additional_compile_targets': [
@@ -231,7 +213,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'linux-jammy-or-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_linux_isolated_script_tests',
@@ -2728,7 +2710,7 @@
           'win10_intel_uhd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests_fxc',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2740,7 +2722,7 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests_fxc',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2767,7 +2749,7 @@
           'win10_intel_uhd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests_fxc',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2779,7 +2761,7 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests_fxc',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2806,18 +2788,6 @@
           'expiration': 10800,
         },
         'os_type': 'android',
-      },
-      # TODO(crbug.com/1412588): Delete this builder when bionic image rolls are
-      # disabled.
-      'linux-rel-dev': {
-        'swarming': {
-          'dimensions': {
-            'os': 'Ubuntu-18.04',
-          },
-        },
-        'test_suites': {
-           'gtest_tests': 'chromium_dev_linux_gtests',
-        },
       },
       'linux-rel-jammy-dev': {
         'mixins': [
@@ -2896,20 +2866,6 @@
           'linux-jammy-or-focal',
         ],
       },
-      'fuchsia-arm64-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
-          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-jammy-or-focal',
-        ],
-      },
       'fuchsia-x64-cast-receiver-rel': {
         'additional_compile_targets': [
           'all',
@@ -2936,26 +2892,6 @@
         'additional_compile_targets': [
           'all',
         ],
-      },
-      'fuchsia-x64-rel' : {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-jammy',
-        ],
-        'swarming': {
-          'dimensions': {
-            'kvm': '1',
-          },
-        },
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
-        },
       },
     },
   },
@@ -3525,7 +3461,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_arm64',
+          'mac_14_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_beta',
@@ -4624,7 +4560,8 @@
         # should be running the same test_suites as
         # 'Win10 FYI x64 Release (Intel)'
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_win_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
         },
       },
       'Win10 FYI x64 Release (AMD RX 5500 XT)': {
@@ -4693,7 +4630,8 @@
           "win11_qualcomm_adreno_690_stable",
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_win_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
         },
       },
     },
@@ -6179,8 +6117,6 @@
       },
       'win11-arm64-dbg-tests': {
         'mixins': [
-          # Only run selected test suites on CQ.
-          'ci_only',
           'win-arm64',
         ],
         'test_suites': {
@@ -6190,8 +6126,6 @@
       },
       'win11-arm64-rel-tests': {
         'mixins': [
-          # Only run selected test suites on CQ.
-          'ci_only',
           'win-arm64',
         ],
         'test_suites': {
@@ -6479,7 +6413,7 @@
       'android-emulator-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'linux-jammy-or-bionic',
+          'linux-jammy',
           '11-x86-emulator',
           'skia_gold_test',
         ],
@@ -6512,7 +6446,7 @@
       'linux-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'linux-jammy-or-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',
@@ -6538,28 +6472,6 @@
           'variations_smoke_tests',
         ],
         # no tests, stay compile only.
-      },
-      'win-arm64-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'win-arm64-rel': {
-        'browser_config': 'release',
-        'os_type': 'win',
-        'additional_compile_targets': [
-          'chrome',
-          'chromedriver_group',
-        ],
-        'mixins': [
-          'chrome-win-arm64',
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-          'gpu_telemetry_tests': 'gpu_common_win_telemetry_tests',
-        },
       },
       'win-chrome-reclient': {
         'additional_compile_targets': [
@@ -6709,7 +6621,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
+           'gtest_tests': 'optimization_guide_nogpu_gtests',
         },
         'os_type': 'cros',
       },
@@ -6723,8 +6635,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-           # TODO(b/317243012): Add GPU suite when machines become available.
-           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
+           'gtest_tests': 'optimization_guide_linux_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'linux',
@@ -6739,7 +6650,7 @@
           'mac_default_arm64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_desktop_gtests',
+           'gtest_tests': 'optimization_guide_mac_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
@@ -6754,7 +6665,7 @@
           'mac_default_x64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_desktop_gtests',
+           'gtest_tests': 'optimization_guide_mac_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
@@ -6769,8 +6680,7 @@
           'win10',
         ],
         'test_suites': {
-           # TODO(b/317243012): Add GPU suite when machines become available.
-           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
+           'gtest_tests': 'optimization_guide_win_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'win',
@@ -6786,8 +6696,7 @@
           'win10',
         ],
         'test_suites': {
-           # TODO(b/317243012): Add GPU suite when machines become available.
-           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
+           'gtest_tests': 'optimization_guide_win_gtests',
            'isolated_scripts': 'model_validation_tests_full',
 
         },

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -58,7 +59,6 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
@@ -76,6 +76,7 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -162,6 +163,7 @@
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 #include "third_party/blink/renderer/core/dom/scripted_idle_task_controller.h"
+#include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -663,11 +665,23 @@ const ListedElement::List& Document::UnassociatedListedElementsList::Get(
     const Node& root = owner.GetTreeScope().RootNode();
     DCHECK(list_.empty());
 
-    // TODO(crbug.com/1243730): We do not consider shadow trees for now.
-    for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
-      ListedElement* listed_element = ListedElement::From(element);
-      if (listed_element && !listed_element->Form()) {
-        list_.push_back(listed_element);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillIncludeShadowDomInUnassociatedListedElements)) {
+      for (Node& current :
+           ShadowIncludingTreeOrderTraversal::DescendantsOf(root)) {
+        if (HTMLElement* element = DynamicTo<HTMLElement>(current)) {
+          if (ListedElement* listed_element = ListedElement::From(*element);
+              listed_element && !listed_element->Form()) {
+            list_.push_back(listed_element);
+          }
+        }
+      }
+    } else {
+      for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
+        ListedElement* listed_element = ListedElement::From(element);
+        if (listed_element && !listed_element->Form()) {
+          list_.push_back(listed_element);
+        }
       }
     }
     dirty_ = false;
@@ -705,6 +719,31 @@ void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
     new_document.element_explicitly_set_attr_elements_map_.insert(element,
                                                                   it->value);
     element_explicitly_set_attr_elements_map_.erase(it);
+  }
+}
+
+CachedAttrAssociatedElementsMap* Document::GetCachedAttrAssociatedElementsMap(
+    Element* element) {
+  DCHECK(element);
+  DCHECK(element->GetDocument() == this);
+  auto add_result =
+      element_cached_attr_associated_elements_map_.insert(element, nullptr);
+  if (add_result.is_new_entry) {
+    add_result.stored_value->value =
+        MakeGarbageCollected<CachedAttrAssociatedElementsMap>();
+  }
+  return add_result.stored_value->value.Get();
+}
+
+void Document::MoveElementCachedAttrAssociatedElementsMapToNewDocument(
+    Element* element,
+    Document& new_document) {
+  DCHECK(element);
+  auto it = element_cached_attr_associated_elements_map_.find(element);
+  if (it != element_cached_attr_associated_elements_map_.end()) {
+    new_document.element_cached_attr_associated_elements_map_.insert(element,
+                                                                     it->value);
+    element_cached_attr_associated_elements_map_.erase(it);
   }
 }
 
@@ -1406,9 +1445,11 @@ Node* Document::importNode(Node* imported_node,
   NodeCloningData data;
   if (deep) {
     data.Put(CloneOption::kIncludeDescendants);
-    auto* fragment = DynamicTo<DocumentFragment>(imported_node);
-    if (fragment && fragment->IsTemplateContent()) {
-      data.Put(CloneOption::kIncludeShadowRoots);
+    if (!RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
+      auto* fragment = DynamicTo<DocumentFragment>(imported_node);
+      if (fragment && fragment->IsTemplateContent()) {
+        data.Put(CloneOption::kIncludeAllShadowRoots);
+      }
     }
   }
   return imported_node->Clone(*this, data, /*append_to*/ nullptr);
@@ -6352,7 +6393,7 @@ void Document::setDomain(const String& raw_domain,
   }
 }
 
-absl::optional<base::Time> Document::lastModifiedTime() const {
+std::optional<base::Time> Document::lastModifiedTime() const {
   AtomicString http_last_modified = override_last_modified_;
   if (http_last_modified.empty()) {
     if (DocumentLoader* document_loader = Loader()) {
@@ -6363,7 +6404,7 @@ absl::optional<base::Time> Document::lastModifiedTime() const {
   if (!http_last_modified.empty()) {
     return ParseDate(http_last_modified);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // https://html.spec.whatwg.org/C#dom-document-lastmodified
@@ -7813,7 +7854,7 @@ void Document::UpdateThemeColorCache() {
   }
 }
 
-absl::optional<Color> Document::ThemeColor() {
+std::optional<Color> Document::ThemeColor() {
   // Returns the color of the first meta[name=theme-color] element in
   // tree order that matches and is valid.
   // https://html.spec.whatwg.org/multipage/semantics.html#meta-theme-color
@@ -7830,7 +7871,7 @@ absl::optional<Color> Document::ThemeColor() {
       return color;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Document::UpdateAppTitle() {
@@ -8162,7 +8203,7 @@ void Document::ScheduleForTopLayerRemoval(Element* element,
     return;
   }
 
-  absl::optional<TopLayerReason> existing_pending_removal = absl::nullopt;
+  std::optional<TopLayerReason> existing_pending_removal = std::nullopt;
   for (const auto& pending_removal : top_layer_elements_pending_removal_) {
     if (pending_removal->element == element) {
       existing_pending_removal = pending_removal->reason;
@@ -8215,14 +8256,14 @@ void Document::RemoveFromTopLayerImmediately(Element* element) {
   probe::TopLayerElementsChanged(this);
 }
 
-absl::optional<Document::TopLayerReason>
-Document::IsScheduledForTopLayerRemoval(Element* element) const {
+std::optional<Document::TopLayerReason> Document::IsScheduledForTopLayerRemoval(
+    Element* element) const {
   for (const auto& entry : top_layer_elements_pending_removal_) {
     if (entry->element == element) {
       return entry->reason;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 HTMLDialogElement* Document::ActiveModalDialog() const {
@@ -9041,6 +9082,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(synchronous_mutation_observer_set_);
   visitor->Trace(fragment_directive_);
   visitor->Trace(element_explicitly_set_attr_elements_map_);
+  visitor->Trace(element_cached_attr_associated_elements_map_);
   visitor->Trace(display_lock_document_state_);
   visitor->Trace(render_blocking_resource_manager_);
   visitor->Trace(find_in_page_active_match_node_);

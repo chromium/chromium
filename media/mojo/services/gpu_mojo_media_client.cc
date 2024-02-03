@@ -4,6 +4,7 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -28,7 +29,6 @@
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -208,7 +208,7 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   return supported_config_cache_.value_or(SupportedVideoDecoderConfigs{});
 }
 
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigsStatic(
     base::WeakPtr<MediaGpuChannelManager> manager,
     const gpu::GpuPreferences& gpu_preferences,

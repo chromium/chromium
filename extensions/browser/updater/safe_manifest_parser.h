@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include "base/functional/callback_forward.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -63,7 +64,7 @@ struct UpdateManifestResult {
   UpdateManifestResult(const UpdateManifestResult& other);
   ~UpdateManifestResult();
 
-  std::string extension_id;
+  ExtensionId extension_id;
   std::string version;
   std::string browser_min_version;
   std::string app_status;

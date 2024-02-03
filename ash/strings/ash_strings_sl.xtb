@@ -607,9 +607,11 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3526440770046466733">Odpiranje povezave na novem zavihku in zadržanje na trenutnem zavihku</translation>
 <translation id="353086728817903341">Vzpostavljena je povezava s toliko napravami: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
+<translation id="3537350467437346467">Ogledali ste si:</translation>
 <translation id="3539957339480430241">Dostopna točka naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Opustitev nastavitve ogleda nedavnih fotografij in predstavnosti telefona</translation>
 <translation id="3542066395059568317">Prikazana bodo priporočila, da boste lahko nadaljevali tam, kjer ste končali. Priporočila lahko odstranite s klikom desnega gumba.</translation>
+<translation id="3547318469722231257">Spremenili ste:</translation>
 <translation id="3552189655002856821">Povezava Wi-Fi je izklopljena.</translation>
 <translation id="3554215588514239132">Prikaz ali skrivanje podokna z orodji za razvijalce</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> je bil pripet</translation>
@@ -701,6 +703,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="385300504083504382">Začetek</translation>
 <translation id="3859364108019690">Aplikacij ni mogoče pretočno predvajati</translation>
 <translation id="3861651314799684201">Pritisnite Enter, če želite snemati v celozaslonskem načinu</translation>
+<translation id="3882323608730650973">Spremenjeno</translation>
 <translation id="3886872229787704059">Odprto danes</translation>
 <translation id="3891340733213178823">Dvakrat pritisnite Ctrl + Shift + Q, če se želite odjaviti.</translation>
 <translation id="3893630138897523026">ChromeVox (izgovorjava povratnih informacij)</translation>
@@ -894,6 +897,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4582666543382004902">Dostopna točka je izklopljena zaradi uporabe Wi-Fi-ja. Če želite uporabljati dostopno točko, izklopite Wi-Fi.</translation>
 <translation id="4585337515783392668">Ustavi predvajanje v neznanem sprejemniku</translation>
 <translation id="4596144739579517758">Temna tema je izklopljena</translation>
+<translation id="4596442969149038771">Uporabnik <ph name="USER" /> je delil z drugimi</translation>
 <translation id="4611292653554630842">Prijava</translation>
 <translation id="462160925400706389">Naprava <ph name="NAME" /> je povezana</translation>
 <translation id="4623167406982293031">Preveri račun</translation>
@@ -1337,6 +1341,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6298183524022479114">Prilagodite to napravo v aplikaciji</translation>
 <translation id="6309219492973062892">Klik ali dotik ikone polic od 1 do 8</translation>
 <translation id="6315170314923504164">Glasovne nastavitve</translation>
+<translation id="6319058840130157106">Premikanje nazaj med spodnjim desnim kotom, zaganjalnikom, naslovno vrstico, vrstico z zaznamki, odprtim spletnim mestom in prenosi</translation>
 <translation id="6324916366299863871">Urejanje bližnjice</translation>
 <translation id="6330012934079202188">Prikaz oken z vseh namizij, pritisnite tipko s puščico gor, če želite prikazati okna s trenutnega namizja</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana seja, ki jo upravlja domena <ph name="MANAGER" />.</translation>
@@ -1500,6 +1505,7 @@ Nova namestitev</translation>
 <translation id="6981291220124935078">Vklopi dostop</translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="698231206551913481">Vse datoteke in lokalni podatki, povezani s tem uporabnikom, bodo trajno izbrisani, ko odstranite uporabnika.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ne podpira <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ločljivost je bila spremenjena na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Kliknite »Potrdi«, če želite ohraniti spremembe. Prejšnja nastavitev bo obnovljena čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">V kratki predstavitvi si oglejte, kako uporabljati Chromebook. Uporabljati ga lahko začnete v 6 korakih.</translation>
 <translation id="7004910047186208204">Povezava z mobilnim podatkovnim omrežjem</translation>
 <translation id="7005239792648594238">Če želite začeti, odprite aplikacijo</translation>
@@ -1814,6 +1820,7 @@ Nova namestitev</translation>
 <translation id="8314772463905284467">Tipka Caps Lock je vklopljena</translation>
 <translation id="8315514906653279104">Vklapljanje …</translation>
 <translation id="8331351032546853669">Prenos na čakanju</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Izbrano je okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">zaganjalnik</translation>
@@ -1920,6 +1927,7 @@ Nova namestitev</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, nameščena aplikacija, blokirana</translation>
 <translation id="8785070478575117577">Vzpostavitev povezave z omrežjem <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Premikanje naprej med spodnjim desnim kotom, zaganjalnikom, naslovno vrstico, vrstico z zaznamki, odprtim spletnim mestom in prenosi</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Mapa <ph name="FOLDER_NAME" /></translation>
@@ -2033,6 +2041,7 @@ Nova namestitev</translation>
 <translation id="953431725143473984">Želite izklopiti napravo?</translation>
 <translation id="954052413789300507">Ni dovolj prostora za datoteko <ph name="FILENAME" />. Sprostite prostor.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Spremenil uporabnik <ph name="USER" /></translation>
 <translation id="974545358917229949">Prikaz <ph name="RESULT_COUNT" /> rezultatov za poizvedbo <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Brez roka</translation>
 <translation id="98120814841227350">Premik na konec dokumenta</translation>

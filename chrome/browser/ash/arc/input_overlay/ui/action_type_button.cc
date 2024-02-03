@@ -41,6 +41,7 @@ ActionTypeButton::ActionTypeButton(PressedCallback callback,
                             label,
                             gfx::Insets::VH(10, 12)),
       icon_(icon) {
+  SetTooltipText(label);
   SetPreferredSize(gfx::Size(kButtonWidth, kActionTypeButtonHeight));
   SetVisible(true);
   SetBackground(views::CreateRoundedRectBackground(SK_ColorTRANSPARENT,
@@ -65,7 +66,30 @@ ActionTypeButton::ActionTypeButton(PressedCallback callback,
 
 ActionTypeButton::~ActionTypeButton() = default;
 
-void ActionTypeButton::Layout() {
+void ActionTypeButton::RefreshColors() {
+  const bool is_selected = selected();
+  auto active_color_id = is_selected ? cros_tokens::kCrosSysPrimary
+                                     : cros_tokens::kCrosSysOnSurface;
+  auto disabled_color_id = is_selected
+                               ? ash::kColorAshIconPrimaryDisabledColor
+                               : ash::kColorAshIconSecondaryDisabledColor;
+  SetEnabledTextColorIds(active_color_id);
+  SetTextColorId(ButtonState::STATE_DISABLED, disabled_color_id);
+  SetBackground(is_selected ? views::CreateThemedRoundedRectBackground(
+                                  cros_tokens::kCrosSysHighlightShape,
+                                  /*radius=*/kCornerRadius)
+                            : views::CreateRoundedRectBackground(
+                                  SK_ColorTRANSPARENT,
+                                  /*radius=*/kCornerRadius));
+  SetBorder(is_selected
+                ? views::CreateEmptyBorder(/*thickness=*/kBorderThickness)
+                : views::CreateThemedRoundedRectBorder(
+                      /*thickness=*/kBorderThickness,
+                      /*radius=*/kCornerRadius,
+                      cros_tokens::kCrosSysHoverOnSubtle));
+}
+
+void ActionTypeButton::Layout(PassKey) {
   SizeToPreferredSize();
   gfx::Rect local_bounds = GetLocalBounds();
   gfx::Rect local_content_bounds(local_bounds);
@@ -84,10 +108,10 @@ void ActionTypeButton::Layout() {
   label_origin.Offset((local_content_bounds.width() - label_size.width()) / 2,
                       kTopSpacing + kActionTypeIconSize + kLabelIconSpacing);
 
-  image()->SetBoundsRect(gfx::Rect(
+  image_container_view()->SetBoundsRect(gfx::Rect(
       image_origin, gfx::Size(kActionTypeIconSize, kActionTypeIconSize)));
   label->SetBoundsRect(gfx::Rect(label_origin, label_size));
-  Button::Layout();
+  LayoutSuperclass<Button>(this);
 }
 
 gfx::ImageSkia ActionTypeButton::GetImage(ButtonState for_state) const {
@@ -113,27 +137,12 @@ void ActionTypeButton::OnThemeChanged() {
   RefreshColors();
 }
 
-void ActionTypeButton::RefreshColors() {
-  const bool is_selected = selected();
-  auto active_color_id = is_selected ? cros_tokens::kCrosSysPrimary
-                                     : cros_tokens::kCrosSysOnSurface;
-  auto disabled_color_id = is_selected
-                               ? ash::kColorAshIconPrimaryDisabledColor
-                               : ash::kColorAshIconSecondaryDisabledColor;
-  SetEnabledTextColorIds(active_color_id);
-  SetTextColorId(ButtonState::STATE_DISABLED, disabled_color_id);
-  SetBackground(is_selected ? views::CreateThemedRoundedRectBackground(
-                                  cros_tokens::kCrosSysHighlightShape,
-                                  /*radius=*/kCornerRadius)
-                            : views::CreateRoundedRectBackground(
-                                  SK_ColorTRANSPARENT,
-                                  /*radius=*/kCornerRadius));
-  SetBorder(is_selected
-                ? views::CreateEmptyBorder(/*thickness=*/kBorderThickness)
-                : views::CreateThemedRoundedRectBorder(
-                      /*thickness=*/kBorderThickness,
-                      /*radius=*/kCornerRadius,
-                      cros_tokens::kCrosSysHoverOnSubtle));
+void ActionTypeButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  ash::OptionButtonBase::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kRadioButton;
+  node_data->SetName(label()->GetText());
+  node_data->SetCheckedState(selected() ? ax::mojom::CheckedState::kTrue
+                                        : ax::mojom::CheckedState::kFalse);
 }
 
 BEGIN_METADATA(ActionTypeButton)

@@ -56,7 +56,7 @@ RTCIceCandidate* RTCIceCandidate::Create(
 
   String sdp_mid = candidate_init->sdpMid();
 
-  absl::optional<uint16_t> sdp_m_line_index;
+  std::optional<uint16_t> sdp_m_line_index;
   if (candidate_init->hasSdpMLineIndexNonNull()) {
     sdp_m_line_index = candidate_init->sdpMLineIndexNonNull();
   } else {
@@ -86,7 +86,7 @@ String RTCIceCandidate::sdpMid() const {
   return platform_candidate_->SdpMid();
 }
 
-absl::optional<uint16_t> RTCIceCandidate::sdpMLineIndex() const {
+std::optional<uint16_t> RTCIceCandidate::sdpMLineIndex() const {
   return platform_candidate_->SdpMLineIndex();
 }
 
@@ -107,7 +107,7 @@ String RTCIceCandidate::component() const {
   return platform_candidate_->Component();
 }
 
-absl::optional<uint32_t> RTCIceCandidate::priority() const {
+std::optional<uint32_t> RTCIceCandidate::priority() const {
   return platform_candidate_->Priority();
 }
 
@@ -119,7 +119,7 @@ String RTCIceCandidate::protocol() const {
   return platform_candidate_->Protocol();
 }
 
-absl::optional<uint16_t> RTCIceCandidate::port() const {
+std::optional<uint16_t> RTCIceCandidate::port() const {
   return platform_candidate_->Port();
 }
 
@@ -127,7 +127,7 @@ String RTCIceCandidate::type() const {
   return platform_candidate_->Type();
 }
 
-absl::optional<String> RTCIceCandidate::tcpType() const {
+std::optional<String> RTCIceCandidate::tcpType() const {
   return platform_candidate_->TcpType();
 }
 
@@ -135,7 +135,7 @@ String RTCIceCandidate::relatedAddress() const {
   return platform_candidate_->RelatedAddress();
 }
 
-absl::optional<uint16_t> RTCIceCandidate::relatedPort() const {
+std::optional<uint16_t> RTCIceCandidate::relatedPort() const {
   return platform_candidate_->RelatedPort();
 }
 

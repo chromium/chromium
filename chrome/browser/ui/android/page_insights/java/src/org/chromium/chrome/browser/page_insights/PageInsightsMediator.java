@@ -57,7 +57,10 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -483,7 +486,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         Log.v(TAG, "Fetching data for auto-trigger");
         mPageInsightsDataLoader.loadInsightsData(
                 mTabObservable.get().getUrl(),
-                config.getShouldAttachGaiaToRequest(),
+                /* isUserInitiated= */ false,
+                getNavigationTimestampMs(mTabObservable.get()),
+                config,
                 metadata -> {
                     if (mAutoTriggerStage != AutoTriggerStage.FETCHING_DATA) {
                         // Don't proceed if something has changed since we started fetching data.
@@ -581,7 +586,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         PageInsightsConfig config = mPageInsightsConfigProvider.apply(mCurrentNavigationHandle);
         mPageInsightsDataLoader.loadInsightsData(
                 mTabObservable.get().getUrl(),
-                config.getShouldAttachGaiaToRequest(),
+                /* isUserInitiated= */ true,
+                getNavigationTimestampMs(mTabObservable.get()),
+                config,
                 metadata -> {
                     mCurrentMetadata = metadata;
                     mCurrentConfig = config;
@@ -838,5 +845,25 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                                 new PageInsightsSurfaceScopeDependencyProviderImpl(mContext));
         mSurfaceRenderer = surfaceScope.provideSurfaceRenderer();
         return mSurfaceRenderer;
+    }
+
+    @Nullable
+    private static Long getNavigationTimestampMs(Tab tab) {
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) {
+            return null;
+        }
+        NavigationController navigationController = webContents.getNavigationController();
+        if (navigationController == null) {
+            return null;
+        }
+        NavigationEntry lastCommittedEntry =
+                navigationController.getEntryAtIndex(
+                        navigationController.getLastCommittedEntryIndex());
+        if (lastCommittedEntry == null) {
+            return null;
+        }
+        // TODO(b/319407873): Update the below method's name to specify its unit.
+        return lastCommittedEntry.getTimestamp();
     }
 }

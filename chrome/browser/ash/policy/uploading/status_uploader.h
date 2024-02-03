@@ -49,10 +49,11 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   // has ever happened.
   base::Time last_upload() const { return last_upload_; }
 
-  // Returns true if session data upload (screenshots, logs, etc) is allowed.
-  // This checks to ensure that the current session is a kiosk session, and
-  // that no user input (keyboard, mouse, touch, audio/video) has been received.
-  bool IsSessionDataUploadAllowed();
+  // Returns true if screenshot upload is allowed. This checks to ensure that
+  // the current session is a kiosk session and that no user input (keyboard,
+  // mouse, touch) has been received in the last 5 minutes. If there has been
+  // audio/video captured in this session it will be blocked till reboot.
+  bool IsScreenshotAllowed();
 
   // MediaCaptureDevicesDispatcher::Observer implementation
   void OnRequestUpdate(int render_process_id,

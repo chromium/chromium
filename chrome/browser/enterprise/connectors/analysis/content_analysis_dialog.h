@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_H_
 
+#include <cstddef>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -144,6 +145,10 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     return delegate_->GetCustomLearnMoreUrl().has_value();
   }
 
+  bool has_custom_message_ranges() const {
+    return delegate_->GetCustomRuleMessageRanges().has_value();
+  }
+
   bool bypass_requires_justification() const {
     return delegate_->BypassRequiresJustification();
   }
@@ -270,6 +275,12 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // Helper that indicates if the dialog corresponds to a print scan.
   bool is_print_scan() const;
+
+  // Helper methods to get the admin message shown in dialog. As we are
+  // inserting it into IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE, offset here is
+  // the start index for the custom message.
+  void AddLinksToDialogMessage(size_t offset);
+  void UpdateDialogMessage(std::u16string new_message);
 
   void AcceptButtonCallback();
   void CancelButtonCallback();

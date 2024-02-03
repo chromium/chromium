@@ -31,8 +31,8 @@
         class="action-button"
         disabled$="[[thumbnailsLoading_]]"
         on-click="onClickInputQuerySearchButton_">
-      <iron-icon icon$="[[getSearchButtonIcon_(path)]]" slot="prefix-icon"></iron-icon>
-      [[getSearchButtonText_(path)]]
+      <iron-icon icon$="[[getSearchButtonIcon_(path, thumbnails_)]]" slot="prefix-icon"></iron-icon>
+      [[getSearchButtonText_(path, thumbnails_)]]
     </cr-button>
   </div>
 </div>

@@ -13,8 +13,7 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 const char* kFlatbufferSchemaExpected = R"(
@@ -184,5 +183,4 @@ TEST_F(IndexedRulesetFormatVersionTest, StripCommentsAndWhitespace) {
 }
 
 }  // namespace
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

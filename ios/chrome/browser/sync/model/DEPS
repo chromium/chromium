@@ -1,5 +1,6 @@
 include_rules = [
   "+components/consent_auditor",
+  "+components/data_sharing/public",
   "+components/trusted_vault",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",

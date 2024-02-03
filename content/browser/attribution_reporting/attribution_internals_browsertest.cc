@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   static constexpr char kScript[] = R"(
-    document.body.innerHTML.search('Attribution Reporting API Internals') >= 0;
+    document.body.innerHTML.search('Attribution Reporting') >= 0;
   )";
 
   // Execute script to ensure the page has loaded correctly, executing similarly
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
   static constexpr char kScript[] = R"(
-    const status = document.getElementById('feature-status-content');
+    const status = document.getElementById('feature-status');
     const setTitleIfDone = (_, obs) => {
       if (status.innerText.trim() === 'enabled') {
         if (obs) {
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
   static constexpr char kScript[] = R"(
-    const status = document.getElementById('feature-status-content');
+    const status = document.getElementById('feature-status');
     const setTitleIfDone = (_, obs) => {
       if (status.innerText.trim() === 'disabled') {
         if (obs) {
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[13]?.innerText === '{}' &&
           table.children[1].children[13]?.innerText === '{\n "a": "0x1"\n}' &&
           table.children[0].children[14]?.innerText === 'modulus' &&
-          table.children[0].children[15]?.innerText === '14' &&
+          table.children[0].children[15]?.innerText === '14.000' &&
           table.children[0].children[16]?.innerText === '0 / 65536' &&
           table.children[1].children[16]?.innerText === '1300 / 65536' &&
           table.children[0].children[17]?.innerText === '19' &&
@@ -1000,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(ExecJsInWebUI(R"(
     document.querySelector('#reportTable')
      .shadowRoot.querySelector('input[type="checkbox"]').click();
-    document.getElementById('send-reports').click();
+    document.querySelector('#event-level-report-controls button').click();
   )"));
 
   // The real manager would do this itself, but the test manager requires manual
@@ -1312,9 +1312,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(ExecJsInWebUI(R"(
     document.querySelector('#aggregatableReportTable')
       .shadowRoot.querySelectorAll('input[type="checkbox"]')[1].click();
+    document.querySelector('#aggregatable-report-controls button').click();
   )"));
-  ASSERT_TRUE(ExecJsInWebUI(
-      "document.getElementById('send-aggregatable-reports').click();"));
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
@@ -1352,7 +1351,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
-      const label = document.querySelector('#show-debug-event-reports span');
+      const label = document.querySelector('#event-level-report-controls span');
       const setTitleIfDone = (_, obs) => {
         if (table.children.length === 2 &&
             table.children[0].children[5]?.innerText === '1' &&
@@ -1381,7 +1380,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Toggle checkbox.
   ASSERT_TRUE(ExecJsInWebUI(R"(
-    document.querySelector('#show-debug-event-reports input').click();)"));
+    document.querySelector('#event-level-report-controls input').click();)"));
 
   manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
                                             SourceBuilder(now).BuildStored())
@@ -1398,7 +1397,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
-      const label = document.querySelector('#show-debug-event-reports span');
+      const label = document.querySelector('#event-level-report-controls span');
       const setTitleIfDone = (_, obs) => {
         if (table.children.length === 1 &&
             table.children[0].children[5]?.innerText === '2' &&
@@ -1426,7 +1425,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Toggle checkbox.
   ASSERT_TRUE(ExecJsInWebUI(R"(
-    document.querySelector('#show-debug-event-reports input').click();)"));
+    document.querySelector('#event-level-report-controls input').click();)"));
 
   // The debug reports should be visible again and the hidden label should be
   // cleared.
@@ -1434,7 +1433,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#reportTable').shadowRoot
           .querySelector('tbody');
-      const label = document.querySelector('#show-debug-event-reports span');
+      const label = document.querySelector('#event-level-report-controls span');
       const setTitleIfDone = (_, obs) => {
         if (table.children.length === 3 &&
             table.children[0].children[5]?.innerText === '1' &&

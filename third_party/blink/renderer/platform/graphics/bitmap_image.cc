@@ -323,7 +323,7 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
   bool is_lazy_generated = image.IsLazyGenerated();
 
   const cc::PaintFlags* image_flags = &flags;
-  absl::optional<cc::PaintFlags> dark_mode_flags;
+  std::optional<cc::PaintFlags> dark_mode_flags;
   if (draw_options.dark_mode_filter) {
     dark_mode_flags = flags;
     draw_options.dark_mode_filter->ApplyFilterToImage(

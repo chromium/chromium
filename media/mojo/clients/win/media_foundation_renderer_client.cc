@@ -151,7 +151,7 @@ void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRendererClient::SetLatencyHint(
-    absl::optional<base::TimeDelta> /*latency_hint*/) {
+    std::optional<base::TimeDelta> /*latency_hint*/) {
   NOTIMPLEMENTED() << "Latency hint not supported in MediaFoundationRenderer";
 }
 
@@ -281,7 +281,7 @@ void MediaFoundationRendererClient::OnVideoOpacityChange(bool opaque) {
 }
 
 void MediaFoundationRendererClient::OnVideoFrameRateChange(
-    absl::optional<int> fps) {
+    std::optional<int> fps) {
   DVLOG_FUNC(1) << "fps=" << (fps ? *fps : -1);
   DCHECK(has_video_);
 
@@ -518,7 +518,7 @@ void MediaFoundationRendererClient::InitializeDCOMPRenderingIfNeeded() {
 }
 
 void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
-    const absl::optional<base::UnguessableToken>& token,
+    const std::optional<base::UnguessableToken>& token,
     const std::string& error) {
   DVLOG_FUNC(1);
   DCHECK(has_video_);

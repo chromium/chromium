@@ -154,6 +154,11 @@ void WebContentsViewMac::UpdateWindowControlsOverlay(
   }
 }
 
+BackForwardTransitionAnimationManager*
+WebContentsViewMac::GetBackForwardTransitionAnimationManager() {
+  return nullptr;
+}
+
 void WebContentsViewMac::StartDragging(
     const DropData& drop_data,
     const url::Origin& source_origin,

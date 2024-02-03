@@ -107,7 +107,12 @@ BASE_FEATURE(kQuickCommands,
 // the browser width is resized smaller than normal.
 BASE_FEATURE(kResponsiveToolbar,
              "ResponsiveToolbar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Enables the side search feature for Google Search. Presents recent Google
 // search results in a browser side panel.
@@ -349,6 +354,12 @@ BASE_FEATURE(kUpdateTextOptions,
 const base::FeatureParam<int> kUpdateTextOptionNumber{
     &kUpdateTextOptions, "UpdateTextOptionNumber", 2};
 #endif
+
+// Enables enterprise profile badging on the toolbar avatar and in the profile
+// menu.
+BASE_FEATURE(kEnterpriseProfileBadging,
+             "EnterpriseProfileBadging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This enables enables persistence of a WebContents in a 1-to-1 association
 // with the current Profile for WebUI bubbles. See https://crbug.com/1177048.

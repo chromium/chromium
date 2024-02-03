@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -11,7 +13,6 @@
 #include "net/base/net_errors.h"
 #include "net/filter/mock_source_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -136,7 +137,7 @@ class SourceStreamToDataPipeTest
 
   void CloseConsumerHandle() { consumer_end_.reset(); }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
-  absl::optional<int> CallbackResult() { return callback_result_; }
+  std::optional<int> CallbackResult() { return callback_result_; }
 
  private:
   void FinishedReading(int result) { callback_result_ = result; }
@@ -145,7 +146,7 @@ class SourceStreamToDataPipeTest
   std::unique_ptr<SourceStreamToDataPipe> adapter_;  // owned by `adapter_`.
   raw_ptr<net::MockSourceStream> source_;
   mojo::ScopedDataPipeConsumerHandle consumer_end_;
-  absl::optional<int> callback_result_;
+  std::optional<int> callback_result_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

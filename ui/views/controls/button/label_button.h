@@ -14,7 +14,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/action_view_interface.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
 #include "ui/views/controls/button/label_button_label.h"
@@ -150,7 +149,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int w) const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddLayerToRegion(ui::Layer* new_layer,
                         views::LayerRegion region) override;
@@ -184,11 +183,6 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
     return image_container_->GetView();
   }
   View* image_container_view() { return image_container_->GetView(); }
-  // TODO(ahmedmoussa): `image()` to be removed in the following CL.
-  const ImageView* image() const {
-    return static_cast<const ImageView*>(image_container_view());
-  }
-  ImageView* image() { return static_cast<ImageView*>(image_container_view()); }
   Label* label() const { return label_; }
   InkDropContainerView* ink_drop_container() const {
     return ink_drop_container_;

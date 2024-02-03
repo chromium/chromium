@@ -119,7 +119,7 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
 
   PipelineStatusCodes pipeline_status_ = PIPELINE_OK;
   base::TimeDelta duration_ = kNoTimestamp;
-  absl::optional<bool> autoplay_initiated_;
+  std::optional<bool> autoplay_initiated_;
 };
 
 }  // namespace media

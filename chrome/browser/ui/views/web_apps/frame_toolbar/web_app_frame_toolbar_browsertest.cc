@@ -625,6 +625,30 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 }
 
+// Regression test for b/321784833.
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
+                       BorderlessModeHidesTitlebarAndWindowingControls) {
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // `chromeos::FrameCaptionButtonContainerView` is ChromeOS only thing.
+  BrowserNonClientFrameViewChromeOS* frame_view_cros =
+      static_cast<BrowserNonClientFrameViewChromeOS*>(frame_view());
+  EXPECT_TRUE(frame_view_cros->caption_button_container()->GetVisible());
+#endif
+  EXPECT_TRUE(web_app_frame_toolbar()->GetVisible());
+
+  GrantWindowManagementPermission();
+
+  EXPECT_TRUE(
+      browser_view()->window_management_permission_granted_for_testing());
+  EXPECT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  EXPECT_FALSE(web_app_frame_toolbar()->GetVisible());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(frame_view_cros->caption_button_container()->GetVisible());
+#endif
+}
+
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        DisplayModeMediaCSS) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);

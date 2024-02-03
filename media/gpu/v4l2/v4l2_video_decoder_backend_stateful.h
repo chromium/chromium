@@ -6,6 +6,7 @@
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -86,7 +86,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
 
   static void ReuseOutputBufferThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      absl::optional<base::WeakPtr<V4L2StatefulVideoDecoderBackend>> weak_this,
+      std::optional<base::WeakPtr<V4L2StatefulVideoDecoderBackend>> weak_this,
       V4L2ReadableBufferRef buffer);
   void ReuseOutputBuffer(V4L2ReadableBufferRef buffer);
 
@@ -135,14 +135,14 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   base::queue<DecodeRequest> decode_request_queue_;
 
   // The decode request which is currently processed.
-  absl::optional<DecodeRequest> current_decode_request_;
+  std::optional<DecodeRequest> current_decode_request_;
   // V4L2 input buffer currently being prepared.
-  absl::optional<V4L2WritableBufferRef> current_input_buffer_;
+  std::optional<V4L2WritableBufferRef> current_input_buffer_;
 
   std::unique_ptr<v4l2_vda_helpers::InputBufferFragmentSplitter>
       frame_splitter_;
 
-  absl::optional<gfx::Rect> visible_rect_;
+  std::optional<gfx::Rect> visible_rect_;
 
   // Map of enqueuing timecodes to system timestamp, for histogramming purposes.
   std::map<int64_t, base::TimeTicks> encoding_timestamps_;

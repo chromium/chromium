@@ -79,8 +79,6 @@ void UpdatePageSpecificContentSettings(
 
   content_settings::PageSpecificContentSettings::MicrophoneCameraState
       microphone_camera_state;
-  std::string requested_audio_device = request.requested_audio_device_id;
-  std::string requested_video_device = request.requested_video_device_id;
 
   if (audio_setting != CONTENT_SETTING_DEFAULT) {
     microphone_camera_state.Put(

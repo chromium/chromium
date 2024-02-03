@@ -12,8 +12,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -137,6 +141,40 @@ TEST_F(CheckboxTestRefreshOnly, TestCorrectContainerColor) {
   expected = checkbox()->GetColorProvider()->GetColor(
       ui::kColorCheckboxContainerDisabled);
   EXPECT_EQ(actual, expected);
+}
+
+using CheckboxActionViewControllerTest = CheckboxTest;
+
+TEST_F(CheckboxActionViewControllerTest, TestActionViewInterface) {
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder()
+          .SetActionId(0)
+          .SetEnabled(false)
+          .SetChecked(true)
+          .Build();
+  checkbox()->GetActionViewInterface()->ActionItemChangedImpl(
+      action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_TRUE(checkbox()->GetChecked());
+  EXPECT_FALSE(checkbox()->GetEnabled());
+}
+
+TEST_F(CheckboxActionViewControllerTest, TestCheckboxClicked) {
+  ActionViewController view_controller = ActionViewController();
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder()
+          .SetActionId(0)
+          .SetEnabled(false)
+          .SetChecked(false)
+          .Build();
+  EXPECT_FALSE(action_item->GetChecked());
+  view_controller.CreateActionViewRelationship(checkbox(),
+                                               action_item->GetAsWeakPtr());
+  // The checked property is tied together for all checkboxes that are linked to
+  // the same ActionItem.
+  checkbox()->SetChecked(true);
+  EXPECT_TRUE(action_item->GetChecked());
 }
 
 }  // namespace views

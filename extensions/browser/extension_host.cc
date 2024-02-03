@@ -34,7 +34,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -366,18 +365,6 @@ void ExtensionHost::PrimaryMainDocumentElementAvailable() {
 void ExtensionHost::CloseContents(WebContents* contents) {
   Close();
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-bool ExtensionHost::OnMessageReceived(const IPC::Message& message,
-                                      content::RenderFrameHost* host) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(ExtensionHost, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_EventAck, OnEventAck)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-#endif
 
 void ExtensionHost::EmitLateAckedEventTask(int event_id) {
   // If the event is still present then we haven't received the ack yet in

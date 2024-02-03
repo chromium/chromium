@@ -127,10 +127,10 @@ class ImageResource::ImageResourceInfoImpl final
   bool HasCacheControlNoStoreHeader() const override {
     return resource_->HasCacheControlNoStoreHeader();
   }
-  absl::optional<ResourceError> GetResourceError() const override {
+  std::optional<ResourceError> GetResourceError() const override {
     if (resource_->LoadFailedOrCanceled())
       return resource_->GetResourceError();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void SetDecodedSize(size_t size) override { resource_->SetDecodedSize(size); }
@@ -167,14 +167,14 @@ class ImageResource::ImageResourceInfoImpl final
     return &resource_->Options().unsupported_image_mime_types->data;
   }
 
-  absl::optional<WebURLRequest::Priority> RequestPriority() const override {
+  std::optional<WebURLRequest::Priority> RequestPriority() const override {
     auto priority = resource_->GetResourceRequest().Priority();
     if (priority == WebURLRequest::Priority::kUnresolved) {
       // This can happen for image documents (e.g. when `<iframe
       // src="title.png">` is the LCP), because the `ImageResource` isn't
       // associated with `ResourceLoader` in such cases. For now, consider the
       // priority not available for such cases by returning nullopt.
-      return absl::nullopt;
+      return std::nullopt;
     }
     return priority;
   }

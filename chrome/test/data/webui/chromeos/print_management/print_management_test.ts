@@ -11,7 +11,7 @@ import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js
 import {PrintManagementElement} from 'chrome://print-management/print_management.js';
 import {PrinterSetupInfoElement} from 'chrome://print-management/printer_setup_info.js';
 import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, LaunchSource, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';

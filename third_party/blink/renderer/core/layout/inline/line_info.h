@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
@@ -91,14 +92,16 @@ class CORE_EXPORT LineInfo {
   // break.
   bool IsEndParagraph() const { return !GetBreakToken() || HasForcedBreak(); }
 
-  HeapVector<Member<const BreakToken>>& ParallelFlowBreakTokens() {
+  HeapVector<Member<const InlineBreakToken>>& ParallelFlowBreakTokens() {
     return parallel_flow_break_tokens_;
   }
-  void PropagateParallelFlowBreakToken(const BreakToken* token) {
+  void PropagateParallelFlowBreakToken(const InlineBreakToken* token) {
+    DCHECK(token->IsInParallelBlockFlow());
     parallel_flow_break_tokens_.push_back(token);
   }
+  void RemoveParallelFlowBreakToken(unsigned item_index);
 
-  absl::optional<LayoutUnit> MinimumSpaceShortage() const {
+  std::optional<LayoutUnit> MinimumSpaceShortage() const {
     return minimum_space_shortage_;
   }
   void PropagateMinimumSpaceShortage(LayoutUnit shortage) {
@@ -260,11 +263,11 @@ class CORE_EXPORT LineInfo {
   BfcOffset bfc_offset_;
 
   const InlineBreakToken* break_token_ = nullptr;
-  HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
+  HeapVector<Member<const InlineBreakToken>> parallel_flow_break_tokens_;
 
   const LayoutResult* block_in_inline_layout_result_ = nullptr;
 
-  absl::optional<LayoutUnit> minimum_space_shortage_;
+  std::optional<LayoutUnit> minimum_space_shortage_;
 
   LayoutUnit available_width_;
   LayoutUnit width_;

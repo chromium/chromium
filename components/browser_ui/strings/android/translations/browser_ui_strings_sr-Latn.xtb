@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1415402041810619267">URL je skraćen</translation>
-<translation id="1426410128494586442">Da</translation>
 <translation id="1434873037477293673">kartica sniženja</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}one{<ph name="SITE_COUNT" /> sajt}few{<ph name="SITE_COUNT" /> sajta}other{<ph name="SITE_COUNT" /> sajtova}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Da biste dozvolili da <ph name="APP_NAME" /> pristupa kameri, uključite kameru i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
 <translation id="2238944249568001759">Predložene pretrage na osnovu vaše poslednje kartice</translation>
+<translation id="2241587408274973373">Kartice na stranici nove kartice</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Uklonite</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sajt je blokiran}one{# sajt je blokiran}few{# sajta su blokirana}other{# sajtova je blokirano}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Sajtovi mogu da prikazuju upite za prijavljivanje iz usluga za identitet.</translation>
 <translation id="2790501146643349491">Kada je uključeno, nedavno zatvoreni sajtovi mogu da završe slanje i prijem podataka. Kada je isključeno, nedavno zatvoreni sajtovi ne mogu da završe slanje niti prijem podataka.</translation>
 <translation id="2822354292072154809">Želite li stvarno da resetujete sve dozvole za sajt za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Zahtevaj prikaz za mobilne uređaje</translation>
 <translation id="2870560284913253234">Sajt</translation>
 <translation id="2874939134665556319">Prethodna pesma</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Prikazivač sertifikata</translation>
 <translation id="2979365474350987274">Kolačići treće strane su ograničeni</translation>
 <translation id="3008272652534848354">Resetuj dozvole</translation>
-<translation id="3013291976881901233">MIDI uređaji</translation>
 <translation id="301521992641321250">Automatski je blokirano</translation>
 <translation id="3069226013421428034">Dozvolite prijavljivanje trećih strana za određeni sajt.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Povezano sa USB uređajem</translation>
 <translation id="4194328954146351878">Pre nego što dozvolite sajtovima da vide i menjaju informacije na NFC uređajima prikazuje se upit (preporučeno)</translation>
 <translation id="4200726100658658164">Otvorite podešavanja lokacije</translation>
-<translation id="4212246570487010370">Nastavite sa pregledanjem</translation>
 <translation id="4226663524361240545">Uređaj će vibrirati kada primate obaveštenja</translation>
 <translation id="4259722352634471385">Navigacija je blokirana: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Premesti nadole</translation>
 <translation id="6749077623962119521">Želite da resetujete dozvole?</translation>
 <translation id="6766622839693428701">Prevucite nadole da biste zatvorili.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Sa uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Izaberite opciju za <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6818926723028410516">Izaberite stavke</translation>

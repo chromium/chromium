@@ -12,9 +12,9 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
+#include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "ui/gfx/geometry/point.h"
@@ -204,7 +204,7 @@ class FormFillerJavaScriptTest : public FormFillerTest {
 TEST_P(FormFillerJavaScriptTest, IsolateScoping) {
   // Enter the embedder's isolate so it can be captured when the
   // `PDFiumFormFiller` is created.
-  v8::Isolate* embedder_isolate = blink::MainThreadIsolate();
+  v8::Isolate* embedder_isolate = GetBlinkIsolate();
   v8::Isolate::Scope embedder_isolate_scope(embedder_isolate);
 
   FormFillerTestClient client;

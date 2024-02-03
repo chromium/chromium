@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.Latency" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -264,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.Status"
-    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-05-26">
+    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-07-28">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

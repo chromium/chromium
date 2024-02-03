@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_RTP_TRANSCEIVER_PLATFORM_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -36,9 +36,9 @@ class PLATFORM_EXPORT RTCRtpTransceiverPlatform {
   virtual std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const = 0;
   virtual webrtc::RtpTransceiverDirection Direction() const = 0;
   virtual webrtc::RTCError SetDirection(webrtc::RtpTransceiverDirection) = 0;
-  virtual absl::optional<webrtc::RtpTransceiverDirection> CurrentDirection()
+  virtual std::optional<webrtc::RtpTransceiverDirection> CurrentDirection()
       const = 0;
-  virtual absl::optional<webrtc::RtpTransceiverDirection> FiredDirection()
+  virtual std::optional<webrtc::RtpTransceiverDirection> FiredDirection()
       const = 0;
   virtual webrtc::RTCError Stop() = 0;
   virtual webrtc::RTCError SetCodecPreferences(

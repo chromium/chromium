@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<p>
+  Calling endLayer after a flush should correctly render the layer content.
+
+  Nothing should be rendered if the canvas is flushed before calling endLayer.
+  After the flush, endLayer finds itself called alone without any other draw
+  calls. If endLayer fails to trigger a paint invalidation, the content of the
+  layer will never show up.
+</p>
+<canvas id="canvas" width="200" height="200"></canvas>
+<script type="module">
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+}
+
+const placeholder = document.getElementById('canvas');
+const offscreen = placeholder.transferControlToOffscreen();
+const ctx = offscreen.getContext('2d');
+
+ctx.fillStyle = 'red';
+ctx.fillRect(0, 0, 16, 16);
+ctx.beginLayer({filter: 'blur(5px)'});
+ctx.fillRect(64, 64, 128, 128);
+
+function waitForPixel(x, y) {
+  return new Promise((resolve) => {
+    function checkPixel() {
+      const testCanvas = document.createElement('canvas');
+      testCanvas.width = testCanvas.height = 200;
+      const testCtx = testCanvas.getContext('2d', {willReadFrequently: true});
+
+      testCtx.drawImage(placeholder, 0, 0);
+      const pixel = testCtx.getImageData(x, y, 1, 1).data;
+      if (pixel[0] == 255) {
+        resolve();
+      } else {
+        setTimeout(checkPixel, 0);
+      }
+    };
+    checkPixel();
+  });
+}
+
+await waitForPixel(8, 8);  // Wait for a first flush to happen.
+ctx.endLayer();
+await waitForPixel(128, 128);  // Wait for the layer content to propagate.)
+if (window.testRunner) {
+  testRunner.notifyDone();
+}
+
+</script>

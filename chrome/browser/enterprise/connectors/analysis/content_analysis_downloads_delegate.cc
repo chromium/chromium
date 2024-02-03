@@ -89,6 +89,12 @@ std::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
   return custom_learn_more_url_;
 }
 
+// TODO(b/322829143): Implement per-rule custom message for downloads.
+std::optional<std::vector<std::pair<gfx::Range, GURL>>>
+ContentAnalysisDownloadsDelegate::GetCustomRuleMessageRanges() const {
+  return std::nullopt;
+}
+
 bool ContentAnalysisDownloadsDelegate::BypassRequiresJustification() const {
   return bypass_justification_required_;
 }

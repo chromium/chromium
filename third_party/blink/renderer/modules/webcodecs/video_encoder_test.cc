@@ -129,7 +129,7 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
     return nullptr;
 
   ImageBitmap* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      image_data, absl::nullopt, ImageBitmapOptions::Create());
+      image_data, std::nullopt, ImageBitmapOptions::Create());
 
   VideoFrameInit* video_frame_init = VideoFrameInit::Create();
   video_frame_init->setTimestamp(timestamp);
@@ -348,7 +348,7 @@ TEST_F(
             out.key_frame = true;
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE,
-                WTF::BindOnce(*output_cb, std::move(out), absl::nullopt));
+                WTF::BindOnce(*output_cb, std::move(out), std::nullopt));
           })));
 
   EXPECT_CALL(*mock_encoder_metrics_provider, MockIncrementEncodedFrameCount())

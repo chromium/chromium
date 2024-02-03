@@ -41,7 +41,8 @@ class TargetDeviceConnectionBroker {
 
   enum class ConnectionClosedReason {
     kComplete,
-    kUserAborted,
+    kUserAborted,  // Based on user selections on target device, which are
+                   // always informed by Chromebook UI.
     kAuthenticationFailed,
     kConnectionLost,
     kRequestTimedOut,

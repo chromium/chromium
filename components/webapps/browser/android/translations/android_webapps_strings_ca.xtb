@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1213425325105380833">Restaura les aplicacions web que has utilitzat recentment en dispositius connectats a aquest compte</translation>
+<translation id="1786044937610313874">Les dreceres s'obren a Chrome</translation>
+<translation id="204914487372604757">Crea la drecera</translation>
 <translation id="2065911435109240297">Restaura les aplicacions web</translation>
 <translation id="2111649875343992405">Revisa quines aplicacions web s'han de restaurar</translation>
 <translation id="2139186145475833000">Afegeix a pantalla d'inici</translation>
@@ -13,6 +15,7 @@
 <translation id="4338600611020922010">Afegeix a l'escriptori</translation>
 <translation id="4665282149850138822"><ph name="NAME" /> s'ha afegit a la pantalla d'inici</translation>
 <translation id="5250483651202458397">Captura de pantalla. Toca per tancar.</translation>
+<translation id="5684726956335420505">Tria com vols afegir l'aplicació a la pantalla d'inici</translation>
 <translation id="5972844218283131174">Desselecciona-ho tot</translation>
 <translation id="6838423508083736333">Aplicacions web utilitzades el darrer mes</translation>
 <translation id="6990079615885386641">Baixeu l'aplicació des de Google Play Store: <ph name="APP_ACTION" /></translation>

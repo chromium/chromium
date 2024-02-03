@@ -22,7 +22,7 @@
 @property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 // Presents a given item as a header section above data.
-- (void)presentHeaderItem:(TableViewItem*)item;
+- (void)presentHeaderItem:(TableViewHeaderFooterItem*)item;
 
 // Presents given items in 'items' section.
 - (void)presentDataItems:(NSArray<TableViewItem*>*)items;

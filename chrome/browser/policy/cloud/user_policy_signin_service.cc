@@ -278,4 +278,8 @@ UserPolicySigninService::GetDeviceDMTokenIfAffiliatedCallback() {
   return base::BindRepeating(&GetDeviceDMTokenIfAffiliated);
 }
 
+std::string UserPolicySigninService::GetProfileId() {
+  return ::policy::GetProfileId(profile_);
+}
+
 }  // namespace policy

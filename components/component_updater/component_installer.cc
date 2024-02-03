@@ -87,16 +87,18 @@ void ComponentInstaller::Register(ComponentUpdateService* cus,
 
   std::vector<uint8_t> public_key_hash;
   installer_policy_->GetHash(&public_key_hash);
+  const auto crx_id = update_client::GetCrxIdFromPublicKeyHash(public_key_hash);
   Register(base::BindOnce(&ComponentUpdateService::RegisterComponent,
                           base::Unretained(cus)),
-           std::move(callback),
-           cus->GetRegisteredVersion(
-               update_client::GetCrxIdFromPublicKeyHash(public_key_hash)));
+           std::move(callback), cus->GetRegisteredVersion(crx_id),
+           cus->GetMaxPreviousProductVersion(crx_id));
 }
 
-void ComponentInstaller::Register(RegisterCallback register_callback,
-                                  base::OnceClosure callback,
-                                  const base::Version& registered_version) {
+void ComponentInstaller::Register(
+    RegisterCallback register_callback,
+    base::OnceClosure callback,
+    const base::Version& registered_version,
+    const base::Version& max_previous_product_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!installer_policy_) {
@@ -109,7 +111,8 @@ void ComponentInstaller::Register(RegisterCallback register_callback,
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&ComponentInstaller::StartRegistration, this,
-                     registered_version, registration_info),
+                     registered_version, max_previous_product_version,
+                     registration_info),
       base::BindOnce(&ComponentInstaller::FinishRegistration, this,
                      registration_info, std::move(register_callback),
                      std::move(callback)));
@@ -326,6 +329,7 @@ ComponentInstaller::GetValidInstallationManifest(const base::FilePath& path) {
 // version, and saves its data to |registration_info|.
 std::optional<base::Version> ComponentInstaller::SelectComponentVersion(
     const base::Version& registered_version,
+    const base::Version& max_previous_product_version,
     const base::FilePath& base_dir,
     scoped_refptr<RegistrationInfo> registration_info) {
   base::FileEnumerator file_enumerator(base_dir, false,
@@ -372,8 +376,16 @@ std::optional<base::Version> ComponentInstaller::SelectComponentVersion(
     }
   }
 
-  // No suitable version was found.
-  if (!selected_version || bundled_version >= *selected_version) {
+  // No suitable version was found. Either:
+  // - nothing matched (the directory is empty or contains no folders managed by
+  //   component installer).
+  // - or, the bundled version (if there is one) is a greater version than any
+  //   directory downloaded, as long as its greater than any previously selected
+  //   version (to support component downgrades).
+  // In either of these cases, there is no downloaded version that should be
+  // used, so return `nullopt`.
+  if (!selected_version || (bundled_version >= *selected_version &&
+                            bundled_version > max_previous_product_version)) {
     return std::nullopt;
   }
 
@@ -434,6 +446,7 @@ std::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
 
 void ComponentInstaller::StartRegistration(
     const base::Version& registered_version,
+    const base::Version& max_previous_product_version,
     scoped_refptr<RegistrationInfo> registration_info) {
   VLOG(1) << __func__ << " for " << installer_policy_->GetName();
   DCHECK(task_runner_);
@@ -461,8 +474,8 @@ void ComponentInstaller::StartRegistration(
 
   DeleteUnselectedComponentVersions(
       base_dir.value(),
-      SelectComponentVersion(registered_version, base_dir.value(),
-                             registration_info));
+      SelectComponentVersion(registered_version, max_previous_product_version,
+                             base_dir.value(), registration_info));
 }
 
 void ComponentInstaller::UninstallOnTaskRunner() {

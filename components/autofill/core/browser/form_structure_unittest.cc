@@ -240,7 +240,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.label = u"username";
   field.name = u"username";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // With min required fields enabled.
@@ -251,7 +251,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.label = u"password";
   field.name = u"password";
   field.form_control_type = FormControlType::kInputPassword;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   EXPECT_FALSE(FormIsAutofillable(form));
@@ -261,7 +261,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.label = u"Full Name";
   field.name = u"fullname";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   EXPECT_FALSE(FormIsAutofillable(form));
@@ -271,7 +271,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.label = u"Address Line 1";
   field.name = u"address1";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   EXPECT_FALSE(FormIsAutofillable(form));
@@ -280,7 +280,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.label = u"Email";
   field.name = u"email";
   field.form_control_type = FormControlType::kInputEmail;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   EXPECT_TRUE(FormIsAutofillable(form));
@@ -311,7 +311,7 @@ class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
   }
 
   void AddField(FormFieldData field) {
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form_.fields.push_back(std::move(field));
     form_structure_ = nullptr;
   }
@@ -878,12 +878,12 @@ TEST_F(FormStructureTestImpl,
 
   field.label = u"First Name";
   field.name = u"firstname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
   field.name = u"lastname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   EXPECT_FALSE(FormShouldRunHeuristics(form));
@@ -949,7 +949,7 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
 
   field.label = u"Promo Code";
   field.name = u"promocode";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
@@ -1168,53 +1168,53 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
 
   field.label = u"Your First Name:";
   field.name = u"bill.first";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Your Last Name:";
   field.name = u"bill.last";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Street Address Line 1:";
   field.name = u"bill.street1";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Street Address Line 2:";
   field.name = u"bill.street2";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"bill.city";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"State (U.S.):";
   field.name = u"bill.state";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Zip/Postal Code:";
   field.name = u"BillTo.PostalCode";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Country:";
   field.name = u"bill.country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone Number:";
   field.name = u"BillTo.Phone";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"Submit";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1260,39 +1260,39 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
 
   field.label = u"E-mail address";
   field.name = u"email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Full name";
   field.name = u"name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Company";
   field.name = u"company";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Zip Code";
   field.name = u"Home.PostalCode";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"Submit";
   field.value = u"continue";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1331,43 +1331,43 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
 
   field.label = u"First Name";
   field.name = std::u16string();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
   field.name = std::u16string();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Email";
   field.name = std::u16string();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone";
   field.name = std::u16string();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = std::u16string();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = std::u16string();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Zip code";
   field.name = std::u16string();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"Submit";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1409,33 +1409,33 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
 
   field.label = u"Name on Card";
   field.name = u"name_on_card";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Card Number";
   field.name = u"card_number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Exp Month";
   field.name = u"ccmonth";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Exp Year";
   field.name = u"ccyear";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Verification";
   field.name = u"verification";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"Submit";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1471,40 +1471,40 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
 
   field.label = u"Name on Card";
   field.name = u"name_on_card";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // This is not a field we know how to process.  But we should skip over it
   // and process the other fields in the card block.
   field.label = u"Card image";
   field.name = u"card_image";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Card Number";
   field.name = u"card_number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Exp Month";
   field.name = u"ccmonth";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Exp Year";
   field.name = u"ccyear";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Verification";
   field.name = u"verification";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"Submit";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1542,22 +1542,22 @@ TEST_F(FormStructureTestImpl, ThreeAddressLines) {
 
   field.label = u"Address Line1";
   field.name = u"Address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address Line2";
   field.name = u"Address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address Line3";
   field.name = u"Address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1588,22 +1588,22 @@ TEST_F(FormStructureTestImpl, SurplusAddressLinesIgnored) {
 
   field.label = u"Address Line1";
   field.name = u"shipping.address.addressLine1";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address Line2";
   field.name = u"shipping.address.addressLine2";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address Line3";
   field.name = u"billing.address.addressLine3";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address Line4";
   field.name = u"billing.address.addressLine4";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1637,22 +1637,22 @@ TEST_F(FormStructureTestImpl, ThreeAddressLinesExpedia) {
 
   field.label = u"Street:";
   field.name = u"FOPIH_RgWebCC_0_IHAddress_ads1";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Suite or Apt:";
   field.name = u"FOPIH_RgWebCC_0_IHAddress_adap";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Street address second line";
   field.name = u"FOPIH_RgWebCC_0_IHAddress_ads2";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City:";
   field.name = u"FOPIH_RgWebCC_0_IHAddress_adct";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1685,17 +1685,17 @@ TEST_F(FormStructureTestImpl, TwoAddressLinesEbay) {
 
   field.label = u"Address Line1";
   field.name = u"address1";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Floor number, suite number, etc";
   field.name = u"address2";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City:";
   field.name = u"city";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1723,17 +1723,17 @@ TEST_F(FormStructureTestImpl, HeuristicsStateWithProvince) {
 
   field.label = u"Address Line1";
   field.name = u"Address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address Line2";
   field.name = u"Address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"State/Province/Region";
   field.name = u"State";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1762,57 +1762,57 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
 
   field.label = u"First Name*:";
   field.name = u"editBillingAddress$firstNameBox";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name*:";
   field.name = u"editBillingAddress$lastNameBox";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Company Name:";
   field.name = u"editBillingAddress$companyBox";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address*:";
   field.name = u"editBillingAddress$addressLine1Box";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Apt/Suite :";
   field.name = u"editBillingAddress$addressLine2Box";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City*:";
   field.name = u"editBillingAddress$cityBox";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"State/Province*:";
   field.name = u"editBillingAddress$stateDropDown";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Country*:";
   field.name = u"editBillingAddress$countryDropDown";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Postal Code*:";
   field.name = u"editBillingAddress$zipCodeBox";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone*:";
   field.name = u"editBillingAddress$phoneBox";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Email Address*:";
   field.name = u"email$emailBox";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1850,13 +1850,13 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   field.label = u"Phone:";
   field.name = u"dayphone1";
   field.max_length = 0;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"-";
   field.name = u"dayphone2";
   field.max_length = 3;  // Size of prefix is 3.
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"-";
@@ -1864,13 +1864,13 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   field.max_length = 4;  // Size of suffix is 4.  If unlimited size is
                          // passed, phone will be parsed as
                          // <country code> - <area code> - <phone>.
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"ext.:";
   field.name = u"dayphone4";
   field.max_length = 0;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1898,27 +1898,27 @@ TEST_F(FormStructureTestImpl, HeuristicsInfernoCC) {
 
   field.label = u"Name on Card";
   field.name = u"name_on_card";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"billing_address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Card Number";
   field.name = u"card_number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Expiration Date";
   field.name = u"expiration_month";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Expiration Year";
   field.name = u"expiration_year";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1955,32 +1955,32 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
 
   field.label = u"Card number";
   field.name = u"ccnumber";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"First name";
   field.name = u"first_name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last name";
   field.name = u"last_name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Expiration date";
   field.name = u"ccexpiresmonth";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"ccexpiresyear";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"cvc number";
   field.name = u"csc";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -2021,32 +2021,32 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
 
   field.label = u"Cardholder Name";
   field.name = u"cc_first_name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last name";
   field.name = u"last_name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Card number";
   field.name = u"ccnumber";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Expiration date";
   field.name = u"ccexpiresmonth";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"ccexpiresyear";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"cvc number";
   field.name = u"csc";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -2124,12 +2124,12 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
 
   field.label = u"email";
   field.name = u"email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"First Name";
   field.name = u"first";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Checkable fields shouldn't affect the signature.
@@ -2137,7 +2137,7 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   field.name = u"Select";
   field.form_control_type = FormControlType::kInputCheckbox;
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -2168,22 +2168,22 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   field.label = u"Random Field label";
   field.name = u"random1234";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Random Field label2";
   field.name = u"random12345";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Random Field label3";
   field.name = u"1ran12dom12345678";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Random Field label3";
   field.name = u"12345ran123456dom123";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -2288,27 +2288,28 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   form.name = u"the-name";
   form.url = GURL("http://cool.com");
   form.action = form.url.Resolve("/login");
+  form.child_frames = {FrameTokenWithPredecessor()};
 
   FormFieldData field;
   field.label = u"username";
   field.name = u"username";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"password";
   field.name = u"password";
   field.form_control_type = FormControlType::kInputPassword;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"Submit";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
-  EXPECT_TRUE(form.SameFormAs(FormStructure(form).ToFormData()));
+  EXPECT_TRUE(FormData::DeepEqual(form, FormStructure(form).ToFormData()));
 }
 
 // Tests that an Autofill upload for password form with 1 field should not be
@@ -2318,7 +2319,7 @@ TEST_F(FormStructureTestImpl, OneFieldPasswordFormShouldNotBeUpload) {
   FormFieldData field;
   field.name = u"Password";
   field.form_control_type = FormControlType::kInputPassword;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   EXPECT_FALSE(FormStructure(form).ShouldBeUploaded());
@@ -2336,32 +2337,32 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
 
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Country";
   field.name = u"country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone";
   field.name = u"phone";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Country";
   field.name = u"country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone";
   field.name = u"phone";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -2695,18 +2696,18 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
 
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   FieldGlobalId full_name_id = field.global_id();
 
   field.label = u"Country";
   field.name = u"country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Unknown";
   field.name = u"unknown";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   FieldGlobalId unknown_id = field.global_id();
 
@@ -2773,7 +2774,7 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
     FormFieldData field;
     field.form_control_type = FormControlType::kInputText;
     field.name = name;
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     field.host_frame = frame_token;
     field.host_form_id = host_form_id;
     form.fields.push_back(field);

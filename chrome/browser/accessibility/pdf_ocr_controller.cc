@@ -22,9 +22,11 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -184,7 +186,7 @@ PdfOcrController::GetAllPdfWebContentsesForTesting(Profile* profile) {
 }
 
 bool PdfOcrController::IsEnabled() const {
-  return is_enabled_;
+  return scoped_accessibility_mode_ != nullptr;
 }
 
 void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
@@ -232,50 +234,54 @@ void PdfOcrController::OnActivationChanged() {
   if (is_always_active) {
     RecordAcceptLanguages(
         profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-    if (MaybeScheduleRequest()) {
-      // The request will be handled when the library is ready or discarded if
-      // it fails to load.
+
+    if (!ocr_service_ready_) {
+      // Avoid repeated requests.
+      if (waiting_for_ocr_service_initialization_) {
+        return;
+      }
+      waiting_for_ocr_service_initialization_ = true;
+
+      if (ScreenAIInstallState::GetInstance()->get_state() !=
+              ScreenAIInstallState::State::kDownloaded &&
+          !component_ready_observer_.IsObserving()) {
+        // Start observing ScreenAIInstallState to report it to user.
+        component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
+      }
+
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+          ->GetServiceStateAsync(
+              ScreenAIServiceRouter::Service::kOCR,
+              base::BindOnce(
+                  &PdfOcrController::OCRServiceInitializationCallback,
+                  weak_ptr_factory_.GetWeakPtr()));
       return;
     }
-    CHECK_EQ(ScreenAIInstallState::GetInstance()->get_state(),
-             ScreenAIInstallState::State::kReady);
-  }
 
-  is_enabled_ = is_always_active;
-
-  std::vector<content::WebContents*> html_web_contents_vector =
-      GetPdfHtmlWebContentses(profile_);
-  // Iterate over all WebContentses associated with PDF Viewer Mimehandlers and
-  // set the AXMode with the ui::AXMode::kPDFOcr flag.
-  for (auto* web_contents : html_web_contents_vector) {
-    ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
-    ax_mode.set_mode(ui::AXMode::kPDFOcr, is_always_active);
-    web_contents->SetAccessibilityMode(ax_mode);
+    // This will send the `kPDFOcr` flag to all WebContents. Strictly speaking,
+    // it need only be sent to those associated with PDF Viewer Mimehandlers,
+    // but we have no filtering mechanism today. The others should simply ignore
+    // it.
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForBrowserContext(profile_, ui::AXMode::kPDFOcr);
+  } else {
+    scoped_accessibility_mode_.reset();
   }
 }
 
-bool PdfOcrController::MaybeScheduleRequest() {
-  ScreenAIInstallState::State current_install_state =
-      ScreenAIInstallState::GetInstance()->get_state();
-
-  // No need for scheduling if service is ready already.
-  if (current_install_state == ScreenAIInstallState::State::kReady) {
-    return false;
+void PdfOcrController::OCRServiceInitializationCallback(bool successful) {
+  waiting_for_ocr_service_initialization_ = false;
+  ocr_service_ready_ = successful;
+  if (successful) {
+    OnActivationChanged();
+  } else {
+    // Call `StateChanged` to announce the state to user.
+    StateChanged(ScreenAIInstallState::State::kDownloadFailed);
   }
 
-  // TODO(crbug.com/127829): Make sure requesting to repeat a failed download
-  // will trigger a new one.
-  if (current_install_state == ScreenAIInstallState::State::kFailed) {
-    ScreenAIInstallState::GetInstance()->DownloadComponent();
-  }
-
-  if (!component_ready_observer_.IsObserving()) {
-    // Start observing ScreenAIInstallState when the user activates PDF OCR. It
-    // triggers downloading the Screen AI library if it's not downloaded.
-    component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
-  }
-
-  return true;
+  // No more need for observing Screen AI state changes.
+  component_ready_observer_.Reset();
 }
 
 void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
@@ -287,7 +293,7 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOADING);
       break;
 
-    case ScreenAIInstallState::State::kFailed:
+    case ScreenAIInstallState::State::kDownloadFailed:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR);
       // Update the PDF OCR pref to be false to toggle off the button.
       profile_->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
@@ -296,12 +302,6 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
 
     case ScreenAIInstallState::State::kDownloaded:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE);
-      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-          ->InitializeServiceIfNeeded(ScreenAIServiceRouter::Service::kOCR);
-      break;
-
-    case ScreenAIInstallState::State::kReady:
-      OnActivationChanged();
       break;
   }
 }

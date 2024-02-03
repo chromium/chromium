@@ -49,7 +49,7 @@ class InstanceUpdateTest : public testing::Test {
     aura::Window test_window(nullptr);
     test_window.Init(ui::LAYER_NOT_DRAWN);
 
-    expect_launch_id_ = base::EmptyString();
+    expect_launch_id_.clear();
     expect_state_ = apps::InstanceState::kUnknown;
     expect_last_updated_time_ = base::Time();
 

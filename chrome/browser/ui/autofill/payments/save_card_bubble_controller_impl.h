@@ -88,7 +88,7 @@ class SaveCardBubbleControllerImpl
   void ShowBubbleForManageCardsForTesting(const CreditCard& card);
 
   void ReshowBubble(bool is_user_gesture);
-  virtual void HideIconAndBubbleAfterUpload();
+  virtual void ShowConfirmationBubbleView();
 
   // SaveCardBubbleController:
   std::u16string GetWindowTitle() const override;
@@ -98,8 +98,11 @@ class SaveCardBubbleControllerImpl
   AccountInfo GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
+  base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  GetOnBubbleClosedCallback() override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
+  ui::ImageModel GetCreditCardImage() const override;
 
   void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
                         user_provided_card_details) override;
@@ -216,6 +219,9 @@ class SaveCardBubbleControllerImpl
 
   // The security level for the current context.
   security_state::SecurityLevel security_level_;
+
+  // Weak pointer factory for this save card bubble controller.
+  base::WeakPtrFactory<SaveCardBubbleControllerImpl> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

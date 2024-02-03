@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_ORIGIN_TRIAL_STATE_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_ORIGIN_TRIAL_STATE_HOST_IMPL_H_
 
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -14,6 +13,8 @@
 #include "url/origin.h"
 
 namespace content {
+
+class RenderFrameHost;
 
 // Implementation of mojo OriginTrialStateHost.
 //

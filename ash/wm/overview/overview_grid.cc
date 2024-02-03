@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -16,11 +17,14 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/default_desk_button.h"
@@ -78,6 +82,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
@@ -114,6 +119,10 @@ constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 45;
 // Distance from the bottom of the last overview item to the top of the faster
 // splitscreen toast widget.
 constexpr int kFasterSplitScreenToastSpacingDp = 40;
+
+// Distance from the right of the faster splitscreen toast to the left of the
+// settings button.
+constexpr int kSettingsButtonSpacingDp = 8;
 
 // Windows are not allowed to get taller than this.
 constexpr int kMaxHeight = 512;
@@ -1646,7 +1655,20 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
   desks_bar_view_->OnNewDeskButtonPressed(
       DesksCreationRemovalSource::kDragToNewDeskButton);
 
-  return move_windows_to_target_desk(desks_controller->desks().back().get());
+  auto* target_desk = desks_controller->desks().back().get();
+
+  // When creating a new desk by by dragging and dropping a lacros browser
+  // window to new desk button, set the desk's default profile based on the
+  // profile lacros window is logged into.
+  const auto windows = dragged_item->GetWindows();
+  if (chromeos::features::IsDeskProfilesEnabled() && windows.size() == 1) {
+    if (auto lacros_profile_id = windows[0]->GetProperty(ash::kLacrosProfileId);
+        lacros_profile_id != 0) {
+      target_desk->SetLacrosProfileId(lacros_profile_id);
+    }
+  }
+
+  return move_windows_to_target_desk(target_desk);
 }
 
 void OverviewGrid::StartScroll() {
@@ -2014,15 +2036,12 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
   // `no_windows_widget_` and one `faster_splitscreen_widget_`.
   const bool in_faster_split_screen_setup_session =
       window_util::IsInFasterSplitScreenSetupSession(root_window_);
-  if (!in_faster_split_screen_setup_session &&
-      (!no_items || IsShowingSavedDeskLibrary())) {
+  if ((!in_faster_split_screen_setup_session &&
+       (!no_items || IsShowingSavedDeskLibrary())) ||
+      overview_session_->enter_exit_overview_type() ==
+          OverviewEnterExitType::kPine) {
     no_windows_widget_.reset();
-    return;
-  }
-
-  if (overview_session_->enter_exit_overview_type() ==
-      OverviewEnterExitType::kPine) {
-    no_windows_widget_.reset();
+    settings_widget_.reset();
     return;
   }
 
@@ -2061,6 +2080,10 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
   }
 
   RefreshNoWindowsWidgetBounds(/*animate=*/false);
+
+  // This must be done after we set the no windows widget bounds.
+  // TODO(b/323199185): Refactor all these UI component updates.
+  UpdateSettingsButton();
 }
 
 void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
@@ -2318,13 +2341,6 @@ void OverviewGrid::OnSplitViewStateChanged(
     return;
   }
 
-  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
-    // When an activated window is auto snapped, it will send a state change and
-    // try to end overview here. Ignore split view state when
-    // `kFasterSplitScreenSetup` or `kSnapGroup` is enabled.
-    return;
-  }
-
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
   const bool unsnappable_window_activated =
@@ -2338,7 +2354,8 @@ void OverviewGrid::OnSplitViewStateChanged(
   if (state == SplitViewController::State::kBothSnapped ||
       unsnappable_window_activated ||
       (split_view_controller->InClamshellSplitViewMode() &&
-       overview_session_->IsEmpty())) {
+       overview_session_->IsEmpty() &&
+       !window_util::IsInFasterSplitScreenSetupSession(root_window_))) {
     overview_session_->RestoreWindowActivation(false);
     overview_controller->EndOverview(
         state == SplitViewController::State::kBothSnapped
@@ -2428,6 +2445,12 @@ const SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() const {
              ? views::AsViewClass<SavedDeskLibraryView>(
                    saved_desk_library_widget_->GetContentsView())
              : nullptr;
+}
+
+const IconButton* OverviewGrid::GetSettingsButtonForTesting() const {
+  return settings_widget_ ? views::AsViewClass<IconButton>(
+                                settings_widget_->GetContentsView())
+                          : nullptr;
 }
 
 void OverviewGrid::MaybeInitDesksWidget() {
@@ -2854,14 +2877,14 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
       SCOPED_CRASH_KEY_NUMBER("OG_UNSDUW", "unsupported_app_type",
                               window->GetProperty(aura::client::kAppType));
       SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "unsupported_app_id",
-                                full_restore::GetAppId(window));
+                                ::full_restore::GetAppId(window));
       base::debug::DumpWithoutCrashing();
     } else if (num_incognito_windows_ < 0) {
       num_incognito_windows_ = 0;
       SCOPED_CRASH_KEY_NUMBER("OG_UNSDUW", "incognito_app_type",
                               window->GetProperty(aura::client::kAppType));
       SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "incognito_app_id",
-                                full_restore::GetAppId(window));
+                                ::full_restore::GetAppId(window));
       base::debug::DumpWithoutCrashing();
     }
   }
@@ -2905,6 +2928,49 @@ void OverviewGrid::CreateAndShowPine(const gfx::ImageSkia& pine_image) {
   pine_widget_ = PineContentsView::Create(root_window_, pine_image);
   pine_widget_->ShowInactive();
   OverviewController::Get()->OnPineWidgetShown();
+}
+
+void OverviewGrid::OnSettingsButtonPressed() {
+  // Opens the OS Settings page, which causes a window activation change and
+  // `EndOverview()` and destroys `this`.
+  Shell::Get()->shell_delegate()->OpenMultitaskingSettings();
+}
+
+void OverviewGrid::UpdateSettingsButton() {
+  if (!window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
+    // If we weren't started by partial overview, don't show the settings
+    // button.
+    return;
+  }
+
+  if (!settings_widget_) {
+    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.parent = desks_util::GetActiveDeskContainerForRoot(root_window_);
+    params.name = "OverviewSettingsWidget";
+    params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+    params.init_properties_container.SetProperty(kOverviewUiKey, true);
+    settings_widget_ = std::make_unique<views::Widget>(std::move(params));
+    auto* settings_button =
+        settings_widget_->SetContentsView(std::make_unique<IconButton>(
+            base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
+                                weak_ptr_factory_.GetWeakPtr()),
+            IconButton::Type::kLarge, &kOverviewSettingsIcon,
+            IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL));
+    settings_button->SetBackgroundColor(kColorAshShieldAndBase80);
+  }
+
+  // Align the settings button with the no windows widget.
+  // TODO(b/323199185): Move the faster splitscreen toast to this widget.
+  // TODO(b/323409897): Add a11y focus traversal and Chromevox support.
+  CHECK(no_windows_widget_);
+  const gfx::Rect no_windows_widget_bounds(
+      no_windows_widget_->GetWindowBoundsInScreen());
+  settings_widget_->SetBounds(
+      gfx::Rect(no_windows_widget_bounds.right() + kSettingsButtonSpacingDp,
+                no_windows_widget_bounds.y(), no_windows_widget_bounds.height(),
+                no_windows_widget_bounds.height()));
+  settings_widget_->Show();
 }
 
 }  // namespace ash

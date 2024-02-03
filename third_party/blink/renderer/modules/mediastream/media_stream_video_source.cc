@@ -26,6 +26,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter.h"
@@ -265,7 +266,7 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
   restart_callback_ = std::move(callback);
 
   if (send_black_frame) {
-    const absl::optional<gfx::Size> source_size =
+    const std::optional<gfx::Size> source_size =
         GetTrackAdapter()->source_frame_size();
     scoped_refptr<media::VideoFrame> black_frame =
         media::VideoFrame::CreateBlackFrame(
@@ -404,10 +405,10 @@ base::SequencedTaskRunner* MediaStreamVideoSource::video_task_runner() const {
   return Platform::Current()->GetMediaStreamVideoSourceVideoTaskRunner().get();
 }
 
-absl::optional<media::VideoCaptureFormat>
+std::optional<media::VideoCaptureFormat>
 MediaStreamVideoSource::GetCurrentFormat() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return absl::optional<media::VideoCaptureFormat>();
+  return std::optional<media::VideoCaptureFormat>();
 }
 
 size_t MediaStreamVideoSource::CountEncodedSinks() const {
@@ -516,7 +517,7 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
 
 void MediaStreamVideoSource::StartFrameMonitoring() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  absl::optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
+  std::optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
   double frame_rate = current_format ? current_format->frame_rate : 0.0;
   if (current_format && enable_device_rotation_detection_) {
     GetTrackAdapter()->SetSourceFrameSize(current_format->frame_size);
@@ -574,19 +575,21 @@ void MediaStreamVideoSource::SendWheel(
     double relative_y,
     int wheel_delta_x,
     int wheel_delta_y,
-    base::OnceCallback<void(bool, const String&)> callback) {
-  std::move(callback).Run(false, "Unsupported.");
+    base::OnceCallback<void(DOMException*)> callback) {
+  std::move(callback).Run(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
 }
 
 void MediaStreamVideoSource::GetZoomLevel(
-    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
   std::move(callback).Run(false, "Unsupported.");
 }
 
 void MediaStreamVideoSource::SetZoomLevel(
     int zoom_level,
-    base::OnceCallback<void(bool success, const String& error)> callback) {
-  std::move(callback).Run(false, "Unsupported.");
+    base::OnceCallback<void(DOMException*)> callback) {
+  std::move(callback).Run(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
 }
 
 void MediaStreamVideoSource::ApplySubCaptureTarget(
@@ -599,9 +602,9 @@ void MediaStreamVideoSource::ApplySubCaptureTarget(
       media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
 }
 
-absl::optional<uint32_t>
+std::optional<uint32_t>
 MediaStreamVideoSource::GetNextSubCaptureTargetVersion() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif
 

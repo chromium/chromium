@@ -109,7 +109,7 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
   const std::string& icon_identifier() const { return icon_identifier_; }
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // SavedDeskIconView:
   void OnThemeChanged() override;
@@ -166,7 +166,7 @@ class SavedDeskOverflowIconView : public SavedDeskIconView {
   ~SavedDeskOverflowIconView() override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // SavedDeskIconView:
   void UpdateCount(int count) override;

@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_INPUT_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_INPUT_NODE_H_
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
@@ -200,8 +201,8 @@ class CORE_EXPORT LayoutInputNode {
   // ComputeReplacedSize can use it to compute actual replaced size.
   // Corresponds to Legacy's LayoutReplaced::IntrinsicSizingInfo.
   // Use BlockNode::GetAspectRatio to get the aspect ratio.
-  void IntrinsicSize(absl::optional<LayoutUnit>* computed_inline_size,
-                     absl::optional<LayoutUnit>* computed_block_size) const;
+  void IntrinsicSize(std::optional<LayoutUnit>* computed_inline_size,
+                     std::optional<LayoutUnit>* computed_block_size) const;
 
   // Returns the next sibling.
   LayoutInputNode NextSibling() const;
@@ -313,8 +314,8 @@ class CORE_EXPORT LayoutInputNode {
       : box_(box), type_(type) {}
 
   void GetOverrideIntrinsicSize(
-      absl::optional<LayoutUnit>* computed_inline_size,
-      absl::optional<LayoutUnit>* computed_block_size) const;
+      std::optional<LayoutUnit>* computed_inline_size,
+      std::optional<LayoutUnit>* computed_block_size) const;
 
   Member<LayoutBox> box_;
 

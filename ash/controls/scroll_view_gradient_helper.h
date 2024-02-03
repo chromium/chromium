@@ -27,7 +27,7 @@ namespace ash {
 // only on the first call to UpdateGradientMak().
 //
 // Views using this helper should call UpdateGradientMask() whenever the scroll
-// view bounds or contents bounds change (e.g. from Layout()).
+// view bounds or contents bounds change (e.g. during layout).
 //
 // The gradient is destroyed when this object is destroyed. This does not add
 // extra work in the common views::View teardown case (the layer would be

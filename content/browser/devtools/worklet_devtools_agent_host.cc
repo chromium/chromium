@@ -28,4 +28,11 @@ std::string WorkletDevToolsAgentHost::GetType() {
   return kTypeWorklet;
 }
 
+bool WorkletDevToolsAgentHost::AttachSession(DevToolsSession* session,
+                                             bool acquire_wake_lock) {
+  // Default implementation returns false, blocking the session -- hence
+  // the override.
+  return true;
+}
+
 }  // namespace content

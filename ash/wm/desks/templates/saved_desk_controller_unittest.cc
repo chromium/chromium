@@ -95,7 +95,8 @@ class ScrubLacrosProfileIdTest : public testing::Test {
         for (const auto& [window_id, lacros_profile_id] : fake_launch_list) {
           auto& app_restore_data = launch_list[window_id];
           app_restore_data = std::make_unique<app_restore::AppRestoreData>();
-          app_restore_data->lacros_profile_id = lacros_profile_id;
+          app_restore_data->browser_extra_info.lacros_profile_id =
+              lacros_profile_id;
         }
       }
 
@@ -114,7 +115,8 @@ class ScrubLacrosProfileIdTest : public testing::Test {
         auto& fake_launch_list = fake_restore_data[app_id];
         for (const auto& [window_id, app_restore_data] : launch_list) {
           fake_launch_list[window_id] =
-              app_restore_data->lacros_profile_id.value_or(0);
+              app_restore_data->browser_extra_info.lacros_profile_id.value_or(
+                  0);
         }
       }
     }

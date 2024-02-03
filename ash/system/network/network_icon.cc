@@ -591,6 +591,14 @@ gfx::ImageSkia GetImageForPSimPendingActivationWhileLoggedOut(
       GetDefaultColorForIconType(color_provider, icon_type));
 }
 
+gfx::ImageSkia GetImageForCarrierLockedNetwork(
+    const ui::ColorProvider* color_provider,
+    IconType icon_type) {
+  return gfx::CreateVectorIcon(
+      kCarrierLockedIcon,
+      GetDefaultColorForIconType(color_provider, icon_type));
+}
+
 gfx::ImageSkia GetImageForWiFiEnabledState(
     const ui::ColorProvider* color_provider,
     bool enabled,

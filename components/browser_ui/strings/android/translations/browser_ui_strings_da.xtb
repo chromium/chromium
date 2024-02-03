@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384959399684842514">Download er sat på pause</translation>
 <translation id="1415402041810619267">Webadressen er forkortet</translation>
-<translation id="1426410128494586442">Ja</translation>
 <translation id="1434873037477293673">kort med prisfald</translation>
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> website}one{<ph name="SITE_COUNT" /> website}other{<ph name="SITE_COUNT" /> websites}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2238944249568001759">Foreslåede søgninger baseret på din seneste fane</translation>
+<translation id="2241587408274973373">Kort på siden Ny fane</translation>
 <translation id="2241634353105152135">Kun én gang</translation>
 <translation id="2253414712144136228">Fjern <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 website er blokeret}one{# website er blokeret}other{# websites er blokeret}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
 <translation id="2790501146643349491">Når dette er slået til, kan nyligt lukkede websites gennemføre afsendelse og modtagelse af data. Når dette er slået fra, kan nyligt lukkede websites ikke sende eller modtage data.</translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Anmod om mobilvenlig visning</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2874939134665556319">Forrige nummer</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Certifikatfremviser</translation>
 <translation id="2979365474350987274">Tredjepartscookies er begrænsede</translation>
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
-<translation id="3013291976881901233">MIDI-enheder</translation>
 <translation id="301521992641321250">Automatisk blokering</translation>
 <translation id="3069226013421428034">Tillad tredjepartslogin for et bestemt website.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Udløber i morgen}one{Udløber om # dag}other{Udløber om # dage}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Forbundet til en USB-enhed</translation>
 <translation id="4194328954146351878">Spørg, om websites må få adgang til og ændre oplysninger på NFC-enheder (anbefales)</translation>
 <translation id="4200726100658658164">Åbn lokationsindstillinger</translation>
-<translation id="4212246570487010370">Fortsæt med at gennemse</translation>
 <translation id="4226663524361240545">Notifikationer kan få enheden til at vibrere</translation>
 <translation id="4259722352634471385">Navigationen er blokeret: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tilladt</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Flyt ned</translation>
 <translation id="6749077623962119521">Vil du nulstille tilladelserne?</translation>
 <translation id="6766622839693428701">Stryg ned for at lukke.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> fra <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Vælg en mulighed for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6818926723028410516">Vælg elementer</translation>

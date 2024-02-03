@@ -84,6 +84,10 @@ const float kResourceAdjustedRatio = 0.5;
 
 bool g_should_fail_drawing_buffer_creation_for_testing = false;
 
+BASE_FEATURE(kAddSharedImageRasterUsageInDrawingBuffer,
+             "AddSharedImageRasterUsageInDrawingBuffer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 void FlipVertically(base::span<uint8_t> framebuffer,
                     size_t num_rows,
                     size_t row_bytes) {
@@ -1900,11 +1904,18 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   GLuint texture_id = 0;
   bool created_mappable_si = false;
 
-  // The SharedImages created here are read to and written from by WebGL.
+  // The SharedImages created here are read to and written from by WebGL. They
+  // may also be read via the raster interface for WebGL->video and/or
+  // WebGL->canvas conversions. As RASTER_READ usage was not historically
+  // included here, we are rolling it out with a killswitch.
+  // TODO(crbug.com/1522121): Remove this killswitch post-safe rollout.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageInDrawingBuffer)) {
+    usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
+  }
   if (initial_gpu_ == gl::GpuPreference::kHighPerformance)
     usage |= gpu::SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
   GrSurfaceOrigin origin = opengl_flip_y_extension_
@@ -1957,6 +1968,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
       }
 
+      bool disallow_gmb = base::FeatureList::IsEnabled(
+          features::kDrawingBufferWithoutGpuMemoryBuffer);
+
       // TODO(crbug.com/911176): When RGB emulation is not needed, we should use
       // the non-GMB CreateSharedImage with gpu::SHARED_IMAGE_USAGE_SCANOUT in
       // order to allocate the GMB service-side and avoid a synchronous
@@ -1965,17 +1979,31 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       uint32_t additional_usage_flags = gpu::SHARED_IMAGE_USAGE_SCANOUT;
       if (low_latency_enabled()) {
         buffer_usage = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
-        additional_usage_flags = gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+        if (disallow_gmb) {
+          additional_usage_flags |=
+              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+        } else {
+          additional_usage_flags =
+              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+        }
       }
 
       if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
               viz::SinglePlaneSharedImageFormatToBufferFormat(
                   color_buffer_format_),
               ContextProvider()->GetCapabilities())) {
-        auto client_shared_image = sii->CreateSharedImage(
-            color_buffer_format_, size, color_space_, origin,
-            back_buffer_alpha_type, usage | additional_usage_flags,
-            "WebGLDrawingBuffer", gpu::kNullSurfaceHandle, buffer_usage);
+        scoped_refptr<gpu::ClientSharedImage> client_shared_image;
+        if (disallow_gmb) {
+          client_shared_image = sii->CreateSharedImage(
+              color_buffer_format_, size, color_space_, origin,
+              back_buffer_alpha_type, usage | additional_usage_flags,
+              "WebGLDrawingBuffer", gpu::kNullSurfaceHandle);
+        } else {
+          client_shared_image = sii->CreateSharedImage(
+              color_buffer_format_, size, color_space_, origin,
+              back_buffer_alpha_type, usage | additional_usage_flags,
+              "WebGLDrawingBuffer", gpu::kNullSurfaceHandle, buffer_usage);
+        }
         if (client_shared_image) {
           created_mappable_si = true;
 #if BUILDFLAG(IS_MAC)
@@ -1987,7 +2015,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           // side and eliminating the usage of MappableSI here altogether. Will
           // require resolving issues with low-latency canvas tests that caused
           // prior attempts to be reverted (crbug.com/1346737).
-          client_shared_image->SetColorSpaceOnNativeBuffer(color_space_);
+          if (!disallow_gmb) {
+            client_shared_image->SetColorSpaceOnNativeBuffer(color_space_);
+          }
 #endif
           back_buffer_shared_image = std::move(client_shared_image);
 #if BUILDFLAG(IS_MAC)

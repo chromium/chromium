@@ -22,103 +22,122 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ModuleDelegateHost">
+  <variant name="NewTabPage"/>
+  <variant name="StartSurface"/>
+</variants>
+
 <variants name="ModuleType">
   <variant name="PriceChange"/>
   <variant name="SingleTab"/>
 </variants>
 
-<histogram name="MagicStack.Clank.NewTabPage.ContextMenu.OpenCustomizeSettings"
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.OpenCustomizeSettings"
     enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Record the total count that the context menu item to open customize settings
-    is clicked. The histogram is logged on a NewTabPage and is logged
+    is clicked. The histogram is logged on a {ModuleDelegateHost} and is logged
     Android-only.
   </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
-<histogram name="MagicStack.Clank.NewTabPage.ContextMenu.RemoveModule"
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.RemoveModule"
     enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Record the total count that the context menu item to remove a module is
-    clicked. The histogram is logged on a NewTabPage and is logged Android-only.
+    clicked. The histogram is logged on a {ModuleDelegateHost} and is logged
+    Android-only.
   </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
-<histogram name="MagicStack.Clank.NewTabPage.ContextMenu.Shown"
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.Shown"
     enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Record the total count of times that the context menu of a module is shown
-    on the magic stack of a NewTabPage. The histogram is logged on Android-only.
+    on the magic stack of a {ModuleDelegateHost}. The histogram is logged on
+    Android-only.
   </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
-<histogram name="MagicStack.Clank.NewTabPage.Module.Click" enum="ModuleType"
-    expires_after="2024-06-20">
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.Module.Click"
+    enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Record the total count of clicks on different modules of the magic stack on
-    the NewTabPage. The histogram is logged on Android-only.
+    the {ModuleDelegateHost}. The histogram is logged on Android-only.
   </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
 <histogram
-    name="MagicStack.Clank.NewTabPage.Module.FetchDataDurationMs.{ModuleType}"
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataDurationMs.{ModuleType}"
     units="ms" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Records the duration from building a module to the time when the module
     returns a successful fetching data response. The histogram is logged when
-    showing the magic stack on NewTabPage, Android-only.
+    showing the magic stack on {ModuleDelegateHost}, Android-only.
   </summary>
   <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
 <histogram
-    name="MagicStack.Clank.NewTabPage.Module.FetchDataFailedDurationMs.{ModuleType}"
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataFailedDurationMs.{ModuleType}"
     units="ms" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Records the duration from building a module to the time when the module
     returns a response of no data to show. The histogram is logged when showing
-    the magic stack on NewTabPage, Android-only.
+    the magic stack on {ModuleDelegateHost}, Android-only.
   </summary>
   <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
 <histogram
-    name="MagicStack.Clank.NewTabPage.Module.FetchDataTimeoutDurationMs.{ModuleType}"
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutDurationMs.{ModuleType}"
     units="ms" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Records the duration from building a module to the time when it returns a
     response after timeout. The histogram is logged when showing the magic stack
-    on NewTabPage, Android-only.
+    on {ModuleDelegateHost}, Android-only.
   </summary>
   <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
-<histogram name="MagicStack.Clank.NewTabPage.Module.FetchDataTimeoutType"
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutType"
     enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Records the types of modules which didn't respond before the timer timeout.
-    The histogram is logged when showing the magic stack on NewTabPage,
-    Android-only.
+    The histogram is logged when showing the magic stack on
+    {ModuleDelegateHost}, Android-only.
   </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
-<histogram name="MagicStack.Clank.NewTabPage.Module.FirstModuleShownDurationMs"
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FirstModuleShownDurationMs"
     units="ms" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
@@ -126,159 +145,46 @@ chromium-metrics-reviews@google.com.
     Records the duration from building the first module to the time when the
     recyclerview becomes visible, i.e., the first highest ranking module returns
     valid data. The histogram is logged when showing the magic stack on
-    NewTabPage, Android-only.
+    {ModuleDelegateHost}, Android-only.
   </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
-<histogram name="MagicStack.Clank.NewTabPage.Module.TopImpression"
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.ProfileReadyDelayMs"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the time spent between triggering to show modules and fetch the
+    module list when the profile is ready. The histogram is logged when showing
+    the magic stack on {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.Module.TopImpression"
     enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Record the total count of times that a module is shown on the magic stack of
-    a NewTabPage. The histogram is logged on Android-only.
+    a {ModuleDelegateHost}. The histogram is logged on Android-only.
   </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
 <histogram
-    name="MagicStack.Clank.NewTabPage.Segmentation.FetchRankingResultsDurationMs"
+    name="MagicStack.Clank.{ModuleDelegateHost}.Segmentation.FetchRankingResultsDurationMs"
     units="ms" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Records the duration from calling the segmentation API to fetch a ranking to
     the time when a response returns. The histogram is logged when showing the
-    magic stack on NewTabPage, Android-only.
+    magic stack on {ModuleDelegateHost}, Android-only.
   </summary>
-</histogram>
-
-<histogram
-    name="MagicStack.Clank.StartSurface.ContextMenu.OpenCustomizeSettings"
-    enum="ModuleType" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Record the total count that the context menu item to open customize settings
-    is clicked. The histogram is logged on the Start surface and is logged
-    Android-only.
-  </summary>
-</histogram>
-
-<histogram name="MagicStack.Clank.StartSurface.ContextMenu.RemoveModule"
-    enum="ModuleType" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Record the total count that the context menu item to remove a module is
-    clicked. The histogram is logged on the Start surface and is logged
-    Android-only.
-  </summary>
-</histogram>
-
-<histogram name="MagicStack.Clank.StartSurface.ContextMenu.Shown"
-    enum="ModuleType" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Record the total count of times that the context menu of a module is shown
-    on the magic stack of the Start surface. The histogram is logged on
-    Android-only.
-  </summary>
-</histogram>
-
-<histogram name="MagicStack.Clank.StartSurface.Module.Click" enum="ModuleType"
-    expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Record the total count of clicks on different modules of the magic stack on
-    the Start surface. The histogram is logged on Android-only.
-  </summary>
-</histogram>
-
-<histogram
-    name="MagicStack.Clank.StartSurface.Module.FetchDataDurationMs.{ModuleType}"
-    units="ms" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Records the duration from building a module to the time when the module
-    returns a successful fetching data response. The histogram is logged when
-    showing the magic stack on Start surface, Android-only.
-  </summary>
-  <token key="ModuleType" variants="ModuleType"/>
-</histogram>
-
-<histogram
-    name="MagicStack.Clank.StartSurface.Module.FetchDataFailedDurationMs.{ModuleType}"
-    units="ms" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Records the duration from building a module to the time when the module
-    returns a response of no data to show. The histogram is logged when showing
-    the magic stack on Start surface, Android-only.
-  </summary>
-  <token key="ModuleType" variants="ModuleType"/>
-</histogram>
-
-<histogram
-    name="MagicStack.Clank.StartSurface.Module.FetchDataTimeoutDurationMs.{ModuleType}"
-    units="ms" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Records the duration from building a module to the time when it returns a
-    response after timeout. The histogram is logged when showing the magic stack
-    on Start surface, Android-only.
-  </summary>
-  <token key="ModuleType" variants="ModuleType"/>
-</histogram>
-
-<histogram name="MagicStack.Clank.StartSurface.Module.FetchDataTimeoutType"
-    enum="ModuleType" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Records the types of modules which didn't respond before the timer timeout.
-    The histogram is logged when showing the magic stack on Start surface,
-    Android-only.
-  </summary>
-</histogram>
-
-<histogram
-    name="MagicStack.Clank.StartSurface.Module.FirstModuleShownDurationMs"
-    units="ms" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Records the duration from building the first module to the time when the
-    recyclerview becomes visible, i.e., the first highest ranking module returns
-    valid data. The histogram is logged when showing the magic stack on Start
-    surface, Android-only.
-  </summary>
-</histogram>
-
-<histogram name="MagicStack.Clank.StartSurface.Module.TopImpression"
-    enum="ModuleType" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Record the total count of times that a module is shown on the magic stack of
-    the Start surface. The histogram is logged on Android-only.
-  </summary>
-</histogram>
-
-<histogram
-    name="MagicStack.Clank.StartSurface.Segmentation.FetchRankingResultsDurationMs"
-    units="ms" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Records the duration from calling the segmentation API to fetch a ranking to
-    the time when a response returns. The histogram is logged when showing the
-    magic stack on Start surface, Android-only.
-  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
 </histograms>

@@ -4649,7 +4649,6 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
   // enabled.
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
-  disabled_features.push_back(chromeos::features::kCrosShortstand);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.
@@ -4665,14 +4664,6 @@ WebAppIntegrationTest::~WebAppIntegrationTest() = default;
 
 void WebAppIntegrationTest::SetUp() {
   helper_.SetUp();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  StartUniqueAshChrome(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{"CrosShortstand"},
-      /*additional_cmdline_switches=*/{},
-      "b/319753599 Migrate shortcuts out of web app system and remove shortcut "
-      "related tests.");
-#endif
   InProcessBrowserTest::SetUp();
 }
 

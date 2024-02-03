@@ -121,6 +121,7 @@ class HoverButton : public views::LabelButton {
   FRIEND_TEST_ALL_PREFIXES(ExtensionsMenuItemViewTest,
                            UpdatesToDisplayCorrectActionTitle);
   friend class AccountSelectionBubbleViewTest;
+  friend class AccountSelectionModalViewTest;
   friend class PageInfoBubbleViewBrowserTest;
 
   void OnPressed(const ui::Event& event);

@@ -34,6 +34,8 @@ class BackendDelegate : public FileSystemBackendDelegate {
 
   ~BackendDelegate() override;
 
+  static std::unique_ptr<FileSystemBackendDelegate> MakeUnique();
+
   // FileSystemBackend::Delegate overrides.
   storage::AsyncFileUtil* GetAsyncFileUtil(
       storage::FileSystemType type) override;

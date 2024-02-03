@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1384959399684842514">ડાઉનલોડ થોભાવ્યું</translation>
 <translation id="1415402041810619267">URL ટૂંકી કરી છે</translation>
-<translation id="1426410128494586442">હા</translation>
 <translation id="1434873037477293673">કિંમતમાં ઘટાડાનું કાર્ડ</translation>
 <translation id="1448064542941920355">નાનું-મોટું કરવાની ટકાવારી ઘટાડો</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> સાઇટ}one{<ph name="SITE_COUNT" /> સાઇટ}other{<ph name="SITE_COUNT" /> સાઇટ}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> તમારો કૅમેરા ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ કૅમેરા ચાલુ કરો.</translation>
 <translation id="2235344399760031203">ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2238944249568001759">તમારા છેલ્લા ટૅબ પર આધારિત સૂચવેલી શોધ</translation>
+<translation id="2241587408274973373">નવા ટૅબ પેજ કાર્ડ</translation>
 <translation id="2241634353105152135">માત્ર એક વખત</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> કાઢી નાખો</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 સાઇટને બ્લૉક કરી}one{# સાઇટને બ્લૉક કરી}other{# સાઇટને બ્લૉક કરી}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">સાઇટ ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બતાવી શકે છે.</translation>
 <translation id="2790501146643349491">ચાલુ હોય ત્યારે, તાજેતરમાં બંધ કરેલી સાઇટ ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું પૂર્ણ કરી શકે છે. બંધ હોય ત્યારે, તાજેતરમાં બંધ કરેલી સાઇટ ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું પૂર્ણ કરી શકતી નથી.</translation>
 <translation id="2822354292072154809">શું તમે ખરેખર <ph name="CHOSEN_OBJECT_NAME" />ની બધી સાઇટ પસંદગીઓને રીસેટ કરવા માગો છે?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">મોબાઇલ વ્યૂની વિનંતી કરો</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
 <translation id="2874939134665556319">પાછલું ટ્રૅક</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">પ્રમાણપત્ર દર્શક</translation>
 <translation id="2979365474350987274">ત્રીજા પક્ષની કુકી મર્યાદિત છે</translation>
 <translation id="3008272652534848354">પરવાનગીઓ રીસેટ કરો</translation>
-<translation id="3013291976881901233">MIDI ઉપકરણો</translation>
 <translation id="301521992641321250">ઑટોમૅટિક રીતે બ્લૉક થયું</translation>
 <translation id="3069226013421428034">ચોક્કસ સાઇટ માટે ત્રીજા પક્ષ દ્વારા સાઇન-ઇનને મંજૂરી આપો.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{આવતીકાલે સમયસીમા સમાપ્ત થાય છે}one{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}other{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">કોઈ USB ડિવાઇસથી કનેક્ટેડ</translation>
 <translation id="4194328954146351878">NFC ડિવાઇસ પર સાઇટને માહિતી જોવાની અને બદલવાની મંજૂરી આપતા પહેલાં પૂછો (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="4200726100658658164">સ્થાન સેટિંગ ખોલો</translation>
-<translation id="4212246570487010370">બ્રાઉઝ કરવાનું ચાલુ રાખો</translation>
 <translation id="4226663524361240545">સૂચનાઓ ઉપકરણને વાઇબ્રેટ કરી શકે છે</translation>
 <translation id="4259722352634471385">નૅવિગેશન બ્લૉક કરેલું છે: <ph name="URL" /></translation>
 <translation id="4278390842282768270">મંજૂર</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">નીચે ખસેડો</translation>
 <translation id="6749077623962119521">પરવાનગીઓ રીસેટ કરીએ?</translation>
 <translation id="6766622839693428701">બંધ કરવા માટે નીચેની તરફ સ્વાઇપ કરો.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> તરફથી</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> માટે કોઈ વિકલ્પ પસંદ કરો</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6818926723028410516">આઇટમ પસંદ કરો</translation>

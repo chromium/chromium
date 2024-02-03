@@ -23,8 +23,9 @@ namespace arc::input_overlay {
 // TouchPoint indicates the touch point for each action and shows up in the edit
 // mode.
 class TouchPoint : public views::View {
+  METADATA_HEADER(TouchPoint, views::View)
+
  public:
-  METADATA_HEADER(TouchPoint);
   static TouchPoint* Show(views::View* parent,
                           ActionType action_type,
                           const gfx::Point& center_pos);

@@ -7,17 +7,9 @@ import("//tools/typescript/ts_library.gni")
 preprocess_folder = "$target_gen_dir/preprocessed"
 tsc_folder = "$target_gen_dir/tsc"
 
-# TODO: Replace allowed_paths, dialog_type, files_app_state, metadata_stats_type
-# and volume_manager_common_volume_type with definitions from Files app.
 js_files = [
-  "dialog_type.js",
-  "element_object.js",
-  "files_app_state.js",
-  "key_modifiers.js",
-  "metadata_stats_type.js",
   "remote_call.js",
   "test_util.js",
-  "volume_manager_common_volume_type.js",
 
   # File Manager.
   "file_manager/background.js",
@@ -78,7 +70,6 @@ js_files = [
 
 ts_files = [
   "file_manager/android_photos.ts",
-  "allowed_paths.ts",
   "testcase.ts",
 
   "file_manager/choose_entry.ts",
@@ -89,6 +80,12 @@ ts_files = [
 copy("copy_src") {
   sources = js_files + ts_files
   outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
+}
+
+copy("from_files_app") {
+  sources = [ "../file_manager/common/js/shared_types.ts" ]
+  outputs = [ "$preprocess_folder/prod/file_manager/{{source_file_part}}" ]
+  deps = [ "//ui/file_manager:generate_definitions" ]
 }
 
 # All non JS/TS files.
@@ -117,9 +114,15 @@ ts_library("build_ts") {
     # "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
   ]
 
-  extra_deps = [ ":copy_src" ]
+  extra_deps = [
+    ":copy_src",
+    ":from_files_app",
+  ]
 
-  in_files = js_files + ts_files
+  in_files = js_files + ts_files + [
+               # Copied from the Files app production to avoid duplication.
+               "prod/file_manager/shared_types.ts",
+             ]
 }
 
 group("build") {

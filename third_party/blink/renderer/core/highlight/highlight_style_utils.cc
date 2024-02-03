@@ -42,7 +42,7 @@ mojom::blink::ColorScheme UsedColorScheme(
 }
 
 Color PreviousLayerColor(const ComputedStyle& originating_style,
-                         absl::optional<Color> previous_layer_color) {
+                         std::optional<Color> previous_layer_color) {
   if (previous_layer_color) {
     return *previous_layer_color;
   }
@@ -122,14 +122,14 @@ Color ForcedColor(const ComputedStyle& originating_style,
 }
 
 // Returns the UA default ‘color’ for the given |pseudo|.
-absl::optional<Color> DefaultForegroundColor(
+std::optional<Color> DefaultForegroundColor(
     const Document& document,
     PseudoId pseudo,
     mojom::blink::ColorScheme color_scheme) {
   switch (pseudo) {
     case kPseudoIdSelection:
       if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       if (document.GetFrame()->Selection().FrameIsFocusedAndActive()) {
         return LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
@@ -144,10 +144,10 @@ absl::optional<Color> DefaultForegroundColor(
     case kPseudoIdSpellingError:
     case kPseudoIdGrammarError:
     case kPseudoIdHighlight:
-      return absl::nullopt;
+      return std::nullopt;
     default:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -183,14 +183,14 @@ Color DefaultHighlightColor(const Document& document,
                             const ComputedStyle* pseudo_style,
                             PseudoId pseudo,
                             const CSSProperty& property,
-                            absl::optional<Color> previous_layer_color) {
+                            std::optional<Color> previous_layer_color) {
   mojom::blink::ColorScheme color_scheme =
       UsedColorScheme(originating_style, pseudo_style);
   if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
     return DefaultBackgroundColor(document, pseudo, color_scheme);
   }
   DCHECK(property.IDEquals(CSSPropertyID::kColor));
-  if (absl::optional<Color> result =
+  if (std::optional<Color> result =
           DefaultForegroundColor(document, pseudo, color_scheme)) {
     return *result;
   }
@@ -291,7 +291,7 @@ Color HighlightStyleUtils::ResolveColor(
     const ComputedStyle* pseudo_style,
     PseudoId pseudo,
     const CSSProperty& property,
-    absl::optional<Color> previous_layer_color) {
+    std::optional<Color> previous_layer_color) {
   if (UseForcedColors(document, originating_style, pseudo_style)) {
     return ForcedColor(originating_style, pseudo_style, pseudo, property,
                        document.GetColorProviderForPainting(
@@ -350,7 +350,7 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
-    absl::optional<Color> current_layer_color,
+    std::optional<Color> current_layer_color,
     PseudoId pseudo,
     const AtomicString& pseudo_argument) {
   if (pseudo == kPseudoIdSelection) {
@@ -388,19 +388,19 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
   return result;
 }
 
-absl::optional<AppliedTextDecoration>
+std::optional<AppliedTextDecoration>
 HighlightStyleUtils::SelectionTextDecoration(
     const Document& document,
     const ComputedStyle& style,
     const ComputedStyle& pseudo_style,
-    absl::optional<Color> previous_layer_color) {
-  absl::optional<AppliedTextDecoration> decoration =
+    std::optional<Color> previous_layer_color) {
+  std::optional<AppliedTextDecoration> decoration =
       style.LastAppliedTextDecoration();
   if (!decoration) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<AppliedTextDecoration> pseudo_decoration =
+  std::optional<AppliedTextDecoration> pseudo_decoration =
       pseudo_style.LastAppliedTextDecoration();
   if (pseudo_decoration && decoration->Lines() == pseudo_decoration->Lines()) {
     decoration = pseudo_decoration;
@@ -477,16 +477,16 @@ TextPaintStyle HighlightStyleUtils::HighlightPaintingStyle(
   return highlight_style;
 }
 
-absl::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
+std::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
-    absl::optional<Color> previous_layer_color,
+    std::optional<Color> previous_layer_color,
     PseudoId pseudo) {
   DCHECK(pseudo == kPseudoIdSpellingError || pseudo == kPseudoIdGrammarError);
 
   if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (const ComputedStyle* pseudo_style =
@@ -496,7 +496,7 @@ absl::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
                         previous_layer_color);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(

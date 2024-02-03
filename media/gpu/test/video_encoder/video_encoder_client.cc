@@ -45,7 +45,7 @@ static unsigned int kMinInFlightFrames = 12;
 // only dereferenced after rescheduling the task on the specified task runner.
 template <typename CallbackFunc, typename... CallbackArgs>
 void CallbackThunk(
-    absl::optional<base::WeakPtr<VideoEncoderClient>> encoder_client,
+    std::optional<base::WeakPtr<VideoEncoderClient>> encoder_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     CallbackFunc func,
     CallbackArgs... args) {
@@ -619,7 +619,7 @@ void VideoEncoderClient::UpdateBitrateTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
   DVLOGF(4);
   aligned_data_helper_->UpdateFrameRate(framerate);
-  encoder_->RequestEncodingParametersChange(bitrate, framerate, absl::nullopt);
+  encoder_->RequestEncodingParametersChange(bitrate, framerate, std::nullopt);
   base::AutoLock auto_lcok(stats_lock_);
   current_stats_.framerate = framerate;
 }

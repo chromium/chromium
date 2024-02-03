@@ -17,6 +17,8 @@ class AppViewElement extends GuestViewContainerElement {
   }
 }
 
-forwardApiMethods(AppViewElement, AppViewImpl, null, ['connect']);
+forwardApiMethods(
+    AppViewElement, AppViewImpl, null, ['connect'],
+    /*promiseApiDetails=*/[]);
 
 registerElement('AppView', AppViewElement);

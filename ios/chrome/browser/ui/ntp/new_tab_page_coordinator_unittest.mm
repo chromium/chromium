@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
@@ -508,11 +509,11 @@ TEST_F(NewTabPageCoordinatorTest, FakeboxTappedMetricLogging) {
   [coordinator_ stop];
 }
 
-// Test that in response to tapping on MVT while on the Start Surface, the
+// Test that in response to tapping on Shortcuts while on the Start Surface, the
 // NTPTabHelper, NTPCoordinator, and ContentSuggestionsMediator perform as
 // expected, leading to logging the correct NTP metric and resets NTPTabHelper's
 // ShouldShowStartSurface() property.
-TEST_F(NewTabPageCoordinatorTest, MVTStartMetricLogging) {
+TEST_F(NewTabPageCoordinatorTest, ShortcutsStartMetricLogging) {
   CreateCoordinator(/*off_the_record=*/false);
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
   FakeUrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
@@ -522,17 +523,14 @@ TEST_F(NewTabPageCoordinatorTest, MVTStartMetricLogging) {
   [coordinator_ didNavigateToNTPInWebState:web_state_];
 
   histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
-                                        IOSHomeActionType::kMostVisitedTile, 0);
+                                        IOSHomeActionType::kShortcuts, 0);
   histogram_tester_->ExpectTotalCount(kStartTimeSpentHistogram, 0);
   histogram_tester_->ExpectTotalCount(kStartImpressionHistogram, 1);
 
-  ContentSuggestionsMostVisitedItem* item =
-      [[ContentSuggestionsMostVisitedItem alloc] init];
-  item.title = @"Most Visited Index 0";
-  item.URL = GURL("chrome://version");
-  [coordinator_.contentSuggestionsCoordinator.contentSuggestionsMediator
-      openMostVisitedItem:item
-                  atIndex:0];
+  ContentSuggestionsMostVisitedActionItem* item =
+      [[ContentSuggestionsMostVisitedActionItem alloc] init];
+  item.title = @"Bookmarks 0";
+  [coordinator_ shortcutTileOpened];
   // Force the URL load callback to simulate the NavigationManager receiving the
   // URL load signal from the URLLoadingBrowserAgent.
   web::FakeNavigationContext navigation_context;
@@ -548,7 +546,7 @@ TEST_F(NewTabPageCoordinatorTest, MVTStartMetricLogging) {
   // received the DidStartNavigation() WebStateObserver callback to reset
   // ShouldShowStartSurface() to false.
   histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
-                                        IOSHomeActionType::kMostVisitedTile, 1);
+                                        IOSHomeActionType::kShortcuts, 1);
   histogram_tester_->ExpectTotalCount(kStartTimeSpentHistogram, 1);
   histogram_tester_->ExpectTotalCount(kStartImpressionHistogram, 1);
   EXPECT_FALSE(

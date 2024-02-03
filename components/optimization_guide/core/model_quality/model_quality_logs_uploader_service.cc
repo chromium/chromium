@@ -43,6 +43,14 @@ void RecordUploadStatusHistogram(proto::ModelExecutionFeature feature,
       status);
 }
 
+void RecordUserFeedbackHistogram(proto::ModelExecutionFeature feature,
+                                 proto::UserFeedback user_feedback) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"OptimizationGuide.ModelQuality.UserFeedback.",
+                    GetStringNameForModelExecutionFeature(feature)}),
+      static_cast<ModelQualityUserFeedback>(user_feedback));
+}
+
 // Returns the URL endpoint for the model quality service along with the needed
 // API key.
 GURL GetModelQualityLogsUploaderServiceURL() {
@@ -63,31 +71,36 @@ void RecordUserFeedbackHistogram(ModelQualityLogEntry* log_entry) {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
   switch (log_entry->log_ai_data_request()->feature_case()) {
     case proto::LogAiDataRequest::FeatureCase::kCompose:
+      feature = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
       user_feedback =
           log_entry->quality_data<ComposeFeatureTypeMap>()->user_feedback();
-      feature = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
       break;
     case proto::LogAiDataRequest::FeatureCase::kTabOrganization:
-      user_feedback = log_entry->quality_data<TabOrganizationFeatureTypeMap>()
-                          ->mutable_organizations(0)
-                          ->user_feedback();
       feature = proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION;
+      // If there is no tab organization, we don't have any user_feedback.
+      if (log_entry->quality_data<TabOrganizationFeatureTypeMap>()
+              ->organizations_size() != 0) {
+        // We assume there is only one tab organizations when we upload the
+        // model quality data for this version.
+        // TODO(b/323300127): Fix this to consider logging feedback for all
+        // organizations.
+        user_feedback = log_entry->quality_data<TabOrganizationFeatureTypeMap>()
+                            ->mutable_organizations(0)
+                            ->user_feedback();
+      }
       break;
     case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:
-      user_feedback = log_entry->quality_data<WallpaperSearchFeatureTypeMap>()
-                          ->user_feedback();
       feature = proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH;
+      user_feedback = log_entry->quality_data<WallpaperSearchFeatureTypeMap>()
+                          ->user_feedback();
       break;
     default:
       NOTREACHED();
       break;
   }
-  base::UmaHistogramEnumeration(
-      base::StrCat({"OptimizationGuide.ModelQuality.UserFeedback.",
-                    GetStringNameForModelExecutionFeature(feature)}),
-      static_cast<ModelQualityUserFeedback>(user_feedback));
+  RecordUserFeedbackHistogram(feature, user_feedback);
 }
 
 // URL load completion callback.

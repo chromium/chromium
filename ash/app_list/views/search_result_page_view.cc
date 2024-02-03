@@ -66,8 +66,9 @@ constexpr base::TimeDelta kDecreasingHeightSearchResultsDuration =
 // A container view that ensures the card background and the shadow are painted
 // in the correct order.
 class SearchCardView : public views::View {
+  METADATA_HEADER(SearchCardView, views::View)
+
  public:
-  METADATA_HEADER(SearchCardView);
   explicit SearchCardView(std::unique_ptr<views::View> content_view) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     AddChildView(std::move(content_view));
@@ -77,7 +78,7 @@ class SearchCardView : public views::View {
   ~SearchCardView() override = default;
 };
 
-BEGIN_METADATA(SearchCardView, views::View)
+BEGIN_METADATA(SearchCardView)
 END_METADATA
 
 }  // namespace
@@ -171,7 +172,7 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
   AnimateToSearchResultsState(ShouldShowSearchResultView()
                                   ? SearchResultsState::kExpanded
                                   : SearchResultsState::kActive);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SearchResultPageView::UpdatePageBoundsForState(

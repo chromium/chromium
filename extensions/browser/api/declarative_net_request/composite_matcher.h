@@ -20,8 +20,7 @@ class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 struct RequestAction;
 
@@ -119,7 +118,6 @@ class CompositeMatcher {
   const HostPermissionsAlwaysRequired host_permissions_always_required_;
 };
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_COMPOSITE_MATCHER_H_

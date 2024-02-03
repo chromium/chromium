@@ -27,7 +27,7 @@ void TestURLLoaderClient::OnReceiveEarlyHints(
 void TestURLLoaderClient::OnReceiveResponse(
     mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   EXPECT_FALSE(has_received_response_);
   EXPECT_FALSE(has_received_completion_);
   has_received_response_ = true;

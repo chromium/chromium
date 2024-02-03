@@ -13,11 +13,11 @@ namespace blink {
 
 namespace {
 
-String PostureToString(device::mojom::blink::DevicePostureType posture) {
+String PostureToString(mojom::blink::DevicePostureType posture) {
   switch (posture) {
-    case device::mojom::blink::DevicePostureType::kContinuous:
+    case mojom::blink::DevicePostureType::kContinuous:
       return "continuous";
-    case device::mojom::blink::DevicePostureType::kFolded:
+    case mojom::blink::DevicePostureType::kFolded:
       return "folded";
   }
 }
@@ -34,8 +34,7 @@ String DevicePosture::type() {
   return PostureToString(posture_);
 }
 
-void DevicePosture::OnPostureChanged(
-    device::mojom::blink::DevicePostureType posture) {
+void DevicePosture::OnPostureChanged(mojom::blink::DevicePostureType posture) {
   if (posture_ == posture)
     return;
 
@@ -53,7 +52,7 @@ void DevicePosture::EnsureServiceConnection() {
     return;
   }
 
-  device::mojom::blink::DevicePostureProvider* service =
+  mojom::blink::DevicePostureProvider* service =
       window->GetFrame()->GetDevicePostureProvider();
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);

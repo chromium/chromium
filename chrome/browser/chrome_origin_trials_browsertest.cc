@@ -241,9 +241,8 @@ class ChromeOriginTrialsDisabledTokensLimitTest
     // list of disabled tokens.
     std::vector<std::string> disabled_tokens;
     for (uint16_t i = 0; i < token_count; i++) {
-      std::string encoded_token;
       std::string token = std::bitset<kTokenSignatureSize>(i).to_string();
-      base::Base64Encode(token, &encoded_token);
+      std::string encoded_token = base::Base64Encode(token);
       disabled_tokens.push_back(encoded_token);
     }
     return disabled_tokens;

@@ -37,10 +37,22 @@ bool GetIsItemComplete(SetUpListItemType type,
       return IsChromeLikelyDefaultBrowser();
     case SetUpListItemType::kAutofill:
       return password_manager_util::IsCredentialProviderEnabledOnStartup(prefs);
-    case SetUpListItemType::kContentNotification:
-      return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-          .FindBool(kContentNotificationKey)
-          .value_or(false);
+    case SetUpListItemType::kNotifications:
+      if (IsIOSTipsNotificationsEnabled()) {
+        return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
+                   .FindBool(kContentNotificationKey)
+                   .value_or(false) ||
+               prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
+                   .FindBool(kTipsNotificationKey)
+                   .value_or(false) ||
+               prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
+                   .FindBool(kCommerceNotificationKey)
+                   .value_or(false);
+      } else {
+        return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
+            .FindBool(kContentNotificationKey)
+            .value_or(false);
+      }
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
       NOTREACHED_NORETURN();
@@ -141,10 +153,11 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
 
   // Add content notification item if the feature is enabled and the user has
   // signed in.
-  if (IsContentPushNotificationsSetUpListEnabled() &&
-      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    AddItemIfNotNil(items, BuildItem(SetUpListItemType::kContentNotification,
-                                     prefs, localState, authService));
+  if (IsIOSTipsNotificationsEnabled() ||
+      (IsContentPushNotificationsSetUpListEnabled() &&
+       authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin))) {
+    AddItemIfNotNil(items, BuildItem(SetUpListItemType::kNotifications, prefs,
+                                     localState, authService));
   }
 
   if (IsMagicStackEnabled()) {
@@ -172,8 +185,7 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kFollowItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
-        set_up_list_prefs::kContentNotificationItemState,
-        &_prefChangeRegistrar);
+        set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -198,7 +210,7 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
       initWithObjects:@(int(SetUpListItemType::kSignInSync)),
                       @(int(SetUpListItemType::kDefaultBrowser)),
                       @(int(SetUpListItemType::kAutofill)),
-                      @(int(SetUpListItemType::kContentNotification)), nil];
+                      @(int(SetUpListItemType::kNotifications)), nil];
   for (SetUpListItem* item in _items) {
     [itemTypes removeObject:@(int(item.type))];
   }

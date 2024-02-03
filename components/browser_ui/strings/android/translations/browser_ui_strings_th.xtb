@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1384959399684842514">หยุดดาวน์โหลดไว้ชั่วคราว</translation>
 <translation id="1415402041810619267">ตัด URL ให้สั้นลงแล้ว</translation>
-<translation id="1426410128494586442">ยอมรับ</translation>
 <translation id="1434873037477293673">การ์ดราคาต่ำลง</translation>
 <translation id="1448064542941920355">ลดการซูม</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> เว็บไซต์}other{<ph name="SITE_COUNT" /> เว็บไซต์}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงกล้องถ่ายรูป ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2238944249568001759">การค้นหาที่แนะนําโดยอิงจากแท็บล่าสุด</translation>
+<translation id="2241587408274973373">การ์ดหน้าแท็บใหม่</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2253414712144136228">นำ<ph name="NAME_OF_LIST_ITEM" />ออก</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{มี 1 เว็บไซต์ที่ถูกบล็อก}other{มี # เว็บไซต์ที่ถูกบล็อก}}</translation>
@@ -85,7 +85,7 @@
 <translation id="2438120137003069591">คุณได้อนุญาตให้เว็บไซต์นี้ใช้คุกกี้ของบุคคลที่สามเป็นการชั่วคราว ซึ่งหมายความว่าจะมีการป้องกันขณะท่องเว็บน้อยลง แต่ฟีเจอร์ของเว็บไซต์จะทำงานตามที่คาดไว้ได้มากขึ้น <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ฟีเจอร์บนเว็บไซต์บางแห่งอาจใช้งานในโหมดไม่ระบุตัวตนไม่ได้</translation>
 <translation id="2442870161001914531">ขอเว็บไซต์เวอร์ชันเดสก์ท็อปเสมอ</translation>
-<translation id="2469312991797799607">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดของ <ph name="ORIGIN" /> รวมถึงทุกเว็บไซต์จากต้นทางนี้</translation>
+<translation id="2469312991797799607">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดของ <ph name="ORIGIN" /> รวมถึงทุกเว็บไซต์ที่อยู่ภายใต้โดเมนนี้</translation>
 <translation id="2479148705183875116">ไปที่การตั้งค่า</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">เว็บไซต์สามารถแสดงข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตนได้</translation>
 <translation id="2790501146643349491">เมื่อเปิด เว็บไซต์ที่เพิ่งปิดจะส่งและรับข้อมูลจนเสร็จสิ้นได้ เมื่อปิด เว็บไซต์ที่เพิ่งปิดจะส่งหรือรับข้อมูลจนเสร็จสิ้นไม่ได้</translation>
 <translation id="2822354292072154809">แน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ทั้งหมดของเว็บไซต์สำหรับ <ph name="CHOSEN_OBJECT_NAME" /></translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ขอมุมมองบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">เครื่องมือดูใบรับรอง</translation>
 <translation id="2979365474350987274">มีการจำกัดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
-<translation id="3013291976881901233">อุปกรณ์ MIDI</translation>
 <translation id="301521992641321250">ถูกบล็อกโดยอัตโนมัติ</translation>
 <translation id="3069226013421428034">อนุญาตการลงชื่อเข้าใช้ของบุคคลที่สามสำหรับบางเว็บไซต์</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{หมดอายุวันพรุ่งนี้}other{หมดอายุในอีก # วัน}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">เชื่อมต่ออยู่กับอุปกรณ์ USB</translation>
 <translation id="4194328954146351878">ถามก่อนที่จะอนุญาตให้เว็บไซต์ดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC (แนะนำ)</translation>
 <translation id="4200726100658658164">เปิดการตั้งค่าตำแหน่ง</translation>
-<translation id="4212246570487010370">ท่องเว็บต่อไป</translation>
 <translation id="4226663524361240545">การแจ้งเตือนอาจทำให้อุปกรณ์สั่น</translation>
 <translation id="4259722352634471385">มีการบล็อกการนำทาง: <ph name="URL" /></translation>
 <translation id="4278390842282768270">อนุญาตแล้ว</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">เลื่อนลง</translation>
 <translation id="6749077623962119521">รีเซ็ตสิทธิ์ใช่ไหม</translation>
 <translation id="6766622839693428701">เลื่อนลงเพื่อปิด</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> จาก <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">เลือกตัวเลือกสำหรับ <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6818926723028410516">เลือกรายการ</translation>
@@ -498,7 +494,7 @@
 <translation id="9002538116239926534">เมื่อเปิด เว็บไซต์จะบันทึกข้อมูลลงในอุปกรณ์ของคุณได้ เมื่อปิด เว็บไซต์จะบันทึกข้อมูลลงในอุปกรณ์ของคุณไม่ได้</translation>
 <translation id="9011903857143958461">อนุญาตให้เข้าถึง <ph name="SITE_NAME" /> ได้</translation>
 <translation id="9019902583201351841">มีการจัดการโดยผู้ปกครอง</translation>
-<translation id="9039697262778250930">คุณอาจออกจากระบบเว็บไซต์เหล่านี้</translation>
+<translation id="9039697262778250930">ระบบอาจนำคุณออกจากระบบเว็บไซต์เหล่านี้</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9090268041676521955">เว็บไซต์นี้อยู่ในกลุ่มที่สามารถดูกิจกรรมของคุณได้ ซึ่งเป็นกลุ่มที่ <ph name="FPS_OWNER" /> กำหนดไว้</translation>
 <translation id="9106233582039520022">ลบคุกกี้ไหม</translation>

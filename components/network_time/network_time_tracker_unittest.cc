@@ -70,7 +70,8 @@ class NetworkTimeTrackerTest : public ::testing::Test {
         std::unique_ptr<base::Clock>(clock_),
         std::unique_ptr<const base::TickClock>(tick_clock_), &pref_service_,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_loader_factory_));
+            &url_loader_factory_),
+        std::nullopt);
 
     // Do this to be sure that |is_null| returns false.
     clock_->Advance(base::Days(111));
@@ -91,7 +92,7 @@ class NetworkTimeTrackerTest : public ::testing::Test {
 
   // Replaces |tracker_| with a new object, while preserving the
   // testing clocks.
-  void Reset() {
+  void Reset(std::optional<NetworkTimeTracker::FetchBehavior> behavior) {
     base::SimpleTestClock* new_clock = new base::SimpleTestClock();
     new_clock->SetNow(clock_->Now());
     base::SimpleTestTickClock* new_tick_clock = new base::SimpleTestTickClock();
@@ -102,7 +103,8 @@ class NetworkTimeTrackerTest : public ::testing::Test {
         std::unique_ptr<base::Clock>(clock_),
         std::unique_ptr<const base::TickClock>(tick_clock_), &pref_service_,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_loader_factory_));
+            &url_loader_factory_),
+        behavior);
   }
 
   // Good signature over invalid data, though made with a non-production key.
@@ -365,7 +367,7 @@ TEST_F(NetworkTimeTrackerTest, Serialize) {
   // 6 days is just under the threshold for discarding data.
   base::TimeDelta delta = base::Days(6);
   AdvanceBoth(delta);
-  Reset();
+  Reset(std::nullopt);
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, &out_uncertainty));
   EXPECT_EQ(in_network_time + delta, out_network_time);
@@ -393,7 +395,7 @@ TEST_F(NetworkTimeTrackerTest, DeserializeOldFormat) {
   prefs.Set("local", *local);
   prefs.Set("network", *network);
   pref_service_.Set(prefs::kNetworkTimeMapping, base::Value(std::move(prefs)));
-  Reset();
+  Reset(std::nullopt);
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SYNC_ATTEMPT,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
 }
@@ -408,7 +410,7 @@ TEST_F(NetworkTimeTrackerTest, SerializeWithLongDelay) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   AdvanceBoth(base::Days(8));
-  Reset();
+  Reset(std::nullopt);
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_NO_SYNC_ATTEMPT,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
 }
@@ -423,7 +425,7 @@ TEST_F(NetworkTimeTrackerTest, SerializeWithTickClockAdvance) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   tick_clock_->Advance(base::Days(1));
-  Reset();
+  Reset(std::nullopt);
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_SYNC_LOST,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
 }
@@ -439,7 +441,7 @@ TEST_F(NetworkTimeTrackerTest, SerializeWithWallClockAdvance) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   clock_->Advance(base::Days(1));
-  Reset();
+  Reset(std::nullopt);
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_SYNC_LOST,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
 }
@@ -712,6 +714,19 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkSubseqeuntSyncPending) {
             tracker_->GetNetworkTime(&out_network_time, nullptr));
 
   tracker_->WaitForFetchForTesting(123123123);
+}
+
+TEST_F(NetworkTimeTrackerTest, CustomFetchBehaviorTest) {
+  // On creation, the test is configured as if the feature param is set to
+  // FETCHES_IN_BACKGROUND_AND_ON_DEMAND.
+  EXPECT_EQ(
+      NetworkTimeTracker::FetchBehavior::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      tracker_->GetFetchBehavior());
+  // When created with a parameter, the tracker should ignore the feature param,
+  // and instead use the parameter.
+  Reset(NetworkTimeTracker::FetchBehavior::FETCHES_IN_BACKGROUND_ONLY);
+  EXPECT_EQ(NetworkTimeTracker::FetchBehavior::FETCHES_IN_BACKGROUND_ONLY,
+            tracker_->GetFetchBehavior());
 }
 
 }  // namespace network_time

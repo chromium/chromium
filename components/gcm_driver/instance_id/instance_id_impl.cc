@@ -234,7 +234,7 @@ void InstanceIDImpl::EnsureIDGenerated() {
   //    We don't want to be strictly cryptographically secure. The server might
   //    reject the ID if there is a conflict or problem.
   uint8_t bytes[kInstanceIDByteLength];
-  crypto::RandBytes(bytes, sizeof(bytes));
+  crypto::RandBytes(bytes);
 
   // 2) Transforms the first 4 bits to 0x7. Note that this is required by the
   //    server.
@@ -244,9 +244,7 @@ void InstanceIDImpl::EnsureIDGenerated() {
   // 3) Encode the value in Android-compatible base64 scheme:
   //    * URL safe: '/' replaced by '_' and '+' replaced by '-'.
   //    * No padding: any trailing '=' will be removed.
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(bytes), sizeof(bytes)),
-      &id_);
+  id_ = base::Base64Encode(bytes);
   std::replace(id_.begin(), id_.end(), '+', '-');
   std::replace(id_.begin(), id_.end(), '/', '_');
   std::erase(id_, '=');

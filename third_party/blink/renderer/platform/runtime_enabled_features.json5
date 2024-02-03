@@ -319,6 +319,9 @@
     {
       name: "AppTitle",
       status: "experimental",
+      origin_trial_feature_name: "AppTitle",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
+      base_feature: "WebAppEnableAppTitle",
     },
     {
       name: "AsyncClipboardImplicitPermission",
@@ -520,11 +523,6 @@
       origin_trial_feature_name: "CacheStorageCodeCacheHint",
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      // If set, the parser will canonicalize whitespace strings.
-      name: "CanonicalizeWhitespaceStrings",
-      status: "stable",
     },
     {
       name: "Canvas2dCanvasFilter",
@@ -777,7 +775,6 @@
       name: "CSSAnchorPositioning",
       implied_by: ["HTMLSelectListElement"],
       status: "experimental",
-      base_feature: "none",
     },
     {
       // Use full cascading for applying @try fallback for anchor positioning
@@ -855,6 +852,23 @@
       status: "experimental",
     },
     {
+      // This flag controls whether the deprecated :--foo syntax is enabled. It
+      // is being replaced by :state(foo), which is controlled by the
+      // CSSCustomStateNewSyntax flag.
+      // TODO(crbug.com/1514397): Remove this when the feature is fully launched.
+      name: "CSSCustomStateDeprecatedSyntax",
+      status: "stable",
+    },
+    {
+      // This flag controls whether the :state(foo) pseudo-class for custom
+      // elements is enabled. It is a rename of :--foo, which is being
+      // deprecated and is controlled by the CSSCustomStateDeprecatedSyntax
+      // flag.
+      // TODO(crbug.com/1514397): Remove this when the deprecation is done.
+      name: "CSSCustomStateNewSyntax",
+      status: "experimental",
+    },
+    {
       name: "CSSDisplayAnimation",
       status: "stable",
     },
@@ -908,6 +922,13 @@
       status: "experimental",
       base_feature: "none",
     },
+    {
+      // Support for 'light-dark()' function to select computed color values
+      // based on the used color-scheme.
+      name: "CSSLightDarkColors",
+      status: "stable",
+    },
+
     {
       name: "CSSLinearTimingFunction",
       status: "stable"
@@ -1053,14 +1074,6 @@
       name: "CSSSelectorFragmentAnchor",
       status: "experimental",
       base_feature: "CssSelectorFragmentAnchor",
-    },
-    {
-      // Support for :nth-child(An + B of S).
-      //
-      // https://drafts.csswg.org/selectors-4/#the-nth-child-pseudo
-      name: "CSSSelectorNthChildComplexSelector",
-      status: "stable",
-      base_feature: "none",
     },
     {
       name: "CSSSignRelatedFunctions",
@@ -1539,10 +1552,6 @@
       name: "EventTimingInteractionCount",
       status: "experimental",
       base_feature: "none",
-    },
-     {
-      name: "ExcludeBrokenImageIconFromBeingLcpEligible",
-      status: "stable",
     },
     {
       name: "ExperimentalContentSecurityPolicyFeatures",
@@ -2219,19 +2228,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutNewContainingBlock",
-      status: "stable",
-    },
-    {
-      name: "LayoutNewMeasureCache",
-      depends_on: ["LayoutNewMinMaxCache"],
-      status: "stable",
-    },
-    {
-      name: "LayoutNewMinMaxCache",
-      status: "stable",
-    },
-    {
       name: "LayoutNGShapeCache",
       status: "test",
       base_feature: "LayoutNGShapeCache",
@@ -2477,15 +2473,6 @@
       status: "test",
       base_feature: "none",
     },
-    {
-      // When a Web application calls getDisplayMedia() and asks for video,
-      // allow a hint to be provided as to whether it prefers that the user
-      // has the option to choose display surfaces whose type is monitor.
-      //
-      // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-monitortypesurfaces
-      name: "MonitorTypeSurfaces",
-      status: "stable",
-    },
     // crbug.com/269917: Make mouse event targets agnostic to mousedown event
     // cancellation when the pointer is dragged out of an iframe.
     {
@@ -2514,7 +2501,7 @@
     },
     {
       name: "NavigationActivation",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NavigationId",
@@ -2526,6 +2513,10 @@
       // Android does not yet support NavigatorContentUtils.
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
+    },
+    {
+      name: "NestedTopLayerSupport",
+      status: "experimental",
     },
     {
       name: "NetInfoConstantType",
@@ -2656,10 +2647,6 @@
       // Android does not yet support SystemMonitor.
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
-    },
-    {
-      name: "OnePassRasterInvalidation",
-      status: "experimental",
     },
     // This flag is a killswitch. It was only exists as a way for us to turn
     // the feature off in the emergency that it breaks websites.
@@ -3154,10 +3141,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "ReferenceBoxNoPixelSnapping",
-      status: "stable",
-    },
-    {
       name: "RegionCapture",
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
@@ -3193,11 +3176,6 @@
       base_feature: "none",
     },
     {
-      // See https://github.com/w3c/csswg-drafts/issues/9398
-      name: "RemoveZoomAdjustmentOfBoundingBox",
-      status: "test",
-    },
-    {
       // See https://github.com/whatwg/html/issues/10034
       name: "RenderBlockingInlineModuleScript",
       status: "stable",
@@ -3213,6 +3191,15 @@
       // https://github.com/WICG/display-locking/blob/main/explainers/update-rendering.md
       name: "RenderPriorityAttribute",
       base_feature: "none",
+    },
+    {
+      // TODO(crbug.com/1500633): Remove this flag when the new CursorAnchorInfo
+      // mojo pipe is launched.
+      name: "ReportVisibleLineBounds",
+      status: {
+        "Android": "stable",
+        "default": "",
+      }
     },
     {
       name: "ResourceTimingContentType",
@@ -3469,6 +3456,11 @@
       status: "stable",
     },
     {
+      // See crbug.com/1510466: this is the shadow root clonable implementation.
+      name: "ShadowRootClonable",
+      status: "experimental",
+    },
+    {
       name: "SharedArrayBuffer",
       base_feature: "none",
       public: true,
@@ -3670,6 +3662,11 @@
       name: "StableBlinkFeatures",
       status: "stable",
       base_feature: "none",
+    },
+    {
+      // See https://github.com/w3c/csswg-drafts/issues/9398
+      name: "StandardizedBrowserZoom",
+      status: "test",
     },
     {
       name: "StorageAccessAPIBeyondCookies",
@@ -4121,6 +4118,14 @@
       origin_trial_os: ["win", "mac", "linux"],
     },
     {
+      // WebAssembly JS Promise Integration,
+      // https://github.com/WebAssembly/js-promise-integration/blob/main/proposals/js-promise-integration
+      name: "WebAssemblyJSPromiseIntegration",
+      origin_trial_feature_name: "WebAssemblyJSPromiseIntegration",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebAssemblyJSStringBuiltins",
       origin_trial_feature_name: "WebAssemblyJSStringBuiltins",
       status: "experimental",
@@ -4255,6 +4260,11 @@
       public: true,
     },
     {
+      name: "WebGPU",
+      base_feature: "none",
+      status: "stable",
+    },
+    {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",
@@ -4282,6 +4292,8 @@
     },
     {
       name: "WebIdentityDigitalCredentials",
+      origin_trial_feature_name: "WebIdentityDigitalCredentials",
+      origin_trial_os: ["android"],
       depends_on: ["FedCm"],
       public: true,
       status: "test",

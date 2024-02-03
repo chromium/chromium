@@ -46,7 +46,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/hashed_extension_id.h"
@@ -674,8 +673,8 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
     return;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   for (const auto& extension_id : extension_ids) {
-    const Extension* extension = registry->GetExtensionById(
-        extension_id.first, ExtensionRegistry::ENABLED);
+    const Extension* extension =
+        registry->enabled_extensions().GetByID(extension_id.first);
     if (!extension || IsExtensionAllowlisted(extension->id()))
       continue;
 

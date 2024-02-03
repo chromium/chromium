@@ -26,7 +26,8 @@ class ArcPingRoutine : public NetworkDiagnosticsRoutine {
   using RunArcHttpCallback = chromeos::network_diagnostics::mojom::
       NetworkDiagnosticsRoutines::RunArcPingCallback;
 
-  ArcPingRoutine();
+  explicit ArcPingRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   ArcPingRoutine(const ArcPingRoutine&) = delete;
   ArcPingRoutine& operator=(const ArcPingRoutine&) = delete;
   ~ArcPingRoutine() override;

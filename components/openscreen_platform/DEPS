@@ -2,6 +2,7 @@ include_rules = [
   "+components/cast/message_port",
   "+mojo/public/cpp",
   "+net",
+  "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+third_party/openscreen/src/platform/base",
   "+third_party/openscreen/src/platform/api",

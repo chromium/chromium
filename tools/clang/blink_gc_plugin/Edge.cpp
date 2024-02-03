@@ -15,6 +15,35 @@ bool Collection::NeedsFinalization() { return info_->NeedsFinalization(); }
 bool Collection::IsSTDCollection() {
   return Config::IsSTDCollection(info_->name());
 }
+std::string Collection::GetCollectionName() const {
+  return info_->name();
+}
+
+TracingStatus Collection::NeedsTracing(NeedsTracingOption) {
+  if (on_heap_) {
+    return TracingStatus::Needed();
+  }
+
+  // This will be handled by matchers.
+  if (IsSTDCollection()) {
+    if ((GetCollectionName() == "array") && !members_.empty()) {
+      Edge* type = members_.at(0);
+      if (type->IsMember() || type->IsWeakMember() ||
+          type->IsTraceWrapperV8Reference()) {
+        return TracingStatus::Needed();
+      }
+    }
+    return TracingStatus::Unknown();
+  }
+
+  // For off-heap collections, determine tracing status of members.
+  TracingStatus status = TracingStatus::Unneeded();
+  for (Members::iterator it = members_.begin(); it != members_.end(); ++it) {
+    // Do a non-recursive test here since members could equal the holder.
+    status = status.LUB((*it)->NeedsTracing(kNonRecursive));
+  }
+  return status;
+}
 
 void RecursiveEdgeVisitor::AtValue(Value*) {}
 void RecursiveEdgeVisitor::AtRawPtr(RawPtr*) {}

@@ -1023,7 +1023,7 @@ bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
     return false;
   }
   const user_manager::UserType user_type = user->GetType();
-  if (user_type != user_manager::USER_TYPE_REGULAR) {
+  if (user_type != user_manager::UserType::kRegular) {
     return false;
   }
   if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {

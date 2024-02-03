@@ -12,6 +12,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/test/browser_test.h"
@@ -19,14 +20,22 @@
 
 class TrackingProtectionSettingsMetricsBrowserTest
     : public InProcessBrowserTest {
+ public:
+  TrackingProtectionSettingsMetricsBrowserTest() {
+    feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSettingsMetricsBrowserTest,
                        RecordsMetricsOnStartup) {
   histogram_tester_.ExpectUniqueSample("Settings.TrackingProtection.Enabled",
                                        false, 1);
+  histogram_tester_.ExpectUniqueSample("Settings.IpProtection.Enabled", false,
+                                       1);
 }
 
 class TrackingProtectionSettingsForEnterpriseBrowserTest

@@ -99,6 +99,14 @@ ScopedCFTypeRef<CTFontRef> CreateCopyWithTraitsAndWeightFromFont(
       &kCFTypeDictionaryValueCallBacks));
 
   ScopedCFTypeRef<CFStringRef> family_name(CTFontCopyFamilyName(font));
+  // Some broken fonts may lack a postscript name (nameID="6"), full font
+  // name (nameId="4") or family name (nameID="1") in the 'name' font table, see
+  // https://learn.microsoft.com/en-us/typography/opentype/spec/name.
+  // For these fonts `family_name` will be null, compare
+  // https://crbug.com/1521364
+  if (!family_name) {
+    return ScopedCFTypeRef<CTFontRef>(nullptr);
+  }
   const CFStringRef attribute_keys[] = {kCTFontFamilyNameAttribute,
                                         kCTFontTraitsAttribute};
   const CFTypeRef attribute_values[] = {family_name.get(), traits_dict.get()};
@@ -121,8 +129,8 @@ ScopedCFTypeRef<CTFontRef> CreateCopyWithTraitsAndWeightFromFont(
 
 bool IsLastResortFont(CTFontRef font) {
   ScopedCFTypeRef<CFStringRef> font_name(CTFontCopyPostScriptName(font));
-  return CFStringCompare(font_name.get(), CFSTR("LastResort"), 0) ==
-         kCFCompareEqualTo;
+  return font_name && CFStringCompare(font_name.get(), CFSTR("LastResort"),
+                                      0) == kCFCompareEqualTo;
 }
 
 ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,

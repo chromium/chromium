@@ -17,8 +17,9 @@ class DisplayOverlayController;
 // View shows target circle, crossed line and touch point in button placement
 // mode.
 class TargetView : public views::View {
+  METADATA_HEADER(TargetView, views::View)
+
  public:
-  METADATA_HEADER(TargetView);
   TargetView(DisplayOverlayController* controller, ActionType action_type);
 
   TargetView(const TargetView&) = delete;

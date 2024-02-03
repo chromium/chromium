@@ -28,13 +28,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -119,7 +119,7 @@ class PLATFORM_EXPORT ResourceFetcher
         scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
         BackForwardCacheLoaderHelper*,
-        const absl::optional<base::UnguessableToken>&
+        const std::optional<base::UnguessableToken>&
             service_worker_race_network_request_token,
         bool is_from_origin_dirty_style_sheet) = 0;
 
@@ -183,7 +183,7 @@ class PLATFORM_EXPORT ResourceFetcher
       const ResourceLoaderOptions&,
       const mojom::blink::RequestContextType,
       const RenderBlockingBehavior,
-      const absl::optional<base::UnguessableToken>&
+      const std::optional<base::UnguessableToken>&
           service_worker_race_network_request_token,
       bool is_from_origin_dirty_style_sheet);
   // Get a code cache host. This cannot be called after ClearContext is called.
@@ -275,11 +275,11 @@ class PLATFORM_EXPORT ResourceFetcher
   String GetCacheIdentifier(const KURL& url) const;
 
   // If `url` exists as a resource in a subresource bundle in this frame,
-  // returns its UnguessableToken; otherwise, returns absl::nullopt.
-  absl::optional<base::UnguessableToken> GetSubresourceBundleToken(
+  // returns its UnguessableToken; otherwise, returns std::nullopt.
+  std::optional<base::UnguessableToken> GetSubresourceBundleToken(
       const KURL& url) const;
 
-  absl::optional<KURL> GetSubresourceBundleSourceUrl(const KURL& url) const;
+  std::optional<KURL> GetSubresourceBundleSourceUrl(const KURL& url) const;
 
   enum IsImageSet { kImageNotImageSet, kImageIsImageSet };
 
@@ -328,8 +328,8 @@ class PLATFORM_EXPORT ResourceFetcher
       RenderBlockingBehavior render_blocking_behavior,
       mojom::blink::ScriptType script_type,
       bool is_link_preload,
-      const absl::optional<float> resource_width = absl::nullopt,
-      const absl::optional<float> resource_height = absl::nullopt,
+      const std::optional<float> resource_width = std::nullopt,
+      const std::optional<float> resource_height = std::nullopt,
       bool is_potentially_lcp_element = false,
       bool is_potentially_lcp_influencer = false) {
     return ComputeLoadPriority(
@@ -395,8 +395,8 @@ class PLATFORM_EXPORT ResourceFetcher
       RenderBlockingBehavior = RenderBlockingBehavior::kNonBlocking,
       mojom::blink::ScriptType script_type = mojom::blink::ScriptType::kClassic,
       bool is_link_preload = false,
-      const absl::optional<float> resource_width = absl::nullopt,
-      const absl::optional<float> resource_height = absl::nullopt,
+      const std::optional<float> resource_width = std::nullopt,
+      const std::optional<float> resource_height = std::nullopt,
       bool is_potentially_lcp_element = false,
       bool is_potentially_lcp_influencer = false);
   // A helper that uses `params` to fill out other remaining parameters.
@@ -410,13 +410,13 @@ class PLATFORM_EXPORT ResourceFetcher
       const ResourceRequestHead& resource_request,
       FetchParameters::SpeculativePreloadType speculative_preload_type,
       bool is_link_preload,
-      const absl::optional<float> resource_width,
-      const absl::optional<float> resource_height);
+      const std::optional<float> resource_width,
+      const std::optional<float> resource_height);
 
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
   // create a new WebScopedVirtualTimePauser and set it to
   // |virtual_time_pauser|.
-  absl::optional<ResourceRequestBlockedReason> PrepareRequest(
+  std::optional<ResourceRequestBlockedReason> PrepareRequest(
       FetchParameters&,
       const ResourceFactory&,
       WebScopedVirtualTimePauser& virtual_time_pauser);

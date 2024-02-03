@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -44,9 +45,9 @@ Node* ResolveSource(Element* source) {
 ScrollTimeline* ScrollTimeline::Create(Document& document,
                                        ScrollTimelineOptions* options,
                                        ExceptionState& exception_state) {
-  absl::optional<Element*> source = options->hasSource()
-                                        ? absl::make_optional(options->source())
-                                        : absl::nullopt;
+  std::optional<Element*> source = options->hasSource()
+                                       ? std::make_optional(options->source())
+                                       : std::nullopt;
 
   ScrollAxis axis =
       options->hasAxis() ? options->axis().AsEnum() : ScrollAxis::kBlock;
@@ -148,7 +149,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
     double range = state.scroll_offsets->end - state.scroll_offsets->start;
     double duration_in_microseconds =
         range * kScrollTimelineMicrosecondsPerPixel;
-    state.duration = absl::make_optional(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
+    state.duration = std::make_optional(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
         duration_in_microseconds / 1000));
     state.current_time =
         base::Microseconds(offset * kScrollTimelineMicrosecondsPerPixel);
@@ -164,7 +165,7 @@ void ScrollTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   double end_offset = physical_orientation == kHorizontalScroll
                           ? scroll_dimensions.x()
                           : scroll_dimensions.y();
-  state->scroll_offsets = absl::make_optional<ScrollOffsets>(0, end_offset);
+  state->scroll_offsets = std::make_optional<ScrollOffsets>(0, end_offset);
 }
 
 Element* ScrollTimeline::source() const {
@@ -264,20 +265,20 @@ ScrollAxis ScrollTimeline::GetAxis() const {
   return axis_;
 }
 
-absl::optional<double> ScrollTimeline::GetMaximumScrollPosition() const {
-  absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
+std::optional<double> ScrollTimeline::GetMaximumScrollPosition() const {
+  std::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
   if (!scroll_offsets) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   LayoutBox* scroll_container = ScrollContainer();
   if (!scroll_container) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   PaintLayerScrollableArea* scrollable_area =
       scroll_container->GetScrollableArea();
   if (!scrollable_area) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
                                    scrollable_area->MinimumScrollOffset();

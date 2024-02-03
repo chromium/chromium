@@ -703,8 +703,8 @@ bool ValidateTestResultObject(const Value::Dict& iteration_data,
   result &=
       ValidateKeyValue(*dict, "output_snippet", test_result.output_snippet);
 
-  std::string base64_output_snippet;
-  Base64Encode(test_result.output_snippet, &base64_output_snippet);
+  std::string base64_output_snippet =
+      base::Base64Encode(test_result.output_snippet);
   result &=
       ValidateKeyValue(*dict, "output_snippet_base64", base64_output_snippet);
 

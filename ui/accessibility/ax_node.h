@@ -118,6 +118,9 @@ class AX_EXPORT AXNode final {
   const std::vector<raw_ptr<AXNode, VectorExperimental>>& GetAllChildren()
       const;
   size_t GetChildCount() const;
+#if DCHECK_IS_ON()
+  size_t GetSubtreeCount() const;
+#endif
   size_t GetChildCountCrossingTreeBoundary() const;
   size_t GetUnignoredChildCount() const;
   size_t GetUnignoredChildCountCrossingTreeBoundary() const;

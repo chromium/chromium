@@ -198,7 +198,7 @@ bool ParseBackgroundOrMaskPosition(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    absl::optional<WebFeature> three_value_position,
+    std::optional<WebFeature> three_value_position,
     HeapVector<CSSPropertyValue, 64>& properties) {
   const CSSValue* result_x = nullptr;
   const CSSValue* result_y = nullptr;
@@ -478,13 +478,13 @@ const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  const Vector<absl::optional<TimelineOffset>>& range_start_list =
+  const Vector<std::optional<TimelineOffset>>& range_start_list =
       style.Animations() ? style.Animations()->RangeStartList()
-                         : Vector<absl::optional<TimelineOffset>>{
+                         : Vector<std::optional<TimelineOffset>>{
                                CSSAnimationData::InitialRangeStart()};
-  const Vector<absl::optional<TimelineOffset>>& range_end_list =
+  const Vector<std::optional<TimelineOffset>>& range_end_list =
       style.Animations() ? style.Animations()->RangeEndList()
-                         : Vector<absl::optional<TimelineOffset>>{
+                         : Vector<std::optional<TimelineOffset>>{
                                CSSAnimationData::InitialRangeEnd()};
 
   if (range_start_list.size() != range_end_list.size()) {
@@ -499,8 +499,8 @@ const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
   auto* outer_list = CSSValueList::CreateCommaSeparated();
 
   for (wtf_size_t i = 0; i < range_start_list.size(); ++i) {
-    const absl::optional<TimelineOffset>& start = range_start_list[i];
-    const absl::optional<TimelineOffset>& end = range_end_list[i];
+    const std::optional<TimelineOffset>& start = range_start_list[i];
+    const std::optional<TimelineOffset>& end = range_end_list[i];
 
     auto* inner_list = CSSValueList::CreateSpaceSeparated();
     inner_list->Append(
@@ -3305,15 +3305,15 @@ static CSSValue* CSSValueForTimelineShorthand(
   }
   if (name_vector.empty()) {
     list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
-        /* name */ nullptr, TimelineAxis::kBlock, /* inset */ absl::nullopt,
+        /* name */ nullptr, TimelineAxis::kBlock, /* inset */ std::nullopt,
         style));
     return list;
   }
   for (wtf_size_t i = 0; i < name_vector.size(); ++i) {
     list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
         name_vector[i].Get(), axis_vector[i],
-        inset_vector ? absl::optional<TimelineInset>((*inset_vector)[i])
-                     : absl::optional<TimelineInset>(),
+        inset_vector ? std::optional<TimelineInset>((*inset_vector)[i])
+                     : std::optional<TimelineInset>(),
         style));
   }
 
@@ -3806,7 +3806,7 @@ bool MaskPosition::ParseShorthand(
       maskPositionShorthand(), important, range, context,
       local_context.UseAliasParsing()
           ? WebFeature::kThreeValuedPositionBackground
-          : absl::optional<WebFeature>(),
+          : std::optional<WebFeature>(),
       properties);
 }
 

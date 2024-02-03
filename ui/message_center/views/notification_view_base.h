@@ -53,7 +53,7 @@ class CompactTitleMessageView : public views::View {
   const char* GetClassName() const override;
 
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   void set_title(const std::u16string& title);
   void set_message(const std::u16string& message);
@@ -99,7 +99,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void Activate();
 
   // MessageView:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnFocus() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -111,8 +111,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void SetExpanded(bool expanded) override;
   bool IsManuallyExpandedOrCollapsed() const override;
   void SetManuallyExpandedOrCollapsed(ExpandState state) override;
-  void OnSettingsButtonPressed(const ui::Event& event) override;
-  void OnSnoozeButtonPressed(const ui::Event& event) override;
+  void ToggleInlineSettings(const ui::Event& event) override;
+  void ToggleSnoozeSettings(const ui::Event& event) override;
 
   // views::InkDropObserver:
   void InkDropAnimationStarted() override;
@@ -125,9 +125,13 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Whether the notification view is showing `icon_view_`.
   virtual bool IsIconViewShown() const;
 
+  views::Label* message_label_for_testing() { return message_label_; }
+
   views::ProgressBar* progress_bar_view_for_testing() {
     return progress_bar_view_;
   }
+
+  views::Label* status_view_for_testing() { return status_view_; }
 
  protected:
   explicit NotificationViewBase(const Notification& notification);
@@ -215,14 +219,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Reorder the view in `left_content_` according to `left_content_count_`.
   void ReorderViewInLeftContent(views::View* view);
 
-  // This function is called when the UI changes from notification view to
-  // inline settings or vice versa.
-  virtual void ToggleInlineSettings(const ui::Event& event);
-
-  // This function is called when the UI changes from notification view to
-  // snooze settings or vice versa.
-  virtual void ToggleSnoozeSettings(const ui::Event& event);
-
   // Called when a user clicks on a notification action button, identified by
   // `index`.
   virtual void ActionButtonPressed(size_t index, const ui::Event& event);
@@ -283,16 +279,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   const std::vector<raw_ptr<views::View, VectorExperimental>> item_views()
       const {
     return item_views_;
-  }
-
-  bool inline_settings_enabled() const { return inline_settings_enabled_; }
-  void set_inline_settings_enabled(bool inline_settings_enabled) {
-    inline_settings_enabled_ = inline_settings_enabled;
-  }
-
-  bool snooze_settings_enabled() const { return snooze_settings_enabled_; }
-  void set_snooze_settings_enabled(bool snooze_settings_enabled) {
-    snooze_settings_enabled_ = snooze_settings_enabled;
   }
 
   bool hide_icon_on_expanded() const { return hide_icon_on_expanded_; }
@@ -379,12 +365,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // notification UI uses AshNotificationView, which has customized layout,
   // header view, etc.).
   const bool for_ash_notification_;
-
-  // Describes whether the view can display inline settings or not.
-  bool inline_settings_enabled_ = false;
-
-  // Describes whether the view can display snooze settings or not.
-  bool snooze_settings_enabled_ = false;
 
   // Container views directly attached to this view.
   raw_ptr<NotificationHeaderView> header_row_ = nullptr;

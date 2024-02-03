@@ -17,6 +17,8 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/shell_delegate.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -62,6 +64,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
@@ -469,4 +472,11 @@ void ChromeShellDelegate::ShouldExitFullscreenBeforeLock(
 
 ash::DeskProfilesDelegate* ChromeShellDelegate::GetDeskProfilesDelegate() {
   return crosapi::CrosapiManager::Get()->crosapi_ash()->desk_profiles_ash();
+}
+
+void ChromeShellDelegate::OpenMultitaskingSettings() {
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      ProfileManager::GetActiveUserProfile(),
+      chromeos::settings::mojom::kSystemPreferencesSectionPath,
+      chromeos::settings::mojom::Setting::kSnapWindowSuggestions);
 }

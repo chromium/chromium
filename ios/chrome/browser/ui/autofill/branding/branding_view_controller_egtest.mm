@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
@@ -140,6 +141,13 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
   CheckBrandingHasVisiblity(YES);
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
       performAction:grey_tap()];
+
+  if (!base::ios::IsRunningOnIOS16OrLater() && [ChromeEarlGrey isIPadIdiom]) {
+    [ChromeEarlGreyUI
+        dismissByTappingOnTheWindowOfPopover:
+            chrome_test_util::ManualFallbackPasswordTableViewMatcher()];
+  }
+
   DismissKeyboard();
   // Second time: branding is still visible after user interacts with a keyboard
   // accessory element.

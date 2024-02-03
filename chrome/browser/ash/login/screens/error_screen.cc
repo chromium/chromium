@@ -360,7 +360,9 @@ void ErrorScreen::OnConfigureCerts() {
 }
 
 void ErrorScreen::OnDiagnoseButtonClicked() {
-  ConnectivityDiagnosticsDialog::ShowDialog();
+  gfx::NativeWindow native_window =
+      LoginDisplayHost::default_host()->GetNativeWindow();
+  ConnectivityDiagnosticsDialog::ShowDialog(native_window);
 }
 
 void ErrorScreen::OnLaunchOobeGuestSession() {
@@ -448,7 +450,7 @@ void ErrorScreen::StartGuestSessionAfterOwnershipCheck(
   }
 
   LoginDisplayHost::default_host()->GetExistingUserController()->Login(
-      UserContext(user_manager::USER_TYPE_GUEST,
+      UserContext(user_manager::UserType::kGuest,
                   user_manager::GuestAccountId()),
       SigninSpecifics());
 }

@@ -70,7 +70,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   ConstraintSpace BuildSpaceForFlexBasis(const BlockNode& flex_item) const;
   ConstraintSpace BuildSpaceForIntrinsicBlockSize(
       const BlockNode& flex_item,
-      absl::optional<LayoutUnit> override_inline_size) const;
+      std::optional<LayoutUnit> override_inline_size) const;
   // |line_cross_size_for_stretch| should only be set when running the final
   // layout pass for stretch, when the line cross size is definite.
   // |block_offset_for_fragmentation| should only be set when running the final
@@ -78,9 +78,9 @@ class CORE_EXPORT FlexLayoutAlgorithm
   ConstraintSpace BuildSpaceForLayout(
       const BlockNode& flex_item_node,
       LayoutUnit item_main_axis_final_size,
-      absl::optional<LayoutUnit> override_inline_size = absl::nullopt,
-      absl::optional<LayoutUnit> line_cross_size_for_stretch = absl::nullopt,
-      absl::optional<LayoutUnit> block_offset_for_fragmentation = absl::nullopt,
+      std::optional<LayoutUnit> override_inline_size = std::nullopt,
+      std::optional<LayoutUnit> line_cross_size_for_stretch = std::nullopt,
+      std::optional<LayoutUnit> block_offset_for_fragmentation = std::nullopt,
       bool min_block_size_should_encompass_intrinsic_size = false) const;
 
   void ConstructAndAppendFlexItems(

@@ -80,6 +80,7 @@
 #include "third_party/skia/src/core/SkCanvasPriv.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -103,6 +104,12 @@
 namespace viz {
 
 namespace {
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+BASE_FEATURE(kAddSharedImageRasterReadUsage,
+             "AddSharedImageRasterReadUsage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 enum VertexOpacityUsage {
   kNone = 0,
@@ -559,6 +566,10 @@ struct SkiaRenderer::RenderPassOverlayParams {
   SharedQuadState shared_quad_state;
   cc::FilterOperations filters;
   cc::FilterOperations backdrop_filters;
+
+  // Represents the number of |OverlayLock|s (i.e. number of distinct frames)
+  // that reference this.
+  int ref_count = 0;
 };
 #endif
 
@@ -1223,19 +1234,24 @@ void SkiaRenderer::SwapBuffersComplete(
   MaybeDecrementSolidColorBuffers(committed_overlay_locks_);
 #endif  // BUILDFLAG(IS_OZONE)
 
-  // Right now, only macOS and Ozone need to return mailboxes of released
-  // overlays, so we should not release |committed_overlay_locks_| here. The
-  // resources in it will be released in DidReceiveReleasedOverlays() later.
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE)
+  // On macOS, we don't want to release |committed_overlay_locks_| right away
+  // because CoreAnimation can hold the overlay images for potentially several
+  // frames. We depend on the output device to signal the return of overlays via
+  // |DidReceiveReleasedOverlays| to know when it's safe to release the locks.
   for (auto lock_iter = committed_overlay_locks_.begin();
        lock_iter != read_fence_lock_iter; ++lock_iter) {
     awaiting_release_overlay_locks_.insert(std::move(*lock_iter));
   }
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // Current pending locks should have been committed by the next time
   // SwapBuffers() is completed.
-  committed_overlay_locks_.clear();
+  {
+    DisplayResourceProvider::ScopedBatchReturnResources returner(
+        resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
+    committed_overlay_locks_.clear();
+  }
   std::swap(committed_overlay_locks_, pending_overlay_locks_.front());
   pending_overlay_locks_.pop_front();
 }
@@ -1251,39 +1267,25 @@ void SkiaRenderer::BuffersPresented() {
 
 void SkiaRenderer::DidReceiveReleasedOverlays(
     const std::vector<gpu::Mailbox>& released_overlays) {
+#if BUILDFLAG(IS_APPLE)
   DisplayResourceProvider::ScopedBatchReturnResources returner(
       resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
 
-  // This method is only called on macOS and Ozone right now.
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   for (const auto& mailbox : released_overlays) {
-    // If this mailbox is for render pass overlay, mark the released render pass
-    // overlay backing as available to be re-used.
-    auto it =
-        base::ranges::find(in_flight_render_pass_overlay_backings_, mailbox,
-                           [](const RenderPassOverlayParams& overlay) {
-                             return overlay.render_pass_backing.mailbox;
-                           });
-    if (it != in_flight_render_pass_overlay_backings_.end()) {
-      available_render_pass_overlay_backings_.push_back(*it);
-      in_flight_render_pass_overlay_backings_.erase(it);
-    }
-
     auto iter = base::ranges::find(awaiting_release_overlay_locks_, mailbox,
                                    &OverlayLock::mailbox);
     if (iter == awaiting_release_overlay_locks_.end()) {
-// TODO(crbug.com/1299794): Re-enable this DCHECK on Ozone.
-#if !BUILDFLAG(IS_OZONE)
       // The released overlay should always be found as awaiting to be released.
       DLOG(FATAL) << "Got an unexpected mailbox";
-#endif  // !BUILDFLAG(IS_OZONE)
       continue;
     }
     awaiting_release_overlay_locks_.erase(iter);
   }
 #else
+  // Only macOS has the requirement of polling the OS compositor to check if the
+  // overlay images have been released.
   NOTREACHED();
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif
 }
 
 bool SkiaRenderer::FlippedFramebuffer() const {
@@ -2544,8 +2546,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     // invalid. Once these tests are migrated, we can remove the override here
     // and revert to Skia's default behavior of assuming sRGB on invalid.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!src_color_space.IsValid())
+  if (!src_color_space.IsValid()) {
     override_color_space = CurrentRenderPassSkColorSpace();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2582,6 +2585,11 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       quad->resource_size_in_pixels().IsEmpty()
           ? gfx::RectF(image->width(), image->height())
           : gfx::RectF(gfx::SizeF(quad->resource_size_in_pixels()));
+  // For video frames, `valid_texel_bounds` is VideoFrame::visible_rect which is
+  // passed here via `uv_rect`.
+  if (quad->is_video_frame) {
+    valid_texel_bounds = uv_rect;
+  }
 
   // There are three scenarios where a texture quad cannot be put into a batch:
   // 1. It needs to be blended with a constant background color.
@@ -2884,10 +2892,12 @@ void SkiaRenderer::ScheduleOverlays() {
       continue;
     }
 
-#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
     if (overlay.rpdq) {
       PrepareRenderPassOverlay(&overlay);
-      locks.emplace_back(overlay.mailbox);
+      if (!overlay.mailbox.IsZero()) {
+        locks.emplace_back(this, overlay.mailbox);
+      }
       continue;
     }
 #else
@@ -2908,7 +2918,7 @@ void SkiaRenderer::ScheduleOverlays() {
         overlay.resource_size_in_pixels = gfx::Size(1, 1);
         // This can now be treated as a regular overlay with a mailbox backing.
         overlay.is_solid_color = false;
-        locks.emplace_back(overlay.mailbox);
+        locks.emplace_back(this, overlay.mailbox);
       }
 #else
       // All other platforms that support solid color overlays don't need fake
@@ -2947,12 +2957,13 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     bool is_video_frame,
     float resource_offset,
     float resource_multiplier) {
-  // Use the current SDR slider white level for HDR videos on
+  // Use the current SDR slider white level for PQ HDR videos on
   // Windows, so that they look similar when rendered by the
   // compositor and when rendered as an overlay (HDR10 MPO).
   // https://crbug.com/1492817
   auto hdr_metadata = src_hdr_metadata;
-  if (is_video_frame && src.IsToneMappedByDefault() &&
+  if (is_video_frame &&
+      src.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
       base::FeatureList::IsEnabled(features::kUseDisplaySDRMaxLuminanceNits)) {
     hdr_metadata =
         gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
@@ -3588,10 +3599,17 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
   if (it == available_render_pass_overlay_backings_.end()) {
     // Allocate the image for render pass overlay if there is no existing
     // available one.
-    constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ;
+    auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+    // The SharedImages created here are not used by the raster interface, but
+    // RASTER usage was historically listed. We are in the process of removing
+    // this usage with a reverse killswitch.
+    // TODO(crbug.com/1523914): Remove this code post-safe rollout.
+    if (base::FeatureList::IsEnabled(kAddSharedImageRasterReadUsage)) {
+      kOverlayUsage = kOverlayUsage | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
+    }
+
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
         kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
@@ -4109,6 +4127,75 @@ void SkiaRenderer::MaybeDecrementSolidColorBuffers(
 }
 #endif  // BUILDFLAG(IS_OZONE)
 
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
+    ScopedInFlightRenderPassOverlayBackingRef(SkiaRenderer* renderer,
+                                              const gpu::Mailbox& mailbox)
+    : renderer_(renderer), mailbox_(mailbox) {
+  CHECK(renderer_);
+  CHECK(!mailbox_.IsZero());
+
+  auto it =
+      base::ranges::find(renderer_->in_flight_render_pass_overlay_backings_,
+                         mailbox_, [](const RenderPassOverlayParams& overlay) {
+                           return overlay.render_pass_backing.mailbox;
+                         });
+  CHECK(it != renderer_->in_flight_render_pass_overlay_backings_.end());
+
+  it->ref_count++;
+}
+
+SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
+    ~ScopedInFlightRenderPassOverlayBackingRef() {
+  if (!renderer_ && mailbox_.IsZero()) {
+    return;
+  }
+
+  auto it =
+      base::ranges::find(renderer_->in_flight_render_pass_overlay_backings_,
+                         mailbox_, [](const RenderPassOverlayParams& overlay) {
+                           return overlay.render_pass_backing.mailbox;
+                         });
+  CHECK(it != renderer_->in_flight_render_pass_overlay_backings_.end());
+
+  // Render pass overlay backings can be reused across multiple frames so we
+  // only want to mark them as available when we're releasing lock holding the
+  // last reference.
+  CHECK_GT(it->ref_count, 0);
+  it->ref_count--;
+  if (it->ref_count == 0) {
+    renderer_->available_render_pass_overlay_backings_.push_back(*it);
+    renderer_->in_flight_render_pass_overlay_backings_.erase(it);
+  }
+}
+
+SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
+    ScopedInFlightRenderPassOverlayBackingRef(
+        SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&& other) {
+  // This is an RAII type so we depend on the move operators to clear the
+  // |other| binding so we don't to unintentional work in the dtor. We need to
+  // manually implement the move operators since neither |raw_ptr| nor
+  // |gpu::Mailbox| guarantees a move operation that default initializes the
+  // original binding.
+  renderer_ = other.renderer_;
+  other.renderer_ = nullptr;
+  mailbox_ = other.mailbox_;
+  other.mailbox_ = gpu::Mailbox();
+}
+
+SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&
+SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
+    ScopedInFlightRenderPassOverlayBackingRef::operator=(
+        SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&& other) {
+  // Manually implemented, see move ctor.
+  renderer_ = other.renderer_;
+  other.renderer_ = nullptr;
+  mailbox_ = other.mailbox_;
+  other.mailbox_ = gpu::Mailbox();
+  return *this;
+}
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+
 SkiaRenderer::OverlayLock::OverlayLock(
     DisplayResourceProvider* resource_provider,
     ResourceId resource_id) {
@@ -4137,15 +4224,18 @@ SkiaRenderer::OverlayLock& SkiaRenderer::OverlayLock::OverlayLock::operator=(
 }
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-SkiaRenderer::OverlayLock::OverlayLock(gpu::Mailbox mailbox) {
-  render_pass_lock.emplace(mailbox);
+SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer* renderer,
+                                       const gpu::Mailbox& mailbox) {
+  render_pass_lock.emplace(renderer, mailbox);
 }
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
+#if BUILDFLAG(IS_APPLE)
 bool SkiaRenderer::OverlayLockComparator::operator()(
     const OverlayLock& lhs,
     const OverlayLock& rhs) const {
   return lhs.mailbox() < rhs.mailbox();
 }
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace viz

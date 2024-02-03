@@ -28,7 +28,8 @@
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 
 #include <algorithm>
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
@@ -94,13 +95,13 @@ static SkColor4f ResolveStopColorWithMissingParams(
     Color neighbor,
     Color::ColorSpace color_space,
     sk_sp<cc::ColorFilter> color_filter) {
-  absl::optional<float> param0 =
+  std::optional<float> param0 =
       color.Param0IsNone() ? neighbor.Param0() : color.Param0();
-  absl::optional<float> param1 =
+  std::optional<float> param1 =
       color.Param1IsNone() ? neighbor.Param1() : color.Param1();
-  absl::optional<float> param2 =
+  std::optional<float> param2 =
       color.Param2IsNone() ? neighbor.Param2() : color.Param2();
-  absl::optional<float> alpha =
+  std::optional<float> alpha =
       color.AlphaIsNone() ? neighbor.Alpha() : color.Alpha();
   Color resolved_color =
       Color::FromColorSpace(color_space, param0, param1, param2, alpha);
@@ -400,7 +401,7 @@ class RadialGradient final : public Gradient {
                                   const SkMatrix& local_matrix,
                                   SkColor4f fallback_color) const override {
     const SkMatrix* matrix = &local_matrix;
-    absl::optional<SkMatrix> adjusted_local_matrix;
+    std::optional<SkMatrix> adjusted_local_matrix;
     if (aspect_ratio_ != 1) {
       // CSS3 elliptical gradients: apply the elliptical scaling at the
       // gradient center point.
@@ -467,7 +468,7 @@ class ConicGradient final : public Gradient {
     // Skia's sweep gradient angles are relative to the x-axis, not the y-axis.
     const float skia_rotation = rotation_ - 90;
     const SkMatrix* matrix = &local_matrix;
-    absl::optional<SkMatrix> adjusted_local_matrix;
+    std::optional<SkMatrix> adjusted_local_matrix;
     if (skia_rotation) {
       adjusted_local_matrix.emplace(local_matrix);
       adjusted_local_matrix->preRotate(skia_rotation, position_.x(),

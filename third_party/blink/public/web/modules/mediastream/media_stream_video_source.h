@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIASTREAM_MEDIA_STREAM_VIDEO_SOURCE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -38,6 +38,7 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
+class DOMException;
 class MediaStreamVideoTrack;
 class VideoTrackAdapter;
 class VideoTrackAdapterSettings;
@@ -161,7 +162,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // Implementations must return the capture format if available.
   // Implementations supporting devices of type MEDIA_DEVICE_VIDEO_CAPTURE
   // must return a value.
-  virtual absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const;
+  virtual std::optional<media::VideoCaptureFormat> GetCurrentFormat() const;
 
   // Returns true if encoded output can be enabled in the source.
   virtual bool SupportsEncodedOutput() const;
@@ -180,15 +181,14 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   //
   // `wheel_delta_x` and `wheel_delta_y` represent the scroll deltas.
   //
-  // `callback` is used to report the result.
-  // `callback.success` reports back success/failure.
-  // `callback.error` has the error message upon failure. (Empty otherwise.)
-  virtual void SendWheel(
-      double relative_x,
-      double relative_y,
-      int wheel_delta_x,
-      int wheel_delta_y,
-      base::OnceCallback<void(bool success, const String& error)> callback);
+  // `callback` is used to report the result. If set to `nullptr`, success
+  // is reported. Otherwise, the indicated exception described the issue
+  // encountered.
+  virtual void SendWheel(double relative_x,
+                         double relative_y,
+                         int wheel_delta_x,
+                         int wheel_delta_y,
+                         base::OnceCallback<void(DOMException*)> callback);
 
   // Retrieves the zoom level from the captured tab.
   //
@@ -196,7 +196,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // `callback.zoom_level` has the zoom level or nullopt in case of failure.
   // `callback.error` has the error message upon failure. (Empty otherwise.)
   virtual void GetZoomLevel(
-      base::OnceCallback<void(absl::optional<int> zoom_level,
+      base::OnceCallback<void(std::optional<int> zoom_level,
                               const String& error)> callback);
 
   // Sets the zoom level for the captured tab.
@@ -204,12 +204,11 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // `zoom_level` is the requested zoom level and must be among the values
   // returned by `CaptureController::getSupportedZoomLevels()`.
   //
-  // `callback` is used to report the result.
-  // `callback.success` reports back success/failure.
-  // `callback.error` has the error message upon failure. (Empty otherwise.)
-  virtual void SetZoomLevel(
-      int zoom_level,
-      base::OnceCallback<void(bool success, const String& error)> callback);
+  // `callback` is used to report the result. If set to `nullptr`, success
+  // is reported. Otherwise, the indicated exception described the issue
+  // encountered.
+  virtual void SetZoomLevel(int zoom_level,
+                            base::OnceCallback<void(DOMException*)> callback);
 
   // Start/stop cropping or restricting the video track.
   //
@@ -246,7 +245,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // TODO(crbug.com/1332628): Make the sub-capture-target-version an
   // implementation detail that is not exposed to the entity
   // calling ApplySubCaptureTarget().
-  virtual absl::optional<uint32_t> GetNextSubCaptureTargetVersion();
+  virtual std::optional<uint32_t> GetNextSubCaptureTargetVersion();
 #endif
 
   // Returns the current sub-capture-target version.

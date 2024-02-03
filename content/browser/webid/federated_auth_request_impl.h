@@ -103,8 +103,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdentityRequestDialogController> controller);
 
   // content::FederatedIdentityModalDialogViewDelegate:
-  void NotifyClose() override;
-  bool NotifyResolve(const std::string& token) override;
+  void OnClose() override;
+  bool OnResolve(GURL idp_config_url, const std::string& token) override;
 
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
@@ -250,7 +250,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::vector<blink::mojom::IdentityProviderPtr>& providers);
 
   void MaybeShowAccountsDialog();
-  void ShowModalDialog(const GURL& url);
+  void ShowModalDialog(const GURL& idp_config_url, const GURL& url_to_show);
   void ShowErrorDialog(const GURL& idp_config_url,
                        IdpNetworkRequestManager::FetchStatus status,
                        std::optional<TokenError> error);
@@ -374,7 +374,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Trigger a dialog to prompt the user to login to the IdP. `can_append_hints`
   // is true if the caller allows the login url to be augmented with login and
   // domain hints.
-  void LoginToIdP(bool can_append_hints, GURL login_url);
+  void LoginToIdP(bool can_append_hints,
+                  const GURL& idp_config_url,
+                  GURL login_url);
 
   void CompleteDisconnectRequest(DisconnectCallback callback,
                                  blink::mojom::DisconnectStatus status);

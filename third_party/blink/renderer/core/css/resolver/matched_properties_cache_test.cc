@@ -372,4 +372,38 @@ TEST_F(MatchedPropertiesCacheTest, Signaling) {
   EXPECT_FALSE(cache.Find(key_signaling, style, parent_style));
 }
 
+TEST_F(MatchedPropertiesCacheTest, InvisibleRuleInCache) {
+  TestCache cache(GetDocument());
+
+  const ComputedStyle& parent_style = InitialStyle();
+  const ComputedStyle& style = InitialStyle();
+
+  TestKey key_non_invisible("top:1px", /* hash */ 1, GetDocument(),
+                            {.is_invisible = false});
+  TestKey key_invisible("top:1px", /* hash */ 1, GetDocument(),
+                        {.is_invisible = true});
+
+  cache.Add(key_invisible, style, parent_style);
+
+  EXPECT_TRUE(cache.Find(key_invisible, style, parent_style));
+  EXPECT_FALSE(cache.Find(key_non_invisible, style, parent_style));
+}
+
+TEST_F(MatchedPropertiesCacheTest, NonInvisibleRuleInCache) {
+  TestCache cache(GetDocument());
+
+  const ComputedStyle& parent_style = InitialStyle();
+  const ComputedStyle& style = InitialStyle();
+
+  TestKey key_non_invisible("top:1px", /* hash */ 1, GetDocument(),
+                            {.is_invisible = false});
+  TestKey key_invisible("top:1px", /* hash */ 1, GetDocument(),
+                        {.is_invisible = true});
+
+  cache.Add(key_non_invisible, style, parent_style);
+
+  EXPECT_FALSE(cache.Find(key_invisible, style, parent_style));
+  EXPECT_TRUE(cache.Find(key_non_invisible, style, parent_style));
+}
+
 }  // namespace blink

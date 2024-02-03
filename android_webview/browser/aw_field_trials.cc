@@ -6,10 +6,12 @@
 
 #include "base/base_paths_android.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/history/core/browser/features.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/permissions/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/viz/common/features.h"
@@ -26,33 +28,33 @@ namespace {
 
 class AwFeatureOverrides {
  public:
-  AwFeatureOverrides() = default;
+  explicit AwFeatureOverrides(base::FeatureList& feature_list)
+      : feature_list_(feature_list) {}
 
   AwFeatureOverrides(const AwFeatureOverrides& other) = delete;
   AwFeatureOverrides& operator=(const AwFeatureOverrides& other) = delete;
 
-  ~AwFeatureOverrides() = default;
+  ~AwFeatureOverrides() {
+    feature_list_->RegisterExtraFeatureOverrides(std::move(overrides_));
+  }
 
   // Enable a feature with WebView-specific override.
   void EnableFeature(const base::Feature& feature) {
-    overrides.emplace_back(
+    overrides_.emplace_back(
         std::cref(feature),
         base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
   }
 
   // Disable a feature with WebView-specific override.
   void DisableFeature(const base::Feature& feature) {
-    overrides.emplace_back(
+    overrides_.emplace_back(
         std::cref(feature),
         base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
   }
 
-  void RegisterOverrides(base::FeatureList* feature_list) {
-    feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
-  }
-
  private:
-  std::vector<base::FeatureList::FeatureOverrideInfo> overrides;
+  base::raw_ref<base::FeatureList> feature_list_;
+  std::vector<base::FeatureList::FeatureOverrideInfo> overrides_;
 };
 
 }  // namespace
@@ -70,7 +72,10 @@ void AwFieldTrials::OnVariationsSetupComplete() {
 // TODO(crbug.com/1453407): Consider to migrate all WebView feature overrides
 // from the AwMainDelegate to the new mechanism here.
 void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
-  AwFeatureOverrides aw_feature_overrides;
+  if (!feature_list) {
+    return;
+  }
+  AwFeatureOverrides aw_feature_overrides(*feature_list);
 
   // Disable third-party storage partitioning on WebView.
   aw_feature_overrides.DisableFeature(
@@ -169,5 +174,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // FedCM is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kFedCm);
 
-  aw_feature_overrides.RegisterOverrides(feature_list);
+  // Storage Access permission prompts are not supported on WebView.
+  aw_feature_overrides.DisableFeature(
+      permissions::features::kPermissionStorageAccessAPI);
 }

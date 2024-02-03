@@ -5,10 +5,10 @@
 /**
  * @fileoverview Polymer element for network configuration selection menus.
  */
-import '//resources/cr_elements/md_select.css.js';
-import '//resources/cr_elements/policy/cr_tooltip_icon.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
+import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 

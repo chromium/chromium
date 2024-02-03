@@ -103,7 +103,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
-    const absl::optional<base::UnguessableToken>&
+    const std::optional<base::UnguessableToken>&
         service_worker_race_network_request_token,
     bool is_from_origin_dirty_style_sheet) {
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>

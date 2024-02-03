@@ -18,6 +18,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
@@ -35,6 +38,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -200,6 +205,37 @@ TEST(CredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
                   MakeGarbageCollected<MockPublicKeyCredential>());
 
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
+}
+
+// Test that navigator.credentials.get() increments the feature use counter when
+// one of the identity providers is a digital identity credential.
+TEST(CredentialsContainerTest, IdentityDigitalCredentialUseCounter) {
+  test::TaskEnvironment task_environment;
+  MockCredentialManager mock_credential_manager;
+  CredentialManagerTestingContext context(&mock_credential_manager);
+
+  ScopedWebIdentityDigitalCredentialsForTest scoped_digital_credentials(
+      /*enabled=*/true);
+
+  IdentityProviderRequestOptions* identity_provider_request =
+      IdentityProviderRequestOptions::Create();
+  identity_provider_request->setHolder(DigitalCredentialProvider::Create());
+  HeapVector<Member<IdentityProviderRequestOptions>> identity_providers;
+  identity_providers.push_back(identity_provider_request);
+
+  IdentityCredentialRequestOptions* identity_credential_request =
+      IdentityCredentialRequestOptions::Create();
+  identity_credential_request->setProviders(identity_providers);
+  CredentialRequestOptions* options = CredentialRequestOptions::Create();
+  options->setIdentity(identity_credential_request);
+
+  auto promise =
+      CredentialsContainer::credentials(*context.DomWindow().navigator())
+          ->get(context.GetScriptState(), options,
+                IGNORE_EXCEPTION_FOR_TESTING);
+
+  EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+      blink::mojom::WebFeature::kIdentityDigitalCredentials));
 }
 
 }  // namespace blink

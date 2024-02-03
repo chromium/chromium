@@ -17,6 +17,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "read_anything_toolbar.ts",
+    "voice_selection_menu.ts",
   ]
   icons_html_files = [ "icons.html" ]
 

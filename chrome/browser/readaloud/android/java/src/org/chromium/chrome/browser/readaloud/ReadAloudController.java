@@ -9,6 +9,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYI
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -425,11 +426,13 @@ public class ReadAloudController
     }
 
     /**
-     * Checks if Read Aloud is supported which is true iff: user is not in the
-     * incognito mode and user opted into "Make searches and browsing better".
+     * Checks if Read Aloud is supported which is true iff: user is not in the incognito mode and
+     * user opted into "Make searches and browsing better". If the ReadAloudInMultiWindow flag is
+     * disabled, this will return false if the activity is in multi window mode.
      */
     public boolean isAvailable() {
-        return ReadAloudFeatures.isAllowed(mProfileSupplier.get());
+        return ReadAloudFeatures.isAllowed(mProfileSupplier.get())
+                && !ReadAloudFeatures.isInMultiWindowAndDisabled(mActivity);
     }
 
     /** Returns true if the web contents within current Tab is readable. */
@@ -674,6 +677,13 @@ public class ReadAloudController
         }
     }
 
+    /** Pause audio if playing. */
+    public void pause() {
+        if (mPlayback != null && mCurrentPlaybackData.state() == PLAYING) {
+            mPlayback.pause();
+        }
+    }
+
     private void maybeHandleTabReload(Tab tab, GURL newUrl) {
         if (mHighlighter != null
                 && tab.getUrl() != null
@@ -731,6 +741,17 @@ public class ReadAloudController
             selectedVoiceId = voices.get(0).getVoiceId();
         }
         mSelectedVoiceId.set(selectedVoiceId);
+    }
+
+    /**
+     * Pause if the given intent is for processing text.
+     *
+     * @param intent Intent being sent by Chrome.
+     */
+    public void maybePauseForOutgoingIntent(@Nullable Intent intent) {
+        if (intent != null && intent.getAction().equals(Intent.ACTION_PROCESS_TEXT)) {
+            pause();
+        }
     }
 
     // Player.Delegate
@@ -853,7 +874,14 @@ public class ReadAloudController
                 new ReadAloudPlaybackHooks.CreatePlaybackCallback() {
                     @Override
                     public void onSuccess(Playback playback) {
-
+                        // Check if in multi-window mode and not supporting multi-window
+                        // This failure will also trigger when the user goes into multi-window mode
+                        // with a playback since we will attempt to restore
+                        if (ReadAloudFeatures.isInMultiWindowAndDisabled(mActivity)) {
+                            playback.release();
+                            promise.reject(new Exception("In multi window mode"));
+                            return;
+                        }
                         // If we rely on the backend to detect page language, ensure it is supported
                         if (args.getLanguage() == null
                                 && !mReadabilityHooks
@@ -863,9 +891,10 @@ public class ReadAloudController
                                                         playback.getMetadata().languageCode()))) {
                             playback.release();
                             promise.reject(new Exception("Unsupported language"));
-                        } else {
-                            promise.fulfill(playback);
+                            return;
                         }
+
+                        promise.fulfill(playback);
                     }
 
                     @Override

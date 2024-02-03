@@ -45,7 +45,7 @@ class SidePanelResizeArea : public ResizeArea {
 
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   raw_ptr<SidePanel> side_panel_;

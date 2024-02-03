@@ -17,12 +17,15 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -651,6 +654,27 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
           "history 1100 .1",
       }));
 
+  // When multiple URL suggestions have been assigned the same score by the ML
+  // model, those suggestions which were top-ranked according to legacy scoring
+  // should continue to be top-ranked once ML scoring has run.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateHistoryUrlMlScoredMatch("history A 1350 .2", true, 1350, .2),
+          CreateHistoryUrlMlScoredMatch("history B 1200 .2", true, 1200, .2),
+          CreateHistoryUrlMlScoredMatch("history C 1100 .2", false, 1100, .2),
+          CreateHistoryUrlMlScoredMatch("history D 300 .2", true, 300, .2),
+          CreateHistoryUrlMlScoredMatch("history E 200 .2", true, 200, .2),
+          CreateHistoryUrlMlScoredMatch("history F 100 .2", true, 100, .2),
+      }),
+      testing::ElementsAreArray({
+          "history A 1350 .2",
+          "history B 1200 .2",
+          "history C 1100 .2",
+          "history D 300 .2",
+          "history E 200 .2",
+          "history F 100 .2",
+      }));
+
   // Can change the default suggestion from 1 history to another.
   EXPECT_THAT(
       controller_.SimulateCleanAutocompletePass({
@@ -869,6 +893,27 @@ TEST_F(AutocompleteControllerTest, MlRanking_StableSearchRanking) {
           "history 1350 .5",
           "history 500 .2",
           "history 1100 .1",
+      }));
+
+  // When multiple URL suggestions have been assigned the same score by the ML
+  // model, those suggestions which were top-ranked according to legacy scoring
+  // should continue to be top-ranked once ML scoring has run.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateHistoryUrlMlScoredMatch("history B 1200 .2", true, 1200, .2),
+          CreateHistoryUrlMlScoredMatch("history E 200 .2", true, 200, .2),
+          CreateHistoryUrlMlScoredMatch("history A 1350 .2", true, 1350, .2),
+          CreateHistoryUrlMlScoredMatch("history D 300 .2", true, 300, .2),
+          CreateHistoryUrlMlScoredMatch("history C 1100 .2", false, 1100, .2),
+          CreateHistoryUrlMlScoredMatch("history F 100 .2", true, 100, .2),
+      }),
+      testing::ElementsAreArray({
+          "history A 1350 .2",
+          "history B 1200 .2",
+          "history C 1100 .2",
+          "history D 300 .2",
+          "history E 200 .2",
+          "history F 100 .2",
       }));
 
   // Can change the default suggestion from 1 history to another.
@@ -1406,5 +1451,174 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
             "search",
             "history",
         }));
+  }
+}
+
+TEST_F(AutocompleteControllerTest, ShouldRunProvider) {
+  // Disable LimitKeywordModeSuggestions flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions,
+      false);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
+  std::set<AutocompleteProvider::Type> expected_provider_types;
+  AutocompleteInput input(u"a", 1u, metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  controller_.input_ = input;
+
+  // Populate template URL service with starter pack entries.
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    controller_.template_url_service_->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+
+  // Not in keyword mode, run all providers except open tab provider.
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              provider->type() != AutocompleteProvider::TYPE_OPEN_TAB)
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  // In keyword mode but not starter pack, LimitkeywordModeSuggestions disabled,
+  // run all providers except open tab provider.
+  controller_.input_.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              provider->type() != AutocompleteProvider::TYPE_OPEN_TAB)
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  // In @tabs, run search, keyword, and open tab provider only.
+  controller_.input_.UpdateText(u"@tabs", 0, {});
+  expected_provider_types = {AutocompleteProvider::TYPE_KEYWORD,
+                             AutocompleteProvider::TYPE_SEARCH,
+                             AutocompleteProvider::TYPE_OPEN_TAB};
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  // In @bookmarks, run search, keyword, and bookmarks only.
+  controller_.input_.UpdateText(u"@bookmarks", 0, {});
+  expected_provider_types = {AutocompleteProvider::TYPE_KEYWORD,
+                             AutocompleteProvider::TYPE_SEARCH,
+                             AutocompleteProvider::TYPE_BOOKMARK};
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  // In @history, run search, keyword, and history providers only.
+  controller_.input_.UpdateText(u"@history", 0, {});
+  expected_provider_types = {AutocompleteProvider::TYPE_KEYWORD,
+                             AutocompleteProvider::TYPE_SEARCH,
+                             AutocompleteProvider::TYPE_HISTORY_QUICK,
+                             AutocompleteProvider::TYPE_HISTORY_URL};
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+}
+
+TEST_F(AutocompleteControllerTest,
+       ShouldRunProvider_LimitKeywordModeSuggestions) {
+  // Enable LimitKeywordModeSuggestions flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions,
+      true);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
+  std::set<AutocompleteProvider::Type> excluded_provider_types;
+  AutocompleteInput input(u"a", 1u, metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  controller_.input_ = input;
+
+  // Populate template URL service with an entry for drive.google.com (to test
+  // document provider) and a generic keyword entry.
+  TemplateURLData drive_turl_data;
+  drive_turl_data.SetShortName(u"Google Drive");
+  drive_turl_data.SetKeyword(u"drive.google.com");
+  drive_turl_data.SetURL("https://drive.google.com/search?q={searchTerms}");
+  controller_.template_url_service_->Add(
+      std::make_unique<TemplateURL>(drive_turl_data));
+  TemplateURLData turl_data;
+  turl_data.SetShortName(u"Test Keyword");
+  turl_data.SetKeyword(u"keyword");
+  turl_data.SetURL("https://google.com/search?q={searchTerms}");
+  controller_.template_url_service_->Add(
+      std::make_unique<TemplateURL>(turl_data));
+
+  // Not in keyword mode, run all providers except open tab provider.
+  excluded_provider_types = {AutocompleteProvider::TYPE_OPEN_TAB};
+  for (auto& provider : controller_.providers()) {
+    EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
+              excluded_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  // In keyword mode, all limit provider params on by default, limit document
+  //  and history cluster suggestions as well.
+  controller_.input_.UpdateText(u"keyword", 0, {});
+  controller_.input_.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  excluded_provider_types = {
+      AutocompleteProvider::TYPE_OPEN_TAB,
+      AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER,
+      AutocompleteProvider::TYPE_DOCUMENT};
+  for (auto& provider : controller_.providers()) {
+    EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
+              excluded_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  // For drive.google.com, run document provider.
+  controller_.input_.UpdateText(u"drive.google.com", 0, {});
+  excluded_provider_types = {
+      AutocompleteProvider::TYPE_OPEN_TAB,
+      AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER};
+  for (auto& provider : controller_.providers()) {
+    EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
+              excluded_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  // Turn off param to limit history cluster and document suggestions, ensure
+  // they're run.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions,
+      {{"LimitHistoryClusterSuggestions", "false"}});
+  scoped_config.Reset();
+  controller_.input_.UpdateText(u"keyword", 0, {});
+  excluded_provider_types = {AutocompleteProvider::TYPE_OPEN_TAB,
+                             AutocompleteProvider::TYPE_DOCUMENT};
+  for (auto& provider : controller_.providers()) {
+    EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
+              excluded_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
   }
 }

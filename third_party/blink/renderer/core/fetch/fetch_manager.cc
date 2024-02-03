@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 
 #include <stdint.h>
+
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -26,7 +28,6 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -309,19 +310,19 @@ class FetchLoaderBase : public GarbageCollectedMixin {
   virtual void Failed(
       const String& message,
       DOMException* dom_exception,
-      absl::optional<String> devtools_request_id = absl::nullopt,
-      absl::optional<base::UnguessableToken> issue_id = absl::nullopt) = 0;
+      std::optional<String> devtools_request_id = std::nullopt,
+      std::optional<base::UnguessableToken> issue_id = std::nullopt) = 0;
 
   void PerformSchemeFetch(ExceptionState&);
   void PerformNetworkError(
       const String& message,
-      absl::optional<base::UnguessableToken> issue_id = absl::nullopt);
+      std::optional<base::UnguessableToken> issue_id = std::nullopt);
   void FileIssueAndPerformNetworkError(RendererCorsIssueCode,
                                        int64_t identifier);
   void PerformHTTPFetch(ExceptionState&);
   void PerformDataFetch();
   bool AddConsoleMessage(const String& message,
-                         absl::optional<base::UnguessableToken> issue_id);
+                         std::optional<base::UnguessableToken> issue_id);
 
   ExecutionContext* GetExecutionContext() { return execution_context_.Get(); }
   void SetExecutionContext(ExecutionContext* ec) { execution_context_ = ec; }
@@ -492,8 +493,8 @@ class FetchManager::Loader final
   void Failed(
       const String& message,
       DOMException* dom_exception,
-      absl::optional<String> devtools_request_id = absl::nullopt,
-      absl::optional<base::UnguessableToken> issue_id = absl::nullopt) override;
+      std::optional<String> devtools_request_id = std::nullopt,
+      std::optional<base::UnguessableToken> issue_id = std::nullopt) override;
 
   Member<FetchManager> fetch_manager_;
   Member<ScriptPromiseResolver> resolver_;
@@ -755,9 +756,9 @@ void FetchManager::Loader::DidFail(uint64_t identifier,
   }
 
   auto issue_id = error.CorsErrorStatus()
-                      ? absl::optional<base::UnguessableToken>(
+                      ? std::optional<base::UnguessableToken>(
                             error.CorsErrorStatus()->issue_id)
-                      : absl::nullopt;
+                      : std::nullopt;
   Failed(String(), nullptr,
          IdentifiersFactory::SubresourceRequestId(identifier), issue_id);
 }
@@ -968,8 +969,8 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
 
 void FetchLoaderBase::PerformNetworkError(
     const String& message,
-    absl::optional<base::UnguessableToken> issue_id) {
-  Failed(message, nullptr, absl::nullopt, issue_id);
+    std::optional<base::UnguessableToken> issue_id) {
+  Failed(message, nullptr, std::nullopt, issue_id);
 }
 
 void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
@@ -1123,7 +1124,7 @@ void FetchManager::Loader::CreateLoader(
 
 bool FetchLoaderBase::AddConsoleMessage(
     const String& message,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id) {
   if (execution_context_->IsContextDestroyed())
     return false;
   bool issue_only =
@@ -1146,8 +1147,8 @@ bool FetchLoaderBase::AddConsoleMessage(
 void FetchManager::Loader::Failed(
     const String& message,
     DOMException* dom_exception,
-    absl::optional<String> devtools_request_id,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<String> devtools_request_id,
+    std::optional<base::UnguessableToken> issue_id) {
   if (failed_ || finished_) {
     return;
   }
@@ -1261,7 +1262,7 @@ class FetchLaterManager::DeferredLoader final
                  FetchRequestData* fetch_request_data,
                  ScriptState* script_state,
                  AbortSignal* signal,
-                 const absl::optional<base::TimeDelta>& activate_after)
+                 const std::optional<base::TimeDelta>& activate_after)
       : FetchLoaderBase(ec, fetch_request_data, script_state, signal),
         fetch_later_manager_(fetch_later_manager),
         fetch_later_result_(MakeGarbageCollected<FetchLaterResult>()),
@@ -1418,11 +1419,11 @@ class FetchLaterManager::DeferredLoader final
       timer_.StartOneShot(*activate_after_, FROM_HERE);
     }
   }
-  void Failed(const String& message,
-              DOMException* dom_exception,
-              absl::optional<String> devtools_request_id = absl::nullopt,
-              absl::optional<base::UnguessableToken> issue_id =
-                  absl::nullopt) override {
+  void Failed(
+      const String& message,
+      DOMException* dom_exception,
+      std::optional<String> devtools_request_id = std::nullopt,
+      std::optional<base::UnguessableToken> issue_id = std::nullopt) override {
     AddConsoleMessage(message, issue_id);
     NotifyFinished();
   }
@@ -1461,7 +1462,7 @@ class FetchLaterManager::DeferredLoader final
 
   // The "activateAfter" to request a deferred fetch.
   // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#request-a-deferred-fetch
-  const absl::optional<base::TimeDelta> activate_after_;
+  const std::optional<base::TimeDelta> activate_after_;
   // A timer to handle `activate_after_`.
   HeapTaskRunnerTimer<DeferredLoader> timer_;
 
@@ -1500,7 +1501,7 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     ScriptState* script_state,
     FetchRequestData* request,
     AbortSignal* signal,
-    absl::optional<DOMHighResTimeStamp> activate_after_ms,
+    std::optional<DOMHighResTimeStamp> activate_after_ms,
     ExceptionState& exception_state) {
   // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
   // Continuing the fetchLater(input, init) method steps:
@@ -1512,7 +1513,7 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     return nullptr;
   }
 
-  absl::optional<base::TimeDelta> activate_after = absl::nullopt;
+  std::optional<base::TimeDelta> activate_after = std::nullopt;
   if (activate_after_ms.has_value()) {
     activate_after = base::Milliseconds(*activate_after_ms);
     // 8. If `activate_after` is less than 0 then throw a RangeError.
@@ -1762,7 +1763,7 @@ FetchLaterManager::PrepareNetworkRequest(
           kFetchLaterResourceType,
           fetcher->GetProperties().GetFetchClientSettingsObject(), params,
           fetcher->Context(), unused_virtual_time_pauser,
-          WTF::BindOnce(&ComputeFetchLaterLoadPriority)) != absl::nullopt) {
+          WTF::BindOnce(&ComputeFetchLaterLoadPriority)) != std::nullopt) {
     return nullptr;
   }
 

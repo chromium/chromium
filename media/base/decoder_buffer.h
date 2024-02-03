@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -25,7 +26,6 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/timestamp_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -228,11 +228,11 @@ class MEDIA_EXPORT DecoderBuffer
   }
 
   bool has_side_data() const { return side_data_.has_value(); }
-  const absl::optional<DecoderBufferSideData>& side_data() const {
+  const std::optional<DecoderBufferSideData>& side_data() const {
     return side_data_;
   }
   DecoderBufferSideData& WritableSideData();
-  void set_side_data(const absl::optional<DecoderBufferSideData>& side_data) {
+  void set_side_data(const std::optional<DecoderBufferSideData>& side_data) {
     side_data_ = side_data;
   }
 
@@ -268,13 +268,16 @@ class MEDIA_EXPORT DecoderBuffer
   std::unique_ptr<uint8_t[]> data_;
 
  private:
+  // Constructor helper method for memory allocations.
+  void Initialize();
+
   TimeInfo time_info_;
 
   // Size of the encoded data.
   size_t size_;
 
   // Structured side data.
-  absl::optional<DecoderBufferSideData> side_data_;
+  std::optional<DecoderBufferSideData> side_data_;
 
   // Encoded data, if it is stored in a read-only shared memory mapping.
   base::ReadOnlySharedMemoryMapping read_only_mapping_;
@@ -289,9 +292,6 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Whether the frame was marked as a keyframe in the container.
   bool is_key_frame_ = false;
-
-  // Constructor helper method for memory allocations.
-  void Initialize();
 };
 
 }  // namespace media

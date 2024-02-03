@@ -45,16 +45,22 @@ public class HomeModulesContextMenuManager {
     }
 
     private final ModuleDelegate mModuleDelegate;
-    private final Point mContextMenuStartPointion;
+    private final Point mContextMenuStartPosition;
+    private final ModuleRegistry mModuleRegistry;
+
+    private Boolean mHasModuleToCustomize;
 
     /**
      * @param moduleDelegate The instance of magic stack {@link ModuleDelegate}.
      * @param startPosition The starting position to show the context menu.
      */
     public HomeModulesContextMenuManager(
-            @NonNull ModuleDelegate moduleDelegate, @NonNull Point startPosition) {
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull Point startPosition,
+            ModuleRegistry moduleRegistry) {
         mModuleDelegate = moduleDelegate;
-        mContextMenuStartPointion = startPosition;
+        mContextMenuStartPosition = startPosition;
+        mModuleRegistry = moduleRegistry;
     }
 
     /**
@@ -111,7 +117,7 @@ public class HomeModulesContextMenuManager {
             @NonNull MenuItem menuItem, @NonNull ModuleProvider moduleProvider) {
         switch (menuItem.getItemId()) {
             case ContextMenuItemId.HIDE_MODULE:
-                mModuleDelegate.removeModule(moduleProvider.getModuleType());
+                mModuleDelegate.removeModuleAndDisable(moduleProvider.getModuleType());
                 HomeModulesMetricsUtils.recordContextMenuRemoveModule(
                         mModuleDelegate.getHostSurfaceType(), moduleProvider.getModuleType());
                 return true;
@@ -129,9 +135,13 @@ public class HomeModulesContextMenuManager {
     /** Returns whether to show a context menu item. */
     @VisibleForTesting
     boolean shouldShowItem(@ContextMenuItemId int itemId, @NonNull ModuleProvider moduleProvider) {
-        if (itemId == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS
-                || itemId == ContextMenuItemId.HIDE_MODULE
-                        && moduleProvider.getModuleType() != ModuleType.SINGLE_TAB) {
+        if (mHasModuleToCustomize == null) {
+            mHasModuleToCustomize = mModuleRegistry.hasCustomizableModule();
+        }
+        if (itemId == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS && mHasModuleToCustomize) {
+            return true;
+        } else if (itemId == ContextMenuItemId.HIDE_MODULE
+                && moduleProvider.getModuleType() != ModuleType.SINGLE_TAB) {
             return true;
         }
 
@@ -165,6 +175,10 @@ public class HomeModulesContextMenuManager {
 
     /** Returns the starting position of the context menu. */
     Point getContextMenuOffset() {
-        return mContextMenuStartPointion;
+        return mContextMenuStartPosition;
+    }
+
+    void resetHasModuleToCustomizeForTesting() {
+        mHasModuleToCustomize = null;
     }
 }

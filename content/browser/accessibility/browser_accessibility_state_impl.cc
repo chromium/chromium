@@ -223,7 +223,9 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
       if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
         AddAccessibilityModeFlags(ui::kAXModeBasic);
       } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
+#if BUILDFLAG(IS_ANDROID)
         AddAccessibilityModeFlags(ui::kAXModeFormControls);
+#endif
       } else {
         // If AXMode is 'complete' or invalid, default to complete bundle.
         AddAccessibilityModeFlags(ui::kAXModeComplete);
@@ -291,15 +293,24 @@ void BrowserAccessibilityStateImpl::OnScreenReaderStopped() {
 }
 
 void BrowserAccessibilityStateImpl::EnableAccessibility() {
-  if (IsAccessibleBrowser()) {
-    // Accessibility is already enabled, nothing to do.
+  if (disallow_ax_mode_changes_) {
     return;
   }
+
+  // Enabling accessibility is generally the result of an accessibility API
+  // call, so we should also reset the auto-disable accessibility code. The only
+  // exception is in tests or when a user manually toggles accessibility flags
+  // in chrome://accessibility.
+  OnAccessibilityApiUsage();
+
+  const ui::AXMode previous_mode = process_accessibility_mode_->mode();
+
   // First disable any non-additive modes that restrict or filter the
   // information available in the tree.
-  RemoveAccessibilityModeFlags(ui::kAXModeFormControls);
+  const ui::AXMode new_mode =
+      (previous_mode & ~ui::kAXModeFormControls) | ui::kAXModeComplete;
 
-  AddAccessibilityModeFlags(ui::kAXModeComplete);
+  process_accessibility_mode_ = CreateScopedModeForProcess(new_mode);
 }
 
 void BrowserAccessibilityStateImpl::DisableAccessibility() {
@@ -497,12 +508,6 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
 }
 
 void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
-
-#if BUILDFLAG(IS_ANDROID)
-void BrowserAccessibilityStateImpl::SetImageLabelsModeForProfile(
-    bool enabled,
-    BrowserContext* profile) {}
-#endif
 
 void BrowserAccessibilityStateImpl::DisallowAXModeChanges() {
   disallow_ax_mode_changes_ = true;

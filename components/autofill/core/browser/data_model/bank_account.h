@@ -16,10 +16,8 @@ class GURL;
 
 namespace autofill {
 
-class BankAccount;
-
 // Details for a user's bank account. This data is synced from Google payments.
-class BankAccount : public PaymentInstrument {
+class BankAccount {
  public:
   // The type of bank account owned by the user. This is used for display
   // purposes only.
@@ -40,15 +38,13 @@ class BankAccount : public PaymentInstrument {
               std::u16string_view bank_name,
               std::u16string_view account_number_suffix,
               AccountType account_type);
-  ~BankAccount() override;
+  ~BankAccount();
 
   friend bool operator==(const BankAccount&, const BankAccount&);
 
-  // PaymentInstrument
-  PaymentInstrument::InstrumentType GetInstrumentType() const override;
-  bool AddToDatabase(PaymentsAutofillTable* database) const override;
-  bool UpdateInDatabase(PaymentsAutofillTable* database) const override;
-  bool DeleteFromDatabase(PaymentsAutofillTable* database) const override;
+  const PaymentInstrument& payment_instrument() const {
+    return payment_instrument_;
+  }
 
   const std::u16string& bank_name() const { return bank_name_; }
 
@@ -68,6 +64,9 @@ class BankAccount : public PaymentInstrument {
 
   // The type of bank account.
   AccountType account_type_ = AccountType::kUnknown;
+
+  // Fields common for all types of payment instruments.
+  PaymentInstrument payment_instrument_;
 };
 
 }  // namespace autofill

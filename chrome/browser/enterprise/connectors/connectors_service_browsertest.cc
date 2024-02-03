@@ -236,7 +236,7 @@ class ConnectorsServiceProfileBrowserTest
         AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, management_status() == ManagementStatus::AFFILIATED,
-        user_manager::USER_TYPE_REGULAR,
+        user_manager::UserType::kRegular,
         static_cast<TestingProfile*>(browser()->profile()));
     fake_user_manager->LoginUser(account_id);
 #else

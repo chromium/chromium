@@ -7,7 +7,8 @@
 
 #include <unicode/uchar.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -25,8 +26,8 @@ struct CORE_EXPORT MathMLPaintInfo : public GarbageCollected<MathMLPaintInfo> {
                   LayoutUnit operator_ascent,
                   LayoutUnit operator_descent,
                   const BoxStrut& radical_base_margins = BoxStrut(),
-                  const absl::optional<LayoutUnit>&
-                      radical_operator_inline_offset = absl::nullopt)
+                  const std::optional<LayoutUnit>&
+                      radical_operator_inline_offset = std::nullopt)
       : operator_character(operator_character),
         operator_shape_result_view(operator_shape_result_view),
         operator_inline_size(operator_inline_size),
@@ -47,7 +48,7 @@ struct CORE_EXPORT MathMLPaintInfo : public GarbageCollected<MathMLPaintInfo> {
   LayoutUnit operator_ascent;
   LayoutUnit operator_descent;
   BoxStrut radical_base_margins;
-  absl::optional<LayoutUnit> radical_operator_inline_offset;
+  std::optional<LayoutUnit> radical_operator_inline_offset;
 };
 
 }  // namespace blink

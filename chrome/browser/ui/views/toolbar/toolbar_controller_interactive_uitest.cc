@@ -533,8 +533,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                                 false));
 }
 
+// TODO(crbug.com/1522194): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
-                       DeactivatedActionItemsOverflow) {
+                       DISABLED_DeactivatedActionItemsOverflow) {
   RunTestSequence(PinBookmarkToToolbar(), SetBrowserSuperWide(), Do([this]() {
                     AddDummyButtonsToToolbarTillElementOverflows(
                         ChromeActionIds::kActionSidePanelShowBookmarks);

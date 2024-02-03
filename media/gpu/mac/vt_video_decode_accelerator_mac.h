@@ -147,7 +147,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image;
 
     // Dynamic HDR metadata, if any.
-    absl::optional<gfx::HDRMetadata> hdr_metadata;
+    std::optional<gfx::HDRMetadata> hdr_metadata;
   };
 
   struct Task {

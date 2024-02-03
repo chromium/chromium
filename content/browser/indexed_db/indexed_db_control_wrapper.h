@@ -48,6 +48,7 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
       const storage::BucketLocator& bucket_locator,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
+      const base::UnguessableToken& client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void DeleteForStorageKey(const blink::StorageKey& storage_key,
                            DeleteForStorageKeyCallback callback) override;

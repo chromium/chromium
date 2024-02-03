@@ -223,7 +223,7 @@ suite('PrivacyPage', function() {
     await flushTasks();
 
     const categorySettingExceptions =
-        page.shadowRoot!.querySelectorAll('storage-access-site-list')!;
+        page.shadowRoot!.querySelectorAll('storage-access-site-list');
 
     assertEquals(2, categorySettingExceptions.length);
     assertTrue(isVisible(categorySettingExceptions[0]!));

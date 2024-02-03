@@ -74,7 +74,7 @@ void NearbyConnectionsTcpSocketFactory::ConnectTask::OnTimeout() {
 }
 
 NearbyConnectionsTcpSocketFactory::NearbyConnectionsTcpSocketFactory(
-    NetworkContextGetter network_context_getter)
+    network::NetworkContextGetter network_context_getter)
     : network_context_getter_(std::move(network_context_getter)) {}
 
 NearbyConnectionsTcpSocketFactory::~NearbyConnectionsTcpSocketFactory() =

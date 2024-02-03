@@ -156,7 +156,7 @@ class HandledEventCallbackTracker {
                       blink::mojom::InputEventResultState ack_result,
                       const ui::LatencyInfo& latency,
                       mojom::blink::DidOverscrollParamsPtr params,
-                      absl::optional<cc::TouchAction> touch_action) {
+                      std::optional<cc::TouchAction> touch_action) {
     callbacks_received_[index] = ReceivedCallback(
         handling_event_ ? CallbackReceivedState::kCalledWhileHandlingEvent
                         : CallbackReceivedState::kCalledAfterHandleEvent,
@@ -260,7 +260,7 @@ class MainThreadEventQueueTest : public testing::Test,
     auto handled_event = std::make_unique<HandledEvent>(event);
     handled_tasks_.push_back(std::move(handled_event));
     std::move(callback).Run(blink::mojom::InputEventResultState::kNotConsumed,
-                            event.latency_info(), nullptr, absl::nullopt);
+                            event.latency_info(), nullptr, std::nullopt);
     return true;
   }
   void InputEventsDispatched(bool raf_aligned) override {
@@ -1166,7 +1166,7 @@ class MainThreadEventQueueInitializationTest
                         std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback callback) override {
     std::move(callback).Run(blink::mojom::InputEventResultState::kNotConsumed,
-                            event.latency_info(), nullptr, absl::nullopt);
+                            event.latency_info(), nullptr, std::nullopt);
     return true;
   }
 

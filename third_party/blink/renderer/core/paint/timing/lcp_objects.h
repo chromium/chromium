@@ -26,8 +26,8 @@ struct LargestContentfulPaintDetails {
   base::TimeTicks largest_text_paint_time = base::TimeTicks();
   uint64_t largest_text_paint_size = 0;
   base::TimeTicks largest_contentful_paint_time = base::TimeTicks();
-  absl::optional<WebURLRequest::Priority>
-      largest_contentful_paint_image_request_priority = absl::nullopt;
+  std::optional<WebURLRequest::Priority>
+      largest_contentful_paint_image_request_priority = std::nullopt;
   bool is_loaded_from_memory_cache = false;
   bool is_preloaded_with_early_hints = false;
 };

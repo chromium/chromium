@@ -68,6 +68,12 @@ GURL FamilyMember::GetAllowListUrlFor(FamilyMember& member) const {
   return GetControlListUrlFor(member, "allowed");
 }
 
+GURL FamilyMember::GetPermissionsUrlFor(FamilyMember& member) const {
+  return GURL(base::StrCat(
+      {"https://families.google.com/u/0/manage/family/child/",
+       GetAccountId(member.browser()->profile()).ToString(), "/permissions"}));
+}
+
 void FamilyMember::TurnOnSync() {
   sign_in_functions_.TurnOnSync(account_, 0);
 }

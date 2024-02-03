@@ -2128,7 +2128,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
 
-  SimulateKioskMode(user_manager::UserType::USER_TYPE_WEB_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kWebKioskApp);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
   SetAmbientModeManagedScreensaverEnabled(true);
   EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),

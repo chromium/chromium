@@ -138,13 +138,13 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // The entire read is satisfied, so there is more to read.
   factory_->AddReadExpectation(0, 16384, 16384);
   impl_->ReadFromUrl(
-      {GURL("example.com"), absl::nullopt},
+      {GURL("example.com"), std::nullopt},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
         ASSERT_EQ(stream->read_position(), 16384lu);
         ASSERT_EQ(stream->buffer_size(), 16384lu);
-        ASSERT_EQ(stream->max_read_position(), absl::nullopt);
+        ASSERT_EQ(stream->max_read_position(), std::nullopt);
         ASSERT_TRUE(stream->CanReadMore());
       }));
   task_environment_.RunUntilIdle();
@@ -153,14 +153,14 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // we'd have to read again (and get a 0) to be sure.
   factory_->AddReadExpectation(0, 16384, 400);
   impl_->ReadFromUrl(
-      {GURL("example.com"), absl::nullopt},
+      {GURL("example.com"), std::nullopt},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
         ASSERT_TRUE(stream->CanReadMore());
         ASSERT_EQ(stream->read_position(), 400lu);
         ASSERT_EQ(stream->buffer_size(), 16384lu);
-        ASSERT_EQ(stream->max_read_position(), absl::nullopt);
+        ASSERT_EQ(stream->max_read_position(), std::nullopt);
       }));
   task_environment_.RunUntilIdle();
 
@@ -186,7 +186,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
   factory_->AddReadExpectation(32768, 16384, 3);
   factory_->AddReadExpectation(32771, 16384, 0);
   impl_->ReadFromUrl(
-      {GURL("example.com"), absl::nullopt},
+      {GURL("example.com"), std::nullopt},
       base::BindOnce(
           [](HlsDataSourceProviderImpl* impl_ptr,
              HlsDataSourceProvider::ReadResult result) {
@@ -259,7 +259,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
   // The Read CB is captured, and so will not execute right away.
   bool has_been_read = false;
   impl_->ReadFromUrl(
-      {GURL("example.com"), absl::nullopt},
+      {GURL("example.com"), std::nullopt},
       base::BindOnce(
           [](bool* read_canary, HlsDataSourceProvider::ReadResult result) {
             *read_canary = true;
@@ -292,7 +292,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, AbortMidInit) {
 
   bool has_been_read = false;
   impl_->ReadFromUrl(
-      {GURL("example.com"), absl::nullopt},
+      {GURL("example.com"), std::nullopt},
       base::BindOnce(
           [](bool* read_canary, HlsDataSourceProvider::ReadResult result) {
             *read_canary = true;
@@ -309,8 +309,8 @@ TEST_F(HlsDataSourceProviderImplUnittest, AbortMidInit) {
 
 TEST_F(HlsDataSourceProviderImplUnittest, ReadMultipleSegments) {
   HlsDataSourceProvider::SegmentQueue segments;
-  segments.emplace(GURL("example.com"), absl::nullopt);
-  segments.emplace(GURL("foo.com"), absl::nullopt);
+  segments.emplace(GURL("example.com"), std::nullopt);
+  segments.emplace(GURL("foo.com"), std::nullopt);
 
   // Request 16k, but only 4k is read. Another read then happens and the 0 byte
   // EOS read happens.

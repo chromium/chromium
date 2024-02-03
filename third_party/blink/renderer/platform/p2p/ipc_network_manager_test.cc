@@ -173,7 +173,7 @@ TEST_F(IpcNetworkManagerTest, DeterminesVPNFromMacAddress) {
   net::NetworkInterfaceList list;
   net::IPAddress ip;
   rtc::IPAddress ip_address;
-  absl::optional<net::Eui48MacAddress> mac_address(
+  std::optional<net::Eui48MacAddress> mac_address(
       {0x0, 0x5, 0x9A, 0x3C, 0x7A, 0x0});
 
   // Assign the magic MAC address known to be a Cisco Anyconnect VPN interface.
@@ -195,7 +195,7 @@ TEST_F(IpcNetworkManagerTest, DeterminesNotVPN) {
   net::NetworkInterfaceList list;
   net::IPAddress ip;
   rtc::IPAddress ip_address;
-  absl::optional<net::Eui48MacAddress> mac_address(
+  std::optional<net::Eui48MacAddress> mac_address(
       {0x0, 0x5, 0x9A, 0x3C, 0x7A, 0x1});
 
   // This is close to a magic VPN mac but shouldn't match.

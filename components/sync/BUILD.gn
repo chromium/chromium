@@ -288,7 +288,6 @@ source_set("unit_tests") {
     "//components/gcm_driver:test_support",
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",
-    "//components/password_manager/core/browser/features:password_features",
     "//components/prefs:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",

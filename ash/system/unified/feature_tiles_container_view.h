@@ -58,7 +58,7 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 

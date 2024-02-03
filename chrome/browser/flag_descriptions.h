@@ -214,9 +214,6 @@ extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
-extern const char kForceGpuMainThreadToNormalPriorityDrDcName[];
-extern const char kForceGpuMainThreadToNormalPriorityDrDcDescription[];
-
 extern const char kUseClientGmbInterfaceName[];
 extern const char kUseClientGmbInterfaceDescription[];
 
@@ -234,9 +231,6 @@ extern const char kSupervisedPrefsControlledBySupervisedStoreDescription[];
 
 extern const char kEnableManagedByParentUiName[];
 extern const char kEnableManagedByParentUiDescription[];
-
-extern const char kClearingCookiesKeepsSupervisedUsersSignedInName[];
-extern const char kClearingCookiesKeepsSupervisedUsersSignedInDescription[];
 #endif  // ENABLE_SUPERVISED_USERS
 
 extern const char kUseAndroidStagingSmdsName[];
@@ -295,6 +289,12 @@ extern const char kAutofillEnableCardBenefitsDescription[];
 
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
+
+extern const char kAutofillGranularFillingAvailableName[];
+extern const char kAutofillGranularFillingAvailableDescription[];
+
+extern const char kAutofillForUnclassifiedFieldsAvailableName[];
+extern const char kAutofillForUnclassifiedFieldsAvailableDescription[];
 
 extern const char kAutofillEnableIbanAndroidBottomSheetName[];
 extern const char kAutofillEnableIbanAndroidBottomSheetDescription[];
@@ -442,6 +442,11 @@ extern const char kCameraMicPreviewDescription[];
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kCaptivePortalPopupWindowName[];
+extern const char kCaptivePortalPopupWindowDescription[];
+#endif
+
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
 
@@ -569,6 +574,9 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 extern const char kEnableBookmarkFoldersForAccountStorageName[];
 extern const char kEnableBookmarkFoldersForAccountStorageDescription[];
 
+extern const char kEnterpriseProfileBadgingName[];
+extern const char kEnterpriseProfileBadgingDescription[];
+
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 
@@ -583,6 +591,9 @@ extern const char kEnableRemovingAllThirdPartyCookiesDescription[];
 
 extern const char kDesktopPWAsAdditionalWindowingControlsName[];
 extern const char kDesktopPWAsAdditionalWindowingControlsDescription[];
+
+extern const char kDesktopPWAsAppTitleName[];
+extern const char kDesktopPWAsAppTitleDescription[];
 
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
@@ -998,6 +1009,10 @@ extern const char kFileSystemAccessLockingSchemeDescription[];
 extern const char kFileSystemAccessPersistentPermissionName[];
 extern const char kFileSystemAccessPersistentPermissionDescription[];
 
+extern const char kFileSystemAccessPersistentPermissionUpdatedPageInfoName[];
+extern const char
+    kFileSystemAccessPersistentPermissionUpdatedPageInfoDescription[];
+
 extern const char kFileSystemObserverName[];
 extern const char kFileSystemObserverDescription[];
 
@@ -1075,6 +1090,11 @@ extern const char kCastStreamingPerformanceOverlayDescription[];
 
 extern const char kCastStreamingVp9Name[];
 extern const char kCastStreamingVp9Description[];
+
+#if BUILDFLAG(IS_MAC)
+extern const char kCastStreamingMacHardwareH264Name[];
+extern const char kCastStreamingMacHardwareH264Description[];
+#endif
 
 extern const char kCastEnableStreamingWithHiDPIName[];
 extern const char kCastEnableStreamingWithHiDPIDescription[];
@@ -1202,6 +1222,9 @@ extern const char kIpProtectionProxyOptOutName[];
 extern const char kIpProtectionProxyOptOutDescription[];
 extern const char kIpProtectionProxyOptOutChoiceDefault[];
 extern const char kIpProtectionProxyOptOutChoiceOptOut[];
+
+extern const char kAutomaticFullscreenContentSettingName[];
+extern const char kAutomaticFullscreenContentSettingDescription[];
 
 extern const char kJapaneseOSSettingsName[];
 extern const char kJapaneseOSSettingsDescription[];
@@ -1456,6 +1479,9 @@ extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
 extern const char kOmniboxOnClobberFocusTypeOnContentName[];
 extern const char kOmniboxOnClobberFocusTypeOnContentDescription[];
 
+extern const char kOmniboxLimitKeywordModeSuggestionsName[];
+extern const char kOmniboxLimitKeywordModeSuggestionsDescription[];
+
 extern const char kOmniboxShortcutBoostName[];
 extern const char kOmniboxShortcutBoostDescription[];
 
@@ -1552,8 +1578,6 @@ extern const char kOverlayStrategiesOccludedAndUnoccluded[];
 
 extern const char kOverscrollHistoryNavigationName[];
 extern const char kOverscrollHistoryNavigationDescription[];
-extern const char kOverscrollHistoryNavigationSettingName[];
-extern const char kOverscrollHistoryNavigationSettingDescription[];
 
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];
@@ -1889,9 +1913,6 @@ extern const char kSuppressToolbarCapturesDescription[];
 
 extern const char kSystemKeyboardLockName[];
 extern const char kSystemKeyboardLockDescription[];
-
-extern const char kSystemSoundsName[];
-extern const char kSystemSoundsDescription[];
 
 extern const char kSyncAutofillWalletCredentialDataName[];
 extern const char kSyncAutofillWalletCredentialDataDescription[];
@@ -2269,6 +2290,9 @@ extern const char kAndroidHatsRefactorDescription[];
 
 extern const char kAndroidHubName[];
 extern const char kAndroidHubDescription[];
+
+extern const char kAndroidTabGroupStableIdsName[];
+extern const char kAndroidTabGroupStableIdsDescription[];
 
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
@@ -2714,6 +2738,9 @@ extern const char kEnableAccessibilityLiveCaptionDescription[];
 extern const char kEnableMantaServiceName[];
 extern const char kEnableMantaServiceDescription[];
 
+extern const char kForceSigninFlowInProfilePickerName[];
+extern const char kForceSigninFlowInProfilePickerDescription[];
+
 extern const char kReadAnythingName[];
 extern const char kReadAnythingDescription[];
 
@@ -3090,9 +3117,6 @@ extern const char kSwapBackquoteKeysInISOKeyboardDescription[];
 extern const char kSystemColorChooserName[];
 extern const char kSystemColorChooserDescription[];
 
-extern const char kVideoToolboxAv1DecodingName[];
-extern const char kVideoToolboxAv1DecodingDescription[];
-
 #endif  // BUILDFLAG(IS_MAC)
 
 // Windows and Mac ------------------------------------------------------------
@@ -3258,9 +3282,6 @@ extern const char kAudioA2DPAdvancedCodecsDescription[];
 
 extern const char kAudioAPNoiseCancellationName[];
 extern const char kAudioAPNoiseCancellationDescription[];
-
-extern const char kAudioFlexibleLoopbackName[];
-extern const char kAudioFlexibleLoopbackDescription[];
 
 extern const char kAudioHFPMicSRName[];
 extern const char kAudioHFPMicSRDescription[];
@@ -3475,9 +3496,6 @@ extern const char kFastPairHIDDescription[];
 extern const char kFastPairPwaCompanionName[];
 extern const char kFastPairPwaCompanionDescription[];
 
-extern const char kFastPairSoftwareScanningName[];
-extern const char kFastPairSoftwareScanningDescription[];
-
 extern const char kFastPairSoftwareScanningSupportName[];
 extern const char kFastPairSoftwareScanningSupportDescription[];
 
@@ -3510,6 +3528,9 @@ extern const char kEnableAssistantRoutinesDescription[];
 
 extern const char kEnableBackgroundBlurName[];
 extern const char kEnableBackgroundBlurDescription[];
+
+extern const char kEnableDisplayPerformanceModeName[];
+extern const char kEnableDisplayPerformanceModeDescription[];
 
 extern const char kDisableDnsProxyName[];
 extern const char kDisableDnsProxyDescription[];
@@ -3556,6 +3577,9 @@ extern const char kDiagnosticsAppJellyDescription[];
 extern const char kEnableKeyboardBacklightToggleName[];
 extern const char kEnableKeyboardBacklightToggleDescription[];
 
+extern const char kEnableKeyboardRewriterFixName[];
+extern const char kEnableKeyboardRewriterFixDescription[];
+
 extern const char kEnableLibinputToHandleTouchpadName[];
 extern const char kEnableLibinputToHandleTouchpadDescription[];
 
@@ -3567,6 +3591,9 @@ extern const char kEnableFakeKeyboardHeuristicDescription[];
 
 extern const char kEnableFakeMouseHeuristicName[];
 extern const char kEnableFakeMouseHeuristicDescription[];
+
+extern const char kEnableHeatmapPalmDetectionName[];
+extern const char kEnableHeatmapPalmDetectionDescription[];
 
 extern const char kEnableNeuralStylusPalmRejectionName[];
 extern const char kEnableNeuralStylusPalmRejectionDescription[];
@@ -3856,6 +3883,9 @@ extern const char kImeSystemEmojiPickerGIFSupportDescription[];
 extern const char kImeSystemEmojiPickerJellySupportName[];
 extern const char kImeSystemEmojiPickerJellySupportDescription[];
 
+extern const char kImeSystemEmojiPickerMojoSearchName[];
+extern const char kImeSystemEmojiPickerMojoSearchDescription[];
+
 extern const char kImeSystemEmojiPickerClipboardName[];
 extern const char kImeSystemEmojiPickerClipboardDescription[];
 
@@ -4040,9 +4070,6 @@ extern const char kShimlessRMASkuDescriptionDescription[];
 
 extern const char kShimlessRMAOsUpdateName[];
 extern const char kShimlessRMAOsUpdateDescription[];
-
-extern const char kShortcutCustomizationJellyName[];
-extern const char kShortcutCustomizationJellyDescription[];
 
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
@@ -4583,14 +4610,6 @@ extern const char
 extern const char
     kEnableBoundSessionCredentialsSoftwareKeysForManualTestingDescription[];
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-extern const char kTheoraVideoCodecName[];
-extern const char kTheoraVideoCodecDescription[];
-#endif
-
-extern const char kForceSigninFlowInProfilePickerName[];
-extern const char kForceSigninFlowInProfilePickerDescription[];
 
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in

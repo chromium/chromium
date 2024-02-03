@@ -157,7 +157,7 @@ class GetAnnotatedVisitsTask : public history::HistoryDBTask {
     // Fetch the visits.
     history::VisitVector basic_visits;
     backend->GetVisitsForURL(id_, &basic_visits);
-    *annotated_visits_ = backend->ToAnnotatedVisits(
+    *annotated_visits_ = backend->ToAnnotatedVisitsFromRows(
         basic_visits, /*compute_redirect_chain_start_properties=*/false);
     wait_event_->Signal();
     return true;

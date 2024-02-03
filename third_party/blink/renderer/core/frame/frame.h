@@ -29,13 +29,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
@@ -302,7 +303,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   const std::string& GetFrameIdForTracing();
 
   void SetEmbeddingToken(const base::UnguessableToken& embedding_token);
-  const absl::optional<base::UnguessableToken>& GetEmbeddingToken() const {
+  const std::optional<base::UnguessableToken>& GetEmbeddingToken() const {
     return embedding_token_;
   }
 
@@ -440,9 +441,9 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   bool IsFencedFrameRoot() const;
 
   // Returns the mode set on the fenced frame if the frame is inside a fenced
-  // frame tree. Otherwise returns `absl::nullopt`. This should not be called
+  // frame tree. Otherwise returns `std::nullopt`. This should not be called
   // on a detached frame.
-  absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+  std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
   GetDeprecatedFencedFrameMode() const;
 
   // Returns all the resources under the frame tree of this node.
@@ -550,13 +551,13 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   bool is_loading_;
   // Contains token to be used as a frame id in the devtools protocol.
   base::UnguessableToken devtools_frame_token_;
-  absl::optional<std::string> trace_value_;
+  std::optional<std::string> trace_value_;
 
   // Embedding token, if existing, associated to this frame. For local frames
   // this will only be valid if the frame has committed a navigation and will
   // change when a new document is committed. For remote frames this will only
   // be valid when owned by an HTMLFrameOwnerElement.
-  absl::optional<base::UnguessableToken> embedding_token_;
+  std::optional<base::UnguessableToken> embedding_token_;
 
   // The user activation state of the current frame.  See |UserActivationState|
   // for details on how this state is maintained.

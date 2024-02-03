@@ -12,7 +12,6 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/native_library.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -52,9 +51,7 @@ class TargetThread : public PlatformThread::Delegate {
 
 // Addresses near the start and end of a function.
 struct FunctionAddressRange {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #in-out-param-ref
-  RAW_PTR_EXCLUSION const void* start;
+  raw_ptr<const void> start;
   raw_ptr<const void> end;
 };
 

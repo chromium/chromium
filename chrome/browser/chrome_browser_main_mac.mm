@@ -25,6 +25,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
+#include "chrome/browser/ui/cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/browser/updater/scheduler.h"
 #include "chrome/common/channel_info.h"
@@ -62,6 +63,9 @@ int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
         base::CommandLine::ForCurrentProcess();
     singleton_command_line->AppendSwitch(switches::kNoStartupWindow);
   }
+
+  [ChromeSwizzleServicesMenuUpdater install];
+
   return ChromeBrowserMainPartsPosix::PreEarlyInitialization();
 }
 

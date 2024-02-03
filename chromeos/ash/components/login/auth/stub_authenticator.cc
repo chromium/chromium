@@ -126,7 +126,7 @@ void StubAuthenticator::LoginAsPublicSession(const UserContext& user_context) {
 void StubAuthenticator::LoginAsKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
-  UserContext user_context(user_manager::UserType::USER_TYPE_KIOSK_APP,
+  UserContext user_context(user_manager::UserType::kKioskApp,
                            expected_user_context_.GetAccountId());
   user_context.SetIsUsingOAuth(false);
   user_context.SetUserIDHash(
@@ -139,7 +139,7 @@ void StubAuthenticator::LoginAsKioskAccount(
 void StubAuthenticator::LoginAsArcKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
-  UserContext user_context(user_manager::USER_TYPE_ARC_KIOSK_APP,
+  UserContext user_context(user_manager::UserType::kArcKioskApp,
                            expected_user_context_.GetAccountId());
   user_context.SetIsUsingOAuth(false);
   user_context.SetUserIDHash(
@@ -152,7 +152,7 @@ void StubAuthenticator::LoginAsArcKioskAccount(
 void StubAuthenticator::LoginAsWebKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
-  UserContext user_context(user_manager::USER_TYPE_WEB_KIOSK_APP,
+  UserContext user_context(user_manager::UserType::kWebKioskApp,
                            expected_user_context_.GetAccountId());
   user_context.SetIsUsingOAuth(false);
   user_context.SetUserIDHash(

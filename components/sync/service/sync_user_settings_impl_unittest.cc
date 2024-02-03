@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -167,8 +166,7 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage,
+                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
@@ -187,6 +185,9 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
       UserSelectableType::kHistory, UserSelectableType::kTabs,
       UserSelectableType::kApps,    UserSelectableType::kExtensions,
       UserSelectableType::kThemes,  UserSelectableType::kSavedTabGroups};
+  if (!base::FeatureList::IsEnabled(kSyncSharedTabGroupDataInTransportMode)) {
+    expected_disabled_types.Put(UserSelectableType::kSharedTabGroupData);
+  }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // On Desktop, kPasswords is disabled by default.
@@ -576,6 +577,78 @@ TEST_F(SyncUserSettingsImplTest, BookmarksOnByDefaultForSyncingUsers) {
 
   EXPECT_TRUE(sync_user_settings->GetSelectedTypes().Has(
       UserSelectableType::kBookmarks));
+}
+
+TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenForSyncingUser) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSyncing);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+  ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+  sync_user_settings->SetEncryptionBootstrapToken("token");
+  EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
+  EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
+            sync_prefs_->GetEncryptionBootstrapToken());
+  sync_prefs_->ClearEncryptionBootstrapToken();
+  EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+}
+
+TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccountSignedOut) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kNotSignedIn);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+  EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+}
+
+TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccount) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+  ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+  sync_user_settings->SetEncryptionBootstrapToken("token");
+  EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
+  signin::GaiaIdHash gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(GetSyncAccountInfoForPrefs().gaia);
+  EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+}
+
+TEST_F(SyncUserSettingsImplTest,
+       EncryptionBootstrapTokenPerAccountFeatureDisabled) {
+  base::test::ScopedFeatureList disable_keep_account_passphrase;
+  disable_keep_account_passphrase.InitAndDisableFeature(
+      kSyncRememberCustomPassphraseAfterSignout);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+  ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+  sync_user_settings->SetEncryptionBootstrapToken("token");
+  EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
+  EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
+            sync_prefs_->GetEncryptionBootstrapToken());
+  sync_prefs_->ClearEncryptionBootstrapToken();
+  EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+}
+
+TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+  ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+  sync_user_settings->SetEncryptionBootstrapToken("token");
+  signin::GaiaIdHash gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(GetSyncAccountInfoForPrefs().gaia);
+  sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({gaia_id_hash});
+  EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
+  sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({});
+  EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
 }
 
 }  // namespace

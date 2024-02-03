@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1021782183249308751">Mantén premida a icona de Chrome e fai clic en Editar a pantalla de inicio</translation>
 <translation id="1066101356081285416">Chrome detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada dos paquetes na páxina Nova pestana. O número de seguimento do paquete e o nome do sitio web enviaranse a Google co fin de fornecer este servizo e mellorar as funcións relacionadas coas compras de Google para todo o mundo. Podes modificar esta opción cando queiras na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utilizar Chrome de forma predeterminada</translation>
 <translation id="1105362920864247682">Borra os datos de navegación en Chrome.</translation>
@@ -96,6 +97,7 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos}}</translation>
 <translation id="3399930248910934354">Abrir configuración de Chrome</translation>
+<translation id="344736123700721678">Accede a Chrome máis rápido desde a barra de aplicacións da pantalla de inicio</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
 <translation id="3503014945441706099">Activa tamén neste perfil de Chrome a función Navegación segura mellorada</translation>
 <translation id="3522659714780527202">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, activa a sincronización</translation>
@@ -177,12 +179,15 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="6054613632208573261">Utiliza Chrome de forma predeterminada</translation>
 <translation id="6063091872902370735">Permitir inicio de sesión en Chrome</translation>
 <translation id="6110625574506755980">Algunhas funcións de Chrome deixarán de estar dispoñibles.</translation>
+<translation id="6132149203299792222">Inicia sesión coa túa Conta de Google para sincronizar os contrasinais ou os marcadores, entre outras cousas.</translation>
 <translation id="6177442314419606057">Busca en Chrome</translation>
 <translation id="6181930887571472871">Pásate a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee as pestanas do modo de incógnito.</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
+<translation id="6272822675004864999">Para recibir notificacións de Chrome, activa as notificacións na configuración de iOS.</translation>
 <translation id="630693926528731525">Non se compartiu o teu contrasinal. Comproba a túa conexión a Internet e asegúrate de que tes a sesión iniciada en Chrome. Despois, téntao de novo.</translation>
 <translation id="6348855835728304880">Accede aos teus contrasinais de Chrome e moito máis noutras aplicacións deste dispositivo.</translation>
+<translation id="6389317667633680932">Explora novas funcións que che axudarán a tirar o máximo proveito de Chrome.</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="6427126399757991875">A túa organización está configurando Chrome…</translation>
 <translation id="6484712497741564393">Tes a sesión iniciada como <ph name="EMAIL" />.
@@ -214,8 +219,10 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">A versión de Google Chrome está desactualizada</translation>
 <translation id="7165736900384873061">Comeza a usar o escáner de códigos QR de Google Chrome</translation>
+<translation id="7175129790242719365">Consello de Chrome: Inicia sesión en Chrome</translation>
 <translation id="7187993566681480880">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="7200524487407690471">Chrome executa automaticamente Comprobación de seguranza todos os días para protexerte das violacións da seguranza dos datos e dos sitios web pouco seguros, entre outras cousas. Podes consultar máis información sobre esta función en Configuración.</translation>
+<translation id="7203324561587388418">Mantente ao día do contido e dos consellos útiles de Chrome.</translation>
 <translation id="72119412072970160">Podes utilizar os contrasinais que gardaches no xestor de contrasinais de Google noutras aplicacións do teu iPad.</translation>
 <translation id="723787869754590019">Usa Chrome para a función de autocompletar</translation>
 <translation id="7254380941803999489">Define Chrome como navegador predeterminado</translation>
@@ -244,6 +251,8 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7897703007638178753">Mostra as pestanas recentes de Chrome</translation>
 <translation id="7925119591961387184">Selecciona Chrome.</translation>
 <translation id="7933491483529363150">Abre a pestana máis recente en Chrome.</translation>
+<translation id="7948283758957877064">Novidades de Chrome</translation>
+<translation id="8006014511203279255">Utiliza Chrome sempre que toques ligazóns en mensaxes ou noutras aplicacións.</translation>
 <translation id="8022947259858476807">Usa Chrome de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
 <translation id="804638182476029347">Permitir que as notificacións de Chrome avisen sobre as baixadas de prezo</translation>
 <translation id="8065292699993359127">Abrir URL en Chrome no modo de incógnito</translation>
@@ -280,6 +289,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="8772179140489533211">Mostra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Consello de Chrome: Usa Chrome de forma predeterminada</translation>
 <translation id="8808828119384186784">Configuración de Chrome</translation>
 <translation id="8855781063981781621">Para desactivar o modo de bloqueo en Chrome, desactívao no teu dispositivo iPad.</translation>
 <translation id="8856877214925961642">A encriptación mediante frase de acceso non inclúe os enderezos nin os métodos de pago.

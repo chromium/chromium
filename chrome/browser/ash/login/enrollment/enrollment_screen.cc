@@ -41,7 +41,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -422,13 +422,13 @@ void EnrollmentScreen::CheckInstallAttributesState() {
     ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
     return;
   }
-  user_data_auth::InstallAttributesState state =
+  device_management::InstallAttributesState state =
       install_attributes_util::InstallAttributesGetStatus();
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "InstallAttributesState: state = " << static_cast<int>(state);
-  if (state == user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
+  if (state == device_management::InstallAttributesState::TPM_NOT_OWNED) {
     // There may be some processes running in the background, we need to try
     // again and set a reasonable timeout here to show an error if nothing
     // changes.
@@ -438,18 +438,18 @@ void EnrollmentScreen::CheckInstallAttributesState() {
   }
   tpm_checked_ = true;
   switch (state) {
-    case user_data_auth::InstallAttributesState::UNKNOWN:
+    case device_management::InstallAttributesState::UNKNOWN:
       // This means that some interprocess communication error may occur and we
       // suggest a reboot.
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
       break;
-    case user_data_auth::InstallAttributesState::FIRST_INSTALL:
+    case device_management::InstallAttributesState::FIRST_INSTALL:
       // This means that TPM is ready to write and we are good to go.
       ShowImpl();
       break;
-    case user_data_auth::InstallAttributesState::VALID:
+    case device_management::InstallAttributesState::VALID:
       // Valid to read, but can't rewrite. Need to clear the TPM.
-    case user_data_auth::InstallAttributesState::INVALID:
+    case device_management::InstallAttributesState::INVALID:
       // Invalid to read. Need to clear the TPM.
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_ERROR));
       break;

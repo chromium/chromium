@@ -194,7 +194,7 @@ class VotesUploader {
   std::optional<PasswordAttributesMetadata> GeneratePasswordAttributesMetadata(
       const std::u16string& password_value);
 
-  // Stores the |unique_renderer_id| and |values| of the fields in
+  // Stores the |renderer_id| and |values| of the fields in
   // |observed_form| to |initial_field_values_|.
   void StoreInitialFieldValues(const autofill::FormData& observed_form);
 

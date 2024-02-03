@@ -95,13 +95,13 @@ class FakeWebrtcVideoStatsDB : public WebrtcVideoStatsDB {
                      GetVideoStatsCB get_stats_cb) override {
     if (fail_next_get_) {
       fail_next_get_ = false;
-      std::move(get_stats_cb).Run(false, absl::nullopt);
+      std::move(get_stats_cb).Run(false, std::nullopt);
       return;
     }
 
     auto entry_it = entries_.find(key.Serialize());
     if (entry_it == entries_.end()) {
-      std::move(get_stats_cb).Run(true, absl::nullopt);
+      std::move(get_stats_cb).Run(true, std::nullopt);
     } else {
       std::move(get_stats_cb).Run(true, entry_it->second);
     }
@@ -112,7 +112,7 @@ class FakeWebrtcVideoStatsDB : public WebrtcVideoStatsDB {
       GetVideoStatsCollectionCB get_stats_cb) override {
     if (fail_next_get_) {
       fail_next_get_ = false;
-      std::move(get_stats_cb).Run(false, absl::nullopt);
+      std::move(get_stats_cb).Run(false, std::nullopt);
       return;
     }
 
@@ -120,14 +120,14 @@ class FakeWebrtcVideoStatsDB : public WebrtcVideoStatsDB {
     std::string key_filter = key.SerializeWithoutPixels();
     for (auto const& [str, video_stats_entry] : entries_) {
       if (str.rfind(key_filter, 0) == 0) {
-        absl::optional<int> pixels = VideoDescKey::ParsePixelsFromKey(str);
+        std::optional<int> pixels = VideoDescKey::ParsePixelsFromKey(str);
         if (pixels) {
           collection.insert({*pixels, std::move(video_stats_entry)});
         }
       }
     }
     if (collection.empty()) {
-      std::move(get_stats_cb).Run(true, absl::nullopt);
+      std::move(get_stats_cb).Run(true, std::nullopt);
     } else {
       std::move(get_stats_cb).Run(true, std::move(collection));
     }

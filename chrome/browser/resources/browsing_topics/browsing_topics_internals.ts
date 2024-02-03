@@ -210,8 +210,7 @@ async function asyncGetBrowsingTopicsState(calculateNow: boolean) {
     nestedDivs[3]!.textContent += epoch.taxonomyVersion;
 
     epoch.topics.forEach((topic) => {
-      epochDiv.querySelectorAll('table')![0]!.appendChild(
-          createTopicRow(topic));
+      epochDiv.querySelectorAll('table')[0]!.appendChild(createTopicRow(topic));
     });
 
     document.querySelector('#epoch-div-list-wrapper')!.appendChild(epochDiv);

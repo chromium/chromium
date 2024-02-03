@@ -812,14 +812,14 @@ TEST(MediaQueryEvaluatorTest, CachedDevicePosture) {
 
   MediaValuesCached::MediaValuesCachedData data;
   {
-    data.device_posture = device::mojom::blink::DevicePostureType::kContinuous;
+    data.device_posture = mojom::blink::DevicePostureType::kContinuous;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(media_values);
     TestMQEvaluator(g_device_posture_none_cases, media_query_evaluator);
   }
 
   {
-    data.device_posture = device::mojom::blink::DevicePostureType::kFolded;
+    data.device_posture = mojom::blink::DevicePostureType::kFolded;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(media_values);
     TestMQEvaluator(g_device_posture_folded_cases, media_query_evaluator);

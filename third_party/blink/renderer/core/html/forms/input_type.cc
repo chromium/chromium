@@ -298,7 +298,7 @@ double InputType::ValueAsDate() const {
   return DateComponents::InvalidMilliseconds();
 }
 
-void InputType::SetValueAsDate(const absl::optional<base::Time>&,
+void InputType::SetValueAsDate(const std::optional<base::Time>&,
                                ExceptionState& exception_state) const {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kInvalidStateError,

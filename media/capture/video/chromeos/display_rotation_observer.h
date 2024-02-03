@@ -60,7 +60,7 @@ class ScreenObserverDelegate
 
   base::WeakPtr<DisplayRotationObserver> observer_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // The task runner where the calls to display::Display must be serialized on.
   const scoped_refptr<base::SingleThreadTaskRunner> display_task_runner_;

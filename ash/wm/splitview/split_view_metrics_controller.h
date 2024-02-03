@@ -99,7 +99,6 @@ class SplitViewMetricsController : public SplitViewObserver,
   SplitViewMetricsController(const SplitViewMetricsController&) = delete;
   SplitViewMetricsController& operator=(const SplitViewMetricsController&) =
       delete;
-
   ~SplitViewMetricsController() override;
 
   // SplitViewObserver:

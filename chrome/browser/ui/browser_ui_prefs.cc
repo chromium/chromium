@@ -63,6 +63,7 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOverscrollHistoryNavigationEnabled,
                                 true);
 #endif
+  registry->RegisterIntegerPref(prefs::kToolbarAvatarLabelSettings, 0);
 }
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {

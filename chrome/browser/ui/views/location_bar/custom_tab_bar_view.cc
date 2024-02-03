@@ -338,7 +338,7 @@ void CustomTabBarView::OnPaintBackground(gfx::Canvas* canvas) {
 }
 
 void CustomTabBarView::ChildPreferredSizeChanged(views::View* child) {
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -410,7 +410,7 @@ void CustomTabBarView::UpdateContents() {
       !IsUrlInAppScope(app_controller, contents->GetLastCommittedURL());
   close_button_->SetVisible(set_visible);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 SkColor CustomTabBarView::GetIconLabelBubbleSurroundingForegroundColor() const {

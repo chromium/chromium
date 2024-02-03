@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/mock_autofill_manager.h"
 #include "components/autofill/core/browser/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -62,98 +63,6 @@ class MockAutofillDriver : public TestAutofillDriver {
               TriggerFormExtractionInAllFrames,
               (base::OnceCallback<void(bool)>),
               ());
-};
-
-class MockAutofillManager : public AutofillManager {
- public:
-  MockAutofillManager(AutofillDriver* driver, AutofillClient* client)
-      : AutofillManager(driver, client) {}
-
-  base::WeakPtr<AutofillManager> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
-  MOCK_METHOD(void,
-              OnFocusNoLongerOnFormImpl,
-              (bool had_interacted_form),
-              (override));
-  MOCK_METHOD(void,
-              OnDidFillAutofillFormDataImpl,
-              (const FormData& form, const base::TimeTicks timestamp),
-              (override));
-  MOCK_METHOD(void, OnDidEndTextFieldEditingImpl, (), (override));
-  MOCK_METHOD(void, OnHidePopupImpl, (), (override));
-  MOCK_METHOD(void,
-              OnSelectOrSelectListFieldOptionsDidChangeImpl,
-              (const FormData& form),
-              (override));
-  MOCK_METHOD(void,
-              OnJavaScriptChangedAutofilledValueImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const std::u16string& old_value),
-              (override));
-  MOCK_METHOD(void,
-              OnFormSubmittedImpl,
-              (const FormData& form,
-               bool known_success,
-               mojom::SubmissionSource source),
-              (override));
-  MOCK_METHOD(void,
-              OnTextFieldDidChangeImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const gfx::RectF& bounding_box,
-               const base::TimeTicks timestamp),
-              (override));
-  MOCK_METHOD(void,
-              OnTextFieldDidScrollImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const gfx::RectF& bounding_box),
-              (override));
-  MOCK_METHOD(void,
-              OnAskForValuesToFillImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const gfx::RectF& bounding_box,
-               AutofillSuggestionTriggerSource trigger_source),
-              (override));
-  MOCK_METHOD(void,
-              OnFocusOnFormFieldImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const gfx::RectF& bounding_box),
-              (override));
-  MOCK_METHOD(void,
-              OnSelectControlDidChangeImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const gfx::RectF& bounding_box),
-              (override));
-  MOCK_METHOD(bool, ShouldParseForms, (), (override));
-  MOCK_METHOD(void, OnBeforeProcessParsedForms, (), (override));
-  MOCK_METHOD(void,
-              OnFormProcessed,
-              (const FormData& form_data, const FormStructure& form_structure),
-              (override));
-  MOCK_METHOD(void,
-              OnAfterProcessParsedForms,
-              (const DenseSet<FormType>& form_types),
-              (override));
-  MOCK_METHOD(void,
-              ReportAutofillWebOTPMetrics,
-              (bool used_web_otp),
-              (override));
-  MOCK_METHOD(void,
-              OnContextMenuShownInField,
-              (const FormGlobalId& form_global_id,
-               const FieldGlobalId& field_global_id),
-              (override));
-
- private:
-  base::WeakPtrFactory<MockAutofillManager> weak_ptr_factory_{this};
 };
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -418,7 +327,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   task_environment_.RunUntilIdle();
 
   form.fields.push_back(form.fields.back());
-  form.fields.back().unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.back().renderer_id = test::MakeFieldRendererId();
 
   // The form was just changed, which causes a reparse. The reparse is
   // asynchronous, so OnAfterTextFieldDidChange() is asynchronous, too.

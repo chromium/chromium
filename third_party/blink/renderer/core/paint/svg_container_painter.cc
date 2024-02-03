@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/svg_container_painter.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
@@ -71,7 +72,7 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
   ScopedSVGTransformState transform_state(paint_info_before_filtering,
                                           layout_svg_container_);
   {
-    absl::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
+    std::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
     if (layout_svg_container_.IsSVGViewportContainer() &&
         SVGLayoutSupport::IsOverflowHidden(layout_svg_container_)) {
       // TODO(crbug.com/814815): The condition should be a DCHECK, but for now

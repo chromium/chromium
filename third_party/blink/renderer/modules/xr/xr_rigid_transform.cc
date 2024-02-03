@@ -34,7 +34,7 @@ XRRigidTransform::XRRigidTransform(const gfx::Transform& transformationMatrix)
 
 void XRRigidTransform::DecomposeMatrix() {
   // decompose matrix to position and orientation
-  absl::optional<gfx::DecomposedTransform> decomp = matrix_->Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = matrix_->Decompose();
   CHECK(decomp, base::NotFatalUntil::M129)
       << "Matrix decompose failed for " << matrix_->ToString();
 

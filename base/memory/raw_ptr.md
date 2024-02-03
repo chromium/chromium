@@ -274,6 +274,11 @@ You don’t have to, but may use `raw_ptr<T>`, in the following scenarios:
   latter if the collection is a class field (note that some of the perf
   optimizations above might still apply and argue for using a raw C++ pointer).
 
+### Signal Handlers
+
+`raw_ptr<T>` assumes that the allocator's data structures are in a consistent
+state. Signal handlers can interrupt in the middle of an allocation operation;
+therefore, `raw_ptr<T>` should not be used in signal handlers.
 
 ## Extra pointer rules {#Extra-pointer-rules}
 

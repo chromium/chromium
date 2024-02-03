@@ -205,7 +205,7 @@ bool IsInKioskMode() {
       Shell::Get()->session_controller()->GetUserType();
   // |active_user_type| is empty when there's no active user.
   return active_user_type &&
-         *active_user_type == user_manager::USER_TYPE_KIOSK_APP;
+         *active_user_type == user_manager::UserType::kKioskApp;
 }
 
 // Returns the currently active user session (at index 0).
@@ -225,7 +225,7 @@ bool IsActiveUser(const AccountId& account_id) {
   return session && session->user_info.account_id == account_id;
 }
 
-// Returns the type of the user with the specified |id| or USER_TYPE_REGULAR.
+// Returns the type of the user with the specified |id| or kRegular.
 user_manager::UserType GetUserType(const AccountId& id) {
   const UserSession* user_session =
       Shell::Get()->session_controller()->GetUserSessionByAccountId(id);
@@ -236,7 +236,7 @@ user_manager::UserType GetUserType(const AccountId& id) {
     // a CHECK.
     LOG(ERROR) << "Cannot resolve user. Assuming regular. This should only "
                   "happen in tests";
-    return user_manager::USER_TYPE_REGULAR;
+    return user_manager::UserType::kRegular;
   }
 
   return user_session->user_info.type;
@@ -958,12 +958,12 @@ base::FilePath WallpaperControllerImpl::GetDefaultWallpaperPath(
   // The wallpaper is determined in the following order:
   // Guest wallpaper, child wallpaper, customized default wallpaper, and regular
   // default wallpaper.
-  if (user_type == user_manager::USER_TYPE_GUEST) {
+  if (user_type == user_manager::UserType::kGuest) {
     const std::string_view switch_string = use_small
                                                ? switches::kGuestWallpaperSmall
                                                : switches::kGuestWallpaperLarge;
     return command_line->GetSwitchValuePath(switch_string);
-  } else if (user_type == user_manager::USER_TYPE_CHILD) {
+  } else if (user_type == user_manager::UserType::kChild) {
     const std::string_view switch_string = use_small
                                                ? switches::kChildWallpaperSmall
                                                : switches::kChildWallpaperLarge;
@@ -998,7 +998,7 @@ void WallpaperControllerImpl::SetCustomizedDefaultWallpaperPaths(
   auto* active_user_session = GetActiveUserSession();
   // Login does not have an active session and the expected behavior is that of
   // a regular user.
-  user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR;
+  user_manager::UserType user_type = user_manager::UserType::kRegular;
   if (active_user_session) {
     // We expect that this finishes before the user has logged in.
     LOG(WARNING) << "Set customized default wallpaper after login";
@@ -1016,8 +1016,8 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
   if (IsInKioskMode())
     return;
 
-  DCHECK(user_type == user_manager::USER_TYPE_REGULAR ||
-         user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  DCHECK(user_type == user_manager::UserType::kRegular ||
+         user_type == user_manager::UserType::kPublicAccount);
 
   // Updates the screen only when the user with this account_id has logged in.
   const bool show_wallpaper = IsActiveUser(account_id);
@@ -1050,7 +1050,7 @@ void WallpaperControllerImpl::OnPolicyWallpaperDecoded(
   wallpaper_metrics_manager_->LogWallpaperResult(WallpaperType::kPolicy,
                                                  SetWallpaperResult::kSuccess);
   SaveAndSetWallpaper(
-      account_id, user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+      account_id, user_type == user_manager::UserType::kPublicAccount,
       kPolicyWallpaperFile, /*file_path=*/"", WallpaperType::kPolicy,
       WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper, image);
 }
@@ -1241,8 +1241,8 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     const AccountId& account_id,
     const user_manager::UserType user_type) {
   current_user_ = account_id;
-  if (user_type == user_manager::USER_TYPE_KIOSK_APP ||
-      user_type == user_manager::USER_TYPE_ARC_KIOSK_APP) {
+  if (user_type == user_manager::UserType::kKioskApp ||
+      user_type == user_manager::UserType::kArcKioskApp) {
     return;
   }
 
@@ -1336,7 +1336,7 @@ void WallpaperControllerImpl::ShowSigninWallpaper() {
   }
 
   // If we don't have a user, use the regular default.
-  SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR,
+  SetDefaultWallpaperImpl(user_manager::UserType::kRegular,
                           /*show_wallpaper=*/true, base::DoNothing());
 }
 
@@ -1516,8 +1516,8 @@ bool WallpaperControllerImpl::ShouldShowWallpaperSetting() {
   // personalization settings) to avoid unnecessary confusion and surprise when
   // everything resets.
   user_manager::UserType active_user_type = active_user_session->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_REGULAR ||
-         active_user_type == user_manager::USER_TYPE_CHILD;
+  return active_user_type == user_manager::UserType::kRegular ||
+         active_user_type == user_manager::UserType::kChild;
 }
 
 void WallpaperControllerImpl::OnDisplayConfigurationChanged() {
@@ -1789,7 +1789,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
 }
 
 void WallpaperControllerImpl::ShowDefaultWallpaperForTesting() {
-  SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR,
+  SetDefaultWallpaperImpl(user_manager::UserType::kRegular,
                           /*show_wallpaper=*/true, base::DoNothing());
 }
 
@@ -2146,7 +2146,8 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
   if (photo.is_null()) {
     // The photo doesn't exist, or has been deleted. If this photo is the
     // current wallpaper, we need to reset to the default.
-    if (current_wallpaper_->wallpaper_info().location == params.id) {
+    if (current_wallpaper_ &&
+        current_wallpaper_->wallpaper_info().location == params.id) {
       sequenced_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&DeleteGooglePhotosCache, params.account_id));
@@ -2693,7 +2694,7 @@ void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
     // wallpaper.
     // TODO(crbug.com/1329567): Decide if the regular default is correct.  But
     // this is the current behavior for EmptyAccountId.
-    SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR,
+    SetDefaultWallpaperImpl(user_manager::UserType::kRegular,
                             /*show_wallpaper=*/true, base::DoNothing());
   } else {
     wallpaper_metrics_manager_->LogWallpaperResult(

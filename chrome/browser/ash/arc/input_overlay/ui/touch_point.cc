@@ -496,7 +496,7 @@ void TouchPoint::SetToDrag() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(TouchPoint, views::View)
+BEGIN_METADATA(TouchPoint)
 END_METADATA
 
 }  // namespace arc::input_overlay

@@ -401,7 +401,7 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
     }
   }
 
-  const absl::optional<CSSNumericSumValue> sum = SumValue();
+  const std::optional<CSSNumericSumValue> sum = SumValue();
   if (!sum.has_value()) {
     exception_state.ThrowTypeError("Invalid value for conversion");
     return nullptr;

@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../history_clusters/page_favicon.js';
 
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Tab} from '../../../history_types.mojom-webui.js';
@@ -17,7 +18,7 @@ import type {MenuItem, ModuleHeaderElementV2} from '../module_header';
 import {getTemplate} from './module.html.js';
 import {TabResumptionProxyImpl} from './tab_resumption_proxy.js';
 
-export const MAX_TABS = 10;
+export const MAX_TABS = 5;
 
 export interface TabResumptionModuleElement {
   $: {
@@ -91,6 +92,22 @@ tabs:
 
   private onMenuButtonClick_(e: Event) {
     this.$.moduleHeaderElementV2.showAt(e);
+  }
+
+  private onTabClick_(e: DomRepeatEvent<Tab>) {
+    chrome.metricsPrivate.recordSmallCount(
+        'NewTabPage.TabResumption.ClickIndex', e.model.index);
+
+    // Calculate the number of milliseconds in the difference. Max is 4 days.
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'NewTabPage.TabResumption.TimeElapsedSinceLastVisit',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+          min: 60 * 1000,
+          max: 4 * 24 * 60 * 60 * 1000,
+          buckets: 50,
+        },
+        Number(e.model.item.relativeTime.microseconds / 1000n));
   }
 }
 

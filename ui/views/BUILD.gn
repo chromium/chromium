@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//build/nocompile.gni")
 import("//components/metrics/generate_histograms_variants_allowlist.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//skia/features.gni")
@@ -85,8 +86,8 @@ component("views") {
     "accessibility/views_ax_tree_manager.h",
     "accessibility/widget_ax_tree_id_map.h",
     "accessible_pane_view.h",
-    "action_view_controller.h",
-    "action_view_interface.h",
+    "actions/action_view_controller.h",
+    "actions/action_view_interface.h",
     "animation/animation_abort_handle.h",
     "animation/animation_builder.h",
     "animation/animation_delegate_views.h",
@@ -325,8 +326,8 @@ component("views") {
     "accessibility/view_accessibility.cc",
     "accessibility/view_accessibility_utils.cc",
     "accessible_pane_view.cc",
-    "action_view_controller.cc",
-    "action_view_interface.cc",
+    "actions/action_view_controller.cc",
+    "actions/action_view_interface.cc",
     "animation/animation_abort_handle.cc",
     "animation/animation_builder.cc",
     "animation/animation_delegate_views.cc",
@@ -647,7 +648,7 @@ component("views") {
       "cocoa/native_widget_mac_ns_window_host.h",
       "controls/menu/menu_closure_animation_mac.h",
       "controls/menu/menu_cocoa_watcher_mac.h",
-      "controls/menu/menu_controller_cocoa_delegate_impl.h",
+      "controls/menu/menu_controller_cocoa_delegate_params.h",
       "controls/menu/menu_runner_impl_cocoa.h",
       "controls/scrollbar/cocoa_scroll_bar.h",
       "event_monitor_mac.h",
@@ -672,7 +673,7 @@ component("views") {
       "controls/menu/menu_closure_animation_mac.mm",
       "controls/menu/menu_cocoa_watcher_mac.mm",
       "controls/menu/menu_config_mac.mm",
-      "controls/menu/menu_controller_cocoa_delegate_impl.mm",
+      "controls/menu/menu_controller_cocoa_delegate_params.cc",
       "controls/menu/menu_pre_target_handler_mac.h",
       "controls/menu/menu_pre_target_handler_mac.mm",
       "controls/menu/menu_runner_impl_cocoa.mm",
@@ -1212,7 +1213,7 @@ test("views_unittests") {
   sources = [
     "accessibility/accessibility_paint_checks_unittest.cc",
     "accessible_pane_view_unittest.cc",
-    "action_view_controller_unittest.cc",
+    "actions/action_view_controller_unittest.cc",
     "animation/animation_builder_unittest.cc",
     "animation/bounds_animator_unittest.cc",
     "animation/bubble_slide_animator_unittest.cc",
@@ -1557,6 +1558,17 @@ test("views_unittests") {
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [ "test/view_skia_gold_pixel_diff_unittest.cc" ]
     deps += [ "//ui/views:view_pixel_diff_test_support" ]
+  }
+
+  if (enable_nocompile_tests) {
+    deps += [ ":views_nocompile_tests" ]
+  }
+}
+
+if (enable_nocompile_tests) {
+  nocompile_source_set("views_nocompile_tests") {
+    sources = [ "view_nocompile.nc" ]
+    deps = [ ":views" ]
   }
 }
 

@@ -5,6 +5,8 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_VIDEO_DECODER_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_VIDEO_DECODER_H_
 
+#include <optional>
+
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,7 +21,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 
 namespace base {
@@ -75,7 +76,7 @@ class MojoVideoDecoder final : public VideoDecoder,
   void OnVideoFrameDecoded(
       const scoped_refptr<VideoFrame>& frame,
       bool can_read_without_stalling,
-      const absl::optional<base::UnguessableToken>& release_token) final;
+      const std::optional<base::UnguessableToken>& release_token) final;
   void OnWaiting(WaitingReason reason) final;
   void RequestOverlayInfo(bool restart_for_transitions) final;
 
@@ -101,7 +102,7 @@ class MojoVideoDecoder final : public VideoDecoder,
       base::OnceClosure complete_cb);
   void InitializeRemoteDecoder(const VideoDecoderConfig& config,
                                bool low_delay,
-                               absl::optional<base::UnguessableToken> cdm_id);
+                               std::optional<base::UnguessableToken> cdm_id);
 
   // Forwards |overlay_info| to the remote decoder.
   void OnOverlayInfoChanged(const OverlayInfo& overlay_info);

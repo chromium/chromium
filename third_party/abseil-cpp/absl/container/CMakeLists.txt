@@ -213,6 +213,7 @@ absl_cc_library(
   DEPS
     absl::config
     GTest::gmock
+  TESTONLY
 )
 
 absl_cc_test(
@@ -306,6 +307,7 @@ absl_cc_test(
     absl::check
     absl::flat_hash_map
     absl::hash_generator_testing
+    absl::test_allocator
     absl::type_traits
     absl::unordered_map_constructor_test
     absl::unordered_map_lookup_test
@@ -347,6 +349,7 @@ absl_cc_test(
     absl::hash_generator_testing
     absl::memory
     absl::strings
+    absl::test_allocator
     absl::unordered_set_constructor_test
     absl::unordered_set_lookup_test
     absl::unordered_set_members_test
@@ -602,6 +605,7 @@ absl_cc_library(
     absl::base
     absl::config
     absl::exponential_biased
+    absl::no_destructor
     absl::raw_logging_internal
     absl::sample_recorder
     absl::synchronization

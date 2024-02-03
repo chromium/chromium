@@ -54,7 +54,7 @@ class TextCodecCJK::Decoder {
   virtual void Finalize(bool flush, StringBuilder& result) {}
 
   uint8_t lead_ = 0x00;
-  absl::optional<uint8_t> prepended_byte_;
+  std::optional<uint8_t> prepended_byte_;
 };
 
 namespace {
@@ -83,11 +83,11 @@ void AppendUnencodableReplacement(UChar32 code_point,
   }
 }
 
-absl::optional<UChar> FindCodePointInJis0208(uint16_t pointer) {
+std::optional<UChar> FindCodePointInJis0208(uint16_t pointer) {
   return FindFirstInSortedPairs(EnsureJis0208EncodeIndexForDecode(), pointer);
 }
 
-absl::optional<UChar> FindCodePointJis0212(uint16_t pointer) {
+std::optional<UChar> FindCodePointJis0212(uint16_t pointer) {
   return FindFirstInSortedPairs(EnsureJis0212EncodeIndexForDecode(), pointer);
 }
 
@@ -384,9 +384,9 @@ const std::array<std::pair<uint32_t, UChar32>, 207>& Gb18030Ranges() {
 }
 
 // https://encoding.spec.whatwg.org/#index-gb18030-ranges-code-point
-absl::optional<UChar32> IndexGb18030RangesCodePoint(uint32_t pointer) {
+std::optional<UChar32> IndexGb18030RangesCodePoint(uint32_t pointer) {
   if ((pointer > 39419 && pointer < 189000) || pointer > 1237575)
-    return absl::nullopt;
+    return std::nullopt;
   if (pointer == 7457)
     return 0xE7C7;
 
@@ -635,7 +635,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
     result.ReserveCapacity(length);
 
     if (prepended_byte_ &&
-        ParseByte(*std::exchange(prepended_byte_, absl::nullopt), result) ==
+        ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
             SawError::kYes) {
       saw_error = true;
       result.Append(kReplacementCharacter);
@@ -645,7 +645,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
       }
     }
     if (second_prepended_byte_ &&
-        ParseByte(*std::exchange(second_prepended_byte_, absl::nullopt),
+        ParseByte(*std::exchange(second_prepended_byte_, std::nullopt),
                   result) == SawError::kYes &&
         stop_on_error) {
       saw_error = true;
@@ -665,7 +665,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
         }
       }
       if (prepended_byte_ &&
-          ParseByte(*std::exchange(prepended_byte_, absl::nullopt), result) ==
+          ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
               SawError::kYes) {
         saw_error = true;
         result.Append(kReplacementCharacter);
@@ -675,7 +675,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
         }
       }
       if (second_prepended_byte_ &&
-          ParseByte(*std::exchange(second_prepended_byte_, absl::nullopt),
+          ParseByte(*std::exchange(second_prepended_byte_, std::nullopt),
                     result) == SawError::kYes &&
           stop_on_error) {
         saw_error = true;
@@ -805,7 +805,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
         return SawError::kYes;
       case State::kEscape: {
         uint8_t lead = std::exchange(lead_, 0x00);
-        absl::optional<State> state;
+        std::optional<State> state;
         if (lead == 0x28) {
           if (byte == 0x42)
             state = State::kAscii;
@@ -846,7 +846,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
   State decoder_state_ = State::kAscii;
   State decoder_output_state_ = State::kAscii;
   bool output_ = false;
-  absl::optional<uint8_t> second_prepended_byte_;
+  std::optional<uint8_t> second_prepended_byte_;
 };
 
 // https://encoding.spec.whatwg.org/#shift_jis-decoder
@@ -1143,7 +1143,7 @@ String TextCodecCJK::Decoder::Decode(const uint8_t* bytes,
   result.ReserveCapacity(length);
 
   if (prepended_byte_ &&
-      ParseByte(*std::exchange(prepended_byte_, absl::nullopt), result) ==
+      ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
           SawError::kYes) {
     saw_error = true;
     result.Append(kReplacementCharacter);
@@ -1162,7 +1162,7 @@ String TextCodecCJK::Decoder::Decode(const uint8_t* bytes,
       }
     }
     if (prepended_byte_ &&
-        ParseByte(*std::exchange(prepended_byte_, absl::nullopt), result) ==
+        ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
             SawError::kYes) {
       saw_error = true;
       result.Append(kReplacementCharacter);

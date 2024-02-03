@@ -27,9 +27,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/html_attributes_ranges.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
@@ -171,7 +172,7 @@ class CORE_EXPORT HTMLTokenizer {
   //    instead of as character tokens.
   //
   // The return value is empty if a state change is not necessary.
-  absl::optional<State> SpeculativeStateForTag(html_names::HTMLTag tag) const;
+  std::optional<State> SpeculativeStateForTag(html_names::HTMLTag tag) const;
 
   bool ForceNullCharacterReplacement() const {
     return force_null_character_replacement_;

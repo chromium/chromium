@@ -8,9 +8,14 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -54,6 +59,11 @@ class MockCardUnmaskPromptController
                bool was_checkbox_visible),
               (override));
 
+  MOCK_METHOD(const autofill::CreditCard&,
+              GetCreditCard,
+              (),
+              (const, override));
+
   MOCK_METHOD(bool, ShouldRequestExpirationDate, (), (const, override));
 
   MOCK_METHOD(bool,
@@ -66,9 +76,11 @@ class MockCardUnmaskPromptViewBridge
     : public autofill::CardUnmaskPromptViewBridge {
  public:
   explicit MockCardUnmaskPromptViewBridge(
-      autofill::CardUnmaskPromptControllerImpl* controller)
+      autofill::CardUnmaskPromptControllerImpl* controller,
+      autofill::TestPersonalDataManager* personal_data_manager)
       : CardUnmaskPromptViewBridge(controller,
-                                   [[UIViewController alloc] init]) {}
+                                   [[UIViewController alloc] init],
+                                   personal_data_manager) {}
 
   MockCardUnmaskPromptViewBridge(const MockCardUnmaskPromptViewBridge&) =
       delete;
@@ -87,11 +99,17 @@ class MockCardUnmaskPromptViewBridge
 };
 
 class CardUnmaskPromptViewControllerTest
-    : public LegacyChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
-  CardUnmaskPromptViewControllerTest() = default;
+  CardUnmaskPromptViewControllerTest()
+      : virtual_card_enrollment_enabled_(GetParam()) {}
 
   void SetUp() override {
+    feature_list_.InitWithFeatureState(
+        autofill::features::kAutofillEnableVirtualCards,
+        virtual_card_enrollment_enabled_);
+
     LegacyChromeTableViewControllerTest::SetUp();
     root_view_controller_ = [[UIViewController alloc] init];
 
@@ -100,10 +118,15 @@ class CardUnmaskPromptViewControllerTest
     card_unmask_prompt_controller_ =
         std::make_unique<NiceMock<MockCardUnmaskPromptController>>(
             pref_service_.get());
+    ON_CALL(*card_unmask_prompt_controller_, GetCreditCard)
+        .WillByDefault(testing::ReturnRef(card_));
+
+    personal_data_manager_ =
+        std::make_unique<autofill::TestPersonalDataManager>();
 
     card_unmask_prompt_bridge_ =
         std::make_unique<NiceMock<MockCardUnmaskPromptViewBridge>>(
-            card_unmask_prompt_controller_.get());
+            card_unmask_prompt_controller_.get(), personal_data_manager_.get());
 
     CreateController();
   }
@@ -149,6 +172,17 @@ class CardUnmaskPromptViewControllerTest
                                  cellForRowAtIndexPath:cvc_index_path];
   }
 
+  // Fetches the card info cell from the tableView's datasource.
+  TableViewDetailIconCell* GetCardInfoCell() {
+    return virtual_card_enrollment_enabled_ ? GetCell(/*item=*/0, /*section*/ 0)
+                                            : nil;
+  }
+
+  TableViewDetailIconItem* GetCardInfoItem() {
+    return virtual_card_enrollment_enabled_ ? GetItem(/*item=*/0, /*section=*/0)
+                                            : nil;
+  }
+
   // Fetches the CVC input cell from the tableView's datasource.
   TableViewTextEditCell* GetCVCInputCell() {
     return GetCell(/*item=*/0, /*section*/ 1);
@@ -192,9 +226,12 @@ class CardUnmaskPromptViewControllerTest
     CVCHeaderItem* header_item = HeaderITem();
     EXPECT_TRUE(header_item);
 
+    NSString* expected_title = base::SysUTF16ToNSString(
+        card_unmask_prompt_controller_->GetWindowTitle());
     NSString* expected_instructions = base::SysUTF16ToNSString(
         card_unmask_prompt_controller_->GetInstructionsMessage());
 
+    EXPECT_NSEQ(header_item.titleText, expected_title);
     EXPECT_NSEQ(header_item.instructionsText, expected_instructions);
   }
 
@@ -271,26 +308,32 @@ class CardUnmaskPromptViewControllerTest
     EXPECT_EQ(footer.urls.count, 1LU);
   }
 
-  // Verifies that the correct items are in the tableViewModel when the
-  // expiration date form is displayed.
-  void CheckUpdateExpirationDateForm() {
+  // Verifies that the correct items are in the tableViewModel.
+  void CheckTableViewModel(bool with_expiration_date_item) {
     // Check expected number of sections and items.
     EXPECT_EQ(NumberOfSections(), 2);
-    // First section only has a header.
-    EXPECT_EQ(NumberOfItemsInSection(0), 0);
-    // CVC and expiration date fields.
-    EXPECT_EQ(NumberOfItemsInSection(1), 2);
+    // First section only has a header when experiment is disabled. It has two
+    // (a header and a card info cell) when experiment is enabled.
+    EXPECT_EQ(NumberOfItemsInSection(0),
+              virtual_card_enrollment_enabled_ ? 1 : 0);
+    // CVC and expiration date fields if applicable.
+    EXPECT_EQ(NumberOfItemsInSection(1), with_expiration_date_item ? 2 : 1);
 
     CheckHeaderAndInstructions();
+
+    // Verifying card info is in model.
+    EXPECT_EQ(virtual_card_enrollment_enabled_, !!GetCardInfoItem());
+
     // Verifing CVC field is in model.
     EXPECT_TRUE(CVCInputItem());
 
-    // Verifying expiration date field is in model.
-    EXPECT_TRUE(ExpirationDateItem());
+    // Verifying expiration date field is updated correctly.
+    EXPECT_EQ(with_expiration_date_item, !!ExpirationDateItem());
 
     // Footer shouldn't be in model.
     EXPECT_FALSE(FooterItem());
   }
+
   // Validates that the first responder has the given accessibility identifier.
   void CheckFirstResponderHasAccessibilityIdentifier(
       NSString* accessibility_identifier) {
@@ -306,30 +349,26 @@ class CardUnmaskPromptViewControllerTest
   std::unique_ptr<NiceMock<MockCardUnmaskPromptController>>
       card_unmask_prompt_controller_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_;
+  base::test::ScopedFeatureList feature_list_;
+  autofill::CreditCard card_ = autofill::test::GetMaskedServerCard();
+  bool virtual_card_enrollment_enabled_;
 };
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CardUnmaskPromptViewControllerTest,
+                         ::testing::Bool());
 
 }  // namespace
 
 // Validates that the CVC form is displayed as the initial state of the
 // controller when the card is not expired.
-TEST_F(CardUnmaskPromptViewControllerTest, CVCFormDisplayedAsInitialState) {
+TEST_P(CardUnmaskPromptViewControllerTest, CVCFormDisplayedAsInitialState) {
   CheckController();
-  // Check expected number of sections and items.
-  EXPECT_EQ(NumberOfSections(), 2);
-  // First section only has a header.
-  EXPECT_EQ(NumberOfItemsInSection(0), 0);
-  // CVC and expiration date fields.
-  EXPECT_EQ(NumberOfItemsInSection(1), 1);
 
-  CheckHeaderAndInstructions();
-
-  // Verifing CVC field is in model.
-  EXPECT_TRUE(CVCInputItem());
-
-  // Footer shouldn't be in model.
-  EXPECT_FALSE(FooterItem());
+  CheckTableViewModel(/*with_expiration_date_item=*/false);
 
   // Confirm button should be disabled until valid input is entered.
   EXPECT_FALSE(ConfirmButton().enabled);
@@ -341,7 +380,7 @@ TEST_F(CardUnmaskPromptViewControllerTest, CVCFormDisplayedAsInitialState) {
 
 // Validates that the Expiration Date form is displayed as the initial state of
 // the controller when the card is expired.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        ExpirationDateFormDisplayedAsInitialState) {
   // Recreate controller for the expiration date form state.
   ResetController();
@@ -351,7 +390,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 
   CreateController();
 
-  CheckUpdateExpirationDateForm();
+  CheckTableViewModel(/*with_expiration_date_item=*/true);
 
   // Add controller to view hierarchy to verify CVC field is focused.
   PresentController();
@@ -360,7 +399,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 
 // Validates that the tableViewModel is properly setup for displaying update
 // expiration date form.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        UpdateExpirationDateFormStateHasExpectedItems) {
   auto* prompt_controller =
       static_cast<CardUnmaskPromptViewController*>(controller());
@@ -371,7 +410,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 
   [prompt_controller showUpdateExpirationDateForm];
 
-  CheckUpdateExpirationDateForm();
+  CheckTableViewModel(/*with_expiration_date_item=*/true);
 
   // Add controller to view hierarchy to verify Expiration Date field is
   // focused.
@@ -381,7 +420,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 
 // Validates the model is properly setup for displaying the expiration card link
 // in the controller's footer.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        ShowUpdateExpirationCardLinkAddsFooterWithLink) {
   // Footer shouldn't be in model before link is shown.
   EXPECT_FALSE(FooterItem());
@@ -396,7 +435,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 
 // Validates that the loading state displays an activity indicator in the
 // navigation bar and disables interactions with the input fields.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        ShowLoadingStateDisplaysActivityIndicatorAndDisablesInteractions) {
   auto* prompt_controller =
       static_cast<CardUnmaskPromptViewController*>(controller());
@@ -411,7 +450,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 }
 
 // Validates that an alert is presented for the error state.
-TEST_F(CardUnmaskPromptViewControllerTest, ShowErrorPresentsAlert) {
+TEST_P(CardUnmaskPromptViewControllerTest, ShowErrorPresentsAlert) {
   PresentController();
 
   auto* prompt_controller =
@@ -438,13 +477,13 @@ TEST_F(CardUnmaskPromptViewControllerTest, ShowErrorPresentsAlert) {
 
 // Verifies that submitting the CVC form forwards the CVC value to
 // CardUnmaskPromptController.
-TEST_F(CardUnmaskPromptViewControllerTest, TestSubmittingCVCForm) {
+TEST_P(CardUnmaskPromptViewControllerTest, TestSubmittingCVCForm) {
   CheckSubmittingForm(/*CVC=*/@"123");
 }
 
 // Verifies that submitting the update expiration date form forwards CVC and
 // expiration date to CardUnmaskPromptController/
-TEST_F(CardUnmaskPromptViewControllerTest, TestSubmittingExpirationDateForm) {
+TEST_P(CardUnmaskPromptViewControllerTest, TestSubmittingExpirationDateForm) {
   auto* prompt_controller =
       static_cast<CardUnmaskPromptViewController*>(controller());
   [prompt_controller showUpdateExpirationDateForm];
@@ -453,7 +492,7 @@ TEST_F(CardUnmaskPromptViewControllerTest, TestSubmittingExpirationDateForm) {
 }
 
 // Verifies that the controller is dismissed after an error.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        TestDismissingViewControllerAfterError) {
   auto* prompt_controller =
       static_cast<CardUnmaskPromptViewController*>(controller());
@@ -464,7 +503,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 }
 
 // Verifies that the expiration date link is displayed after an error.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        TestShowingUpdateExpirationDateLinkAfterError) {
   auto* prompt_controller =
       static_cast<CardUnmaskPromptViewController*>(controller());
@@ -475,7 +514,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 }
 
 // Verifies that the expiration date form is displayed after an error.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        TestShowingUpdateExpirationDateFormAfterError) {
   auto* prompt_controller =
       static_cast<CardUnmaskPromptViewController*>(controller());
@@ -485,11 +524,11 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 
   [prompt_controller onErrorAlertDismissedAndShouldCloseOnDismiss:NO];
 
-  CheckUpdateExpirationDateForm();
+  CheckTableViewModel(/*with_expiration_date_item=*/true);
 }
 
 // Verifies that the icon in the CVC input cell is hidden from Voice Over.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        TestCVCCellIconIsHiddenFromVoiceOver) {
   auto* CVC_cell = GetCVCInputCell();
   ASSERT_TRUE(CVC_cell);
@@ -498,7 +537,7 @@ TEST_F(CardUnmaskPromptViewControllerTest,
 
 // Verifies that the textField in the CVC input cell does not accept more than 4
 // digits.
-TEST_F(CardUnmaskPromptViewControllerTest,
+TEST_P(CardUnmaskPromptViewControllerTest,
        TestCVCTextFieldRejectsTooLongCVCValues) {
   auto* CVC_field = GetCVCInputCell().textField;
   ASSERT_TRUE(CVC_field);

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"

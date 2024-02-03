@@ -46,10 +46,10 @@ class ScrollableView : public views::View {
   ScrollableView& operator=(const ScrollableView&) = delete;
   ~ScrollableView() override = default;
 
-  void Layout() override;
+  void Layout(PassKey) override;
 };
 
-void ScrollableView::Layout() {
+void ScrollableView::Layout(PassKey) {
   gfx::Size pref = GetPreferredSize();
   int width = pref.width();
   int height = pref.height();
@@ -59,7 +59,7 @@ void ScrollableView::Layout() {
   }
   SetBounds(x(), y(), width, height);
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 BEGIN_METADATA(ScrollableView)
@@ -193,7 +193,7 @@ void MediaGalleriesDialogViews::InitChildViews() {
 
 void MediaGalleriesDialogViews::UpdateGalleries() {
   InitChildViews();
-  contents_->Layout();
+  contents_->DeprecatedLayoutImmediately();
 
   if (ControllerHasWebContents())
     DialogModelChanged();

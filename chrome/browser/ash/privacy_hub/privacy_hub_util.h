@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/time/time.h"
+
 class AppAccessNotifier;
 
 namespace ash {
@@ -53,6 +55,9 @@ class ScopedCameraLedFallbackForTesting {
 
 // Sets an AppAccessNotifier instance to be used by the privacy hub
 void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier);
+
+// Returns a pair with sunrise and sunset time.
+std::pair<base::Time, base::Time> SunriseSunsetSchedule();
 
 }  // namespace privacy_hub_util
 

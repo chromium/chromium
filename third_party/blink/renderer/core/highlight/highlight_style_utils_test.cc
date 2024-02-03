@@ -100,7 +100,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
       To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
   Window().getSelection()->setBaseAndExtent(div_node, 0, div_node, 1);
   Compositor().BeginFrame();
-  absl::optional<Color> previous_layer_color;
+  std::optional<Color> previous_layer_color;
 
   std::unique_ptr<PaintController> controller{
       std::make_unique<PaintController>()};
@@ -148,7 +148,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritanceNoRoot) {
   Compositor().BeginFrame();
 
   const ComputedStyle& div_style = div_node->ComputedStyleRef();
-  absl::optional<Color> previous_layer_color;
+  std::optional<Color> previous_layer_color;
   Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div_style, div_node, previous_layer_color,
       kPseudoIdSelection);

@@ -20,7 +20,7 @@ struct GetNextVariableResult {
 
   // The variable name and the portion of the string following it, if one was
   // found.
-  absl::optional<std::pair<types::VariableName, SourceString>> tail;
+  std::optional<std::pair<types::VariableName, SourceString>> tail;
 };
 
 GetNextVariableResult GetNextVariable(const SourceString input) {
@@ -55,7 +55,7 @@ GetNextVariableResult GetNextVariable(const SourceString input) {
         .head = head, .tail = std::make_pair(var_name, remaining_input)};
   }
 
-  return GetNextVariableResult{.head = input, .tail = absl::nullopt};
+  return GetNextVariableResult{.head = input, .tail = std::nullopt};
 }
 
 }  // namespace
@@ -73,11 +73,11 @@ VariableDictionary::VariableDictionary(VariableDictionary&&) = default;
 VariableDictionary& VariableDictionary::operator=(VariableDictionary&&) =
     default;
 
-absl::optional<base::StringPiece> VariableDictionary::Find(
+std::optional<base::StringPiece> VariableDictionary::Find(
     types::VariableName name) const& {
   auto iter = entries_.find(name.GetName());
   if (iter == entries_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return *iter->second;

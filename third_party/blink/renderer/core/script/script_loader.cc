@@ -332,6 +332,24 @@ bool IsEligibleForDelay(const Resource& resource,
     return false;
   }
 
+  bool is_ad_resource = resource.GetResourceRequest().IsAdResource();
+  static const features::AsyncScriptExperimentalSchedulingTarget target =
+      features::kDelayAsyncScriptExecutionTargetParam.Get();
+  switch (target) {
+    case features::AsyncScriptExperimentalSchedulingTarget::kAds:
+      if (!is_ad_resource) {
+        return false;
+      }
+      break;
+    case features::AsyncScriptExperimentalSchedulingTarget::kNonAds:
+      if (is_ad_resource) {
+        return false;
+      }
+      break;
+    case features::AsyncScriptExperimentalSchedulingTarget::kBoth:
+      break;
+  }
+
   static const features::DelayAsyncScriptTarget delay_async_script_target =
       features::kDelayAsyncScriptTargetParam.Get();
   switch (delay_async_script_target) {
@@ -816,7 +834,7 @@ PendingScript* ScriptLoader::PrepareScript(
         context_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
             url,
             /*element=*/nullptr,
-            /*request_id=*/absl::nullopt)) {
+            /*request_id=*/std::nullopt)) {
       options.SetAttributionReportingEligibility(
           ScriptFetchOptions::AttributionReportingEligibility::kEligible);
     }

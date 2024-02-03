@@ -51,7 +51,7 @@ class ContentSettingImageModel {
     NOTIFICATIONS_QUIET_PROMPT = 17,
     CLIPBOARD_READ_WRITE = 18,
     STORAGE_ACCESS = 19,
-    MIDI = 20,
+    // MIDI = 20, // Deprecated.
 
     NUM_IMAGE_TYPES
   };

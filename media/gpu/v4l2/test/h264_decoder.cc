@@ -909,7 +909,7 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
   const H264SPS* sps = parser->GetSPS(sps_id);
   CHECK(sps);
 
-  absl::optional<gfx::Size> coded_size = sps->GetCodedSize();
+  std::optional<gfx::Size> coded_size = sps->GetCodedSize();
   CHECK(coded_size);
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);

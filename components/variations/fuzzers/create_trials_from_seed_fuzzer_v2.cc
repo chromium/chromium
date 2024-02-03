@@ -29,8 +29,12 @@ struct Environment {
 
 EntropyProviders CreateEntropyProviders(
     const CreateTrialsFromSeedTestCase::EntropyValues& entropy_values) {
-  return EntropyProviders(entropy_values.client_id(),
-                          {entropy_values.low_entropy(), 8000});
+  // TODO(crbug.com/1518402): Add support for fuzzing seeds that contains a
+  // layer with LIMITED entropy mode after the limited entropy randomization
+  // logic lands.
+  return EntropyProviders(
+      entropy_values.client_id(), {entropy_values.low_entropy(), 8000},
+      /*limited_entropy_randomization_source=*/std::string_view());
 }
 
 std::unique_ptr<ClientFilterableState> CreateClientFilterableState(

@@ -128,7 +128,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   auto root_element_background_painting_state =
       layout_view_.FirstFragment().ContentsProperties();
 
-  absl::optional<ScopedPaintChunkProperties> scoped_properties;
+  std::optional<ScopedPaintChunkProperties> scoped_properties;
 
   bool painted_separate_backdrop = false;
   bool painted_separate_effect = false;

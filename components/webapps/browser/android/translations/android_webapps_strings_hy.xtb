@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1213425325105380833">Վերականգնեք վեբ հավելվածները, որոնք վերջերս օգտագործել եք այս հաշվի հետ կապված սարքերում</translation>
+<translation id="1786044937610313874">Դյուրանցումները բացել Chrome-ում</translation>
+<translation id="204914487372604757">Ստեղծել դյուրանցում</translation>
 <translation id="2065911435109240297">Վերականգնեք ձեր վեբ հավելվածները</translation>
 <translation id="2111649875343992405">Դիտեք, թե որ վեբ հավելվածներն եք ուզում վերականգնել</translation>
 <translation id="2139186145475833000">Ավելացնել գլխավոր էկրանին</translation>
@@ -10,8 +12,10 @@
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="3910402514791813257">Չհաջողվեց տեղադրել</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
+<translation id="4338600611020922010">Ավելացնել հիմնական էկրանին</translation>
 <translation id="4665282149850138822"><ph name="NAME" /> կայքն ավելացվեց ձեր հիմնական էկրանին</translation>
 <translation id="5250483651202458397">Սքրինշոթ։ Հպեք՝ փակելու համար։</translation>
+<translation id="5684726956335420505">Ընտրեք, թե ինչպես ավելացնել հավելվածը հիմնական էկրանին</translation>
 <translation id="5972844218283131174">Ապընտրել բոլորը</translation>
 <translation id="6838423508083736333">Անցած ամիս օգտագործված վեբ հավելվածներ</translation>
 <translation id="6990079615885386641">Ձեռք բերեք հավելվածը Google Play Խանութից՝ <ph name="APP_ACTION" /></translation>

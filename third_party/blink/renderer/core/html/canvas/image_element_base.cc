@@ -148,7 +148,7 @@ gfx::Size ImageElementBase::BitmapSourceSize() const {
 }
 
 static bool HasDimensionsForImage(SVGImage* svg_image,
-                                  absl::optional<gfx::Rect> crop_rect,
+                                  std::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions* options) {
   if (!svg_image->ConcreteObjectSize(gfx::SizeF()).IsEmpty())
     return true;
@@ -161,7 +161,7 @@ static bool HasDimensionsForImage(SVGImage* svg_image,
 
 ScriptPromise ImageElementBase::CreateImageBitmap(
     ScriptState* script_state,
-    absl::optional<gfx::Rect> crop_rect,
+    std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   ImageResourceContent* image_content = CachedImage();

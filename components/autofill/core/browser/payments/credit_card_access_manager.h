@@ -58,7 +58,12 @@ enum class UnmaskAuthFlowType {
   kOtp = 5,
   // FIDO authentication failed and fell back to OTP authentication.
   kOtpFallbackFromFido = 6,
-  kMaxValue = kOtpFallbackFromFido,
+  // VCN 3DS was the only challenge option returned.
+  kThreeDomainSecure = 7,
+  // VCN 3DS was one of the challenge options returned in the challenge
+  // selection dialog, and user selected the 3DS challenge option.
+  kThreeDomainSecureConsentAlreadyGiven = 8,
+  kMaxValue = kThreeDomainSecureConsentAlreadyGiven,
 };
 
 // TODO(crbug.com/1249665): Remove this. This was added and never used.

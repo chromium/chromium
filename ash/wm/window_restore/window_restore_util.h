@@ -15,6 +15,25 @@ class Window;
 
 namespace ash {
 
+namespace full_restore {
+
+// Enum that specifies restore options on startup. The values must not be
+// changed as they are persisted on disk.
+//
+// This is used to record histograms, so do not remove or reorder existing
+// entries.
+enum class RestoreOption {
+  kAlways = 1,
+  kAskEveryTime = 2,
+  kDoNotRestore = 3,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kDoNotRestore,
+};
+
+}  // namespace full_restore
+
 // Builds the WindowInfo for `window`. Optionally passes `activation_index`,
 // which is used to set `WindowInfo.activation_index` if it has value.
 // Otherwise, `WindowInfo.activation_index` will be calculated from

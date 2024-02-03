@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<style>
+my-element:--foo {
+  color: red;
+}
+</style>
+
+<my-element>
+  <div>hello world</div>
+</my-element>
+
+<script>
+class MyElement extends HTMLElement {
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+    this.internals.states.add('--foo');
+  }
+};
+customElements.define('my-element', MyElement);
+</script>

@@ -35,6 +35,7 @@ TAG_SPECIALIZATIONS = {
             'android-r',
             'android-s',
             'android-t',
+            'android-u',
         ],
         'chromeos': [],
         'fuchsia': [],
@@ -52,6 +53,7 @@ TAG_SPECIALIZATIONS = {
         'win': [
             'win8',
             'win10',
+            'win11',
         ],
     },
     'BROWSER_TAGS': {

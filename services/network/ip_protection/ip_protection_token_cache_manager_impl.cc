@@ -131,8 +131,8 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
 }
 
 void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
-    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
-    absl::optional<base::Time> try_again_after) {
+    std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
+    std::optional<base::Time> try_again_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fetching_auth_tokens_ = false;
   if (tokens.has_value()) {
@@ -157,7 +157,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   ScheduleMaybeRefillCache();
 }
 
-absl::optional<network::mojom::BlindSignedAuthTokenPtr>
+std::optional<network::mojom::BlindSignedAuthTokenPtr>
 IpProtectionTokenCacheManagerImpl::GetAuthToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveExpiredTokens();
@@ -167,7 +167,7 @@ IpProtectionTokenCacheManagerImpl::GetAuthToken() {
   VLOG(2) << "IPPATC::GetAuthToken with " << cache_.size()
           << " tokens available";
 
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> result;
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> result;
   if (cache_.size() > 0) {
     result = std::move(cache_.front());
     cache_.pop_front();

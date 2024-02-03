@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1384959399684842514">Yuklab olish pauza qilindi.</translation>
 <translation id="1415402041810619267">URL manzil qisqartirildi</translation>
-<translation id="1426410128494586442">Ha</translation>
 <translation id="1434873037477293673">narx tushishi haqida bildirgilar</translation>
 <translation id="1448064542941920355">Kichiklashtirish</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ta sayt}other{<ph name="SITE_COUNT" /> ta sayt}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> kameradan foydalanishiga ruxsat berish uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali kamerani yoqing.</translation>
 <translation id="2235344399760031203">Tashqi cookie fayllar bloklandi</translation>
 <translation id="2238944249568001759">Oxirgi varaq asosida tavsiya etiladigan qidiruvlar</translation>
+<translation id="2241587408274973373">Yangi varaq sahifasi bildirgilari</translation>
 <translation id="2241634353105152135">Bir marta</translation>
 <translation id="2253414712144136228">Olib tashlash: <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ta sayt bloklangan}other{# ta sayt bloklangan}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Saytlar shaxsni tasdiqlash xizmatlariga kirish oynalarini chiqarishi mumkin</translation>
 <translation id="2790501146643349491">Yoqilsa, yaqinda yopilgan saytlar axborot yuborish va qabul qilishni toʻxtatishi mumkin. Oʻchirilsa, toʻxtata olmaydi.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> uchun barcha sayt ruxsatnomalari ilk holatga qaytarilsinmi?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobil versiyani ochish</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Avvalgi musiqa</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Sertifikatlarni ko‘rish vositasi</translation>
 <translation id="2979365474350987274">Tashqi cookie fayllar cheklangan</translation>
 <translation id="3008272652534848354">Ruxsatlarni qasliga qaytarish</translation>
-<translation id="3013291976881901233">MIDI qurilmalar</translation>
 <translation id="301521992641321250">Avtomatik bloklangan</translation>
 <translation id="3069226013421428034">Muayyan sayt uchun tashqi xizmatga kirishga ruxsat bering.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Muddati ertaga tugaydi}other{# kundan keyin muddati tugaydi}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB qurilmaga ulandi</translation>
 <translation id="4194328954146351878">Saytlar NFC qurilmalarni koʻrishi va ulardagi axborotni oʻzgartirishidan oldin ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="4200726100658658164">Joylashuv sozlamalarini ochish</translation>
-<translation id="4212246570487010370">Saytlarni kezishda davom etish</translation>
 <translation id="4226663524361240545">Bildirishnoma kelganida qurilma tebranishi mumkin</translation>
 <translation id="4259722352634471385">Sahifa bloklandi: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Pastga tushish</translation>
 <translation id="6749077623962119521">Ruxsatlar tiklansinmi?</translation>
 <translation id="6766622839693428701">Yopish uchun pastga suring.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Manba: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> uchun parametr tanlang</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6818926723028410516">Fayllarni tanlang</translation>

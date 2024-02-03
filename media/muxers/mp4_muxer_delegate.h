@@ -6,6 +6,7 @@
 #define MEDIA_MUXERS_MP4_MUXER_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "media/formats/mp4/writable_box_definitions.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/muxer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -32,14 +32,14 @@ class Mp4MuxerDelegateInterface {
   virtual void AddVideoFrame(
       const Muxer::VideoParameters& params,
       std::string encoded_data,
-      absl::optional<VideoEncoder::CodecDescription> codec_description,
+      std::optional<VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame) = 0;
 
   virtual void AddAudioFrame(
       const AudioParameters& params,
       std::string encoded_data,
-      absl::optional<AudioEncoder::CodecDescription> codec_description,
+      std::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) = 0;
 
   virtual bool Flush() = 0;
@@ -61,14 +61,14 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   void AddVideoFrame(
       const Muxer::VideoParameters& params,
       std::string encoded_data,
-      absl::optional<VideoEncoder::CodecDescription> codec_description,
+      std::optional<VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame) override;
 
   void AddAudioFrame(
       const AudioParameters& params,
       std::string encoded_data,
-      absl::optional<AudioEncoder::CodecDescription> codec_description,
+      std::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
   bool Flush() override;
@@ -108,6 +108,11 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   void Reset();
   void LogBoxInfo() const;
 
+  // The `MaybeFlushForStartup` function will be called to write the file
+  // type box when the first frame is added, which makes `onstart` event
+  // fired. It will return the size of the file type box.
+  size_t MaybeFlushForStartup();
+
   std::unique_ptr<Mp4MuxerContext> context_;
   Muxer::WriteDataCB write_callback_;
 
@@ -120,8 +125,8 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   // video and audio index is a 0 based index that is an item of the container.
   // The track id would be plus one on this index value.
-  absl::optional<size_t> video_track_index_;
-  absl::optional<size_t> audio_track_index_;
+  std::optional<size_t> video_track_index_;
+  std::optional<size_t> audio_track_index_;
   int next_track_index_ = 0;
 
   // Duration time delta for the video track.
@@ -136,6 +141,9 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   int audio_sample_rate_ = 0;
 
   base::TimeDelta max_audio_only_fragment_duration_;
+
+  // Flush for startup is only called once.
+  absl::optional<size_t> written_file_type_box_size_;
 
   Muxer::WriteDataCB write_data_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 

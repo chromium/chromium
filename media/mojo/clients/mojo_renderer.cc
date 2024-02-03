@@ -123,7 +123,7 @@ void MojoRenderer::InitializeRendererFromUrl(media::RendererClient* client) {
       url_params.top_frame_origin, url_params.has_storage_access,
       url_params.allow_credentials, url_params.is_hls, url_params.headers);
   remote_renderer_->Initialize(client_receiver_.BindNewEndpointAndPassRemote(),
-                               absl::nullopt, std::move(media_url_params),
+                               std::nullopt, std::move(media_url_params),
                                base::BindOnce(&MojoRenderer::OnInitialized,
                                               base::Unretained(this), client));
 }
@@ -142,7 +142,7 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
     return;
   }
 
-  absl::optional<base::UnguessableToken> cdm_id = cdm_context->GetCdmId();
+  std::optional<base::UnguessableToken> cdm_id = cdm_context->GetCdmId();
   if (!cdm_id) {
     DVLOG(2) << "MojoRenderer only works with remote CDMs but the CDM ID "
                 "is invalid.";
@@ -158,8 +158,7 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
                                                   base::Unretained(this)));
 }
 
-void MojoRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+void MojoRenderer::SetLatencyHint(std::optional<base::TimeDelta> latency_hint) {
   // TODO(chcunningham): Proxy to remote renderer if needed.
 }
 

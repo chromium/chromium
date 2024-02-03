@@ -40,7 +40,7 @@ class WebStateID;
 @end
 
 // Creates a drag item that encapsulates a tab and a user activity to move the
-// tab to a new window.
+// tab to a new window. If `web_state` is nil, returns nil.
 UIDragItem* CreateTabDragItem(web::WebState* web_state);
 
 // Creates a drag item that encapsulates an URL and a user activity to open the

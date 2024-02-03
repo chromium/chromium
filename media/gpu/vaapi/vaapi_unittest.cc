@@ -4,18 +4,17 @@
 
 // This has to be included first.
 // See http://code.google.com/p/googletest/issues/detail?id=371
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include <drm_fourcc.h>
 #include <gbm.h>
 #include <unistd.h>
-#include <map>
-#include <vector>
-
 #include <va/va.h>
 #include <va/va_drmcommon.h>
 #include <va/va_str.h>
 #include <xf86drm.h>
+
+#include <map>
+#include <optional>
+#include <vector>
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
@@ -40,7 +39,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/linux/gbm_defines.h"
 
 #ifndef I915_FORMAT_MOD_4_TILED
@@ -50,7 +49,7 @@
 namespace media {
 namespace {
 
-absl::optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
+std::optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
   // A map between VideoCodecProfile and VAProfile.
   const std::map<VideoCodecProfile, VAProfile> kProfileMap = {
     // VAProfileH264Baseline is deprecated in <va/va.h> from libva 2.0.0.
@@ -68,12 +67,12 @@ absl::optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   };
   auto it = kProfileMap.find(profile);
-  return it != kProfileMap.end() ? absl::make_optional<VAProfile>(it->second)
-                                 : absl::nullopt;
+  return it != kProfileMap.end() ? std::make_optional<VAProfile>(it->second)
+                                 : std::nullopt;
 }
 
 // Converts the given string to VAProfile
-absl::optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
+std::optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
   const std::map<std::string, VAProfile> kStringToVAProfile = {
     {"VAProfileNone", VAProfileNone},
     {"VAProfileH264ConstrainedBaseline", VAProfileH264ConstrainedBaseline},
@@ -98,12 +97,12 @@ absl::optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
 
   auto it = kStringToVAProfile.find(va_profile);
   return it != kStringToVAProfile.end()
-             ? absl::make_optional<VAProfile>(it->second)
-             : absl::nullopt;
+             ? std::make_optional<VAProfile>(it->second)
+             : std::nullopt;
 }
 
 // Converts the given string to VAEntrypoint
-absl::optional<VAEntrypoint> StringToVAEntrypoint(
+std::optional<VAEntrypoint> StringToVAEntrypoint(
     const std::string& va_entrypoint) {
   const std::map<std::string, VAEntrypoint> kStringToVAEntrypoint = {
     {"VAEntrypointVLD", VAEntrypointVLD},
@@ -118,8 +117,8 @@ absl::optional<VAEntrypoint> StringToVAEntrypoint(
 
   auto it = kStringToVAEntrypoint.find(va_entrypoint);
   return it != kStringToVAEntrypoint.end()
-             ? absl::make_optional<VAEntrypoint>(it->second)
-             : absl::nullopt;
+             ? std::make_optional<VAEntrypoint>(it->second)
+             : std::nullopt;
 }
 
 unsigned int ToVaRTFormat(uint32_t va_fourcc) {
@@ -659,14 +658,14 @@ TEST_P(VaapiVppTest, BlitWithVAAllocatedSurfaces) {
 
   auto scoped_surfaces = wrapper->CreateScopedVASurfaces(
       va_rt_format_in, kInputSize, {VaapiWrapper::SurfaceUsageHint::kGeneric},
-      1u, /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+      1u, /*visible_size=*/std::nullopt, /*va_fourcc=*/std::nullopt);
   ASSERT_FALSE(scoped_surfaces.empty());
   std::unique_ptr<ScopedVASurface> scoped_surface_in =
       std::move(scoped_surfaces[0]);
 
   scoped_surfaces = wrapper->CreateScopedVASurfaces(
       va_rt_format_out, kOutputSize, {VaapiWrapper::SurfaceUsageHint::kGeneric},
-      1u, /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+      1u, /*visible_size=*/std::nullopt, /*va_fourcc=*/std::nullopt);
   ASSERT_FALSE(scoped_surfaces.empty());
   std::unique_ptr<ScopedVASurface> scoped_surface_out =
       std::move(scoped_surfaces[0]);
@@ -773,7 +772,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   auto scoped_surfaces = wrapper->CreateScopedVASurfaces(
       va_rt_format, resolution, {VaapiWrapper::SurfaceUsageHint::kVideoDecoder},
       1u,
-      /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+      /*visible_size=*/std::nullopt, /*va_fourcc=*/std::nullopt);
   ASSERT_FALSE(scoped_surfaces.empty());
   const auto scoped_va_surface = std::move(scoped_surfaces[0]);
   wrapper->DestroyContext();

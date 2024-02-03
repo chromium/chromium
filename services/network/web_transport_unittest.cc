@@ -156,7 +156,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   }
 
   void OnHandshakeFailed(
-      const absl::optional<net::WebTransportError>& error) override {
+      const std::optional<net::WebTransportError>& error) override {
     has_seen_handshake_failure_ = true;
     handshake_error_ = error;
     receiver_.reset();
@@ -183,7 +183,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   bool has_seen_mojo_connection_error() const {
     return has_seen_mojo_connection_error_;
   }
-  absl::optional<net::WebTransportError> handshake_error() const {
+  std::optional<net::WebTransportError> handshake_error() const {
     return handshake_error_;
   }
 
@@ -196,7 +196,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   bool has_seen_connection_establishment_ = false;
   bool has_seen_handshake_failure_ = false;
   bool has_seen_mojo_connection_error_ = false;
-  absl::optional<net::WebTransportError> handshake_error_;
+  std::optional<net::WebTransportError> handshake_error_;
 };
 
 class TestClient final : public mojom::WebTransportClient {

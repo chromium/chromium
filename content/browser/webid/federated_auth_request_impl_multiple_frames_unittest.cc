@@ -225,7 +225,7 @@ class FederatedAuthRequestImplMultipleFramesTest
         std::make_unique<TestFederatedIdentityModalDialogViewDelegate>();
     mock_identity_registry_ = std::make_unique<NiceMock<MockIdentityRegistry>>(
         web_contents(), test_modal_dialog_view_delegate_->GetWeakPtr(),
-        url::Origin::Create(GURL(kIdpUrl)));
+        GURL(kIdpUrl));
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kTopFrameUrl), ui::PAGE_TRANSITION_LINK);

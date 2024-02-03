@@ -64,7 +64,7 @@ class VideoSourceProviderImpl : public mojom::VideoSourceProvider {
   int closed_but_not_yet_disconnected_client_count_ = 0;
   mojo::ReceiverSet<mojom::VideoSourceProvider> receivers_;
   std::map<std::string, std::unique_ptr<VideoSourceImpl>> sources_;
-  absl::optional<DevicesChangedNotifier> devices_changed_notifier_;
+  std::optional<DevicesChangedNotifier> devices_changed_notifier_;
 };
 
 }  // namespace video_capture

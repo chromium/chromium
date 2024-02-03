@@ -27,8 +27,28 @@ class ASH_EXPORT PickerSearchResult {
     bool operator==(const TextData&) const;
   };
 
+  struct EmojiData {
+    std::u16string emoji;
+
+    bool operator==(const EmojiData&) const;
+  };
+
+  struct SymbolData {
+    std::u16string symbol;
+
+    bool operator==(const SymbolData&) const;
+  };
+
+  struct EmoticonData {
+    std::u16string emoticon;
+
+    bool operator==(const EmoticonData&) const;
+  };
+
   struct GifData {
     GURL url;
+    // Width and height of the GIF at `url`.
+    gfx::Size dimensions;
 
     bool operator==(const GifData&) const;
   };
@@ -40,7 +60,12 @@ class ASH_EXPORT PickerSearchResult {
     bool operator==(const BrowsingHistoryData&) const;
   };
 
-  using Data = std::variant<TextData, GifData, BrowsingHistoryData>;
+  using Data = std::variant<TextData,
+                            EmojiData,
+                            SymbolData,
+                            EmoticonData,
+                            GifData,
+                            BrowsingHistoryData>;
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
@@ -49,7 +74,10 @@ class ASH_EXPORT PickerSearchResult {
   static PickerSearchResult BrowsingHistory(const GURL& url,
                                             ui::ImageModel icon);
   static PickerSearchResult Text(std::u16string_view text);
-  static PickerSearchResult Gif(const GURL& url);
+  static PickerSearchResult Emoji(std::u16string_view emoji);
+  static PickerSearchResult Symbol(std::u16string_view symbol);
+  static PickerSearchResult Emoticon(std::u16string_view emoticon);
+  static PickerSearchResult Gif(const GURL& url, const gfx::Size& dimensions);
 
   const Data& data() const;
 

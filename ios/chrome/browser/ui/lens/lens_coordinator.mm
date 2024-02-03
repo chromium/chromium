@@ -467,6 +467,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       ios::provider::IsLensSupported() &&
       GetApplicationContext()->GetLocalState()->GetBoolean(
           prefs::kLensCameraAssistedSearchPolicyAllowed) &&
+      !base::FeatureList::IsEnabled(kDisableLensCamera) &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
   [sharedDefaults setBool:enableLensInWidget forKey:enableLensInWidgetKey];
 }

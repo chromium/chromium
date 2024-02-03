@@ -11,10 +11,10 @@
  *   <settings-dropdown-menu pref="{{prefs.foo}}">
  *   </settings-dropdown-menu>
  */
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/md_select.css.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
+import '//resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
 import {assert} from '//resources/js/assert.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

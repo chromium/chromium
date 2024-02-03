@@ -152,9 +152,8 @@ class QuasiWebSocketHttpResponse : public net::test_server::HttpResponse {
     const auto it = request.headers.find("Sec-WebSocket-Key");
     const std::string key =
         it == request.headers.end() ? std::string() : it->second;
-    base::Base64Encode(
-        base::SHA1HashString(key + net::websockets::kWebSocketGuid),
-        &accept_hash_);
+    accept_hash_ = base::Base64Encode(
+        base::SHA1HashString(key + net::websockets::kWebSocketGuid));
   }
   ~QuasiWebSocketHttpResponse() override {}
 

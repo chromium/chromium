@@ -371,19 +371,19 @@ CustomElementDefinition* ElementRareDataVector::GetCustomElementDefinition()
 }
 
 void ElementRareDataVector::SetLastRememberedBlockSize(
-    absl::optional<LayoutUnit> size) {
+    std::optional<LayoutUnit> size) {
   SetOptionalField(FieldId::kLastRememberedBlockSize, size);
 }
 void ElementRareDataVector::SetLastRememberedInlineSize(
-    absl::optional<LayoutUnit> size) {
+    std::optional<LayoutUnit> size) {
   SetOptionalField(FieldId::kLastRememberedInlineSize, size);
 }
 
-absl::optional<LayoutUnit> ElementRareDataVector::LastRememberedBlockSize()
+std::optional<LayoutUnit> ElementRareDataVector::LastRememberedBlockSize()
     const {
   return GetOptionalField<LayoutUnit>(FieldId::kLastRememberedBlockSize);
 }
-absl::optional<LayoutUnit> ElementRareDataVector::LastRememberedInlineSize()
+std::optional<LayoutUnit> ElementRareDataVector::LastRememberedInlineSize()
     const {
   return GetOptionalField<LayoutUnit>(FieldId::kLastRememberedInlineSize);
 }

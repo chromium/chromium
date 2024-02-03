@@ -4,7 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import {PrintPreviewLayoutSettingsElement} from 'chrome://print/print_preview.js';
+import type {PrintPreviewLayoutSettingsElement} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

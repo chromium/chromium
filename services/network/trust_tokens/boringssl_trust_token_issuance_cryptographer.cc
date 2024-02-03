@@ -5,13 +5,13 @@
 #include "services/network/trust_tokens/boringssl_trust_token_issuance_cryptographer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "services/network/trust_tokens/boringssl_trust_token_state.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
@@ -56,17 +56,17 @@ bool BoringsslTrustTokenIssuanceCryptographer::AddKey(std::string_view key) {
   return true;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 BoringsslTrustTokenIssuanceCryptographer::BeginIssuance(size_t num_tokens) {
   if (!state_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ScopedBoringsslBytes raw_issuance_request;
   if (!TRUST_TOKEN_CLIENT_begin_issuance(
           state_->Get(), raw_issuance_request.mutable_ptr(),
           raw_issuance_request.mutable_len(), num_tokens)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::Base64Encode(raw_issuance_request.as_span());

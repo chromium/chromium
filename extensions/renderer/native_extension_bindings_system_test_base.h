@@ -95,16 +95,6 @@ class TestIPCMessageSender : public IPCMessageSender {
            const std::string& channel_name,
            mojo::PendingAssociatedRemote<mojom::MessagePort> port,
            mojo::PendingAssociatedReceiver<mojom::MessagePortHost> port_host));
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  MOCK_METHOD2(SendOpenMessagePort,
-               void(int routing_id, const PortId& port_id));
-  MOCK_METHOD3(SendCloseMessagePort,
-               void(int routing_id, const PortId& port_id, bool close_channel));
-  MOCK_METHOD2(SendPostMessageToPort,
-               void(const PortId& port_id, const Message& message));
-  MOCK_METHOD2(SendMessageResponsePending,
-               void(int routing_id, const PortId& port_id));
-#endif
   MOCK_METHOD6(SendActivityLogIPC,
                void(ScriptContext* script_context,
                     const ExtensionId& extension_id,

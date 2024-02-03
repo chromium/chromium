@@ -292,7 +292,7 @@ void NavigationManagerImpl::AddPendingItem(
       GetLastCommittedItemInCurrentOrRestoredSession();
   pending_item_ = CreateNavigationItemWithRewriters(
       url, referrer, navigation_type, initiation_type, https_upgrade_type,
-      last_committed_item ? last_committed_item->GetURL() : GURL::EmptyGURL(),
+      last_committed_item ? last_committed_item->GetURL() : GURL(),
       &transient_url_rewriters_);
   RemoveTransientURLRewriters();
 
@@ -300,7 +300,7 @@ void NavigationManagerImpl::AddPendingItem(
       url == next_pending_url_should_skip_serialization_) {
     pending_item_->SetShouldSkipSerialization(true);
   }
-  next_pending_url_should_skip_serialization_ = GURL::EmptyGURL();
+  next_pending_url_should_skip_serialization_ = GURL();
 
   // No need to detect renderer-initiated back/forward navigation in detached
   // mode because there is no renderer.
@@ -784,9 +784,8 @@ void NavigationManagerImpl::LoadURLWithParams(
   if (pending_item) {
     NavigationItem* last_committed_item =
         GetLastCommittedItemInCurrentOrRestoredSession();
-    GURL last_committed_url = last_committed_item
-                                  ? last_committed_item->GetVirtualURL()
-                                  : GURL::EmptyGURL();
+    GURL last_committed_url =
+        last_committed_item ? last_committed_item->GetVirtualURL() : GURL();
     GURL pending_url = pending_item->GetURL();
     if (last_committed_url != pending_url &&
         last_committed_url.EqualsIgnoringRef(pending_url)) {
@@ -1143,11 +1142,9 @@ NavigationManagerImpl::GetLastCommittedItemInCurrentOrRestoredSession() const {
     GURL document_url = delegate_->GetCurrentURL();
     if (!last_committed_web_view_item_) {
       last_committed_web_view_item_ = CreateNavigationItemWithRewriters(
-          /*url=*/GURL::EmptyGURL(), Referrer(),
-          ui::PageTransition::PAGE_TRANSITION_LINK,
+          /*url=*/GURL(), Referrer(), ui::PageTransition::PAGE_TRANSITION_LINK,
           NavigationInitiationType::RENDERER_INITIATED, HttpsUpgradeType::kNone,
-          /*previous_url=*/GURL::EmptyGURL(),
-          nullptr /* use default rewriters only */);
+          /*previous_url=*/GURL(), nullptr /* use default rewriters only */);
       last_committed_web_view_item_->SetUntrusted();
     }
     last_committed_web_view_item_->SetURL(document_url);

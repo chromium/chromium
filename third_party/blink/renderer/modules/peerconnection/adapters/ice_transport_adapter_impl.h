@@ -49,7 +49,7 @@ class IceTransportAdapterImpl final : public IceTransportAdapter,
                            const cricket::Candidate& candidate);
   void OnStateChanged(cricket::IceTransportInternal* transport);
   void OnNetworkRouteChanged(
-      absl::optional<rtc::NetworkRoute> new_network_route);
+      std::optional<rtc::NetworkRoute> new_network_route);
   void OnRoleConflict(cricket::IceTransportInternal* transport);
 
   const raw_ptr<Delegate, ExperimentalRenderer> delegate_;

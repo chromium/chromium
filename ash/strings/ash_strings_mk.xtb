@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Отвора линк во нова картичка и останува во тековната картичка</translation>
 <translation id="353086728817903341">Поврзано со <ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="3533126039236445965">Апликации на полица</translation>
+<translation id="3537350467437346467">Прегледано од вас</translation>
 <translation id="3539957339480430241">Точка на пристап на <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Отфрлете го поставувањето прегледување на неодамнешните фотографии и аудиовизуелни содржини на телефонот</translation>
 <translation id="3542066395059568317">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да кликнете со десното копче за да ги отстраните препораките.</translation>
+<translation id="3547318469722231257">Изменето од вас</translation>
 <translation id="3552189655002856821">Wi-Fi е исклучено</translation>
 <translation id="3554215588514239132">Ја прикажува или ја сокрива таблата со „Програмерски алатки“</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> е прикачена</translation>
@@ -702,6 +704,7 @@
 <translation id="385300504083504382">Почеток</translation>
 <translation id="3859364108019690">Не може да се стримуваат апликации</translation>
 <translation id="3861651314799684201">Притиснете Enter за да го снимите целиот екран</translation>
+<translation id="3882323608730650973">Изменето</translation>
 <translation id="3886872229787704059">Отворено денес</translation>
 <translation id="3891340733213178823">Притиснете Ctrl+Shift+Q двапати за да се одјавите.</translation>
 <translation id="3893630138897523026">ChromeVox (говорни повратни информации)</translation>
@@ -895,6 +898,7 @@
 <translation id="4582666543382004902">Точката на пристап е исклучена за да се користи Wi-Fi. За да користите точка на пристап, исклучете ја Wi-Fi мрежата.</translation>
 <translation id="4585337515783392668">Престани со емитување на непознат приемник</translation>
 <translation id="4596144739579517758">Темната тема е исклучена</translation>
+<translation id="4596442969149038771">Споделено од <ph name="USER" /></translation>
 <translation id="4611292653554630842">Најави се</translation>
 <translation id="462160925400706389">Поврзано: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Потврдете ја сметката</translation>
@@ -1338,6 +1342,7 @@
 <translation id="6298183524022479114">Приспособете го уредов во апликација</translation>
 <translation id="6309219492973062892">Кликнете или допрете ги иконите за полици 1 - 8</translation>
 <translation id="6315170314923504164">Глас</translation>
+<translation id="6319058840130157106">Движење наназад меѓу долниот десен агол, „Стартерот“, лентата за адреси, лентата со обележувачи, отворениот веб-сајт и преземањата</translation>
 <translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6330012934079202188">Се прикажуваат прозорци од сите работни површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од тековната работна површина</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> е управувана сесија со којашто управува <ph name="MANAGER" /></translation>
@@ -1501,6 +1506,7 @@
 <translation id="6981291220124935078">Вклучи пристап</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Резолуцијата е променета на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Кликнете „Потврди“ за да ги задржите промените. Претходните поставки ќе се вратат за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Разгледајте накратко за да дознаете како се користи вашиот Chromebook. Подгответе се во 6 чекори.</translation>
 <translation id="7004910047186208204">Поврзете се на мобилен интернет</translation>
 <translation id="7005239792648594238">Отворете апликација за да започнете</translation>
@@ -1815,6 +1821,7 @@
 <translation id="8314772463905284467">Вклучено е Caps Lock</translation>
 <translation id="8315514906653279104">Се вклучува…</translation>
 <translation id="8331351032546853669">Преземање на чекање</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Избран е прозорецот <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">стартер</translation>
@@ -1921,6 +1928,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирана апликација, блокирана</translation>
 <translation id="8785070478575117577">Поврзи се со <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Движење нанапред меѓу долниот десен агол, „Стартерот“, лентата за адреси, лентата со обележувачи, отворениот веб-сајт и преземањата</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" /></translation>
@@ -2034,6 +2042,7 @@
 <translation id="953431725143473984">Дали да се исклучи уредот?</translation>
 <translation id="954052413789300507">Нема доволно простор за <ph name="FILENAME" />. Ослободете простор.</translation>
 <translation id="954520015070501466">30 мин.</translation>
+<translation id="954786879461589145">Изменето од <ph name="USER" /></translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Без рок</translation>
 <translation id="98120814841227350">Одете на крајот од документот</translation>

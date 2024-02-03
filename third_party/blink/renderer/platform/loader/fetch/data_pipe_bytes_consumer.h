@@ -87,7 +87,7 @@ class PLATFORM_EXPORT DataPipeBytesConsumer final : public BytesConsumer {
   InternalState state_ = InternalState::kWaiting;
   Error error_;
   uint64_t num_read_bytes_ = 0;
-  absl::optional<uint64_t> total_size_;
+  std::optional<uint64_t> total_size_;
   bool is_in_two_phase_read_ = false;
   bool has_pending_notification_ = false;
   bool has_pending_complete_ = false;

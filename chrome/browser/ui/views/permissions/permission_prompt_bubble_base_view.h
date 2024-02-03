@@ -112,11 +112,6 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
  private:
   void SetPromptStyle(PermissionPromptStyle prompt_style);
 
-  // Record UMA Permissions.*.TimeToDecision.|action| metric. Can be
-  // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,
-  // depending on which UI is used.
-  void RecordDecision(permissions::PermissionAction action);
-
   // Convenience methods to convert enum class values to an int used as ViewId
   // and vice-versa.
   static int GetViewId(PermissionDialogButton button) {

@@ -15,9 +15,9 @@ namespace ash {
 namespace sharesheet {
 
 class SharesheetExpandButton : public views::Button {
- public:
-  METADATA_HEADER(SharesheetExpandButton);
+  METADATA_HEADER(SharesheetExpandButton, views::Button)
 
+ public:
   explicit SharesheetExpandButton(PressedCallback callback);
   SharesheetExpandButton(const SharesheetExpandButton&) = delete;
   SharesheetExpandButton& operator=(const SharesheetExpandButton&) = delete;

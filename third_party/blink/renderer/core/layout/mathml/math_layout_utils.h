@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MATHML_MATH_LAYOUT_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MATHML_MATH_LAYOUT_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
@@ -27,10 +28,9 @@ ConstraintSpace CreateConstraintSpaceForMathChild(
     const ConstraintSpace& parent_constraint_space,
     const LayoutInputNode&,
     const LayoutResultCacheSlot = LayoutResultCacheSlot::kLayout,
-    const absl::optional<ConstraintSpace::MathTargetStretchBlockSizes>
-        target_stretch_block_sizes = absl::nullopt,
-    const absl::optional<LayoutUnit> target_stretch_inline_size =
-        absl::nullopt);
+    const std::optional<ConstraintSpace::MathTargetStretchBlockSizes>
+        target_stretch_block_sizes = std::nullopt,
+    const std::optional<LayoutUnit> target_stretch_inline_size = std::nullopt);
 
 MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const ComputedStyle& parent_style,
@@ -55,13 +55,13 @@ inline float RuleThicknessFallback(const ComputedStyle& style) {
 
 LayoutUnit MathAxisHeight(const ComputedStyle& style);
 
-inline absl::optional<float> MathConstant(
+inline std::optional<float> MathConstant(
     const ComputedStyle& style,
     OpenTypeMathSupport::MathConstants constant) {
   const SimpleFontData* font_data = style.GetFont().PrimaryFont();
   return font_data ? OpenTypeMathSupport::MathConstant(
                          font_data->PlatformData().GetHarfBuzzFace(), constant)
-                   : absl::nullopt;
+                   : std::nullopt;
 }
 
 LayoutUnit FractionLineThickness(const ComputedStyle&);
@@ -113,7 +113,7 @@ struct MathMLEmbellishedOperatorProperties {
   LayoutUnit lspace;
   LayoutUnit rspace;
 };
-absl::optional<MathMLEmbellishedOperatorProperties>
+std::optional<MathMLEmbellishedOperatorProperties>
 GetMathMLEmbellishedOperatorProperties(const BlockNode&);
 
 bool IsStretchyOperator(const BlockNode& node, bool stretch_axis_is_vertical);

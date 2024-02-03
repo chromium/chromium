@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/texture_utils.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/image_extractor.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -95,6 +96,11 @@ struct ExternalSource {
   bool valid = false;
 };
 
+struct ExternalImageDstInfo {
+  bool premultiplied_alpha;
+  PredefinedColorSpace color_space;
+};
+
 // TODO(crbug.com/1471372): Avoid extra copy.
 scoped_refptr<StaticBitmapImage> GetImageFromImageData(
     const ImageData* image_data) {
@@ -117,11 +123,13 @@ scoped_refptr<StaticBitmapImage> GetImageFromImageData(
 
 ExternalSource GetExternalSourceFromExternalImage(
     const V8GPUImageCopyExternalImageSource* external_image,
+    const ExternalImageDstInfo& external_image_dst_info,
     ExceptionState& exception_state) {
   ExternalSource external_source;
   ExternalTextureSource external_texture_source;
   CanvasImageSource* canvas_image_source = nullptr;
   CanvasRenderingContextHost* canvas = nullptr;
+
   switch (external_image->GetContentType()) {
     case V8GPUImageCopyExternalImageSource::ContentType::kHTMLVideoElement:
       external_texture_source = GetExternalTextureSourceFromVideoElement(
@@ -241,11 +249,30 @@ ExternalSource GetExternalSourceFromExternalImage(
   if (auto* image = DynamicTo<StaticBitmapImage>(image_for_canvas.get())) {
     external_source.image = image;
   } else {
-    PaintImage paint_image = image_for_canvas->PaintImageForCurrentFrame();
-    if (!paint_image) {
+    // HTMLImageElement input
+    ImageExtractor image_extractor(image_for_canvas.get(),
+                                   external_image_dst_info.premultiplied_alpha,
+                                   PredefinedColorSpaceToSkColorSpace(
+                                       external_image_dst_info.color_space));
+    auto sk_image = image_extractor.GetSkImage();
+
+    if (!sk_image) {
       return external_source;
     }
-    external_source.image = StaticBitmapImage::Create(std::move(paint_image));
+    // Handle LazyGenerated images.
+    if (sk_image->isLazyGenerated()) {
+      SkBitmap bitmap;
+      auto image_info = sk_image->imageInfo();
+      bitmap.allocPixels(image_info, image_info.minRowBytes());
+      if (!sk_image->readPixels(bitmap.pixmap(), 0, 0)) {
+        return external_source;
+      }
+
+      sk_image = SkImages::RasterFromBitmap(bitmap);
+    }
+
+    external_source.image = UnacceleratedStaticBitmapImage::Create(
+        std::move(sk_image), image_for_canvas->CurrentFrameOrientation());
   }
   external_source.width = static_cast<uint32_t>(external_source.image->width());
   external_source.height =
@@ -443,7 +470,7 @@ void GPUQueue::WriteBufferImpl(ScriptState* script_state,
                                const void* data_base_ptr,
                                unsigned data_bytes_per_element,
                                uint64_t data_element_offset,
-                               absl::optional<uint64_t> data_element_count,
+                               std::optional<uint64_t> data_element_count,
                                ExceptionState& exception_state) {
   CHECK_LE(data_bytes_per_element, 8u);
 
@@ -572,8 +599,18 @@ void GPUQueue::copyExternalImageToTexture(
     ExceptionState& exception_state) {
   // "srgb" is the only valid color space for now.
   DCHECK_EQ(destination->colorSpace(), "srgb");
-  ExternalSource source =
-      GetExternalSourceFromExternalImage(copyImage->source(), exception_state);
+
+  // Extract color space info before getting source image to handle some
+  // redecoded cases like ImageElement.
+  PredefinedColorSpace color_space;
+  if (!ValidateAndConvertColorSpace(destination->colorSpace(), color_space,
+                                    exception_state)) {
+    return;
+  }
+
+  ExternalSource source = GetExternalSourceFromExternalImage(
+      copyImage->source(), {destination->premultipliedAlpha(), color_space},
+      exception_state);
   if (!source.valid) {
     device_->AddConsoleWarning(
         "CopyExternalImageToTexture(): Browser fails extracting valid resource"
@@ -638,12 +675,6 @@ void GPUQueue::copyExternalImageToTexture(
         device_->GetHandle(), WGPUErrorType_Validation,
         "Destination texture needs to have CopyDst and RenderAttachment "
         "usage.");
-    return;
-  }
-
-  PredefinedColorSpace color_space;
-  if (!ValidateAndConvertColorSpace(destination->colorSpace(), color_space,
-                                    exception_state)) {
     return;
   }
 

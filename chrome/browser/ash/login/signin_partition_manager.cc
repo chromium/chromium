@@ -129,8 +129,8 @@ void SigninPartitionManager::SetClearStoragePartitionTaskForTesting(
 }
 
 void SigninPartitionManager::SetGetSystemNetworkContextForTesting(
-    GetSystemNetworkContextTask get_system_network_context_task) {
-  get_system_network_context_task_ = get_system_network_context_task;
+    network::NetworkContextGetter get_system_network_context_task) {
+  get_system_network_context_task_ = std::move(get_system_network_context_task);
 }
 
 void SigninPartitionManager::SetOnCreateNewStoragePartitionForTesting(

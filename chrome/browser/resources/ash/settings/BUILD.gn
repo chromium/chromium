@@ -207,6 +207,16 @@ build_webui("build") {
     "os_apps_page/app_management_page/read_only_permission_item.ts",
     "os_apps_page/app_management_page/resize_lock_item.ts",
     "os_apps_page/app_management_page/sub_apps_item.ts",
+    "os_apps_page/app_management_page/app_content_dialog.ts",
+    "os_apps_page/app_management_page/app_content_item.ts",
+    "os_apps_page/app_management_page/file_handling_item.ts",
+    "os_apps_page/app_management_page/more_permissions_item.ts",
+    "os_apps_page/app_management_page/permission_item.ts",
+    "os_apps_page/app_management_page/supported_links_dialog.ts",
+    "os_apps_page/app_management_page/supported_links_item.ts",
+    "os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.ts",
+    "os_apps_page/app_management_page/toggle_row.ts",
+    "os_apps_page/app_management_page/uninstall_button.ts",
     "os_apps_page/app_management_page/borealis_page/borealis_detail_view.ts",
     "os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.ts",
     "os_apps_page/app_notifications_page/app_notification_row.ts",
@@ -305,6 +315,7 @@ build_webui("build") {
     "os_reset_page/os_powerwash_dialog.ts",
     "os_reset_page/os_powerwash_dialog_esim_item.ts",
     "os_reset_page/os_reset_page.ts",
+    "os_reset_page/os_sanitize_dialog.ts",
     "os_reset_page/reset_settings_card.ts",
     "os_search_page/google_assistant_subpage.ts",
     "os_search_page/os_search_page.ts",
@@ -312,6 +323,7 @@ build_webui("build") {
     "os_search_page/search_engine.ts",
     "os_search_page/search_subpage.ts",
     "os_settings_menu/menu_item.ts",
+    "os_settings_main/managed_footnote.ts",
     "os_settings_main/os_settings_main.ts",
     "os_settings_menu/os_settings_menu.ts",
     "os_settings_page/os_settings_animated_pages.ts",
@@ -326,6 +338,7 @@ build_webui("build") {
     "parental_controls_page/parental_controls_settings_card.ts",
     "personalization_page/personalization_page.ts",
     "settings_scheduler_slider/settings_scheduler_slider.ts",
+    "system_preferences_page/multitasking_settings_card.ts",
     "system_preferences_page/startup_settings_card.ts",
     "system_preferences_page/storage_and_power_settings_card.ts",
     "system_preferences_page/system_preferences_page.ts",
@@ -444,6 +457,7 @@ build_webui("build") {
   ]
 
   icons_html_files = [
+    "app_management_icons.html",
     "icons.html",
     "os_settings_icons.html",
   ]
@@ -508,16 +522,15 @@ build_webui("build") {
   ts_definitions = ts_definition_files  # Defined in os_settings.gni
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cellular_setup:build_ts",
     "//chrome/browser/resources/nearby_share/shared:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ui/webui/resources/cr_components/localized_link:build_ts",
-    "//ui/webui/resources/cr_components/managed_footnote:build_ts",
     "//ui/webui/resources/cr_components/settings_prefs:build_ts",
-    "//ui/webui/resources/cr_elements:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

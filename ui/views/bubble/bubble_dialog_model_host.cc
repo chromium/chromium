@@ -149,9 +149,9 @@ class CheckboxControl : public Checkbox {
     AddChildView(std::move(label));
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     // Skip LabelButton to use LayoutManager.
-    View::Layout();
+    LayoutSuperclass<View>(this);
   }
 
   gfx::Size CalculatePreferredSize() const override {
@@ -168,9 +168,11 @@ class CheckboxControl : public Checkbox {
     Checkbox::OnThemeChanged();
     // This offsets the image to align with the first line of text. See
     // LabelButton::Layout().
-    image()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
-        (label_line_height_ - image()->GetPreferredSize().height()) / 2, 0, 0,
-        0)));
+    image_container_view()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
+        (label_line_height_ -
+         image_container_view()->GetPreferredSize().height()) /
+            2,
+        0, 0, 0)));
   }
 
   const int label_line_height_;

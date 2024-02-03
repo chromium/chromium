@@ -117,8 +117,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   }
 
   const auto* const resource_tab_helper =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          ResourceUsageTabHelper::FromWebContents(contents);
+      TabResourceUsageTabHelper::FromWebContents(contents);
   if (resource_tab_helper) {
     data.tab_resource_usage = resource_tab_helper->resource_usage();
   }

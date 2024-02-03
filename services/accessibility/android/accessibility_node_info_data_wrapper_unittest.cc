@@ -562,7 +562,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, States) {
   EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
 
   // Make the node collapsible (i.e. expanded).
-  node.standard_actions = absl::nullopt;
+  node.standard_actions = std::nullopt;
   AddStandardAction(&node, AXActionType::COLLAPSE);
 
   data = CallSerialize(wrapper);
@@ -897,7 +897,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
 
   // Same for clear_focus action instead of focus action.
-  child1.standard_actions = absl::nullopt;
+  child1.standard_actions = std::nullopt;
   AddStandardAction(&child1, AXActionType::CLICK);
   AddStandardAction(&child1, AXActionType::CLEAR_FOCUS);
 

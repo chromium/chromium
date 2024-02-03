@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1384959399684842514">Lataus keskeytettiin.</translation>
 <translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
-<translation id="1426410128494586442">Kyllä</translation>
 <translation id="1434873037477293673">hinnanlaskukortti</translation>
 <translation id="1448064542941920355">Vähennä zoomausta</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sivusto}other{<ph name="SITE_COUNT" /> sivustoa}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn kameraasi.</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="2238944249568001759">Viime välilehteen perustuvat hakuehdotukset</translation>
+<translation id="2241587408274973373">Uusi välilehti ‐sivun kortit</translation>
 <translation id="2241634353105152135">Vain kerran</translation>
 <translation id="2253414712144136228">Poista <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sivusto estetty}other{# sivustoa estetty}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita.</translation>
 <translation id="2790501146643349491">Kun tämä on päällä, äskettäin suljetut sivustot voivat viimeistellä datan lähettämistä tai vastaanottamista. Kun tämä ei ole päällä, äskettäin suljetut sivustot eivät voi viimeistellä datan lähettämistä tai vastaanottamista.</translation>
 <translation id="2822354292072154809">Haluatko varmasti nollata kaikki sivuston käyttöoikeudet (<ph name="CHOSEN_OBJECT_NAME" />)?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Pyydä mobiilinäkymää</translation>
 <translation id="2870560284913253234">Sivusto</translation>
 <translation id="2874939134665556319">Edellinen kappale</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Varmennetiedot</translation>
 <translation id="2979365474350987274">Kolmannen osapuolen evästeitä on rajoitettu</translation>
 <translation id="3008272652534848354">Nollaa luvat</translation>
-<translation id="3013291976881901233">MIDI-laitteet</translation>
 <translation id="301521992641321250">Estetty automaattisesti</translation>
 <translation id="3069226013421428034">Salli kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Vanhenee huomenna}other{Vanhenee # päivän kuluttua}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Yhdistetty USB-laitteeseen</translation>
 <translation id="4194328954146351878">Kysy, saavatko sivustot nähdä ja muuttaa NFC-laitteiden tietoja (suositeltu)</translation>
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
-<translation id="4212246570487010370">Jatka selaamista</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Sallittu</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Siirrä alas</translation>
 <translation id="6749077623962119521">Nollataanko luvat?</translation>
 <translation id="6766622839693428701">Sulje pyyhkäisemällä alas.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" />, lähde: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Valitse vaihtoehto sivustolle <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6818926723028410516">Valitse kohteet</translation>

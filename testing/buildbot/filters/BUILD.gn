@@ -275,6 +275,7 @@ source_set("services_unittests_filters") {
     "//testing/buildbot/filters/android.emulator_o.services_unittests.filter",
     "//testing/buildbot/filters/fuchsia.services_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.services_unittests.filter",
+    "//testing/buildbot/filters/win.win_arm64.services_webnn_unittests.filter",
   ]
 }
 
@@ -330,8 +331,10 @@ source_set("gl_tests_filters") {
 source_set("gl_unittests_filters") {
   testonly = true
 
-  data =
-      [ "//testing/buildbot/filters/android.emulator_12.gl_unittests.filter" ]
+  data = [
+    "//testing/buildbot/filters/android.emulator_12.gl_unittests.filter",
+    "//testing/buildbot/filters/win.win_arm64.gl_unittests.filter",
+  ]
 }
 
 source_set("interactive_ui_tests_filters") {

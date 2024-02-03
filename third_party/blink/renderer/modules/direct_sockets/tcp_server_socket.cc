@@ -141,7 +141,7 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     mojo::PendingRemote<network::mojom::blink::TCPServerSocket>
         tcp_server_remote,
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const std::optional<net::IPEndPoint>& local_addr) {
   if (result == net::OK) {
     DCHECK(local_addr);
     readable_stream_wrapper_ =

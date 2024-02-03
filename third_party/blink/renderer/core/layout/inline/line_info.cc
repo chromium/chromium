@@ -458,6 +458,27 @@ LayoutUnit LineInfo::ComputeTotalBlockSize(
   return std::max(initial_letter_box_block_size_, line_height_with_annotation);
 }
 
+void LineInfo::RemoveParallelFlowBreakToken(unsigned item_index) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  DCHECK(std::is_sorted(parallel_flow_break_tokens_.begin(),
+                        parallel_flow_break_tokens_.end(),
+                        [](const auto& a, const auto& b) {
+                          return a->StartItemIndex() < b->StartItemIndex();
+                        }));
+#endif  //  EXPENSIVE_DCHECKS_ARE_ON()
+  for (auto* iter = parallel_flow_break_tokens_.begin();
+       iter != parallel_flow_break_tokens_.end(); ++iter) {
+    const InlineBreakToken* break_token = *iter;
+    DCHECK(break_token->IsInParallelBlockFlow());
+    if (break_token->StartItemIndex() >= item_index) {
+      const wtf_size_t index =
+          static_cast<wtf_size_t>(iter - parallel_flow_break_tokens_.begin());
+      parallel_flow_break_tokens_.Shrink(index);
+      break;
+    }
+  }
+}
+
 std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info) {
   // Feel free to add more LineInfo members.
   ostream << "LineInfo available_width_=" << line_info.AvailableWidth()

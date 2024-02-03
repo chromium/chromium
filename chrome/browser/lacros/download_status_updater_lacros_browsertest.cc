@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
                        ShowInBrowser_DoesNotHandleNonexistentGuid) {
   DownloadStatusUpdaterClientAsyncWaiter client(
       download_status_updater_client());
-  EXPECT_FALSE(client.ShowInBrowser(/*guid=*/base::EmptyString()));
+  EXPECT_FALSE(client.ShowInBrowser(/*guid=*/std::string()));
   EXPECT_FALSE(download_button(browser())->IsShowingDetails());
 }
 

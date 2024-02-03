@@ -93,8 +93,7 @@ FidoCableV1HandshakeHandler::FidoCableV1HandshakeHandler(
           fido_parsing_utils::ConvertToStringView(nonce_),
           kCableHandshakeKeyInfo,
           /*derived_key_size=*/32)) {
-  crypto::RandBytes(client_session_random_.data(),
-                    client_session_random_.size());
+  crypto::RandBytes(client_session_random_);
 }
 
 FidoCableV1HandshakeHandler::~FidoCableV1HandshakeHandler() = default;

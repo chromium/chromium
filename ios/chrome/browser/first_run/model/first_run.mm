@@ -53,6 +53,7 @@ bool FirstRun::IsChromeFirstRun() {
   base::FilePath first_run_sentinel;
   if (!GetFirstRunSentinelFilePath(&first_run_sentinel) ||
       base::PathExists(first_run_sentinel)) {
+    LoadSentinelInfo();
     first_run_ = FIRST_RUN_FALSE;
     return false;
   }
@@ -83,11 +84,12 @@ startup_metric_utils::FirstRunSentinelCreationResult FirstRun::CreateSentinel(
   if (base::PathExists(first_run_sentinel))
     return startup_metric_utils::FirstRunSentinelCreationResult::
         kFilePathExists;
+  GetSentinelInfoGlobal() = std::nullopt;
   bool success = base::WriteFile(first_run_sentinel, base::StringPiece());
   if (error)
     *error = base::File::GetLastFileError();
 
-  if (success && !GetSentinelInfoGlobal().has_value()) {
+  if (success) {
     LoadSentinelInfo();
   }
   return success
@@ -125,5 +127,6 @@ void FirstRun::RegisterProfilePrefs(
 
 // static
 void FirstRun::ClearStateForTesting() {
+  GetSentinelInfoGlobal() = std::nullopt;
   first_run_ = FIRST_RUN_UNKNOWN;
 }

@@ -584,7 +584,7 @@ scoped_refptr<base::SingleThreadTaskRunner> LocalDOMWindow::GetTaskRunner(
 void LocalDOMWindow::ReportPermissionsPolicyViolation(
     mojom::blink::PermissionsPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,
-    const absl::optional<String>& reporting_endpoint,
+    const std::optional<String>& reporting_endpoint,
     const String& message) const {
   if (disposition == mojom::blink::PolicyDisposition::kEnforce) {
     const_cast<LocalDOMWindow*>(this)->CountPermissionsPolicyUsage(
@@ -663,7 +663,7 @@ void LocalDOMWindow::ReportDocumentPolicyViolation(
   document_policy_violation_reports_sent_.insert(report_id);
 
   // Send the document policy violation report to any ReportingObservers.
-  const absl::optional<std::string> endpoint =
+  const std::optional<std::string> endpoint =
       relevant_document_policy->GetFeatureEndpoint(feature);
 
   if (is_report_only) {
@@ -703,7 +703,7 @@ void LocalDOMWindow::AddConsoleMessageImpl(ConsoleMessage* console_message,
         line_number = parser->LineNumber().OneBasedInt();
     }
     Vector<DOMNodeId> nodes(console_message->Nodes());
-    absl::optional<mojom::blink::ConsoleMessageCategory> category =
+    std::optional<mojom::blink::ConsoleMessageCategory> category =
         console_message->Category();
     console_message = MakeGarbageCollected<ConsoleMessage>(
         console_message->GetSource(), console_message->GetLevel(),
@@ -908,14 +908,9 @@ void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
                                             const String& new_url) {
   DCHECK(GetFrame());
   if (GetFrame()->IsMainFrame()) {
-    if (auto* script_state = ToScriptStateForMainWorld(GetFrame())) {
-      // script_state can be nullptr here.
-      // TODO(yoav): get a better understanding of when this happens and add a
-      // test to guard against this.
-      SoftNavigationHeuristics* heuristics =
-          SoftNavigationHeuristics::From(*this);
-      heuristics->SameDocumentNavigationStarted(script_state);
-    }
+    SoftNavigationHeuristics* heuristics =
+        SoftNavigationHeuristics::From(*this);
+    heuristics->SameDocumentNavigationStarted();
   }
   // https://html.spec.whatwg.org/C/#history-traversal
   EnqueueWindowEvent(*HashChangeEvent::Create(old_url, new_url),

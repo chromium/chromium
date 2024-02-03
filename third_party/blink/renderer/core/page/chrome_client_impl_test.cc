@@ -106,8 +106,8 @@ class ViewCreatingClient : public frame_test_helpers::TestWebFrameClient {
       network::mojom::blink::WebSandboxFlags,
       const SessionStorageNamespaceId&,
       bool& consumed_user_gesture,
-      const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>&,
+      const std::optional<Impression>&,
+      const std::optional<WebPictureInPictureWindowOptions>&,
       const WebURL& creator_base_url) override {
     return web_view_helper_.InitializeWithOpener(Frame());
   }

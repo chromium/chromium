@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
@@ -52,7 +53,7 @@ base::SequenceBound<AudioStreamMixer> AudioStreamMixer::Create(
 }
 
 void AudioStreamMixer::AddAudioCapturer(
-    base::StringPiece device_id,
+    std::string_view device_id,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     bool use_automatic_gain_control,
     bool use_echo_canceller) {

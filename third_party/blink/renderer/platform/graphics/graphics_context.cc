@@ -27,13 +27,13 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "cc/paint/color_filter.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/platform_canvas.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
@@ -129,7 +129,7 @@ class GraphicsContext::DarkModeFlags final {
 
  private:
   const cc::PaintFlags* flags_;
-  absl::optional<cc::PaintFlags> dark_mode_flags_;
+  std::optional<cc::PaintFlags> dark_mode_flags_;
 };
 
 GraphicsContext::GraphicsContext(PaintController& paint_controller)

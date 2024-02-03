@@ -135,10 +135,6 @@ class ExtensionHost : public DeferredStartRenderHost,
   }
 
   // content::WebContentsObserver:
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* host) override;
-#endif
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;

@@ -331,14 +331,14 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
 // The TabSearchButton need bounds that overlap the TabStripContainer, which
 // FlexLayout doesn't currently support. Because of this the TSB bounds are
 // manually calculated.
-void TabStripRegionView::Layout() {
+void TabStripRegionView::Layout(PassKey) {
   const bool tab_search_container_before_tab_strip =
       tab_search_container_ && render_tab_search_before_tab_strip_;
   if (tab_search_container_before_tab_strip) {
     UpdateTabStripMargin();
   }
 
-  views::AccessiblePaneView::Layout();
+  LayoutSuperclass<views::AccessiblePaneView>(this);
 
   if (tab_search_container_before_tab_strip) {
     const gfx::Size tab_search_container_size =

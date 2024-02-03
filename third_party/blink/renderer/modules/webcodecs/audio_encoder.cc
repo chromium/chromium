@@ -400,8 +400,11 @@ AudioEncoder::~AudioEncoder() = default;
 
 std::unique_ptr<media::AudioEncoder> AudioEncoder::CreateMediaAudioEncoder(
     const ParsedConfig& config) {
-  if (auto result = CreatePlatformAudioEncoder(config.options.codec))
+  if (auto result = CreatePlatformAudioEncoder(config.options.codec)) {
+    is_platform_encoder_ = true;
     return result;
+  }
+  is_platform_encoder_ = false;
   return CreateSoftwareAudioEncoder(config.options.codec);
 }
 
@@ -426,7 +429,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   media_encoder_ = CreateMediaAudioEncoder(*active_config_);
   if (!media_encoder_) {
     blocking_request_in_progress_ = request;
-    QueueHandleError(logger_->MakeOperationError(
+    QueueHandleError(MakeOperationError(
         "Encoder creation error.",
         media::EncoderStatus(
             media::EncoderStatus::Codes::kEncoderInitializationError,
@@ -451,8 +454,8 @@ void AudioEncoder::ProcessConfigure(Request* request) {
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->HandleError(self->logger_->MakeOperationError("Encoding error.",
-                                                          std::move(status)));
+      self->HandleError(
+          self->MakeOperationError("Encoding error.", std::move(status)));
     } else {
       base::UmaHistogramEnumeration("Blink.WebCodecs.AudioEncoder.Codec",
                                     codec);
@@ -497,8 +500,8 @@ void AudioEncoder::ProcessEncode(Request* request) {
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->HandleError(self->logger_->MakeEncodingError("Encoding error.",
-                                                         std::move(status)));
+      self->HandleError(
+          self->MakeEncodingError("Encoding error.", std::move(status)));
     }
 
     req->EndTracing();
@@ -508,7 +511,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
   if (data->channel_count() != active_config_->options.channels ||
       data->sample_rate() != active_config_->options.sample_rate) {
     // Per spec we must queue a task for error handling.
-    QueueHandleError(logger_->MakeEncodingError(
+    QueueHandleError(MakeEncodingError(
         "Input audio buffer is incompatible with codec parameters",
         media::EncoderStatus(media::EncoderStatus::Codes::kEncoderFailedEncode)
             .WithData("channels", data->channel_count())
@@ -564,7 +567,7 @@ void AudioEncoder::CallOutputCallback(
     ParsedConfig* active_config,
     uint32_t reset_count,
     media::EncodedAudioBuffer encoded_buffer,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_desc) {
+    std::optional<media::AudioEncoder::CodecDescription> codec_desc) {
   DCHECK(active_config);
   if (!script_state_->ContextIsValid() || !output_callback_ ||
       state_.AsEnum() != V8CodecState::Enum::kConfigured ||
@@ -631,6 +634,24 @@ ScriptPromise AudioEncoder::isConfigSupported(ScriptState* script_state,
 
 const AtomicString& AudioEncoder::InterfaceName() const {
   return event_target_names::kAudioEncoder;
+}
+
+DOMException* AudioEncoder::MakeOperationError(std::string error_msg,
+                                               media::EncoderStatus status) {
+  if (is_platform_encoder_) {
+    return logger_->MakeOperationError(std::move(error_msg), std::move(status));
+  }
+  return logger_->MakeSoftwareCodecOperationError(std::move(error_msg),
+                                                  std::move(status));
+}
+
+DOMException* AudioEncoder::MakeEncodingError(std::string error_msg,
+                                              media::EncoderStatus status) {
+  if (is_platform_encoder_) {
+    return logger_->MakeEncodingError(std::move(error_msg), std::move(status));
+  }
+  return logger_->MakeSoftwareCodecEncodingError(std::move(error_msg),
+                                                 std::move(status));
 }
 
 }  // namespace blink

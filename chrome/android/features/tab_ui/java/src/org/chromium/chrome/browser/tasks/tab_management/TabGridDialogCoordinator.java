@@ -115,7 +115,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // take in a mode parameter instead.
             mTabListCoordinator =
                     new TabListCoordinator(
-                            TabUiFeatureUtilities.shouldUseListMode(mActivity)
+                            TabUiFeatureUtilities.shouldUseListMode()
                                     ? TabListCoordinator.TabListMode.LIST
                                     : TabListCoordinator.TabListMode.GRID,
                             activity,
@@ -177,7 +177,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         if (mTabListEditorCoordinator == null) {
             @TabListCoordinator.TabListMode
             int mode =
-                    TabUiFeatureUtilities.shouldUseListMode(mActivity)
+                    TabUiFeatureUtilities.shouldUseListMode()
                             ? TabListCoordinator.TabListMode.LIST
                             : TabListCoordinator.TabListMode.GRID;
             mTabListEditorCoordinator =

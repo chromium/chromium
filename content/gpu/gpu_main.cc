@@ -314,9 +314,7 @@ int GpuMain(MainFunctionParams parameters) {
   base::PlatformThread::SetName("CrGpuMain");
 
   // Set thread priority before sandbox initialization.
-  if (!features::IsGpuMainThreadForcedToNormalPriorityDrDc()) {
-    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kCompositing);
-  }
+  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kCompositing);
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
   ContentSandboxHelper sandbox_helper;

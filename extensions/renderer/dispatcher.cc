@@ -34,14 +34,12 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/behavior_feature.h"
@@ -294,9 +292,6 @@ Dispatcher::Dispatcher(
       std::make_unique<ScriptInjectionManager>(user_script_set_manager_.get());
   user_script_set_manager_observation_.Observe(user_script_set_manager_.get());
   PopulateSourceMap();
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  WakeEventPage::Get()->Init(RenderThread::Get());
-#endif
   // Ideally this should be done after checking
   // ExtensionAPIEnabledInExtensionServiceWorkers(), but the Dispatcher is
   // created so early that sending an IPC from browser/ process to synchronize
@@ -683,16 +678,11 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
 
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  WorkerThreadDispatcher::Get()->DidStartContext(service_worker_scope,
-                                                 service_worker_version_id);
-#else
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
   service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
       service_worker_data->context()->GetExtensionID(),
       *service_worker_data->activation_sequence(), service_worker_scope,
       service_worker_version_id, thread_id);
-#endif
 }
 
 void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
@@ -715,15 +705,10 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
         service_worker_data->bindings_system();
     if (worker_bindings_system) {
       worker_bindings_system->WillReleaseScriptContext(script_context);
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-      WorkerThreadDispatcher::Get()->DidStopContext(service_worker_scope,
-                                                    service_worker_version_id);
-#else
       service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
           script_context->GetExtensionID(),
           *service_worker_data->activation_sequence(), service_worker_scope,
           service_worker_version_id, thread_id);
-#endif
     }
     // Note: we have to remove the context (and thus perform invalidation on
     // the native handlers) prior to removing the worker data, which destroys
@@ -1017,23 +1002,6 @@ void Dispatcher::RegisterNativeHandlers(
       "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
                                 context, bindings_system));
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
-  if (WorkerThreadDispatcher::Get()->OnControlMessageReceived(message))
-    return true;
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(Dispatcher, message)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_DeliverMessage, OnDeliverMessage)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnConnect, OnDispatchOnConnect)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect, OnDispatchOnDisconnect)
-  IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  return handled;
-}
-#endif
 
 void Dispatcher::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
@@ -1344,39 +1312,6 @@ void Dispatcher::WatchPages(const std::vector<std::string>& css_selectors) {
   content_watcher_->OnWatchPages(css_selectors);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-void Dispatcher::OnDeliverMessage(int worker_thread_id,
-                                  const PortId& target_port_id,
-                                  const Message& message) {
-  DCHECK_EQ(kMainThreadId, worker_thread_id);
-  bindings_system_->messaging_service()->DeliverMessage(
-      script_context_set_.get(), target_port_id, message,
-      nullptr);  // All render frames.
-}
-
-void Dispatcher::OnDispatchOnConnect(
-    int worker_thread_id,
-    const ExtensionMsg_OnConnectData& connect_data) {
-  DCHECK_EQ(kMainThreadId, worker_thread_id);
-  DCHECK(!connect_data.target_port_id.is_opener);
-
-  bindings_system_->messaging_service()->DispatchOnConnect(
-      script_context_set_.get(), connect_data.target_port_id,
-      connect_data.channel_type, connect_data.channel_name,
-      connect_data.tab_source, connect_data.external_connection_info, {}, {},
-      nullptr, base::DoNothing());  // All render frames.
-}
-
-void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
-                                        const PortId& port_id,
-                                        const std::string& error_message) {
-  DCHECK_EQ(kMainThreadId, worker_thread_id);
-  bindings_system_->messaging_service()->DispatchOnDisconnect(
-      script_context_set_.get(), port_id, error_message,
-      nullptr);  // All render frames.
-}
-#endif
-
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
                                base::Value::List event_args,
                                DispatchEventCallback callback) {
@@ -1413,19 +1348,6 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
 
   DispatchEventHelper(*params->host_id, params->event_name, event_args,
                       std::move(params->filtering_info));
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  if (background_frame) {
-    // Tell the browser process when an event has been dispatched with a lazy
-    // background page active.
-    const Extension* extension = RendererExtensionRegistry::Get()->GetByID(
-        GenerateExtensionIdFromHostID(*params->host_id));
-    if (extension && BackgroundInfo::HasBackgroundPage(extension)) {
-      background_frame->Send(new ExtensionHostMsg_EventAck(
-          background_frame->GetRoutingID(), params->event_id,
-          event_has_listener_in_background_context));
-    }
-  }
-#endif
   std::move(callback).Run(event_has_listener_in_background_context);
 }
 

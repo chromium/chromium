@@ -4,6 +4,8 @@
 
 #include "services/service_manager/tests/util.h"
 
+#include <optional>
+
 #include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -23,7 +25,6 @@
 #include "services/service_manager/public/cpp/service_executable/switches.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mach_port_rendezvous.h"

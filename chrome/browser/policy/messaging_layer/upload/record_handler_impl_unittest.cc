@@ -142,6 +142,12 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
 
   content::BrowserTaskEnvironment task_environment_;
 
+  // Set up this device as a managed device.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
   FileUploadJob::TestEnvironment manager_test_env_;
   ReportingServerConnector::TestEnvironment test_env_;
 
@@ -150,12 +156,6 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   std::unique_ptr<RecordHandlerImpl> handler_;
 
   scoped_refptr<ResourceManager> memory_resource_;
-
-  // Set up this device as a managed device.
-  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
-      policy::ScopedManagementServiceOverrideForTesting(
-          policy::ManagementServiceFactory::GetForPlatform(),
-          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 };
 
 std::pair<ScopedReservation, std::vector<EncryptedRecord>>

@@ -169,7 +169,7 @@ void AudioTrackMojoEncoder::OnEncodeDone(media::EncoderStatus status) {
 
 void AudioTrackMojoEncoder::OnEncodeOutput(
     media::EncodedAudioBuffer encoded_buffer,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_desc) {
+    std::optional<media::AudioEncoder::CodecDescription> codec_desc) {
   if (!current_status_.is_ok()) {
     LogError("Refusing to output when in error state: ", current_status_);
     return;

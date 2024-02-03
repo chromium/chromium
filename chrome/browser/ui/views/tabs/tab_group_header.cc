@@ -547,7 +547,7 @@ void TabGroupHeader::VisualsChanged() {
   }
 
   if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->Layout();
+    views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
   }
 
   const bool collapsed_state =

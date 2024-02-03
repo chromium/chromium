@@ -17,8 +17,7 @@
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/common/api/declarative_net_request.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace flat_rule = url_pattern_index::flat;
 namespace dnr_api = api::declarative_net_request;
 
@@ -227,5 +226,4 @@ ExtensionUrlPatternIndexMatcher::GetDisabledRuleIdsForTesting() const {
   return disabled_rule_ids_;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

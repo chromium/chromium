@@ -58,7 +58,7 @@ void FakeLocalFrameHost::VisibilityChanged(
     mojom::blink::FrameVisibility visibility) {}
 
 void FakeLocalFrameHost::DidChangeThemeColor(
-    absl::optional<::SkColor> theme_color) {}
+    std::optional<::SkColor> theme_color) {}
 
 void FakeLocalFrameHost::DidChangeBackgroundColor(
     const SkColor4f& background_color,
@@ -106,7 +106,7 @@ void FakeLocalFrameHost::DispatchLoad() {}
 void FakeLocalFrameHost::GoToEntryAtOffset(
     int32_t offset,
     bool has_user_gesture,
-    absl::optional<blink::scheduler::TaskAttributionId>) {}
+    std::optional<blink::scheduler::TaskAttributionId>) {}
 
 void FakeLocalFrameHost::UpdateTitle(
     const WTF::String& title,
@@ -206,7 +206,7 @@ void FakeLocalFrameHost::DidChangeFrameOwnerProperties(
     mojom::blink::FrameOwnerPropertiesPtr frame_owner_properties) {}
 
 void FakeLocalFrameHost::DidChangeOpener(
-    const absl::optional<LocalFrameToken>& opener_frame) {}
+    const std::optional<LocalFrameToken>& opener_frame) {}
 
 void FakeLocalFrameHost::DidChangeIframeAttributes(
     const blink::FrameToken& child_frame_token,

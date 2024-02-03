@@ -4,16 +4,22 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
+#include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 
@@ -108,23 +114,30 @@ void FedCmAccountSelectionView::Show(
                                   base::UTF8ToUTF16(*iframe_etld_plus_one))
                             : std::nullopt;
 
-  bool create_widget = !dialog_widget_;
-  if (create_widget) {
-    views::Widget* widget = CreateWidgetWithAccessibleTitle(
+  // TODO(crbug.com/1518356): Support modal dialogs for all types of FedCM
+  // dialogs. This boolean is used to fall back to the bubble dialog where
+  // modal is not yet implemented.
+  bool has_modal_support =
+      idp_display_data_list_.size() == 1u && accounts_size == 1u &&
+      !idp_display_data_list_[0].idp_metadata.supports_add_account;
+
+  // If a modal dialog was created previously but there is no modal support for
+  // this type of dialog, reset account_selection_view_ to create a bubble
+  // dialog instead.
+  if (account_selection_view_ && rp_mode == blink::mojom::RpMode::kButton &&
+      !has_modal_support) {
+    ResetAccountSelectionView();
+  }
+
+  bool create_view = !account_selection_view_;
+  if (create_view) {
+    account_selection_view_ = CreateAccountSelectionView(
         top_frame_for_display_, iframe_for_display_, idp_title, rp_context,
-        rp_mode, show_auto_reauthn_checkbox);
-    if (!widget) {
+        rp_mode, show_auto_reauthn_checkbox, has_modal_support);
+
+    if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
       return;
-    }
-    dialog_widget_ = widget->GetWeakPtr();
-
-    // Initialize InputEventActivationProtector to handle potentially unintended
-    // input events. Do not override `input_protector_` set by
-    // SetInputEventActivationProtectorForTesting().
-    if (!input_protector_) {
-      input_protector_ =
-          std::make_unique<views::InputEventActivationProtector>();
     }
   }
 
@@ -143,20 +156,32 @@ void FedCmAccountSelectionView::Show(
     // When there is a single IDP and a single account to show and the IDP does
     // not support adding an account, we can use the single account UI.
     state_ = State::PERMISSION;
-    GetAccountSelectionView()->ShowSingleAccountConfirmDialog(
+    account_selection_view_->ShowSingleAccountConfirmDialog(
         top_frame_for_display_, iframe_for_display_,
         idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
         /*show_back_button=*/false);
   } else {
     state_ = State::ACCOUNT_PICKER;
-    GetAccountSelectionView()->ShowMultiAccountPicker(idp_display_data_list_);
+    account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
   }
 
-  if (create_widget || is_modal_closed_but_accounts_fetch_pending_) {
+  if (!GetDialogWidget()) {
+    delegate_->OnDismiss(DismissReason::kOther);
+    return;
+  }
+
+  // Initialize InputEventActivationProtector to handle potentially unintended
+  // input events. Do not override `input_protector_` set by
+  // SetInputEventActivationProtectorForTesting().
+  if (!input_protector_) {
+    input_protector_ = std::make_unique<views::InputEventActivationProtector>();
+  }
+
+  if (create_view || is_modal_closed_but_accounts_fetch_pending_) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
-      dialog_widget_->Show();
+      GetDialogWidget()->Show();
     }
   }
   // Else:
@@ -186,36 +211,53 @@ void FedCmAccountSelectionView::ShowFailureDialog(
                                  base::UTF8ToUTF16(*iframe_etld_plus_one))
                            : std::nullopt;
 
-  bool create_widget = !dialog_widget_;
-  if (create_widget) {
-    views::Widget* widget = CreateWidgetWithAccessibleTitle(
-        base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
+  // TODO(crbug.com/1518356): Support modal dialogs for all types of FedCM
+  // dialogs. This boolean is used to fall back to the bubble dialog where
+  // modal is not yet implemented.
+  bool has_modal_support = false;
+
+  // If a modal dialog was created previously but there is no modal support for
+  // this type of dialog, reset account_selection_view_ to create a bubble
+  // dialog instead.
+  if (account_selection_view_ && rp_mode == blink::mojom::RpMode::kButton &&
+      !has_modal_support) {
+    ResetAccountSelectionView();
+  }
+
+  bool create_view = !account_selection_view_;
+  if (create_view) {
+    account_selection_view_ = CreateAccountSelectionView(
+        top_frame_for_display_, iframe_for_display_,
         base::UTF8ToUTF16(idp_etld_plus_one), rp_context, rp_mode,
-        /*show_auto_reauthn_checkbox=*/false);
-    if (!widget) {
+        /*show_auto_reauthn_checkbox=*/false, has_modal_support);
+
+    if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
       return;
     }
-    dialog_widget_ = widget->GetWeakPtr();
-
-    // Initialize InputEventActivationProtector to handle potentially unintended
-    // input events. Do not override `input_protector_` set by
-    // SetInputEventActivationProtectorForTesting().
-    if (!input_protector_) {
-      input_protector_ =
-          std::make_unique<views::InputEventActivationProtector>();
-    }
   }
 
-  GetAccountSelectionView()->ShowFailureDialog(
+  account_selection_view_->ShowFailureDialog(
       base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
 
-  if (create_widget || is_modal_closed_but_accounts_fetch_pending_) {
+  if (!GetDialogWidget()) {
+    delegate_->OnDismiss(DismissReason::kOther);
+    return;
+  }
+
+  // Initialize InputEventActivationProtector to handle potentially unintended
+  // input events. Do not override `input_protector_` set by
+  // SetInputEventActivationProtectorForTesting().
+  if (!input_protector_) {
+    input_protector_ = std::make_unique<views::InputEventActivationProtector>();
+  }
+
+  if (create_view || is_modal_closed_but_accounts_fetch_pending_) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
-      dialog_widget_->Show();
+      GetDialogWidget()->Show();
     }
   }
   // Else:
@@ -238,33 +280,50 @@ void FedCmAccountSelectionView::ShowErrorDialog(
                                  base::UTF8ToUTF16(*iframe_etld_plus_one))
                            : std::nullopt;
 
-  bool create_widget = !dialog_widget_;
-  if (create_widget) {
-    views::Widget* widget = CreateWidgetWithAccessibleTitle(
-        base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
+  // TODO(crbug.com/1518356): Support modal dialogs for all types of FedCM
+  // dialogs. This boolean is used to fall back to the bubble dialog where
+  // modal is not yet implemented.
+  bool has_modal_support = false;
+
+  // If a modal dialog was created previously but there is no modal support for
+  // this type of dialog, reset account_selection_view_ to create a bubble
+  // dialog instead.
+  if (account_selection_view_ && rp_mode == blink::mojom::RpMode::kButton &&
+      !has_modal_support) {
+    ResetAccountSelectionView();
+  }
+
+  bool create_view = !account_selection_view_;
+  if (create_view) {
+    account_selection_view_ = CreateAccountSelectionView(
+        top_frame_for_display_, iframe_for_display_,
         base::UTF8ToUTF16(idp_etld_plus_one), rp_context, rp_mode,
-        /*show_auto_reauthn_checkbox=*/false);
-    if (!widget) {
+        /*show_auto_reauthn_checkbox=*/false, has_modal_support);
+
+    if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
       return;
     }
-    dialog_widget_ = widget->GetWeakPtr();
-
-    // Initialize InputEventActivationProtector to handle potentially unintended
-    // input events. Do not override `input_protector_` set by
-    // SetInputEventActivationProtectorForTesting().
-    if (!input_protector_) {
-      input_protector_ =
-          std::make_unique<views::InputEventActivationProtector>();
-    }
   }
 
-  GetAccountSelectionView()->ShowErrorDialog(
+  account_selection_view_->ShowErrorDialog(
       base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata, error);
 
-  if (create_widget && is_web_contents_visible_) {
-    dialog_widget_->Show();
+  if (!GetDialogWidget()) {
+    delegate_->OnDismiss(DismissReason::kOther);
+    return;
+  }
+
+  // Initialize InputEventActivationProtector to handle potentially unintended
+  // input events. Do not override `input_protector_` set by
+  // SetInputEventActivationProtectorForTesting().
+  if (!input_protector_) {
+    input_protector_ = std::make_unique<views::InputEventActivationProtector>();
+  }
+
+  if (create_view && is_web_contents_visible_) {
+    GetDialogWidget()->Show();
     input_protector_->VisibilityChanged(true);
   }
   // Else:
@@ -292,24 +351,24 @@ void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
 }
 
 std::string FedCmAccountSelectionView::GetTitle() const {
-  return GetAccountSelectionView()->GetDialogTitle();
+  return account_selection_view_->GetDialogTitle();
 }
 
 std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
-  return GetAccountSelectionView()->GetDialogSubtitle();
+  return account_selection_view_->GetDialogSubtitle();
 }
 
 void FedCmAccountSelectionView::OnVisibilityChanged(
     content::Visibility visibility) {
   is_web_contents_visible_ = visibility == content::Visibility::VISIBLE;
-  if (!dialog_widget_ || popup_window_ ||
+  if (!GetDialogWidget() || popup_window_ ||
       is_modal_closed_but_accounts_fetch_pending_) {
     return;
   }
 
   if (is_web_contents_visible_) {
-    dialog_widget_->Show();
-    dialog_widget_->widget_delegate()->SetCanActivate(true);
+    GetDialogWidget()->Show();
+    GetDialogWidget()->widget_delegate()->SetCanActivate(true);
     // This will protect against potentially unintentional inputs that happen
     // right after the dialog becomes visible again.
     input_protector_->VisibilityChanged(true);
@@ -318,8 +377,8 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
     // Make the views::Widget non-activatable while it is hidden to prevent the
     // views::Widget from being shown during focus traversal.
     // TODO(crbug.com/1367309): fix the issue on Mac.
-    dialog_widget_->Hide();
-    dialog_widget_->widget_delegate()->SetCanActivate(false);
+    GetDialogWidget()->Hide();
+    GetDialogWidget()->widget_delegate()->SetCanActivate(false);
     input_protector_->VisibilityChanged(false);
   }
 }
@@ -340,7 +399,7 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
   // TODO(npm): we should change the management logic so that it is
   // possible to move the dialog with the tab, even to a different browser
   // window.
-  if (index == TabStripModel::kNoTab && dialog_widget_) {
+  if (index == TabStripModel::kNoTab && GetDialogWidget()) {
     Close();
   }
 }
@@ -355,14 +414,14 @@ void FedCmAccountSelectionView::SetIdpSigninPopupWindowForTesting(
   popup_window_ = std::move(idp_signin_popup_window);
 }
 
-views::Widget* FedCmAccountSelectionView::CreateWidgetWithAccessibleTitle(
+AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
     const std::u16string& top_frame_etld_plus_one,
     const std::optional<std::u16string>& iframe_etld_plus_one,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
-    bool show_auto_reauthn_checkbox) {
-  // TODO(crbug.com/1518356): Use rp_mode for button flows.
+    bool show_auto_reauthn_checkbox,
+    bool has_modal_support) {
   Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());
 
   // Reject the API if the browser is not found or its tab strip model does not
@@ -374,36 +433,26 @@ views::Widget* FedCmAccountSelectionView::CreateWidgetWithAccessibleTitle(
 
   browser->tab_strip_model()->AddObserver(this);
 
+  if (rp_mode == blink::mojom::RpMode::kButton && has_modal_support) {
+    return new AccountSelectionModalView(
+        rp_context, browser,
+        SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
+        this, this);
+  }
+
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   views::View* anchor_view = browser_view->contents_web_view();
 
-  views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
-      new AccountSelectionBubbleView(
-          top_frame_etld_plus_one, iframe_etld_plus_one, idp_title, rp_context,
-          show_auto_reauthn_checkbox, anchor_view,
-          SystemNetworkContextManager::GetInstance()
-              ->GetSharedURLLoaderFactory(),
-          this));
-  bubble_widget->AddObserver(this);
-
-  return bubble_widget;
-}
-
-AccountSelectionViewInterface*
-FedCmAccountSelectionView::GetAccountSelectionView() {
-  return static_cast<AccountSelectionBubbleView*>(
-      dialog_widget_->widget_delegate());
-}
-
-const AccountSelectionViewInterface*
-FedCmAccountSelectionView::GetAccountSelectionView() const {
-  return static_cast<const AccountSelectionBubbleView*>(
-      dialog_widget_->widget_delegate());
+  return new AccountSelectionBubbleView(
+      top_frame_etld_plus_one, iframe_etld_plus_one, idp_title, rp_context,
+      show_auto_reauthn_checkbox, browser, anchor_view,
+      SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
+      this, this);
 }
 
 void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
   DismissReason dismiss_reason =
-      (dialog_widget_->closed_reason() ==
+      (GetDialogWidget()->closed_reason() ==
        views::Widget::ClosedReason::kCloseButtonClicked)
           ? DismissReason::kCloseButton
           : DismissReason::kOther;
@@ -437,7 +486,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
     ShowVerifyingSheet(account, idp_display_data);
     return;
   }
-  GetAccountSelectionView()->ShowSingleAccountConfirmDialog(
+  account_selection_view_->ShowSingleAccountConfirmDialog(
       top_frame_for_display_, iframe_for_display_, account, idp_display_data,
       /*show_back_button=*/true);
 }
@@ -454,7 +503,7 @@ void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
 void FedCmAccountSelectionView::OnBackButtonClicked() {
   // No need to protect input here since back cannot be the first event.
   state_ = State::ACCOUNT_PICKER;
-  GetAccountSelectionView()->ShowMultiAccountPicker(idp_display_data_list_);
+  account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
@@ -469,17 +518,18 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.ClosedSheetType.Desktop",
                             GetSheetType(), SheetType::COUNT);
 
-  dialog_widget_->CloseWithReason(
+  GetDialogWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_login_url,
+void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
+                                             const GURL& idp_login_url,
                                              const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
 
-  delegate_->OnLoginToIdP(idp_login_url);
+  delegate_->OnLoginToIdP(idp_config_url, idp_login_url);
   is_mismatch_continue_clicked_ = true;
   popup_window_state_ =
       PopupWindowResult::kAccountsNotReceivedAndPopupNotClosedByIdp;
@@ -511,8 +561,8 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
         delegate_->GetWebContents(), this);
   }
   input_protector_->VisibilityChanged(false);
-  if (dialog_widget_) {
-    dialog_widget_->Hide();
+  if (GetDialogWidget()) {
+    GetDialogWidget()->Hide();
   }
   return popup_window_->ShowPopupWindow(url);
 }
@@ -544,7 +594,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     std::move(show_accounts_dialog_callback_).Run();
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
-      dialog_widget_->Show();
+      GetDialogWidget()->Show();
     }
   }
 }
@@ -578,8 +628,7 @@ void FedCmAccountSelectionView::ShowVerifyingSheet(
       state_ == State::AUTO_REAUTHN
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN)
           : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
-  GetAccountSelectionView()->ShowVerifyingSheet(account, idp_display_data,
-                                                title);
+  account_selection_view_->ShowVerifyingSheet(account, idp_display_data, title);
 }
 
 FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
@@ -606,19 +655,19 @@ FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
 }
 
 void FedCmAccountSelectionView::Close() {
-  if (!dialog_widget_) {
+  if (!GetDialogWidget()) {
     if (delegate_ && notify_delegate_of_dismiss_) {
       delegate_->OnDismiss(DismissReason::kOther);
     }
     return;
   }
 
-  dialog_widget_->Close();
+  GetDialogWidget()->Close();
   OnDismiss(DismissReason::kOther);
 }
 
 void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
-  if (!dialog_widget_) {
+  if (!GetDialogWidget()) {
     return;
   }
 
@@ -641,11 +690,20 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
                               popup_window_state_);
   }
 
-  dialog_widget_->RemoveObserver(this);
-  dialog_widget_.reset();
+  ResetAccountSelectionView();
   input_protector_.reset();
 
   if (notify_delegate_of_dismiss_) {
     delegate_->OnDismiss(dismiss_reason);
   }
+}
+
+base::WeakPtr<views::Widget> FedCmAccountSelectionView::GetDialogWidget() {
+  return account_selection_view_ ? account_selection_view_->GetDialogWidget()
+                                 : nullptr;
+}
+
+void FedCmAccountSelectionView::ResetAccountSelectionView() {
+  account_selection_view_->CloseDialog();
+  account_selection_view_ = nullptr;
 }

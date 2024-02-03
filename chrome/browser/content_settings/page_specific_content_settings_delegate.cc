@@ -270,7 +270,7 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
   if (grant_time.is_null())
     return;
   permissions::PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
-      type, base::Time::Now() - grant_time);
+      type, base::Time::Now() - grant_time, setting_info.source);
   permissions::PermissionUmaUtil::RecordPermissionUsage(
       type, web_contents()->GetBrowserContext(), web_contents(),
       web_contents()->GetLastCommittedURL());

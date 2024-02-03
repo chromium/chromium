@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
   void OnReceiveResponse(
       mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
 
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
 
-  absl::optional<URLLoaderCompletionStatus> done_status_;
+  std::optional<URLLoaderCompletionStatus> done_status_;
   base::OnceCallback<void(const URLLoaderCompletionStatus&)> callback_;
 };
 

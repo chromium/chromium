@@ -246,7 +246,7 @@ class AnimatingLayoutManagerTest : public testing::Test {
 
   void SizeAndLayout() {
     // If the layout of |view| is invalid or the size changes, this will
-    // automatically call |view->Layout()| as well.
+    // automatically lay out the view as well.
     view_->SizeToPreferredSize();
   }
 
@@ -2644,8 +2644,7 @@ TEST_F(AnimatingLayoutManagerTest, PostOrQueueAction_MayPostImmediately) {
   EXPECT_TRUE(action2_called);
 
   // Test that callbacks are not posted between a layout reset and the
-  // subsequent call to Layout(), but are posted at the end of the Layout()
-  // call.
+  // subsequent layout, but are posted at the end of the layout.
   test_layout->SetLayout(layout1());
   layout()->ResetLayout();
   layout()->PostOrQueueAction(
@@ -2788,7 +2787,7 @@ TEST_F(AnimatingLayoutManagerTest, ConstrainedSpace_StopsAnimation) {
   // Advance the animation.
   animation_api()->IncrementTime(base::Milliseconds(500));
   // Layout 2 is 200 across. Halfway is 150. Getting less should halt the
-  // animation. Note that calling SetSize() should result in a Layout() call.
+  // animation. Note that calling SetSize() should result in a layout.
   view()->SetSize({140, 200});
   EXPECT_FALSE(layout()->is_animating());
 }
@@ -2815,7 +2814,7 @@ TEST_F(AnimatingLayoutManagerTest, ConstrainedSpace_TriggersDelayedAction) {
   // Advance the animation.
   animation_api()->IncrementTime(base::Milliseconds(500));
   // Layout 2 is 200 across. Halfway is 150. Getting less should halt the
-  // animation. Note that calling SetSize() should result in a Layout() call.
+  // animation. Note that calling SetSize() should result in a layout.
   view()->SetSize({140, 200});
   // This should post the delayed actions, so make sure it actually runs.
   RunCurrentTasks();
@@ -2838,7 +2837,7 @@ TEST_F(AnimatingLayoutManagerTest, ConstrainedSpace_SubsequentAnimation) {
   // Advance the animation.
   animation_api()->IncrementTime(base::Milliseconds(500));
   // Layout 2 is 200 across. Halfway is 150. Getting less should halt the
-  // animation. Note that calling SetSize() should result in a Layout() call.
+  // animation. Note that calling SetSize() should result in a layout.
   view()->SetSize({140, 200});
 
   // This should attempt to restart the animation.
@@ -3014,8 +3013,8 @@ TEST_F(AnimatingLayoutManagerNoAnimationsTest, ActionsPostedAfterLayout) {
   RunCurrentTasks();
   EXPECT_TRUE(cb1);
 
-  // Changing the layout puts us in a state where we're awaiting an actual call
-  // to Layout(), so actions will not post yet.
+  // Changing the layout puts us in a state where we're waiting for the layout
+  // to be performed, so actions will not post yet.
   UseFixedLayout(layout2());
   layout()->PostOrQueueAction(
       base::BindLambdaForTesting([&]() { cb2 = true; }));
@@ -3026,7 +3025,7 @@ TEST_F(AnimatingLayoutManagerNoAnimationsTest, ActionsPostedAfterLayout) {
   EXPECT_FALSE(cb2);
   EXPECT_FALSE(cb3);
 
-  // Layout() will post the pending actions.
+  // Layout will post the pending actions.
   SizeAndLayout();
   RunCurrentTasks();
   EXPECT_TRUE(cb2);

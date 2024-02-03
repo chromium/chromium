@@ -5,6 +5,7 @@
 #ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_SERVICE_H_
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -14,7 +15,6 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -83,9 +83,9 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Service {
   // is created, |callback| should be invoked with the new instance's PID (which
   // may be the same as this service's PID if they will share a process). If the
   // requested service is not launched, |callback| should be invoked with
-  // |absl::nullopt|.
+  // |std::nullopt|.
   using CreatePackagedServiceInstanceCallback =
-      base::OnceCallback<void(absl::optional<base::ProcessId>)>;
+      base::OnceCallback<void(std::optional<base::ProcessId>)>;
   virtual void CreatePackagedServiceInstance(
       const std::string& service_name,
       mojo::PendingReceiver<mojom::Service> service_receiver,

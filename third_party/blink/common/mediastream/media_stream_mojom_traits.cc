@@ -10,6 +10,13 @@
 #include "media/capture/mojom/video_capture_types_mojom_traits.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "third_party/blink/public/common/mediastream/media_device_id.h"
+
+namespace {
+const size_t kMaxDeviceIdCount = 100;
+const size_t kMaxDeviceIdSize = 500;
+
+}  // namespace
 
 namespace mojo {
 
@@ -18,39 +25,66 @@ bool StructTraits<blink::mojom::MediaStreamDeviceDataView,
                   blink::MediaStreamDevice>::
     Read(blink::mojom::MediaStreamDeviceDataView input,
          blink::MediaStreamDevice* out) {
-  if (!input.ReadType(&out->type))
+  if (!input.ReadType(&out->type)) {
     return false;
-  if (!input.ReadId(&out->id))
+  }
+  if (!input.ReadId(&out->id)) {
     return false;
+  }
   out->display_id = input.display_id();
-  if (!input.ReadVideoFacing(&out->video_facing))
+  if (!input.ReadVideoFacing(&out->video_facing)) {
     return false;
-  if (!input.ReadGroupId(&out->group_id))
+  }
+  if (!input.ReadGroupId(&out->group_id)) {
     return false;
-  if (!input.ReadMatchedOutputDeviceId(&out->matched_output_device_id))
+  }
+  if (!input.ReadMatchedOutputDeviceId(&out->matched_output_device_id)) {
     return false;
-  if (!input.ReadName(&out->name))
+  }
+  if (!input.ReadName(&out->name)) {
     return false;
-  if (!input.ReadInput(&out->input))
+  }
+  if (!input.ReadInput(&out->input)) {
     return false;
-  absl::optional<base::UnguessableToken> session_id;
+  }
+  std::optional<base::UnguessableToken> session_id;
   if (input.ReadSessionId(&session_id)) {
     out->set_session_id(session_id ? *session_id : base::UnguessableToken());
   } else {
     return false;
   }
-  if (!input.ReadDisplayMediaInfo(&out->display_media_info))
+  if (!input.ReadDisplayMediaInfo(&out->display_media_info)) {
     return false;
+  }
   return true;
 }
 
 // static
 bool StructTraits<blink::mojom::TrackControlsDataView, blink::TrackControls>::
     Read(blink::mojom::TrackControlsDataView input, blink::TrackControls* out) {
-  if (!input.ReadStreamType(&out->stream_type))
+  if (!input.ReadStreamType(&out->stream_type)) {
     return false;
-  if (!input.ReadDeviceId(&out->device_id))
+  }
+  if (!input.ReadDeviceIds(&out->device_ids)) {
     return false;
+  }
+  if (out->device_ids.size() > kMaxDeviceIdCount) {
+    return false;
+  }
+  for (const auto& device_id : out->device_ids) {
+    if (out->stream_type ==
+            blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
+        out->stream_type ==
+            blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+      if (!blink::IsValidMediaDeviceId(device_id)) {
+        return false;
+      }
+    } else {
+      if (device_id.size() > kMaxDeviceIdSize) {
+        return false;
+      }
+    }
+  }
   return true;
 }
 
@@ -58,10 +92,12 @@ bool StructTraits<blink::mojom::TrackControlsDataView, blink::TrackControls>::
 bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
     Read(blink::mojom::StreamControlsDataView input,
          blink::StreamControls* out) {
-  if (!input.ReadAudio(&out->audio))
+  if (!input.ReadAudio(&out->audio)) {
     return false;
-  if (!input.ReadVideo(&out->video))
+  }
+  if (!input.ReadVideo(&out->video)) {
     return false;
+  }
   DCHECK(out->audio.requested() ||
          (!input.hotword_enabled() && !input.disable_local_echo() &&
           !input.suppress_local_audio_playback()));

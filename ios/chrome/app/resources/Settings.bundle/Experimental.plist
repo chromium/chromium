@@ -175,6 +175,7 @@
 				<string>promos_manager::Promo::Choice</string>
 				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
 				<string>promos_manager::Promo::OmniboxPosition</string>
+				<string>promos_manager::Promo::DockingPromo</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -184,6 +185,7 @@
 				<string>Waffle</string>
 				<string>Post Restore Default Browser Alert</string>
 				<string>Omnibox Position</string>
+				<string>Docking Promo</string>
 			</array>
 		</dict>
 		<dict>

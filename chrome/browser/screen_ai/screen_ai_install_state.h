@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list_types.h"
+#include "base/observer_list.h"
 #include "base/version.h"
 
 class PrefService;
@@ -20,20 +20,15 @@ namespace screen_ai {
 
 class ScreenAIInstallState {
  public:
-  // TODO(crbug.com/1520424): Remove `kFailed` and `kReady` when all use cases
-  // updated.
   enum class State {
     // Component does not exist on device.
     kNotDownloaded,
     // Component download is in progress.
     kDownloading,
     // Component download failed.
-    kFailed,
-    kDownloadFailed = kFailed,
+    kDownloadFailed,
     // Component is downloaded but not loaded yet.
-    kDownloaded,
-    // Component is initialized successfully by at least one profile.
-    kReady
+    kDownloaded
   };
 
   class Observer : public base::CheckedObserver {
@@ -83,8 +78,6 @@ class ScreenAIInstallState {
   // Returns true if the component is downloaded and not failed to initialize.
   bool IsComponentAvailable();
 
-  void SetComponentReadyForTesting();
-
   // Sets the component state and informs the observers.
   void SetState(State state);
 
@@ -115,7 +108,7 @@ class ScreenAIInstallState {
   base::FilePath component_binary_path_;
   State state_ = State::kNotDownloaded;
 
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace screen_ai

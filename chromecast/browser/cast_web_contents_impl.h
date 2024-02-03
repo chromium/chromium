@@ -7,11 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -94,7 +95,7 @@ class CastWebContentsImpl : public CastWebContents,
   void BlockMediaLoading(bool blocked) override;
   void BlockMediaStarting(bool blocked) override;
   void EnableBackgroundVideoPlayback(bool enabled) override;
-  void AddBeforeLoadJavaScript(uint64_t id, base::StringPiece script) override;
+  void AddBeforeLoadJavaScript(uint64_t id, std::string_view script) override;
   void PostMessageToMainFrame(
       const std::string& target_origin,
       const std::string& data,
@@ -170,7 +171,7 @@ class CastWebContentsImpl : public CastWebContents,
   std::vector<chromecast::shell::mojom::FeaturePtr> GetRendererFeatures();
   void OnBindingsReceived(
       std::vector<chromecast::mojom::ApiBindingPtr> bindings);
-  bool OnPortConnected(base::StringPiece port_name,
+  bool OnPortConnected(std::string_view port_name,
                        std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   content::WebContents* web_contents_;

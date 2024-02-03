@@ -41,7 +41,7 @@ inline void OpusEncoderDeleter(OpusEncoder* encoder_ptr) {
 }
 
 base::TimeDelta GetFrameDuration(
-    const absl::optional<AudioEncoder::OpusOptions> opus_options) {
+    const std::optional<AudioEncoder::OpusOptions> opus_options) {
   return opus_options.has_value() ? opus_options.value().frame_duration
                                   : kDefaultOpusBufferDuration;
 }
@@ -288,7 +288,7 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
   // If |result| in {0,1}, do nothing; the documentation says that a return
   // value of zero or one means the packet does not need to be transmitted.
   if (encoded_data_size > 1) {
-    absl::optional<CodecDescription> desc;
+    std::optional<CodecDescription> desc;
     if (need_to_emit_extra_data_) {
       desc = PrepareExtraData();
       need_to_emit_extra_data_ = false;
@@ -320,7 +320,7 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
 // Creates and returns the libopus encoder instance. Returns nullptr if the
 // encoder creation fails.
 EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
-    const absl::optional<AudioEncoder::OpusOptions>& opus_options) {
+    const std::optional<AudioEncoder::OpusOptions>& opus_options) {
   int opus_result;
   OwnedOpusEncoder encoder(
       opus_encoder_create(converted_params_.sample_rate(),

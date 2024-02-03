@@ -184,7 +184,7 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     const GPUExternalTextureDescriptor* webgpu_desc,
     scoped_refptr<media::VideoFrame> media_video_frame,
     media::PaintCanvasVideoRenderer* video_renderer,
-    absl::optional<media::VideoFrame::ID> media_video_frame_unique_id,
+    std::optional<media::VideoFrame::ID> media_video_frame_unique_id,
     ExceptionState& exception_state) {
   CHECK(media_video_frame);
 
@@ -273,7 +273,7 @@ GPUExternalTexture* GPUExternalTexture::CreateExpired(
               cache->device()->GetHandle()),
           nullptr /*mailbox_texture*/, false /*is_zero_copy*/,
           false /*read_lock_fences_enabled*/,
-          absl::nullopt /*media_video_frame_unique_id*/);
+          std::nullopt /*media_video_frame_unique_id*/);
 
   return external_texture;
 }
@@ -326,7 +326,7 @@ GPUExternalTexture* GPUExternalTexture::FromVideoFrame(
 
   GPUExternalTexture* external_texture = GPUExternalTexture::CreateImpl(
       cache, webgpu_desc, source.media_video_frame, source.video_renderer,
-      absl::nullopt, exception_state);
+      std::nullopt, exception_state);
 
   // If the webcodec video frame has been closed or destroyed, set expired to
   // true, releasing ownership of the underlying resource and remove the texture
@@ -349,7 +349,7 @@ GPUExternalTexture::GPUExternalTexture(
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
     bool is_zero_copy,
     bool read_lock_fences_enabled,
-    absl::optional<media::VideoFrame::ID> media_video_frame_unique_id)
+    std::optional<media::VideoFrame::ID> media_video_frame_unique_id)
     : DawnObject<WGPUExternalTexture>(cache->device(), external_texture),
       mailbox_texture_(std::move(mailbox_texture)),
       is_zero_copy_(is_zero_copy),

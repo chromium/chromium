@@ -6,7 +6,9 @@ package org.chromium.chrome.browser;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -36,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
@@ -58,11 +61,12 @@ public class ChromeActionModeHandlerUnitTest {
     @Mock private ActionMode mActionMode;
     @Mock private Menu mMenu;
     @Mock private ShareDelegate mShareDelegate;
+    @Mock private ReadAloudController mReadAloudController;
 
     private class TestChromeActionModeCallback
             extends ChromeActionModeHandler.ChromeActionModeCallback {
         TestChromeActionModeCallback(Tab tab, ActionModeCallbackHelper helper) {
-            super(tab, null, urlParams -> {}, () -> mShareDelegate);
+            super(tab, null, urlParams -> {}, () -> mShareDelegate, () -> mReadAloudController);
         }
 
         @Override
@@ -214,6 +218,17 @@ public class ChromeActionModeHandlerUnitTest {
         mActionModeCallback.onActionItemClicked(mActionMode, shareItem);
 
         Mockito.verify(mActionModeCallbackHelper).onActionItemClicked(any(), eq(shareItem));
+    }
+
+    @Test
+    public void testMaybePauseReadAloudOnActionItemClicked() {
+        Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
+        MenuItem item = Mockito.mock(MenuItem.class);
+        Intent intent = new Intent();
+        doReturn(intent).when(item).getIntent();
+
+        mActionModeCallback.onActionItemClicked(mActionMode, item);
+        verify(mReadAloudController).maybePauseForOutgoingIntent(eq(intent));
     }
 
     private ResolveInfo createResolveInfo(String packageName) {

@@ -75,7 +75,7 @@ void TestCreditCardSaveManager::set_upload_request_card(
   upload_request_.card = std::move(card);
 }
 
-payments::PaymentsNetworkInterface::UploadRequestDetails*
+payments::PaymentsNetworkInterface::UploadCardRequestDetails*
 TestCreditCardSaveManager::upload_request() {
   return &upload_request_;
 }

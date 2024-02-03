@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">ଡାଉନ୍‌ଲୋଡ୍ ବିରତ ହୋଇଛି</translation>
 <translation id="1415402041810619267">URLକୁ ଛୋଟ କରାଯାଇଛି</translation>
-<translation id="1426410128494586442">ହଁ</translation>
 <translation id="1434873037477293673">ମୂଲ୍ୟ ହ୍ରାସ କାର୍ଡ</translation>
 <translation id="1448064542941920355">ଜୁମ କମାନ୍ତୁ</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ସାଇଟ}other{<ph name="SITE_COUNT" /> ସାଇଟ}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" />କୁ ଆପଣଙ୍କ କ୍ୟାମେରା ଆକ୍ସେସ୍ ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ କ୍ୟାମେରା ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="2235344399760031203">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2238944249568001759">ଆପଣଙ୍କ ଶେଷ ଟାବ ଆଧାରରେ ପ୍ରସ୍ତାବିତ ସନ୍ଧାନଗୁଡ଼ିକ</translation>
+<translation id="2241587408274973373">ନୂଆ ଟାବ ପୃଷ୍ଠା କାର୍ଡଗୁଡ଼ିକ</translation>
 <translation id="2241634353105152135">ଥରେ ମାତ୍ର</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />କୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1ଟି ସାଇଟକୁ ବ୍ଲକ କରାଯାଇଛି}other{#ଟି ସାଇଟକୁ ବ୍ଲକ କରାଯାଇଛି}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">ପରିଚୟ ପ୍ରଦାନ କରୁଥିବା ସେବାଗୁଡ଼ିକରୁ ସାଇନ-ଇନ ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ସାଇଟଗୁଡ଼ିକ ଦେଖାଇପାରନ୍ତି।</translation>
 <translation id="2790501146643349491">ଚାଲୁ ଥିବା ସମୟରେ, ବର୍ତ୍ତମାନ-ବନ୍ଦ କରାଯାଇଥିବା ସାଇଟଗୁଡ଼ିକ ଡାଟା ପଠାଇବା ଓ ପାଇବା ସମ୍ପୂର୍ଣ୍ଣ କରିପାରିବ। ବନ୍ଦ ଥିବା ସମୟରେ, ବର୍ତ୍ତମାନ-ବନ୍ଦ କରାଯାଇଥିବା ସାଇଟଗୁଡ଼ିକ ଡାଟା ପଠାଇବା କିମ୍ବା ପାଇବା ସମ୍ପୂର୍ଣ୍ଣ କରିପାରିବ ନାହିଁ।</translation>
 <translation id="2822354292072154809">ଆପଣ କ’ଣ ନିଶ୍ଚିତ ଯେ ଆପଣ <ph name="CHOSEN_OBJECT_NAME" /> ପାଇଁ ସମସ୍ତ ସାଇଟ୍ ଅନୁମତିଗୁଡ଼ିକ ଚାହୁଁଛନ୍ତି?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ମୋବାଇଲ ଭ୍ୟୁ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="2870560284913253234">ସାଇଟ୍</translation>
 <translation id="2874939134665556319">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍‌</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">ସାର୍ଟିଫିକେଟ୍‌ ଭ୍ୟୁଅର୍‌</translation>
 <translation id="2979365474350987274">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ସୀମିତ ଅଟେ</translation>
 <translation id="3008272652534848354">ଅନୁମତି ରିସେଟ୍ କରନ୍ତୁ</translation>
-<translation id="3013291976881901233">MIDI ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="301521992641321250">ସ୍ୱଚାଳିତ ଭାବେ ବ୍ଲକ୍ କରାଗଲା</translation>
 <translation id="3069226013421428034">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ ପାଇଁ ତୃତୀୟ ପକ୍ଷ ସାଇନ-ଇନକୁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ଆସନ୍ତାକାଲି ମିଆଦ ଶେଷ ହେବ}other{# ଦିନରେ ମିଆଦ ଶେଷ ହେବ}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">ଏକ USB ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="4194328954146351878">NFC ଡିଭାଇସଗୁଡ଼ିକରେ ସୂଚନା ଦେଖିବା ଏବଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="4200726100658658164">ଲୋକେସନ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
-<translation id="4212246570487010370">ବ୍ରାଉଜ୍ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="4226663524361240545">ବିଜ୍ଞପ୍ତି ଡିଭାଇସ୍‍କୁ ଭାଇବ୍ରେଟ୍ କରିପାରେ</translation>
 <translation id="4259722352634471385">ନାଭିଗେସନ୍ ଅବରୋଧ କରାଯାଇଛି: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ଅନୁମୋଦିତ</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">ତଳକୁ ଚାଳନ କରନ୍ତୁ</translation>
 <translation id="6749077623962119521">ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ୍ କରିବେ?</translation>
 <translation id="6766622839693428701">ବନ୍ଦ କରିବା ପାଇଁ ତଳକୁ ସ୍ଵାଇପ୍ କରନ୍ତୁ</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />ରୁ</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> ପାଇଁ ଏକ ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6818926723028410516">ଆଇଟମ୍ ଚୟନ କରନ୍ତୁ</translation>

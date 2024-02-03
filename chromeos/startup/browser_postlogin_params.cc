@@ -17,12 +17,17 @@ namespace chromeos {
 namespace {
 
 // Reads and parses the post-login data to BrowserPostLoginParams.
-// If data is missing, or failed to parse, returns a null StructPtr.
+// If the data is missing or empty, we didn't receive it from Ash, likely
+// because Ash is shutting down and closing its end of the pipe. In that case,
+// we terminate Lacros gracefully.
+// If the data failed to parse because of a deserialization error, returns a
+// null StructPtr.
 crosapi::mojom::BrowserPostLoginParamsPtr ReadStartupBrowserPostLoginParams() {
   std::optional<std::string> content = ReadPostLoginData();
-  if (!content) {
-    // Ash shut down or crashed, so the pipe is broken.
+  if (!content.has_value() || content->empty()) {
+    // Ash shut down or crashed, so the pipe is broken or empty.
     // Lacros should shut down gracefully instead of crashing.
+    // See crbug.com/1491478 for additional context.
     base::Process::TerminateCurrentProcessImmediately(
         RESULT_CODE_INVALID_POST_LOGIN_PARAMS);
   }

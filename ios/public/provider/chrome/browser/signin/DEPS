@@ -3,7 +3,7 @@ include_rules = [
   "+components/signin/public/base/signin_metrics.h",
   "+components/signin/public/identity_manager/account_info.h",
   "+components/sync/service/trusted_vault_client.h",
-  "+ios/chrome/browser/promos_manager/promos_manager.h",
+  "+ios/chrome/browser/promos_manager/model/promos_manager.h",
   "+ios/chrome/browser/shared/model/browser/browser.h",
   "+ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h",
   "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",

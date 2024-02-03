@@ -4,13 +4,14 @@
 
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace {
 
-std::string NormalizeHost(base::StringPiece host) {
+std::string NormalizeHost(std::string_view host) {
   return GURL(base::StrCat({url::kHttpScheme, "://", host})).host();
 }
 
@@ -166,10 +167,10 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRulePtr,
 
     if (!input.host_filters().empty()) {
       // Convert host names in case they contain non-ASCII characters.
-      const base::StringPiece kWildcard("*.");
+      const std::string_view kWildcard("*.");
 
       std::vector<std::string> hosts;
-      for (base::StringPiece host : input.host_filters()) {
+      for (std::string_view host : input.host_filters()) {
         if (base::StartsWith(host, kWildcard, base::CompareCase::SENSITIVE)) {
           hosts.push_back(
               base::StrCat({kWildcard, NormalizeHost(host.substr(2))}));

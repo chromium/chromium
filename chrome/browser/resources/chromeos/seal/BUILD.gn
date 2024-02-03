@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+grit("resources") {
+  source = "resources.grd"
+
+  outputs = [
+    "grit/seal_resources.h",
+    "grit/seal_resources_map.h",
+    "grit/seal_resources_map.cc",
+    "seal_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+
+  use_brotli = true
+}

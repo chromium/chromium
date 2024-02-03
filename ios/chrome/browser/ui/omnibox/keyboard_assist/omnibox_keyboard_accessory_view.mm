@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -125,6 +124,7 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
   // Create and add a stackview containing the leading assistive buttons, i.e.
   // Voice search, camera/Lens search and paste search.
   BOOL useLens = ios::provider::IsLensSupported() &&
+                 !base::FeatureList::IsEnabled(kDisableLensCamera) &&
                  [self isGoogleSearchEngine:self.templateURLService];
   NSArray<UIControl*>* leadingControls =
       OmniboxAssistiveKeyboardLeadingControls(_delegate, self.pasteTarget,

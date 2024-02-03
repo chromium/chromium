@@ -14,17 +14,16 @@ chrome.test.runTests([
     chrome.documentScan.getScannerList(filter, response => {
       chrome.test.assertEq(OperationResult.SUCCESS, response.result);
       chrome.test.assertEq(1, response.scanners.length);
-      chrome.test.assertNe('', response.scanners[0].scannerId);
-      savedId = response.scanners[0].scannerId;
+      chrome.test.assertEq('scanneridabc123', response.scanners[0].scannerId);
       chrome.test.assertEq('GoogleTest', response.scanners[0].manufacturer);
       chrome.test.assertEq('Scanner', response.scanners[0].model);
 
-      // Second call should get the same scanner with a different id.
+      // Second call should get the same scanner with the same id because it's
+      // the same extension within the same session.
       chrome.documentScan.getScannerList(filter, response => {
         chrome.test.assertEq(OperationResult.SUCCESS, response.result);
         chrome.test.assertEq(1, response.scanners.length);
-        chrome.test.assertNe('', response.scanners[0].scannerId);
-        chrome.test.assertNe(savedId, response.scanners[0].scannerId);
+        chrome.test.assertEq('scanneridabc123', response.scanners[0].scannerId);
         chrome.test.assertEq('GoogleTest', response.scanners[0].manufacturer);
         chrome.test.assertEq('Scanner', response.scanners[0].model);
         chrome.test.succeed();
@@ -156,7 +155,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function getListMaintainsJob() {
+  async function getListClearsHandles() {
     const scannerHandle = await getScannerHandle();
     chrome.test.assertNe(null, scannerHandle);
 
@@ -166,8 +165,8 @@ chrome.test.runTests([
     chrome.test.assertEq(OperationResult.SUCCESS, startResponse.result);
     chrome.test.assertNe(null, jobHandle);
 
-    // If a user calls getScannerList, an open job handle will remain valid and
-    // should be cancelable.
+    // If a user calls getScannerList, open handles will be closed and running
+    // jobs will be canceled.  They are all invalid after it returns.
     const filter = {
       local: true,
       secure: true,
@@ -177,7 +176,13 @@ chrome.test.runTests([
 
     const cancelResponse = await cancelScan(jobHandle);
     chrome.test.assertEq(jobHandle, cancelResponse.job);
-    chrome.test.assertEq(OperationResult.SUCCESS, cancelResponse.result);
+    chrome.test.assertEq(OperationResult.INVALID, cancelResponse.result);
+
+    const startResponse2 = await startScan(scannerHandle);
+    chrome.test.assertEq(scannerHandle, startResponse2.scannerHandle);
+    chrome.test.assertEq(OperationResult.INVALID, startResponse2.result);
+    chrome.test.assertEq(null, startResponse2.job);
+
     chrome.test.succeed();
   },
 

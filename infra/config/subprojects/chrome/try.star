@@ -149,6 +149,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-fyi-sherlock-qemu",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-internal-images-roller",
 )
 
@@ -261,11 +265,6 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-arm64-pgo",
-)
-
-chrome_internal_verifier(
-    branch_selector = branches.selector.WINDOWS_BRANCHES,
-    builder = "win-arm64-rel",
 )
 
 chrome_internal_verifier(

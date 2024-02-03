@@ -30,6 +30,13 @@ gfx::Transform XrPoseToGfxTransform(const XrPosef& pose) {
   return gfx::Transform::Compose(decomp);
 }
 
+device::Pose XrPoseToDevicePose(const XrPosef& pose) {
+  gfx::Quaternion orientation{pose.orientation.x, pose.orientation.y,
+                              pose.orientation.z, pose.orientation.w};
+  gfx::Point3F position{pose.position.x, pose.position.y, pose.position.z};
+  return device::Pose{position, orientation};
+}
+
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
   absl::optional<gfx::DecomposedTransform> decomposed_transform =
       transform.Decompose();

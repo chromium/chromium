@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "url/gurl.h"
@@ -37,47 +37,47 @@ class TestInterestGroupBuilder {
   TestInterestGroupBuilder& SetEnableBiddingSignalsPrioritization(
       bool enable_bidding_signals_prioritization);
   TestInterestGroupBuilder& SetPriorityVector(
-      absl::optional<base::flat_map<std::string, double>> priority_vector);
+      std::optional<base::flat_map<std::string, double>> priority_vector);
   TestInterestGroupBuilder& SetPrioritySignalsOverrides(
-      absl::optional<base::flat_map<std::string, double>>
+      std::optional<base::flat_map<std::string, double>>
           priority_signals_overrides);
   TestInterestGroupBuilder& SetSellerCapabilities(
-      absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+      std::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
           seller_capabilities);
   TestInterestGroupBuilder& SetAllSellerCapabilities(
       SellerCapabilitiesType all_sellers_capabilities);
   TestInterestGroupBuilder& SetExecutionMode(
       InterestGroup::ExecutionMode execution_mode);
-  TestInterestGroupBuilder& SetBiddingUrl(absl::optional<GURL> bidding_url);
+  TestInterestGroupBuilder& SetBiddingUrl(std::optional<GURL> bidding_url);
   TestInterestGroupBuilder& SetBiddingWasmHelperUrl(
-      absl::optional<GURL> bidding_wasm_helper_url);
-  TestInterestGroupBuilder& SetUpdateUrl(absl::optional<GURL> update_url);
+      std::optional<GURL> bidding_wasm_helper_url);
+  TestInterestGroupBuilder& SetUpdateUrl(std::optional<GURL> update_url);
   TestInterestGroupBuilder& SetTrustedBiddingSignalsUrl(
-      absl::optional<GURL> trusted_bidding_signals_url);
+      std::optional<GURL> trusted_bidding_signals_url);
   TestInterestGroupBuilder& SetTrustedBiddingSignalsKeys(
-      absl::optional<std::vector<std::string>> trusted_bidding_signals_keys);
+      std::optional<std::vector<std::string>> trusted_bidding_signals_keys);
   TestInterestGroupBuilder& SetTrustedBiddingSignalsSlotSizeMode(
       InterestGroup::TrustedBiddingSignalsSlotSizeMode
           trusted_bidding_signals_slot_size_mode);
   TestInterestGroupBuilder& SetMaxTrustedBiddingSignalsURLLength(
       int32_t max_trusted_bidding_signals_url_length);
   TestInterestGroupBuilder& SetUserBiddingSignals(
-      absl::optional<std::string> user_bidding_signals);
+      std::optional<std::string> user_bidding_signals);
   TestInterestGroupBuilder& SetAds(
-      absl::optional<std::vector<InterestGroup::Ad>> ads);
+      std::optional<std::vector<InterestGroup::Ad>> ads);
   TestInterestGroupBuilder& SetAdComponents(
-      absl::optional<std::vector<InterestGroup::Ad>> ad_components);
+      std::optional<std::vector<InterestGroup::Ad>> ad_components);
   TestInterestGroupBuilder& SetAdSizes(
-      absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes);
+      std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes);
   TestInterestGroupBuilder& SetSizeGroups(
-      absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+      std::optional<base::flat_map<std::string, std::vector<std::string>>>
           size_groups);
   TestInterestGroupBuilder& SetAuctionServerRequestFlags(
       AuctionServerRequestFlags flags);
   TestInterestGroupBuilder& SetAdditionalBidKey(
-      absl::optional<blink::InterestGroup::AdditionalBidKey> key);
+      std::optional<blink::InterestGroup::AdditionalBidKey> key);
   TestInterestGroupBuilder& SetAggregationCoordinatorOrigin(
-      absl::optional<url::Origin> agg_coordinator_origin);
+      std::optional<url::Origin> agg_coordinator_origin);
 
  private:
   InterestGroup interest_group_;

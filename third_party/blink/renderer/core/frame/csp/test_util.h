@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_TEST_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_TEST_UTIL_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -35,7 +36,7 @@ class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
   std::unique_ptr<SourceLocation> GetSourceLocation() override {
     return nullptr;
   }
-  absl::optional<uint16_t> GetStatusCode() override { return absl::nullopt; }
+  std::optional<uint16_t> GetStatusCode() override { return std::nullopt; }
   String GetDocumentReferrer() override { return ""; }
   void DispatchViolationEvent(const SecurityPolicyViolationEventInit&,
                               Element*) override {}

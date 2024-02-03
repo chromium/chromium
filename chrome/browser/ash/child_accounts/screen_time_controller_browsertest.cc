@@ -98,7 +98,7 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
     const user_manager::UserManager* const user_manager =
         user_manager::UserManager::Get();
     EXPECT_EQ(user_manager->GetActiveUser()->GetType(),
-              user_manager::USER_TYPE_CHILD);
+              user_manager::UserType::kChild);
     child_profile_ =
         ProfileHelper::Get()->GetProfileByUser(user_manager->GetActiveUser());
 

@@ -14,6 +14,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_footer_panel.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_header_panel.h"
@@ -36,6 +39,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -84,7 +88,8 @@ const char kTestOtherExtensionId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 }  // namespace
 
 class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
-                               public views::WidgetObserver {
+                               public views::WidgetObserver,
+                               public ProfileObserver {
  public:
   AppInfoDialogViewsTest() = default;
 
@@ -97,7 +102,8 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Sets up a fake user manager over |BrowserWithTestWindowTest| user
     // manager.
-    arc_test_ = std::make_unique<ArcAppTest>();
+    arc_test_ =
+        std::make_unique<ArcAppTest>(ArcAppTest::UserManagerMode::kDoNothing);
     arc_test_->SetUp(extension_environment_.profile());
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();
@@ -130,10 +136,10 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
 
     // The Browser class had dependencies on LocalState, which is owned by
     // |extension_environment_|.
-    auto* browser = release_browser();
+    std::unique_ptr<Browser> browser = release_browser();
     if (browser) {
       browser->tab_strip_model()->CloseAllTabs();
-      delete browser;
+      browser.reset();
       // Browser holds a ScopedProfileKeepAlive, which might post a task to the
       // UI thread on destruction.
       base::RunLoop().RunUntilIdle();
@@ -143,16 +149,49 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     BrowserWithTestWindowTest::TearDown();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override {
-    return extension_environment_.profile()->GetProfileUserName();
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+    AccountId account_id = AccountId::FromUserEmail(email);
+    CHECK(user_manager());
+    user_manager()->AddUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
+#endif
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    CHECK_EQ(profile_name,
-             extension_environment_.profile()->GetProfileUserName());
-    return extension_environment_.profile();
+    auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
+    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto account_id = AccountId::FromUserEmail(profile_name);
+    ash::AnnotatedAccountId::Set(profile, account_id);
+    user_manager()->OnUserProfileCreated(account_id, profile->GetPrefs());
+    auto observation =
+        std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(
+            this);
+    observation->Observe(profile);
+    profile_observations_.push_back(std::move(observation));
+#endif
+    extension_environment_.SetProfile(profile);
+    return profile;
   }
+
+  // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    CHECK(base::EraseIf(profile_observations_, [profile](auto& observation) {
+      return observation->IsObservingSource(profile);
+    }));
+    const auto* account_id = ash::AnnotatedAccountId::Get(profile);
+    CHECK(account_id);
+    user_manager()->OnUserProfileWillBeDestroyed(*account_id);
+  }
+#endif
 
  protected:
   void ShowAppInfo(const std::string& app_id) {
@@ -203,8 +242,16 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   scoped_refptr<const extensions::Extension> chrome_app_;
   extensions::TestExtensionEnvironment extension_environment_{
       extensions::TestExtensionEnvironment::Type::
-          kInheritExistingTaskEnvironment};
+          kInheritExistingTaskEnvironment,
+      extensions::TestExtensionEnvironment::ProfileCreationType::kNoCreate,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+      extensions::TestExtensionEnvironment::OSSetupType::kNoSetUp,
+#endif
+  };
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::vector<
+      std::unique_ptr<base::ScopedObservation<Profile, ProfileObserver>>>
+      profile_observations_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<ArcAppTest> arc_test_;
@@ -236,35 +283,52 @@ TEST_F(AppInfoDialogViewsTest, UninstallingOtherAppDoesNotCloseDialog) {
 TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
   ShowAppInfo(kTestExtensionId);
 
-  // First delete the test browser window. This ensures the test harness isn't
-  // surprised by it being closed in response to the profile deletion below.
-  std::unique_ptr<Browser> browser(release_browser());
-  browser->tab_strip_model()->CloseAllTabs();
-  browser.reset();
-  std::unique_ptr<BrowserWindow> browser_window(release_browser_window());
-  browser_window->Close();
-  browser_window.reset();
+  {
+    // Prevent from unexpected profile deletion due to browser deletion.
+    ScopedProfileKeepAlive keep_alive(
+        profile(), ProfileKeepAliveOrigin::kProfileDeletionProcess);
 
-  // The following serves two purposes:
-  // it ensures the Widget close is being triggered by the DeleteProfile() call
-  // rather than the code above. And prevents a race condition while tearing
-  // down arc_test user_manager.
-  base::RunLoop().RunUntilIdle();
+    // First delete the test browser window. This ensures the test harness isn't
+    // surprised by it being closed in response to the profile deletion below.
+    std::unique_ptr<Browser> browser = release_browser();
+    browser->tab_strip_model()->CloseAllTabs();
+    browser.reset();
+    std::unique_ptr<BrowserWindow> browser_window = release_browser_window();
+    browser_window->Close();
+    browser_window.reset();
+
+    // The following serves two purposes:
+    // it ensures the Widget close is being triggered by the DeleteProfile()
+    // call rather than the code above. And prevents a race condition while
+    // tearing down arc_test user_manager.
+    base::RunLoop().RunUntilIdle();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Avoid a race condition when tearing down arc_test_ and deleting the user
-  // manager.
-  chrome_shelf_controller_.reset();
-  shelf_model_.reset();
-  arc_test_->TearDown();
-  arc_test_.reset();
+    // Avoid a race condition when tearing down arc_test_ and deleting the user
+    // manager.
+    chrome_shelf_controller_.reset();
+    shelf_model_.reset();
+    arc_test_->TearDown();
+    arc_test_.reset();
 #endif
 
-  ASSERT_TRUE(widget_);
-  EXPECT_FALSE(widget_->IsClosed());
-  extension_environment_.DeleteProfile();
+    ASSERT_TRUE(widget_);
+    EXPECT_FALSE(widget_->IsClosed());
+  }
 
+  // Delete the profile.
+  extension_environment_.DeleteProfile();
+  // ScopedProfileKeepAlive's destruction may post a task to the current
+  // sequence, which needs the profile. So, before calling DeleteProfile,
+  // RunLoop once again.
   base::RunLoop().RunUntilIdle();
+  // Note: On platforms except ChromeOS, the above RunLoop will delete the
+  // profile. On ChromeOS (i.e. Ash-Chrome), profile won't be delete by that
+  // because even if all browsers are closed Profile is expected to be kept
+  // for system. Explicitly delete it here.
+  DeleteProfile(GetDefaultProfileName());
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(widget_);
 }
 

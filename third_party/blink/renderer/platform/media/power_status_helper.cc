@@ -20,14 +20,14 @@ PowerStatusHelper::PowerStatusHelper(
 PowerStatusHelper::~PowerStatusHelper() = default;
 
 // static
-absl::optional<int> PowerStatusHelper::BucketFor(
+std::optional<int> PowerStatusHelper::BucketFor(
     bool is_playing,
     bool has_video,
     media::VideoCodec codec,
     media::VideoCodecProfile profile,
     gfx::Size natural_size,
     bool is_fullscreen,
-    absl::optional<int> average_fps) {
+    std::optional<int> average_fps) {
   if (!is_playing)
     return {};
 
@@ -89,7 +89,7 @@ void PowerStatusHelper::SetIsFullscreen(bool is_fullscreen) {
   OnAnyStateChange();
 }
 
-void PowerStatusHelper::SetAverageFrameRate(absl::optional<int> average_fps) {
+void PowerStatusHelper::SetAverageFrameRate(std::optional<int> average_fps) {
   average_fps_ = average_fps;
   OnAnyStateChange();
 }
@@ -101,7 +101,7 @@ void PowerStatusHelper::UpdatePowerExperimentState(bool state) {
 }
 
 void PowerStatusHelper::OnAnyStateChange() {
-  absl::optional<int> old_bucket = current_bucket_;
+  std::optional<int> old_bucket = current_bucket_;
   current_bucket_.reset();
 
   // If we're the power experiment, then we might have a bucket.  Else, we

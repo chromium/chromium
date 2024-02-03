@@ -6,15 +6,14 @@
 #define MEDIA_AUDIO_MAC_CORE_AUDIO_UTIL_MAC_H_
 
 #include <AudioUnit/AudioUnit.h>
+#include <CoreAudio/CoreAudio.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <CoreAudio/CoreAudio.h>
 
 namespace media {
 namespace core_audio_mac {
@@ -30,13 +29,13 @@ std::vector<AudioObjectID> GetRelatedDeviceIDs(AudioObjectID device_id);
 
 // Returns a string with a unique device ID for the given |device_id|, or no
 // value if there is an error.
-absl::optional<std::string> GetDeviceUniqueID(AudioObjectID device_id);
+std::optional<std::string> GetDeviceUniqueID(AudioObjectID device_id);
 
 // Returns a string with a descriptive label for the given |device_id|, or no
 // value if there is an error. The returned label is based on several
 // characteristics of the device.
-absl::optional<std::string> GetDeviceLabel(AudioObjectID device_id,
-                                           bool is_input);
+std::optional<std::string> GetDeviceLabel(AudioObjectID device_id,
+                                          bool is_input);
 
 // Returns the number of input or output streams associated with the given
 // |device_id|. Returns zero if there are no streams or if there is an error.
@@ -44,12 +43,11 @@ uint32_t GetNumStreams(AudioObjectID device_id, bool is_input);
 
 // Returns the source associated with the given |device_id|, or no value if
 // |device_id| has no source or if there is an error.
-absl::optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
-                                         bool is_input);
+std::optional<uint32_t> GetDeviceSource(AudioObjectID device_id, bool is_input);
 
 // Returns the transport type of the given |device_id|, or no value if
 // |device_id| has no source or if there is an error.
-absl::optional<uint32_t> GetDeviceTransportType(AudioObjectID device_id);
+std::optional<uint32_t> GetDeviceTransportType(AudioObjectID device_id);
 
 // Returns whether or not the |device_id| corresponds to a private, aggregate
 // device. Such a device gets created by instantiating a VoiceProcessingIO

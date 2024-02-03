@@ -110,7 +110,7 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
             BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
             window->GetAgentClusterID(), ukm::kInvalidSourceId,
             window->GetExecutionContextToken()),
-        absl::nullopt, std::make_unique<WorkerDevToolsParams>());
+        std::nullopt, std::make_unique<WorkerDevToolsParams>());
   }
 
   void ExecuteScriptInWorklet(WorkerThread* thread,

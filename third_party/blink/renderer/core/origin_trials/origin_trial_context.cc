@@ -166,7 +166,7 @@ OriginTrialStatus MergeOriginTrialStatus(OriginTrialStatus s1,
 OriginTrialTokenResult::OriginTrialTokenResult(
     const String& raw_token,
     OriginTrialTokenStatus status,
-    const absl::optional<TrialToken>& parsed_token)
+    const std::optional<TrialToken>& parsed_token)
     : raw_token(raw_token), status(status), parsed_token(parsed_token) {}
 
 OriginTrialContext::OriginTrialContext(ExecutionContext* context)
@@ -751,8 +751,8 @@ void OriginTrialContext::CacheToken(const String& raw_token,
   trial_result.token_results.push_back(OriginTrialTokenResult{
       raw_token, token_result.Status(),
       token_result.ParsedToken()
-          ? absl::make_optional(*token_result.ParsedToken())
-          : absl::nullopt});
+          ? std::make_optional(*token_result.ParsedToken())
+          : std::nullopt});
 }
 
 void OriginTrialContext::Trace(Visitor* visitor) const {

@@ -59,7 +59,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   // Calls the parent Layout, but in some cases may also need to manually
   // position the TabSearchButton to layer over the TabStrip.
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // These system drag & drop methods forward the events to TabDragController to
   // support its fallback tab dragging mode in the case where the platform

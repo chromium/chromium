@@ -673,8 +673,6 @@ testcase.dirContextMenuForRenameInput = async () => {
   // Check: The rename input should be still be visible and with the same
   // content.
   const inputElement = await directoryTree.waitForRenameInputByLabel('photos');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('NEW NAME', inputElement.value);
 
   // Check: The rename input should be the focused element.

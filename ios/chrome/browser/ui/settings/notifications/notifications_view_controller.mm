@@ -22,6 +22,7 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierNotificationsPriceTracking = kSectionIdentifierEnumZero,
   SectionIdentifierNotificationsContent,
+  SectionIdentifierNotificationsTips,
 };
 
 }  // namespace
@@ -35,6 +36,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Content Notifications footer item received by the mediator.
 @property(nonatomic, strong)
     TableViewHeaderFooterItem* contentNotificationsFooterItem;
+// All the items for the tips notifications section received by mediator.
+@property(nonatomic, strong) TableViewSwitchItem* tipsNotificationsItem;
+// Tips Notifications footer item received by the mediator.
+@property(nonatomic, strong)
+    TableViewHeaderFooterItem* tipsNotificationsFooterItem;
 
 @end
 
@@ -74,6 +80,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
         toSectionWithIdentifier:SectionIdentifierNotificationsContent];
     [model setFooter:self.contentNotificationsFooterItem
         forSectionWithIdentifier:SectionIdentifierNotificationsContent];
+  }
+  if (IsIOSTipsNotificationsEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierNotificationsTips];
+    [model addItem:self.tipsNotificationsItem
+        toSectionWithIdentifier:SectionIdentifierNotificationsTips];
+    [model setFooter:self.tipsNotificationsFooterItem
+        forSectionWithIdentifier:SectionIdentifierNotificationsTips];
   }
 }
 

@@ -46,16 +46,23 @@ regressions. 3 steps:
 
 (3) Override the config in tests:
 
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::MyFeature> scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().my_param = 1;
+  scoped_config.Reset();
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().my_param = 2;
+
+  instead of:
+
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       omnibox_feature_configs::MyFeature::kMyFeature, {{"my_param", "1"}});
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::MyFeature> scoped_config;
-
   scoped_feature_list.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       omnibox_feature_configs::MyFeature::kMyFeature, {{"my_param", "2"}});
-  scoped_config.Reset();
+
 */
 
 // A substitute for `BASE_DECLARE_FEATURE` for nesting in structs.
@@ -75,14 +82,16 @@ class Config {
 template <class T>
 class ScopedConfigForTesting : Config<T> {
  public:
-  ScopedConfigForTesting() : original_config_(T::Get()) { Reset(); }
+  ScopedConfigForTesting() : original_config_(Get()) { Reset(); }
   ScopedConfigForTesting(const ScopedConfigForTesting&) = delete;
   ScopedConfigForTesting& operator=(const ScopedConfigForTesting&) = delete;
-  ~ScopedConfigForTesting() { const_cast<T&>(T::Get()) = original_config_; }
-  void Reset() { const_cast<T&>(T::Get()) = {}; }
+  ~ScopedConfigForTesting() { Get() = original_config_; }
+
+  T& Get() { return const_cast<T&>(T::Get()); }
+  void Reset() { Get() = {}; }
 
  private:
-  T original_config_;
+  const T original_config_;
 };
 
 // Add new configs below, ordered alphabetically.
@@ -124,6 +133,22 @@ struct ForceAllowedToBeDefault : Config<ForceAllowedToBeDefault> {
   DECLARE_FEATURE(kForceAllowedToBeDefault);
   ForceAllowedToBeDefault();
   bool enabled;
+};
+
+// If enabled, only suggestions from the keyword mode provider and historical
+// keyword mode suggestions will be shown in keyword mode.
+struct LimitKeywordModeSuggestions : Config<LimitKeywordModeSuggestions> {
+  DECLARE_FEATURE(kLimitKeywordModeSuggestions);
+  LimitKeywordModeSuggestions();
+  bool enabled;
+
+  // If enabled, limits document provider suggestions except for the Google
+  // Drive keyword engine.
+  bool limit_document_suggestions;
+  // If enabled, limits history cluster suggestions in keyword mode.
+  bool limit_history_cluster_suggestions;
+  // If enabled, limits default search engine suggestions in keyword mode.
+  bool limit_dse_suggestions;
 };
 
 // If enabled, the shortcut provider is more aggressive in scoring.

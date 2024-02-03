@@ -202,8 +202,7 @@ class CertVerifyProcTrustStore {
 
   bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const {
     if (TestRootCerts::HasInstance() &&
-        TestRootCerts::GetInstance()->IsKnownRoot(
-            trust_anchor->der_cert().AsSpan())) {
+        TestRootCerts::GetInstance()->IsKnownRoot(trust_anchor->der_cert())) {
       return true;
     }
     return system_trust_store_->IsKnownRoot(trust_anchor);

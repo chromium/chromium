@@ -35,9 +35,9 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
                                      public AssistantControllerObserver,
                                      public AssistantUiModelObserver,
                                      public display::DisplayObserver {
- public:
-  METADATA_HEADER(AssistantPageView);
+  METADATA_HEADER(AssistantPageView, AppListPage)
 
+ public:
   explicit AssistantPageView(AssistantViewDelegate* assistant_view_delegate);
   AssistantPageView(const AssistantPageView&) = delete;
   AssistantPageView& operator=(const AssistantPageView&) = delete;

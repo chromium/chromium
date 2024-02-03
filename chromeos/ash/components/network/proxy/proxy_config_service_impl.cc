@@ -19,6 +19,8 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
@@ -49,6 +51,21 @@ bool GetNetworkProxyConfig(const PrefService* profile_prefs,
                                                            proxy_config);
 }
 
+bool GetIsCaptivePortalSignin(const PrefService* profile_prefs) {
+  if (!chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
+    return false;
+  }
+  if (!profile_prefs) {
+    return false;
+  }
+  const PrefService::Preference* const captive_portal_pref =
+      profile_prefs->FindPreference(chromeos::prefs::kCaptivePortalSignin);
+  if (!captive_portal_pref) {
+    return false;
+  }
+  return captive_portal_pref->GetValue()->GetBool();
+}
+
 }  // namespace
 
 ProxyConfigServiceImpl::ProxyConfigServiceImpl(
@@ -68,6 +85,8 @@ ProxyConfigServiceImpl::ProxyConfigServiceImpl(
     profile_pref_registrar_.Add(::onc::prefs::kOpenNetworkConfiguration,
                                 proxy_change_callback);
     profile_pref_registrar_.Add(::proxy_config::prefs::kUseSharedProxies,
+                                proxy_change_callback);
+    profile_pref_registrar_.Add(chromeos::prefs::kCaptivePortalSignin,
                                 proxy_change_callback);
   }
   local_state_pref_registrar_.Init(local_state_prefs);
@@ -177,6 +196,11 @@ std::unique_ptr<ProxyConfigDictionary>
 ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
     const PrefService* profile_prefs,
     const PrefService* local_state_prefs) {
+  if (GetIsCaptivePortalSignin(profile_prefs)) {
+    // Ignore proxies for captive portal signin.
+    return nullptr;
+  }
+
   // Apply Pref Proxy configuration if available.
   net::ProxyConfigWithAnnotation pref_proxy_config;
   ProxyPrefs::ConfigState pref_state =
@@ -193,8 +217,9 @@ ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
   // No connected network.
-  if (!network)
+  if (!network) {
     return nullptr;
+  }
 
   // Apply network proxy configuration.
   ::onc::ONCSource onc_source;
@@ -202,17 +227,24 @@ ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
       proxy_config::GetProxyConfigForNetwork(
           profile_prefs, local_state_prefs, *network,
           NetworkHandler::Get()->network_profile_handler(), &onc_source);
-  if (!ProxyConfigServiceImpl::IgnoreProxy(profile_prefs,
-                                           network->profile_path(), onc_source))
+  if (!ProxyConfigServiceImpl::IgnoreProxy(
+          profile_prefs, network->profile_path(), onc_source)) {
     return proxy_config;
+  }
 
   return std::make_unique<ProxyConfigDictionary>(
       ProxyConfigDictionary::CreateDirect());
 }
 
 void ProxyConfigServiceImpl::DetermineEffectiveConfigFromDefaultNetwork() {
-  if (!NetworkHandler::IsInitialized())
+  if (!NetworkHandler::IsInitialized()) {
     return;
+  }
+
+  // Ignore proxies for captive portal signin.
+  if (GetIsCaptivePortalSignin(profile_prefs_)) {
+    return;
+  }
 
   NetworkStateHandler* handler = NetworkHandler::Get()->network_state_handler();
   const NetworkState* network = handler->DefaultNetwork();

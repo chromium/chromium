@@ -376,9 +376,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        TestOpenPopupDoesNotGrantTabPermissions) {
   OpenPopupViaAPI(false);
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
-  ASSERT_FALSE(registry
-                   ->GetExtensionById(last_loaded_extension_id(),
-                                      ExtensionRegistry::ENABLED)
+  ASSERT_FALSE(registry->enabled_extensions()
+                   .GetByID(last_loaded_extension_id())
                    ->permissions_data()
                    ->HasAPIPermissionForTab(
                        sessions::SessionTabHelper::IdForTab(

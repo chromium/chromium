@@ -451,7 +451,6 @@ test("components_unittests") {
       "//components/heavy_ad_intervention:unit_tests",
       "//components/history/content/browser:unit_tests",
       "//components/history_clusters/core:unit_tests",
-      "//components/history_clusters/ui:unit_tests",
       "//components/invalidation/impl:unit_tests",
       "//components/javascript_dialogs:unit_tests",
       "//components/js_injection/common:unit_tests",
@@ -615,6 +614,7 @@ test("components_unittests") {
       "//components/embedder_support/android:native_java_unittests_java",
       "//components/embedder_support/android/metrics:test_support_java",
       "//components/embedder_support/android/metrics:unit_tests",
+      "//components/facilitated_payments/core/browser:unit_tests",
       "//components/gcm_driver/instance_id:test_support",
       "//components/gcm_driver/instance_id/android:instance_id_driver_java",
       "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
@@ -824,6 +824,10 @@ test("components_unittests") {
   # Only supported on cast-enabled platforms.
   if (enable_cast_receiver) {
     deps += [ "//components/cast_receiver:unit_tests" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//components/remote_cocoa/common:unit_tests" ]
   }
 
   # On LaCrOS, tests use ash - chrome as a window manager, thus the dependency.

@@ -84,4 +84,18 @@ public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperC
                         getMetadata(),
                         intent));
     }
+
+    @Override
+    public NotificationWrapperBuilder setDeleteIntent(
+            PendingIntentProvider intent, @NotificationUmaTracker.ActionType int actionType) {
+        // As `actionType` will be part of the `requestCode` that `NotificationIntentInterceptor`
+        // generates, the below wrapper `PendingIntent` will not be `Intent.filterEquals` to the
+        // one above.
+        return setDeleteIntent(
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.ACTION_INTENT,
+                        actionType,
+                        getMetadata(),
+                        intent));
+    }
 }

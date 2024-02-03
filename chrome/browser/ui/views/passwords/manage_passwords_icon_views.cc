@@ -29,7 +29,7 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
                          page_action_icon_delegate,
                          "ManagePasswords") {
   // Password icon should not be mirrored in RTL.
-  image()->SetFlipCanvasOnPaintForRTLUI(false);
+  image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kPasswordsOmniboxKeyIconElementId);
   SetAccessibilityProperties(/*role*/ std::nullopt,
                              GetTextForTooltipAndAccessibleName());
@@ -58,7 +58,7 @@ void ManagePasswordsIconViews::UpdateUiForState() {
   // We may be about to automatically pop up a passwords bubble.
   // Force layout of the icon's parent now; the bubble will be incorrectly
   // positioned otherwise, as the icon won't have been drawn into position.
-  parent()->Layout();
+  parent()->DeprecatedLayoutImmediately();
 }
 
 views::BubbleDialogDelegate* ManagePasswordsIconViews::GetBubble() const {
@@ -104,8 +104,10 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     case password_manager::ui::PENDING_PASSWORD_UPDATE_STATE:
     case password_manager::ui::PENDING_PASSWORD_STATE:
     case password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE:
+    case password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_SAVE);
-    case password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE:
+    case password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE:
+    case password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MOVE);
     case password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE:
     case password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE:

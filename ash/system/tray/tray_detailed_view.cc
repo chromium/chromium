@@ -152,6 +152,7 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
     DCHECK(start_view->GetVisible());
     start_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, 0, 0, end_width - start_width)));
+    start_view->InvalidateLayout();
   } else {
     // Ensure the end container is visible, even if it has no buttons.
     tri_view_->SetContainerVisible(TriView::Container::END, true);
@@ -159,7 +160,7 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
         gfx::Insets::TLBR(0, start_width - end_width, 0, 0)));
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void TrayDetailedView::CreateScrollableList() {
@@ -313,8 +314,8 @@ void TrayDetailedView::CloseBubble() {
   delegate_->CloseBubble();
 }
 
-void TrayDetailedView::Layout() {
-  views::View::Layout();
+void TrayDetailedView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
   if (scroller_ && !scroller_->is_bounded()) {
     scroller_->ClipHeightTo(0, scroller_->height());
   }

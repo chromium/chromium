@@ -85,7 +85,7 @@ MATCHER(EqualsFillData, "") {
   FormFieldData::FillData lhs_field = std::get<0>(arg);
   FormFieldData::FillData rhs_field = std::get<1>(arg);
   return lhs_field.value == rhs_field.value &&
-         lhs_field.unique_renderer_id == rhs_field.unique_renderer_id &&
+         lhs_field.renderer_id == rhs_field.renderer_id &&
          lhs_field.section == rhs_field.section &&
          lhs_field.is_autofilled == rhs_field.is_autofilled &&
          lhs_field.force_override == rhs_field.force_override;
@@ -283,14 +283,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   void PreviewPasswordGenerationSuggestion(
       const std::u16string& password) override {}
-
-  void SetUserGestureRequired(bool required) override {}
-
-  void SetSecureContextRequired(bool required) override {}
-
-  void SetFocusRequiresScroll(bool require) override {}
-
-  void SetQueryPasswordSuggestion(bool query) override {}
 
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;
 
@@ -656,7 +648,7 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
 
   EXPECT_NE(signature_without_meta_data, CalculateFormSignature(form));
   EXPECT_EQ(field.host_frame, frame_token());
-  EXPECT_EQ(field.host_form_id, form.unique_renderer_id);
+  EXPECT_EQ(field.host_form_id, form.renderer_id);
   EXPECT_EQ(field.host_form_signature, CalculateFormSignature(form));
 
   EXPECT_EQ(field.host_frame, form.fields.front().host_frame);
@@ -674,9 +666,8 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedForm) {
                               // data set, which we don't test here.
                               Field("FormData::frame_token",
                                     &FormData::host_frame, frame_token()),
-                              Field("FormData::unique_renderer_id",
-                                    &FormData::unique_renderer_id,
-                                    form.unique_renderer_id),
+                              Field("FormData::renderer_id",
+                                    &FormData::renderer_id, form.renderer_id),
                               Field("FormData::fields", &FormData::fields,
                                     SizeIs(form.fields.size())))),
                           IsEmpty()));
@@ -701,19 +692,18 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_RemovedForm) {
 TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
   FormData form = test::CreateTestAddressFormData();
   FormRendererId other_form_renderer_id = test::MakeFormRendererId();
-  EXPECT_CALL(
-      manager(),
-      OnFormsSeen(
-          ElementsAre(AllOf(
-              // The received form has some frame-specific meta data set, which
-              // we don't test here.
-              Field("FormData::frame_token", &FormData::host_frame,
-                    frame_token()),
-              Field("FormData::unique_renderer_id",
-                    &FormData::unique_renderer_id, form.unique_renderer_id),
-              Field("FormData::fields", &FormData::fields,
-                    SizeIs(form.fields.size())))),
-          ElementsAre(FormGlobalId(frame_token(), other_form_renderer_id))));
+  EXPECT_CALL(manager(),
+              OnFormsSeen(ElementsAre(AllOf(
+                              // The received form has some frame-specific meta
+                              // data set, which we don't test here.
+                              Field("FormData::frame_token",
+                                    &FormData::host_frame, frame_token()),
+                              Field("FormData::renderer_id",
+                                    &FormData::renderer_id, form.renderer_id),
+                              Field("FormData::fields", &FormData::fields,
+                                    SizeIs(form.fields.size())))),
+                          ElementsAre(FormGlobalId(frame_token(),
+                                                   other_form_renderer_id))));
   driver().renderer_events().FormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{other_form_renderer_id});

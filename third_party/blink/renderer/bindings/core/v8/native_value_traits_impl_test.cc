@@ -335,7 +335,7 @@ TEST(NativeValueTraitsImplTest, IDLBigint) {
     NonThrowableExceptionState exception_state;
     const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
         scope.GetIsolate(), v8_bigint, exception_state);
-    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    std::optional<absl::uint128> val = bigint.ToUInt128();
     ASSERT_TRUE(val.has_value());
     EXPECT_EQ(*val, 123u);
   }
@@ -354,7 +354,7 @@ TEST(NativeValueTraitsImplTest, IDLBigint) {
     NonThrowableExceptionState exception_state;
     const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
         scope.GetIsolate(), v8_string, exception_state);
-    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    std::optional<absl::uint128> val = bigint.ToUInt128();
     ASSERT_TRUE(val.has_value());
     EXPECT_EQ(*val, 123u);
   }
@@ -369,7 +369,7 @@ TEST(NativeValueTraitsImplTest, IDLBigint) {
     NonThrowableExceptionState exception_state;
     const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
         scope.GetIsolate(), v8_object, exception_state);
-    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    std::optional<absl::uint128> val = bigint.ToUInt128();
     ASSERT_TRUE(val.has_value());
     EXPECT_EQ(*val, 123u);
   }

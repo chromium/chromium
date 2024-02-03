@@ -357,6 +357,22 @@ void MediaStreamSource::OnDeviceCaptureHandleChange(
   }
 }
 
+void MediaStreamSource::OnZoomLevelChange(const MediaStreamDevice& device,
+                                          int zoom_level) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (!platform_source_) {
+    return;
+  }
+
+  // Observers may dispatch events which create and add new Observers;
+  // take a snapshot so as to safely iterate.
+  HeapVector<Member<Observer>> observers(observers_);
+  for (auto observer : observers) {
+    observer->SourceChangedZoomLevel(zoom_level);
+  }
+#endif
+}
+
 void MediaStreamSource::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
 }

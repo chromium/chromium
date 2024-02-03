@@ -22,7 +22,7 @@
 namespace media {
 namespace v4l2_vda_helpers {
 
-absl::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device) {
+std::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device) {
   std::vector<uint32_t> processor_input_formats =
       V4L2ImageProcessorBackend::GetSupportedInputFormats();
 
@@ -36,10 +36,10 @@ absl::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device) {
     }
     ++fmtdesc.index;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device) {
+std::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device) {
   // Prefer YVU420 and NV12 because ArcGpuVideoDecodeAccelerator only supports
   // single physical plane.
   static constexpr uint32_t kPreferredFormats[] = {V4L2_PIX_FMT_NV12,
@@ -65,7 +65,7 @@ absl::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device) {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<ImageProcessor> CreateImageProcessor(

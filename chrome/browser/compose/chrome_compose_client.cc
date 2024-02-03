@@ -568,6 +568,9 @@ void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
 
 void ChromeComposeClient::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
+  if (!compose_enabling_->IsEnabledForProfile(profile_)) {
+    return;
+  }
   ComposeSession* active_session = GetSessionForActiveComposeField();
   if (open_settings_requested_) {
     open_settings_requested_ = false;

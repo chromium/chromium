@@ -497,7 +497,7 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   // Check that the remote visit's annotation info got synced.
   // NOTE: Annotation info is present on the last remote visit.
   const std::vector<AnnotatedVisit> annotated_visits =
-      backend()->ToAnnotatedVisits(
+      backend()->ToAnnotatedVisitsFromRows(
           backend()->GetVisits(),
           /*compute_redirect_chain_start_properties=*/false);
   EXPECT_TRUE(annotated_visits[1].content_annotations.has_url_keyed_image);

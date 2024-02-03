@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1384959399684842514">డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>
 <translation id="1415402041810619267">URL కుదించబడింది</translation>
-<translation id="1426410128494586442">అవును</translation>
 <translation id="1434873037477293673">ధర తగ్గింపు కార్డ్</translation>
 <translation id="1448064542941920355">జూమ్ స్థాయిని తగ్గించండి</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> సైట్}other{<ph name="SITE_COUNT" /> సైట్‌లు}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">మీ కెమెరాను యాక్సెస్ చేయడానికి <ph name="APP_NAME" />ని అనుమతించడానికి, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
 <translation id="2235344399760031203">థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2238944249568001759">మీ చివరి ట్యాబ్ ఆధారంగా సూచించబడిన సెర్చ్‌లు</translation>
+<translation id="2241587408274973373">కొత్త ట్యాబ్ పేజీ కార్డ్‌లు</translation>
 <translation id="2241634353105152135">ఒకసారి మాత్రమే</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />‌ను తీసివేయండి</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 సైట్ బ్లాక్ చేసింది}other{# సైట్‌లు బ్లాక్ చేశాయి}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">గుర్తింపు సర్వీస్‌ల నుండి సైన్-ఇన్ ప్రాంప్ట్‌లను సైట్‌లు చూపగలవు.</translation>
 <translation id="2790501146643349491">ఆన్‌లో ఉన్నప్పుడు, ఇటీవల మూసివేసిన సైట్‌లు డేటాను పంపడం, స్వీకరించడం పూర్తి చేయగలవు. ఆఫ్‌లో ఉన్నప్పుడు, ఇటీవల మూసివేసిన సైట్‌లు డేటాను పంపడం లేదా స్వీకరించడం పూర్తి చేయడం సాధ్యం కాదు.</translation>
 <translation id="2822354292072154809">మీరు <ph name="CHOSEN_OBJECT_NAME" /> కోసం అన్ని సైట్ అనుమతులను ఖచ్చితంగా రీసెట్ చేయాలనుకుంటున్నారా ?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">మొబైల్ వీక్షణను రిక్వెస్ట్ చేయండి</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">ప్రమాణపత్రం వ్యూయర్</translation>
 <translation id="2979365474350987274">థర్డ్-పార్టీ కుక్కీలు పరిమితం చేయబడ్డాయి</translation>
 <translation id="3008272652534848354">అనుమతులను రీసెట్ చేయండి</translation>
-<translation id="3013291976881901233">MIDI పరికరాలు</translation>
 <translation id="301521992641321250">ఆటోమేటిక్‌గా బ్లాక్ చేయబడింది</translation>
 <translation id="3069226013421428034">నిర్దిష్ట సైట్ కోసం థర్డ్-పార్టీ సైన్-ఇన్‌ను అనుమతిస్తుంది.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{రేపు గడువు ముగుస్తుంది}other{# రోజుల్లో గడువు ముగుస్తుంది}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB పరికరానికి కనెక్ట్ చేయబడింది</translation>
 <translation id="4194328954146351878">NFC పరికరాలలో సమాచారాన్ని చూడటానికి, మార్చడానికి సైట్‌లను అనుమతించే ముందు అడగాలి (సిఫార్సు చేయడమైనది)</translation>
 <translation id="4200726100658658164">లొకేషన్ సెట్టింగ్‌లను తెరవండి</translation>
-<translation id="4212246570487010370">బ్రౌజింగ్‌ను కొనసాగించండి</translation>
 <translation id="4226663524361240545">నోటిఫికేషన్‌లు పరికరాన్ని వైబ్రేట్ చేయవచ్చు</translation>
 <translation id="4259722352634471385">నావిగేషన్ బ్లాక్ చేయబడింది: <ph name="URL" /></translation>
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">క్రిందికి తరలించు</translation>
 <translation id="6749077623962119521">అనుమతులను రీసెట్ చేయాలా?</translation>
 <translation id="6766622839693428701">మూసివేయడానికి దిగువకు స్వైప్ చేయండి.</translation>
-<translation id="6785959295338971061"><ph name="FROM_DEVICE" /> నుండి <ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> కోసం ఒక ఆప్షన్‌ను ఎంచుకోండి</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6818926723028410516">అంశాలను ఎంచుకోండి</translation>

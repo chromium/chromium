@@ -130,9 +130,9 @@ int MaximumViewHeight() {
 }
 
 class MainView : public views::Button {
- public:
-  METADATA_HEADER(MainView);
+  METADATA_HEADER(MainView, views::Button)
 
+ public:
   explicit MainView(PressedCallback callback) : Button(std::move(callback)) {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
@@ -183,13 +183,13 @@ class MainView : public views::Button {
   }
 };
 
-BEGIN_METADATA(MainView, views::Button)
+BEGIN_METADATA(MainView)
 END_METADATA
 
 class ReportQueryView : public views::Button {
- public:
-  METADATA_HEADER(ReportQueryView);
+  METADATA_HEADER(ReportQueryView, views::Button)
 
+ public:
   explicit ReportQueryView(PressedCallback callback)
       : Button(std::move(callback)) {
     SetBackground(views::CreateThemedSolidBackground(
@@ -252,7 +252,7 @@ class ReportQueryView : public views::Button {
   raw_ptr<views::Label> report_label_ = nullptr;
 };
 
-BEGIN_METADATA(ReportQueryView, views::Button)
+BEGIN_METADATA(ReportQueryView)
 END_METADATA
 
 }  // namespace
@@ -836,7 +836,7 @@ void QuickAnswersView::OnPhoneticsAudioButtonPressed(
                    phonetics_info.query_text, phonetics_info.locale);
 }
 
-BEGIN_METADATA(QuickAnswersView, views::View)
+BEGIN_METADATA(QuickAnswersView)
 END_METADATA
 
 }  // namespace quick_answers

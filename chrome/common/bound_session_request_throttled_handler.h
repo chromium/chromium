@@ -14,7 +14,8 @@ class BoundSessionRequestThrottledHandler {
  public:
   enum class UnblockAction { kResume, kCancel };
   using ResumeOrCancelThrottledRequestCallback =
-      base::OnceCallback<void(UnblockAction)>;
+      base::OnceCallback<void(UnblockAction,
+                              chrome::mojom::ResumeBlockedRequestsTrigger)>;
 
   BoundSessionRequestThrottledHandler() = default;
   virtual ~BoundSessionRequestThrottledHandler() = default;

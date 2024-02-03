@@ -9,6 +9,7 @@
 
 namespace autofill {
 struct FormActivityParams;
+struct VirtualCardEnrollUiModel;
 }  // namespace autofill
 
 // Commands related to the passwords bottom sheet.
@@ -22,6 +23,10 @@ struct FormActivityParams;
 
 // Shows the plus address bottom sheet view controller.
 - (void)showPlusAddressesBottomSheet;
+
+// Shows a command to show the VCN enrollment Bottom Sheet.
+- (void)showVirtualCardEnrollmentBottomSheet:
+    (const autofill::VirtualCardEnrollUiModel&)model;
 
 @end
 

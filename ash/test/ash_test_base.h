@@ -326,13 +326,13 @@ class AshTestBase : public testing::Test {
   // See the documentation for|AccountId::GetUserEmail| for discussion.
   void SimulateUserLogin(
       const std::string& user_email,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
+      user_manager::UserType user_type = user_manager::UserType::kRegular);
 
   // Simulates a user sign-in. It creates a new user session, adds it to
   // existing user sessions and makes it the active user session.
   void SimulateUserLogin(
       const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
+      user_manager::UserType user_type = user_manager::UserType::kRegular);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
   void SimulateNewUserFirstLogin(const std::string& user_email);

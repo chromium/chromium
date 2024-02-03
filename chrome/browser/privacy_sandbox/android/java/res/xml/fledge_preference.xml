@@ -12,6 +12,11 @@ found in the LICENSE file.
         android:title="@string/settings_fledge_page_toggle_label"
         android:summary="@string/settings_fledge_page_toggle_sub_label" />
 
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="fledge_description"
+        android:summary="@string/settings_fledge_page_explanation"
+        app:allowDividerAbove="false" />
+
     <org.chromium.chrome.browser.privacy_sandbox.PreferenceCategoryWithClickableSummary
         android:key="fledge_heading"
         android:title="@string/settings_fledge_page_current_sites_heading"

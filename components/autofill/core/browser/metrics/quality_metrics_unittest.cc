@@ -86,7 +86,7 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
                   .value = u"2345678901",
                   .form_control_type = FormControlType::kInputTelephone,
                   .is_autofilled = true}},
-      .unique_renderer_id = test::MakeFormRendererId(),
+      .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin =
           url::Origin::Create(autofill_client_->form_origin())};
 

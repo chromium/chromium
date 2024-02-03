@@ -222,7 +222,8 @@ TEST_F(ButtonOptionsMenuTest, TestActionMoveDefaultInputBinding) {
   EXPECT_TRUE(new_action->current_input()->IsUnbound());
   VerifyActionKeyBinding(new_action, {ui::DomCode::NONE, ui::DomCode::NONE,
                                       ui::DomCode::NONE, ui::DomCode::NONE});
-  VerifyUIDisplay(new_action, {u"", u"", u"", u""}, u"Unassigned joystick");
+  VerifyUIDisplay(new_action, {u"", u"", u"", u""},
+                  GetControlName(ActionType::MOVE, u""));
 
   // Delete the original action move and add another `ActionMove`. The new
   // `ActionMove` will assign default WASD bindings.
@@ -237,7 +238,8 @@ TEST_F(ButtonOptionsMenuTest, TestActionMoveDefaultInputBinding) {
   EXPECT_FALSE(new_action->current_input()->IsUnbound());
   VerifyActionKeyBinding(new_action, {ui::DomCode::US_W, ui::DomCode::US_A,
                                       ui::DomCode::US_S, ui::DomCode::US_D});
-  VerifyUIDisplay(new_action, {u"w", u"a", u"s", u"d"}, u"Joystick wasd");
+  VerifyUIDisplay(new_action, {u"w", u"a", u"s", u"d"},
+                  GetControlName(ActionType::MOVE, u"wasd"));
 }
 
 TEST_F(ButtonOptionsMenuTest, TestClickActionEdit) {

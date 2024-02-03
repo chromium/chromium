@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/messaging/message_port.h"
+#include "extensions/common/extension_id.h"
 
 class GURL;
 
@@ -56,7 +57,7 @@ class MessagingDelegate {
   // if the tab is not available.
   virtual std::unique_ptr<MessagePort> CreateReceiverForTab(
       base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const PortId& receiver_port_id,
       content::WebContents* receiver_contents,
       int receiver_frame_id,
@@ -68,7 +69,7 @@ class MessagingDelegate {
       content::BrowserContext* browser_context,
       base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
       content::RenderFrameHost* source,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const PortId& receiver_port_id,
       const std::string& native_app_name,
       bool allow_user_level,

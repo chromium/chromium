@@ -31,7 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -208,7 +209,7 @@ class CORE_EXPORT InspectorPageAgent final
   void DidOpenDocument(LocalFrame*, DocumentLoader*);
   void FrameAttachedToParent(
       LocalFrame*,
-      const absl::optional<AdScriptIdentifier>& ad_script_on_stack);
+      const std::optional<AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
   void FrameStoppedLoading(LocalFrame*);
   void FrameRequestedNavigation(Frame* target_frame,

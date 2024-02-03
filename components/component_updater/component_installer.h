@@ -156,7 +156,9 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   void Register(
       RegisterCallback register_callback,
       base::OnceClosure callback,
-      const base::Version& registered_version = base::Version(kNullVersion));
+      const base::Version& registered_version = base::Version(kNullVersion),
+      const base::Version& max_previous_product_version =
+          base::Version(kNullVersion));
 
   // Overrides from update_client::CrxInstaller.
   void OnUpdateError(int error) override;
@@ -204,6 +206,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       base::Version* version,
       base::FilePath* install_path);
   void StartRegistration(const base::Version& registered_version,
+                         const base::Version& max_previous_product_version,
                          scoped_refptr<RegistrationInfo> registration_info);
   void FinishRegistration(scoped_refptr<RegistrationInfo> registration_info,
                           RegisterCallback register_callback,
@@ -212,6 +215,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       const base::FilePath& path);
   std::optional<base::Version> SelectComponentVersion(
       const base::Version& registered_version,
+      const base::Version& max_previous_product_version,
       const base::FilePath& base_dir,
       scoped_refptr<RegistrationInfo> registration_info);
 

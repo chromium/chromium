@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FRAGMENT_ITEMS_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FRAGMENT_ITEMS_BUILDER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
@@ -121,9 +122,6 @@ class CORE_EXPORT FragmentItemsBuilder {
   // heuristic. Usually 10-40, some wikipedia pages have >64 items.
   using ItemWithOffsetList = HeapVector<ItemWithOffset, 128>;
 
-  // Find |LogicalOffset| of the first |FragmentItem| for |LayoutObject|.
-  absl::optional<LogicalOffset> LogicalOffsetFor(const LayoutObject&) const;
-
   // Moves all the |FragmentItem|s by |offset| in the block-direction.
   void MoveChildrenInBlockDirection(LayoutUnit offset);
 
@@ -139,8 +137,8 @@ class CORE_EXPORT FragmentItemsBuilder {
   //
   // This function returns new size of the container if the container is an
   // SVG <text>.
-  absl::optional<PhysicalSize> ToFragmentItems(const PhysicalSize& outer_size,
-                                               void* data);
+  std::optional<PhysicalSize> ToFragmentItems(const PhysicalSize& outer_size,
+                                              void* data);
 
  private:
   void MoveCurrentLogicalLineItemsToMap();

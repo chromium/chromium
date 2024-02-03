@@ -15,7 +15,6 @@ build_webui_tests("build_webui_tests") {
   ts_deps = [
     "//chrome/browser/resources/chromeos/borealis_installer:build_ts",
     "//third_party/cros-components:cros_components_ts",
-    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

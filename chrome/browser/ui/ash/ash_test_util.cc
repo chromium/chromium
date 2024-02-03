@@ -43,7 +43,9 @@ void Click(const views::View* view, int flags) {
   ui::test::EventGenerator event_generator(GetRootWindow(view));
   event_generator.set_flags(flags);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.PressModifierKeys(flags);
   event_generator.ClickLeftButton();
+  event_generator.ReleaseModifierKeys(flags);
 }
 
 base::FilePath CreateFile(Profile* profile, std::string_view extension) {

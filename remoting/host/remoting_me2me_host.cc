@@ -356,6 +356,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
   bool OnMaxSessionDurationPolicyUpdate(const base::Value::Dict& policies);
   bool OnMaxClipboardSizePolicyUpdate(const base::Value::Dict& policies);
+  bool OnUrlForwardingPolicyUpdate(const base::Value::Dict& policies);
 
   void InitializeSignaling();
 
@@ -1233,6 +1234,7 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
   restart_required |= OnAllowRemoteAccessConnections(policies);
   restart_required |= OnMaxSessionDurationPolicyUpdate(policies);
   restart_required |= OnMaxClipboardSizePolicyUpdate(policies);
+  restart_required |= OnUrlForwardingPolicyUpdate(policies);
 
   policy_state_ = POLICY_LOADED;
 
@@ -1583,6 +1585,33 @@ bool HostProcess::OnFileTransferPolicyUpdate(
   return true;
 }
 
+bool HostProcess::OnUrlForwardingPolicyUpdate(
+    const base::Value::Dict& policies) {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+
+  std::optional<bool> url_forwarding_enabled =
+      policies.FindBool(policy::key::kRemoteAccessHostAllowUrlForwarding);
+  if (!url_forwarding_enabled.has_value()) {
+    return false;
+  }
+
+  // Always enable remote open URL when the platform supports it and the policy
+  // does not disable it. There is an additional IsRemoteOpenUrlSupported()
+  // check which ensures the capability won't be advertised if the machine is
+  // not properly configured.
+  desktop_environment_options_.set_enable_remote_open_url(
+      url_forwarding_enabled.value());
+
+  if (url_forwarding_enabled.value()) {
+    HOST_LOG << "Policy allows URL forwarding.";
+  } else {
+    HOST_LOG << "Policy disallows URL forwarding.";
+  }
+
+  // Restart required.
+  return true;
+}
+
 bool HostProcess::OnEnableUserInterfacePolicyUpdate(
     const base::Value::Dict& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
@@ -1797,11 +1826,6 @@ void HostProcess::StartHost() {
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
   }
-
-  // Always enable remote open URL when the platform supports it. There is an
-  // additional IsRemoteOpenUrlSupported() check that makes sure the capability
-  // won't be advertised if it's missing a registry key or something.
-  desktop_environment_options_.set_enable_remote_open_url(true);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   desktop_environment_options_.set_enable_remote_webauthn(is_googler_);

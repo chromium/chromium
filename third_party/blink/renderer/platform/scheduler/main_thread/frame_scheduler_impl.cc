@@ -105,6 +105,19 @@ void UpdatePriority(MainThreadTaskQueue* task_queue) {
   task_queue->SetQueuePriority(frame_scheduler->ComputePriority(task_queue));
 }
 
+TaskPriority GetLowPriorityAsyncScriptTaskPriority() {
+  switch (
+      features::kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam.Get()) {
+    case features::AsyncScriptPrioritisationType::kHigh:
+      return TaskPriority::kHighPriority;
+    case features::AsyncScriptPrioritisationType::kLow:
+      return TaskPriority::kLowPriority;
+    case features::AsyncScriptPrioritisationType::kBestEffort:
+      return TaskPriority::kBestEffortPriority;
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 FrameSchedulerImpl::PauseSubresourceLoadingHandleImpl::
@@ -187,6 +200,8 @@ FrameSchedulerImpl::FrameSchedulerImpl(
       subresource_loading_pause_count_(0u),
       back_forward_cache_disabling_feature_tracker_(&tracing_controller_,
                                                     main_thread_scheduler_),
+      low_priority_async_script_task_priority_(
+          GetLowPriorityAsyncScriptTaskPriority()),
       page_frozen_for_tracing_(
           parent_page_scheduler_ ? parent_page_scheduler_->IsFrozen() : true,
           "FrameScheduler.PageFrozen",
@@ -461,7 +476,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       return LoadingControlTaskQueueTraits();
     case TaskType::kLowPriorityScriptExecution:
       return LoadingTaskQueueTraits().SetPrioritisationType(
-          QueueTraits::PrioritisationType::kBestEffort);
+          QueueTraits::PrioritisationType::kAsyncScript);
     // Throttling following tasks may break existing web pages, so tentatively
     // these are unthrottled.
     // TODO(nhiroki): Throttle them again after we're convinced that it's safe
@@ -1017,7 +1032,7 @@ TaskPriority FrameSchedulerImpl::ComputePriority(
   // TODO(shaseley): This should use lower priorities if the frame is
   // deprioritized. Change this once we refactor and add frame policy/priorities
   // and add a range of new priorities less than low.
-  if (absl::optional<WebSchedulingQueueType> queue_type =
+  if (std::optional<WebSchedulingQueueType> queue_type =
           task_queue->GetWebSchedulingQueueType()) {
     bool is_continuation =
         *queue_type == WebSchedulingQueueType::kContinuationQueue;
@@ -1076,6 +1091,11 @@ TaskPriority FrameSchedulerImpl::ComputePriority(
     return parent_page_scheduler_->IsPageVisible()
                ? TaskPriority::kExtremelyHighPriority
                : TaskPriority::kNormalPriority;
+  }
+
+  if (task_queue->GetPrioritisationType() ==
+      MainThreadTaskQueue::QueueTraits::PrioritisationType::kAsyncScript) {
+    return low_priority_async_script_task_priority_;
   }
 
   return TaskPriority::kNormalPriority;

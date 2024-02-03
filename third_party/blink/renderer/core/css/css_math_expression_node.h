@@ -31,9 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_EXPRESSION_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_EXPRESSION_NODE_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
@@ -112,7 +113,7 @@ class CORE_EXPORT CSSMathExpressionNode
       CSSPrimitiveValue::LengthTypeFlags& types) const = 0;
   virtual scoped_refptr<const CalculationExpressionNode>
   ToCalculationExpression(const CSSLengthResolver&) const = 0;
-  virtual absl::optional<PixelsAndPercent> ToPixelsAndPercent(
+  virtual std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const = 0;
 
   scoped_refptr<const CalculationValue> ToCalcValue(
@@ -130,7 +131,7 @@ class CORE_EXPORT CSSMathExpressionNode
   // - A type conversion that doesn't have a fixed conversion ratio is needed
   //   (e.g., between 'px' and 'em').
   // - There's an unsupported calculation, e.g., dividing two lengths.
-  virtual absl::optional<double> ComputeValueInCanonicalUnit() const = 0;
+  virtual std::optional<double> ComputeValueInCanonicalUnit() const = 0;
 
   virtual String CustomCSSText() const = 0;
   virtual bool operator==(const CSSMathExpressionNode& other) const {
@@ -227,10 +228,10 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
-  absl::optional<PixelsAndPercent> ToPixelsAndPercent(
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
   double DoubleValue() const final;
-  absl::optional<double> ComputeValueInCanonicalUnit() const final;
+  std::optional<double> ComputeValueInCanonicalUnit() const final;
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final;
@@ -288,16 +289,16 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
   String CustomCSSText() const final { return identifier_; }
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
-  absl::optional<PixelsAndPercent> ToPixelsAndPercent(
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final {
-    return absl::nullopt;
+    return std::nullopt;
   }
   double DoubleValue() const final {
     NOTREACHED();
     return 0;
   }
-  absl::optional<double> ComputeValueInCanonicalUnit() const final {
-    return absl::nullopt;
+  std::optional<double> ComputeValueInCanonicalUnit() const final {
+    return std::nullopt;
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED();
@@ -445,10 +446,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
   bool IsZero() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
-  absl::optional<PixelsAndPercent> ToPixelsAndPercent(
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
   double DoubleValue() const final;
-  absl::optional<double> ComputeValueInCanonicalUnit() const final;
+  std::optional<double> ComputeValueInCanonicalUnit() const final;
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final;
@@ -526,12 +527,12 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
     return CSSPrimitiveValue::UnitType::kUnknown;
   }
-  absl::optional<double> ComputeValueInCanonicalUnit() const final {
-    return absl::nullopt;
+  std::optional<double> ComputeValueInCanonicalUnit() const final {
+    return std::nullopt;
   }
-  absl::optional<PixelsAndPercent> ToPixelsAndPercent(
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final {
-    return absl::nullopt;
+    return std::nullopt;
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final {

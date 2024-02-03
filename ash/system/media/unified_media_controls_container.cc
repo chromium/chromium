@@ -48,11 +48,11 @@ int UnifiedMediaControlsContainer::GetExpandedHeight() const {
   return should_show_media_controls_ ? kContainerHeight : 0;
 }
 
-void UnifiedMediaControlsContainer::Layout() {
+void UnifiedMediaControlsContainer::Layout(PassKey) {
   for (views::View* child : children()) {
     child->SetBoundsRect(GetContentsBounds());
   }
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 gfx::Size UnifiedMediaControlsContainer::CalculatePreferredSize() const {

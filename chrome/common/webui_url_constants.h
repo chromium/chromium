@@ -328,6 +328,8 @@ extern const char kChromeUIEmojiPickerURL[];
 extern const char kChromeUIEmojiPickerHost[];
 extern const char kChromeUIEnterpriseReportingHost[];
 extern const char kChromeUIEnterpriseReportingURL[];
+extern const char kChromeUIExtendedUpdatesDialogHost[];
+extern const char kChromeUIExtendedUpdatesDialogURL[];
 extern const char kChromeUIFirmwareUpdaterAppURL[];
 extern const char kChromeUIHealthdInternalsHost[];
 extern const char kChromeUIHealthdInternalsURL[];

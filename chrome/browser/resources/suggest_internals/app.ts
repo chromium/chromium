@@ -14,14 +14,15 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 
-import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
-import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {PageCallbackRouter, PageHandler, PageHandlerInterface, Request} from './suggest_internals.mojom-webui.js';
+import type {PageHandlerInterface} from './suggest_internals.mojom-webui.js';
+import {PageCallbackRouter, PageHandler, Request} from './suggest_internals.mojom-webui.js';
 
 interface SuggestInternalsAppElement {
   $: {

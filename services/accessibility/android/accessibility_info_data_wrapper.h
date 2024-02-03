@@ -5,14 +5,13 @@
 #ifndef SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
 #define SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
 
-#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
-
-#include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/rect.h"
-
+#include <optional>
 #include <string>
 #include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 struct AXNodeData;
@@ -57,7 +56,7 @@ class AccessibilityInfoDataWrapper {
 
  protected:
   raw_ptr<AXTreeSourceAndroid> tree_source_;
-  absl::optional<
+  std::optional<
       std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>>
       cached_children_;
 

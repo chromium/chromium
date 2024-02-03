@@ -523,6 +523,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // navigation (for non-prerender pages) or activation (for prerender pages).
   void StartNewContentRenderingTimeout();
 
+  // Customize the value of `new_content_rendering_delay_` for testing.
+  void SetNewContentRenderingTimeoutForTesting(base::TimeDelta timeout);
+
   // Forwards the keyboard event with optional commands to the renderer. If
   // |key_event| is not forwarded for any reason, then |commands| are ignored.
   // |update_event| (if non-null) is set to indicate whether the underlying

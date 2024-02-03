@@ -21,6 +21,10 @@ const char kPriceTrackingIconColorsDescription[] =
     "Tonal colors for the expanded state of the price tracking chip on "
     "desktop.";
 
+const char kProductSpecificationsName[] = "Product Specifications";
+const char kProductSpecificationsDescription[] =
+    "Enable the Product Specifications feature.";
+
 const char kShoppingIconColorVariantName[] =
     "Enable color variant for shopping icons";
 const char kShoppingIconColorVariantDescription[] =

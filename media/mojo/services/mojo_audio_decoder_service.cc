@@ -47,7 +47,7 @@ void MojoAudioDecoderService::Construct(
 
 void MojoAudioDecoderService::Initialize(
     const AudioDecoderConfig& config,
-    const absl::optional<base::UnguessableToken>& cdm_id,
+    const std::optional<base::UnguessableToken>& cdm_id,
     InitializeCallback callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
 

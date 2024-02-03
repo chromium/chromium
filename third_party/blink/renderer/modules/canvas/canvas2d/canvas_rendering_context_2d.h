@@ -159,8 +159,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
-  cc::PaintCanvas* GetPaintCanvas() final;
-  MemoryManagedPaintRecorder* Recorder() override;
+  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
+  const cc::PaintCanvas* GetPaintCanvas() const final;
+  const MemoryManagedPaintRecorder* Recorder() const override;
 
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
@@ -183,7 +184,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void WillDrawImage(CanvasImageSource*) const final;
 
-  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
   void Trace(Visitor*) const override;
 

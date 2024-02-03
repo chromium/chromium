@@ -239,7 +239,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
       override;
   base::TimeDelta GetStartTime() const override;
   int64_t GetMemoryUsage() const override;
-  absl::optional<container_names::MediaContainerName> GetContainerForMetrics()
+  std::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
   void AbortPendingReads() override;
 
@@ -470,7 +470,9 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
       std::unique_ptr<media::StreamParser> stream_parser,
       std::string expected_codecs);
 
-  // Helper for vide and audio track changing.
+  // Helper for video and audio track changing. For the `track_type`, enables
+  // tracks associated with `track_ids` and disables the rest. Fires
+  // `change_completed_cb` when the operation is completed.
   void FindAndEnableProperTracks(const std::vector<MediaTrack::Id>& track_ids,
                                  base::TimeDelta curr_time,
                                  DemuxerStream::Type track_type,

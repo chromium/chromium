@@ -5,9 +5,6 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include "base/strings/string_util_win.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/handle_closer_agent.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -20,170 +17,150 @@
 
 namespace {
 
-const wchar_t* kFileExtensions[] = {L".1", L".2", L".3", L".4"};
-
-// Returns a handle to a unique marker file that can be retrieved between runs.
-HANDLE GetMarkerFile(const wchar_t* extension) {
-  wchar_t path_buffer[MAX_PATH + 1];
-  CHECK(::GetTempPath(MAX_PATH, path_buffer));
-  std::wstring marker_path = path_buffer;
-  marker_path += L"\\sbox_marker_";
-
-  // Generate a unique value from the exe's size and timestamp.
-  CHECK(::GetModuleFileName(nullptr, path_buffer, MAX_PATH));
-  base::win::ScopedHandle module(
-      ::CreateFile(path_buffer, FILE_READ_ATTRIBUTES, FILE_SHARE_READ, nullptr,
-                   OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr));
-  CHECK(module.is_valid());
-  FILETIME timestamp;
-  CHECK(::GetFileTime(module.get(), &timestamp, nullptr, nullptr));
-  marker_path += base::ASCIIToWide(base::StringPrintf(
-      "%08lx%08lx%08lx", ::GetFileSize(module.get(), nullptr),
-      timestamp.dwLowDateTime, timestamp.dwHighDateTime));
-  marker_path += extension;
-
-  // Make the file delete-on-close so cleanup is automatic.
-  return CreateFile(marker_path.c_str(), FILE_ALL_ACCESS,
-                    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                    nullptr, OPEN_ALWAYS, FILE_FLAG_DELETE_ON_CLOSE, nullptr);
-}
+const wchar_t kDeviceKsecDD[] = L"\\Device\\KsecDD";
 
 // Used by the thread pool tests.
 HANDLE finish_event;
 const int kWaitCount = 20;
+
+// Opens a handle to KsecDD in the same way as cryptbase.dll.
+HANDLE OpenKsecDD() {
+  UNICODE_STRING name;
+  OBJECT_ATTRIBUTES attrs{};
+  IO_STATUS_BLOCK iosb;
+  HANDLE hDevice = INVALID_HANDLE_VALUE;
+
+  RtlInitUnicodeString(&name, kDeviceKsecDD);
+  InitializeObjectAttributes(&attrs, &name, 0, nullptr, nullptr);
+
+  NTSTATUS status =
+      NtOpenFile(&hDevice, 0x100001, &attrs, &iosb,
+                 FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                 FILE_SYNCHRONOUS_IO_NONALERT);
+
+  if (!NT_SUCCESS(status)) {
+    ::SetLastError(sandbox::GetLastErrorFromNtStatus(status));
+    return INVALID_HANDLE_VALUE;
+  }
+
+  return hDevice;
+}
 
 }  // namespace
 
 namespace sandbox {
 
 // Checks for the presence of a list of files (in object path form).
-// Format: CheckForFileHandle (Y|N) \path\to\file1 [\path\to\file2 ...]
+// Format: CheckForFileHandle (Y|N) [devices or files to check for].
 // - Y or N depending if the file should exist or not.
 SBOX_TESTS_COMMAND int CheckForFileHandles(int argc, wchar_t** argv) {
-  if (argc < 2)
+  if (argc < 2) {
     return SBOX_TEST_FAILED_TO_RUN_TEST;
+  }
   bool should_find = argv[0][0] == L'Y';
-  if (argv[0][1] != L'\0' || (!should_find && argv[0][0] != L'N'))
+  if (argv[0][1] != L'\0' || (!should_find && argv[0][0] != L'N')) {
     return SBOX_TEST_FAILED_TO_RUN_TEST;
+  }
 
   static int state = BEFORE_INIT;
   switch (state++) {
-    case BEFORE_INIT:
-      // Create a unique marker file that is open while the test is running.
-      // The handles leak, but it will be closed by the test or on exit.
-      for (const wchar_t* kExtension : kFileExtensions)
-        CHECK_NE(GetMarkerFile(kExtension), INVALID_HANDLE_VALUE);
+    case BEFORE_INIT: {
+      HANDLE handle = OpenKsecDD();
+      CHECK_NE(handle, INVALID_HANDLE_VALUE);
+      // Leaks `handle` so we can check for it later.
       return SBOX_TEST_SUCCEEDED;
-
+    }
     case AFTER_REVERT: {
       // Brute force the handle table to find what we're looking for.
+      // This sort of matches what the closer does but it's a test of a sort.
       DWORD handle_count = UINT_MAX;
       const int kInvalidHandleThreshold = 100;
       const size_t kHandleOffset = 4;  // Handles are always a multiple of 4.
       HANDLE handle = nullptr;
       int invalid_count = 0;
 
-      if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
+      if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count)) {
         return SBOX_TEST_FAILED_TO_RUN_TEST;
+      }
 
       while (handle_count && invalid_count < kInvalidHandleThreshold) {
         reinterpret_cast<size_t&>(handle) += kHandleOffset;
         auto handle_name = GetPathFromHandle(handle);
         if (handle_name) {
           for (int i = 1; i < argc; ++i) {
-            if (handle_name.value() == argv[i])
+            if (handle_name.value() == argv[i]) {
               return should_find ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
+            }
           }
           --handle_count;
         } else {
           ++invalid_count;
         }
       }
-
       return should_find ? SBOX_TEST_FAILED : SBOX_TEST_SUCCEEDED;
     }
-
-    default:  // Do nothing.
-      break;
+    default:
+      break;  // Do nothing.
   }
-
   return SBOX_TEST_SUCCEEDED;
 }
 
-// Checks that supplied handle is an Event and it's not waitable.
+// Checks that closed handle becomes an Event and it's not waitable.
 // Format: CheckForEventHandles
 SBOX_TESTS_COMMAND int CheckForEventHandles(int argc, wchar_t** argv) {
   static int state = BEFORE_INIT;
-  static std::vector<HANDLE> to_check;
+  static HANDLE to_check;
 
   switch (state++) {
-    case BEFORE_INIT:
-      // Create a unique marker file that is open while the test is running.
-      for (const wchar_t* kExtension : kFileExtensions) {
-        HANDLE handle = GetMarkerFile(kExtension);
-        CHECK_NE(handle, INVALID_HANDLE_VALUE);
-        to_check.push_back(handle);
-      }
+    case BEFORE_INIT: {
+      // Ensure the process has a KsecDD handle.
+      to_check = OpenKsecDD();
+      CHECK_NE(to_check, INVALID_HANDLE_VALUE);
       return SBOX_TEST_SUCCEEDED;
+    }
+    case AFTER_REVERT: {
+      auto type_name = GetTypeNameFromHandle(to_check);
+      CHECK(type_name);
+      CHECK(base::EqualsCaseInsensitiveASCII(type_name.value(), L"Event"));
 
-    case AFTER_REVERT:
-      for (HANDLE handle : to_check) {
-        auto type_name = GetTypeNameFromHandle(handle);
-        CHECK(type_name);
-        CHECK(base::EqualsCaseInsensitiveASCII(type_name.value(), L"Event"));
+      // Should not be able to wait.
+      CHECK_EQ(WaitForSingleObject(to_check, INFINITE), WAIT_FAILED);
 
-        // Should not be able to wait.
-        CHECK_EQ(WaitForSingleObject(handle, INFINITE), WAIT_FAILED);
-
-        // Should be able to close.
-        CHECK(::CloseHandle(handle));
-      }
+      // Should be able to close.
+      CHECK(::CloseHandle(to_check));
       return SBOX_TEST_SUCCEEDED;
-
+    }
     default:  // Do nothing.
       break;
   }
-
   return SBOX_TEST_SUCCEEDED;
 }
 
-TEST(HandleCloserTest, CheckForMarkerFiles) {
+TEST(HandleCloserTest, CheckForDeviceHandles) {
   TestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
 
   std::wstring command = std::wstring(L"CheckForFileHandles Y");
-  for (const wchar_t* kExtension : kFileExtensions) {
-    base::win::ScopedHandle marker(GetMarkerFile(kExtension));
-    CHECK(marker.is_valid());
-    auto handle_name = GetPathFromHandle(marker.get());
-    CHECK(handle_name);
-    command += (L" ");
-    command += handle_name.value();
-  }
+  command += (L" ");
+  command += kDeviceKsecDD;
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command.c_str()))
       << "Failed: " << command;
 }
 
-TEST(HandleCloserTest, CloseMarkerFiles) {
+TEST(HandleCloserTest, CloseSupportedDevices) {
   TestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
   std::wstring command = std::wstring(L"CheckForFileHandles N");
-  for (const wchar_t* kExtension : kFileExtensions) {
-    base::win::ScopedHandle marker(GetMarkerFile(kExtension));
-    CHECK(marker.is_valid());
-    auto handle_name = GetPathFromHandle(marker.get());
-    CHECK(handle_name);
-    CHECK_EQ(policy->GetConfig()->AddKernelObjectToClose(L"File",
-                                                         handle_name->c_str()),
-             SBOX_ALL_OK);
-    command += (L" ");
-    command += handle_name.value();
-  }
+  command += (L" ");
+  command += kDeviceKsecDD;
+
+  policy->GetConfig()->AddKernelObjectToClose(HandleToClose::kDeviceApi);
+  policy->GetConfig()->AddKernelObjectToClose(HandleToClose::kKsecDD);
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command.c_str()))
       << "Failed: " << command;
@@ -195,15 +172,8 @@ TEST(HandleCloserTest, CheckStuffedHandle) {
   runner.SetTestState(EVERY_STATE);
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
-  for (const wchar_t* kExtension : kFileExtensions) {
-    base::win::ScopedHandle marker(GetMarkerFile(kExtension));
-    CHECK(marker.is_valid());
-    auto handle_name = GetPathFromHandle(marker.get());
-    CHECK(handle_name);
-    CHECK_EQ(policy->GetConfig()->AddKernelObjectToClose(L"File",
-                                                         handle_name->c_str()),
-             SBOX_ALL_OK);
-  }
+  policy->GetConfig()->AddKernelObjectToClose(HandleToClose::kDeviceApi);
+  policy->GetConfig()->AddKernelObjectToClose(HandleToClose::kKsecDD);
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckForEventHandles"));
 }

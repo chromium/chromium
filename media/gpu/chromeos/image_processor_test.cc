@@ -148,11 +148,11 @@ const char* ToString(BackendType backend) {
 }
 
 // Creates a CreateBackendCB for the specified BackendType. If backend is not
-// set, then returns absl::nullopt.
-absl::optional<ImageProcessor::CreateBackendCB> GetCreateBackendCB(
-    absl::optional<BackendType> backend) {
+// set, then returns std::nullopt.
+std::optional<ImageProcessor::CreateBackendCB> GetCreateBackendCB(
+    std::optional<BackendType> backend) {
   if (!backend) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   switch (*backend) {
@@ -175,7 +175,7 @@ absl::optional<ImageProcessor::CreateBackendCB> GetCreateBackendCB(
   }
 }
 
-absl::optional<BackendType> g_backend_type;
+std::optional<BackendType> g_backend_type;
 
 base::FilePath BuildSourceFilePath(const base::FilePath& filename) {
   return media::g_source_directory.Append(filename);
@@ -725,8 +725,8 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
       },
       client_task_runner, quit_closure, &image_processor_error);
   ImageProcessorFactory::PickFormatCB pick_format_cb = base::BindRepeating(
-      [](const std::vector<Fourcc>&, absl::optional<Fourcc>) {
-        return absl::make_optional<Fourcc>(Fourcc::NV12);
+      [](const std::vector<Fourcc>&, std::optional<Fourcc>) {
+        return std::make_optional<Fourcc>(Fourcc::NV12);
       });
 
   std::unique_ptr<ImageProcessor> libyuv_image_processor =

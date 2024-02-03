@@ -87,7 +87,7 @@ bool InfoBarContainerView::IsEmpty() const {
   return GetPreferredSize().height() == 0;
 }
 
-void InfoBarContainerView::Layout() {
+void InfoBarContainerView::Layout(PassKey) {
   const auto set_bounds = [this](int top, View* child) {
     const int height = static_cast<InfoBarView*>(child)->computed_height();
     // Do not add separator dip if it's the first infobar. The first infobar

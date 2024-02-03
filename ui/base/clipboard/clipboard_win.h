@@ -92,8 +92,7 @@ class ClipboardWin : public Clipboard {
       std::unique_ptr<DataTransferEndpoint> data_src) override;
   void WriteText(base::StringPiece text) override;
   void WriteHTML(base::StringPiece markup,
-                 absl::optional<base::StringPiece> source_url,
-                 ClipboardContentType content_type) override;
+                 absl::optional<base::StringPiece> source_url) override;
   void WriteSvg(base::StringPiece markup) override;
   void WriteRTF(base::StringPiece rtf) override;
   void WriteFilenames(std::vector<ui::FileInfo> filenames) override;

@@ -451,7 +451,7 @@ enclave::SigningCallback EnclaveManager::HardwareKeySigningCallback() {
       user_->wrapped_hardware_private_key(), user_->device_id());
 }
 
-std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedKey(
+std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
     int32_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_ready());
@@ -462,7 +462,7 @@ std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedKey(
   return ToVector(it->second);
 }
 
-std::vector<std::vector<uint8_t>> EnclaveManager::GetWrappedKeys() {
+std::vector<std::vector<uint8_t>> EnclaveManager::GetWrappedSecrets() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_ready());
   std::vector<std::vector<uint8_t>> ret;
@@ -470,6 +470,45 @@ std::vector<std::vector<uint8_t>> EnclaveManager::GetWrappedKeys() {
     ret.emplace_back(ToVector(it.second));
   }
   return ret;
+}
+
+std::pair<int32_t, std::vector<uint8_t>>
+EnclaveManager::GetCurrentWrappedSecret() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(is_ready());
+  CHECK(!user_->wrapped_security_domain_secrets().empty());
+
+  std::optional<int32_t> max_version;
+  for (const auto& it : user_->wrapped_security_domain_secrets()) {
+    if (!max_version.has_value() || *max_version < it.first) {
+      max_version = it.first;
+    }
+  }
+  const auto it = user_->wrapped_security_domain_secrets().find(*max_version);
+  return std::make_pair(it->first, ToVector(it->second));
+}
+
+std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+EnclaveManager::GetAccessToken(
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  return std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+      "passkeys_enclave", identity_manager_,
+      signin::ScopeSet{GaiaConstants::kPasskeysEnclaveOAuth2Scope},
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<std::string>)> callback,
+             GoogleServiceAuthError error,
+             signin::AccessTokenInfo access_token_info) {
+            if (error.state() == GoogleServiceAuthError::NONE) {
+              std::move(callback).Run(std::move(access_token_info.token));
+            } else {
+              FIDO_LOG(ERROR)
+                  << "Failed to get access token: " << error.error_message();
+              std::move(callback).Run(std::nullopt);
+            }
+          },
+          std::move(callback)),
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+      signin::ConsentLevel::kSignin);
 }
 
 void EnclaveManager::AddObserver(Observer* observer) {
@@ -680,6 +719,7 @@ void EnclaveManager::Loop(Event in_event) {
           // object idles again, and will notice that the user still isn't
           // registered.
           FIDO_LOG(ERROR) << "Failed to register with enclave";
+          store_keys_args_.reset();
           state_ = State::kNextAction;
           break;
         }
@@ -743,7 +783,8 @@ void EnclaveManager::DoNextAction(Event event) {
     HandleIdentityChange();
   }
 
-  if (want_registration_ && user_ && !user_->registered()) {
+  if ((want_registration_ || store_keys_args_) && user_ &&
+      !user_->registered()) {
     want_registration_ = false;
     StartEnclaveRegistration();
     return;
@@ -763,7 +804,7 @@ void EnclaveManager::DoNextAction(Event event) {
       if (!new_security_domain_secrets_.empty()) {
         state_ = State::kWaitingForEnclaveTokenForWrapping;
         store_keys_args_for_joining_ = std::move(store_keys_args);
-        GetAccessToken();
+        GetAccessTokenInternal();
         return;
       } else if (!user_->joined() && !user_->member_public_key().empty()) {
         store_keys_args_for_joining_ = std::move(store_keys_args);
@@ -919,7 +960,7 @@ void EnclaveManager::DoGeneratingKey(Event event) {
   }
 
   state_ = State::kWaitingForEnclaveTokenForRegistration;
-  GetAccessToken();
+  GetAccessTokenInternal();
 }
 
 void EnclaveManager::DoWaitingForEnclaveTokenForRegistration(Event event) {
@@ -962,6 +1003,7 @@ void EnclaveManager::DoRegisteringWithEnclave(Event event) {
   if (!IsAllOk(response, 2)) {
     FIDO_LOG(ERROR) << "Registration resulted in error response: "
                     << cbor::DiagnosticWriter::Write(response);
+    store_keys_args_.reset();
     state_ = State::kNextAction;
     return;
   }
@@ -1173,7 +1215,7 @@ EnclaveManager::GetNewSecretsToStore(const EnclaveLocalState::User& user,
   return new_secrets;
 }
 
-void EnclaveManager::GetAccessToken() {
+void EnclaveManager::GetAccessTokenInternal() {
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           "passkeys_enclave", identity_manager_,

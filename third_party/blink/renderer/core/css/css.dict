@@ -719,7 +719,7 @@
 "hsl"
 "hsla"
 "hwb"
-"-internal-light-dark"
+"light-dark"
 "matrix"
 "matrix3d"
 "perspective"

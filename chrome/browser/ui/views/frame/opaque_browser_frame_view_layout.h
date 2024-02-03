@@ -230,7 +230,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   gfx::Rect window_icon_bounds_;
 
   // Whether any of the window control buttons were packed on the leading or
-  // trailing sides.  This state is only valid while Layout() is being run.
+  // trailing sides.  This state is only valid while layout is being performed.
   bool placed_leading_button_ = false;
   bool placed_trailing_button_ = false;
 

@@ -136,7 +136,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
             finder.path_from_web_tests('wpt_internal', 'MANIFEST.json'),
             json.dumps({}))
 
-        exit_code = self.command.execute(
+        exit_code = self.command.check_arguments_and_execute(
             optparse.Values({
                 'suffixes': 'txt,wav,png',
                 'all_tests': False,

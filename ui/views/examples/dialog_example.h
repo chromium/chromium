@@ -64,7 +64,7 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   // Invoked when the dialog is closing.
   bool AllowDialogClose(bool accept);
 
-  // Resize the dialog Widget to match the preferred size. Triggers Layout().
+  // Resize the dialog Widget to match the preferred size. Triggers layout.
   void ResizeDialog();
 
   void ShowButtonPressed();

@@ -4,6 +4,8 @@
 
 #include "base/task/thread_pool/thread_group_worker_delegate.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_blocking_call_internal.h"
 #include "base/threading/thread_checker.h"
@@ -13,8 +15,9 @@
 namespace base::internal {
 
 ThreadGroup::ThreadGroupWorkerDelegate::ThreadGroupWorkerDelegate(
-    TrackedRef<ThreadGroup> outer)
-    : outer_(outer) {
+    TrackedRef<ThreadGroup> outer,
+    bool is_excess)
+    : outer_(outer), is_excess_(is_excess) {
   // Bound in OnMainEntry().
   DETACH_FROM_THREAD(worker_thread_checker_);
 }
@@ -26,7 +29,7 @@ ThreadGroup::ThreadGroupWorkerDelegate::WorkerOnly::~WorkerOnly() = default;
 
 TimeDelta ThreadGroup::ThreadGroupWorkerDelegate::ThreadPoolSleepTimeout() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  if (!IsExcess()) {
+  if (!is_excess_) {
     return TimeDelta::Max();
   }
   // Sleep for an extra 10% to avoid the following pathological case:
@@ -214,6 +217,121 @@ void ThreadGroup::ThreadGroupWorkerDelegate::IncrementMaxTasksLockRequired()
       incremented_max_best_effort_tasks_since_blocked_ = true;
       --outer_->num_unresolved_best_effort_may_block_;
     }
+  }
+}
+
+RegisteredTaskSource
+ThreadGroup::ThreadGroupWorkerDelegate::GetWorkLockRequired(
+    BaseScopedCommandsExecutor* executor,
+    WorkerThread* worker) {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  DCHECK(ContainsWorker(outer_->workers_, worker));
+
+  if (!outer_->after_start().ensure_enough_workers_at_end_of_get_work) {
+    // Use this opportunity, before assigning work to this worker, to
+    // create/signal additional workers if needed (doing this here allows us to
+    // reduce potentially expensive create/wake directly on PostTask()).
+    //
+    // Note: FlushWorkerCreation() below releases |outer_->lock_|. It is thus
+    // important that all other operations come after it to keep this method
+    // transactional.
+    outer_->EnsureEnoughWorkersLockRequired(executor);
+    executor->FlushWorkerCreation(&outer_->lock_);
+  }
+
+  if (!CanGetWorkLockRequired(executor, worker)) {
+    return nullptr;
+  }
+
+  RegisteredTaskSource task_source;
+  TaskPriority priority;
+  while (!task_source && !outer_->priority_queue_.IsEmpty()) {
+    // Enforce the CanRunPolicy and that no more than |max_best_effort_tasks_|
+    // BEST_EFFORT tasks run concurrently.
+    priority = outer_->priority_queue_.PeekSortKey().priority();
+    if (!outer_->task_tracker_->CanRunPriority(priority) ||
+        (priority == TaskPriority::BEST_EFFORT &&
+         outer_->num_running_best_effort_tasks_ >=
+             outer_->max_best_effort_tasks_)) {
+      break;
+    }
+
+    task_source = outer_->TakeRegisteredTaskSource(executor);
+  }
+  if (!task_source) {
+    OnWorkerBecomesIdleLockRequired(executor, worker);
+    return nullptr;
+  }
+
+  // Running task bookkeeping.
+  outer_->IncrementTasksRunningLockRequired(priority);
+
+  write_worker().current_task_priority = priority;
+  write_worker().current_shutdown_behavior = task_source->shutdown_behavior();
+
+  if (outer_->after_start().ensure_enough_workers_at_end_of_get_work) {
+    // Subtle: This must be after the call to WillRunTask() inside
+    // TakeRegisteredTaskSource(), so that any state used by WillRunTask() to
+    // determine that the task source must remain in the TaskQueue is also used
+    // to determine the desired number of workers. Concretely, this wouldn't
+    // work:
+    //
+    //   Thread 1: GetWork() calls EnsureEnoughWorkers(). No worker woken up
+    //             because the queue contains a job with max concurrency = 1 and
+    //             the current worker is awake.
+    //   Thread 2: Increases the job's max concurrency.
+    //             ShouldQueueUponCapacityIncrease() returns false because the
+    //             job is already queued.
+    //   Thread 1: Calls WillRunTask() on the job. It returns
+    //             kAllowedNotSaturated because max concurrency is not reached.
+    //             But no extra worker is woken up to run the job!
+    outer_->EnsureEnoughWorkersLockRequired(executor);
+  }
+
+  return task_source;
+}
+
+void ThreadGroup::ThreadGroupWorkerDelegate::RecordUnnecessaryWakeupImpl() {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+
+  base::BooleanHistogram::FactoryGet(
+      std::string("ThreadPool.UnnecessaryWakeup.") + outer_->histogram_label_,
+      base::Histogram::kUmaTargetedHistogramFlag)
+      ->Add(true);
+
+  TRACE_EVENT_INSTANT("wakeup.flow", "ThreadPool.UnnecessaryWakeup");
+}
+
+void ThreadGroup::ThreadGroupWorkerDelegate::OnMainEntryImpl(
+    WorkerThread* worker) {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+
+  {
+#if DCHECK_IS_ON()
+    CheckedAutoLock auto_lock(outer_->lock_);
+    DCHECK(
+        ContainsWorker(outer_->workers_, static_cast<WorkerThread*>(worker)));
+#endif
+  }
+
+#if BUILDFLAG(IS_WIN)
+  worker_only().win_thread_environment = GetScopedWindowsThreadEnvironment(
+      outer_->after_start().worker_environment);
+#endif  // BUILDFLAG(IS_WIN)
+
+  PlatformThread::SetName(
+      StringPrintf("ThreadPool%sWorker", outer_->thread_group_label_.c_str()));
+
+  outer_->BindToCurrentThread();
+  worker_only().worker_thread_ = static_cast<WorkerThread*>(worker);
+  SetBlockingObserverForCurrentThread(this);
+
+  if (outer_->worker_started_for_testing_) {
+    // When |worker_started_for_testing_| is set, the thread that starts workers
+    // should wait for a worker to have started before starting the next one,
+    // and there should only be one thread that wakes up workers at a time.
+    DCHECK(!outer_->worker_started_for_testing_->IsSignaled());
+    outer_->worker_started_for_testing_->Signal();
   }
 }
 

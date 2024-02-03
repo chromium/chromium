@@ -84,6 +84,7 @@ component("ax_base") {
     "ax_role_properties.h",
     "ax_text_attributes.cc",
     "ax_text_attributes.h",
+    "ax_tree_checks.h",
     "ax_tree_data.cc",
     "ax_tree_data.h",
     "ax_tree_id.cc",

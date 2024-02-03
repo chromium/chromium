@@ -498,9 +498,9 @@ int64_t StreamProvider::GetMemoryUsage() const {
   return 0;
 }
 
-absl::optional<container_names::MediaContainerName>
+std::optional<container_names::MediaContainerName>
 StreamProvider::GetContainerForMetrics() const {
-  return absl::optional<container_names::MediaContainerName>();
+  return std::optional<container_names::MediaContainerName>();
 }
 
 void StreamProvider::OnEnabledAudioTracksChanged(

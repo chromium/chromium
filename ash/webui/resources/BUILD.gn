@@ -41,13 +41,6 @@ ash_generated_grit("camera_app_resources") {
   deps = [ "//ash/webui/camera_app_ui:build_grd" ]
 }
 
-ash_generated_grit("shortcut_customization_app_resources") {
-  shortcut_customization_app_gen_dir =
-      "$root_gen_dir/ash/webui/shortcut_customization_ui/resources"
-  source = "$shortcut_customization_app_gen_dir/ash_shortcut_customization_app_resources.grd"
-  deps = [ "//ash/webui/shortcut_customization_ui/resources:build_grd" ]
-}
-
 ash_generated_grit("files_internals_resources") {
   source = "$root_gen_dir/ash/webui/files_internals/ash_files_internals_resources.grd"
   deps = [ "//ash/webui/files_internals:build_grd" ]
@@ -58,23 +51,6 @@ ash_generated_grit("demo_mode_app_resources") {
   source =
       "$root_gen_dir/ash/webui/demo_mode_app_ui/ash_demo_mode_app_resources.grd"
   deps = [ "//ash/webui/demo_mode_app_ui:build_grd" ]
-}
-
-if (!is_official_build) {
-  # Resources used by chrome://sample-system-web-app
-  ash_generated_grit("sample_system_web_app_resources") {
-    source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/resources/trusted/ash_sample_system_web_app_resources.grd"
-    deps =
-        [ "//ash/webui/sample_system_web_app_ui/resources/trusted:trusted_grd" ]
-  }
-
-  # Resources used by chrome-untrusted://sample-system-web-app
-  ash_generated_grit("sample_system_web_app_untrusted_resources") {
-    source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/resources/untrusted/ash_sample_system_web_app_untrusted_resources.grd"
-    deps = [
-      "//ash/webui/sample_system_web_app_ui/resources/untrusted:untrusted_grd",
-    ]
-  }
 }
 
 # Resources used by chrome://help-app, and parts of the sandboxed app it hosts

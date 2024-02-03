@@ -647,8 +647,8 @@ void DownloadBubbleRowView::UpdateRowForFocus(
   }
 }
 
-void DownloadBubbleRowView::Layout() {
-  views::View::Layout();
+void DownloadBubbleRowView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
   transparent_button_->SetBoundsRect(GetLocalBounds());
   gfx::Size quick_actions_size = quick_action_holder_->GetPreferredSize();
   gfx::Insets insets = GetLayoutInsets(DOWNLOAD_ROW);

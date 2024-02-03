@@ -761,20 +761,36 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
   raw_ptr<Layer> expected_no_scroll_layer_;
 };
 
-TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor1_ScrollChild) {
+// TODO(crbug.com/1517753): Test is flaky on asan on multiple platforms.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DeviceScaleFactor1_ScrollChild \
+  DISABLED_DeviceScaleFactor1_ScrollChild
+#else
+#define MAYBE_DeviceScaleFactor1_ScrollChild DeviceScaleFactor1_ScrollChild
+#endif
+TEST_F(LayerTreeHostScrollTestCaseWithChild,
+       MAYBE_DeviceScaleFactor1_ScrollChild) {
   device_scale_factor_ = 1.f;
   scroll_child_layer_ = true;
   RunTest(CompositorMode::THREADED);
 }
 
-TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor15_ScrollChild) {
+// TODO(crbug.com/1517753): Test is flaky on Mac asan.
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DeviceScaleFactor15_ScrollChild \
+  DISABLED_DeviceScaleFactor15_ScrollChild
+#else
+#define MAYBE_DeviceScaleFactor15_ScrollChild DeviceScaleFactor15_ScrollChild
+#endif
+TEST_F(LayerTreeHostScrollTestCaseWithChild,
+       MAYBE_DeviceScaleFactor15_ScrollChild) {
   device_scale_factor_ = 1.5f;
   scroll_child_layer_ = true;
   RunTest(CompositorMode::THREADED);
 }
 
 // TODO(crbug.com/1521921): Test is flaky on Mac asan.
-#if BUILDFLAG(IS_MAC) && defined(LEAK_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor2_ScrollChild \
   DISABLED_DeviceScaleFactor2_ScrollChild
 #else
@@ -803,7 +819,8 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 }
 
 // TODO(crbug.com/1521926): Test is flaky on Win asan.
-#if BUILDFLAG(IS_WIN) && defined(LEAK_SANITIZER)
+// TODO(crbug.com/1517753): Test is flaky on Mac asan.
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)) && defined(LEAK_SANITIZER)
 #define MAYBE_DeviceScaleFactor15_ScrollRootScrollLayer \
   DISABLED_DeviceScaleFactor15_ScrollRootScrollLayer
 #else
@@ -1349,7 +1366,7 @@ class LayerTreeHostScrollTestImplOnlyScrollSnap
 // TODO(crbug.com/1201662): Flaky on Fuchsia, ChromeOS, and Linux.
 // TODO(crbug.com/1522172): Flaky on Windows ASAN.
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_LINUX) && !(BUILDFLAG(IS_WIN) && defined(LEAK_SANITIZER))
+    !BUILDFLAG(IS_LINUX) && !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyScrollSnap);
 #endif
 

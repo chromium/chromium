@@ -39,13 +39,27 @@ class VirtualPlatformSensorProvider : public PlatformSensorProvider {
 
   bool IsOverridingSensor(mojom::SensorType type) const;
 
+  // Adds a new reading to the VirtualPlatformSensor instance associated with
+  // |type|.
+  //
+  // If a VirtualPlatformSensor for |type| has not been created yet, the
+  // reading is stashed and passed on to the VirtualPlatformSensor instance
+  // once it is created. Multiple calls will override the stashed value.
+  //
+  // Note: The new reading still goes through
+  // PlatformSensor::UpdateSharedBufferAndNotifyClients(), so it may end up not
+  // being stored (for example, if a threshold check fails).
+  void AddReading(mojom::SensorType type, const SensorReading&);
+
+ private:
+  struct TypeMetadata;
+
   // PlatformSensorProvider overrides.
   void CreateSensorInternal(mojom::SensorType type,
                             SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
 
- private:
-  base::flat_map<mojom::SensorType, mojom::VirtualSensorMetadataPtr>
+  base::flat_map<mojom::SensorType, std::unique_ptr<TypeMetadata>>
       type_metadata_;
 };
 

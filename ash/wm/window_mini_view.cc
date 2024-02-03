@@ -128,7 +128,7 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
         0.f, 0.f, kWindowMiniViewCornerRadius, kWindowMiniViewCornerRadius));
     layer->SetIsFastRoundedCorner(true);
     backdrop_view_->SetCanProcessEventsWithinSubtree(false);
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   backdrop_view_->SetVisible(visible);
@@ -213,7 +213,23 @@ void WindowMiniView::SetShowPreview(bool show) {
       AddChildView(std::make_unique<WindowPreviewView>(source_window_));
   preview_view_->SetPaintToLayer();
   preview_view_->layer()->SetFillsBoundsOpaquely(false);
-  Layout();
+
+  // TODO(crbug.com/1522471): Consider redesigning `WindowCycleItemView` to
+  // cancel Layer rounded corners.
+  //
+  // The derived class `WindowCycleItemView` of `WindowMiniView` will create
+  // `backdrop_view_` in the Layout method so that we can enter
+  // `WindowMiniView::RefreshPreviewRoundedCorners` in the first layout to
+  // cancel the rounded corners for the Layer of the view. This is a very subtle
+  // logic. If this DeprecatedLayoutImmediately() call is not here, we will lose
+  // the opportunity to adjust the Layer fillet. Maybe we should refactor here.
+  DeprecatedLayoutImmediately();
+
+  // The preferred size of `WindowMiniView` is tied to the presence or absence
+  // of `preview_view_`. Although we have performed Layout above, this will not
+  // invalidate the cache in `LayoutManagerBase`. We need to actively call cache
+  // invalidation.
+  PreferredSizeChanged();
 }
 
 int WindowMiniView::TryRemovingChildItem(aura::Window* destroying_window) {
@@ -259,7 +275,7 @@ gfx::Rect WindowMiniView::GetContentAreaBounds() const {
   return bounds;
 }
 
-void WindowMiniView::Layout() {
+void WindowMiniView::Layout(PassKey) {
   const gfx::Rect content_area_bounds = GetContentAreaBounds();
   if (backdrop_view_) {
     backdrop_view_->SetBoundsRect(content_area_bounds);
@@ -272,7 +288,7 @@ void WindowMiniView::Layout() {
   }
 
   header_view_->SetBoundsRect(GetHeaderBounds());
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

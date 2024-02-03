@@ -107,7 +107,7 @@ void MojoAudioEncoder::Flush(EncoderStatusCB done_cb) {
 void MojoAudioEncoder::OnEncodedBufferReady(media::EncodedAudioBuffer buffer,
                                             const CodecDescription& desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<CodecDescription> opt_desc;
+  std::optional<CodecDescription> opt_desc;
   if (desc.size() > 0)
     opt_desc = desc;
   output_cb_.Run(std::move(buffer), std::move(opt_desc));

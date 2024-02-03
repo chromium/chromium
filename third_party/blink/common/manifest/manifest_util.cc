@@ -135,7 +135,7 @@ mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
   return mojom::CaptureLinks::kUndefined;
 }
 
-absl::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
+std::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
     const std::string& client_mode) {
   using ClientMode = Manifest::LaunchHandler::ClientMode;
   if (base::EqualsCaseInsensitiveASCII(client_mode, "auto"))
@@ -146,7 +146,7 @@ absl::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
     return ClientMode::kNavigateExisting;
   if (base::EqualsCaseInsensitiveASCII(client_mode, "focus-existing"))
     return ClientMode::kFocusExisting;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace blink

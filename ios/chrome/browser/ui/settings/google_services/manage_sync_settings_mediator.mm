@@ -934,6 +934,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::UserSelectableType::kExtensions:
     case syncer::UserSelectableType::kApps:
     case syncer::UserSelectableType::kSavedTabGroups:
+    case syncer::UserSelectableType::kSharedTabGroupData:
       NOTREACHED();
       break;
   }
@@ -1238,7 +1239,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         [self.syncErrorHandler openTrustedVaultReauthForFetchKeys];
         break;
       }
-      [self.syncErrorHandler openPassphraseDialog];
+      [self.syncErrorHandler openPassphraseDialogWithModalPresentation:NO];
       break;
     }
     case GoogleActivityControlsItemType:
@@ -1258,7 +1259,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       break;
     }
     case ShowPassphraseDialogErrorItemType:
-      [self.syncErrorHandler openPassphraseDialog];
+      [self.syncErrorHandler openPassphraseDialogWithModalPresentation:YES];
       break;
     case SyncNeedsTrustedVaultKeyErrorItemType:
       [self.syncErrorHandler openTrustedVaultReauthForFetchKeys];

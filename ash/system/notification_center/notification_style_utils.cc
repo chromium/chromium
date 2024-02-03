@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include "ash/system/notification_center/notification_style_utils.h"
+#include <memory>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/notification_center/message_center_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -20,10 +24,13 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/message_center/views/message_view.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 namespace ash::notification_style_utils {
 
@@ -47,6 +54,17 @@ gfx::ImageSkia CreateNotificationAppIcon(
 
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       kNotificationAppIconViewSize / 2, icon_background_color, app_icon);
+}
+
+gfx::ImageSkia CreateNotificationItemIcon(
+    const message_center::NotificationItem* item) {
+  // TODO(b/284512022): Return a resized image provided in `item` or a
+  // default contact icon. Remove the temporary implementation returning a
+  // hardcoded chrome icon.
+  return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+      kNotificationAppIconViewSize / 2, SK_ColorRED,
+      gfx::CreateVectorIcon(message_center::kProductIcon,
+                            kNotificationAppIconImageSize, SK_ColorBLACK));
 }
 
 SkColor CalculateIconBackgroundColor(
@@ -122,18 +140,16 @@ std::unique_ptr<views::Background> CreateNotificationBackground(
       is_popup_notification ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
                             : cros_tokens::kCrosSysSystemOnBase;
 
+  const gfx::RoundedCornersF background_radii(top_radius, top_radius,
+                                              bottom_radius, bottom_radius);
   if (is_grouped_child_notification) {
     // Grouped children are always transparent. Handle them separately.
-    return views::CreateRoundedRectBackground(
-        SK_ColorTRANSPARENT,
-        gfx::RoundedCornersF(top_radius, top_radius, bottom_radius,
-                             bottom_radius),
-        /*for_border_thickness=*/0);
+    return views::CreateRoundedRectBackground(SK_ColorTRANSPARENT,
+                                              background_radii);
   }
 
   return views::CreateThemedRoundedRectBackground(background_color_id,
-                                                  top_radius, bottom_radius,
-                                                  /*for_border_thickness=*/0);
+                                                  background_radii);
 }
 
 void StyleNotificationPopup(views::View* notification_view) {
@@ -152,6 +168,42 @@ void StyleNotificationPopup(views::View* notification_view) {
   notification_view->SetBorder(std::make_unique<views::HighlightBorder>(
       kMessagePopupCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
+}
+
+std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(
+    views::Button::PressedCallback callback,
+    const std::u16string& label) {
+  std::unique_ptr<PillButton> actions_button = std::make_unique<PillButton>(
+      std::move(callback), label, PillButton::Type::kFloatingWithoutIcon,
+      /*icon=*/nullptr, kNotificationPillButtonHorizontalSpacing);
+  actions_button->SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+
+  return actions_button;
+}
+
+std::unique_ptr<views::FlexLayoutView> CreateInlineSettingsViewForMessageView(
+    message_center::MessageView* message_view) {
+  auto inline_settings_view = std::make_unique<views::FlexLayoutView>();
+  inline_settings_view->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  // base::Unretained(message_view) is safe here because `inline_settings_view`
+  // and it's children must be owned by the provided `message_view`
+  auto turn_off_notifications_button = GenerateNotificationLabelButton(
+      base::BindRepeating(&message_center::MessageView::DisableNotification,
+                          base::Unretained(message_view)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NOTIFICATION_INLINE_SETTINGS_TURN_OFF_BUTTON_TEXT));
+  inline_settings_view->AddChildView(std::move(turn_off_notifications_button));
+  auto cancel_button =
+      notification_style_utils::GenerateNotificationLabelButton(
+          base::BindRepeating(
+              &message_center::MessageView::ToggleInlineSettings,
+              base::Unretained(message_view)),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_NOTIFICATION_INLINE_SETTINGS_CANCEL_BUTTON_TEXT));
+  inline_settings_view->AddChildView(std::move(cancel_button));
+  inline_settings_view->SetVisible(false);
+  return inline_settings_view;
 }
 
 }  // namespace ash::notification_style_utils

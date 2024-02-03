@@ -216,9 +216,12 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback loader_callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
+  loader_callback_ = std::move(loader_callback);
+  fallback_callback_ = std::move(fallback_callback);
+
   if (!container_host_) {
     // We can't do anything other than to fall back to network.
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
 
@@ -232,7 +235,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // anyway.
   if (skip_service_worker_ || !context_) {
     ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(true);
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
   ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(false);
@@ -247,7 +250,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // headers between now and when the request handler passed to
   // |loader_callback_| is invoked.
   if (ShouldFallbackToLoadOfflinePage(tentative_resource_request.headers)) {
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -261,9 +264,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "URL",
       tentative_resource_request.url.spec());
-
-  loader_callback_ = std::move(loader_callback);
-  fallback_callback_ = std::move(fallback_callback);
 
   // Look up a registration.
   context_->registry()->FindRegistrationForClientUrl(
@@ -525,12 +525,15 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     container_host_->AddServiceWorkerToUpdate(active_version);
   }
 
+  // If the router evaluation is needed, always forward to the service worker.
+  // Because the router evaluation is done in ServiceWorkerMainResourceLoader.
+  if (active_version->NeedRouterEvaluate()) {
+    CreateLoaderAndStartRequest(std::move(find_registration_start_time));
+    return;
+  }
+
   switch (active_version->EffectiveFetchHandlerType()) {
     case ServiceWorkerVersion::FetchHandlerType::kNoHandler: {
-      // When we have non-fetch router rules, we cannot skip service worker.
-      if (active_version->HasRouterWithNonFetchEventSource()) {
-        break;
-      }
       RecordSkipReason(FetchHandlerSkipReason::kNoFetchHandler);
       TRACE_EVENT_WITH_FLOW1(
           "ServiceWorker",
@@ -542,10 +545,6 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       return;
     }
     case ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler: {
-      // When we have non-fetch router rules, we cannot skip service worker.
-      if (active_version->HasRouterWithNonFetchEventSource()) {
-        break;
-      }
       RecordSkipReason(FetchHandlerSkipReason::kSkippedForEmptyFetchHandler);
       TRACE_EVENT_WITH_FLOW2(
           "ServiceWorker",
@@ -656,11 +655,15 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
 
   // Finally, we want to forward to the service worker! Make a
   // ServiceWorkerMainResourceLoader which does that work.
+  CreateLoaderAndStartRequest(std::move(find_registration_start_time));
+}
+
+void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
+    base::TimeTicks find_registration_start_time) {
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
           std::move(fallback_callback_), container_host_, frame_tree_node_id_,
           std::move(find_registration_start_time)));
-
   std::move(loader_callback_)
       .Run(base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
           base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
@@ -770,6 +773,7 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
 }
 
 void ServiceWorkerControlleeRequestHandler::CompleteWithoutLoader() {
+  fallback_callback_.Reset();
   std::move(loader_callback_).Run({});
 }
 

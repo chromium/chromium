@@ -31,6 +31,33 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Received activation"/>
 </enum>
 
+<enum name="CookieReadStatus">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kNotOnboardedAllowed"/>
+  <int value="2" label="kNotOnboardedBlocked"/>
+  <int value="3" label="kNotOnboardedAllowedAd"/>
+  <int value="4" label="kNotOnboardedBlockedAd"/>
+  <int value="5" label="kAllowed"/>
+  <int value="6" label="kAllowedAd"/>
+  <int value="7" label="kAllowedOther"/>
+  <int value="8" label="kAllowedOtherAd"/>
+  <int value="9" label="kAllowedHeuristics"/>
+  <int value="10" label="kAllowedHeuristicsAd"/>
+  <int value="11" label="kAllowedMetadataGrant"/>
+  <int value="12" label="kAllowedMetadataGrantAd"/>
+  <int value="13" label="kAllowedTrial"/>
+  <int value="14" label="kAllowedTrialAd"/>
+  <int value="15" label="kAllowedTopLevelTrial"/>
+  <int value="16" label="kAllowedTopLevelTrialAd"/>
+  <int value="17" label="kBlocked"/>
+  <int value="18" label="kBlockedAd"/>
+  <int value="19" label="kBlockedOtherAd"/>
+  <int value="20" label="kBlockedSkippedHeuristicsAd"/>
+  <int value="21" label="kBlockedSkippedMetadataGrantAd"/>
+  <int value="22" label="kBlockedSkippedTrialAd"/>
+  <int value="23" label="kBlockedSkippedTopLevelTrialAd"/>
+</enum>
+
 <enum name="CrossOriginAdStatus">
   <int value="0" label="Ad Origin indeterminable"/>
   <int value="1" label="Main Frame Origin same as Ad"/>

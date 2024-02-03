@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.ui_metrics.SadTabEvent;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -118,7 +119,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     // TabObserver
 
     @Override
-    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+    public void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
         removeIfPresent();
     }
 

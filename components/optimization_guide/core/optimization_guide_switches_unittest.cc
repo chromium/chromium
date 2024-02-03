@@ -59,7 +59,7 @@ TEST(OptimizationGuideSwitchesTest, ParseComponentConfigFromCommandLine) {
 
   std::string encoded_config;
   config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kHintsProtoOverride,
                                                             encoded_config);
@@ -96,7 +96,7 @@ TEST(OptimizationGuideSwitchesTest,
   host_info.set_host("whatever.com");
   std::string encoded_proto;
   host_info.SerializeToString(&encoded_proto);
-  base::Base64Encode(encoded_proto, &encoded_proto);
+  encoded_proto = base::Base64Encode(encoded_proto);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kHintsProtoOverride,
                                                             encoded_proto);

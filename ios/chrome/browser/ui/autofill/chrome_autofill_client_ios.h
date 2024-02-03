@@ -40,10 +40,6 @@ namespace web {
 class WebState;
 }
 
-namespace plus_addresses {
-class PlusAddressService;
-}
-
 namespace autofill {
 
 namespace payments {
@@ -160,12 +156,16 @@ class ChromeAutofillClientIOS : public AutofillClient {
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   LogManager* GetLogManager() const override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
-  plus_addresses::PlusAddressService* GetPlusAddressService() override;
-  void OfferPlusAddressCreation(
-      const url::Origin& main_frame_origin,
-      plus_addresses::PlusAddressCallback callback) override;
+  AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
+  void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
+                                PlusAddressCallback callback) override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
+  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
+  void ShowVirtualCardEnrollDialog(
+      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback) override;
 
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no

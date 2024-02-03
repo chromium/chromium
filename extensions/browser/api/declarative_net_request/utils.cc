@@ -37,8 +37,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 namespace dnr_api = api::declarative_net_request;
@@ -883,5 +882,4 @@ bool IsRuleSafe(const flat::UrlRuleMetadata& url_rule_metadata) {
          action_type == flat::ActionType_upgrade_scheme;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

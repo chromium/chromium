@@ -591,7 +591,7 @@ protocol::Response InspectorDOMAgent::getNodesForSubtreeByStyle(
 
   HashMap<CSSPropertyID, HashSet<String>> properties;
   for (const auto& style : *computed_styles) {
-    absl::optional<CSSPropertyName> property_name = CSSPropertyName::From(
+    std::optional<CSSPropertyName> property_name = CSSPropertyName::From(
         document_->GetExecutionContext(), style->getName());
     if (!property_name)
       return protocol::Response::InvalidParams("Invalid CSS property name");

@@ -485,7 +485,7 @@ void PerfettoTracedProcess::SetSystemProducerEnabledForTesting(bool enabled) {
 }
 
 void PerfettoTracedProcess::SetupSystemTracing(
-    absl::optional<const char*> system_socket) {
+    std::optional<const char*> system_socket) {
   // Note: Not checking for a valid sequence here so that we don't inadvertently
   // bind this object on the wrong sequence during early initialization.
   DCHECK(!system_producer_);

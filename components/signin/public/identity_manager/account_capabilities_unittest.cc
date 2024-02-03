@@ -28,19 +28,28 @@ TEST_F(AccountCapabilitiesTest, CanHaveEmailAddressDisplayed) {
             signin::Tribool::kFalse);
 }
 
-TEST_F(AccountCapabilitiesTest, CanOfferExtendedChromeSyncPromos) {
+TEST_F(AccountCapabilitiesTest,
+       CanShowHistorySyncOptInsWithoutMinorModeRestrictions) {
   AccountCapabilities capabilities;
-  EXPECT_EQ(capabilities.can_offer_extended_chrome_sync_promos(),
-            signin::Tribool::kUnknown);
+  EXPECT_EQ(
+      capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kUnknown);
 
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
-  EXPECT_EQ(capabilities.can_offer_extended_chrome_sync_promos(),
-            signin::Tribool::kTrue);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
+  EXPECT_EQ(
+      capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kTrue);
 
-  mutator.set_can_offer_extended_chrome_sync_promos(false);
-  EXPECT_EQ(capabilities.can_offer_extended_chrome_sync_promos(),
-            signin::Tribool::kFalse);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      false);
+  EXPECT_EQ(
+      capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kFalse);
 }
 
 TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
@@ -195,7 +204,8 @@ TEST_F(AccountCapabilitiesTest, AreAnyCapabilitiesKnown_PartiallyFilled) {
   AccountCapabilities capabilities;
 
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
   EXPECT_TRUE(capabilities.AreAnyCapabilitiesKnown());
 }
 
@@ -208,7 +218,8 @@ TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_PartiallyFilled) {
   AccountCapabilities capabilities;
 
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
   EXPECT_FALSE(capabilities.AreAllCapabilitiesKnown());
 }
 
@@ -225,37 +236,47 @@ TEST_F(AccountCapabilitiesTest, UpdateWith_UnknownToKnown) {
 
   AccountCapabilities other;
   AccountCapabilitiesTestMutator mutator(&other);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
 
   EXPECT_TRUE(capabilities.UpdateWith(other));
-  EXPECT_EQ(signin::Tribool::kTrue,
-            capabilities.can_offer_extended_chrome_sync_promos());
+  EXPECT_EQ(
+      signin::Tribool::kTrue,
+      capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions());
 }
 
 TEST_F(AccountCapabilitiesTest, UpdateWith_KnownToUnknown) {
   AccountCapabilities capabilities;
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
 
   AccountCapabilities other;
 
   EXPECT_FALSE(capabilities.UpdateWith(other));
-  EXPECT_EQ(signin::Tribool::kTrue,
-            capabilities.can_offer_extended_chrome_sync_promos());
+  EXPECT_EQ(
+      signin::Tribool::kTrue,
+      capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions());
 }
 
 TEST_F(AccountCapabilitiesTest, UpdateWith_OverwriteKnown) {
   AccountCapabilities capabilities;
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
 
   AccountCapabilities other;
   AccountCapabilitiesTestMutator other_mutator(&other);
-  other_mutator.set_can_offer_extended_chrome_sync_promos(false);
+  other_mutator
+      .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(false);
 
   EXPECT_TRUE(capabilities.UpdateWith(other));
-  EXPECT_EQ(signin::Tribool::kFalse,
-            capabilities.can_offer_extended_chrome_sync_promos());
+  EXPECT_EQ(
+      signin::Tribool::kFalse,
+      capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions());
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -263,7 +284,8 @@ TEST_F(AccountCapabilitiesTest, UpdateWith_OverwriteKnown) {
 TEST_F(AccountCapabilitiesTest, ConversionWithJNI_TriboolTrue) {
   AccountCapabilities capabilities;
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_capabilities =
@@ -278,7 +300,8 @@ TEST_F(AccountCapabilitiesTest, ConversionWithJNI_TriboolTrue) {
 TEST_F(AccountCapabilitiesTest, ConversionWithJNI_TriboolFalse) {
   AccountCapabilities capabilities;
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(false);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      false);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_capabilities =

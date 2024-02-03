@@ -24,6 +24,7 @@ constexpr char kBlankUrl[] = "about:blank";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackWebContentsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabWebContentsId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kAboutChromeOsUrl[] = "chrome://os-settings/help";
@@ -95,6 +96,18 @@ class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
                                    "Send feedback"));
   }
 
+  auto WaitForElementToRender(const ui::ElementIdentifier& contents_id,
+                              const DeepQuery& element) {
+    StateChange element_renders;
+    element_renders.event = kElementRenders;
+    element_renders.where = element;
+    element_renders.test_function =
+        "(el) => { if (el !== null) { let rect = el.getBoundingClientRect(); "
+        "return rect.width > 0 && rect.height > 0; } return false; }";
+
+    return WaitForStateChange(contents_id, element_renders);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -117,7 +130,14 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
       FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
 }
 
-IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, SubmitFeedbackThenExit) {
+// crbug.com/1517839
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SubmitFeedbackThenExit DISABLED_SubmitFeedbackThenExit
+#else
+#define MAYBE_SubmitFeedbackThenExit SubmitFeedbackThenExit
+#endif
+IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
+                       MAYBE_SubmitFeedbackThenExit) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-3f028d06-0100-4b5b-b1f3-99ceeaf3d62b");
   // Query to pierce through Shadow DOM to find the description element on the
@@ -144,23 +164,26 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, SubmitFeedbackThenExit) {
       InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
       Log("Launching the os feedback app"), LaunchOsFeedbackApp(),
       WaitForWebContentsReady(kOsFeedbackWebContentsId, GURL(kOsFeedbackUrl)),
+
       Log("Entering fake description"),
       ExecuteJsAt(kOsFeedbackWebContentsId, kDescriptionTextQuery,
                   " el => el.value = 'Testing only - please ignore'"),
       FlushEvents(),
-      WaitForElementTextContains(kOsFeedbackWebContentsId, kContinueButtonQuery,
-                                 "Continue"),
+
       Log("Clicking the continue button"),
+      WaitForElementToRender(kOsFeedbackWebContentsId, kContinueButtonQuery),
       ClickElement(kOsFeedbackWebContentsId, kContinueButtonQuery),
-      FlushEvents(), Log("Clicking the send button"),
-      WaitForElementTextContains(kOsFeedbackWebContentsId,
-                                 kSendReportButtonQuery, "Send"),
+      FlushEvents(),
+
+      Log("Clicking the send button"),
+      WaitForElementToRender(kOsFeedbackWebContentsId, kSendReportButtonQuery),
       ClickElement(kOsFeedbackWebContentsId, kSendReportButtonQuery),
       FlushEvents(),
-      WaitForElementTextContains(kOsFeedbackWebContentsId, kDoneButtonQuery,
-                                 "Done"),
+
       Log("Clicking the done button"),
+      WaitForElementToRender(kOsFeedbackWebContentsId, kDoneButtonQuery),
       ClickElement(kOsFeedbackWebContentsId, kDoneButtonQuery), FlushEvents(),
+
       Log("Waiting for the feedback app to exit"),
       WaitForHide(kOsFeedbackWebContentsId));
 }

@@ -1581,6 +1581,10 @@ class ScrollableShelfViewDeskButtonTest : public ScrollableShelfViewTest {
 // Verify that adding an app to overflow the shelf will cause the desk button to
 // shrink.
 TEST_F(ScrollableShelfViewDeskButtonTest, ButtonRespondsToOverflowStateChange) {
+  // Desk button will be forced to be zero state for display that is narrower
+  // than 1280.
+  UpdateDisplay("1280x720");
+
   SetShelfAnimationDuration(base::Milliseconds(1));
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
 
@@ -1589,8 +1593,8 @@ TEST_F(ScrollableShelfViewDeskButtonTest, ButtonRespondsToOverflowStateChange) {
   EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
             scrollable_shelf_view->layout_strategy_for_test());
   auto* desk_button_widget = GetPrimaryShelf()->desk_button_widget();
-  EXPECT_TRUE(desk_button_widget->is_expanded());
-  EXPECT_EQ(96, desk_button_widget->GetTargetBounds().width());
+  EXPECT_FALSE(desk_button_widget->zero_state());
+  EXPECT_EQ(218, desk_button_widget->GetTargetBounds().width());
 
   // Keep adding apps until the desk button shrinks, and track the ID of the
   // last added app so that we can remove it later.
@@ -1598,7 +1602,7 @@ TEST_F(ScrollableShelfViewDeskButtonTest, ButtonRespondsToOverflowStateChange) {
   // button does not shrink.
   ShelfID last_app_id;
   size_t number_of_apps = 0u;
-  while (desk_button_widget->is_expanded()) {
+  while (!desk_button_widget->zero_state()) {
     last_app_id = AddAppShortcut();
     WaitForShelfAnimation();
     ++number_of_apps;
@@ -1607,15 +1611,15 @@ TEST_F(ScrollableShelfViewDeskButtonTest, ButtonRespondsToOverflowStateChange) {
 
   EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
             scrollable_shelf_view->layout_strategy_for_test());
-  EXPECT_EQ(36, desk_button_widget->GetTargetBounds().width());
+  EXPECT_EQ(118, desk_button_widget->GetTargetBounds().width());
 
   auto* shelf_model = ShelfModel::Get();
   shelf_model->RemoveItemAt(shelf_model->ItemIndexByID(last_app_id));
   WaitForShelfAnimation();
   EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
             scrollable_shelf_view->layout_strategy_for_test());
-  EXPECT_TRUE(desk_button_widget->is_expanded());
-  EXPECT_EQ(96, desk_button_widget->GetTargetBounds().width());
+  EXPECT_FALSE(desk_button_widget->zero_state());
+  EXPECT_EQ(218, desk_button_widget->GetTargetBounds().width());
 }
 
 }  // namespace ash

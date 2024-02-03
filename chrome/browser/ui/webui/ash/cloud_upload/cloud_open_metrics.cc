@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
@@ -150,6 +151,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kInvalidAlternateUrl:
               case OfficeDriveOpenErrors::kDriveAlternateUrl:
               case OfficeDriveOpenErrors::kUnexpectedAlternateUrl:
+              case OfficeDriveOpenErrors::kEmptyAlternateUrl:
+              case OfficeDriveOpenErrors::kWaitingForUpload:
               case OfficeDriveOpenErrors::kSuccess:
                 SetWrongValueLogged(drive_open_error);
                 break;
@@ -253,6 +256,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kNoDriveService:
               case OfficeDriveOpenErrors::kDriveAuthenticationNotReady:
               case OfficeDriveOpenErrors::kMeteredConnection:
+              case OfficeDriveOpenErrors::kEmptyAlternateUrl:
+              case OfficeDriveOpenErrors::kWaitingForUpload:
                 break;
               case OfficeDriveOpenErrors::kSuccess:
                 SetWrongValueLogged(drive_open_error);
@@ -305,6 +310,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kNoDriveService:
               case OfficeDriveOpenErrors::kDriveAuthenticationNotReady:
               case OfficeDriveOpenErrors::kMeteredConnection:
+              case OfficeDriveOpenErrors::kEmptyAlternateUrl:
+              case OfficeDriveOpenErrors::kWaitingForUpload:
                 SetWrongValueLogged(drive_open_error);
                 break;
             }
@@ -630,7 +637,7 @@ CloudOpenMetrics::~CloudOpenMetrics() {
   one_drive_upload_result_.LogCompanionMetric();
 
   if (delayed_dump_) {
-    base::debug::DumpWithoutCrashing();
+    DumpState();
   }
 }
 
@@ -687,6 +694,47 @@ base::WeakPtr<CloudOpenMetrics> CloudOpenMetrics::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void CloudOpenMetrics::DumpState() {
+  switch (inconsistent_state_) {
+    case MetricState::kCorrectlyNotLogged: {
+      SCOPED_CRASH_KEY_STRING64("CloudOpenMetrics", "NL",
+                                inconsistent_metric_name_);
+      base::debug::DumpWithoutCrashing();
+      break;
+    }
+    case MetricState::kCorrectlyLogged: {
+      SCOPED_CRASH_KEY_STRING64("CloudOpenMetrics", "L",
+                                inconsistent_metric_name_);
+      base::debug::DumpWithoutCrashing();
+      break;
+    }
+    case MetricState::kIncorrectlyNotLogged: {
+      SCOPED_CRASH_KEY_STRING64("CloudOpenMetrics", "INL",
+                                inconsistent_metric_name_);
+      base::debug::DumpWithoutCrashing();
+      break;
+    }
+    case MetricState::kIncorrectlyLogged: {
+      SCOPED_CRASH_KEY_STRING64("CloudOpenMetrics", "IL",
+                                inconsistent_metric_name_);
+      base::debug::DumpWithoutCrashing();
+      break;
+    }
+    case MetricState::kIncorrectlyLoggedMultipleTimes: {
+      SCOPED_CRASH_KEY_STRING64("CloudOpenMetrics", "ILM",
+                                inconsistent_metric_name_);
+      base::debug::DumpWithoutCrashing();
+      break;
+    }
+    case MetricState::kWrongValueLogged: {
+      SCOPED_CRASH_KEY_STRING64("CloudOpenMetrics", "WVL",
+                                inconsistent_metric_name_);
+      base::debug::DumpWithoutCrashing();
+      break;
+    }
+  }
+}
+
 template <typename MetricType>
 void CloudOpenMetrics::OnInconsistencyFound(Metric<MetricType>& metric,
                                             bool immediately_dump) {
@@ -705,8 +753,13 @@ void CloudOpenMetrics::OnInconsistencyFound(Metric<MetricType>& metric,
              << one_drive_source_volume_ << ". " << one_drive_task_result_
              << ". " << one_drive_transfer_required_ << ". "
              << one_drive_upload_result_ << ".";
+
+  // Set dump key-value pair.
+  inconsistent_metric_name_ = metric.metric_name;
+  inconsistent_state_ = metric.state;
+
   if (immediately_dump) {
-    base::debug::DumpWithoutCrashing();
+    DumpState();
   } else {
     delayed_dump_ = true;
   }

@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/block_child_iterator.h"
@@ -451,7 +451,7 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
 LogicalOffset BlockLayoutAlgorithm::CalculateLogicalOffset(
     const LogicalFragment& fragment,
     LayoutUnit child_bfc_line_offset,
-    const absl::optional<LayoutUnit>& child_bfc_block_offset) {
+    const std::optional<LayoutUnit>& child_bfc_block_offset) {
   LayoutUnit inline_size = container_builder_.InlineSize();
   TextDirection direction = GetConstraintSpace().Direction();
 
@@ -566,7 +566,7 @@ NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
   algorithm_ignoring_line_clamp.ignore_line_clamp_ = true;
   BoxFragmentBuilder& new_builder =
       algorithm_ignoring_line_clamp.container_builder_;
-  new_builder.SetBoxType(container_builder_.BoxType());
+  new_builder.SetBoxType(container_builder_.GetBoxType());
   return algorithm_ignoring_line_clamp.Layout();
 }
 
@@ -1555,7 +1555,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
       DCHECK(!constraint_space.AncestorHasClearancePastAdjoiningFloats());
       ResolveBfcBlockOffset(previous_inflow_position,
                             non_adjoining_bfc_offset_estimate,
-                            /* forced_bfc_block_offset */ absl::nullopt);
+                            /* forced_bfc_block_offset */ std::nullopt);
 
       if ((bfc_offset_already_resolved || has_adjoining_floats) &&
           old_offset != *container_builder_.BfcBlockOffset()) {
@@ -1885,7 +1885,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(
       HasClearancePastAdjoiningFloats(
           container_builder_.GetAdjoiningObjectTypes(), child.Style(), Style());
 
-  absl::optional<LayoutUnit> forced_bfc_block_offset;
+  std::optional<LayoutUnit> forced_bfc_block_offset;
   bool is_pushed_by_floats = false;
 
   // If we can separate the previous margin strut from what is to follow, do
@@ -1946,7 +1946,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     PreviousInflowPosition* previous_inflow_position,
     InlineChildLayoutContext* inline_child_layout_context,
     const InlineBreakToken** previous_inline_break_token) {
-  absl::optional<LayoutUnit> child_bfc_block_offset =
+  std::optional<LayoutUnit> child_bfc_block_offset =
       layout_result->BfcBlockOffset();
 
   bool is_self_collapsing = layout_result->IsSelfCollapsing();
@@ -1991,8 +1991,9 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     DCHECK(!GetConstraintSpace().AncestorHasClearancePastAdjoiningFloats());
 
     if (!ResolveBfcBlockOffset(previous_inflow_position, bfc_block_offset,
-                               /* forced_bfc_block_offset */ absl::nullopt))
+                               /* forced_bfc_block_offset */ std::nullopt)) {
       return LayoutResult::kBfcBlockOffsetResolved;
+    }
   }
 
   // We have special behavior for a self-collapsing child which gets pushed
@@ -2146,7 +2147,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     DCHECK_EQ(layout_result->IsSelfCollapsing(), is_self_collapsing);
   }
 
-  const absl::optional<LayoutUnit> line_box_bfc_block_offset =
+  const std::optional<LayoutUnit> line_box_bfc_block_offset =
       layout_result->LineBoxBfcBlockOffset();
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
@@ -2366,7 +2367,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     const PreviousInflowPosition& previous_inflow_position,
     const LayoutInputNode child,
     const InflowChildData& child_data,
-    const absl::optional<LayoutUnit>& child_bfc_block_offset,
+    const std::optional<LayoutUnit>& child_bfc_block_offset,
     const LogicalOffset& logical_offset,
     const LayoutResult& layout_result,
     const LogicalFragment& fragment,
@@ -2769,7 +2770,7 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
     return margins;
   }
 
-  absl::optional<LayoutUnit> child_inline_size;
+  std::optional<LayoutUnit> child_inline_size;
   auto ChildInlineSize = [&]() -> LayoutUnit {
     if (!child_inline_size) {
       ConstraintSpaceBuilder builder(GetConstraintSpace(),
@@ -2822,7 +2823,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     const InflowChildData& child_data,
     const LogicalSize child_available_size,
     bool is_new_fc,
-    const absl::optional<LayoutUnit> child_bfc_block_offset,
+    const std::optional<LayoutUnit> child_bfc_block_offset,
     bool has_clearance_past_adjoining_floats,
     LayoutUnit block_start_annotation_space) {
   const ComputedStyle& child_style = child.Style();
@@ -3075,7 +3076,7 @@ void BlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
 bool BlockLayoutAlgorithm::ResolveBfcBlockOffset(
     PreviousInflowPosition* previous_inflow_position,
     LayoutUnit bfc_block_offset,
-    absl::optional<LayoutUnit> forced_bfc_block_offset) {
+    std::optional<LayoutUnit> forced_bfc_block_offset) {
   // Clearance may have been resolved (along with BFC block-offset) in a
   // previous layout pass, so check the constraint space for pre-applied
   // clearance. This is important in order to identify possible class C break
@@ -3139,17 +3140,17 @@ bool BlockLayoutAlgorithm::NeedsAbortOnBfcBlockOffsetChange() const {
          GetConstraintSpace().ExpectedBfcBlockOffset();
 }
 
-absl::optional<LayoutUnit>
+std::optional<LayoutUnit>
 BlockLayoutAlgorithm::CalculateQuirkyBodyMarginBlockSum(
     const MarginStrut& end_margin_strut) {
   if (!Node().IsQuirkyAndFillsViewport())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!Style().LogicalHeight().IsAuto())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (GetConstraintSpace().IsNewFormattingContext()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(Node().IsBody());

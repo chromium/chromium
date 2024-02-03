@@ -1787,7 +1787,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // When the dialog is transitioning to closed, we have to check the
         // elements which are in the top layer but are pending removal to see if
         // this element used to be open as a dialog.
-        absl::optional<Document::TopLayerReason> top_layer_reason =
+        std::optional<Document::TopLayerReason> top_layer_reason =
             dialog->GetDocument().IsScheduledForTopLayerRemoval(dialog);
         return top_layer_reason &&
                *top_layer_reason == Document::TopLayerReason::kDialog;
@@ -1806,7 +1806,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // When the popover is transitioning to closed, popoverOpen won't return
         // true and we have to check the elements which are in the top layer but
         // are pending removal to see if this element used to be popoverOpen.
-        absl::optional<Document::TopLayerReason> top_layer_reason =
+        std::optional<Document::TopLayerReason> top_layer_reason =
             html_element->GetDocument().IsScheduledForTopLayerRemoval(
                 html_element);
         return top_layer_reason &&
@@ -1921,9 +1921,15 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return false;
       }
       return !element.GetDocument().GetPage()->GetFocusController().IsActive();
-    case CSSSelector::kPseudoState: {
+    case CSSSelector::kPseudoStateDeprecatedSyntax: {
+      CHECK(RuntimeEnabledFeatures::CSSCustomStateDeprecatedSyntaxEnabled());
       return element.DidAttachInternals() &&
              element.EnsureElementInternals().HasState(selector.Value());
+    }
+    case CSSSelector::kPseudoState: {
+      CHECK(RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled());
+      return element.DidAttachInternals() &&
+             element.EnsureElementInternals().HasState(selector.Argument());
     }
     case CSSSelector::kPseudoHorizontal:
     case CSSSelector::kPseudoVertical:
@@ -2147,9 +2153,14 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         return false;
       }
       result.dynamic_pseudo = context.pseudo_id;
-      return selector_pseudo_id == kPseudoIdViewTransition ||
-             selector.Argument() == CSSSelector::UniversalSelectorAtom() ||
-             selector.Argument() == pseudo_argument_;
+      if (selector_pseudo_id == kPseudoIdViewTransition) {
+        return true;
+      }
+
+      CHECK(!selector.IdentList().empty());
+      const AtomicString& name_or_wildcard = selector.IdentList()[0];
+      return name_or_wildcard == CSSSelector::UniversalSelectorAtom() ||
+             name_or_wildcard == pseudo_argument_;
     }
     case CSSSelector::kPseudoScrollbarButton:
     case CSSSelector::kPseudoScrollbarCorner:

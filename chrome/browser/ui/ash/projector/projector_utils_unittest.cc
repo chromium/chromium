@@ -54,7 +54,7 @@ class ScopedLogIn {
   ScopedLogIn(
       FakeUserManagerWithLocalState* fake_user_manager,
       const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR)
+      user_manager::UserType user_type = user_manager::UserType::kRegular)
       : fake_user_manager_(fake_user_manager), account_id_(account_id) {
     // Prevent access to DBus. This switch is reset in case set from test SetUp
     // due massive usage of InitFromArgv.
@@ -63,19 +63,19 @@ class ScopedLogIn {
       command_line.AppendSwitch(switches::kTestType);
 
     switch (user_type) {
-      case user_manager::USER_TYPE_REGULAR:  // fallthrough
+      case user_manager::UserType::kRegular:  // fallthrough
         LogIn();
         break;
-      case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+      case user_manager::UserType::kPublicAccount:
         LogInAsPublicAccount();
         break;
-      case user_manager::USER_TYPE_ARC_KIOSK_APP:
+      case user_manager::UserType::kArcKioskApp:
         LogInArcKioskApp();
         break;
-      case user_manager::USER_TYPE_CHILD:
+      case user_manager::UserType::kChild:
         LogInChildUser();
         return;
-      case user_manager::USER_TYPE_GUEST:
+      case user_manager::UserType::kGuest:
         LogInGuestUser();
         return;
       default:
@@ -212,27 +212,27 @@ TEST_F(ProjectorUtilsChildTest, IsProjectorAllowedForProfile_ChildUser) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId),
-                    user_manager::USER_TYPE_CHILD);
+                    user_manager::UserType::kChild);
 
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
 }
 
 TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_GuestAccount) {
   ScopedLogIn login(GetFakeUserManager(), user_manager::GuestAccountId(),
-                    user_manager::USER_TYPE_GUEST);
+                    user_manager::UserType::kGuest);
   EXPECT_FALSE(IsProjectorAllowedForProfile(profile()));
 }
 
 TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_DemoAccount) {
   ScopedLogIn login(GetFakeUserManager(), user_manager::DemoAccountId(),
-                    user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+                    user_manager::UserType::kPublicAccount);
   EXPECT_FALSE(IsProjectorAllowedForProfile(profile()));
 }
 
 TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_KioskAppAccount) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
-                    user_manager::USER_TYPE_ARC_KIOSK_APP);
+                    user_manager::UserType::kArcKioskApp);
   EXPECT_FALSE(IsProjectorAllowedForProfile(profile()));
 }
 
@@ -255,27 +255,27 @@ TEST_F(ProjectorUtilsChildTest, IsProjectorAppEnabled_ChildUser) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId),
-                    user_manager::USER_TYPE_CHILD);
+                    user_manager::UserType::kChild);
 
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));
 }
 
 TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_GuestAccount) {
   ScopedLogIn login(GetFakeUserManager(), user_manager::GuestAccountId(),
-                    user_manager::USER_TYPE_GUEST);
+                    user_manager::UserType::kGuest);
   EXPECT_FALSE(IsProjectorAppEnabled(profile()));
 }
 
 TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_DemoAccount) {
   ScopedLogIn login(GetFakeUserManager(), user_manager::DemoAccountId(),
-                    user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+                    user_manager::UserType::kPublicAccount);
   EXPECT_FALSE(IsProjectorAppEnabled(profile()));
 }
 
 TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_KioskAppAccount) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
-                    user_manager::USER_TYPE_ARC_KIOSK_APP);
+                    user_manager::UserType::kArcKioskApp);
   EXPECT_FALSE(IsProjectorAppEnabled(profile()));
 }
 

@@ -651,6 +651,8 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        CheckLowEntropySourceValue) {
+  // `entropy_providers` will contain a limited entropy provider.
+  // TODO(crbug.com/1518876): Add a test for limited entropy randomization.
   auto entropy_providers = g_browser_process->GetMetricsServicesManager()
                                ->CreateEntropyProvidersForTesting();
 

@@ -9,9 +9,9 @@
 namespace blink {
 
 network::OptionalTrustTokenParams ConvertTrustTokenParams(
-    const absl::optional<network::mojom::blink::TrustTokenParams>& maybe_in) {
+    const std::optional<network::mojom::blink::TrustTokenParams>& maybe_in) {
   if (!maybe_in)
-    return absl::nullopt;
+    return std::nullopt;
   const network::mojom::blink::TrustTokenParams& in = *maybe_in;
 
   network::mojom::TrustTokenParamsPtr out =

@@ -8,7 +8,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 
-/** Java accessor for base/feature_map.h state. */
+/** Java accessor for base/android/feature_map.h state. */
 public final class SyncFeatureMap extends FeatureMap {
     public static final String ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE =
             "EnableBookmarkFoldersForAccountStorage";

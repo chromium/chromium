@@ -23,6 +23,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -138,11 +140,9 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(
       std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
-  if (features::IsVcBackgroundReplaceEnabled()) {
-    info_vec.push_back(
-        std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
-            profile));
-  }
+  info_vec.push_back(
+      std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
+          profile));
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
@@ -374,6 +374,9 @@ void SystemWebAppManager::Start() {
     LOG(ERROR)
         << "Exceeded SWA install retry attempts.  Skipping installation, will "
            "retry on next OS update or when locale changes.";
+    SCOPED_CRASH_KEY_BOOL("SystemWebAppManager", "broken_icons",
+                          PreviousSessionHadBrokenIcons());
+    base::debug::DumpWithoutCrashing();
     return;
   }
 

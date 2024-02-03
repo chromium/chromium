@@ -398,7 +398,7 @@ void FrameCaptionButtonContainerView::UpdateBorderlessModeEnabled(
   // so similarly to hiding the title bar, also the caption button container
   // containing them will be hidden.
   is_borderless_mode_enabled_ = enabled;
-  SetVisible(enabled);
+  SetVisible(!enabled);
 }
 
 void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
@@ -513,8 +513,8 @@ void FrameCaptionButtonContainerView::ClearOnSizeButtonPressedCallback() {
   on_size_button_pressed_callback_.Reset();
 }
 
-void FrameCaptionButtonContainerView::Layout() {
-  views::View::Layout();
+void FrameCaptionButtonContainerView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   // This ensures that the first frame of the animation to show the size button
   // pushes the buttons to the left of the size button into the center.
@@ -533,10 +533,22 @@ void FrameCaptionButtonContainerView::Layout() {
 }
 
 void FrameCaptionButtonContainerView::ChildPreferredSizeChanged(View* child) {
+  // In the `View::PreferredSizeChanged` method, `ChildPreferredSizeChanged`
+  // occurs before the `InvalidateLayout` method. If we call the `Layout` method
+  // in `ChildPreferredSizeChanged`, due to the order of calls, there is a
+  // layout cache in `LayoutManagerBase`. `Layout` cannot be laid out correctly
+  // at this time. So we need to actively call `InvalidateLayout` to clean up
+  // the layout cache of `LayoutManagerBase`.
+  //
+  // Here, we call `Layout` in
+  // `BrowserNonClientFrameViewChromeOS::ChildPreferredSizeChanged`.
+  InvalidateLayout();
   PreferredSizeChanged();
 }
 
 void FrameCaptionButtonContainerView::ChildVisibilityChanged(View* child) {
+  // Same as ChildPreferredSizeChanged.
+  InvalidateLayout();
   PreferredSizeChanged();
 }
 

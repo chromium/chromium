@@ -45,7 +45,7 @@ std::string InputVectorToString(std::vector<bssl::der::Input> vec) {
   std::string sep;
   for (const auto& element : vec) {
     r += sep;
-    r += base::HexEncode(element.AsSpan());
+    r += base::HexEncode(element);
     sep = ',';
   }
   r += '}';

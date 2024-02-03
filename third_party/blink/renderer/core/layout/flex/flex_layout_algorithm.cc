@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/core/layout/flex/flex_layout_algorithm.h"
 
 #include <memory>
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/baseline_utils.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
@@ -92,14 +93,14 @@ class BaselineAccumulator {
     }
   }
 
-  absl::optional<LayoutUnit> FirstBaseline() const {
+  std::optional<LayoutUnit> FirstBaseline() const {
     if (first_major_baseline_)
       return *first_major_baseline_;
     if (first_minor_baseline_)
       return *first_minor_baseline_;
     return first_fallback_baseline_;
   }
-  absl::optional<LayoutUnit> LastBaseline() const {
+  std::optional<LayoutUnit> LastBaseline() const {
     if (last_minor_baseline_)
       return *last_minor_baseline_;
     if (last_major_baseline_)
@@ -110,13 +111,13 @@ class BaselineAccumulator {
  private:
   FontBaseline font_baseline_;
 
-  absl::optional<LayoutUnit> first_major_baseline_;
-  absl::optional<LayoutUnit> first_minor_baseline_;
-  absl::optional<LayoutUnit> first_fallback_baseline_;
+  std::optional<LayoutUnit> first_major_baseline_;
+  std::optional<LayoutUnit> first_minor_baseline_;
+  std::optional<LayoutUnit> first_fallback_baseline_;
 
-  absl::optional<LayoutUnit> last_major_baseline_;
-  absl::optional<LayoutUnit> last_minor_baseline_;
-  absl::optional<LayoutUnit> last_fallback_baseline_;
+  std::optional<LayoutUnit> last_major_baseline_;
+  std::optional<LayoutUnit> last_minor_baseline_;
+  std::optional<LayoutUnit> last_fallback_baseline_;
 };
 
 bool ContainsNonWhitespace(const LayoutBox* box) {
@@ -170,7 +171,7 @@ LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
     // the term "content".
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
-    absl::optional<LayoutUnit> inline_size;
+    std::optional<LayoutUnit> inline_size;
     if (container_builder_.InlineSize() != kIndefiniteSize)
       inline_size = container_builder_.InlineSize();
     return ComputeBlockSizeForFragment(
@@ -477,7 +478,7 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
 
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     const BlockNode& flex_item,
-    absl::optional<LayoutUnit> override_inline_size) const {
+    std::optional<LayoutUnit> override_inline_size) const {
   const ComputedStyle& child_style = flex_item.Style();
   ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
                                        child_style.GetWritingDirection(),
@@ -553,9 +554,9 @@ Length FlexLayoutAlgorithm::GetUsedFlexBasis(const BlockNode& child) const {
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     const BlockNode& flex_item_node,
     LayoutUnit item_main_axis_final_size,
-    absl::optional<LayoutUnit> override_inline_size,
-    absl::optional<LayoutUnit> line_cross_size_for_stretch,
-    absl::optional<LayoutUnit> block_offset_for_fragmentation,
+    std::optional<LayoutUnit> override_inline_size,
+    std::optional<LayoutUnit> line_cross_size_for_stretch,
+    std::optional<LayoutUnit> block_offset_for_fragmentation,
     bool min_block_size_should_encompass_intrinsic_size) const {
   const ComputedStyle& child_style = flex_item_node.Style();
   ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
@@ -674,7 +675,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       continue;
     }
 
-    absl::optional<LayoutUnit> max_content_contribution;
+    std::optional<LayoutUnit> max_content_contribution;
     if (phase == Phase::kColumnWrapIntrinsicSize) {
       auto space = BuildSpaceForIntrinsicInlineSize(child);
       MinMaxSizesResult child_contributions =
@@ -727,7 +728,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                                           : child.Style().UsedWidth();
     all_items_have_non_auto_cross_sizes &= !cross_axis_length.IsAuto();
 
-    absl::optional<MinMaxSizesResult> min_max_sizes;
+    std::optional<MinMaxSizesResult> min_max_sizes;
     auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
       if (!min_max_sizes) {
         // We want the child's intrinsic inline sizes in its writing mode, so
@@ -1099,7 +1100,7 @@ const LayoutResult* FlexLayoutAlgorithm::RelayoutAndBreakEarlierForFlex(
 const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   // Freezing the scrollbars for the sub-tree shouldn't be strictly necessary,
   // but we do this just in case we trigger an unstable layout.
-  absl::optional<PaintLayerScrollableArea::FreezeScrollbarsScope>
+  std::optional<PaintLayerScrollableArea::FreezeScrollbarsScope>
       freeze_scrollbars;
   if (ignore_child_scrollbar_changes_)
     freeze_scrollbars.emplace();
@@ -1468,7 +1469,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       if (DoesItemStretch(flex_item.ng_input_node)) {
         ConstraintSpace child_space = BuildSpaceForLayout(
             flex_item.ng_input_node, flex_item.main_axis_final_size,
-            /* override_inline_size */ absl::nullopt,
+            /* override_inline_size */ std::nullopt,
             line_output.line_cross_size);
         layout_result =
             flex_item.ng_input_node.Layout(child_space,
@@ -1775,10 +1776,10 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
     }
 
-    absl::optional<LayoutUnit> line_cross_size_for_stretch =
+    std::optional<LayoutUnit> line_cross_size_for_stretch =
         DoesItemStretch(flex_item->ng_input_node)
-            ? absl::optional<LayoutUnit>(line_output.line_cross_size)
-            : absl::nullopt;
+            ? std::optional<LayoutUnit>(line_output.line_cross_size)
+            : std::nullopt;
 
     // If an item broke, its offset may have expanded (as the result of a
     // current or previous break before), in which case, we shouldn't expand by
@@ -1798,7 +1799,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         MinBlockSizeShouldEncompassIntrinsicSize(*flex_item);
     ConstraintSpace child_space = BuildSpaceForLayout(
         flex_item->ng_input_node, flex_item->main_axis_final_size,
-        /* override_inline_size */ absl::nullopt, line_cross_size_for_stretch,
+        /* override_inline_size */ std::nullopt, line_cross_size_for_stretch,
         offset.block_offset, min_block_size_should_encompass_intrinsic_size);
     const LayoutResult* layout_result = flex_item->ng_input_node.Layout(
         child_space, item_break_token, early_break_in_child);
@@ -2131,7 +2132,7 @@ void FlexLayoutAlgorithm::AdjustButtonBaseline(
       container_builder_.Children();
   if (children.size() < 1) {
     const LayoutBlock* layout_block = To<LayoutBlock>(Node().GetLayoutBox());
-    absl::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine();
+    std::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine();
     if (container_builder_.FirstBaseline() != baseline) {
       UseCounter::Count(Node().GetDocument(),
                         WebFeature::kWrongBaselineOfEmptyLineButton);
@@ -2144,7 +2145,7 @@ void FlexLayoutAlgorithm::AdjustButtonBaseline(
   const auto& space = GetConstraintSpace();
   LogicalBoxFragment fragment(space.GetWritingDirection(),
                               To<PhysicalBoxFragment>(*child.fragment));
-  absl::optional<LayoutUnit> child_baseline =
+  std::optional<LayoutUnit> child_baseline =
       space.GetBaselineAlgorithmType() == BaselineAlgorithmType::kDefault
           ? fragment.FirstBaseline()
           : fragment.LastBaseline();
@@ -2526,7 +2527,7 @@ const LayoutResult* FlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
   FlexLayoutAlgorithm algorithm_with_row_cross_sizes(params,
                                                      &row_cross_size_updates_);
   auto& new_builder = algorithm_with_row_cross_sizes.container_builder_;
-  new_builder.SetBoxType(container_builder_.BoxType());
+  new_builder.SetBoxType(container_builder_.GetBoxType());
   algorithm_with_row_cross_sizes.ignore_child_scrollbar_changes_ =
       ignore_child_scrollbar_changes_;
 

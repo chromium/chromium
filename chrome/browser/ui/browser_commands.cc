@@ -163,7 +163,6 @@
 #include "content/public/common/url_utils.h"
 #include "content/public/common/user_agent.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/cookies/cookie_util.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
@@ -421,9 +420,7 @@ void RecordReloadWithCookieBlocking(const Browser* browser,
   ukm::SourceId source_id =
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
-  ukm::builders::ThirdPartyCookies_BreakageIndicator(source_id)
-      .SetBreakageIndicatorType(static_cast<int>(
-          net::cookie_util::BreakageIndicatorType::USER_RELOAD))
+  ukm::builders::ThirdPartyCookies_BreakageIndicator_UserReload(source_id)
       .SetTPCBlocked(cookies_blocked)
       .SetTPCBlockedInSettings(cookies_blocked_in_settings)
       .Record(ukm::UkmRecorder::Get());

@@ -395,8 +395,15 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 }
 
+// TODO(crbug/1523581): Flaky on Linux Tests (dbg) and Mac ASan 64 Tests.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
+    (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
+#define MAYBE_RestoreSettingsAndChangeUrl DISABLED_RestoreSettingsAndChangeUrl
+#else
+#define MAYBE_RestoreSettingsAndChangeUrl RestoreSettingsAndChangeUrl
+#endif
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
-                       RestoreSettingsAndChangeUrl) {
+                       MAYBE_RestoreSettingsAndChangeUrl) {
   // Navigate the current tab to the settings page.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUISettingsURL),

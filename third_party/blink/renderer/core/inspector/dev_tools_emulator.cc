@@ -470,7 +470,7 @@ gfx::Transform DevToolsEmulator::ForceViewport(const gfx::PointF& position,
 }
 
 gfx::Transform DevToolsEmulator::ResetViewport() {
-  viewport_override_ = absl::nullopt;
+  viewport_override_ = std::nullopt;
   return ComputeRootLayerTransform();
 }
 

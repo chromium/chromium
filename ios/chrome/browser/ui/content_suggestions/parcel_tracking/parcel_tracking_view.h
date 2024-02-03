@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ContentSuggestionsCommands;
+@protocol ParcelTrackingCommands;
 class GURL;
 @class ParcelTrackingItem;
 
@@ -17,7 +17,8 @@ class GURL;
 // Configures this view with `config`.
 - (void)configureView:(ParcelTrackingItem*)config;
 
-@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
+// Command handler for user events.
+@property(nonatomic, weak) id<ParcelTrackingCommands> commandHandler;
 
 @end
 

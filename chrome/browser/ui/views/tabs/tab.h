@@ -78,7 +78,7 @@ class Tab : public gfx::AnimationDelegate,
   bool GetHitTestMask(SkPath* mask) const override;
 
   // TabSlotView:
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

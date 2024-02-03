@@ -32,8 +32,10 @@ const char kDefaultStunServer[] = "stun.l.google.com";
 const char kSupportDetails[] = "https://support.google.com/a/answer/1279090";
 const base::TimeDelta kTimeoutAfterHostResolution = base::Seconds(10);
 
-VideoConferencingRoutine::VideoConferencingRoutine()
-    : stun_server_hostname_(kDefaultStunServer),
+VideoConferencingRoutine::VideoConferencingRoutine(
+    mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source),
+      stun_server_hostname_(kDefaultStunServer),
       udp_prober_getter_callback_(base::BindRepeating(
           &VideoConferencingRoutine::CreateAndExecuteUdpProber)),
       tls_prober_getter_callback_(base::BindRepeating(
@@ -43,8 +45,10 @@ VideoConferencingRoutine::VideoConferencingRoutine()
       media_hostnames_(util::GetDefaultMediaUrls()) {}
 
 VideoConferencingRoutine::VideoConferencingRoutine(
+    mojom::RoutineCallSource source,
     const std::string& stun_server_hostname)
-    : stun_server_hostname_(stun_server_hostname),
+    : NetworkDiagnosticsRoutine(source),
+      stun_server_hostname_(stun_server_hostname),
       udp_prober_getter_callback_(base::BindRepeating(
           &VideoConferencingRoutine::CreateAndExecuteUdpProber)),
       tls_prober_getter_callback_(base::BindRepeating(
@@ -122,7 +126,7 @@ network::mojom::NetworkContext* VideoConferencingRoutine::GetNetworkContext() {
 }
 
 std::unique_ptr<UdpProber> VideoConferencingRoutine::CreateAndExecuteUdpProber(
-    UdpProber::NetworkContextGetter network_context_getter,
+    network::NetworkContextGetter network_context_getter,
     net::HostPortPair host_port_pair,
     base::span<const uint8_t> data,
     net::NetworkTrafficAnnotationTag tag,
@@ -134,7 +138,7 @@ std::unique_ptr<UdpProber> VideoConferencingRoutine::CreateAndExecuteUdpProber(
 }
 
 std::unique_ptr<TlsProber> VideoConferencingRoutine::CreateAndExecuteTlsProber(
-    TlsProber::NetworkContextGetter network_context_getter,
+    network::NetworkContextGetter network_context_getter,
     net::HostPortPair host_port_pair,
     bool negotiate_tls,
     TlsProber::TlsProbeCompleteCallback callback) {

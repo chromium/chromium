@@ -247,14 +247,12 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
           std::tuple<ClipboardHistoryControllerShowSource,
                      /*time_since_menu_shown=*/std::optional<base::TimeDelta>,
                      /*time_since_nudge_shown=*/std::optional<base::TimeDelta>,
-                     /*enable_footer=*/bool,
                      /*enable_refresh=*/bool>> {
  public:
   ClipboardHistoryMenuModelAdapterMenuItemTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kClipboardHistoryFooter, IsClipboardHistoryFooterEnabled()},
-         {features::kClipboardHistoryLongpress,
+        {{features::kClipboardHistoryLongpress,
           IsClipboardHistoryLongpressEnabled()},
          {chromeos::features::kClipboardHistoryRefresh,
           IsClipboardHistoryRefreshEnabled()},
@@ -303,17 +301,13 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     return std::get<2>(GetParam());
   }
 
-  bool IsClipboardHistoryFooterEnabled() const {
-    return std::get<3>(GetParam());
-  }
-
   bool IsClipboardHistoryLongpressEnabled() const {
     return GetSource() ==
            ClipboardHistoryControllerShowSource::kControlVLongpress;
   }
 
   bool IsClipboardHistoryRefreshEnabled() const {
-    return std::get<4>(GetParam());
+    return std::get<3>(GetParam());
   }
 
  private:
@@ -331,7 +325,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                                  Values(std::make_optional(base::Seconds(61)),
                                         std::make_optional(base::Seconds(60)),
                                         std::nullopt),
-                                 /*enable_footer=*/Bool(),
                                  /*enable_refresh=*/Bool()));
 
 TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
@@ -354,11 +347,10 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
       GetTimeSinceNudgeShown().value_or(base::TimeDelta::Max());
 
   const bool has_header = IsClipboardHistoryRefreshEnabled();
-  const bool has_footer = IsClipboardHistoryFooterEnabled() &&
-                          (IsClipboardHistoryLongpressEnabled() ||
-                           (IsClipboardHistoryRefreshEnabled() &&
-                            ((time_since_menu_shown >= base::Days(60)) ||
-                             (time_since_nudge_shown <= base::Seconds(60)))));
+  const bool has_footer = IsClipboardHistoryLongpressEnabled() ||
+                          (IsClipboardHistoryRefreshEnabled() &&
+                           ((time_since_menu_shown >= base::Days(60)) ||
+                            (time_since_nudge_shown <= base::Seconds(60))));
 
   // Verify the number of items in the menu model.
   size_t expected_menu_item_count = controller->history()->GetItems().size();

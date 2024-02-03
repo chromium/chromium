@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination,
-        // <if expr="is_chromeos">
-        DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS,
-        // </if>
-        DestinationStore, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl,
-        // <if expr="is_chromeos">
-        PrintPreviewDestinationDialogCrosElement,
-        // </if>
-        // <if expr="not is_chromeos">
-        PrintPreviewDestinationDialogElement,
-        // </if>
-        PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import type {Destination, DestinationStore, LocalDestinationInfo,
+             // <if expr="is_chromeos">
+             PrintPreviewDestinationDialogCrosElement,
+             // </if>
+             // <if expr="not is_chromeos">
+             PrintPreviewDestinationDialogElement,
+             // </if>
+             PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import {
+  // <if expr="is_chromeos">
+  DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS,
+  // </if>
+  GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // <if expr="is_chromeos">
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+
 // </if>
 
 // <if expr="is_chromeos">

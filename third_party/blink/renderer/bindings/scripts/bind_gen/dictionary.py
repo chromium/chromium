@@ -687,69 +687,184 @@ def make_trace_function(cg_context):
     return func_def.make_decl(override=True), func_def
 
 
-def make_blink_to_v8_function(cg_context):
+def make_property_count_const(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    T = TextNode
+
+    base_property_count = ("${base_class_name}::kTotalPropertyCount"
+                           if cg_context.dictionary.inherited else "0")
+
+    return ListNode([
+        T("static constexpr size_t kBasePropertyCount = {};".format(
+            base_property_count)),
+        T("static constexpr size_t kOwnPropertyCount = {};".format(
+            len(cg_context.dictionary.own_members))),
+        T("static constexpr size_t kTotalPropertyCount "
+          "= kBasePropertyCount + kOwnPropertyCount;")
+    ])
+
+
+def make_properties_array(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    T = TextNode
+
+    properties = ListNode([
+        T("\"{}\",".format(member.identifier))
+        for member in cg_context.dictionary.own_members
+    ])
+    return ListNode([
+        T("const std::string_view kOwnPropertyNames[] = {"),
+        properties,
+        T("};"),
+        EmptyNode(),
+    ])
+
+
+def make_fill_template_properties_function(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    T = TextNode
+
+    func_def = CxxFuncDefNode(name="FillTemplateProperties",
+                              arg_decls=[
+                                  "WTF::Vector<std::string_view>& properties",
+                              ],
+                              return_type="void",
+                              class_name=cg_context.class_name,
+                              const=True)
+
+    func_def.set_base_template_vars(cg_context.template_bindings())
+    body = func_def.body
+
+    if cg_context.dictionary.inherited:
+        body.extend([
+            T("${base_class_name}::FillTemplateProperties(properties);"),
+            T("DCHECK_EQ(properties.size(), kBasePropertyCount);"),
+            EmptyNode(),
+        ])
+
+    if cg_context.dictionary.own_members:
+        body.extend([
+            T("static_assert(std::size(kOwnPropertyNames) "
+              "== kOwnPropertyCount);"),
+            T("properties.AppendRange(std::cbegin(kOwnPropertyNames),"
+              " std::cend(kOwnPropertyNames));"),
+            T("DCHECK_EQ(properties.size(), kTotalPropertyCount);")
+        ])
+
+    return func_def.make_decl(override=True), func_def
+
+
+def make_fill_values_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     S = SymbolNode
     T = TextNode
     F = FormatNode
 
-    func_def = CxxFuncDefNode(name="FillV8ObjectWithMembers",
-                              arg_decls=[
-                                  "ScriptState* script_state",
-                                  "v8::Local<v8::Object> v8_dictionary",
-                              ],
-                              return_type="bool",
-                              class_name=cg_context.class_name,
-                              const=True)
+    func_def = CxxFuncDefNode(
+        name="FillValues",
+        arg_decls=[
+            "ScriptState* script_state",
+            "v8::Local<v8::DictionaryTemplate> dict_template",
+        ],
+        return_type="v8::Local<v8::Object>",
+        class_name=cg_context.class_name,
+        const=True)
+
+    func_def.set_base_template_vars(cg_context.template_bindings())
+    if cg_context.dictionary.members:
+        func_def.body.extend([
+            T("v8::MaybeLocal<v8::Value> values[kTotalPropertyCount];"),
+            T("FillValuesImpl(script_state, values);"),
+            T("return dict_template->NewInstance("
+              "script_state->GetContext(), values);")
+        ])
+    else:
+        func_def.body.extend([
+            T("return dict_template->NewInstance("
+              "script_state->GetContext(), {});")
+        ])
+
+    return func_def.make_decl(override=True), func_def
+
+
+def make_fill_values_impl_function(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    S = SymbolNode
+    T = TextNode
+    F = FormatNode
+
+    func_def = CxxFuncDefNode(
+        name="FillValuesImpl",
+        arg_decls=[
+            "ScriptState* script_state",
+            "base::span<v8::MaybeLocal<v8::Value>> values"
+        ],
+        return_type="void",
+        class_name=cg_context.class_name,
+        const=True)
+
     func_def.set_base_template_vars(cg_context.template_bindings())
     body = func_def.body
-    body.add_template_vars({
-        "script_state": "script_state",
-        "v8_dictionary": "v8_dictionary",
-    })
+    body.add_template_vars({"script_state": "script_state"})
+    bind_local_vars(body, cg_context)
+
     body.register_code_symbols([
         S("isolate",
           "v8::Isolate* ${isolate} = ${script_state}->GetIsolate();"),
-        S("v8_value", "v8::Local<v8::Value> ${v8_value};"),
-        S("was_property_created", "bool ${was_property_created};"),
     ])
-    bind_local_vars(body, cg_context)
 
     if cg_context.dictionary.inherited:
         body.extend([
-            CxxUnlikelyIfNode(  #
-                cond=T("!${base_class_name}::FillV8ObjectWithMembers"
-                       "(${script_state}, ${v8_dictionary})"),
-                body=T("return false;")),
-            EmptyNode(),
+            F("${base_class_name}::FillValuesImpl("
+              "script_state, values.first(kBasePropertyCount));"),
+            T("values = values.subspan(kBasePropertyCount);"),
+            EmptyNode()
         ])
 
+    body.append(T("CHECK_EQ(kOwnPropertyCount, values.size());"))
     for index, member in enumerate(cg_context.dictionary_own_members):
-        node = CxxLikelyIfNode(
-            cond="{}()".format(member.api_has),
-            body=[
-                F(
-                    "${v8_value} = ToV8Traits<{native_value_tag}>::"
-                    "ToV8(${script_state}, {blink_value});",
-                    native_value_tag=native_value_tag(member.idl_type),
-                    blink_value=member.type_info.member_var_to_ref_expr(
-                        member.value_var)),
-                F(
-                    "${v8_dictionary}->CreateDataProperty("
-                    "${current_context}, "
-                    "${v8_own_member_names}[{index}].Get(${isolate}), "
-                    "${v8_value}).ToChecked();",
-                    index=index)
-            ])
+        convert_property = F(
+            "values[{index}] = "
+            "ToV8Traits<{native_value_tag}>::ToV8(script_state, {blink_value});",
+            native_value_tag=native_value_tag(member.idl_type),
+            blink_value=member.type_info.member_var_to_ref_expr(
+                member.value_var),
+            index=index)
 
-        conditional = expr_from_exposure(member.exposure)
-        if not conditional.is_always_true:
-            node = CxxLikelyIfNode(cond=conditional, body=node)
+        node = CxxLikelyIfNode(cond="{}()".format(member.api_has),
+                               body=[
+                                   convert_property,
+                                   F("DCHECK(!values[{index}].IsEmpty());",
+                                     index=index)
+                               ])
+
+        exposure_conditional = expr_from_exposure(member.exposure)
+        if not exposure_conditional.is_always_true:
+            node = CxxLikelyIfNode(cond=exposure_conditional, body=node)
 
         body.append(node)
 
-    body.append(TextNode("return true;"))
+    return func_def.make_decl(), func_def
+
+
+def make_template_key_function(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    T = TextNode
+
+    func_def = CxxFuncDefNode(name="TemplateKey",
+                              arg_decls=[],
+                              return_type="const void*",
+                              class_name=cg_context.class_name,
+                              const=True)
+
+    func_def.body.append(
+        T("return static_cast<const void*>(kOwnPropertyNames);"))
 
     return func_def.make_decl(override=True), func_def
 
@@ -874,17 +989,9 @@ def make_v8_own_member_names_function(cg_context):
         return func_decl, func_def
 
     body.extend([
-        ListNode([
-            TextNode("static const char* const kOwnMemberNames[] = {"),
-            ListNode([
-                TextNode("\"{}\",".format(member.identifier))
-                for member in cg_context.dictionary.own_members
-            ]),
-            TextNode("};"),
-        ]),
         TextNode("return V8PerIsolateData::From(${isolate})"
                  "->FindOrCreateEternalNameCache"
-                 "(kOwnMemberNames, kOwnMemberNames);"),
+                 "(kOwnPropertyNames, kOwnPropertyNames);"),
     ])
 
     return func_decl, func_def
@@ -956,6 +1063,7 @@ def generate_dictionary(dictionary_identifier):
     # Namespaces
     header_blink_ns = CxxNamespaceNode(name_style.namespace("blink"))
     source_blink_ns = CxxNamespaceNode(name_style.namespace("blink"))
+    source_anon_ns = CxxNamespaceNode("")
 
     # Class definition
     class_def = CxxClassDefNode(cg_context.class_name,
@@ -971,7 +1079,17 @@ def generate_dictionary(dictionary_identifier):
     backward_compatible_accessor_decls, backward_compatible_accessor_defs = (
         make_backward_compatible_accessors(cg_context))
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
-    blink_to_v8_decls, blink_to_v8_defs = make_blink_to_v8_function(cg_context)
+
+    # blink_to_v8_decls, blink_to_v8_defs = make_blink_to_v8_function(cg_context)
+
+    template_key_decl, template_key_def = make_template_key_function(
+        cg_context)
+    fill_template_properties_decl, fill_template_properties_def = (
+        make_fill_template_properties_function(cg_context))
+    fill_values_decl, fill_values_def = make_fill_values_function(cg_context)
+    fill_values_impl_decl, fill_values_impl_def = (
+        make_fill_values_impl_function(cg_context))
+
     v8_to_blink_decls, v8_to_blink_defs = make_v8_to_blink_function(cg_context)
     v8_names_decls, v8_names_defs = make_v8_own_member_names_function(
         cg_context)
@@ -1003,6 +1121,8 @@ def generate_dictionary(dictionary_identifier):
     ])
     source_blink_ns.body.extend([
         make_forward_declarations(source_node.accumulator),
+        EmptyNode(),
+        source_anon_ns,
         EmptyNode(),
     ])
 
@@ -1059,9 +1179,23 @@ def generate_dictionary(dictionary_identifier):
     source_blink_ns.body.append(trace_func_defs)
     source_blink_ns.body.append(EmptyNode())
 
-    class_def.protected_section.append(blink_to_v8_decls)
+    class_def.protected_section.append(make_property_count_const(cg_context))
+
+    source_anon_ns.body.append(make_properties_array(cg_context))
+
+    class_def.protected_section.append(fill_template_properties_decl)
+    class_def.protected_section.append(fill_values_impl_decl)
     class_def.protected_section.append(EmptyNode())
-    source_blink_ns.body.append(blink_to_v8_defs)
+    class_def.private_section.append(template_key_decl)
+    class_def.private_section.append(fill_values_decl)
+    class_def.protected_section.append(EmptyNode())
+    source_blink_ns.body.append(fill_template_properties_def)
+    source_blink_ns.body.append(EmptyNode())
+    source_blink_ns.body.append(fill_values_impl_def)
+    source_blink_ns.body.append(EmptyNode())
+    source_blink_ns.body.append(template_key_def)
+    source_blink_ns.body.append(EmptyNode())
+    source_blink_ns.body.append(fill_values_def)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.protected_section.append(v8_to_blink_decls)

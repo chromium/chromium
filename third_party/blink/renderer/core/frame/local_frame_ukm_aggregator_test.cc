@@ -260,7 +260,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
 
  private:
   // Deterministically record metrics in test.
-  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
 
   int64_t source_id_;
   scoped_refptr<LocalFrameUkmAggregator> aggregator_;
@@ -760,7 +760,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
 
  private:
   // Deterministically record metrics in test.
-  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
 };
 
 TEST_F(LocalFrameUkmAggregatorSimTest, GetUkmAggregator) {

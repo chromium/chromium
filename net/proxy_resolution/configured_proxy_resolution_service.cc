@@ -1063,7 +1063,6 @@ ConfiguredProxyResolutionService::~ConfiguredProxyResolutionService() {
   while (!pending_requests_.empty()) {
     ConfiguredProxyResolutionRequest* req = *pending_requests_.begin();
     req->QueryComplete(ERR_ABORTED);
-    pending_requests_.erase(req);
   }
 }
 

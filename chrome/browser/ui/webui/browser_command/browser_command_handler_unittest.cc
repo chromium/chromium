@@ -47,6 +47,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenNTPAndStartCustomizeChromeTutorial,
     Command::kStartPasswordManagerTutorial,
     Command::kStartSavedTabGroupTutorial,
+    Command::kOpenAISettings,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -76,6 +77,11 @@ class TestCommandHandler : public BrowserCommandHandler {
 
   void OpenPasswordManager() override {
     // The functionality of opening the password manager is removed, as it
+    // cannot be executed in a unittest.
+  }
+
+  void OpenAISettings() override {
+    // The functionality of opening the AI settings is removed, as it
     // cannot be executed in a unittest.
   }
 
@@ -205,6 +211,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenFeedbackForm, ());
 
   MOCK_METHOD(void, OpenPasswordManager, ());
+
+  MOCK_METHOD(void, OpenAISettings, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -663,4 +671,16 @@ TEST_F(BrowserCommandHandlerTest, StartSavedTabGroupTutorialCommand) {
 
   // Manually call tutorial started callback.
   command_handler_->OnTutorialStarted(kSavedTabGroupTutorialId, &service);
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenAISettingsCommand) {
+  // By default, opening the password manager is allowed.
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenAISettings));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  // The OpenAISettings command opens a new settings window with the
+  // AI settings and the correct disposition.
+  EXPECT_CALL(*command_handler_, OpenAISettings());
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenAISettings, std::move(info)));
 }

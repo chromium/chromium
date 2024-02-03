@@ -82,12 +82,6 @@ const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
     &kDevToolsConsoleInsights, "aida_temperature", /*default*/ 0.2};
 
-// Nukes profile directory before creating a new profile using
-// ProfileManager::CreateMultiProfileAsync().
-BASE_FEATURE(kNukeProfileBeforeCreateMultiAsync,
-             "NukeProfileBeforeCreateMultiAsync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables AES keys support in the chrome.enterprise.platformKeys and
 // chrome.platformKeys APIs. The new operations include `sign`, `encrypt` and
@@ -114,6 +108,16 @@ const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 // menu.
 BASE_FEATURE(kQuickSettingsPWANotifications,
              "QuickSettingsPWA",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+// Keeps accessibility enabled for WebContents as ReadAnything observes changes
+// to the active WebContents. This is a holdback study to evaluate the impact of
+// the new behavior, whereby the accessibility modes required by ReadyAnything
+// are cleared on a WebContents when ReadAnything loses interest in it.
+BASE_FEATURE(kReadAnythingPermanentAccessibility,
+             "ReadAnythingPermanentAccessibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

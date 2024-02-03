@@ -10,6 +10,9 @@
 
 namespace ash {
 
+// Returns the angle in degrees of the hue for `seed_color`.
+int HueAngle(SkColor seed_color);
+
 // Adds the harmonized reference colors to `mixer` based on the seed color in
 // `key`. If a seed color is not specified, an arbitrary set of harmonized
 // colors are used.

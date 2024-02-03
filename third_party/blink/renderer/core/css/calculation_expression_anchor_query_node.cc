@@ -89,7 +89,7 @@ float CalculationExpressionAnchorQueryNode::Evaluate(
     float max_value,
     const Length::AnchorEvaluator* anchor_evaluator) const {
   if (anchor_evaluator) {
-    if (const absl::optional<LayoutUnit> value =
+    if (const std::optional<LayoutUnit> value =
             anchor_evaluator->Evaluate(*this)) {
       return value->ToFloat();
     }

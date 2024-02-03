@@ -99,11 +99,6 @@ AutofillProfile ConstructCompleteProfile(
   profile.SetRawInfo(COMPANY_NAME, u"Google, Inc.");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1.800.555.1234");
 
-  // Set birthdate-related values.
-  profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
-  profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
-  profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
-
   // Add some `ProfileTokenQuality` observations.
   test_api(profile.token_quality())
       .AddObservation(NAME_FIRST,
@@ -326,14 +321,6 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   SetToken(specifics.mutable_company_name(), "Google, Inc.",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_phone_home_whole_number(), "1.800.555.1234",
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-
-  // Set birthdate-related values and statuses.
-  SetToken(specifics.mutable_birthdate_day(), 14,
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-  SetToken(specifics.mutable_birthdate_month(), 3,
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-  SetToken(specifics.mutable_birthdate_year(), 1997,
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
 
   // Add some `ProfileTokenQuality` observations.

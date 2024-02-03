@@ -282,6 +282,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="6144416395842701622">Inicia sesión para aprovechar Chromium al máximo</translation>
 <translation id="6145820983052037069">Puedes cambiar de un perfil de Chromium a otro aquí</translation>
 <translation id="615103374448673771">Si permites las cookies, es posible que Chromium las use en la precarga</translation>
+<translation id="6174920971222007286">Este archivo podría ser peligroso<ph name="LINE_BREAK" />Chromium puede comprobar esta descarga si proporcionas la contraseña. La información sobre el archivo se envía a Navegación segura de Google, pero su contenido y la contraseña permanecen en tu dispositivo.</translation>
 <translation id="6175304430031192654">En función de tu configuración, es posible que Chromium también envíe cookies y tu URL actual</translation>
 <translation id="6182736845697986886">No se ha podido realizar la instalación debido a un error interno del servidor de actualizaciones.</translation>
 <translation id="6183079672144801177">Comprueba que hayas iniciado sesión en Chromium con tu <ph name="TARGET_DEVICE_NAME" /> y, después, prueba a enviarlo de nuevo.</translation>

@@ -148,9 +148,9 @@ class LayoutTrackingView : public views::View {
   int layout_count() const { return layout_count_; }
 
   // views::View:
-  void Layout() override {
+  void Layout(PassKey) override {
     ++layout_count_;
-    views::View::Layout();
+    LayoutSuperclass<views::View>(this);
   }
 
  private:

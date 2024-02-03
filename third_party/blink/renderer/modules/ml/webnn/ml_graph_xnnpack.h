@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_XNNPACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_XNNPACK_H_
 
+#include <optional>
+
 #include "base/containers/heap_array.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -219,7 +220,7 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   //
   // XNNPACK won't write beyond the end of output buffers, so the provided
   // outputs are used as-is.
-  absl::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
+  std::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
   CreateExternalValues(const MLNamedArrayBufferViews& inputs,
                        const MLNamedArrayBufferViews& outputs) const;
 

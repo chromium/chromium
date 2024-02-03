@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
@@ -43,13 +43,13 @@ struct BLINK_COMMON_EXPORT DirectFromSellerSignalsSubresource {
   DirectFromSellerSignalsSubresource& operator=(
       DirectFromSellerSignalsSubresource&&);
 
+  friend BLINK_COMMON_EXPORT bool operator==(
+      const DirectFromSellerSignalsSubresource&,
+      const DirectFromSellerSignalsSubresource&);
+
   GURL bundle_url;
   base::UnguessableToken token;
 };
-
-bool BLINK_COMMON_EXPORT
-operator==(const DirectFromSellerSignalsSubresource& a,
-           const DirectFromSellerSignalsSubresource& b);
 
 // The set of directFromSellerSignals for a particular auction or component
 // auction.
@@ -65,8 +65,11 @@ struct BLINK_COMMON_EXPORT DirectFromSellerSignals {
   GURL prefix;
   base::flat_map<url::Origin, DirectFromSellerSignalsSubresource>
       per_buyer_signals;
-  absl::optional<DirectFromSellerSignalsSubresource> seller_signals;
-  absl::optional<DirectFromSellerSignalsSubresource> auction_signals;
+  std::optional<DirectFromSellerSignalsSubresource> seller_signals;
+  std::optional<DirectFromSellerSignalsSubresource> auction_signals;
+
+  friend BLINK_COMMON_EXPORT bool operator==(const DirectFromSellerSignals&,
+                                             const DirectFromSellerSignals&);
 };
 
 // AuctionConfig class used by FLEDGE auctions. Typemapped to
@@ -103,6 +106,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
       return result;
     }
 
+    friend BLINK_COMMON_EXPORT bool operator==(const MaybePromise<Value>&,
+                                               const MaybePromise<Value>&) =
+        default;
+
     Tag tag() const { return tag_; }
     const Value& value() const { return value_; }
     Value& mutable_value_for_testing() { return value_; }
@@ -113,16 +120,16 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   };
 
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseJson
-  using MaybePromiseJson = MaybePromise<absl::optional<std::string>>;
+  using MaybePromiseJson = MaybePromise<std::optional<std::string>>;
 
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignals.
   using MaybePromisePerBuyerSignals =
-      MaybePromise<absl::optional<base::flat_map<url::Origin, std::string>>>;
+      MaybePromise<std::optional<base::flat_map<url::Origin, std::string>>>;
 
   // Typemapped to
   // blink::mojom::AuctionAdConfigMaybePromiseDirectFromSellerSignals
   using MaybePromiseDirectFromSellerSignals =
-      MaybePromise<absl::optional<DirectFromSellerSignals>>;
+      MaybePromise<std::optional<DirectFromSellerSignals>>;
 
   // Representation of bidder timeouts, including optional global and per-origin
   // timeouts.
@@ -131,11 +138,14 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   struct BuyerTimeouts {
     // The value restricts generateBid() script's runtime of all buyers with
     // unspecified timeouts, if present.
-    absl::optional<base::TimeDelta> all_buyers_timeout;
+    std::optional<base::TimeDelta> all_buyers_timeout;
 
     // Values restrict the runtime of particular buyer's generateBid() scripts.
-    absl::optional<base::flat_map<url::Origin, base::TimeDelta>>
+    std::optional<base::flat_map<url::Origin, base::TimeDelta>>
         per_buyer_timeouts;
+
+    friend BLINK_COMMON_EXPORT bool operator==(const BuyerTimeouts&,
+                                               const BuyerTimeouts&);
   };
 
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeouts
@@ -146,11 +156,13 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Typemapped to blink::mojom::AuctionAdConfigBuyerCurrencies
   struct BuyerCurrencies {
     // Fallback value used for buyers not in `per_buyer_currencies`.
-    absl::optional<AdCurrency> all_buyers_currency;
+    std::optional<AdCurrency> all_buyers_currency;
 
     // Currency expectations for buyer per their origin.
-    absl::optional<base::flat_map<url::Origin, AdCurrency>>
-        per_buyer_currencies;
+    std::optional<base::flat_map<url::Origin, AdCurrency>> per_buyer_currencies;
+
+    friend BLINK_COMMON_EXPORT bool operator==(const BuyerCurrencies&,
+                                               const BuyerCurrencies&);
   };
 
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseBuyerCurrencies
@@ -166,6 +178,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
     ServerResponseConfig& operator=(const ServerResponseConfig&);
     ServerResponseConfig& operator=(ServerResponseConfig&&);
+
+    friend BLINK_COMMON_EXPORT bool operator==(const ServerResponseConfig&,
+                                               const ServerResponseConfig&);
 
     base::Uuid request_id;
     bool got_response = false;
@@ -197,12 +212,20 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
       // reported values is subject to a privacy budget, so this controls how
       // much budget is spent on each report).
       double scale;
+
+      friend BLINK_COMMON_EXPORT bool operator==(
+          const AuctionReportBuyersConfig&,
+          const AuctionReportBuyersConfig&);
     };
 
     // Povides whether debug mode is enabled and, if it is, any debug key.
     struct BLINK_COMMON_EXPORT AuctionReportBuyerDebugModeConfig {
       bool is_enabled = false;
-      absl::optional<uint64_t> debug_key;
+      std::optional<uint64_t> debug_key;
+
+      friend BLINK_COMMON_EXPORT bool operator==(
+          const AuctionReportBuyerDebugModeConfig&,
+          const AuctionReportBuyerDebugModeConfig&);
     };
 
     NonSharedParams();
@@ -213,8 +236,11 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     NonSharedParams& operator=(const NonSharedParams&);
     NonSharedParams& operator=(NonSharedParams&&);
 
+    friend BLINK_COMMON_EXPORT bool operator==(const NonSharedParams&,
+                                               const NonSharedParams&);
+
     // Owners of interest groups allowed to participate in the auction.
-    absl::optional<std::vector<url::Origin>> interest_group_buyers;
+    std::optional<std::vector<url::Origin>> interest_group_buyers;
 
     // Opaque JSON data, passed as object to all worklets. This can be a promise
     // when renderer is talking to browser, but will be resolved before passing
@@ -227,7 +253,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     MaybePromiseJson seller_signals;
 
     // The value restricts the runtime of the seller's scoreAd() script.
-    absl::optional<base::TimeDelta> seller_timeout;
+    std::optional<base::TimeDelta> seller_timeout;
 
     // Value is opaque JSON data, passed as object to particular buyers.
     MaybePromisePerBuyerSignals per_buyer_signals;
@@ -242,7 +268,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
     // Expectation of currency seller worklet in this auction will provide when
     // modified bids or converting them for reporting.
-    absl::optional<AdCurrency> seller_currency;
+    std::optional<AdCurrency> seller_currency;
 
     // Expectation of currency for bids made by various participating buyers.
     MaybePromiseBuyerCurrencies buyer_currencies;
@@ -260,14 +286,14 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // Per-buyer sparse vector that, along with a similar per-interest group
     // sparse vector, has its dot product taken to calculate interest group
     // priorities.
-    absl::optional<
+    std::optional<
         base::flat_map<url::Origin, base::flat_map<std::string, double>>>
         per_buyer_priority_signals;
 
     // Merged with `per_buyer_priority_signals` before calculating
     // per-interest group priorities. In the case both have entries with the
     // same key, the entry in `per_buyer_priority_signals` takes precedence.
-    absl::optional<base::flat_map<std::string, double>>
+    std::optional<base::flat_map<std::string, double>>
         all_buyers_priority_signals;
 
     // For each buyer in `interest_group_buyers`, specifies the base bucket ID
@@ -275,17 +301,17 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // `auction_report_buyers`; for each buyer, for each report type, the
     // base bucket ID is added to the `auction_report_buyers` bucket offset to
     // obtain the actual bucket numbers used for reporting.
-    absl::optional<std::vector<absl::uint128>> auction_report_buyer_keys;
+    std::optional<std::vector<absl::uint128>> auction_report_buyer_keys;
 
     // For each type of bidder extended private aggregation reporting event,
     // provides the bucket offset and scalar multiplier for that event.
-    absl::optional<base::flat_map<BuyerReportType, AuctionReportBuyersConfig>>
+    std::optional<base::flat_map<BuyerReportType, AuctionReportBuyersConfig>>
         auction_report_buyers;
 
     // Specifies the debug mode config for per-buyer extended Private
     // Aggregation reporting to the seller.
-    absl::optional<blink::AuctionConfig::NonSharedParams::
-                       AuctionReportBuyerDebugModeConfig>
+    std::optional<blink::AuctionConfig::NonSharedParams::
+                      AuctionReportBuyerDebugModeConfig>
         auction_report_buyer_debug_mode_config;
 
     // The set of seller capabilities that each interest group must declare in
@@ -297,11 +323,11 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // If specified by the caller, it is surfaced during the auction through
     // browser signals and stored after the auction in the winning fenced frame
     // config as its container size.
-    absl::optional<blink::AdSize> requested_size;
+    std::optional<blink::AdSize> requested_size;
 
     // All ad slot sizes on a page. Each AdSize must be unique. Interest
     // groups can request this be included in trusted seller signals fetches.
-    absl::optional<std::vector<blink::AdSize>> all_slots_requested_sizes;
+    std::optional<std::vector<blink::AdSize>> all_slots_requested_sizes;
 
     // A unique identifier associated with this and only this invocation of
     // runAdAuction. This must come from a prior call to createAuctionNonce.
@@ -310,7 +336,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // each of those additional bids was intended for this and only this
     // auction. In multi-seller auctions, this field is only meaningful for the
     // top-level auction config; it's ignored in component auction configs.
-    absl::optional<base::Uuid> auction_nonce;
+    std::optional<base::Uuid> auction_nonce;
 
     // Nested auctions whose results will also be fed to `seller`. Only the top
     // level auction config can have component auctions.
@@ -325,6 +351,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   AuctionConfig& operator=(const AuctionConfig&);
   AuctionConfig& operator=(AuctionConfig&&);
 
+  friend BLINK_COMMON_EXPORT bool operator==(const AuctionConfig&,
+                                             const AuctionConfig&);
+
   // Returns how many of the params are promises. Includes component auctions.
   int NumPromises() const;
 
@@ -334,7 +363,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Helper to verify if DirectFromSellerSignals is valid in context of this
   // auction.
   bool IsDirectFromSellerSignalsValid(
-      const absl::optional<blink::DirectFromSellerSignals>&
+      const std::optional<blink::DirectFromSellerSignals>&
           direct_from_seller_signals) const;
 
   // Serializes the configuration in a manner suitable for sending to devtools.
@@ -343,11 +372,11 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Seller running the auction.
   url::Origin seller;
 
-  absl::optional<ServerResponseConfig> server_response;
+  std::optional<ServerResponseConfig> server_response;
 
   // Both URLS, if present, must be same-origin to `seller`.
-  absl::optional<GURL> decision_logic_url;
-  absl::optional<GURL> trusted_scoring_signals_url;
+  std::optional<GURL> decision_logic_url;
+  std::optional<GURL> trusted_scoring_signals_url;
 
   // The maximum length limit for the trusted scoring signal fetch URL. Can
   // only be set as either 0 or a positive number. A value of 0 indicates that
@@ -374,8 +403,8 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
   // Identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).
-  absl::optional<uint16_t> seller_experiment_group_id;
-  absl::optional<uint16_t> all_buyer_experiment_group_id;
+  std::optional<uint16_t> seller_experiment_group_id;
+  std::optional<uint16_t> all_buyer_experiment_group_id;
   base::flat_map<url::Origin, uint16_t> per_buyer_experiment_group_ids;
 
   // This specifies whether additional_bids are expected --- if true, a
@@ -385,7 +414,26 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   bool expects_additional_bids = false;
 
   // Origin for the Coordinator to be used for Private Aggregation.
-  absl::optional<url::Origin> aggregation_coordinator_origin;
+  std::optional<url::Origin> aggregation_coordinator_origin;
+
+  static_assert(__LINE__ == 419, R"(
+If modifying AuctionConfig fields, please make sure to also modify:
+
+* third_party/blink/public/mojom/interest_group/interest_group_types.mojom
+* Mojo serialization in:
+    third_party/blink/public/common/interest_group/auction_config_mojom_traits.h
+    third_party/blink/common/interest_group/auction_config_mojom_traits.cc
+* NumPromises() if it's a Promise.
+* SerializeForDevtools()
+* Add some non-trivial values for the type into CreateFullAuctionConfig() in
+    third_party/blink/common/interest_group/auction_config_test_util.cc
+* Update devtools serialization expectations in
+    third_party/blink/common/interest_group/auction_config_unittest.cc
+* If the value has special validation logic, add a test to
+    third_party/blink/common/interest_group/auction_config_mojom_traits_test.cc
+  (If it's just passing along some values, adding to CreateFullAuctionConfig()
+   will provide some coverage automatically).
+)");
 };
 
 }  // namespace blink

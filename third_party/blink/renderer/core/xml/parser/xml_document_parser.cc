@@ -912,7 +912,7 @@ static inline void HandleNamespaceAttributes(
       namespace_q_name =
           WTF::g_xmlns_with_colon + ToAtomicString(namespaces[i].prefix);
 
-    absl::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
+    std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
         xmlns_names::kNamespaceURI, namespace_q_name, exception_state);
     if (!parsed_name) {
       return;
@@ -972,7 +972,7 @@ static inline void HandleElementAttributes(
             ? ToAtomicString(attributes[i].localname)
             : attr_prefix + ":" + ToString(attributes[i].localname);
 
-    absl::optional<QualifiedName> parsed_name =
+    std::optional<QualifiedName> parsed_name =
         Element::ParseAttributeName(attr_uri, attr_q_name, exception_state);
     if (!parsed_name) {
       return;
@@ -1047,8 +1047,8 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   // HTMLConstructionSite::CreateElement.
   // https://html.spec.whatwg.org/multipage/parsing.html#create-an-element-for-the-token
   // https://html.spec.whatwg.org/multipage/xhtml.html#parsing-xhtml-documents
-  absl::optional<CEReactionsScope> reactions;
-  absl::optional<ThrowOnDynamicMarkupInsertionCountIncrementer>
+  std::optional<CEReactionsScope> reactions;
+  std::optional<ThrowOnDynamicMarkupInsertionCountIncrementer>
       throw_on_dynamic_markup_insertions;
   if (RuntimeEnabledFeatures::RunMicrotaskBeforeXmlCustomElementEnabled() &&
       !parsing_fragment_) {

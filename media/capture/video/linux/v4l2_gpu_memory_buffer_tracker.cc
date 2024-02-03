@@ -3,22 +3,23 @@
 // found in the LICENSE file.
 
 #include "media/capture/video/linux/v4l2_gpu_memory_buffer_tracker.h"
+
+#include <optional>
+
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 namespace {
 // Converts the video pixel format |pixel_format| to gfx::BufferFormat.
-absl::optional<gfx::BufferFormat> ToBufferFormat(
-    VideoPixelFormat pixel_format) {
+std::optional<gfx::BufferFormat> ToBufferFormat(VideoPixelFormat pixel_format) {
   switch (pixel_format) {
     case PIXEL_FORMAT_NV12:
       return gfx::BufferFormat::YUV_420_BIPLANAR;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -43,7 +44,7 @@ V4L2GpuMemoryBufferTracker::~V4L2GpuMemoryBufferTracker() {
 bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
                                       VideoPixelFormat format,
                                       const mojom::PlaneStridesPtr& strides) {
-  absl::optional<gfx::BufferFormat> gfx_format = ToBufferFormat(format);
+  std::optional<gfx::BufferFormat> gfx_format = ToBufferFormat(format);
   if (!gfx_format) {
     DLOG(ERROR) << "Unsupported VideoPixelFormat "
                 << VideoPixelFormatToString(format);
@@ -77,7 +78,7 @@ bool V4L2GpuMemoryBufferTracker::IsReusableForFormat(
     return false;
   }
 
-  absl::optional<gfx::BufferFormat> gfx_format = ToBufferFormat(format);
+  std::optional<gfx::BufferFormat> gfx_format = ToBufferFormat(format);
   if (!gfx_format) {
     return false;
   }

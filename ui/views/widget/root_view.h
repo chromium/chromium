@@ -267,8 +267,7 @@ class VIEWS_EXPORT RootView : public View,
 
   // Hidden view used to make announcements to the screen reader via an alert or
   // live region update.
-  raw_ptr<AnnounceTextView, AcrossTasksDanglingUntriaged> announce_view_ =
-      nullptr;
+  raw_ptr<AnnounceTextView> announce_view_ = nullptr;
 };
 
 }  // namespace internal

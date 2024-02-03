@@ -22,12 +22,6 @@
                 "description": "Whether to request permission to the whole ChromeOS desktop. If granted, this gives the extension access to every aspect of the desktop, and every site and app. If this permission is requested, all other permissions are implicitly included and do not need to be requested separately.",
                 "optional": true,
                 "type": "boolean"
-              },
-              "matches": {
-                "description": "A list of URL patterns for which this extension may request an automation tree. If not specified, automation permission will be granted for the sites for which the extension has a <a href='https://developer.chrome.com/extensions/declare_permissions#host-permissions'>host permission</a> or <a href='https://developer.chrome.com/extensions/declare_permissions#activeTab'>activeTab permission</a>).",
-                "optional": true,
-                "type": "array",
-                "items": { "type": "string" }
               }
             }
           }

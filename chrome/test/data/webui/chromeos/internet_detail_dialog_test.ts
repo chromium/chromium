@@ -16,8 +16,8 @@ import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/netw
 import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
 import {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/network_siminfo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';

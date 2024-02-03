@@ -15,7 +15,6 @@
 #include "base/token.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,8 +33,10 @@ BASE_FEATURE(kClientAutomatedTest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
+    bool is_generation_guid_required,
     bool attach_encryption_settings,
-    int config_file_version) {
+    int config_file_version)
+    : is_generation_guid_required_(is_generation_guid_required) {
   result_.emplace();
   if (attach_encryption_settings) {
     result_->Set(GetAttachEncryptionSettingsPath(), true);
@@ -75,7 +76,8 @@ UploadEncryptedReportingRequestBuilder::AddRecord(
   }
 
   auto record_result =
-      EncryptedRecordDictionaryBuilder(std::move(record), scoped_reservation)
+      EncryptedRecordDictionaryBuilder(std::move(record), scoped_reservation,
+                                       is_generation_guid_required_)
           .Build();
   if (!record_result.has_value()) {
     // Record has errors. Stop here.
@@ -139,7 +141,8 @@ std::string_view UploadEncryptedReportingRequestBuilder::GetSourcePath() {
 
 EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
     EncryptedRecord record,
-    ScopedReservation& scoped_reservation) {
+    ScopedReservation& scoped_reservation,
+    bool is_generation_guid_required) {
   base::Value::Dict record_dictionary;
 
   // A record without sequence information cannot be uploaded - deny it.
@@ -147,7 +150,8 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
     return;
   }
   auto sequence_information_result =
-      SequenceInformationDictionaryBuilder(record.sequence_information())
+      SequenceInformationDictionaryBuilder(record.sequence_information(),
+                                           is_generation_guid_required)
           .Build();
   if (!sequence_information_result.has_value()) {
     // Sequencing information was improperly configured. Record cannot be
@@ -187,8 +191,8 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
 
   // Gap records won't fill in this field, so it can be missing.
   if (record.has_encrypted_wrapped_record()) {
-    std::string base64_encode;
-    base::Base64Encode(record.encrypted_wrapped_record(), &base64_encode);
+    std::string base64_encode =
+        base::Base64Encode(record.encrypted_wrapped_record());
     ScopedReservation base64_encode_reservation(base64_encode.size(),
                                                 scoped_reservation);
     if (!base64_encode_reservation.reserved()) {
@@ -236,10 +240,11 @@ EncryptedRecordDictionaryBuilder::GetCompressionInformationPath() {
 }
 
 SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
-    const SequenceInformation& sequence_information) {
+    const SequenceInformation& sequence_information,
+    bool is_generation_guid_required) {
   bool generation_guid_is_invalid = false;
 #if BUILDFLAG(IS_CHROMEOS)
-  if (GenerationGuidIsRequired()) {
+  if (is_generation_guid_required) {
     generation_guid_is_invalid = !sequence_information.has_generation_guid() ||
                                  sequence_information.generation_guid().empty();
   }
@@ -291,18 +296,6 @@ std::string_view SequenceInformationDictionaryBuilder::GetPriorityPath() {
 std::string_view SequenceInformationDictionaryBuilder::GetGenerationGuidPath() {
   return json_keys::kGenerationGuid;
 }
-
-// static
-bool SequenceInformationDictionaryBuilder::GenerationGuidIsRequired() {
-  // Returns true if this is an unmanaged ChromeOS device.
-  // Generation guid is only required for unmanaged ChromeOS devices. Enterprise
-  // managed ChromeOS devices or device with managed browser are not required to
-  // use the version of `Storage` that produces generation guids.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return !policy::ManagementServiceFactory::GetForPlatform()
-              ->HasManagementAuthority(
-                  policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 EncryptionInfoDictionaryBuilder::EncryptionInfoDictionaryBuilder(
@@ -315,8 +308,7 @@ EncryptionInfoDictionaryBuilder::EncryptionInfoDictionaryBuilder(
     return;
   }
 
-  std::string base64_key;
-  base::Base64Encode(encryption_info.encryption_key(), &base64_key);
+  std::string base64_key = base::Base64Encode(encryption_info.encryption_key());
   encryption_info_dictionary.Set(GetEncryptionKeyPath(), base64_key);
   encryption_info_dictionary.Set(
       GetPublicKeyIdPath(),

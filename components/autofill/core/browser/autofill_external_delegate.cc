@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -43,7 +44,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -85,7 +85,8 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
     case AutofillSuggestionTriggerSource::kPasswordManager:
     case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
+    case AutofillSuggestionTriggerSource::
+        kShowPromptAfterDialogClosedNonManualFallback:
       // On Android, no popup exists. Instead, the keyboard accessory is used.
 #if BUILDFLAG(IS_ANDROID)
       return AutofillTriggerSource::kKeyboardAccessory;
@@ -101,56 +102,6 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
       return AutofillTriggerSource::kManualFallback;
   }
   NOTREACHED_NORETURN();
-}
-
-// Returns the `PopupType` that would be shown if `field` inside `form` is
-// clicked.
-PopupType GetPopupTypeForQuery(BrowserAutofillManager& manager,
-                               const FormData& form,
-                               const FormFieldData& field,
-                               AutofillSuggestionTriggerSource trigger_source) {
-  if (IsAddressAutofillManuallyTriggered(trigger_source)) {
-    return PopupType::kAddresses;
-  }
-  if (IsPaymentsAutofillManuallyTriggered(trigger_source)) {
-    return PopupType::kCreditCards;
-  }
-  // Users can trigger autofill by left clicking on the form field or through
-  // the Chrome context menu by right clicking the form field. The type of the
-  // popup is determined by the field type in the first case and by the user's
-  // action in the second case. That's why we must make sure that the Autofill
-  // was not triggered manually before starting looking at the field type.
-  CHECK(!IsAutofillManuallyTriggered(trigger_source));
-  const AutofillField* const autofill_field =
-      manager.GetAutofillField(form, field);
-  if (!autofill_field) {
-    return PopupType::kUnspecified;
-  }
-
-  switch (autofill_field->Type().group()) {
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kUnfillable:
-      return PopupType::kUnspecified;
-
-    case FieldTypeGroup::kCreditCard:
-      return PopupType::kCreditCards;
-
-    case FieldTypeGroup::kIban:
-      return PopupType::kIbans;
-
-    case FieldTypeGroup::kAddress:
-      return PopupType::kAddresses;
-
-    case FieldTypeGroup::kName:
-    case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kBirthdateField:
-      return PopupType::kAddresses;
-  }
 }
 }  // namespace
 
@@ -225,8 +176,6 @@ void AutofillExternalDelegate::OnQuery(
   query_field_ = field;
   element_bounds_ = element_bounds;
   trigger_source_ = trigger_source;
-  popup_type_ = GetPopupTypeForQuery(*manager_, query_form_, query_field_,
-                                     trigger_source);
 }
 
 const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
@@ -243,8 +192,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   bool has_autofill_suggestions = base::ranges::any_of(
       input_suggestions, IsAutofillAndFirstLayerSuggestionId,
       &Suggestion::popup_item_id);
-  if (trigger_source_ ==
-          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed &&
+  if (trigger_source_ == AutofillSuggestionTriggerSource::
+                             kShowPromptAfterDialogClosedNonManualFallback &&
       !has_autofill_suggestions) {
     // User changed or deleted the only Autofill profile shown in the popup,
     // avoid showing any other suggestions in this case.
@@ -336,7 +285,7 @@ void AutofillExternalDelegate::SetCurrentDataListValues(
 
 void AutofillExternalDelegate::OnPopupShown() {
   // Popups are expected to be Autofill or Autocomplete.
-  DCHECK_NE(GetPopupType(), PopupType::kPasswords);
+  DCHECK_NE(GetMainFillingProduct(), FillingProduct::kPassword);
 
   const bool has_autofill_suggestions = base::ranges::any_of(
       shown_suggestion_types_, IsAutofillAndFirstLayerSuggestionId);
@@ -663,19 +612,25 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                                 query_form_, query_field_);
       break;
     case PopupItemId::kFillExistingPlusAddress:
-      plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
-          plus_addresses::PlusAddressMetrics::
-              PlusAddressAutofillSuggestionEvent::kExistingPlusAddressChosen);
+      if (AutofillPlusAddressDelegate* plus_address_delegate =
+              manager_->client().GetPlusAddressDelegate()) {
+        plus_address_delegate->RecordAutofillSuggestionEvent(
+            AutofillPlusAddressDelegate::SuggestionEvent::
+                kExistingPlusAddressChosen);
+      }
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           PopupItemId::kFillExistingPlusAddress);
       break;
     case PopupItemId::kCreateNewPlusAddress: {
-      plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
-          plus_addresses::PlusAddressMetrics::
-              PlusAddressAutofillSuggestionEvent::kCreateNewPlusAddressChosen);
-      plus_addresses::PlusAddressCallback callback = base::BindOnce(
+      if (AutofillPlusAddressDelegate* plus_address_delegate =
+              manager_->client().GetPlusAddressDelegate()) {
+        plus_address_delegate->RecordAutofillSuggestionEvent(
+            AutofillPlusAddressDelegate::SuggestionEvent::
+                kCreateNewPlusAddressChosen);
+      }
+      PlusAddressCallback callback = base::BindOnce(
           [](base::WeakPtr<AutofillExternalDelegate> delegate,
              const FormData& form, const FormFieldData& field,
              const std::string& plus_address) {
@@ -858,10 +813,6 @@ void AutofillExternalDelegate::ClearPreviewedForm() {
   manager_->driver().RendererShouldClearPreviewedForm();
 }
 
-PopupType AutofillExternalDelegate::GetPopupType() const {
-  return popup_type_;
-}
-
 FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
   for (PopupItemId popup_item_id : shown_suggestion_types_) {
     if (FillingProduct product =
@@ -927,9 +878,8 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
   }
   autofill_metrics::LogEditAddressProfileDialogClosed(
       /*user_saved_changes=*/false);
-  manager_->driver().RendererShouldTriggerSuggestions(
-      query_field_.global_id(),
-      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
+                                                      GetReopenTriggerSource());
 }
 
 void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
@@ -944,16 +894,14 @@ void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
     pdm->RemoveByGUID(guid);
     return;
   }
-  manager_->driver().RendererShouldTriggerSuggestions(
-      query_field_.global_id(),
-      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
+                                                      GetReopenTriggerSource());
 }
 
 void AutofillExternalDelegate::OnPersonalDataFinishedProfileTasks() {
   pdm_observation_.Reset();
-  manager_->driver().RendererShouldTriggerSuggestions(
-      query_field_.global_id(),
-      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
+                                                      GetReopenTriggerSource());
 }
 
 void AutofillExternalDelegate::OnCreditCardScanned(
@@ -1231,21 +1179,16 @@ bool AutofillExternalDelegate::IsPaymentsManualFallbackOnNonPaymentsField()
   return false;
 }
 
-std::u16string AutofillExternalDelegate::GetSettingsSuggestionValue() const {
-  switch (GetPopupType()) {
-    case PopupType::kAddresses:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES);
-
-    case PopupType::kCreditCards:
-    case PopupType::kIbans:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
-
-    case PopupType::kAutocomplete:
-    case PopupType::kPasswords:
-    case PopupType::kUnspecified:
-      NOTREACHED();
-      return std::u16string();
-  }
+AutofillSuggestionTriggerSource
+AutofillExternalDelegate::GetReopenTriggerSource() const {
+  // Manual fallbacks show suggestions of a specific type. If the Autofill
+  // wasn't triggered manually, return
+  // `kShowPromptAfterDialogClosedNonManualFallback` to avoid showing other
+  // suggestion types.
+  return IsAutofillManuallyTriggered(trigger_source_)
+             ? trigger_source_
+             : AutofillSuggestionTriggerSource::
+                   kShowPromptAfterDialogClosedNonManualFallback;
 }
 
 }  // namespace autofill

@@ -7,12 +7,12 @@
  * 'settings-display' is the settings subpage for display settings.
  */
 
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_tabs/cr_tabs.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './display_layout.js';
 import './display_overscan_dialog.js';
@@ -20,13 +20,13 @@ import './display_night_light.js';
 import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrSliderElement, SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrSliderElement, SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -1284,7 +1284,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       }
     });
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        DisplaySettingsType.kMirrorMode, /*value=*/ {});
+        DisplaySettingsType.kMirrorMode, /*value=*/ {
+          mirrorModeStatus: mirrorModeInfo.mode === MirrorMode.NORMAL,
+        });
   }
 
   private onUnifiedDesktopClick_(): void {
@@ -1295,7 +1297,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         .setDisplayProperties(this.primaryDisplayId, properties)
         .then(() => this.setPropertiesCallback_());
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        DisplaySettingsType.kUnifiedMode, /*value=*/ {});
+        DisplaySettingsType.kUnifiedMode,
+        /*value=*/ {unifiedModeStatus: properties.isUnified});
   }
 
   private onOverscanClick_(e: Event): void {

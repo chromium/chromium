@@ -105,10 +105,8 @@ extern NSString* const kAutofillUseCount;
 extern NSString* const kSpecialTabsUseCount;
 
 // Param names used for the default browser video promo.
-extern const char kVideoConditionsFullscreenPromo[];
-extern const char kVideoConditionsHalfscreenPromo[];
-extern const char kGenericConditionsFullscreenPromo[];
-extern const char kGenericConditionsHalfscreenPromo[];
+extern const char kVideoFullscreenPromo[];
+extern const char kVideoHalfscreenPromo[];
 extern const char kDefaultBrowserVideoPromoVariant[];
 
 // Helper function to set `data` for `key` into the storage object.
@@ -141,19 +139,11 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
 // Returns true if the default browser video promo is enabled.
 bool IsDefaultBrowserVideoPromoEnabled();
 
-// Returns true if the default browser video promo half screen enabled.
-bool IsDBVideoPromoHalfscreenEnabled();
-
-// Returns true if the default browser video promo full screen enabled.
+// Returns true if the default browser video promo full screen is enabled.
 bool IsDBVideoPromoFullscreenEnabled();
 
-// Returns true if the default browser video promo full screen with generic
-// triggering conditions enabled.
-bool IsDBVideoPromoWithGenericFullscreenEnabled();
-
-// Returns true if the default browser video promo half screen with generic
-// triggering conditions enabled.
-bool IsDBVideoPromoWithGenericHalfscreenEnabled();
+// Returns true if the default browser video promo half screen is enabled.
+bool IsDBVideoPromoHalfscreenEnabled();
 
 // Returns true if the non-modal default browser promo cooldown refactor is
 // enabled.
@@ -242,6 +232,11 @@ bool HasRecentValidURLPastesAndRecordsCurrentPaste();
 // user session (default 6 hours). If not, it records the timestamp.
 bool HasRecentTimestampForKey(NSString* eventKey);
 
+// Returns true if the last URL open is within the specified number of `days`
+// which would indicate Chrome is likely still the default browser. Returns
+// false otherwise.
+bool IsChromeLikelyDefaultBrowserXDays(int days);
+
 // Returns true if the last URL open is within the time threshold that would
 // indicate Chrome is likely still the default browser. Returns false otherwise.
 bool IsChromeLikelyDefaultBrowser();
@@ -249,6 +244,24 @@ bool IsChromeLikelyDefaultBrowser();
 // Do not use. Only for backward compatibility
 // Returns true if the last URL open is within 7 days. Returns false otherwise.
 bool IsChromeLikelyDefaultBrowser7Days();
+
+// Returns true if Chrome was likely the default browser in the last
+// `likelyDefaultInterval` days but not in the last `likelyNotDefaultInterval`
+// days.
+bool IsChromePotentiallyNoLongerDefaultBrowser(int likelyDefaultInterval,
+                                               int likelyNotDefaultInterval);
+
+// Returns true if Chrome was likely the default browser in the last 21 days but
+// not in the last 7 days.
+bool IsChromePotentiallyNoLongerDefaultBrowser21To7();
+
+// Returns true if Chrome was likely the default browser in the last 28 days but
+// not in the last 14 days.
+bool IsChromePotentiallyNoLongerDefaultBrowser28To14();
+
+// Returns true if Chrome was likely the default browser in the last 35 days but
+// not in the last 14 days.
+bool IsChromePotentiallyNoLongerDefaultBrowser35To14();
 
 // Returns true if the past behavior of the user indicates that the user fits
 // the categorization that would likely benefit from having Chrome set as their
@@ -275,15 +288,10 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 // Returns the impression limit for the non-modal default browser promo.
 int GetNonModalDefaultBrowserPromoImpressionLimit();
 
-// Returns YES if the app has launched on cold start under
-// `kTimestampAppLaunchOnColdStart`.
-bool HasAppLaunchedOnColdStartAndRecordsLaunch();
-
 // Return true if the default browser promo should be registered with the promo
 // manager to display a default browser promo.
 bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
-                                         bool is_omnibox_copy_paste,
-                                         feature_engagement::Tracker* tracker);
+                                         bool is_omnibox_copy_paste);
 
 // Returns true if it was determined that the user is eligible for a
 // tailored promo.
@@ -296,10 +304,6 @@ bool IsGeneralPromoEligibleUser(bool is_signed_in);
 // Returns true if it was determined that the user is eligible for the
 // post restore default browser promo.
 bool IsPostRestoreDefaultBrowserEligibleUser();
-
-// Return true if it was determined that the user is eligible for the
-// video promo.
-bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker);
 
 // Removes unused data from NSUserDefaults. This method should be periodically
 // pruned of cleanups that have been present for multiple milestones.

@@ -6,8 +6,9 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenPaths, SeaPenRouterElement, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
-import {SeaPenQuery, SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
-import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -76,18 +77,39 @@ suite('SeaPenTemplateQueryElementTest', function() {
   });
 
   test('displays search again button on results page', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.images;
     seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
       path: SeaPenPaths.RESULTS,
       templateId: SeaPenTemplateId.kFlower.toString(),
     });
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
-    const searchButton = seaPenTemplateQueryElement.shadowRoot!.querySelector(
-                             '#searchButton') as HTMLElement;
-
+    const searchButton =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+    const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
     assertEquals(
         seaPenTemplateQueryElement.i18n('seaPenRecreateButton'),
         searchButton!.innerText);
+    assertEquals('personalization-shared:refresh', icon!.getAttribute('icon'));
+  });
+
+  test('displays create button when no thumbnails are generated', async () => {
+    seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
+      path: SeaPenPaths.RESULTS,
+      templateId: SeaPenTemplateId.kFlower.toString(),
+    });
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const searchButton =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+    const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+    assertEquals(
+        seaPenTemplateQueryElement.i18n('seaPenCreateButton'),
+        searchButton!.innerText);
+    assertEquals('sea-pen:photo-spark', icon!.getAttribute('icon'));
   });
 
   test('selects chip', async () => {

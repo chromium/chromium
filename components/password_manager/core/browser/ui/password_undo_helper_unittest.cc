@@ -140,10 +140,6 @@ TEST_F(PasswordUndoHelperTest, UndoMultipleForms) {
 }
 
 TEST_F(PasswordUndoHelperTest, UndoFormsMultipleStores) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kEnablePasswordsAccountStorage);
-
   PasswordForm profile_form = CreatePasswordForm();
   PasswordForm account_form = CreatePasswordForm();
   account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;

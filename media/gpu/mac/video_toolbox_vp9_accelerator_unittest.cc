@@ -32,7 +32,7 @@ class VideoToolboxVP9AcceleratorTest : public testing::Test {
   std::unique_ptr<VideoToolboxVP9Accelerator> accelerator_{
       std::make_unique<VideoToolboxVP9Accelerator>(
           std::make_unique<NullMediaLog>(),
-          absl::nullopt,
+          std::nullopt,
           base::BindRepeating(&VideoToolboxVP9AcceleratorTest::OnDecode,
                               base::Unretained(this)),
           base::BindRepeating(&VideoToolboxVP9AcceleratorTest::OnOutput,

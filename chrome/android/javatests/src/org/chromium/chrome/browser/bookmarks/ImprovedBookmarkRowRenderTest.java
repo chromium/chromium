@@ -88,7 +88,7 @@ public class ImprovedBookmarkRowRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
+                    .setRevision(5)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
@@ -229,6 +229,23 @@ public class ImprovedBookmarkRowRenderTest {
                     mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
                 });
         mRenderTestRule.render(mContentView, "local_bookmark");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testLocalBookmarkItemWithChevron() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
+                            ImageVisibility.DRAWABLE);
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.END_IMAGE_RES,
+                            R.drawable.outline_chevron_right_24dp);
+                });
+        mRenderTestRule.render(mContentView, "local_bookmark_wtih_chevron");
     }
 
     @Test

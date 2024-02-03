@@ -9,16 +9,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/types/id_type.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "url/origin.h"
 
 namespace autofill {
-
-// The id of an ongoing profile import process.
-using AutofillProfileImportId =
-    ::base::IdTypeU64<class AutofillProfileImportIdMarker>;
 
 // Specifies the type of a profile form import.
 enum class AutofillProfileImportType {
@@ -143,8 +138,6 @@ class ProfileImportProcess {
     return silently_updated_profiles_;
   }
 
-  const AutofillProfileImportId& import_id() const { return import_id_; }
-
   const AutofillProfile& observed_profile() const { return observed_profile_; }
 
   AutofillProfileImportType import_type() const { return import_type_; }
@@ -254,9 +247,6 @@ class ProfileImportProcess {
   // Returns the number of edited fields.
   // If the user didn't edit any fields (or wasn't prompted), this is a no-op.
   int CollectedEditedTypeHistograms() const;
-
-  // An id to identify an import request.
-  AutofillProfileImportId import_id_;
 
   // Indicates if the user is already prompted.
   bool prompt_shown_{false};

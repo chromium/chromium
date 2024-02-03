@@ -40,6 +40,8 @@ namespace {
 
 constexpr base::TimeDelta kCountUpTimerRefreshInterval = base::Seconds(1);
 
+const std::u16string& kDefaultRecordingDuration = u"00:00";
+
 // Number of pixels to add to the top and bottom of the Game Dashboard button so
 // that it's centered within the frame header.
 constexpr int kGameDashboardButtonVerticalPaddingDp = 3;
@@ -103,6 +105,11 @@ GameDashboardContext::~GameDashboardContext() {
     main_menu_widget_->CloseNow();
   }
   CloseWelcomeDialog();
+}
+
+const std::u16string& GameDashboardContext::GetRecordingDuration() const {
+  return recording_duration_.empty() ? kDefaultRecordingDuration
+                                     : recording_duration_;
 }
 
 void GameDashboardContext::SetToolbarSnapLocation(

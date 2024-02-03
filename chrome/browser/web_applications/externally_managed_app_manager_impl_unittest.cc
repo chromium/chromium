@@ -231,8 +231,9 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
   }
 
   GURL GetNextInstallationLaunchURL(const GURL& url) {
-    if (!base::Contains(next_installation_launch_urls_, url))
-      return GURL::EmptyGURL();
+    if (!base::Contains(next_installation_launch_urls_, url)) {
+      return GURL();
+    }
 
     auto result = next_installation_launch_urls_.at(url);
     next_installation_launch_urls_.erase(url);

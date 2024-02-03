@@ -84,7 +84,7 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
       ScheduleTimeIncrement();
   }
 
-  void SetAutoIncrementTimeDelta(absl::optional<base::TimeDelta> delta) {
+  void SetAutoIncrementTimeDelta(std::optional<base::TimeDelta> delta) {
     auto_time_increment_delta_ = delta;
     ScheduleTimeIncrement();
   }
@@ -132,7 +132,7 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
   WeakPersistent<ExecutionContext> context_;
   mutable double current_time_ = 0;
   bool playing_ = false;
-  absl::optional<base::TimeDelta> auto_time_increment_delta_ =
+  std::optional<base::TimeDelta> auto_time_increment_delta_ =
       base::Milliseconds(33);
   bool scheduled_time_increment_ = false;
   double last_seek_time_ = -1;
@@ -388,7 +388,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
 
   // If media playback time is fixed, periodic timeupdate's should not continue
   // to fire.
-  WebMediaPlayer()->SetAutoIncrementTimeDelta(absl::nullopt);
+  WebMediaPlayer()->SetAutoIncrementTimeDelta(std::nullopt);
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
   FastForwardBy(base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
@@ -619,12 +619,12 @@ class CueEventListener final : public NativeEventListener {
     // The difference between when the cue was scheduled to begin and when the
     // |kEnter| event was fired. The optional will be empty if the |kEnter|
     // event was never fired.
-    absl::optional<base::TimeDelta> enter_time_delta;
+    std::optional<base::TimeDelta> enter_time_delta;
 
     // The difference between when the cue was scheduled to end and when the
     // |kExit| event fired. The optional will be empty if the |kExit| event
     // was never fired.
-    absl::optional<base::TimeDelta> exit_time_delta;
+    std::optional<base::TimeDelta> exit_time_delta;
   };
 
   void OnCueEnter(HTMLMediaElement* media_element, VTTCue* cue) {

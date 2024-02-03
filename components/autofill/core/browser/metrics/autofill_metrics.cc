@@ -109,7 +109,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_ADDRESS_WITH_NAME = 30,
   GROUP_ADDRESS_HOME_FLOOR = 31,
   GROUP_UNKNOWN_TYPE = 32,
-  GROUP_BIRTHDATE = 33,
+  GROUP_BIRTHDATE = 33,  // Deprecated
   GROUP_IBAN = 34,
   GROUP_ADDRESS_HOME_LANDMARK = 35,
   GROUP_ADDRESS_HOME_BETWEEN_STREETS = 36,
@@ -328,9 +328,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case NAME_LAST_CONJUNCTION:
         case NAME_LAST_SECOND:
         case NAME_HONORIFIC_PREFIX:
-        case BIRTHDATE_DAY:
-        case BIRTHDATE_MONTH:
-        case BIRTHDATE_4_DIGIT_YEAR:
         case IBAN_VALUE:
         case MAX_VALID_FIELD_TYPE:
         case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
@@ -348,10 +345,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
 
     case FieldTypeGroup::kPhone:
       group = GROUP_PHONE;
-      break;
-
-    case FieldTypeGroup::kBirthdateField:
-      group = GROUP_BIRTHDATE;
       break;
 
     case FieldTypeGroup::kCreditCard:
@@ -1663,12 +1656,6 @@ void AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
 }
 
 // static
-void AutofillMetrics::LogNumberOfAddressesDeletedForDisuse(
-    size_t num_profiles) {
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.AddressesDeletedForDisuse", num_profiles);
-}
-
-// static
 void AutofillMetrics::LogAddressSuggestionsCount(size_t num_suggestions) {
   UMA_HISTOGRAM_COUNTS_1M("Autofill.AddressSuggestionsCount", num_suggestions);
 }
@@ -1713,13 +1700,6 @@ void AutofillMetrics::LogSectioningMetrics(
 // static
 void AutofillMetrics::LogServerResponseHasDataForForm(bool has_data) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.ServerResponseHasDataForForm", has_data);
-}
-
-// static
-void AutofillMetrics::LogProfileActionOnFormSubmitted(
-    AutofillProfileAction action) {
-  UMA_HISTOGRAM_ENUMERATION("Autofill.ProfileActionOnFormSubmitted", action,
-                            AUTOFILL_PROFILE_ACTION_ENUM_SIZE);
 }
 
 // static
@@ -2032,24 +2012,6 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
 // static
 void AutofillMetrics::LogParseFormTiming(const base::TimeDelta& duration) {
   UMA_HISTOGRAM_TIMES("Autofill.Timing.ParseForm", duration);
-}
-
-// static
-void AutofillMetrics::LogNumberOfProfilesConsideredForDedupe(
-    size_t num_considered) {
-  // A maximum of 50 is enforced to reduce the number of generated buckets.
-  UMA_HISTOGRAM_COUNTS_1000(
-      "Autofill.NumberOfProfilesConsideredForDedupe",
-      std::min(static_cast<int>(num_considered), kMaxBucketsCount));
-}
-
-// static
-void AutofillMetrics::LogNumberOfProfilesRemovedDuringDedupe(
-    size_t num_removed) {
-  // A maximum of 50 is enforced to reduce the number of generated buckets.
-  UMA_HISTOGRAM_COUNTS_1000(
-      "Autofill.NumberOfProfilesRemovedDuringDedupe",
-      std::min(static_cast<int>(num_removed), kMaxBucketsCount));
 }
 
 // static

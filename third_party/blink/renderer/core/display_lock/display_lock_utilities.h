@@ -156,20 +156,20 @@ class CORE_EXPORT DisplayLockUtilities {
         DisplayLockUtilities::memoizer_ = this;
     }
 
-    absl::optional<bool> IsNodeLocked(const Node* node) {
+    std::optional<bool> IsNodeLocked(const Node* node) {
       if (nodes_preventing_paint.Contains(node))
         return true;
       if (unlocked_nodes.Contains(node))
         return false;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
-    absl::optional<bool> IsNodeLockedForAccessibility(const Node* node) {
+    std::optional<bool> IsNodeLockedForAccessibility(const Node* node) {
       if (nodes_preventing_accessibility.Contains(node))
         return true;
       if (unlocked_nodes.Contains(node))
         return false;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     void NotifyLocked(const Node* node) {

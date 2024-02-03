@@ -28,17 +28,17 @@ WebPerformanceMetricsForNestedContexts::operator=(
   return *this;
 }
 
-absl::optional<base::TimeTicks>
+std::optional<base::TimeTicks>
 WebPerformanceMetricsForNestedContexts::UnloadStart() const {
   return private_->timingForReporting()->UnloadStart();
 }
 
-absl::optional<base::TimeTicks>
+std::optional<base::TimeTicks>
 WebPerformanceMetricsForNestedContexts::UnloadEnd() const {
   return private_->timingForReporting()->UnloadEnd();
 }
 
-absl::optional<base::TimeTicks>
+std::optional<base::TimeTicks>
 WebPerformanceMetricsForNestedContexts::CommitNavigationEnd() const {
   return private_->timingForReporting()->CommitNavigationEnd();
 }

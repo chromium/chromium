@@ -312,6 +312,17 @@ public class ReturnToChromeUtilUnitTest {
                         START_SURFACE_RETURN_TIME_SECONDS));
         Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(1, false));
 
+        // Verifies returning false if segmentation result is negative (not show).
+        result =
+                new ClassificationResult(
+                        PredictionStatus.SUCCEEDED, new String[] {"ChromeStartAndroidV2"});
+        ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
+        Assert.assertEquals(
+                -1,
+                ReturnToChromeUtil.getReturnTimeFromSegmentation(
+                        START_SURFACE_RETURN_TIME_SECONDS));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(1, false));
+
         // Tests regular cases with last backgrounded time set:
         result =
                 new ClassificationResult(

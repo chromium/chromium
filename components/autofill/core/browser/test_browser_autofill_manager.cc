@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_form_filler.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -26,7 +27,10 @@ namespace autofill {
 
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver,
                                                        AutofillClient* client)
-    : BrowserAutofillManager(driver, client, "en-US") {}
+    : BrowserAutofillManager(driver, client, "en-US") {
+  test_api(*this).set_form_filler(
+      std::make_unique<TestFormFiller>(*this, log_manager(), "en-US"));
+}
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
@@ -158,13 +162,6 @@ void TestBrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
 const gfx::Image& TestBrowserAutofillManager::GetCardImage(
     const CreditCard& credit_card) {
   return card_image_;
-}
-
-void TestBrowserAutofillManager::ScheduleRefill(
-    const FormData& form,
-    const FormStructure& form_structure,
-    const AutofillTriggerDetails& trigger_details) {
-  test_api(*this).TriggerRefill(form, trigger_details);
 }
 
 bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(

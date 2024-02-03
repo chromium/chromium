@@ -36,7 +36,7 @@ const mojom::blink::DevToolsSessionState* InspectorSessionState::ReattachState()
 
 void InspectorSessionState::EnqueueUpdate(const WTF::String& key,
                                           const WebVector<uint8_t>* value) {
-  absl::optional<WTF::Vector<uint8_t>> updated_value;
+  std::optional<WTF::Vector<uint8_t>> updated_value;
   if (value) {
     WTF::Vector<uint8_t> payload;
     payload.AppendRange(value->begin(), value->end());

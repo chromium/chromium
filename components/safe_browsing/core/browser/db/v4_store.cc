@@ -390,8 +390,7 @@ V4Store::V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
 V4Store::~V4Store() = default;
 
 std::string V4Store::DebugString() const {
-  std::string state_base64;
-  base::Base64Encode(state_, &state_base64);
+  std::string state_base64 = base::Base64Encode(state_);
 
   return base::StringPrintf("path: %" PRFilePath "; state: %s",
                             store_path_.value().c_str(), state_base64.c_str());
@@ -833,10 +832,10 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
     for (size_t i = 0; i < crypto::kSHA256Length; i++) {
       if (checksum[i] != expected_checksum[i]) {
 #if DCHECK_IS_ON()
-        std::string checksum_b64, expected_checksum_b64;
-        base::Base64Encode(base::StringPiece(checksum, std::size(checksum)),
-                           &checksum_b64);
-        base::Base64Encode(expected_checksum, &expected_checksum_b64);
+        std::string checksum_b64 =
+            base::Base64Encode(base::as_byte_span(checksum));
+        std::string expected_checksum_b64 =
+            base::Base64Encode(expected_checksum);
         DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
                  << "; expected: " << expected_checksum_b64
                  << "; store: " << *this;
@@ -1040,10 +1039,10 @@ bool V4Store::VerifyChecksum() {
       RecordApplyUpdateResult(kReadFromDisk, CHECKSUM_MISMATCH_FAILURE,
                               store_path_);
 #if DCHECK_IS_ON()
-      std::string checksum_b64, expected_checksum_b64;
-      base::Base64Encode(base::StringPiece(checksum, std::size(checksum)),
-                         &checksum_b64);
-      base::Base64Encode(expected_checksum_, &expected_checksum_b64);
+      std::string checksum_b64 =
+          base::Base64Encode(base::as_byte_span(checksum));
+      std::string expected_checksum_b64 =
+          base::Base64Encode(expected_checksum_);
       DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
                << "; expected: " << expected_checksum_b64
                << "; store: " << *this;

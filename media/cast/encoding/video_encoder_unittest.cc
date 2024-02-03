@@ -32,11 +32,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/threading/platform_thread.h"
-#include "media/cast/encoding/h264_vt_encoder.h"
-#endif
-
 namespace media {
 namespace cast {
 
@@ -105,18 +100,8 @@ class VideoEncoderTest
            !video_config_.use_hardware_encoder;
   }
 
-  bool is_testing_video_toolbox_encoder() const {
-    return
-#if BUILDFLAG(IS_MAC)
-        (video_config_.use_hardware_encoder &&
-         H264VideoToolboxEncoder::IsSupported(video_config_)) ||
-#endif
-        false;
-  }
-
   bool is_testing_external_video_encoder() const {
-    return video_config_.use_hardware_encoder &&
-           !is_testing_video_toolbox_encoder();
+    return video_config_.use_hardware_encoder;
   }
 
   VideoEncoder* video_encoder() const { return video_encoder_.get(); }
@@ -129,16 +114,6 @@ class VideoEncoderTest
     DCHECK_GT(video_config_.max_frame_rate, 0);
     const base::TimeDelta frame_duration =
         base::Microseconds(1000000.0 / video_config_.max_frame_rate);
-#if BUILDFLAG(IS_MAC)
-    if (is_testing_video_toolbox_encoder()) {
-      // The H264VideoToolboxEncoder (on MAC_OSX and IOS) is not a faked
-      // implementation in these tests, and performs its encoding asynchronously
-      // on an unknown set of threads.  Therefore, sleep the current thread for
-      // the real amount of time to avoid excessively spinning the CPU while
-      // waiting for something to happen.
-      base::PlatformThread::Sleep(frame_duration);
-    }
-#endif
     task_runner_->RunTasks();
     testing_clock_.Advance(frame_duration);
   }
@@ -357,18 +332,10 @@ std::vector<std::pair<Codec, bool>> DetermineEncodersToTest() {
   // Software VP8 encoder.
   values.emplace_back(Codec::kVideoVp8, false);
 
-  // Hardware-accelerated encoder (faked).
+  // Hardware-accelerated encoders (faked).
   values.emplace_back(Codec::kVideoVp8, true);
+  values.emplace_back(Codec::kVideoH264, true);
 
-#if BUILDFLAG(IS_MAC)
-  // VideoToolbox encoder (when VideoToolbox is present).
-  FrameSenderConfig video_config = GetDefaultVideoSenderConfig();
-  video_config.use_hardware_encoder = true;
-  video_config.codec = Codec::kVideoH264;
-  if (H264VideoToolboxEncoder::IsSupported(video_config)) {
-    values.emplace_back(Codec::kVideoH264, true);
-  }
-#endif
   return values;
 }
 }  // namespace

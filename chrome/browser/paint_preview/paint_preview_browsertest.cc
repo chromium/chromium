@@ -115,8 +115,7 @@ class PaintPreviewBrowserTest
   }
 
   void LoadHtml(const base::StringPiece& html) const {
-    std::string base64_html;
-    base::Base64Encode(html, &base64_html);
+    std::string base64_html = base::Base64Encode(html);
     GURL url(std::string("data:text/html;base64,") + base64_html);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }

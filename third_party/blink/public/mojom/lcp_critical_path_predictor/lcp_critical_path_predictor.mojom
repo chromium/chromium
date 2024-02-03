@@ -21,6 +21,9 @@ interface LCPCriticalPathPredictorHost {
   // the LCP element.
   SetLcpInfluencerScriptUrls(array<url.mojom.Url> lcp_influencer_scripts);
 
+  // `origins` contain the list of preconnectable origins that affected the LCP element.
+  SetPreconnectOrigins(array<url.mojom.Url> origins);
+
   // This method is for letting the LCPP know the used web fonts.
   // `font_url` is a web font's URL, which has started to be fetched.
   // This method should be called under the following conditions:
@@ -51,4 +54,7 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
 
   // Font URLs that were used in the past loads.
   array<url.mojom.Url> fetched_fonts;
+
+  // Preconnectable origins that affected the LCP element.
+  array<url.mojom.Url> preconnect_origins;
 };

@@ -43,6 +43,7 @@ class ExceptionState;
 class LocalDOMWindow;
 class Location;
 class Node;
+class ScriptState;
 struct WrapperTypeInfo;
 
 // BindingSecurity provides utility functions that determine access permission
@@ -90,10 +91,29 @@ class CORE_EXPORT BindingSecurity {
       v8::Local<v8::Context> accessing_context,
       v8::MaybeLocal<v8::Context> target_context);
 
+  static bool ShouldAllowAccessToV8Context(ScriptState* accessing_script_state,
+                                           ScriptState* target_script_state) {
+    DCHECK(accessing_script_state);
+
+    // Fast path for the most likely case.
+    if (LIKELY(accessing_script_state == target_script_state)) {
+      return true;
+    }
+    ExceptionState* exception_state = nullptr;
+    return ShouldAllowAccessToV8ContextInternal(
+        accessing_script_state, target_script_state, exception_state);
+  }
+
   static void FailedAccessCheckFor(v8::Isolate*,
                                    const WrapperTypeInfo*,
                                    v8::Local<v8::Object> holder,
                                    ExceptionState&);
+
+ private:
+  static bool ShouldAllowAccessToV8ContextInternal(
+      ScriptState* accessing_script_state,
+      ScriptState* target_script_state,
+      ExceptionState* exception_state);
 };
 
 }  // namespace blink

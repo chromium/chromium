@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_LOCAL_FRAME_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/containers/span.h"
@@ -17,7 +18,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/css/page_size_type.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -280,7 +280,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Returns the embedding token for this frame or nullopt if the frame hasn't
   // committed a navigation. This token changes when a new document is committed
   // in this WebLocalFrame.
-  virtual const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
+  virtual const std::optional<base::UnguessableToken>& GetEmbeddingToken()
       const = 0;
 
   // "Returns true if the frame the document belongs to, or any of its ancestor
@@ -833,7 +833,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) = 0;
 
   // See blink::LocalFrame::AdEvidence()
-  virtual const absl::optional<blink::FrameAdEvidence>& AdEvidence() = 0;
+  virtual const std::optional<blink::FrameAdEvidence>& AdEvidence() = 0;
 
   // This is used to check if a script tagged as an ad is currently on the v8
   // stack. This is the same method used to compute the below bit which will

@@ -15,6 +15,7 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_query_plan_test_util.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,15 +33,19 @@ class AttributionSqlQueryPlanTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-    std::unique_ptr<AttributionStorage> storage =
-        std::make_unique<AttributionStorageSql>(
-            temp_directory_.GetPath(),
-            std::make_unique<ConfigurableStorageDelegate>());
 
-    // Make sure lazy initialization happens by adding a record to the db, but
-    // then ensure the database is closed so the sqlite_dev_shell can read it.
-    storage->StoreSource(SourceBuilder().Build());
-    storage.reset();
+    {
+      std::unique_ptr<AttributionStorage> storage =
+          std::make_unique<AttributionStorageSql>(
+              temp_directory_.GetPath(),
+              std::make_unique<ConfigurableStorageDelegate>());
+
+      // Make sure lazy initialization happens by adding a record to the db, but
+      // then ensure the database is closed so the sqlite_dev_shell can read it.
+      auto result = storage->StoreSource(SourceBuilder().Build());
+      ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
+    }
+
     explainer_ = std::make_unique<SqlQueryPlanExplainer>(
         temp_directory_.GetPath().Append(FILE_PATH_LITERAL("Conversions")));
   }

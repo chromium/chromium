@@ -2417,9 +2417,9 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDirectionList(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDuration(
-    const absl::optional<double>& duration,
+    const std::optional<double>& duration,
     bool resolve_auto_to_zero) {
-  absl::optional<double> resolved_duration =
+  std::optional<double> resolved_duration =
       (!duration.has_value() && resolve_auto_to_zero) ? 0 : duration;
   if (!resolved_duration.has_value()) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
@@ -2437,7 +2437,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
   return CreateAnimationValueList(
       animation_data
           ? animation_data->DurationList()
-          : Vector<absl::optional<double>>{CSSAnimationData::InitialDuration()},
+          : Vector<std::optional<double>>{CSSAnimationData::InitialDuration()},
       ValueForAnimationDuration, resolve_auto_to_zero);
 }
 
@@ -2446,8 +2446,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
   return CreateAnimationValueList(
       transition_data
           ? transition_data->DurationList()
-          : Vector<
-                absl::optional<double>>{CSSTransitionData::InitialDuration()},
+          : Vector<std::optional<double>>{CSSTransitionData::InitialDuration()},
       ValueForAnimationDuration,
       /* resolve_auto_to_zero */ false);
 }
@@ -2516,7 +2515,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationPlayStateList(
 
 namespace {
 
-CSSValue* ValueForAnimationRange(const absl::optional<TimelineOffset>& offset,
+CSSValue* ValueForAnimationRange(const std::optional<TimelineOffset>& offset,
                                  const ComputedStyle& style,
                                  const Length& default_offset) {
   if (!offset.has_value()) {
@@ -2536,7 +2535,7 @@ CSSValue* ValueForAnimationRange(const absl::optional<TimelineOffset>& offset,
 }  // namespace
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
-    const absl::optional<TimelineOffset>& offset,
+    const std::optional<TimelineOffset>& offset,
     const ComputedStyle& style) {
   return ValueForAnimationRange(offset, style, Length::Percent(0.0));
 }
@@ -2547,13 +2546,13 @@ CSSValue* ComputedStyleUtils::ValueForAnimationRangeStartList(
   return CreateAnimationValueList(
       animation_data
           ? animation_data->RangeStartList()
-          : Vector<absl::optional<TimelineOffset>>{CSSAnimationData::
-                                                       InitialRangeStart()},
+          : Vector<std::optional<TimelineOffset>>{CSSAnimationData::
+                                                      InitialRangeStart()},
       &ValueForAnimationRangeStart, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeEnd(
-    const absl::optional<TimelineOffset>& offset,
+    const std::optional<TimelineOffset>& offset,
     const ComputedStyle& style) {
   return ValueForAnimationRange(offset, style, Length::Percent(100.0));
 }
@@ -2564,8 +2563,8 @@ CSSValue* ComputedStyleUtils::ValueForAnimationRangeEndList(
   return CreateAnimationValueList(
       animation_data
           ? animation_data->RangeEndList()
-          : Vector<absl::optional<TimelineOffset>>{CSSAnimationData::
-                                                       InitialRangeEnd()},
+          : Vector<std::optional<TimelineOffset>>{CSSAnimationData::
+                                                      InitialRangeEnd()},
       &ValueForAnimationRangeEnd, style);
 }
 
@@ -2704,7 +2703,7 @@ CSSValue* ComputedStyleUtils::ValueForTimelineInset(
 CSSValue* ComputedStyleUtils::SingleValueForTimelineShorthand(
     const ScopedCSSName* name,
     TimelineAxis axis,
-    absl::optional<TimelineInset> inset,
+    std::optional<TimelineInset> inset,
     const ComputedStyle& style) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ValueForCustomIdentOrNone(name));
@@ -2999,17 +2998,12 @@ CSSValue* ComputedStyleUtils::ValueForTransformFunction(
 }
 
 gfx::RectF ComputedStyleUtils::ReferenceBoxForTransform(
-    const LayoutObject& layout_object,
-    UsePixelSnappedBox pixel_snap_box) {
+    const LayoutObject& layout_object) {
   if (layout_object.IsSVGChild()) {
     return TransformHelper::ComputeReferenceBox(layout_object);
   }
   if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
-    if (pixel_snap_box == kDontUsePixelSnappedBox ||
-        RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()) {
-      return gfx::RectF(layout_box->PhysicalBorderBoxRect());
-    }
-    return gfx::RectF(layout_box->DeprecatedPixelSnappedBorderBoxRect());
+    return gfx::RectF(layout_box->PhysicalBorderBoxRect());
   }
   return gfx::RectF();
 }
@@ -4069,7 +4063,7 @@ CSSValueList* ComputedStyleUtils::ValuesForContainerShorthand(
 }
 
 CSSValue* ComputedStyleUtils::ValueForGapLength(
-    const absl::optional<Length>& gap_length,
+    const std::optional<Length>& gap_length,
     const ComputedStyle& style) {
   if (!gap_length) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
@@ -4129,7 +4123,7 @@ CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   }
 
-  if (const absl::optional<Length>& length = intrinsic_length.GetLength()) {
+  if (const std::optional<Length>& length = intrinsic_length.GetLength()) {
     list->Append(*ZoomAdjustedPixelValueForLength(*length, style));
   } else {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));

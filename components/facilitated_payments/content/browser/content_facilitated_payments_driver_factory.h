@@ -17,6 +17,10 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}  // namespace optimization_guide
+
 namespace payments::facilitated {
 
 // Manages the lifetime of `ContentFacilitatedPaymentsDriver`. It is owned by
@@ -27,8 +31,9 @@ class ContentFacilitatedPaymentsDriverFactory
           ContentFacilitatedPaymentsDriverFactory>,
       public content::WebContentsObserver {
  public:
-  explicit ContentFacilitatedPaymentsDriverFactory(
-      content::WebContents* web_contents);
+  ContentFacilitatedPaymentsDriverFactory(
+      content::WebContents* web_contents,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   ContentFacilitatedPaymentsDriverFactory(
       const ContentFacilitatedPaymentsDriverFactory&) = delete;
   ContentFacilitatedPaymentsDriverFactory& operator=(
@@ -54,6 +59,11 @@ class ContentFacilitatedPaymentsDriverFactory
   base::flat_map<content::RenderFrameHost*,
                  std::unique_ptr<ContentFacilitatedPaymentsDriver>>
       driver_map_;
+
+  // The optimization guide decider to help determine whether the current main
+  // frame URL is eligible for facilitated payments.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -15,7 +15,6 @@ import android.util.SparseArray;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -216,20 +215,6 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             int activityAtRequestedIndexTaskId = activityAtRequestedIndex.getTaskId();
             boolean isFinishing = activityAtRequestedIndex.isFinishing();
 
-            // Try to reassign the originally assigned index to match the requested index.
-            assignedIndex =
-                    reassignIndex(
-                            mismatchedIndicesHandler,
-                            activityAtRequestedIndex,
-                            requestedIndex,
-                            originallyAssignedIndex);
-            if (assignedIndex != originallyAssignedIndex) {
-                // Originally assigned index was updated.
-                Log.i(
-                        TAG_MULTI_INSTANCE,
-                        "Reassigned index " + assignedIndex + " for new activity " + newActivity);
-            }
-
             message +=
                     " ApplicationStatus activity state: "
                             + ApplicationStatus.getStateForActivity(activityAtRequestedIndex)
@@ -254,6 +239,25 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             message += "]";
 
             boolean isSameTask = activityAtRequestedIndexTaskId == newActivity.getTaskId();
+            message +=
+                    " Activity at requested index is in app tasks? "
+                            + isInAppTask
+                            + ", is in same task? "
+                            + isSameTask;
+
+            // Try to reassign the originally assigned index to match the requested index.
+            assignedIndex =
+                    reassignIndex(
+                            mismatchedIndicesHandler,
+                            activityAtRequestedIndex,
+                            requestedIndex,
+                            originallyAssignedIndex,
+                            isInAppTask,
+                            isSameTask);
+            message +=
+                    " Reassigned index for new activity? "
+                            + (assignedIndex != originallyAssignedIndex);
+
             @PreAssignedActivityState
             int state = getPreAssignedActivityState(isInAppTask, isSameTask, isFinishing);
             recordUmaForAssertIndicesMatch(state, assignedIndex != originallyAssignedIndex);
@@ -266,6 +270,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
 
         if (!BuildConfig.IS_FOR_TEST) {
             assert requestedIndex == assignedIndex : message;
+            assert assignedIndex == originallyAssignedIndex : message;
         }
         Log.i(TAG_MULTI_INSTANCE, message);
         return assignedIndex;
@@ -323,17 +328,18 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         };
     }
 
-    @VisibleForTesting
-    protected int reassignIndex(
+    private int reassignIndex(
             MismatchedIndicesHandler mismatchedIndicesHandler,
             Activity activityAtRequestedIndex,
             int requestedIndex,
-            int originallyAssignedIndexForNewActivity) {
-        if (!ChromeFeatureList.sTabWindowManagerIndexReassignmentOnMismatch.isEnabled()) {
-            return originallyAssignedIndexForNewActivity;
-        }
+            int originallyAssignedIndexForNewActivity,
+            boolean isActivityAtRequestedIndexInAppTasks,
+            boolean isActivityAtRequestedIndexInSameTask) {
         boolean handled =
-                mismatchedIndicesHandler.handleMismatchedIndices(activityAtRequestedIndex);
+                mismatchedIndicesHandler.handleMismatchedIndices(
+                        activityAtRequestedIndex,
+                        isActivityAtRequestedIndexInAppTasks,
+                        isActivityAtRequestedIndexInSameTask);
         if (!handled) return originallyAssignedIndexForNewActivity;
         int releasedIndex = clearSelectorAndIndexAssignments(activityAtRequestedIndex);
         if (releasedIndex == INVALID_WINDOW_INDEX) {

@@ -26,6 +26,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1087110696012418426">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Tìm kiếm <ph name="CATEGORY" />, tệp, ứng dụng, v.v. Dùng các phím mũi tên để di chuyển giữa các ứng dụng.</translation>
 <translation id="1093645050124056515">ctrl + alt + mũi tên xuống</translation>
+<translation id="1094756674036064790">Tắt Bluetooth?</translation>
 <translation id="109942774857561566">Tôi chán quá</translation>
 <translation id="1104084341931202936">Hiển thị các tùy chọn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="1104621072296271835">Các thiết bị của bạn hoạt động hiệu quả hơn khi kết nối với nhau</translation>
@@ -607,9 +608,11 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3526440770046466733">Mở đường liên kết trong thẻ mới và tiếp tục sử dụng thẻ hiện tại</translation>
 <translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="3533126039236445965">Ứng dụng trong kệ</translation>
+<translation id="3537350467437346467">Bạn mới xem</translation>
 <translation id="3539957339480430241">Điểm phát sóng <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Loại bỏ việc thiết lập tính năng xem nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="3542066395059568317">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể nhấp chuột phải để xoá đề xuất.</translation>
+<translation id="3547318469722231257">Bạn mới sửa đổi</translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3554215588514239132">Hiển thị hoặc ẩn bảng Công cụ cho nhà phát triển</translation>
 <translation id="3554637740840164787">Đã ghim <ph name="ITEM_TITLE" /></translation>
@@ -658,6 +661,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3660860940251915011">Bật/tắt chế độ hiển thị ở mức cao cho <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Người dùng được quản lý</translation>
 <translation id="3666266999138159418">Vuốt để ẩn cửa sổ nổi</translation>
+<translation id="3673898235958558034">Khi bạn tắt Bluetooth, "<ph name="DEVICE_NAME_1" />" và "<ph name="DEVICE_NAME_2" />" sẽ ngắt kết nối khỏi Chromebook.</translation>
 <translation id="367531336287639526">Chọn biểu tượng đầu tiên ở bên trái thanh địa chỉ</translation>
 <translation id="3677931086890821290">Chế độ này cho phép tất cả ứng dụng và trang web có quyền truy cập thông tin vị trí và ChromeOS dùng thông tin vị trí của Wi-Fi và mạng di động.</translation>
 <translation id="3679827876008292680">Chuyển đến thẻ cuối cùng trong cửa sổ</translation>
@@ -701,6 +705,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="385300504083504382">Phần đầu</translation>
 <translation id="3859364108019690">Không thể truyền trực tuyến các ứng dụng</translation>
 <translation id="3861651314799684201">Nhấn phím Enter để ghi toàn màn hình</translation>
+<translation id="3882323608730650973">Mới có người sửa đổi</translation>
 <translation id="3886872229787704059">Mở hôm nay</translation>
 <translation id="3891340733213178823">Nhấn Ctrl+Shift+Q hai lần để đăng xuất.</translation>
 <translation id="3893630138897523026">ChromeVox (phản hồi bằng giọng nói)</translation>
@@ -894,6 +899,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4582666543382004902">Đã tắt điểm phát sóng để sử dụng Wi-Fi. Để sử dụng điểm phát sóng, hãy tắt Wi-Fi.</translation>
 <translation id="4585337515783392668">Dừng truyền trên bộ thu không xác định</translation>
 <translation id="4596144739579517758">Giao diện tối đang tắt</translation>
+<translation id="4596442969149038771"><ph name="USER" /> mới chia sẻ</translation>
 <translation id="4611292653554630842">Đăng nhập</translation>
 <translation id="462160925400706389">Đã kết nối <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Xác minh tài khoản</translation>
@@ -911,6 +917,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4666911709726371538">Hiện thêm ứng dụng</translation>
 <translation id="4667099493359681081">Đang tải <ph name="FILENAME" /> xuống</translation>
 <translation id="4672539464599646374">Đã bật Trình tiết kiệm pin</translation>
+<translation id="4673427585974421255">Tiếp tục bật</translation>
 <translation id="468293128311738995">Ứng dụng từ điện thoại của bạn</translation>
 <translation id="4690510401873698237">Giá ở dưới cùng</translation>
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
@@ -1211,6 +1218,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5802516411616338943">Mở phần Cài đặt nhanh</translation>
 <translation id="5804651031882187592">Tắt chế độ cài đặt "Khoá SIM"</translation>
 <translation id="5805809050170488595">Nhấp để kích hoạt <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Khi bạn tắt Bluetooth, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" và <ph name="DEVICE_COUNT" /> thiết bị khác sẽ ngắt kết nối khỏi Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks trên web</translation>
 <translation id="5825969630400862129">Cài đặt thiết bị đã kết nối</translation>
 <translation id="5837036133683224804">Dừng <ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
@@ -1337,6 +1345,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="6298183524022479114">Tuỳ chỉnh thiết bị này trong ứng dụng</translation>
 <translation id="6309219492973062892">Nhấp hoặc nhấn vào các biểu tượng từ 1 – 8 trên kệ</translation>
 <translation id="6315170314923504164">Thoại</translation>
+<translation id="6319058840130157106">Di chuyển lùi giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>
 <translation id="6324916366299863871">Chỉnh sửa phím tắt</translation>
 <translation id="6330012934079202188">Đang hiển thị các cửa sổ của mọi không gian làm việc, hãy nhấn phím Mũi tên lên để hiển thị các cửa sổ của không gian làm việc hiện tại</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> là phiên do <ph name="MANAGER" /> quản lý</translation>
@@ -1390,6 +1399,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="6539852571005954999">Đang quét tệp tải xuống <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Đang truyền tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Tìm kiếm hình ảnh theo nội dung và bản xem trước hình ảnh</translation>
+<translation id="6547795021703527064">Khi bạn tắt Bluetooth, "<ph name="DEVICE_NAME" />" sẽ ngắt kết nối khỏi Chromebook.</translation>
 <translation id="6555373427270923730">Nhập địa chỉ web vào thanh địa chỉ, sau đó nhấn phím <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Mới cài đặt</translation>
@@ -1500,6 +1510,7 @@ Mới cài đặt</translation>
 <translation id="6981291220124935078">Bật quyền truy cập</translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="698231206551913481">Tất cả các tệp và dữ liệu cục bộ liên quan tới người dùng này sẽ bị xóa vĩnh viễn sau khi người dùng này bị xóa.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Độ phân giải đã được đổi thành <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Hãy nhấp vào nút xác nhận để lưu các thay đổi. Các chế độ cài đặt trước đó sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="6989752354829085073">Xem hướng dẫn nhanh để biết cách thao tác trên Chromebook. Thiết lập và sử dụng trong 6 bước.</translation>
 <translation id="7004910047186208204">Kết nối với dữ liệu di động</translation>
 <translation id="7005239792648594238">Mở một ứng dụng để bắt đầu</translation>
@@ -1651,7 +1662,7 @@ Mới cài đặt</translation>
 <translation id="7647488630410863958">Mở khóa thiết bị để xem thông báo của bạn</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7654687942625752712">Nhấn và giữ cả hai phím âm lượng trong 5 giây để tắt tính năng phản hồi bằng giọng nói.</translation>
-<translation id="7658239707568436148">Hủy</translation>
+<translation id="7658239707568436148">Huỷ</translation>
 <translation id="7659861092419699379">Đã đóng không gian làm việc và cửa sổ</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> của bạn sẽ xuất hiện trên các thiết bị liên kết với <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Nhấn để định cấu hình</translation>
@@ -1751,7 +1762,7 @@ Mới cài đặt</translation>
 <translation id="8000066093800657092">Không có mạng nào</translation>
 <translation id="8001755249288974029">Chọn văn bản từ vị trí con trỏ đến đầu dòng</translation>
 <translation id="8004512796067398576">Tăng dần</translation>
-<translation id="8026334261755873520">Xóa dữ liệu duyệt web</translation>
+<translation id="8026334261755873520">Xoá dữ liệu duyệt web</translation>
 <translation id="8029247720646289474">Không kết nối được điểm phát sóng</translation>
 <translation id="8029629653277878342">Bạn cần nhập mã PIN hoặc mật khẩu để tăng cường bảo mật</translation>
 <translation id="8030169304546394654">Đã ngắt kết nối</translation>
@@ -1814,6 +1825,7 @@ Mới cài đặt</translation>
 <translation id="8314772463905284467">Đang bật Caps Lock</translation>
 <translation id="8315514906653279104">Đang bật...</translation>
 <translation id="8331351032546853669">Đang chờ tải xuống</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Đã chọn cửa sổ <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">trình khởi chạy</translation>
@@ -1920,6 +1932,7 @@ Mới cài đặt</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã bị chặn</translation>
 <translation id="8785070478575117577">Kết nối với <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Di chuyển tiến giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>
 <translation id="8792626944327216835">micrô</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Thư mục <ph name="FOLDER_NAME" /></translation>
@@ -2033,6 +2046,7 @@ Mới cài đặt</translation>
 <translation id="953431725143473984">Tắt thiết bị?</translation>
 <translation id="954052413789300507">Không đủ dung lượng cho <ph name="FILENAME" />. Giải phóng dung lượng.</translation>
 <translation id="954520015070501466">30 phút</translation>
+<translation id="954786879461589145"><ph name="USER" /> mới sửa đổi</translation>
 <translation id="974545358917229949">Đang hiển thị <ph name="RESULT_COUNT" /> kết quả cho <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Không có ngày đến hạn</translation>
 <translation id="98120814841227350">Chuyển đến cuối tài liệu</translation>

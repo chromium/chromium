@@ -32,9 +32,9 @@ class SearchModel;
 // a list of app icons.
 class ASH_EXPORT RecentAppsView : public AppListModelObserver,
                                   public views::View {
- public:
-  METADATA_HEADER(RecentAppsView);
+  METADATA_HEADER(RecentAppsView, views::View)
 
+ public:
   RecentAppsView(AppListKeyboardController* keyboard_controller,
                  AppListViewDelegate* view_delegate);
   RecentAppsView(const RecentAppsView&) = delete;

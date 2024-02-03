@@ -6,14 +6,15 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
-#include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/reporting/util/status.h"
 
@@ -35,30 +36,17 @@ Status FakeUploadClient::EnqueueUpload(
     ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
-  UploadEncryptedReportingRequestBuilder builder;
-  for (auto record : records) {
-    builder.AddRecord(std::move(record), scoped_reservation);
-  }
-  auto request_result = builder.Build();
-  if (!request_result.has_value()) {
-    // While it might seem that this should return a bad status, the actual
-    // UploadClient would return OK here as the records are processed at a later
-    // time, and any failures are expected to be handled elsewhere.
-    return Status::StatusOK();
-  }
-
-  auto response_cb = base::BindOnce(
-      &FakeUploadClient::OnUploadComplete, base::Unretained(this),
-      std::move(scoped_reservation), std::move(report_upload_success_cb),
-      std::move(encryption_key_attached_cb));
-
+  auto response_cb = base::BindOnce(&FakeUploadClient::OnUploadComplete,
+                                    base::Unretained(this),
+                                    std::move(report_upload_success_cb),
+                                    std::move(encryption_key_attached_cb));
   ReportingServerConnector::UploadEncryptedReport(
-      std::move(request_result.value()), std::move(response_cb));
+      need_encryption_key, config_file_version, std::move(records),
+      std::move(scoped_reservation), std::move(response_cb));
   return Status::StatusOK();
 }
 
 void FakeUploadClient::OnUploadComplete(
-    ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     StatusOr<base::Value::Dict> response) {

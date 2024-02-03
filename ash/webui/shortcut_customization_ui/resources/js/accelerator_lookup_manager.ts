@@ -99,6 +99,11 @@ export class AcceleratorLookupManager {
   // is used to display the 'meta' key with correct icon.
   private hasLauncherButton: boolean = false;
 
+  // Determine if a search result row is currently focused. This ensures the
+  // focused row stays highlighted as the search result, despite mouse hover
+  // actions.
+  private searchResultRowFocused: boolean = false;
+
   /**
    * Used to generate the keys for the ReverseAcceleratorLookupMap.
    */
@@ -211,6 +216,14 @@ export class AcceleratorLookupManager {
 
   getHasLauncherButton(): boolean {
     return this.hasLauncherButton;
+  }
+
+  setSearchResultRowFocused(searchResultRowFocused: boolean): void {
+    this.searchResultRowFocused = searchResultRowFocused;
+  }
+
+  getSearchResultRowFocused(): boolean {
+    return this.searchResultRowFocused;
   }
 
   isSubcategoryLocked(subcategory: AcceleratorSubcategory): boolean {

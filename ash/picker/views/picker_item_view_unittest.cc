@@ -12,6 +12,8 @@
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -27,8 +29,7 @@ using ::testing::SizeIs;
 using PickerItemViewTest = AshTestBase;
 
 TEST_F(PickerItemViewTest, SetsPrimaryText) {
-  PickerItemView item_view(views::Button::PressedCallback(),
-                           PickerItemView::ItemType::kListItem);
+  PickerItemView item_view{views::Button::PressedCallback()};
 
   const std::u16string kPrimaryText = u"Item";
   item_view.SetPrimaryText(kPrimaryText);
@@ -42,8 +43,7 @@ TEST_F(PickerItemViewTest, SetsPrimaryText) {
 }
 
 TEST_F(PickerItemViewTest, SetsPrimaryImage) {
-  PickerItemView item_view(views::Button::PressedCallback(),
-                           PickerItemView::ItemType::kListItem);
+  PickerItemView item_view{views::Button::PressedCallback()};
 
   item_view.SetPrimaryImage(std::make_unique<views::ImageView>());
 
@@ -53,10 +53,10 @@ TEST_F(PickerItemViewTest, SetsPrimaryImage) {
 }
 
 TEST_F(PickerItemViewTest, SetsLeadingIcon) {
-  PickerItemView item_view(views::Button::PressedCallback(),
-                           PickerItemView::ItemType::kListItem);
+  PickerItemView item_view{views::Button::PressedCallback()};
 
-  item_view.SetLeadingIcon(kImeMenuEmoticonIcon);
+  item_view.SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+      kImeMenuEmoticonIcon, cros_tokens::kCrosSysOnSurface));
 
   ASSERT_THAT(item_view.leading_container_for_testing()->children(), SizeIs(1));
   EXPECT_TRUE(views::IsViewClass<views::ImageView>(

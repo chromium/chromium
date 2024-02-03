@@ -82,6 +82,23 @@ bool IsAnyTypeSyncable(const syncer::SyncService* sync_service,
   return false;
 }
 
+// Implements static compliance with
+// CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability requirement,
+// as if the capability was always set to the opposite of the feature flag.
+//
+// When kMinorModeRestrictionsForHistorySyncOptIn feature is enabled, the
+// compliance is achieved for all users without reading
+// CanShowHistorySyncOptInsWithoutMinorModeRestrictions value.
+bool UnrestrictedMode() {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // ChromeOs handles minor modes separately.
+  return true;
+#else
+  return !base::FeatureList::IsEnabled(
+      ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
+#endif
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShouldShowAppsDisclaimerInLacros(Profile* profile) {
   syncer::SyncPrefs prefs_ = syncer::SyncPrefs(profile->GetPrefs());
@@ -321,6 +338,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   // Registering other variables that are computed above based on multiple
   // factors (e.g. platform).
   source->AddBoolean("useClickableSyncInfoDesc", use_clickable_sync_info_desc);
+  source->AddBoolean("unrestrictedMode", UnrestrictedMode());
 }
 
 void SyncConfirmationUI::InitializeForSyncDisabled(

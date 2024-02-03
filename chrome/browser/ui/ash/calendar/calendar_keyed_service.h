@@ -54,6 +54,18 @@ class CalendarKeyedService : public KeyedService {
 
   void Initialize();
 
+  // Fetches a list of calendars based on the current client's account.
+  //
+  // `callback` will be called when response or google_apis's ERROR (if the call
+  // is not successful) is returned. `google_apis::OTHER_ERROR` will be passed
+  // in the `callback` if the current client has no valid calendar service,
+  // e.g. a guest user.
+  //
+  // The returned `base::OnceClosure` callback can cancel the api call and get
+  // the `google_apis::CANCEL` error before the response is back.
+  base::OnceClosure GetCalendarList(
+      google_apis::calendar::CalendarListCallback callback);
+
   // Fetches calendar events based on the current client's account.
   //
   // `callback` will be called when response or google_apis's ERROR (if the call

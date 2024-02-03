@@ -23,11 +23,15 @@ inline constexpr char kDestTextPath[] =
 
 inline constexpr char kCategoryPath[] = "category";
 inline constexpr char kConversionToSiAPath[] = "conversionToSiA";
+inline constexpr char kConversionToSiBPath[] = "conversionToSiB";
+inline constexpr char kConversionToSiCPath[] = "conversionToSiC";
 inline constexpr char kResultValueTemplate[] = "%.3g";
 inline constexpr char kNamePath[] = "name";
 inline constexpr char kUnitsPath[] = "units";
 
-inline constexpr double kInvalidRateValue = 0;
+inline constexpr double kInvalidRateTermValue = 0;
+
+inline constexpr char kPoundName[] = "Pound";
 
 std::string GetUnitDisplayText(const std::string& name);
 

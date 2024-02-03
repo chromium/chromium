@@ -342,7 +342,7 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     gfx::RoundedCornersF radii = {0, static_cast<float>(view->height()),
                                   static_cast<float>(view->height()), 0};
     return views::CreateThemedRoundedRectBackground(
-        GetOmniboxBackgroundColorId(part_state), radii, 0);
+        GetOmniboxBackgroundColorId(part_state), radii);
   }
 
   return views::CreateThemedSolidBackground(
@@ -363,7 +363,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   if (match_.answer) {
     suggestion_view_->content()->AppendExtraText(match_.answer->first_line());
     suggestion_view_->description()->SetTextWithStyling(
-        match_.answer->second_line(), true);
+        match_.answer->second_line(), false);
   } else {
     // Not all 2-line suggestions have deemphasized descriptions; specifically,
     // calculator answers are 2-line but not deemphasized.
@@ -423,10 +423,8 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
   bool prefers_contrast =
       GetNativeTheme() && GetNativeTheme()->UserHasContrastPreference();
-  if (match_.answer) {
-    suggestion_view_->content()->ApplyTextColor(default_id);
-    suggestion_view_->description()->ApplyTextColor(default_id);
-  } else if (match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+  if (match_.answer ||
+      match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
     suggestion_view_->content()->ApplyTextColor(default_id);
     suggestion_view_->description()->ApplyTextColor(dimmed_id);
   } else if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {

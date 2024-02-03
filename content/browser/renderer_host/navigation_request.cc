@@ -57,6 +57,7 @@
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/object_navigation_fallback_body_loader.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
@@ -427,7 +428,9 @@ void AddAdditionalRequestHeaders(
   if (frame_tree_node->frame_tree().is_prerendering()) {
     headers->SetHeader("Sec-Purpose", "prefetch;prerender");
     headers->SetHeader("Purpose", "prefetch");
-  } else if (frame_tree_node->frame_tree().page_delegate()->IsInPreviewMode()) {
+  } else if (frame_tree_node->frame_tree()
+                 .page_delegate()
+                 ->IsPageInPreviewMode()) {
     // Preview mode sends similar request so that it is compatible with
     // prerendering as we can as possible, but adds `preview` for sites that
     // need to identify the preview case from prerendering.
@@ -4726,15 +4729,18 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
   net::IsolationInfo isolation_info = url_loader_factory_params->isolation_info;
 
   // TODO(crbug.com/1225556): Support DevTools instrumentation and extension's
-  // WebRequest API in a way similar to
-  // RenderFrameHostImpl::WillCreateURLLoaderFactory.
-  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
-  process->CreateURLLoaderFactory(loader_factory.BindNewPipeAndPassReceiver(),
-                                  std::move(url_loader_factory_params));
+  // WebRequest API.
+  auto loader_factory = url_loader_factory::CreatePendingRemote(
+      ContentBrowserClient::URLLoaderFactoryType::kEarlyHints,
+      url_loader_factory::TerminalParams::ForNetworkContext(
+          process->GetStoragePartition()->GetNetworkContext(),
+          std::move(url_loader_factory_params)));
 
   did_create_early_hints_manager_params_ = true;
   return NavigationEarlyHintsManagerParams(
-      tentative_origin, std::move(isolation_info), std::move(loader_factory));
+      tentative_origin, std::move(isolation_info),
+      mojo::Remote<network::mojom::URLLoaderFactory>(
+          std::move(loader_factory)));
 }
 
 void NavigationRequest::OnRequestFailedInternal(

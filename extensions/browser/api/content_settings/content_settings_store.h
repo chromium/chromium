@@ -20,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "extensions/common/api/types.h"
+#include "extensions/common/extension_id.h"
 
 namespace content_settings {
 class OriginValueMap;
@@ -43,9 +44,8 @@ class ContentSettingsStore
 
     // Called when a content setting changes in the
     // ContentSettingsStore.
-    virtual void OnContentSettingChanged(
-        const std::string& extension_id,
-        bool incognito) = 0;
+    virtual void OnContentSettingChanged(const ExtensionId& extension_id,
+                                         bool incognito) = 0;
   };
 
   static constexpr char kContentSettingKey[] = "setting";
@@ -92,12 +92,12 @@ class ContentSettingsStore
 
   // Serializes all content settings set by the extension with ID |extension_id|
   // and returns them as a list of Values.
-  base::Value::List GetSettingsForExtension(const std::string& extension_id,
+  base::Value::List GetSettingsForExtension(const ExtensionId& extension_id,
                                             ChromeSettingScope scope) const;
 
   // Deserializes content settings rules from |list| and applies them as set by
   // the extension with ID |extension_id|.
-  void SetExtensionContentSettingFromList(const std::string& extension_id,
+  void SetExtensionContentSettingFromList(const ExtensionId& extension_id,
                                           const base::Value::List& list,
                                           ChromeSettingScope scope);
 
@@ -140,7 +140,7 @@ class ContentSettingsStore
       const std::string& ext_id,
       ChromeSettingScope scope) const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void NotifyOfContentSettingChanged(const std::string& extension_id,
+  void NotifyOfContentSettingChanged(const ExtensionId& extension_id,
                                      bool incognito);
 
   bool OnCorrectThread();

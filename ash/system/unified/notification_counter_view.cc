@@ -169,7 +169,7 @@ void NotificationCounterView::Update() {
 }
 
 std::u16string NotificationCounterView::GetAccessibleNameString() const {
-  return GetVisible() ? image_view()->GetTooltipText() : base::EmptyString16();
+  return GetVisible() ? image_view()->GetTooltipText() : std::u16string();
 }
 
 void NotificationCounterView::HandleLocaleChange() {

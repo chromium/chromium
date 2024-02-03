@@ -337,7 +337,7 @@ PrefetchOriginProber* PrefetchService::GetPrefetchOriginProber() const {
   return origin_prober_.get();
 }
 
-void PrefetchService::AddPrefetchContainer(
+void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
     std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
   base::WeakPtr<PrefetchContainer> prefetch_container =
       owned_prefetch_container->GetWeakPtr();
@@ -362,7 +362,14 @@ void PrefetchService::AddPrefetchContainer(
 
   owned_prefetches_[prefetch_container_key] =
       std::move(owned_prefetch_container);
+}
 
+void PrefetchService::AddPrefetchContainer(
+    std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      owned_prefetch_container->GetWeakPtr();
+  AddPrefetchContainerWithoutStartingPrefetch(
+      std::move(owned_prefetch_container));
   PrefetchUrl(std::move(prefetch_container));
 }
 
@@ -1414,10 +1421,19 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
         break;
     }
 
+    if (prefetch_container->IsDecoy()) {
+      DVLOG(1)
+          << "PrefetchService::FindPrefetchContainerToServe: skipped because "
+             "prefetch is a decoy: "
+          << *prefetch_container;
+      return true;
+    }
+
     // Note: This codepath is only be reached in practice if we create a
     // second NavigationRequest to this prefetch's URL. The first
     // NavigationRequest would call GetPrefetch, which might set this
     // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
+    CHECK(prefetch_container->HasPrefetchStatus());
     if (prefetch_container->GetPrefetchStatus() ==
         PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
       DVLOG(1)

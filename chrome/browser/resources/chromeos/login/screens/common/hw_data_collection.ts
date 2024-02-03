@@ -6,9 +6,9 @@
  * @fileoverview Polymer element for HW data collection screen.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/js/action_link.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_text_button.js';

@@ -233,8 +233,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   // For testing.
   base::RepeatingCallback<void()> _onPhotoOutputStopped;
-  absl::optional<bool> _isPortraitEffectSupportedForTesting;
-  absl::optional<bool> _isPortraitEffectActiveForTesting;
+  std::optional<bool> _isPortraitEffectSupportedForTesting;
+  std::optional<bool> _isPortraitEffectActiveForTesting;
 
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }

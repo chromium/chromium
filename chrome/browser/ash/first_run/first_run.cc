@@ -51,8 +51,8 @@ namespace {
 // public accounts.
 bool IsRegularUserOrSupervisedChild(user_manager::UserManager* user_manager) {
   switch (user_manager->GetActiveUser()->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
       return true;
     default:
       return false;
@@ -67,7 +67,7 @@ bool ShouldShowGetStarted(Profile* profile,
   if (profile->IsChild())
     return true;
   switch (user_manager->GetActiveUser()->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       return !profile->GetProfilePolicyConnector()->IsManaged();
     default:
       return false;
@@ -146,6 +146,10 @@ bool ShouldLaunchHelpApp(Profile* profile) {
 
   if (command_line->HasSwitch(switches::kForceFirstRunUI)) {
     return true;
+  }
+
+  if (command_line->HasSwitch(switches::kDisableFirstRunUI)) {
+    return false;
   }
 
   if (display::Screen::GetScreen()->InTabletMode()) {

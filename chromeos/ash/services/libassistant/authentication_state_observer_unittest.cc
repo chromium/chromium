@@ -15,31 +15,6 @@ namespace ash::libassistant {
 
 namespace {
 
-// Return the list of all libassistant error codes that are considered to be
-// authentication errors. This list is created on demand as there is no clear
-// enum that defines these, and we don't want to hard code this list in the
-// test.
-std::vector<int> GetAuthenticationErrorCodes() {
-  const int kMinErrorCode = chromeos::assistant::GetLowestErrorCode();
-  const int kMaxErrorCode = chromeos::assistant::GetHighestErrorCode();
-
-  std::vector<int> result;
-  for (int code = kMinErrorCode; code <= kMaxErrorCode; ++code) {
-    if (chromeos::assistant::IsAuthError(code)) {
-      result.push_back(code);
-    }
-  }
-
-  return result;
-}
-
-// Return a list of some libassistant error codes that are not considered to be
-// authentication errors.  Note we do not return all such codes as there are
-// simply too many and testing them all significantly slows down the tests.
-std::vector<int> GetNonAuthenticationErrorCodes() {
-  return {-99999, 0, 1};
-}
-
 class AuthenticationStateObserverMock
     : public mojom::AuthenticationStateObserver {
  public:
@@ -90,11 +65,7 @@ class AuthenticationStateObserverTest : public ::testing::Test {
 
   void FlushMojomPipes() { service_tester_.FlushForTesting(); }
 
-  void OnCommunicationError(int error_code) {
-    if (!chromeos::assistant::IsAuthError(error_code)) {
-      return;
-    }
-
+  void OnCommunicationError() {
     ::assistant::api::OnDeviceStateEventRequest request;
     auto* communication_error =
         request.mutable_event()->mutable_on_communication_error();
@@ -113,29 +84,12 @@ class AuthenticationStateObserverTest : public ::testing::Test {
 };
 
 TEST_F(AuthenticationStateObserverTest, ShouldReportAuthenticationErrors) {
-  for (int code : GetAuthenticationErrorCodes()) {
-    EXPECT_CALL(observer_mock(), OnAuthenticationError());
-    OnCommunicationError(code);
+  EXPECT_CALL(observer_mock(), OnAuthenticationError());
+  OnCommunicationError();
 
-    FlushMojomPipes();
-    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer_mock()))
-        << "Failure for error code " << code;
-  }
-}
-
-TEST_F(AuthenticationStateObserverTest, ShouldIgnoreNonAuthenticationErrors) {
-  std::vector<int> non_authentication_errors = GetNonAuthenticationErrorCodes();
-
-  for (int code : non_authentication_errors) {
-    // check to ensure these are not authentication errors.
-    ASSERT_FALSE(chromeos::assistant::IsAuthError(code));
-    EXPECT_CALL(observer_mock(), OnAuthenticationError()).Times(0);
-    OnCommunicationError(code);
-
-    FlushMojomPipes();
-    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer_mock()))
-        << "Failure for error code " << code;
-  }
+  FlushMojomPipes();
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer_mock()))
+      << "Failure to receive Auth error.";
 }
 
 }  // namespace ash::libassistant

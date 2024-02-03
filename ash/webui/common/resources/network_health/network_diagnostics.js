@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './routine_group.js';
 
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {ArcDnsResolutionProblem, ArcHttpProblem, ArcPingProblem, CaptivePortalProblem, DnsLatencyProblem, DnsResolutionProblem, DnsResolverPresentProblem, GatewayCanBePingedProblem, HasSecureWiFiConnectionProblem, HttpFirewallProblem, HttpsFirewallProblem, HttpsLatencyProblem, RoutineProblems, RoutineType, RoutineVerdict, SignalStrengthProblem, VideoConferencingProblem} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
+import {ArcDnsResolutionProblem, ArcHttpProblem, ArcPingProblem, CaptivePortalProblem, DnsLatencyProblem, DnsResolutionProblem, DnsResolverPresentProblem, GatewayCanBePingedProblem, HasSecureWiFiConnectionProblem, HttpFirewallProblem, HttpsFirewallProblem, HttpsLatencyProblem, RoutineCallSource, RoutineProblems, RoutineType, RoutineVerdict, SignalStrengthProblem, VideoConferencingProblem} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 import {getNetworkDiagnosticsService} from './mojo_interface_provider.js';
 import {getTemplate} from './network_diagnostics.html.js';
@@ -72,8 +72,8 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
                 {
                   name: 'NetworkDiagnosticsLanConnectivity',
                   type: RoutineType.kLanConnectivity,
-                  func: () =>
-                      getNetworkDiagnosticsService().runLanConnectivity(),
+                  func: () => getNetworkDiagnosticsService().runLanConnectivity(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
               ],
             },
@@ -83,14 +83,15 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
                 {
                   name: 'NetworkDiagnosticsSignalStrength',
                   type: RoutineType.kSignalStrength,
-                  func: () =>
-                      getNetworkDiagnosticsService().runSignalStrength(),
+                  func: () => getNetworkDiagnosticsService().runSignalStrength(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
                 {
                   name: 'NetworkDiagnosticsHasSecureWiFiConnection',
                   type: RoutineType.kHasSecureWiFiConnection,
-                  func: () => getNetworkDiagnosticsService()
-                                  .runHasSecureWiFiConnection(),
+                  func: () =>
+                      getNetworkDiagnosticsService().runHasSecureWiFiConnection(
+                          RoutineCallSource.kChromeNetworkPage),
                 },
               ],
             },
@@ -100,7 +101,8 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
                 {
                   name: 'NetworkDiagnosticsCaptivePortal',
                   type: RoutineType.kCaptivePortal,
-                  func: () => getNetworkDiagnosticsService().runCaptivePortal(),
+                  func: () => getNetworkDiagnosticsService().runCaptivePortal(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
               ],
             },
@@ -111,7 +113,8 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
                   name: 'NetworkDiagnosticsGatewayCanBePinged',
                   type: RoutineType.kGatewayCanBePinged,
                   func: () =>
-                      getNetworkDiagnosticsService().runGatewayCanBePinged(),
+                      getNetworkDiagnosticsService().runGatewayCanBePinged(
+                          RoutineCallSource.kChromeNetworkPage),
                 },
               ],
             },
@@ -121,18 +124,21 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
                 {
                   name: 'NetworkDiagnosticsHttpFirewall',
                   type: RoutineType.kHttpFirewall,
-                  func: () => getNetworkDiagnosticsService().runHttpFirewall(),
+                  func: () => getNetworkDiagnosticsService().runHttpFirewall(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
                 {
                   name: 'NetworkDiagnosticsHttpsFirewall',
                   type: RoutineType.kHttpsFirewall,
-                  func: () => getNetworkDiagnosticsService().runHttpsFirewall(),
+                  func: () => getNetworkDiagnosticsService().runHttpsFirewall(
+                      RoutineCallSource.kChromeNetworkPage),
 
                 },
                 {
                   name: 'NetworkDiagnosticsHttpsLatency',
                   type: RoutineType.kHttpsLatency,
-                  func: () => getNetworkDiagnosticsService().runHttpsLatency(),
+                  func: () => getNetworkDiagnosticsService().runHttpsLatency(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
               ],
             },
@@ -143,17 +149,20 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
                   name: 'NetworkDiagnosticsDnsResolverPresent',
                   type: RoutineType.kDnsResolverPresent,
                   func: () =>
-                      getNetworkDiagnosticsService().runDnsResolverPresent(),
+                      getNetworkDiagnosticsService().runDnsResolverPresent(
+                          RoutineCallSource.kChromeNetworkPage),
                 },
                 {
                   name: 'NetworkDiagnosticsDnsLatency',
                   type: RoutineType.kDnsLatency,
-                  func: () => getNetworkDiagnosticsService().runDnsLatency(),
+                  func: () => getNetworkDiagnosticsService().runDnsLatency(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
                 {
                   name: 'NetworkDiagnosticsDnsResolution',
                   type: RoutineType.kDnsResolution,
-                  func: () => getNetworkDiagnosticsService().runDnsResolution(),
+                  func: () => getNetworkDiagnosticsService().runDnsResolution(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
               ],
             },
@@ -167,7 +176,8 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
                   // default.
                   func: () =>
                       getNetworkDiagnosticsService().runVideoConferencing(
-                          /*stun_server_hostname=*/ null),
+                          /*stun_server_hostname=*/ null,
+                          RoutineCallSource.kChromeNetworkPage),
                 },
               ],
             },
@@ -177,18 +187,21 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
                 {
                   name: 'ArcNetworkDiagnosticsPing',
                   type: RoutineType.kArcPing,
-                  func: () => getNetworkDiagnosticsService().runArcPing(),
+                  func: () => getNetworkDiagnosticsService().runArcPing(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
                 {
                   name: 'ArcNetworkDiagnosticsHttp',
                   type: RoutineType.kArcHttp,
-                  func: () => getNetworkDiagnosticsService().runArcHttp(),
+                  func: () => getNetworkDiagnosticsService().runArcHttp(
+                      RoutineCallSource.kChromeNetworkPage),
                 },
                 {
                   name: 'ArcNetworkDiagnosticsDnsResolution',
                   type: RoutineType.kArcDnsResolution,
                   func: () =>
-                      getNetworkDiagnosticsService().runArcDnsResolution(),
+                      getNetworkDiagnosticsService().runArcDnsResolution(
+                          RoutineCallSource.kChromeNetworkPage),
                 },
               ],
             },

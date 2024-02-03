@@ -36,7 +36,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
                WebPerformanceMetricsForReporting::
                    kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>
         request_animation_frames;
-    absl::optional<base::TimeDelta> first_input_delay;
+    std::optional<base::TimeDelta> first_input_delay;
   };
 
   using BackForwardCacheRestoreTimings =
@@ -113,50 +113,50 @@ class CORE_EXPORT PerformanceTimingForReporting final
   // The duration between the hardware timestamp and being queued on the main
   // thread for the first click, tap, key press, cancellable touchstart, or
   // pointer down followed by a pointer up.
-  absl::optional<base::TimeDelta> FirstInputDelay() const;
+  std::optional<base::TimeDelta> FirstInputDelay() const;
 
   // The timestamp of the event whose delay is reported by FirstInputDelay().
-  absl::optional<base::TimeDelta> FirstInputTimestamp() const;
+  std::optional<base::TimeDelta> FirstInputTimestamp() const;
 
   // The timestamp of the event whose delay is reported by FirstInputDelay().
   // Intended to be used for correlation with other events internal to blink.
-  absl::optional<base::TimeTicks> FirstInputTimestampAsMonotonicTime() const;
+  std::optional<base::TimeTicks> FirstInputTimestampAsMonotonicTime() const;
 
   // The longest duration between the hardware timestamp and being queued on the
   // main thread for the click, tap, key press, cancellable touchstart, or
   // pointer down followed by a pointer up.
-  absl::optional<base::TimeDelta> LongestInputDelay() const;
+  std::optional<base::TimeDelta> LongestInputDelay() const;
 
   // The timestamp of the event whose delay is reported by LongestInputDelay().
-  absl::optional<base::TimeDelta> LongestInputTimestamp() const;
+  std::optional<base::TimeDelta> LongestInputTimestamp() const;
 
   // The duration of event handlers processing the first input event.
-  absl::optional<base::TimeDelta> FirstInputProcessingTime() const;
+  std::optional<base::TimeDelta> FirstInputProcessingTime() const;
 
   // The duration between the user's first scroll and display update.
-  absl::optional<base::TimeDelta> FirstScrollDelay() const;
+  std::optional<base::TimeDelta> FirstScrollDelay() const;
 
   // The hardware timestamp of the first scroll.
-  absl::optional<base::TimeDelta> FirstScrollTimestamp() const;
+  std::optional<base::TimeDelta> FirstScrollTimestamp() const;
 
   // TimeTicks for unload start and end.
-  absl::optional<base::TimeTicks> UnloadStart() const;
-  absl::optional<base::TimeTicks> UnloadEnd() const;
+  std::optional<base::TimeTicks> UnloadStart() const;
+  std::optional<base::TimeTicks> UnloadEnd() const;
 
   // The timestamp of when the commit navigation finished in the frame loader.
-  absl::optional<base::TimeTicks> CommitNavigationEnd() const;
+  std::optional<base::TimeTicks> CommitNavigationEnd() const;
 
   // The timestamp of the user timing mark 'mark_fully_loaded', if
   // available.
-  absl::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const;
+  std::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const;
 
   // The timestamp of the user timing mark 'mark_fully_visible', if
   // available.
-  absl::optional<base::TimeDelta> UserTimingMarkFullyVisible() const;
+  std::optional<base::TimeDelta> UserTimingMarkFullyVisible() const;
 
   // The timestamp of the user timing mark 'mark_interactive', if
   // available.
-  absl::optional<base::TimeDelta> UserTimingMarkInteractive() const;
+  std::optional<base::TimeDelta> UserTimingMarkInteractive() const;
 
   uint64_t ParseStart() const;
   uint64_t ParseStop() const;
@@ -166,10 +166,10 @@ class CORE_EXPORT PerformanceTimingForReporting final
   uint64_t ParseBlockedOnScriptExecutionFromDocumentWriteDuration() const;
 
   // The time of the first paint after a portal activation.
-  absl::optional<base::TimeTicks> LastPortalActivatedPaint() const;
+  std::optional<base::TimeTicks> LastPortalActivatedPaint() const;
 
   // The start time of the prerender activation navigation.
-  absl::optional<base::TimeDelta> PrerenderActivationStart() const;
+  std::optional<base::TimeDelta> PrerenderActivationStart() const;
 
   void Trace(Visitor*) const override;
 
@@ -185,8 +185,8 @@ class CORE_EXPORT PerformanceTimingForReporting final
   DocumentLoader* GetDocumentLoader() const;
   DocumentLoadTiming* GetDocumentLoadTiming() const;
   InteractiveDetector* GetInteractiveDetector() const;
-  absl::optional<base::TimeDelta> MonotonicTimeToPseudoWallTime(
-      const absl::optional<base::TimeTicks>&) const;
+  std::optional<base::TimeDelta> MonotonicTimeToPseudoWallTime(
+      const std::optional<base::TimeTicks>&) const;
 
   bool cross_origin_isolated_capability_;
 };

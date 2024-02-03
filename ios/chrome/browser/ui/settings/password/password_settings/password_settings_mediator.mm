@@ -429,10 +429,10 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
     return;
   }
 
-  [self.consumer
-      setLocalPasswordsCount:[self computeLocalPasswordsCount]
-         withUserEligibility:password_manager::features_util::
-                                 IsOptedInForAccountStorage(_syncService)];
+  [self.consumer setLocalPasswordsCount:[self computeLocalPasswordsCount]
+                    withUserEligibility:password_manager::features_util::
+                                            IsOptedInForAccountStorage(
+                                                _prefService, _syncService)];
 }
 
 // Returns the amount of local passwords.

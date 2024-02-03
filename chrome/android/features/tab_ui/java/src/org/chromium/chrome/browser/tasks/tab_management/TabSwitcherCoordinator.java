@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -605,8 +606,8 @@ public class TabSwitcherCoordinator
     }
 
     @Override
-    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
-        mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd);
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
+        mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
 
     private TabSwitcherMessageManager getMessageManager() {

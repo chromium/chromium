@@ -831,7 +831,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
         if (may_set_sec_cookie_deprecation_header &&
             c.cookie.Name() == "receive-cookie-deprecation" &&
-            c.cookie.IsHttpOnly() && c.cookie.IsSecure()) {
+            c.cookie.IsHttpOnly() && c.cookie.SecureAttribute()) {
           request_info_.extra_headers.SetHeader(
               "Sec-Cookie-Deprecation",
               *request_->context()->cookie_deprecation_label());

@@ -118,49 +118,4 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-class ContentAutofillDriverPrerenderBrowserTest
-    : public ContentAutofillDriverBrowserTest {
- public:
-  ContentAutofillDriverPrerenderBrowserTest() {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillProbableFormSubmissionInBrowser);
-  }
-  ~ContentAutofillDriverPrerenderBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
-                       PrerenderingDoesNotSubmitForm) {
-  GURL initial_url =
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  // Set a dummy form data to simulate to submit a form. And, OnFormSubmitted
-  // method will be called upon navigation.
-  autofill_driver_factory()
-      ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
-      ->renderer_events()
-      .SetFormToBeProbablySubmitted(std::make_optional<FormData>());
-
-  base::HistogramTester histogram_tester;
-
-  // Load a page in the prerendering.
-  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
-  int host_id = prerender_helper().AddPrerender(prerender_url);
-  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
-  EXPECT_FALSE(host_observer.was_activated());
-  // TODO(crbug.com/1200511): use a mock AutofillManager and
-  // EXPECT_CALL(manager, OnFormSubmitted(_, _, _)).
-  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
-                                    0);
-
-  // Activate the page from the prerendering.
-  prerender_helper().NavigatePrimaryPage(prerender_url);
-  EXPECT_TRUE(host_observer.was_activated());
-  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
-                                    1);
-}
-
 }  // namespace autofill

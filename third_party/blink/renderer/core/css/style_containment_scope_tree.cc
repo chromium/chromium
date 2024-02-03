@@ -20,6 +20,7 @@ void StyleContainmentScopeTree::Trace(Visitor* visitor) const {
   visitor->Trace(root_scope_);
   visitor->Trace(outermost_quotes_dirty_scope_);
   visitor->Trace(outermost_counters_dirty_scope_);
+  visitor->Trace(outermost_anchor_name_dirty_scope_);
   visitor->Trace(scopes_);
   visitor->Trace(object_counters_map_);
 }
@@ -52,6 +53,7 @@ void StyleContainmentScopeTree::DestroyScopeForElement(const Element& element) {
     StyleContainmentScope* scope = it->value;
     UpdateOutermostQuotesDirtyScope(scope->Parent());
     UpdateOutermostCountersDirtyScope(scope->Parent());
+    UpdateOutermostAnchorNameDirtyScope(scope->Parent());
     scope->ReattachToParent();
     scopes_.erase(it);
   }
@@ -92,6 +94,7 @@ StyleContainmentScope* StyleContainmentScopeTree::CreateScopeForElement(
   StyleContainmentScope* changed_scope = parent_has_changed ? parent : nullptr;
   UpdateOutermostCountersDirtyScope(changed_scope);
   UpdateOutermostQuotesDirtyScope(changed_scope);
+  UpdateOutermostAnchorNameDirtyScope(changed_scope);
   return scope;
 }
 
@@ -142,6 +145,12 @@ void StyleContainmentScopeTree::UpdateOutermostCountersDirtyScope(
       FindCommonAncestor(scope, outermost_counters_dirty_scope_);
 }
 
+void StyleContainmentScopeTree::UpdateOutermostAnchorNameDirtyScope(
+    StyleContainmentScope* scope) {
+  outermost_anchor_name_dirty_scope_ =
+      FindCommonAncestor(scope, outermost_anchor_name_dirty_scope_);
+}
+
 void StyleContainmentScopeTree::UpdateQuotes() {
   if (!outermost_quotes_dirty_scope_) {
     return;
@@ -156,6 +165,14 @@ void StyleContainmentScopeTree::UpdateCounters() {
   }
   outermost_counters_dirty_scope_->UpdateCounters();
   outermost_counters_dirty_scope_ = nullptr;
+}
+
+void StyleContainmentScopeTree::InvalidateAnchorNameReferences() {
+  if (!outermost_anchor_name_dirty_scope_) {
+    return;
+  }
+  outermost_anchor_name_dirty_scope_->InvalidateAnchorNameReferences();
+  outermost_anchor_name_dirty_scope_ = nullptr;
 }
 
 void StyleContainmentScopeTree::AddCounterToObjectMap(

@@ -26,7 +26,6 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/action_view_interface.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -370,7 +369,7 @@ int LabelButton::GetHeightForWidth(int width) const {
   return height;
 }
 
-void LabelButton::Layout() {
+void LabelButton::Layout(PassKey) {
   gfx::Rect image_area = GetLocalBounds();
 
   ink_drop_container_->SetBoundsRect(image_area);
@@ -437,7 +436,7 @@ void LabelButton::Layout() {
   }
 
   label_->SetBoundsRect(label_bounds);
-  Button::Layout();
+  LayoutSuperclass<Button>(this);
 }
 
 void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {

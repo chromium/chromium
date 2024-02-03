@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "OnDeviceBaseModelMetadataProto";
+
+package optimization_guide.proto;
+
+// Specifies the version information of the currently downloaded on-device base
+// model. This is used to maintain compatibility of additional data requested
+// from the server for new features.
+message OnDeviceBaseModelMetadata {
+  // The name of the base model currently stored on-device.
+  optional string base_model_name = 1;
+  // The version of the base model currently stored on-device.
+  optional string base_model_version = 2;
+}

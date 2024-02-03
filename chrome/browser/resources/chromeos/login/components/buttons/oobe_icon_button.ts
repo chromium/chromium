@@ -27,15 +27,15 @@
  *
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/cr_icons.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../common_styles/oobe_common_styles.css.js';
 import '../oobe_vars/oobe_custom_vars.css.js';
 import '../hd_iron_icon.js';
 
-import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 
 import type {HdIronIcon} from '../hd_iron_icon.js';

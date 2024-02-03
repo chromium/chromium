@@ -371,7 +371,7 @@ TEST_F(PowerButtonTest, ButtonStatesGuestMode) {
 }
 
 TEST_F(PowerButtonTest, EmailIsShownForRegularAccount) {
-  SimulateUserLogin("user@gmail.com", user_manager::USER_TYPE_REGULAR);
+  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetEmailButton()->GetVisible());
   EXPECT_TRUE(GetEmailButton()->GetEnabled());
@@ -379,7 +379,7 @@ TEST_F(PowerButtonTest, EmailIsShownForRegularAccount) {
 }
 
 TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
-  SimulateUserLogin("child@gmail.com", user_manager::USER_TYPE_CHILD);
+  SimulateUserLogin("child@gmail.com", user_manager::UserType::kChild);
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetEmailButton()->GetVisible());
   // The multi-profile user chooser is disabled for child accounts.
@@ -388,7 +388,7 @@ TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
 }
 
 TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
-  SimulateUserLogin("test@test.com", user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  SimulateUserLogin("test@test.com", user_manager::UserType::kPublicAccount);
   SimulatePowerButtonPress();
   EXPECT_EQ(nullptr, GetEmailButton());
 }
@@ -397,7 +397,7 @@ TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
 // accessed in kiosk mode.
 
 TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
-  SimulateUserLogin("user@gmail.com", user_manager::USER_TYPE_REGULAR);
+  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
   SimulatePowerButtonPress();
   LeftClickOn(GetEmailButton());
 

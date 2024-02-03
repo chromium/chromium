@@ -5,11 +5,15 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_LACROS_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_LACROS_H_
 
+#include <memory>
+
 #include "base/values.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 
 namespace content {
+
+class ScopedAccessibilityMode;
 
 class BrowserAccessibilityStateImplLacros
     : public BrowserAccessibilityStateImpl {
@@ -26,6 +30,10 @@ class BrowserAccessibilityStateImplLacros
   void OnSpokenFeedbackPrefChanged(base::Value value);
 
   CrosapiPrefObserver crosapi_pref_observer_;
+
+  // Applies AXMode::kScreenReader to all WebContents in the process while
+  // spoken feedback is enabled.
+  std::unique_ptr<ScopedAccessibilityMode> screen_reader_mode_;
 };
 
 }  // namespace content

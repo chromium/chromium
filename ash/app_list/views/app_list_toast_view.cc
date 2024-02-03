@@ -356,7 +356,7 @@ gfx::Size AppListToastView::CalculatePreferredSize() const {
                GetLayoutManager()->GetPreferredSize(this).height()));
 }
 
-void AppListToastView::Layout() {
+void AppListToastView::Layout(PassKey) {
   // Make sure that labels are sized so the text fits the available width, logic
   // in `GetPreferredSize()` should ensure the toast is large enough for the
   // text to be visible within the UI.
@@ -368,7 +368,7 @@ void AppListToastView::Layout() {
         label_width, subtitle_label_->GetHeightForWidth(label_width)));
   }
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 void AppListToastView::UpdateInteriorMargins(const gfx::Insets& margin) {

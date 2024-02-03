@@ -34,10 +34,6 @@ class MockAutofillDriver : public mojom::AutofillDriver {
   }
 
   MOCK_METHOD(void,
-              SetFormToBeProbablySubmitted,
-              (const std::optional<FormData>& form),
-              (override));
-  MOCK_METHOD(void,
               FormsSeen,
               (const std::vector<FormData>& updated_forms,
                const std::vector<FormRendererId>& removed_forms),

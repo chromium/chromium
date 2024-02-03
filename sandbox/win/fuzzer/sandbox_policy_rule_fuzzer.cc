@@ -23,24 +23,22 @@ constexpr size_t maxParams = 2;
 std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
   auto policy = std::make_unique<sandbox::PolicyBase>("");
   auto* config = policy->GetConfig();
+  CHECK(config);
 
   auto result = config->SetFakeGdiInit();
-  if (result != sandbox::SBOX_ALL_OK)
-    return nullptr;
+  CHECK_EQ(result, sandbox::SBOX_ALL_OK);
 
   result = config->AllowFileAccess(sandbox::FileSemantics::kAllowAny,
                                    L"\\??\\pipe\\chrome.*");
-  if (result != sandbox::SBOX_ALL_OK)
-    return nullptr;
+  CHECK_EQ(result, sandbox::SBOX_ALL_OK);
 
   result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
-                                   L"\\\\.\\pipe\\chrome.unused.*");
-  if (result != sandbox::SBOX_ALL_OK)
-    return nullptr;
+                                   L"\\??\\pipe\\chrome.unused.*");
+  CHECK_EQ(result, sandbox::SBOX_ALL_OK);
 
-  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowAny, L"*.log");
-  if (result != sandbox::SBOX_ALL_OK)
-    return nullptr;
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowAny,
+                                   L"\\??\\*.log");
+  CHECK_EQ(result, sandbox::SBOX_ALL_OK);
 
   sandbox::BrokerServicesBase::FreezeTargetConfigForTesting(
       policy->GetConfig());

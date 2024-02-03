@@ -137,11 +137,11 @@ MakeMockDisplayVideoCaptureComponent() {
 }
 
 MediaTrackConstraints* MakeMediaTrackConstraints(
-    absl::optional<int> exact_width,
-    absl::optional<int> exact_height,
-    absl::optional<float> min_frame_rate,
-    absl::optional<float> max_frame_rate,
-    absl::optional<float> aspect_ratio = absl::nullopt) {
+    std::optional<int> exact_width,
+    std::optional<int> exact_height,
+    std::optional<float> min_frame_rate,
+    std::optional<float> max_frame_rate,
+    std::optional<float> aspect_ratio = std::nullopt) {
   MediaConstraints constraints;
   MediaTrackConstraintSetPlatform basic;
   if (exact_width) {
@@ -399,7 +399,7 @@ TEST_F(MediaStreamTrackImplTest,
   EXPECT_NE(initialFrameRate, kMaxFrameRate);
   // Apply new frame rate constraints.
   MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
-      absl::nullopt, absl::nullopt, kMinFrameRate, kMaxFrameRate);
+      std::nullopt, std::nullopt, kMinFrameRate, kMaxFrameRate);
   ScriptPromise apply_constraints_promise =
       track->applyConstraints(v8_scope.GetScriptState(), track_constraints);
 
@@ -435,7 +435,7 @@ TEST_F(MediaStreamTrackImplTest,
   EXPECT_NE(initialHeight, kReducedHeight);
   // Apply new frame rate constraints.
   MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
-      kReducedWidth, kReducedHeight, absl::nullopt, absl::nullopt);
+      kReducedWidth, kReducedHeight, std::nullopt, std::nullopt);
   ScriptPromise apply_constraints_promise =
       track->applyConstraints(v8_scope.GetScriptState(), track_constraints);
 
@@ -471,7 +471,7 @@ TEST_F(MediaStreamTrackImplTest,
   EXPECT_NE(initialHeight, kReducedHeight);
   // Apply new frame rate constraints.
   MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
-      kReducedWidth, absl::nullopt, absl::nullopt, absl::nullopt);
+      kReducedWidth, std::nullopt, std::nullopt, std::nullopt);
   ScriptPromise apply_constraints_promise =
       track->applyConstraints(v8_scope.GetScriptState(), track_constraints);
 
@@ -509,7 +509,7 @@ TEST_F(MediaStreamTrackImplTest, ApplyConstraintsWidthAndAspectRatio) {
   EXPECT_NE(initialHeight, kReducedHeight);
   // Apply new frame rate constraints.
   MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
-      kReducedWidth, absl::nullopt, absl::nullopt, absl::nullopt, kAspectRatio);
+      kReducedWidth, std::nullopt, std::nullopt, std::nullopt, kAspectRatio);
   ScriptPromise apply_constraints_promise =
       track->applyConstraints(v8_scope.GetScriptState(), track_constraints);
 
@@ -711,7 +711,7 @@ TEST_F(MediaStreamTrackImplTest, ApplyConstraintsUpdatesMinFps) {
 
   // Apply new constraints.
   MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
-      absl::nullopt, absl::nullopt, kMinFrameRate, initialFrameRate);
+      std::nullopt, std::nullopt, kMinFrameRate, initialFrameRate);
   ScriptPromise apply_constraints_promise =
       track->applyConstraints(v8_scope.GetScriptState(), track_constraints);
   ScriptPromiseTester tester(v8_scope.GetScriptState(),

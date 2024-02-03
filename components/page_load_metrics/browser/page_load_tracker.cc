@@ -266,9 +266,7 @@ internal::PageLoadTrackerPageType CalculatePageType(
              content::FrameType::kFencedFrameRoot) {
     return internal::PageLoadTrackerPageType::kFencedFramesPage;
   }
-  content::WebContentsDelegate* delegate =
-      navigation_handle->GetWebContents()->GetDelegate();
-  return (delegate && delegate->IsInPreviewMode())
+  return navigation_handle->GetWebContents()->IsInPreviewMode()
              ? internal::PageLoadTrackerPageType::kPreviewPrimaryPage
              : internal::PageLoadTrackerPageType::kPrimaryPage;
 }
@@ -806,10 +804,12 @@ void PageLoadTracker::OnCookiesRead(
     const GURL& first_party_url,
     bool blocked_by_policy,
     bool is_ad_tagged,
-    const net::CookieSettingOverrides& cookie_setting_overrides) {
+    const net::CookieSettingOverrides& cookie_setting_overrides,
+    bool is_partitioned_access) {
   for (const auto& observer : observers_) {
     observer->OnCookiesRead(url, first_party_url, blocked_by_policy,
-                            is_ad_tagged, cookie_setting_overrides);
+                            is_ad_tagged, cookie_setting_overrides,
+                            is_partitioned_access);
   }
 }
 
@@ -819,10 +819,12 @@ void PageLoadTracker::OnCookieChange(
     const net::CanonicalCookie& cookie,
     bool blocked_by_policy,
     bool is_ad_tagged,
-    const net::CookieSettingOverrides& cookie_setting_overrides) {
+    const net::CookieSettingOverrides& cookie_setting_overrides,
+    bool is_partitioned_access) {
   for (const auto& observer : observers_) {
     observer->OnCookieChange(url, first_party_url, cookie, blocked_by_policy,
-                             is_ad_tagged, cookie_setting_overrides);
+                             is_ad_tagged, cookie_setting_overrides,
+                             is_partitioned_access);
   }
 }
 

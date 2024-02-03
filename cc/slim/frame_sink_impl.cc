@@ -164,6 +164,11 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
       break;
   }
 
+  // CreateSharedImage() with initial pixels doesn't support specifying
+  // non-standard stride so data must be exactly the minimum size required to
+  // hold all pixels.
+  DCHECK_EQ(format.EstimatedSizeInBytes(size), resource_bitmap.SizeInBytes());
+
   UploadedUIResource uploaded_resource;
   auto* sii = context_provider_->SharedImageInterface();
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();

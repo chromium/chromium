@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/tls_prober.h"
 #include "net/base/host_port_pair.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 namespace ash {
 namespace network_diagnostics {
@@ -26,7 +27,7 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
 
     // Creates an instance of TlsProber.
     virtual std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
-        TlsProber::NetworkContextGetter network_context_getter,
+        network::NetworkContextGetter network_context_getter,
         net::HostPortPair host_port_pair,
         bool negotiate_tls,
         TlsProber::TlsProbeCompleteCallback callback) = 0;
@@ -34,12 +35,13 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
 
   using TlsProberGetterCallback =
       base::RepeatingCallback<std::unique_ptr<TlsProber>(
-          TlsProber::NetworkContextGetter network_context_getter,
+          network::NetworkContextGetter network_context_getter,
           net::HostPortPair host_port_pair,
           bool negotiate_tls,
           TlsProber::TlsProbeCompleteCallback callback)>;
 
-  HttpFirewallRoutine();
+  explicit HttpFirewallRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   HttpFirewallRoutine(const HttpFirewallRoutine&) = delete;
   HttpFirewallRoutine& operator=(const HttpFirewallRoutine&) = delete;
   ~HttpFirewallRoutine() override;

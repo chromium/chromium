@@ -35,7 +35,7 @@ class TrustTokenRequestHelper {
   // Tokens issuance and redemption, this involves executing a network request).
   virtual void Begin(
       const GURL& url,
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+      base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                               mojom::TrustTokenOperationStatus)> done) = 0;
 
   // Checks |response_headers| for issuance response headers; if these are

@@ -7,6 +7,7 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 [expanded] 
 element.style { ()
@@ -15,5 +16,6 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 

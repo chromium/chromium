@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
   explicit OAuth2MintAccessTokenFetcherAdapter(
       OAuth2AccessTokenConsumer* consumer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const std::string& user_gaia_id,
       const std::string& refresh_token,
       const std::string& device_id,
       const std::string& client_version,
@@ -68,6 +69,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
       const RemoteConsentResolutionData& resolution_data) override;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const std::string user_gaia_id_;
   const std::string refresh_token_;
   const std::string device_id_;
   const std::string client_version_;

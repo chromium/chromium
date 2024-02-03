@@ -126,7 +126,7 @@ class PasskeyAuthenticatorServiceAshTest : public testing::Test {
         account_info_, &passkey_model_, &trusted_vault_client_);
     passkey_authenticator_->BindReceiver(
         passkey_authenticator_remote_.BindNewPipeAndPassReceiver());
-    crypto::RandBytes(base::make_span(security_domain_secret_));
+    crypto::RandBytes(security_domain_secret_);
   }
 
   void InjectTrustedVaultKey() {

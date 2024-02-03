@@ -21,6 +21,7 @@
 #include "content/public/common/content_features.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -496,7 +497,7 @@ bool SimpleFeature::IsIdInAllowlist(const HashedExtensionId& hashed_id) const {
 }
 
 // static
-bool SimpleFeature::IsIdInArray(const std::string& extension_id,
+bool SimpleFeature::IsIdInArray(const ExtensionId& extension_id,
                                 const char* const array[],
                                 size_t array_length) {
   if (!IsValidExtensionId(extension_id))
@@ -582,7 +583,7 @@ Feature::Availability SimpleFeature::CheckDependencies(
 }
 
 // static
-bool SimpleFeature::IsValidExtensionId(const std::string& extension_id) {
+bool SimpleFeature::IsValidExtensionId(const ExtensionId& extension_id) {
   // Belt-and-suspenders philosophy here. We should be pretty confident by this
   // point that we've validated the extension ID format, but in case something
   // slips through, we avoid a class of attack where creative ID manipulation

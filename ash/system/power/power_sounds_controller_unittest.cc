@@ -41,7 +41,8 @@ constexpr int kLowPowerMinutes = 15;
 
 class PowerSoundsControllerTest : public AshTestBase {
  public:
-  PowerSoundsControllerTest(absl::optional<bool> battery_saver_allowed = false)
+  explicit PowerSoundsControllerTest(
+      absl::optional<bool> battery_saver_allowed = false)
       : battery_saver_allowed_(battery_saver_allowed) {}
 
   PowerSoundsControllerTest(const PowerSoundsControllerTest&) = delete;
@@ -52,8 +53,7 @@ class PowerSoundsControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_.InitWithFeatures(
-        {features::kSystemSounds, features::kBatterySaver}, {});
+    scoped_feature_.InitWithFeatures({features::kBatterySaver}, {});
     AshTestBase::SetUp();
     OverrideIsBatterySaverAllowedForTesting(battery_saver_allowed_);
     SetInitialPowerStatus();

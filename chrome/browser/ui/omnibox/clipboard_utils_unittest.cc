@@ -92,8 +92,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
   {
     const std::u16string kMarkup(u"<strong>Hi!</string>");
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteHTML(kMarkup, kURL,
-                               ui::ClipboardContentType::kSanitized);
+    clipboard_writer.WriteHTML(kMarkup, kURL);
   }
   EXPECT_TRUE(GetClipboardText(/*notify_if_restricted=*/false).empty());
 }

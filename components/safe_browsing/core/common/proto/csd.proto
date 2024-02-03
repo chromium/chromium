@@ -1654,6 +1654,13 @@ message ClientSafeBrowsingReportRequest {
     optional int64 google_play_services_version = 2;
     optional bool is_instant_apps = 3;
     optional SafeBrowsingUrlApiType url_api_type = 4;
+    // Server-side only fields.
+    reserved 5;
+    reserved 6;
+    // Whether this is an asynchronous check. If true,
+    // the user may see the page before they see a warning. See
+    // go/async-sb-check-telemetry for details.
+    optional bool is_async_check = 7;
   }
   optional SafeBrowsingClientProperties client_properties = 17;
 

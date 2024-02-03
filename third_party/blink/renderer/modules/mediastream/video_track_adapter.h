@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/media_stream_types.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -118,7 +119,7 @@ class MODULES_EXPORT VideoTrackAdapter
                                    const VideoTrackAdapterSettings& settings,
                                    gfx::Size* desired_size);
 
-  absl::optional<gfx::Size> source_frame_size() const {
+  std::optional<gfx::Size> source_frame_size() const {
     return source_frame_size_;
   }
 
@@ -210,7 +211,7 @@ class MODULES_EXPORT VideoTrackAdapter
 
   // Resolution configured on the video source, accessed on the video task
   // runner.
-  absl::optional<gfx::Size> source_frame_size_;
+  std::optional<gfx::Size> source_frame_size_;
 };
 
 }  // namespace blink

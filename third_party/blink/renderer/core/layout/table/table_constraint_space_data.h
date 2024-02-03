@@ -41,7 +41,7 @@ class TableConstraintSpaceData : public RefCounted<TableConstraintSpaceData> {
     Row(LayoutUnit block_size,
         wtf_size_t start_cell_index,
         wtf_size_t cell_count,
-        absl::optional<LayoutUnit> baseline,
+        std::optional<LayoutUnit> baseline,
         bool is_collapsed)
         : block_size(block_size),
           start_cell_index(start_cell_index),
@@ -58,7 +58,7 @@ class TableConstraintSpaceData : public RefCounted<TableConstraintSpaceData> {
     const LayoutUnit block_size;
     const wtf_size_t start_cell_index;
     const wtf_size_t cell_count;
-    const absl::optional<LayoutUnit> baseline;
+    const std::optional<LayoutUnit> baseline;
     const bool is_collapsed;
   };
 

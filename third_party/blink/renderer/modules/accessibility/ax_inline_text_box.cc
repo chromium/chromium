@@ -30,10 +30,10 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/numerics/clamped_math.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -278,7 +278,7 @@ void AXInlineTextBox::SerializeMarkerAttributes(
   std::vector<int32_t> marker_ends;
 
   // First use ARIA markers for spelling/grammar if available.
-  absl::optional<DocumentMarker::MarkerType> aria_marker_type =
+  std::optional<DocumentMarker::MarkerType> aria_marker_type =
       GetAriaSpellingOrGrammarMarker();
   if (aria_marker_type) {
     marker_types.push_back(ToAXMarkerType(aria_marker_type.value()));

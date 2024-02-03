@@ -23,7 +23,6 @@ source_set("incognito_interstitial_ui") {
     "//ios/chrome/browser/shared/ui/elements:elements",
     "//ios/chrome/browser/shared/ui/util:util",
     "//ios/chrome/browser/ui/ntp/incognito",
-    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/promo_style:promo_style",
     "//ios/chrome/common/ui/util:util",

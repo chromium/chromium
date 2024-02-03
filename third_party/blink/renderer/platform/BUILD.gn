@@ -719,6 +719,7 @@ component("platform") {
     "fonts/shaping/font_features.cc",
     "fonts/shaping/font_features.h",
     "fonts/shaping/glyph_bounds_accumulator.h",
+    "fonts/shaping/glyph_data.h",
     "fonts/shaping/han_kerning.cc",
     "fonts/shaping/han_kerning.h",
     "fonts/shaping/harfbuzz_face.cc",
@@ -974,6 +975,8 @@ component("platform") {
     "graphics/gpu/extensions_3d_util.h",
     "graphics/gpu/graphics_context_3d_utils.cc",
     "graphics/gpu/graphics_context_3d_utils.h",
+    "graphics/gpu/image_extractor.cc",
+    "graphics/gpu/image_extractor.h",
     "graphics/gpu/image_layer_bridge.cc",
     "graphics/gpu/image_layer_bridge.h",
     "graphics/gpu/shared_context_rate_limiter.cc",
@@ -2622,6 +2625,16 @@ fuzzer_test("blink_png_decoder_fuzzer") {
     "//third_party/blink/web_tests/images/png-suite/samples",
     "//third_party/blink/web_tests/images/resources/pngfuzz",
   ]
+}
+
+fuzzer_test("blink_jpeg_decoder_fuzzer") {
+  sources = [ "image-decoders/jpeg/jpeg_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
 }
 
 # Fuzzer for blink::DateTimeFormat.

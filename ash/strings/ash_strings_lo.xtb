@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">ສະບາຍດີຕອນບ່າຍ <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">ຊອກຫາ <ph name="CATEGORY" />, ໄຟລ໌, ແອັບ ແລະ ອື່ນໆຂອງທ່ານ. ໃຊ້ປຸ່ມລູກສອນເພື່ອນຳທາງແອັບຂອງທ່ານ.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + ລູກສອນລົງ</translation>
+<translation id="1094756674036064790">ປິດ Bluetooth ບໍ?</translation>
 <translation id="109942774857561566">ຂ້ອຍເບື່ອຫຼາຍ</translation>
 <translation id="1104084341931202936">ສະແດງການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="1104621072296271835">ອຸປະກອນຂອງທ່ານໃຊ້ໄດ້ດີຍິ່ງຂຶ້ນຮ່ວມກັນ</translation>
@@ -607,9 +608,11 @@
 <translation id="3526440770046466733">ເປີດລິ້ງໃນແຖບໃໝ່ ແລະ ຢູ່ໃນແຖບປັດຈຸບັນຕໍ່ໄປ</translation>
 <translation id="353086728817903341">ເຊື່ອມຕໍ່ຫາ <ph name="NUM_DEVICES" /> ອຸປະກອນແລ້ວ</translation>
 <translation id="3533126039236445965">ແອັບໃນຖ້ານ</translation>
+<translation id="3537350467437346467">ທ່ານໄດ້ເບິ່ງ</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ຮັອດສະປອດ</translation>
 <translation id="3540893133818942399">ປິດການຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ ແລະ ແອັບຂອງໂທລະສັບທ່ານໄວ້</translation>
 <translation id="3542066395059568317">ທ່ານຈະເຫັນການແນະນຳເພື່ອໃຫ້ທ່ານສາມາດສືບຕໍ່ຈາກບ່ອນທີ່ເປີດຄ້າງໄວ້ໄດ້. ທ່ານສາມາດຄລິກຂວາເພື່ອລຶບການແນະນຳອອກໄດ້.</translation>
+<translation id="3547318469722231257">ທ່ານໄດ້ແກ້ໄຂ</translation>
 <translation id="3552189655002856821">ປິດ Wi-Fi ແລ້ວ</translation>
 <translation id="3554215588514239132">ສະແດງ ຫຼື ເຊື່ອງແຜງເຄື່ອງມືສຳລັບນັກພັດທະນາ</translation>
 <translation id="3554637740840164787">ປັກໝຸດ <ph name="ITEM_TITLE" /> ແລ້ວ</translation>
@@ -658,6 +661,7 @@
 <translation id="3660860940251915011">ເປີດ/ປິດການເບິ່ງເຫັນລະດັບສູງຂອງ <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">ຜູ້ໃຊ້ທີ່ມີການຈັດການ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">ປັດເພື່ອເຊື່ອງໜ້າຈໍແບບລອຍຂອງທ່ານ</translation>
+<translation id="3673898235958558034">ເມື່ອທ່ານປິດ Bluetooth, "<ph name="DEVICE_NAME_1" />" ແລະ "<ph name="DEVICE_NAME_2" />" ຈະຕັດການເຊື່ອມຕໍ່ຈາກ Chromebook ຂອງທ່ານ.</translation>
 <translation id="367531336287639526">ເລືອກໄອຄອນທຳອິດໄປທາງຊ້າຍຂອງແຖບທີ່ຢູ່</translation>
 <translation id="3677931086890821290">ການດຳເນີນການນີ້ຈະອະນຸຍາດໃຫ້ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີການອະນຸຍາດເຂົ້າເຖິງສະຖານທີ່ ແລະ ChromeOS ສາມາດໃຊ້ສະຖານທີ່ Wi-Fi ແລະ ເຄືອຂ່າຍມືຖືໄດ້.</translation>
 <translation id="3679827876008292680">ເຂົ້າໄປແຖບສຸດທ້າຍໃນໜ້າຈໍ</translation>
@@ -701,6 +705,7 @@
 <translation id="385300504083504382">ການເລີ່ມຕົ້ນ</translation>
 <translation id="3859364108019690">ສະຕຣີມແອັບບໍ່ໄດ້</translation>
 <translation id="3861651314799684201">ກົດ enter ເພື່ອບັນທຶກເຕັມຈໍ</translation>
+<translation id="3882323608730650973">ແກ້ໄຂແລ້ວ</translation>
 <translation id="3886872229787704059">ເປີດມື້ນີ້</translation>
 <translation id="3891340733213178823">ກົດ Ctrl+Shift+Q ສອງຄັ້ງເພື່ອອອກຈາກລະບົບ.</translation>
 <translation id="3893630138897523026">ChromeVox (ຄໍາ​ຄິດ​ເຫັນ​ທີ່ເວົ້າມາ​)</translation>
@@ -894,6 +899,7 @@
 <translation id="4582666543382004902">ປິດຮັອດສະປອດເພື່ອໃຊ້ Wi-Fi ແລ້ວ. ເພື່ອໃຊ້ຮັອດສະປອດ, ໃຫ້ປິດ Wi-Fi.</translation>
 <translation id="4585337515783392668">ຢຸດການສົ່ງສັນຍານໃນເຄື່ອງຮັບທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="4596144739579517758">ຮູບແບບສີສັນມືດປິດຢູ່</translation>
+<translation id="4596442969149038771"><ph name="USER" /> ໄດ້ແບ່ງປັນ</translation>
 <translation id="4611292653554630842">ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="462160925400706389">ເຊື່ອມຕໍ່ <ph name="NAME" /> ແລ້ວ</translation>
 <translation id="4623167406982293031">ຢັ້ງຢືນບັນຊີ</translation>
@@ -911,6 +917,7 @@
 <translation id="4666911709726371538">ແອັບເພີ່ມເຕີມ</translation>
 <translation id="4667099493359681081">ກຳລັງດາວໂຫຼດ <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">ເປີດໃຊ້ຕົວປະຢັດແບັດເຕີຣີແລ້ວ</translation>
+<translation id="4673427585974421255">ເປີດໄວ້</translation>
 <translation id="468293128311738995">ແອັບຈາກໂທລະສັບຂອງທ່ານ</translation>
 <translation id="4690510401873698237">ຊັ້ນວາງຢູ່ລຸ່ມສຸດ</translation>
 <translation id="4696813013609194136">ປົດລັອກອຸປະກອນດ້ວຍລະຫັດພໍ່ແມ່</translation>
@@ -1211,6 +1218,7 @@
 <translation id="5802516411616338943">ເປີດການຕັ້ງຄ່າດ່ວນ</translation>
 <translation id="5804651031882187592">ປິດການຕັ້ງຄ່າ "ລັອກຊິມ"</translation>
 <translation id="5805809050170488595">ຄລິກເພື່ອເປີດໃຊ້ <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">ເມື່ອທ່ານປິດ Bluetooth, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ແລະ ອີກ <ph name="DEVICE_COUNT" /> ອຸປະກອນຈະຕັດການເຊື່ອມຕໍ່ຈາກ Chromebook ຂອງທ່ານ.</translation>
 <translation id="5823239091726045201">Google Tasks ຢູ່ເວັບ</translation>
 <translation id="5825969630400862129">ການຕັ້ງຄ່າອຸປະກອນທີ່ເຊື່ອມຕໍ່</translation>
 <translation id="5837036133683224804">ຢຸດ <ph name="ROUTE_TITLE" /> ໃນ <ph name="RECEIVER_NAME" /></translation>
@@ -1337,6 +1345,7 @@
 <translation id="6298183524022479114">ປັບແຕ່ງອຸປະກອນນີ້ໃນແອັບ</translation>
 <translation id="6309219492973062892">ຄລິກ ຫຼື ແຕະໄອຄອນຖ້ານ 1-8</translation>
 <translation id="6315170314923504164">ສຽງ</translation>
+<translation id="6319058840130157106">ຍ້າຍກັບຫຼັງລະຫວ່າງມຸມຂວາລຸ່ມ, ຕົວເປີດໃຊ້, ແຖບທີ່ຢູ່, ແຖບບຸກມາກ, ເວັບໄຊທີ່ເປີດ ແລະ ດາວໂຫຼດ</translation>
 <translation id="6324916366299863871">ແກ້ໄຂທາງລັດ</translation>
 <translation id="6330012934079202188">ກຳລັງສະແດງໜ້າຈໍຈາກໂຕະທັງໝົດ, ກົດປຸ່ມລູກສອນຂຶ້ນເພື່ອສະແດງໜ້າຈໍຈາກໂຕະປັດຈຸບັນ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ແມ່ນເຊດຊັນແບບມີການຈັດການທີ່ຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>
@@ -1390,6 +1399,7 @@
 <translation id="6539852571005954999">ກຳລັງສະແກນການດາວໂຫຼດ <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">ກໍາລັງສົ່ງສັນຍານຫາ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">ຊອກຫາຮູບຕາມເນື້ອຫາ ແລະ ຕົວຢ່າງຮູບ</translation>
+<translation id="6547795021703527064">ເມື່ອທ່ານປິດ Bluetooth, "<ph name="DEVICE_NAME" />" ຈະຕັດການເຊື່ອມຕໍ່ຈາກ Chromebook ຂອງທ່ານ.</translation>
 <translation id="6555373427270923730">ພິມທີ່ຢູ່ເວັບໃນແຖບທີ່ຢູ່, ແລ້ວກົດ <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ຕິດຕັ້ງໃໝ່</translation>
@@ -1815,6 +1825,7 @@
 <translation id="8314772463905284467">Caps Lock ເປີດຢູ່</translation>
 <translation id="8315514906653279104">ກຳລັງເປີດ...</translation>
 <translation id="8331351032546853669">ການດາວໂຫຼດລໍຖ້າດຳເນີນການ</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">ເລືອກໜ້າຈໍ <ph name="WINDOW_TITLE" /> ແລ້ວ</translation>
 <translation id="8349826889576450703">ຕົວເປີດໃຊ້</translation>
@@ -1921,6 +1932,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, ແອັບທີ່ຕິດຕັ້ງແລ້ວ, ບລັອກໄວ້ແລ້ວ</translation>
 <translation id="8785070478575117577">ເຊື່ອມຕໍ່ກັບ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">ຍ້າຍໄປໜ້າລະຫວ່າງມຸມຂວາລຸ່ມ, ຕົວເປີດໃຊ້, ແຖບທີ່ຢູ່, ແຖບບຸກມາກ, ເວັບໄຊທີ່ເປີດ ແລະ ດາວໂຫຼດ</translation>
 <translation id="8792626944327216835">ໄມໂຄຣໂຟນ</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">ໂຟລເດີ <ph name="FOLDER_NAME" /></translation>
@@ -2034,6 +2046,7 @@
 <translation id="953431725143473984">ປິດເຄື່ອງບໍ?</translation>
 <translation id="954052413789300507">ພື້ນທີ່ບໍ່ພຽງພໍສຳລັບ <ph name="FILENAME" />. ກະລຸນາສ້າງພື້ນທີ່ຫວ່າງກ່ອນ.</translation>
 <translation id="954520015070501466">30ນທ</translation>
+<translation id="954786879461589145"><ph name="USER" /> ໄດ້ແກ້ໄຂ</translation>
 <translation id="974545358917229949">ສະແດງຜົນການຊອກຫາ <ph name="RESULT_COUNT" /> ລາຍການສຳລັບ <ph name="QUERY" /></translation>
 <translation id="981011780479609956">ບໍ່ມີມື້ຮອດກຳນົດ</translation>
 <translation id="98120814841227350">ໄປຫາທ້າຍເອກະສານ</translation>

@@ -131,7 +131,7 @@ sk_sp<PaintFilter> FEComponentTransfer::CreateImageFilter() {
   unsigned char r_values[256], g_values[256], b_values[256], a_values[256];
   GetValues(r_values, g_values, b_values, a_values);
 
-  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   sk_sp<cc::ColorFilter> color_filter =
       cc::ColorFilter::MakeTableARGB(a_values, r_values, g_values, b_values);
   return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),

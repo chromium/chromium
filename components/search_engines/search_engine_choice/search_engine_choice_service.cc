@@ -65,6 +65,16 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
   }
   return false;
 }
+
+bool IsDefaultSearchProviderSetOrBlockedByPolicy(
+    const TemplateURLService& template_url_service) {
+  const TemplateURL* default_search_engine =
+      template_url_service.GetDefaultSearchProvider();
+
+  return !default_search_engine ||
+         default_search_engine->created_by_policy() ==
+             TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+}
 #endif
 
 SearchEngineType GetDefaultSearchEngineType(
@@ -132,24 +142,6 @@ bool SearchEngineChoiceService::ShouldShowUpdatedSettings() {
   return IsChoiceScreenFlagEnabled(ChoicePromo::kAny);
 }
 
-#if BUILDFLAG(IS_IOS)
-bool SearchEngineChoiceService::ShouldShowChoiceScreen(
-    const policy::PolicyService& policy_service,
-    bool is_regular_profile,
-    TemplateURLService* template_url_service) {
-  PreprocessPrefsForReprompt();
-  auto condition = GetStaticChoiceScreenConditions(
-      policy_service, is_regular_profile, CHECK_DEREF(template_url_service));
-
-  if (condition == SearchEngineChoiceScreenConditions::kEligible) {
-    condition = GetDynamicChoiceScreenConditions(*template_url_service);
-  }
-
-  RecordChoiceScreenProfileInitCondition(condition);
-  return condition == SearchEngineChoiceScreenConditions::kEligible;
-}
-#endif
-
 SearchEngineChoiceScreenConditions
 SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     const policy::PolicyService& policy_service,
@@ -164,10 +156,16 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
 
+#if !BUILDFLAG(IS_IOS)
+  // `prefs::kDefaultSearchProviderChoicePending` does not get set on
+  // iOS. Instead, the iOS-specific wrapper
+  // `ShouldDisplaySearchEngineChoiceScreen()` handles checking whether
+  // the screen should be displayed based on the promo type.
   if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
       !profile_prefs_->GetBoolean(prefs::kDefaultSearchProviderChoicePending)) {
     return SearchEngineChoiceScreenConditions::kProfileOutOfScope;
   }
+#endif
 
   if (!is_regular_profile) {
     // Naming not exactly accurate, but still reflect the fact that incognito,
@@ -206,7 +204,8 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kSearchProviderOverride;
   }
 
-  if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service)) {
+  if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service) ||
+      IsDefaultSearchProviderSetOrBlockedByPolicy(template_url_service)) {
     return SearchEngineChoiceScreenConditions::kControlledByPolicy;
   }
 
@@ -225,6 +224,10 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
   // Don't show the dialog if the default search engine is set by an extension.
   if (template_url_service.IsExtensionControlledDefaultSearch()) {
     return SearchEngineChoiceScreenConditions::kExtensionControlled;
+  }
+
+  if (IsDefaultSearchProviderSetOrBlockedByPolicy(template_url_service)) {
+    return SearchEngineChoiceScreenConditions::kControlledByPolicy;
   }
 
   // Don't show the dialog if the user has a custom search engine set as

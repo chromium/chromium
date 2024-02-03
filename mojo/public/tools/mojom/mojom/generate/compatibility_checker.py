@@ -7,6 +7,10 @@ from mojom.generate import module as mojom
 from functools import singledispatchmethod
 
 
+class CompatibilityError(Exception):
+  pass
+
+
 class BackwardCompatibilityChecker:
   """Used for memoization while recursively checking two type definitions for
   backward-compatibility."""
@@ -30,13 +34,6 @@ class BackwardCompatibilityChecker:
         self._cache[key] = False
     return result
 
-  def _IsFieldBackwardCompatible(self, new_field: mojom.Kind,
-                                 old_field: mojom.Kind):
-    if (new_field.min_version or 0) != (old_field.min_version or 0):
-      return False
-
-    return self.IsBackwardCompatible(new_field.kind, old_field.kind)
-
   # Each type should register their own compatibility check under this
   # dispatcher. Assume that both new and old are the same type when the
   # type specific compatibility checker is invoked.
@@ -49,10 +46,19 @@ class BackwardCompatibilityChecker:
   def _(self, new: mojom.Kind, old: mojom.Kind):
     return new == old
 
+  @_CheckCompat.register(mojom.Field)
+  def _(self, new: mojom.Field, old: mojom.Field):
+    if (new.min_version or 0) != (old.min_version or 0):
+      return False
+
+    return self.IsBackwardCompatible(new.kind, old.kind)
+
   @_CheckCompat.register(mojom.Struct)
   def _(self, new: mojom.Struct, old: mojom.Struct):
-    """The new struct is backward-compatible with older_struct if and only if
-    all of the following conditions hold:
+    """This struct is backward-compatible with the older_struct if they are
+    layout compatible or semantically compatible.
+    A struct is semantically compatible if and only if all the following
+    conditions hold:
       - Any newly added field is tagged with a [MinVersion] attribute specifying
         a version number greater than all previously used [MinVersion]
         attributes within the struct.
@@ -64,13 +70,25 @@ class BackwardCompatibilityChecker:
       - All reference-typed (string, array, map, struct, or union) fields tagged
         with a [MinVersion] greater than zero must be optional.
     """
+    # Check for layout compatibility first. If they are layout compatible, we
+    # are done.
+    new_packed_fields = pack.PackedStruct(new).packed_fields_in_ordinal_order
+    old_packed_fields = pack.PackedStruct(old).packed_fields_in_ordinal_order
+
+    if len(new_packed_fields) == len(old_packed_fields):
+      layout_compatible = True
+      for pair in zip(new_packed_fields, old_packed_fields):
+        (new_field, old_field) = (pair[0].field, pair[1].field)
+        if not self.IsBackwardCompatible(new_field, old_field):
+          layout_compatible = False
+          break
+
+      if layout_compatible:
+        return True
 
     def buildOrdinalFieldMap(struct):
       fields_by_ordinal = {}
       for field in struct.fields:
-        if field.ordinal in fields_by_ordinal:
-          raise Exception('Multiple fields with ordinal %s in struct %s.' %
-                          (field.ordinal, struct.mojom_name))
         fields_by_ordinal[field.ordinal] = field
       return fields_by_ordinal
 
@@ -78,11 +96,10 @@ class BackwardCompatibilityChecker:
     old_fields = buildOrdinalFieldMap(old)
     if len(new_fields) < len(old_fields):
       # At least one field was removed, which is not OK.
-      raise Exception('Removing struct fields from struct %s is not allowed.' %
-                      (new.mojom_name))
+      raise CompatibilityError(
+          'Removing struct fields from struct %s is not allowed.' %
+          (new.mojom_name))
 
-    # If there are N fields, existing ordinal values must exactly cover the
-    # range from 0 to N-1.
     num_old_ordinals = len(old_fields)
     max_old_min_version = 0
     for ordinal in range(num_old_ordinals):
@@ -90,10 +107,10 @@ class BackwardCompatibilityChecker:
       old_field = old_fields[ordinal]
       if (old_field.min_version or 0) > max_old_min_version:
         max_old_min_version = old_field.min_version
-      if not self._IsFieldBackwardCompatible(new_field, old_field):
+      if not self.IsBackwardCompatible(new_field, old_field):
         # Type or min-version mismatch between old and new versions of the same
         # ordinal field.
-        raise Exception(
+        raise CompatibilityError(
             'Struct %s field with ordinal value %d have different type'
             ' or min version, old name %s, new name %s.' %
             (new.mojom_name, ordinal, old_field.mojom_name,
@@ -109,20 +126,20 @@ class BackwardCompatibilityChecker:
       min_version = new_field.min_version or 0
       if min_version <= max_old_min_version:
         # A new field is being added to an existing version, which is not OK.
-        raise Exception(
+        raise CompatibilityError(
             'Adding new fields to an existing MinVersion is not allowed'
             ' for struct %s' % (new.mojom_name))
       if min_version < last_min_version:
         # The [MinVersion] of a field cannot be lower than the [MinVersion] of
         # a field with lower ordinal value.
-        raise Exception(
+        raise CompatibilityError(
             'MinVersion of struct %s field %s cannot be lower than MinVersion'
             ' of preceding fields' % (new.mojom_name, new_field))
       if mojom.IsReferenceKind(
           new_field.kind) and not mojom.IsNullableKind(new_field.kind):
         # New fields whose type can be nullable MUST be nullable.
-        raise Exception('New struct %s field %s must be nullable' %
-                        (new.mojom_name, new_field))
+        raise CompatibilityError('New struct %s field %s must be nullable' %
+                                 (new.mojom_name, new_field))
 
     return True
 
@@ -143,8 +160,9 @@ class BackwardCompatibilityChecker:
       fields_by_ordinal = {}
       for field in union.fields:
         if field.ordinal in fields_by_ordinal:
-          raise Exception('Multiple fields with ordinal %s in union %s.' %
-                          (field.ordinal, union.mojom_name))
+          raise CompatibilityError(
+              'Multiple fields with ordinal %s in union %s.' %
+              (field.ordinal, union.mojom_name))
         fields_by_ordinal[field.ordinal] = field
       return fields_by_ordinal
 
@@ -160,7 +178,7 @@ class BackwardCompatibilityChecker:
       if not new_field:
         # A field was removed, which is not OK.
         return False
-      if not self._IsFieldBackwardCompatible(new_field, old_field):
+      if not self.IsBackwardCompatible(new_field, old_field):
         # An field changed its type or MinVersion, which is not OK.
         return False
       old_min_version = old_field.min_version or 0
@@ -229,8 +247,9 @@ class BackwardCompatibilityChecker:
       methods_by_ordinal = {}
       for method in interface.methods:
         if method.ordinal in methods_by_ordinal:
-          raise Exception('Multiple methods with ordinal %s in interface %s.' %
-                          (method.ordinal, interface.mojom_name))
+          raise CompatibilityError(
+              'Multiple methods with ordinal %s in interface %s.' %
+              (method.ordinal, interface.mojom_name))
         methods_by_ordinal[method.ordinal] = method
       return methods_by_ordinal
 
@@ -301,19 +320,20 @@ class BackwardCompatibilityChecker:
     new_fields = buildVersionFieldMap(new)
 
     if new_fields.keys() != old_fields.keys() and not old.extensible:
-      raise Exception("Non-extensible enum cannot be modified")
+      raise CompatibilityError("Non-extensible enum cannot be modified")
 
     for min_version, valid_values in old_fields.items():
       if min_version not in new_fields:
-        raise Exception('New values added to an extensible enum '
-                        'did not specify MinVersion: %s' % new_fields)
+        raise CompatibilityError('New values added to an extensible enum '
+                                 'did not specify MinVersion: %s' % new_fields)
 
       if (new_fields[min_version] != valid_values):
         if (len(new_fields[min_version]) < len(valid_values)):
-          raise Exception('Removing values for an existing MinVersion %s '
-                          'is not allowed' % min_version)
+          raise CompatibilityError(
+              'Removing values for an existing MinVersion %s '
+              'is not allowed' % min_version)
 
-        raise Exception(
+        raise CompatibilityError(
             'New values don\'t match old values '
             'for an existing MinVersion %s, '
             'please specify MinVersion equal to "Next version" '

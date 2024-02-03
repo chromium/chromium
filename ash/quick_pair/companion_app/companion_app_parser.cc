@@ -5,6 +5,7 @@
 #include "ash/quick_pair/companion_app/companion_app_parser.h"
 
 #include <optional>
+#include <string_view>
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
@@ -72,7 +73,7 @@ std::optional<std::string> CompanionAppParser::GetCompanionAppExtra(
   //
   // They must always begin with "#Intent", have components be separated by ";"
   // and end with "end"
-  const std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  const std::vector<std::string_view> parts = base::SplitStringPiece(
       intent_as_string, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() < 2 || parts.front() != kIntentPrefix ||
       parts.back() != kEndSuffix) {

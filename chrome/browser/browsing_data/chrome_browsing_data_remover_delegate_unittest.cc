@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -4033,7 +4032,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_TRUE(prefs->GetDict(kPermissionActionsPrefPath).empty());
 }
 
-// Force-enables kEnablePasswordsAccountStorage.
+// Tests with non-null AccountPasswordStoreFactory::GetForProfile().
 class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
     : public ChromeBrowsingDataRemoverDelegateWithPasswordsTest {
  public:
@@ -4041,17 +4040,9 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
 #if BUILDFLAG(IS_ANDROID)
     // Using the account store on Android also requires UPM support for local
     // passwords.
-    feature_list_.InitWithFeatures(
-        {password_manager::features::kEnablePasswordsAccountStorage,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-        {});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        password_manager_android_util::
-            kSkipLocalUpmGmsCoreVersionCheckForTesting);
-#else
     feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 #endif
   }
 };

@@ -181,7 +181,7 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
            std::u16string key,
            std::u16string value,
            base::OnceCallback<void(OperationResult)> callback,
-           SetBehavior behavior = SetBehavior::kDefault) override {
+           SetBehavior behavior) override {
     Run(std::move(callback));
   }
   void Append(url::Origin context_origin,
@@ -514,7 +514,7 @@ class SharedStorageManagerTest : public testing::Test {
            std::u16string key,
            std::u16string value,
            OperationResult* out_result,
-           SetBehavior behavior = SetBehavior::kDefault) {
+           SetBehavior behavior) {
     DCHECK(out_result);
     DCHECK(GetManager());
     DCHECK(receiver_);
@@ -1834,15 +1834,15 @@ TEST_P(SharedStorageManagerParamTest, AsyncOperations) {
   ASSERT_TRUE(GetManager()->database());
 
   OperationResult result1 = OperationResult::kSqlError;
-  Set(kOrigin1, u"key1", u"value1", &result1);
+  Set(kOrigin1, u"key1", u"value1", &result1, SetBehavior::kDefault);
   GetResult value1;
   Get(kOrigin1, u"key1", &value1);
   OperationResult result2 = OperationResult::kSqlError;
-  Set(kOrigin1, u"key1", u"value2", &result2);
+  Set(kOrigin1, u"key1", u"value2", &result2, SetBehavior::kDefault);
   GetResult value2;
   Get(kOrigin1, u"key1", &value2);
   OperationResult result3 = OperationResult::kSqlError;
-  Set(kOrigin1, u"key2", u"value1", &result3);
+  Set(kOrigin1, u"key2", u"value1", &result3, SetBehavior::kDefault);
   GetResult value3;
   Get(kOrigin1, u"key2", &value3);
   int length1 = -1;
@@ -1947,7 +1947,8 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   // Add a key for origin1.
   {
     base::test::TestFuture<OperationResult> future;
-    GetManager()->Set(kOrigin1, u"key1", u"value1", future.GetCallback());
+    GetManager()->Set(kOrigin1, u"key1", u"value1", future.GetCallback(),
+                      SetBehavior::kDefault);
     EXPECT_EQ(OperationResult::kSet, future.Get());
   }
 
@@ -1956,7 +1957,8 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   base::Time time1 = base::Time::Now();
   {
     base::test::TestFuture<OperationResult> future;
-    GetManager()->Set(kOrigin2, u"key1", u"value1", future.GetCallback());
+    GetManager()->Set(kOrigin2, u"key1", u"value1", future.GetCallback(),
+                      SetBehavior::kDefault);
     EXPECT_EQ(OperationResult::kSet, future.Get());
   }
 
@@ -1965,7 +1967,8 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   base::Time time2 = base::Time::Now();
   {
     base::test::TestFuture<OperationResult> future;
-    GetManager()->Set(kOrigin3, u"key1", u"value1", future.GetCallback());
+    GetManager()->Set(kOrigin3, u"key1", u"value1", future.GetCallback(),
+                      SetBehavior::kDefault);
     EXPECT_EQ(OperationResult::kSet, future.Get());
   }
 

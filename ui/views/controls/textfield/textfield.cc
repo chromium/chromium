@@ -2667,6 +2667,10 @@ void Textfield::UpdateCursorVisibility() {
     StopBlinkingCursor();
 }
 
+bool Textfield::IsMenuShowing() const {
+  return context_menu_runner_ && context_menu_runner_->IsRunning();
+}
+
 gfx::Rect Textfield::CalculateCursorViewBounds() const {
   gfx::Rect location(GetRenderText()->GetUpdatedCursorBounds());
   location.set_x(GetMirroredXForRect(location));

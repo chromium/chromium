@@ -6,6 +6,7 @@
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_TOKEN_MANAGER_H_
 
 #include <array>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -13,7 +14,6 @@
 #include "base/unguessable_token.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -46,8 +46,8 @@ class CAPTURE_EXPORT TokenManager {
   // cros::mojom::CameraClientType::UNKNOWN, it tries to figure out the actual
   // client type by the supplied |token|. If authentication succeeds, it returns
   // the authenticated type of the client. If authentication fails,
-  // absl::nullopt is returned.
-  absl::optional<cros::mojom::CameraClientType> AuthenticateClient(
+  // std::nullopt is returned.
+  std::optional<cros::mojom::CameraClientType> AuthenticateClient(
       cros::mojom::CameraClientType type,
       const base::UnguessableToken& token);
 

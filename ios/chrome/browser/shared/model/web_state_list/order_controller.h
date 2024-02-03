@@ -16,10 +16,10 @@ class RemovingIndexes;
 // it on a serialized version.
 class OrderController {
  public:
-  // Enumeration representing the group of the item during insertion.
-  enum class ItemGroup {
-    kRegular,
-    kPinned,
+  // Represents a range of indices.
+  struct Range {
+    const int begin;
+    const int end;  // excluded
   };
 
   // Structure used to represent the requirement to determine the insertion
@@ -28,19 +28,16 @@ class OrderController {
   struct InsertionParams {
     const int desired_index;
     const int opener_index;
-    const ItemGroup group;
-
-    // Returns whether the item is pinned.
-    bool pinned() const { return group == ItemGroup::kPinned; }
+    const Range range;
 
     // Factory representing automatic selection of the insertion index.
-    static InsertionParams Automatic(ItemGroup group);
+    static InsertionParams Automatic(Range range);
 
     // Factory representing insertion at a specified index.
-    static InsertionParams ForceIndex(int desired_index, ItemGroup group);
+    static InsertionParams ForceIndex(int desired_index, Range range);
 
     // Factory representing insertion relative to the opener.
-    static InsertionParams WithOpener(int opener_index, ItemGroup group);
+    static InsertionParams WithOpener(int opener_index, Range range);
   };
 
   explicit OrderController(const OrderControllerSource& source);

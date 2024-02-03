@@ -187,6 +187,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Display.MirrorModeStatus"
+    enum="DisplaySettingsBoolean" expires_after="2024-06-28">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user toggles the display mirror mode setting via the
+    ChromeOS Settings app.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Display.NewDisplayConnected"
     enum="DisplayType" expires_after="2024-06-28">
   <owner>zhangwenyu@google.com</owner>
@@ -199,6 +209,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Display.UnifiedModeStatus"
+    enum="DisplaySettingsBoolean" expires_after="2024-06-28">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user toggles the display unified mode setting via the
+    ChromeOS Settings app.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Display.{DisplayType}"
     enum="DisplaySettingsType" expires_after="2024-06-28">
   <owner>zhangwenyu@google.com</owner>
@@ -206,6 +226,34 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records each time a user changes the display settings of an {DisplayType}
     display via the ChromeOS Settings app.
+  </summary>
+  <token key="DisplayType">
+    <variant name="External" summary="external"/>
+    <variant name="Internal" summary="internal"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Display.{DisplayType}.NightLightSchedule"
+    enum="DisplaySettingsNightLightScheduleOption" expires_after="2024-06-28">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user changes the display night light schedule setting of
+    an {DisplayType} display via the ChromeOS Settings app.
+  </summary>
+  <token key="DisplayType">
+    <variant name="External" summary="external"/>
+    <variant name="Internal" summary="internal"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Display.{DisplayType}.NightLightStatus"
+    enum="DisplaySettingsBoolean" expires_after="2024-06-28">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user toggles the display night light status setting of
+    an {DisplayType} display via the ChromeOS Settings app.
   </summary>
   <token key="DisplayType">
     <variant name="External" summary="external"/>
@@ -360,13 +408,13 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadDocumentTime" units="ms"
-    expires_after="2024-03-14">
+    expires_after="2025-02-02">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
     The amount of time between the RenderFrameHost StartProvisionalLoad and
-    DidFinishDocumentLoad events for the Chrome OS settings page.
+    DidFinishDocumentLoad events for the ChromeOS settings page.
   </summary>
 </histogram>
 
@@ -402,7 +450,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumNavigationsUntilChange"
-    units="navigations" expires_after="2024-05-26">
+    units="navigations" expires_after="2024-07-28">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>wesokuhara@google.com</owner>

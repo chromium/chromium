@@ -439,9 +439,6 @@ const int kMainIntentCheckDelay = 1;
           browser->GetBrowserState());
 
   tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
-
-  tracker->NotifyEvent(
-      feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
 }
 
 @end

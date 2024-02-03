@@ -11,14 +11,20 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /** A class to handle the state of flags for tab_management. */
 public class TabUiFeatureUtilities {
     private static final String TAG = "TabFeatureUtilities";
+    private static final String SAMSUNG_LOWER_CASE = "samsung";
 
     // Field trial parameters:
     private static final String SKIP_SLOW_ZOOMING_PARAM = "skip-slow-zooming";
@@ -41,6 +47,15 @@ public class TabUiFeatureUtilities {
                     ANIMATION_START_TIMEOUT_MS_PARAM,
                     300);
 
+    private static final String ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST_PARAM =
+            "enable_non_split_mode_tab_drag_manufacturer_allowlist";
+    public static final StringCachedFieldTrialParameter
+            ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST =
+                    ChromeFeatureList.newStringCachedFieldTrialParameter(
+                            ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
+                            ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST_PARAM,
+                            SAMSUNG_LOWER_CASE);
+
     // Field trail params for tab drag and drop.
     private static final String DISABLE_STRIP_TO_CONTENT_DD_PARAM = "disable_strip_to_content_dd";
     private static final String DISABLE_STRIP_TO_STRIP_DD_PARAM = "disable_strip_to_strip_dd";
@@ -48,6 +63,9 @@ public class TabUiFeatureUtilities {
             "disable_strip_to_strip_diff_model_dd";
     private static final String DISABLE_DRAG_TO_NEW_INSTANCE_DD_PARAM =
             "disable_drag_to_new_instance";
+
+    // Manufacturer list that supports tab drag in non-split mode.
+    static Set<String> sTabDragNonSplitManufacturerAllowlist;
 
     public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_CONTENT_DD =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -95,11 +113,8 @@ public class TabUiFeatureUtilities {
                 && ChromeFeatureList.sDelayTempStripRemoval.isEnabled();
     }
 
-    /**
-     * @return Whether the Grid Tab Switcher UI should use list mode.
-     * @param context The activity context.
-     */
-    public static boolean shouldUseListMode(Context context) {
+    /** Returns whether the Grid Tab Switcher UI should use list mode. */
+    public static boolean shouldUseListMode() {
         // Low-end forces list mode.
         return SysUtils.isLowEndDevice();
     }
@@ -117,7 +132,7 @@ public class TabUiFeatureUtilities {
                         ChromeFeatureList.sTabToGTSAnimation.isEnabled()
                                 && SysUtils.amountOfPhysicalMemoryKB() / 1024
                                         >= ZOOMING_MIN_MEMORY.getValue()
-                                && !shouldUseListMode(context);
+                                && !shouldUseListMode();
             }
         }
         return sIsTabToGtsAnimationEnabled;
@@ -151,5 +166,17 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabDragAsWindowEnabled() {
         return ChromeFeatureList.sTabDragDropAsWindowAndroid.isEnabled();
+    }
+
+    public static Set getTabDragNonSplitModeAllowlist() {
+        if (sTabDragNonSplitManufacturerAllowlist == null) {
+            sTabDragNonSplitManufacturerAllowlist = new HashSet<>();
+
+            String allowlist = ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST.getValue();
+            if (allowlist != null && !allowlist.isEmpty()) {
+                Collections.addAll(sTabDragNonSplitManufacturerAllowlist, allowlist.split(","));
+            }
+        }
+        return sTabDragNonSplitManufacturerAllowlist;
     }
 }

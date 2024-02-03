@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_MEDIA_EVENT_LISTENER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_MEDIA_EVENT_LISTENER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -37,7 +38,7 @@ class MediaControlsMediaEventListener final : public NativeEventListener {
   void OnRemotePlaybackAvailabilityChanged();
 
   Member<MediaControlsImpl> media_controls_;
-  absl::optional<int> remote_playback_availability_callback_id_;
+  std::optional<int> remote_playback_availability_callback_id_;
 };
 
 }  // namespace blink

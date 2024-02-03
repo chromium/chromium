@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
@@ -101,7 +102,7 @@ class CastMetricsServiceClient : public ::metrics::MetricsServiceClient,
   std::unique_ptr<::metrics::MetricsLogUploader> CreateUploader(
       const GURL& server_url,
       const GURL& insecure_server_url,
-      base::StringPiece mime_type,
+      std::string_view mime_type,
       ::metrics::MetricsLogUploader::MetricServiceType service_type,
       const ::metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;

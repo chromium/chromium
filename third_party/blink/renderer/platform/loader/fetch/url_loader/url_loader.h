@@ -34,9 +34,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -102,7 +102,7 @@ class BLINK_PLATFORM_EXPORT URLLoader {
       base::TimeDelta timeout_interval,
       URLLoaderClient* client,
       WebURLResponse& response,
-      absl::optional<WebURLError>& error,
+      std::optional<WebURLError>& error,
       scoped_refptr<SharedBuffer>& data,
       int64_t& encoded_data_length,
       uint64_t& encoded_body_length,

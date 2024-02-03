@@ -2242,7 +2242,7 @@ TEST_F(PartialRasterTileManagerTest, CancelledTasksHaveNoContentId) {
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 
@@ -2345,7 +2345,7 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 
@@ -2431,7 +2431,7 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 
@@ -3808,6 +3808,7 @@ TEST_F(SynchronousRasterTileManagerTest, AlwaysUseImageCache) {
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
   static_cast<SynchronousTaskGraphRunner*>(task_graph_runner())->RunUntilIdle();
 
+  pending_layer_ = old_pending_layer_ = active_layer_ = nullptr;
   // Destroy the LTHI since it accesses the RasterBufferProvider during cleanup.
   TakeHostImpl();
 }

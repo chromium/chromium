@@ -102,7 +102,7 @@ void WebTestPushMessagingService::SubscribeFromWorker(
         blink::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE);
   } else {
     std::move(callback).Run(
-        "registration_id", GURL::EmptyGURL() /* endpoint */,
+        "registration_id", GURL() /* endpoint */,
         std::nullopt /* expiration_time */, std::vector<uint8_t>() /* p256dh */,
         std::vector<uint8_t>() /* auth */,
         blink::mojom::PushRegistrationStatus::PERMISSION_DENIED);

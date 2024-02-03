@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_BACKGROUND_COLOR_PAINT_DEFINITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_BACKGROUND_COLOR_PAINT_DEFINITION_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/native_css_paint_definition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -40,7 +41,7 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
                              const Node*,
                              const Vector<Color>& animated_colors,
                              const Vector<double>& offsets,
-                             const absl::optional<double>& progress);
+                             const std::optional<double>& progress);
 
   // Get the animated colors and offsets from the animation keyframes. Moreover,
   // we obtain the progress of the animation from the main thread, such that if
@@ -52,7 +53,7 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
   static bool GetBGColorPaintWorkletParams(Node* node,
                                            Vector<Color>* animated_colors,
                                            Vector<double>* offsets,
-                                           absl::optional<double>* progress);
+                                           std::optional<double>* progress);
 
   static Animation* GetAnimationIfCompositable(const Element* element);
 

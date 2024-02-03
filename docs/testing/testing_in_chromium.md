@@ -67,6 +67,25 @@ Web Tests were enabled on Android K before, but it is disabled on Android platfo
 see [this thread](https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/338WKwWPbPI/discussion) for more context.
 ***
 
+*** note
+**Tast Tests Note**
+
+Tast tests are written, maintained and gardened by ChromeOS engineers.
+
+ChromeOS tests that Chrome engineers support should be (re)written in the following priority order:
+*   unit tests
+*   linux_chromeos browser_tests
+*   linux_chromeos interactive_ui_tests
+*   [Crosier tests](http://go/crosier)
+
+When a Tast test fails:
+*   If the change is written by a ChromeOS engineer, the ChromeOS [gardener](http://go/cros-gardening) can revert it.
+*   Otherwise the ChromeOS gardener can revert the Chrome-authored change accompanied by a test from the supported frameworks above or manual repro steps that a Chrome engineer can run under [linux_chromeos](../chromeos_build_instructions.md#Chromium-OS-on-Linux-linux_chromeos) (preferable) or using Simple Chrome VM [instructions](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md).
+*   If the above is not possible, the ChromeOS gardener or ChromeOS feature owner should inform the author about the failure, and the author uses their best judgment on whether to revert, fix on trunk, or let ChromeOS engineers update the test (e.g. if test needs an update or if the test is just testing internal implementation details of Chrome but doesn't break user functionality).
+
+
+***
+
 ## General Principles
 
 *   All the tests in Chromium running on CQ and main waterfall should be hermetic and stable.

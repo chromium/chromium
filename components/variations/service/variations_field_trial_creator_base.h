@@ -29,6 +29,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
@@ -216,6 +217,14 @@ class VariationsFieldTrialCreatorBase {
   // Returns whether the map of the cached UI strings to override is empty.
   // To be implemented by subclasses, if they have need for UI strings.
   virtual bool IsOverrideResourceMapEmpty() = 0;
+
+  // Whether the limited entropy randomization source is enabled on this client.
+  // The `trial` param controls the output, which will be false if `trial` is
+  // null or the trial is not enabled. `trial` can be a nullptr when the client
+  // is not eligible for limited entropy randomization (e.g. Android WebView).
+  static bool IsLimitedEntropyRandomizationSourceEnabled(
+      version_info::Channel channel,
+      LimitedEntropySyntheticTrial* trial);
 
  protected:
   // Get the platform we're running on, respecting OverrideVariationsPlatform().

@@ -29,18 +29,18 @@ class RTCEncodedAudioFrameDelegate
   explicit RTCEncodedAudioFrameDelegate(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,
       rtc::ArrayView<const unsigned int> contributing_sources,
-      absl::optional<uint16_t> sequence_number);
+      std::optional<uint16_t> sequence_number);
 
   uint32_t RtpTimestamp() const;
   DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
   void SetRtpTimestamp(uint32_t timestamp, ExceptionState& exception_state);
-  absl::optional<uint32_t> Ssrc() const;
-  absl::optional<uint8_t> PayloadType() const;
-  absl::optional<std::string> MimeType() const;
-  absl::optional<uint16_t> SequenceNumber() const;
+  std::optional<uint32_t> Ssrc() const;
+  std::optional<uint8_t> PayloadType() const;
+  std::optional<std::string> MimeType() const;
+  std::optional<uint16_t> SequenceNumber() const;
   Vector<uint32_t> ContributingSources() const;
-  absl::optional<uint64_t> AbsCaptureTime() const;
+  std::optional<uint64_t> AbsCaptureTime() const;
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> PassWebRtcFrame();
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> CloneWebRtcFrame();
 
@@ -49,7 +49,7 @@ class RTCEncodedAudioFrameDelegate
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame_
       GUARDED_BY(lock_);
   Vector<uint32_t> contributing_sources_ GUARDED_BY(lock_);
-  absl::optional<uint16_t> sequence_number_ GUARDED_BY(lock_);
+  std::optional<uint16_t> sequence_number_ GUARDED_BY(lock_);
 };
 
 class MODULES_EXPORT RTCEncodedAudioFramesAttachment

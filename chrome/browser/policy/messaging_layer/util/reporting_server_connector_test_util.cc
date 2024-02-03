@@ -106,7 +106,7 @@ ReportingServerConnector::TestEnvironment::TestEnvironment()
   auto delegate =
       std::make_unique<FakeDelegate>(device_management_service_.get());
   SetEncryptedReportingClient(
-      std::make_unique<EncryptedReportingClient>(std::move(delegate)));
+      EncryptedReportingClient::Create(std::move(delegate)));
 }
 
 ReportingServerConnector::TestEnvironment::~TestEnvironment() {

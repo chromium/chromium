@@ -16,12 +16,8 @@
 namespace cc {
 
 TestLayerTreeHostBase::TestLayerTreeHostBase()
-    : task_runner_provider_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      pending_layer_(nullptr),
-      active_layer_(nullptr),
-      old_pending_layer_(nullptr),
-      root_id_(1),
-      next_layer_id_(2) {}
+    : task_runner_provider_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+}
 
 TestLayerTreeHostBase::~TestLayerTreeHostBase() = default;
 
@@ -32,6 +28,12 @@ void TestLayerTreeHostBase::SetUp() {
                               task_graph_runner_.get());
   InitializeFrameSink();
   SetInitialTreePriority();
+}
+
+void TestLayerTreeHostBase::TearDown() {
+  pending_layer_ = nullptr;
+  active_layer_ = nullptr;
+  old_pending_layer_ = nullptr;
 }
 
 LayerTreeSettings TestLayerTreeHostBase::CreateSettings() {
@@ -144,7 +146,7 @@ void TestLayerTreeHostBase::SetupPendingTree(
 
   // The bounds() just mirror the raster source size.
   if (raster_source) {
-    pending_layer_->SetBounds(raster_source->GetSize());
+    pending_layer_->SetBounds(raster_source->size());
     pending_layer_->SetRasterSource(raster_source, invalidation);
   }
 

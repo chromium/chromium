@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: A network error occurred
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: WebSocket was not cleanly closed.
 [FAIL] constructing with a valid URL should work
-  promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
+  promise_test: Unhandled rejection with value: object "WebSocketError: WebSocket closed before handshake complete."
 [FAIL] setting a protocol in the constructor should work
-  promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
+  promise_test: Unhandled rejection with value: object "WebSocketError: WebSocket closed before handshake complete."
 [FAIL] wss.opened should resolve to the right types
-  promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
+  promise_test: Unhandled rejection with value: object "WebSocketError: WebSocket closed before handshake complete."
 Harness: the test ran to completion.
 

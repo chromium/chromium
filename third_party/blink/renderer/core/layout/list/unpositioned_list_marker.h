@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LIST_UNPOSITIONED_LIST_MARKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LIST_UNPOSITIONED_LIST_MARKER_H_
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
@@ -60,10 +61,10 @@ class CORE_EXPORT UnpositionedListMarker final {
 
   // Returns the baseline that the list-marker should place itself along.
   //
-  // |absl::nullopt| indicates that the child |content| does not have a baseline
+  // |std::nullopt| indicates that the child |content| does not have a baseline
   // to align to, and that caller should try next child, or use the
   // |AddToBoxWithoutLineBoxes()| method.
-  absl::optional<LayoutUnit> ContentAlignmentBaseline(
+  std::optional<LayoutUnit> ContentAlignmentBaseline(
       const ConstraintSpace&,
       FontBaseline,
       const PhysicalFragment& content) const;

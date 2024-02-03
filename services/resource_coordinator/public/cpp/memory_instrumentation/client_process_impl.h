@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   // https://bugs.chromium.org/p/chromium/issues/detail?id=812346#c16.
   std::map<uint64_t, std::vector<OSMemoryDumpArgs>>
       delayed_os_memory_dump_callbacks_;
-  absl::optional<uint64_t> most_recent_chrome_memory_dump_guid_;
+  std::optional<uint64_t> most_recent_chrome_memory_dump_guid_;
 
   mojo::Receiver<mojom::ClientProcess> receiver_;
   mojo::Remote<mojom::Coordinator> coordinator_;

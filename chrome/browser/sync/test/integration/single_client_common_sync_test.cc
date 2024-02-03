@@ -7,16 +7,23 @@
 #include "base/json/json_reader.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
+#include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/pref_names.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
@@ -403,5 +410,64 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
       syncer::ModelTypeHistogramValue(syncer::SECURITY_EVENTS), 0);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class SingleClientPolicySyncTest : public SyncTest {
+ public:
+  SingleClientPolicySyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientPolicySyncTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SyncTest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  testing::NiceMock<policy::MockConfigurationPolicyProvider>*
+  policy_provider() {
+    return &policy_provider_;
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
+                       AppliesSyncTypesListDisabledPolicyImmediately) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::ModelType::PASSWORDS));
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::ModelType::BOOKMARKS));
+
+  base::Value::List disabled_types;
+  disabled_types.Append("bookmarks");
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSyncTypesListDisabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(disabled_types)), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
+
+  // Once the policy is applied, the now-disabled type should not be considered
+  // selected anymore.
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+
+  // Also, Sync should immediately start reconfiguring (without any additional
+  // waiting), and as such the now-disabled type should not be active anymore.
+  // (Other data types may or may not be active here, depending on timing.)
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::ModelType::BOOKMARKS));
+
+  // Wait for some other data type to become active again.
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+  // The policy-disabled type should still be inactive.
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::ModelType::BOOKMARKS));
+}
 
 }  // namespace

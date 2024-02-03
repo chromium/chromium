@@ -12,7 +12,7 @@
 namespace blink {
 
 std::unique_ptr<CompositorAnimation> CompositorAnimation::Create(
-    absl::optional<int> replaced_cc_animation_id) {
+    std::optional<int> replaced_cc_animation_id) {
   auto compositor_animation = std::make_unique<CompositorAnimation>(
       cc::Animation::Create(replaced_cc_animation_id
                                 ? *replaced_cc_animation_id
@@ -142,7 +142,7 @@ void CompositorAnimation::NotifyAnimationTakeover(
 }
 
 void CompositorAnimation::NotifyLocalTimeUpdated(
-    absl::optional<base::TimeDelta> local_time) {
+    std::optional<base::TimeDelta> local_time) {
   if (delegate_) {
     delegate_->NotifyLocalTimeUpdated(local_time);
   }

@@ -384,7 +384,12 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
   EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
 
   // Wait until the PDF is fully loaded.
-  test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
+  content::RenderFrameHost* subframe_main_host =
+      ChildFrameAt(active_web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe_main_host);
+  content::RenderFrameHost* embedder_host = ChildFrameAt(subframe_main_host, 0);
+  ASSERT_TRUE(embedder_host);
+  test_pdf_viewer_stream_manager->WaitUntilPdfLoaded(embedder_host);
 
   // The primary main frame shouldn't be the PDF embedder and shouldn't have a
   // PDF stream.

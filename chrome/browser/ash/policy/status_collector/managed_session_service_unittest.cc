@@ -59,7 +59,7 @@ class ManagedSessionServiceTest : public ::testing::Test,
     profile_builder.SetProfileName(account_id.GetUserEmail());
     auto profile = profile_builder.Build();
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_manager::UserType::USER_TYPE_REGULAR,
+        account_id, is_affiliated, user_manager::UserType::kRegular,
         profile.get());
     if (login) {
       user_manager_->LoginUser(account_id, true);

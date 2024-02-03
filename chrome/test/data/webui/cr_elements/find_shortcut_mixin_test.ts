@@ -131,6 +131,7 @@ suite('find-shortcut', () => {
     document.body.appendChild(dialog);
 
     dialog.showModal();
+    await dialog.updateComplete;
     await check(testElement, true);
   });
 

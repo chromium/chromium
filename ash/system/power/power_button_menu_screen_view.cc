@@ -186,7 +186,7 @@ void PowerButtonMenuScreenView::OnWidgetShown(
   if (power_button_position_ != PowerButtonPosition::NONE) {
     UpdateMenuBoundsOrigins();
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 PowerButtonMenuCurtainView*
@@ -202,7 +202,7 @@ const char* PowerButtonMenuScreenView::GetClassName() const {
   return "PowerButtonMenuScreenView";
 }
 
-void PowerButtonMenuScreenView::Layout() {
+void PowerButtonMenuScreenView::Layout(PassKey) {
   power_button_screen_background_shield_->SetBoundsRect(GetContentsBounds());
   if (IsCurtainModeEnabled()) {
     LayoutMenuCurtainView();

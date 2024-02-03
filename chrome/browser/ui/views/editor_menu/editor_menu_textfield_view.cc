@@ -71,8 +71,8 @@ void EditorMenuTextfieldView::AddedToWidget() {
   InitLayout();
 }
 
-void EditorMenuTextfieldView::Layout() {
-  View::Layout();
+void EditorMenuTextfieldView::Layout(PassKey) {
+  LayoutSuperclass<View>(this);
 
   // Vertically center the arrow button at the right end of the textfield.
   arrow_button_->SetBounds(

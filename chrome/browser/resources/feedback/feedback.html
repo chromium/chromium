@@ -1,0 +1,27 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <title>$i18n{appTitle}</title>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <if expr="chromeos_ash">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=sys">
+    <link rel="stylesheet" href="//theme/typography.css">
+  </if>
+</head>
+<style>
+  html,
+  body {
+    background-color: var(--feedback-bg-color);
+    color: var(--feedback-primary-color);
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+  }
+</style>
+<body>
+  <script src="app.js" type="module"></script>
+  <feedback-app></feedback-app>
+</body>
+</html>

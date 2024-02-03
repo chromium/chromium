@@ -22,10 +22,11 @@ void AccountCapabilitiesTestMutator::set_can_have_email_address_displayed(
       ->capabilities_map_[kCanHaveEmailAddressDisplayedCapabilityName] = value;
 }
 
-void AccountCapabilitiesTestMutator::set_can_offer_extended_chrome_sync_promos(
-    bool value) {
-  capabilities_
-      ->capabilities_map_[kCanOfferExtendedChromeSyncPromosCapabilityName] =
+void AccountCapabilitiesTestMutator::
+    set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+        bool value) {
+  capabilities_->capabilities_map_
+      [kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName] =
       value;
 }
 

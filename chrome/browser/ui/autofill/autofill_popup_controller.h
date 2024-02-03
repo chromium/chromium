@@ -84,10 +84,6 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
                                           std::u16string* title,
                                           std::u16string* body) = 0;
 
-  // Returns the popup type corresponding to the controller.
-  // TODO(b/316859406): Replace with `GetMainFillingProduct`.
-  virtual PopupType GetPopupType() const = 0;
-
   // Returns the main filling product corresponding to the controller.
   virtual FillingProduct GetMainFillingProduct() const = 0;
 

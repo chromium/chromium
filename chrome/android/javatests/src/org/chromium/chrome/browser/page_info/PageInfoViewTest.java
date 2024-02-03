@@ -361,7 +361,7 @@ public class PageInfoViewTest {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     helper::notifyCalled,
                                     new int[] {BrowsingDataType.SITE_SETTINGS},

@@ -6,10 +6,11 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './profile_picker_shared.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
+import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
+import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {getTemplate} from './profile_switch.html.js';
 
 export interface ProfileSwitchElement {

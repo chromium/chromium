@@ -71,7 +71,7 @@ void VerifyHMACDeviceID(MediaDeviceType device_type,
 blink::StreamControls GetAudioStreamControls(std::string hmac_device_id) {
   blink::StreamControls stream_controls{/*request_audio=*/true,
                                         /*request_video=*/false};
-  stream_controls.audio.device_id = hmac_device_id;
+  stream_controls.audio.device_ids = {hmac_device_id};
   return stream_controls;
 }
 

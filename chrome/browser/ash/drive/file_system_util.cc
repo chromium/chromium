@@ -85,44 +85,56 @@ base::FilePath GetCacheRootPath(const Profile* const profile) {
   return cache_root_path.Append(kFileCacheVersionDir);
 }
 
-bool IsDriveAvailableForProfile(const Profile* const profile) {
+DriveAvailability CheckDriveAvailabilityForProfile(
+    const Profile* const profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Disable Drive for non-Gaia accounts.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kDisableGaiaServices)) {
-    return false;
+    return DriveAvailability::kNotAvailableForAccountType;
   }
   if (!ash::LoginState::IsInitialized()) {
-    return false;
+    return DriveAvailability::kNotAvailableForUninitialisedLoginState;
   }
   // Disable Drive for incognito profiles.
   if (profile->IsOffTheRecord()) {
-    return false;
+    return DriveAvailability::kNotAvailableInIncognito;
   }
   const User* const user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user || !user->HasGaiaAccount()) {
-    return false;
+    return DriveAvailability::kNotAvailableForAccountType;
   }
 
   // Disable Drive if the flag has been passed and it is a test image.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kDisableDriveFsForTesting)) {
     base::SysInfo::CrashIfChromeOSNonTestImage();
-    return false;
+    return DriveAvailability::kNotAvailableForTestImage;
   }
 
-  return true;
+  return DriveAvailability::kAvailable;
 }
 
-bool IsDriveEnabledForProfile(const Profile* const profile) {
+bool IsDriveAvailableForProfile(const Profile* const profile) {
+  return CheckDriveAvailabilityForProfile(profile) ==
+         DriveAvailability::kAvailable;
+}
+
+DriveAvailability CheckDriveEnabledAndDriveAvailabilityForProfile(
+    const Profile* const profile) {
   // Disable Drive if preference is set. This can happen with commandline flag
   // --disable-drive or enterprise policy, or with user settings.
   if (profile->GetPrefs()->GetBoolean(prefs::kDisableDrive)) {
-    return false;
+    return DriveAvailability::kNotAvailableWhenDisableDrivePreferenceSet;
   }
 
-  return IsDriveAvailableForProfile(profile);
+  return CheckDriveAvailabilityForProfile(profile);
+}
+
+bool IsDriveEnabledForProfile(const Profile* const profile) {
+  return CheckDriveEnabledAndDriveAvailabilityForProfile(profile) ==
+         DriveAvailability::kAvailable;
 }
 
 bool IsDriveFsBulkPinningAvailable(const Profile* const profile) {

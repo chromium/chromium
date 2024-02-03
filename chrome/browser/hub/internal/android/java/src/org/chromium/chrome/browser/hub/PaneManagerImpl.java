@@ -66,7 +66,9 @@ public class PaneManagerImpl implements PaneManager {
     @Override
     public boolean focusPane(@PaneId int paneId) {
         Pane nextPane = getPaneForId(paneId);
-        if (nextPane == null) return false;
+        if (nextPane == null || !nextPane.getReferenceButtonDataSupplier().hasValue()) {
+            return false;
+        }
 
         Pane previousPane = mCurrentPaneSupplierImpl.get();
         if (nextPane == previousPane) return true;

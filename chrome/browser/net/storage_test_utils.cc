@@ -149,8 +149,13 @@ void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame,
       << "(expected at " << location.ToString() << ")";
 }
 
-bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame) {
-  return content::EvalJs(frame, kRequestStorageAccess).ExtractBool();
+bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame,
+                                          bool omit_user_gesture) {
+  int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS;
+  if (omit_user_gesture) {
+    options |= content::EXECUTE_SCRIPT_NO_USER_GESTURE;
+  }
+  return content::EvalJs(frame, kRequestStorageAccess, options).ExtractBool();
 }
 
 bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,

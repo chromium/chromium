@@ -15,8 +15,10 @@
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "url/gurl.h"
 
 namespace content_settings {
@@ -25,10 +27,11 @@ namespace {
 
 // This iterator is used for iterating the rules for |content_type| and
 // |resource_identifier| in the precedence order of the rules.
+template <class Iterator>
 class RuleIteratorImpl : public RuleIterator {
  public:
-  RuleIteratorImpl(const Rules::const_iterator& current_rule,
-                   const Rules::const_iterator& rule_end,
+  RuleIteratorImpl(const Iterator& current_rule,
+                   const Iterator& rule_end,
                    scoped_refptr<RefCountedAutoLock> auto_lock,
                    base::AutoReset<bool> iterating)
       : current_rule_(current_rule),
@@ -50,8 +53,8 @@ class RuleIteratorImpl : public RuleIterator {
   }
 
  private:
-  Rules::const_iterator current_rule_;
-  Rules::const_iterator rule_end_;
+  Iterator current_rule_;
+  Iterator rule_end_;
   scoped_refptr<RefCountedAutoLock> auto_lock_;
   base::AutoReset<bool> iterating_;
 };
@@ -66,51 +69,105 @@ std::unique_ptr<RuleIterator> OriginValueMap::GetRuleIterator(
   // created.
   scoped_refptr<RefCountedAutoLock> auto_lock =
       MakeRefCounted<RefCountedAutoLock>(lock_);
-  auto it = entries_.find(content_type);
-  if (it == entries_.end()) {
-    return nullptr;
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    auto it = entry_index().find(content_type);
+    if (it == entry_index().end()) {
+      return nullptr;
+    }
+    CHECK(!iterating_);
+    base::AutoReset<bool> iterating(&iterating_, true);
+    return std::make_unique<
+        RuleIteratorImpl<HostIndexedContentSettings::Iterator>>(
+        it->second.begin(), it->second.end(), std::move(auto_lock),
+        std::move(iterating));
+  } else {
+    auto it = entry_map().find(content_type);
+    if (it == entry_map().end()) {
+      return nullptr;
+    }
+    CHECK(!iterating_);
+    base::AutoReset<bool> iterating(&iterating_, true);
+    return std::make_unique<RuleIteratorImpl<Rules::const_iterator>>(
+        it->second.begin(), it->second.end(), std::move(auto_lock),
+        std::move(iterating));
   }
-  CHECK(!iterating_);
-  base::AutoReset<bool> iterating(&iterating_, true);
-  return std::make_unique<RuleIteratorImpl>(
-      it->second.begin(), it->second.end(), std::move(auto_lock),
-      std::move(iterating));
 }
 
 std::unique_ptr<Rule> OriginValueMap::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type) const {
-  auto it = entries_.find(content_type);
-  if (it == entries_.end()) {
-    return nullptr;
-  }
+  const RuleEntry* result = nullptr;
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    auto it = entry_index().find(content_type);
+    if (it == entry_index().end()) {
+      return nullptr;
+    }
+    result = it->second.Find(primary_url, secondary_url);
+  } else {
+    auto it = entry_map().find(content_type);
+    if (it == entry_map().end()) {
+      return nullptr;
+    }
 
-  // Iterate the entries in until a match is found. Since the rules are
-  // stored in the order of decreasing precedence, the most specific match
-  // is found first.
-  for (const auto& entry : it->second) {
-    if (entry.first.primary_pattern.Matches(primary_url) &&
-        entry.first.secondary_pattern.Matches(secondary_url) &&
-        (base::FeatureList::IsEnabled(
-             content_settings::features::kActiveContentSettingExpiry) ||
-         !entry.second.metadata.IsExpired())) {
-      return std::make_unique<Rule>(
-          entry.first.primary_pattern, entry.first.secondary_pattern,
-          entry.second.value.Clone(), entry.second.metadata);
+    // Iterate the entries in until a match is found. Since the rules are
+    // stored in the order of decreasing precedence, the most specific match
+    // is found first.
+    for (const auto& entry : it->second) {
+      if (entry.first.primary_pattern.Matches(primary_url) &&
+          entry.first.secondary_pattern.Matches(secondary_url) &&
+          (base::FeatureList::IsEnabled(
+               content_settings::features::kActiveContentSettingExpiry) ||
+           !entry.second.metadata.IsExpired())) {
+        result = &entry;
+        break;
+      }
     }
   }
+  if (result) {
+    return std::make_unique<Rule>(
+        result->first.primary_pattern, result->first.secondary_pattern,
+        result->second.value.Clone(), result->second.metadata);
+  }
+
   return nullptr;
 }
 
 size_t OriginValueMap::size() const {
   size_t size = 0;
-  for (const auto& entry : entries_)
-    size += entry.second.size();
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    for (const auto& entry : entry_index()) {
+      size += entry.second.size();
+    }
+  } else {
+    for (const auto& entry : entry_map()) {
+      size += entry.second.size();
+    }
+  }
   return size;
 }
 
-OriginValueMap::OriginValueMap() = default;
+std::vector<ContentSettingsType> OriginValueMap::types() const {
+  std::vector<ContentSettingsType> result;
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    for (auto& entry : entry_index()) {
+      result.push_back(entry.first);
+    }
+  } else {
+    for (auto& entry : entry_map()) {
+      result.push_back(entry.first);
+    }
+  }
+  return result;
+}
+
+OriginValueMap::OriginValueMap() {
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    entries_ = EntryIndex();
+  } else {
+    entries_ = EntryMap();
+  }
+}
 
 OriginValueMap::~OriginValueMap() = default;
 
@@ -118,17 +175,30 @@ const base::Value* OriginValueMap::GetValue(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type) const {
-  auto it = entries_.find(content_type);
-  if (it == entries_.end())
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    auto it = entry_index().find(content_type);
+    if (it == entry_index().end()) {
+      return nullptr;
+    }
+    auto* result = it->second.Find(primary_url, secondary_url);
+    if (result) {
+      return &result->second.value;
+    }
     return nullptr;
+  } else {
+    auto it = entry_map().find(content_type);
+    if (it == entry_map().end()) {
+      return nullptr;
+    }
 
-  // Iterate the entries in until a match is found. Since the rules are stored
-  // in the order of decreasing precedence, the most specific match is found
-  // first.
-  for (const auto& entry : it->second) {
-    if (entry.first.primary_pattern.Matches(primary_url) &&
-        entry.first.secondary_pattern.Matches(secondary_url)) {
-      return &entry.second.value;
+    // Iterate the entries in until a match is found. Since the rules are
+    // stored in the order of decreasing precedence, the most specific match
+    // is found first.
+    for (const auto& entry : it->second) {
+      if (entry.first.primary_pattern.Matches(primary_url) &&
+          entry.first.secondary_pattern.Matches(secondary_url)) {
+        return &entry.second.value;
+      }
     }
   }
   return nullptr;
@@ -146,14 +216,20 @@ bool OriginValueMap::SetValue(
   // TODO(raymes): Remove this after we track down the cause of
   // crbug.com/531548.
   CHECK_NE(ContentSettingsType::DEFAULT, content_type);
-  SortedPatternPair patterns(primary_pattern, secondary_pattern);
-  ValueEntry* entry = &entries_[content_type][patterns];
-  if (entry->value == value && entry->metadata == metadata) {
-    return false;
+
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    return entry_index()[content_type].SetValue(
+        primary_pattern, secondary_pattern, std::move(value), metadata);
+  } else {
+    SortedPatternPair patterns(primary_pattern, secondary_pattern);
+    ValueEntry* entry = &entry_map()[content_type][patterns];
+    if (entry->value == value && entry->metadata == metadata) {
+      return false;
+    }
+    entry->value = std::move(value);
+    entry->metadata = metadata;
+    return true;
   }
-  entry->value = std::move(value);
-  entry->metadata = metadata;
-  return true;
 }
 
 bool OriginValueMap::DeleteValue(
@@ -161,25 +237,40 @@ bool OriginValueMap::DeleteValue(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   CHECK(!iterating_);
-  SortedPatternPair patterns(primary_pattern, secondary_pattern);
-  auto it = entries_.find(content_type);
-  if (it == entries_.end())
-    return false;
-  bool result = it->second.erase(patterns) > 0;
-  if (it->second.empty())
-    entries_.erase(it);
-  return result;
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    return entry_index()[content_type].DeleteValue(primary_pattern,
+                                                   secondary_pattern);
+  } else {
+    SortedPatternPair patterns(primary_pattern, secondary_pattern);
+    auto it = entry_map().find(content_type);
+    if (it == entry_map().end()) {
+      return false;
+    }
+    bool result = it->second.erase(patterns) > 0;
+    if (it->second.empty()) {
+      entry_map().erase(it);
+    }
+    return result;
+  }
 }
 
 void OriginValueMap::DeleteValues(ContentSettingsType content_type) {
   CHECK(!iterating_);
-  entries_.erase(content_type);
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    entry_index().erase(content_type);
+  } else {
+    entry_map().erase(content_type);
+  }
 }
 
 void OriginValueMap::clear() {
   CHECK(!iterating_);
   // Delete all owned value objects.
-  entries_.clear();
+  if (base::FeatureList::IsEnabled(features::kIndexedHostContentSettingsMap)) {
+    return entry_index().clear();
+  } else {
+    entry_map().clear();
+  }
 }
 
 }  // namespace content_settings

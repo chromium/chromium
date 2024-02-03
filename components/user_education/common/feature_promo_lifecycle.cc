@@ -71,7 +71,8 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
       switch (promo_type_) {
         case PromoType::kLegacy:
         case PromoType::kToast:
-          return FeaturePromoResult::Success();
+          return data->is_dismissed ? FeaturePromoResult::kPermanentlyDismissed
+                                    : FeaturePromoResult::Success();
         case PromoType::kCustomAction:
         case PromoType::kSnooze:
         case PromoType::kTutorial:
@@ -279,7 +280,7 @@ void FeaturePromoLifecycle::RecordShown() {
 
   // Record Promo type
   UMA_HISTOGRAM_ENUMERATION("UserEducation.MessageShown.Type", promo_type_);
-  UMA_HISTOGRAM_ENUMERATION("UserEducation.MessageShown.SubType",
+  UMA_HISTOGRAM_ENUMERATION("UserEducation.MessageShown.Subtype",
                             promo_subtype_);
   std::string type_action_name = "UserEducation.MessageShown.";
   switch (promo_subtype_) {

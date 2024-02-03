@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/mojo/drag_mojom_traits.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -16,7 +17,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
@@ -50,11 +50,11 @@ WTF::String StructTraits<blink::mojom::DragItemStringDataView,
 }
 
 // static
-absl::optional<blink::KURL> StructTraits<blink::mojom::DragItemStringDataView,
-                                         blink::WebDragData::StringItem>::
+std::optional<blink::KURL> StructTraits<blink::mojom::DragItemStringDataView,
+                                        blink::WebDragData::StringItem>::
     base_url(const blink::WebDragData::StringItem& item) {
   if (item.base_url.IsNull())
-    return absl::nullopt;
+    return std::nullopt;
   return item.base_url;
 }
 
@@ -64,7 +64,7 @@ bool StructTraits<blink::mojom::DragItemStringDataView,
     Read(blink::mojom::DragItemStringDataView data,
          blink::WebDragData::StringItem* out) {
   WTF::String string_type, string_data, title;
-  absl::optional<blink::KURL> url;
+  std::optional<blink::KURL> url;
   if (!data.ReadStringType(&string_type) ||
       !data.ReadStringData(&string_data) || !data.ReadTitle(&title) ||
       !data.ReadBaseUrl(&url))

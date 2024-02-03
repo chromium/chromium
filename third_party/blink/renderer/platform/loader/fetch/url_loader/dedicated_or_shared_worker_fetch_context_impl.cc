@@ -418,7 +418,7 @@ net::SiteForCookies DedicatedOrSharedWorkerFetchContextImpl::SiteForCookies()
   return site_for_cookies_;
 }
 
-absl::optional<WebSecurityOrigin>
+std::optional<WebSecurityOrigin>
 DedicatedOrSharedWorkerFetchContextImpl::TopFrameOrigin() const {
   // TODO(jkarlin): set_top_frame_origin is only called for dedicated workers.
   // Determine the top-frame-origin of a shared worker as well. See

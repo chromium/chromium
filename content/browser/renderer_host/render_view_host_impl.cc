@@ -458,7 +458,7 @@ bool RenderViewHostImpl::CreateRenderView(
       frame_tree_node->current_frame_host()->devtools_frame_token();
   DCHECK_EQ(&frame_tree_node->frame_tree(), frame_tree_);
   params->is_prerendering = frame_tree_->is_prerendering() ||
-                            frame_tree_->page_delegate()->IsInPreviewMode();
+                            frame_tree_->page_delegate()->IsPageInPreviewMode();
   params->attribution_support = delegate_->GetAttributionSupport();
 
   if (main_rfh) {

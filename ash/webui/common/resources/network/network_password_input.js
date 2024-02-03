@@ -6,10 +6,10 @@
  * @fileoverview Polymer element for network password input fields.
  */
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/cr_input/cr_input.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/ash/common/cr_elements/cr_icons.css.js';
+import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';

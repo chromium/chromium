@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
@@ -42,14 +43,14 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> android_backend,
     PrefService* prefs,
     IsAccountStore is_account_store)
-    : built_in_backend_(std::move(built_in_backend)),
-      android_backend_(std::move(android_backend)),
+    : built_in_backend_(built_in_backend.get()),
+      android_backend_(android_backend.get()),
       prefs_(prefs),
       sync_settings_helper_(prefs) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-      built_in_backend_.get(), android_backend_.get(), prefs_,
+      std::move(built_in_backend), std::move(android_backend), prefs_,
       is_account_store);
 }
 
@@ -191,23 +192,32 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
 
 void PasswordStoreBackendMigrationDecorator::Shutdown(
     base::OnceClosure shutdown_completed) {
+  migrator_.reset();
+  built_in_backend_ = nullptr;
+  android_backend_ = nullptr;
   // Calling Shutdown() on active_backend_ will take care of calling
   // Shutdown() on relevant backends.
   active_backend_->Shutdown(
       base::BindOnce(
-          [](std::unique_ptr<PasswordStoreBackend> built_in_backend,
-             std::unique_ptr<PasswordStoreBackend> android_backend,
-             std::unique_ptr<PasswordStoreBackend> combined_backend) {
-            // All the backends must be destroyed only after |active_backend_|
-            // signals that Shutdown is over. It can be done asynchronously and
-            // after PasswordStoreBackendMigrationDecorator destruction.
-            built_in_backend.reset();
-            android_backend.reset();
+          [](std::unique_ptr<PasswordStoreBackend> combined_backend) {
+            // All the backends must be destroyed only after
+            // |active_backend_| signals that Shutdown is over. It can be
+            // done asynchronously and after
+            // PasswordStoreBackendMigrationDecorator destruction.
             combined_backend.reset();
           },
-          std::move(built_in_backend_), std::move(android_backend_),
           std::move(active_backend_))
           .Then(std::move(shutdown_completed)));
+}
+
+bool PasswordStoreBackendMigrationDecorator::IsAbleToSavePasswords() {
+  // Suppress saving while the migration of local passwords is ongoing, to avoid
+  // the migration "forgetting" any new passwords. In fact the same concern
+  // applies to all migration types, but it's scary to change behavior now.
+  return active_backend_->IsAbleToSavePasswords() &&
+         !(migrator_ && migrator_->migration_in_progress_type() ==
+                            BuiltInBackendToAndroidBackendMigrator::
+                                MigrationType::kForLocalUsers);
 }
 
 void PasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(

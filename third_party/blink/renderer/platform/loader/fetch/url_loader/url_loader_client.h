@@ -88,7 +88,7 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   virtual void DidReceiveResponse(
       const WebURLResponse&,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) {}
+      std::optional<mojo_base::BigBuffer> cached_metadata) {}
 
   // Called when a chunk of response data is received. |data_length| is the
   // number of bytes pointed to by |data|.

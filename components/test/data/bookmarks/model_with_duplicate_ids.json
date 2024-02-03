@@ -1,0 +1,79 @@
+{
+   "checksum": "6c2a9ad06ac72e4c0858441e5e988553",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "children": [ {
+               "date_added": "12949698950422234",
+               "guid": "8976663c-4b6e-4abc-ae57-0d136b88c2f5",
+               "id": "5",
+               "name": "Bookmark Manager",
+               "type": "url",
+               "url": "chrome-extension://eemcgdkfndhakfknompkggombfjjjeno/main.html#3"
+            } ],
+            "date_added": "12949698938004572",
+            "date_modified": "12949698958396466",
+            "guid": "cc30491d-e0bd-4112-9d09-52bf3b948ab2",
+            "id": "3",
+            "name": "Folder A1",
+            "type": "folder"
+         } ],
+         "date_added": "0",
+         "date_modified": "0",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Bookmarks Bar",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "children": [ {
+               "date_added": "12949698958396466",
+               "guid": "b180b384-16cf-4149-9c43-be70d2adb56e",
+               "id": "6",
+               "name": "Get started with Google Chrome",
+               "type": "url",
+               "url": "http://tools.google.com/chrome/intl/en/welcome.html"
+            } ],
+            "date_added": "12949698944107898",
+            "date_modified": "12949698961627573",
+            "guid": "da47f36f-050f-4ac9-aa35-ab0d93d39f95",
+            "id": "4",
+            "name": "Folder B1",
+            "type": "folder"
+         } ],
+         "date_added": "0",
+         "date_modified": "0",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "4",
+         "name": "Other Bookmarks",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [ {
+            "children": [ {
+               "date_added": "12949698958396466",
+               "guid": "acd44d5d-2f17-4c6f-b443-fa2721178e52",
+               "id": "9",
+               "name": "Settings",
+               "type": "url",
+               "url": "chrome://settings/"
+            } ],
+            "date_added": "12949698944107898",
+            "date_modified": "12949698961627573",
+            "guid": "00ae74aa-1149-4abd-bac3-bad9f61d608e",
+            "id": "7",
+            "name": "Folder C1",
+            "type": "folder"
+         } ],
+         "date_added": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "10",
+         "name": "Mobile bookmarks",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "ZHVtbXktc3luYy1tZXRhZGF0YS0x",
+   "version": 1
+}

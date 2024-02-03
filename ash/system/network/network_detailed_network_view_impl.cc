@@ -97,7 +97,7 @@ NetworkDetailedNetworkViewImpl::~NetworkDetailedNetworkViewImpl() = default;
 
 void NetworkDetailedNetworkViewImpl::NotifyNetworkListChanged() {
   scroll_content()->InvalidateLayout();
-  Layout();
+  DeprecatedLayoutImmediately();
 
   if (!settings_button()) {
     return;

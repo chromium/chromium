@@ -30,9 +30,9 @@ namespace apps {
 
 // A frameless or non-Ash, non-panel NonClientFrameView for app windows.
 class AppWindowFrameView : public views::NonClientFrameView {
- public:
-  METADATA_HEADER(AppWindowFrameView);
+  METADATA_HEADER(AppWindowFrameView, views::NonClientFrameView)
 
+ public:
   // AppWindowFrameView is used to draw frames for app windows when a non
   // standard frame is needed. This occurs if there is no frame needed, or if
   // there is a frame color.
@@ -71,7 +71,7 @@ class AppWindowFrameView : public views::NonClientFrameView {
 
   // views::View implementation.
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;

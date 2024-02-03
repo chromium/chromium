@@ -29,8 +29,8 @@ _DISALLOW_NON_BLINK_MOJOM = (
     'Warning')
 
 _DISALLOW_CONTINUATION_DATA_ = (
-    '.*(Get|Set|Ensure)ContinuationPreservedEmbedderData.*',
-    '[Get|Set|Ensure]ContinuationPreservedEmbedderData does not support multiple '
+    '.*(Get|Set)ContinuationPreservedEmbedderData.*',
+    '[Get|Set]ContinuationPreservedEmbedderData does not support multiple '
     'clients.')
 
 _CONFIG = [
@@ -702,6 +702,7 @@ _CONFIG = [
             'ui::AXMode',
             'ui::AXNodeData',
             'ui::AXRelativeBounds',
+            'ui::AXTreeChecks',
             'ui::AXTreeData',
             'ui::AXTreeSerializer',
             'ui::AXTreeSource',
@@ -750,6 +751,10 @@ _CONFIG = [
             'base::apple::ScopedCFTypeRef',
             'base::mac::MacOSVersion',
             'base::mac::MacOSMajorVersion',
+
+            # Protected memory
+            'base::ProtectedMemory',
+            'base::AutoWritableMemory',
         ],
         'disallowed': [
             ('base::Bind(|Once|Repeating)',

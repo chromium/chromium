@@ -59,7 +59,7 @@ device::mojom::blink::SmartCardProtocol ToMojoSmartCardProtocol(
   }
 }
 
-absl::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
+std::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
     SmartCardConnectionState state,
     SmartCardProtocol protocol) {
   switch (state) {
@@ -78,7 +78,7 @@ absl::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
         case SmartCardProtocol::kUndefined:
           LOG(ERROR)
               << "Invalid Status result: (state=specific, protocol=undefined)";
-          return absl::nullopt;
+          return std::nullopt;
         case SmartCardProtocol::kT0:
           return V8SmartCardConnectionState::Enum::kT0;
         case SmartCardProtocol::kT1:
@@ -186,7 +186,7 @@ class SmartCardConnection::TransactionState final
   HeapMojoAssociatedRemote<device::mojom::blink::SmartCardTransaction>
       transaction_;
   ScriptValue callback_exception_;
-  absl::optional<device::mojom::blink::SmartCardDisposition> pending_end_;
+  std::optional<device::mojom::blink::SmartCardDisposition> pending_end_;
 };
 
 SmartCardConnection::TransactionState::~TransactionState() = default;
@@ -624,7 +624,7 @@ void SmartCardConnection::OnStatusDone(
 
   const SmartCardStatusPtr& mojo_status = result->get_status();
 
-  absl::optional<V8SmartCardConnectionState::Enum> connection_state =
+  std::optional<V8SmartCardConnectionState::Enum> connection_state =
       ToV8ConnectionState(mojo_status->state, mojo_status->protocol);
 
   if (!connection_state.has_value()) {

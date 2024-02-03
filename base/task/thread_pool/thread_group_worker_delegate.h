@@ -21,7 +21,8 @@ namespace base::internal {
 // ThreadGroup.
 class ThreadGroup::ThreadGroupWorkerDelegate : public BlockingObserver {
  public:
-  explicit ThreadGroupWorkerDelegate(TrackedRef<ThreadGroup> outer);
+  explicit ThreadGroupWorkerDelegate(TrackedRef<ThreadGroup> outer,
+                                     bool is_excess);
   ThreadGroupWorkerDelegate(const ThreadGroupWorkerDelegate&) = delete;
   ThreadGroupWorkerDelegate& operator=(const ThreadGroupWorkerDelegate&) =
       delete;
@@ -53,9 +54,6 @@ class ThreadGroup::ThreadGroupWorkerDelegate : public BlockingObserver {
     return *read_any().current_task_priority;
   }
 
-  // True if the calling worker is be eligible for reclaim.
-  virtual bool IsExcess() const = 0;
-
   // Exposed for AnnotateAcquiredLockAlias.
   const CheckedLock& lock() const LOCK_RETURNED(outer_->lock_) {
     return outer_->lock_;
@@ -73,6 +71,10 @@ class ThreadGroup::ThreadGroupWorkerDelegate : public BlockingObserver {
                                       WorkerThread* worker)
       EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_) = 0;
 
+  RegisteredTaskSource GetWorkLockRequired(BaseScopedCommandsExecutor* executor,
+                                           WorkerThread* worker)
+      EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_);
+
   // Calls cleanup on |worker| and removes it from the thread group. Called from
   // GetWork() when no work is available and CanCleanupLockRequired() returns
   // true.
@@ -84,6 +86,10 @@ class ThreadGroup::ThreadGroupWorkerDelegate : public BlockingObserver {
   virtual void OnWorkerBecomesIdleLockRequired(
       BaseScopedCommandsExecutor* executor,
       WorkerThread* worker) EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_) = 0;
+
+  // See worker_thread.h for documentation.
+  void OnMainEntryImpl(WorkerThread* worker);
+  void RecordUnnecessaryWakeupImpl();
 
   // Only used in DCHECKs.
   template <typename Worker>
@@ -146,6 +152,11 @@ class ThreadGroup::ThreadGroupWorkerDelegate : public BlockingObserver {
   }
 
   const TrackedRef<ThreadGroup> outer_;
+
+  // Whether the worker is in excess. This must be decided at worker creation
+  // time to prevent unnecessarily discarding TLS state, as well as any behavior
+  // the OS has learned about a given thread.
+  const bool is_excess_;
 
   // Whether |outer_->max_tasks_|/|outer_->max_best_effort_tasks_| were
   // incremented due to a ScopedBlockingCall on the thread.

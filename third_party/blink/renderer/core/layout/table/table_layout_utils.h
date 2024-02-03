@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_LAYOUT_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_LAYOUT_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -48,7 +49,7 @@ void SetupTableCellConstraintSpaceBuilder(
     const Vector<TableColumnLocation>& column_locations,
     LayoutUnit cell_block_size,
     LayoutUnit percentage_inline_size,
-    absl::optional<LayoutUnit> alignment_baseline,
+    std::optional<LayoutUnit> alignment_baseline,
     wtf_size_t start_column,
     bool is_initial_block_size_indefinite,
     bool is_restricted_block_size_table,
@@ -139,13 +140,13 @@ class RowBaselineTabulator {
 
  private:
   // Cell baseline is computed from baseline-aligned cells.
-  absl::optional<LayoutUnit> max_cell_ascent_;
-  absl::optional<LayoutUnit> max_cell_descent_;
+  std::optional<LayoutUnit> max_cell_ascent_;
+  std::optional<LayoutUnit> max_cell_descent_;
   bool max_cell_baseline_depends_on_percentage_block_descendant_ = false;
 
   // Non-baseline aligned cells are used to compute baseline if baseline
   // cells are not available.
-  absl::optional<LayoutUnit> fallback_cell_descent_;
+  std::optional<LayoutUnit> fallback_cell_descent_;
   bool fallback_cell_depends_on_percentage_block_descendant_ = false;
 };
 

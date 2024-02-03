@@ -12,7 +12,14 @@ template("model_service") {
       "on_device_model_service.h",
       "pre_sandbox_init.cc",
     ]
-    deps = [ "//services/on_device_model/public/cpp" ]
+    deps = [
+      "//services/on_device_model/public/cpp",
+
+      # TODO(crbug.com/1519723): Remove this once possible. This is a hack due to
+      # an implicit dependency via //third_party/utf via language_detection above.
+      "//third_party/libphonenumber",
+      "//third_party/utf",
+    ]
     public_deps = [
       "//base",
       "//mojo/public/cpp/bindings",

@@ -287,9 +287,14 @@ using content::RenderFrame;
 using content::RenderThread;
 using content::WebPluginInfo;
 using content::WebPluginMimeType;
-using UsesKeyboardAccessoryForSuggestions =
-    AutofillAgent::UsesKeyboardAccessoryForSuggestions;
 using ExtractAllDatalists = autofill::AutofillAgent::ExtractAllDatalists;
+using FocusRequiresScroll = autofill::AutofillAgent::FocusRequiresScroll;
+using QueryPasswordSuggestions =
+    autofill::AutofillAgent::QueryPasswordSuggestions;
+using SecureContextRequired = autofill::AutofillAgent::SecureContextRequired;
+using UserGestureRequired = autofill::AutofillAgent::UserGestureRequired;
+using UsesKeyboardAccessoryForSuggestions =
+    autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions;
 
 namespace {
 
@@ -691,8 +696,10 @@ void ChromeContentRendererClient::RenderFrameCreated(
         render_frame, password_autofill_agent.get(), associated_interfaces);
     new AutofillAgent(
         render_frame,
-        {UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID)),
-         ExtractAllDatalists(false)},
+        {ExtractAllDatalists(false), FocusRequiresScroll(true),
+         QueryPasswordSuggestions(false), SecureContextRequired(false),
+         UserGestureRequired(true),
+         UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID))},
         std::move(password_autofill_agent),
         std::move(password_generation_agent), associated_interfaces);
 

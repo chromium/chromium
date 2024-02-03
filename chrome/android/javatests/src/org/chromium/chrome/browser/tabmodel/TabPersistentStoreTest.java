@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.TabModelMetaDa
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.TabStateInfo;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
@@ -361,6 +362,11 @@ public class TabPersistentStoreTest {
                                 @Override
                                 protected OneshotSupplier<ProfileProvider> createProfileProvider() {
                                     throw new IllegalStateException();
+                                }
+
+                                @Override
+                                protected RootUiCoordinator createRootUiCoordinator() {
+                                    return null;
                                 }
                             };
                     ApplicationStatus.onStateChangeForTesting(
@@ -1073,7 +1079,9 @@ public class TabPersistentStoreTest {
                                                     profileProvider,
                                                     mChromeActivity,
                                                     null,
-                                                    preLaunchedActivity -> false,
+                                                    (activityAtRequestedIndex,
+                                                            isActivityInAppTasks,
+                                                            isActivityInSameTask) -> false,
                                                     0)
                                             .second;
                         });

@@ -73,7 +73,7 @@ void AXTreeSourceAndroid::NotifyActionResult(const ui::AXActionData& data,
 
 void AXTreeSourceAndroid::NotifyGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& rect) {
+    const std::optional<gfx::Rect>& rect) {
   GetAutomationEventRouter()->DispatchGetTextLocationDataResult(data, rect);
 }
 
@@ -255,7 +255,7 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
       android_focused_id_.has_value() ? GetFromId(*android_focused_id_)
                                       : nullptr;
   std::vector<ui::AXEvent> events;
-  const absl::optional<ax::mojom::Event> event_type =
+  const std::optional<ax::mojom::Event> event_type =
       ToAXEvent(event_data.event_type, source_node, focused_node);
   if (event_type) {
     ui::AXEvent event;

@@ -156,8 +156,7 @@ bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
     const std::string& policy_type = policy_entry.first;
     const std::string& policy_value = policy_entry.second;
 
-    std::string encoded_policy_type;
-    base::Base64Encode(policy_type, &encoded_policy_type);
+    std::string encoded_policy_type = base::Base64Encode(policy_type);
     policy_types_base64.emplace(encoded_policy_type);
 
     const base::FilePath policy_dir =
@@ -196,8 +195,8 @@ DMStorage::GetOmahaPolicySettings() const {
     return nullptr;
   }
 
-  std::string encoded_omaha_policy_type;
-  base::Base64Encode(kGoogleUpdatePolicyType, &encoded_omaha_policy_type);
+  std::string encoded_omaha_policy_type =
+      base::Base64Encode(kGoogleUpdatePolicyType);
 
   base::FilePath omaha_policy_file =
       policy_cache_root_.AppendASCII(encoded_omaha_policy_type)

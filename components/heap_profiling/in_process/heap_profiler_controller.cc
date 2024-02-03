@@ -392,8 +392,8 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
   base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
                                  samples.size());
   CHECK(!on_snapshot_callback.is_null());
-  if (samples.empty() &&
-      !base::FeatureList::IsEnabled(kHeapProfilerIncludeZero)) {
+  if (!base::FeatureList::IsEnabled(kHeapProfilerIncludeZero) &&
+      samples.empty()) {
     std::move(on_snapshot_callback).Run(false);
     return;
   }

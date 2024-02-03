@@ -44,7 +44,7 @@ class EditorMenuTextfieldView : public views::View,
   views::Textfield* textfield() { return textfield_; }
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
 
   // views::TextfieldController:

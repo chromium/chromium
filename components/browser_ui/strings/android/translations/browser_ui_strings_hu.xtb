@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1384959399684842514">A letöltés szünetel</translation>
 <translation id="1415402041810619267">URL csonkolva</translation>
-<translation id="1426410128494586442">Igen</translation>
 <translation id="1434873037477293673">árcsökkenést jelző kártya</translation>
 <translation id="1448064542941920355">Nagyítás csökkentése</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webhely}other{<ph name="SITE_COUNT" /> webhely}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
 <translation id="2238944249568001759">Javasolt keresések a legutóbbi lap alapján</translation>
+<translation id="2241587408274973373">Az Új lap oldal kártyái</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> eltávolítása</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 letiltott webhely}other{# letiltott webhely}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
 <translation id="2790501146643349491">Ha be van kapcsolva, a nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását. Ha ki van kapcsolva, a nemrégiben bezárt webhelyek nem tudják befejezni az adatok küldését és fogadását.</translation>
 <translation id="2822354292072154809">Biztosan visszaállítja a(z) <ph name="CHOSEN_OBJECT_NAME" /> minden webhelyengedélyét?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobilnézet kérelmezése</translation>
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2874939134665556319">Előző szám</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Tanúsítványmegtekintő</translation>
 <translation id="2979365474350987274">A harmadik féltől származó cookie-k korlátozva vannak</translation>
 <translation id="3008272652534848354">Engedélyek visszavonása</translation>
-<translation id="3013291976881901233">MIDI-eszközök</translation>
 <translation id="301521992641321250">Automatikusan letiltva</translation>
 <translation id="3069226013421428034">Engedélyezheti a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Holnap jár le}other{# napon belül lejár}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Csatlakoztatva USB-eszközhöz</translation>
 <translation id="4194328954146351878">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára az NFC-eszközökön található információk megtekintését és az ilyen eszközökkel való információcserét (ajánlott)</translation>
 <translation id="4200726100658658164">Helybeállítások megnyitása</translation>
-<translation id="4212246570487010370">Böngészés folytatása</translation>
 <translation id="4226663524361240545">Az értesítések miatt rezeghet az eszköz</translation>
 <translation id="4259722352634471385">Le van tiltva az ide vezető navigáció: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Mozgatás lefelé</translation>
 <translation id="6749077623962119521">Visszaállítja az engedélyeket?</translation>
 <translation id="6766622839693428701">A bezáráshoz csúsztasson lefelé.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> innen: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Válassza ki a kívánt lehetőséget a következőhöz: <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6818926723028410516">Válasszon elemeket</translation>

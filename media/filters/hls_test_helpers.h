@@ -152,7 +152,7 @@ class MockHlsRendition : public HlsRendition {
               (base::TimeDelta time),
               (override));
   MOCK_METHOD(void, StartWaitingForSeek, (), (override));
-  MOCK_METHOD(absl::optional<base::TimeDelta>, GetDuration, (), (override));
+  MOCK_METHOD(std::optional<base::TimeDelta>, GetDuration, (), (override));
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void,
               UpdatePlaylist,

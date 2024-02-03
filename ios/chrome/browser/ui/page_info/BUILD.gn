@@ -4,6 +4,8 @@
 
 source_set("page_info") {
   sources = [
+    "page_info_helper.h",
+    "page_info_helper.mm",
     "page_info_presentation_commands.h",
     "page_info_security_view_controller.h",
     "page_info_security_view_controller.mm",
@@ -128,13 +130,17 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "page_info_egtest.mm" ]
+  sources = [
+    "page_info_egtest.mm",
+    "page_info_security_egtest.mm",
+  ]
   deps = [
     ":constants",
     ":features",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/ui/permissions:constants",
     "//ios/chrome/browser/ui/permissions:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

@@ -25,8 +25,10 @@ using JobId = PasswordStoreAndroidBackendBridgeHelper::JobId;
 }
 
 std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper>
-PasswordStoreAndroidBackendBridgeHelper::Create() {
-  return std::make_unique<PasswordStoreAndroidBackendBridgeHelperImpl>();
+PasswordStoreAndroidBackendBridgeHelper::Create(
+    password_manager::IsAccountStore is_account_store) {
+  return std::make_unique<PasswordStoreAndroidBackendBridgeHelperImpl>(
+      is_account_store);
 }
 
 bool PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend() {
@@ -34,8 +36,10 @@ bool PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend() {
 }
 
 PasswordStoreAndroidBackendBridgeHelperImpl::
-    PasswordStoreAndroidBackendBridgeHelperImpl()
-    : receiver_bridge_(PasswordStoreAndroidBackendReceiverBridge::Create()),
+    PasswordStoreAndroidBackendBridgeHelperImpl(
+        password_manager::IsAccountStore is_account_store)
+    : receiver_bridge_(
+          PasswordStoreAndroidBackendReceiverBridge::Create(is_account_store)),
       dispatcher_bridge_(PasswordStoreAndroidBackendDispatcherBridge::Create()),
       background_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::USER_VISIBLE})) {

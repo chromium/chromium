@@ -440,7 +440,7 @@ Maybe<String> BuildBlockedReason(const ResourceError& error) {
     return Maybe<String>();
   }
 
-  absl::optional<ResourceRequestBlockedReason> resource_request_blocked_reason =
+  std::optional<ResourceRequestBlockedReason> resource_request_blocked_reason =
       error.GetResourceRequestBlockedReason();
   if (resource_request_blocked_reason)
     return BuildBlockedReason(*resource_request_blocked_reason);
@@ -700,7 +700,7 @@ void SetNetworkStateOverride(bool offline,
   // have per-frame override instead.
   if (offline || latency || download_throughput || upload_throughput) {
     GetNetworkStateNotifier().SetNetworkConnectionInfoOverride(
-        !offline, type, absl::nullopt, latency,
+        !offline, type, std::nullopt, latency,
         download_throughput / (1024 * 1024 / 8));
   } else {
     GetNetworkStateNotifier().ClearOverride();
@@ -718,9 +718,9 @@ String IPAddressToString(const net::IPAddress& address) {
 
 namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
 
-absl::optional<String> AcceptedEncodingFromProtocol(
+std::optional<String> AcceptedEncodingFromProtocol(
     const protocol::Network::ContentEncoding& encoding) {
-  absl::optional<String> result;
+  std::optional<String> result;
   if (ContentEncodingEnum::Gzip == encoding ||
       ContentEncodingEnum::Br == encoding ||
       ContentEncodingEnum::Deflate == encoding ||
@@ -1117,7 +1117,7 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
         AlternateProtocolUsageToString(response.AlternateProtocolUsage()));
   }
 
-  const absl::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
+  const std::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
   if (ssl_info.has_value()) {
     response_object->setSecurityDetails(BuildSecurityDetails(*ssl_info));
   }
@@ -1304,7 +1304,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
                                       pending_xhr_replay_data_.Get());
     pending_xhr_replay_data_.Clear();
   }
-  pending_request_type_ = absl::nullopt;
+  pending_request_type_ = std::nullopt;
 }
 
 void InspectorNetworkAgent::WillSendNavigationRequest(
@@ -1494,7 +1494,7 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
   resources_data_->SetResourceType(request_id, type);
   resources_data_->ResponseReceived(request_id, frame_id, response);
 
-  const absl::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
+  const std::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
   if (ssl_info.has_value() && ssl_info->cert) {
     resources_data_->SetCertificate(request_id, ssl_info->cert);
   }
@@ -1834,7 +1834,7 @@ void InspectorNetworkAgent::WillCreateWebSocket(
     uint64_t identifier,
     const KURL& request_url,
     const String&,
-    absl::optional<base::UnguessableToken>* devtools_token) {
+    std::optional<base::UnguessableToken>* devtools_token) {
   *devtools_token = devtools_token_;
   std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
       current_stack_trace =
@@ -2169,7 +2169,7 @@ protocol::Response InspectorNetworkAgent::setAcceptedEncodings(
         encodings) {
   HashSet<String> accepted_encodings;
   for (const protocol::Network::ContentEncoding& encoding : *encodings) {
-    absl::optional<String> value = AcceptedEncodingFromProtocol(encoding);
+    std::optional<String> value = AcceptedEncodingFromProtocol(encoding);
     if (!value) {
       return protocol::Response::InvalidParams("Unknown encoding type: " +
                                                encoding.Utf8());

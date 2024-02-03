@@ -24,7 +24,7 @@ namespace hud_display {
 
 class Graph {
  public:
-  // Graph screen size (that is used in Layout()) should match (ring buffer
+  // Graph screen size (that is used during layout) should match (ring buffer
   // size - 1) to prevent scaling, because RingBuffer always keeps one element
   // unused.
   using Data = base::RingBuffer<float, kHUDGraphWidth + 1>;

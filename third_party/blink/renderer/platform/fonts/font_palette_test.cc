@@ -28,26 +28,26 @@ TEST(FontPaletteTest, HashingAndComparison) {
 
   b = FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
                        FontPalette::Create(FontPalette::kDarkPalette), 30, 70,
-                       0.7, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
+                       0.7, 1.0, Color::ColorSpace::kSRGB, std::nullopt);
   EXPECT_NE(a->GetHash(), b->GetHash());
   EXPECT_NE(a, b);
 
   scoped_refptr<FontPalette> c =
       FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
                        FontPalette::Create(FontPalette::kDarkPalette), 15, 35,
-                       0.7, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
+                       0.7, 1.0, Color::ColorSpace::kSRGB, std::nullopt);
   EXPECT_NE(c->GetHash(), b->GetHash());
   EXPECT_NE(c, b);
 
   c = FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
                        FontPalette::Create(), 30, 70, 0.7, 1.0,
-                       Color::ColorSpace::kSRGB, absl::nullopt);
+                       Color::ColorSpace::kSRGB, std::nullopt);
   EXPECT_NE(c->GetHash(), b->GetHash());
   EXPECT_NE(c, b);
 
   c = FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
                        FontPalette::Create(FontPalette::kDarkPalette), 30, 70,
-                       0.7, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
+                       0.7, 1.0, Color::ColorSpace::kOklab, std::nullopt);
   EXPECT_NE(c->GetHash(), b->GetHash());
   EXPECT_NE(c, b);
 }
@@ -57,7 +57,7 @@ TEST(FontPaletteTest, MixPaletteValue) {
   scoped_refptr<FontPalette> palette =
       FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
                        FontPalette::Create(FontPalette::kDarkPalette), 30, 70,
-                       0.7, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
+                       0.7, 1.0, Color::ColorSpace::kSRGB, std::nullopt);
   EXPECT_EQ("palette-mix(in srgb, light, dark 70%)", palette->ToString());
 }
 
@@ -67,10 +67,10 @@ TEST(FontPaletteTest, NestedMixPaletteValue) {
   scoped_refptr<FontPalette> palette_end =
       FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
                        FontPalette::Create(FontPalette::kDarkPalette), 70, 30,
-                       0.3, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
+                       0.3, 1.0, Color::ColorSpace::kSRGB, std::nullopt);
   scoped_refptr<FontPalette> palette =
       FontPalette::Mix(palette_start, palette_end, 30, 70, 0.7, 1.0,
-                       Color::ColorSpace::kOklab, absl::nullopt);
+                       Color::ColorSpace::kOklab, std::nullopt);
   EXPECT_EQ(
       "palette-mix(in oklab, normal, palette-mix(in srgb, light, dark 30%) "
       "70%)",
@@ -82,10 +82,10 @@ TEST(FontPaletteTest, InterpolablePalettesNotEqual) {
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
                        FontPalette::Create(FontPalette::kLightPalette), 90, 10,
-                       0.1, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
+                       0.1, 1.0, Color::ColorSpace::kOklab, std::nullopt);
   scoped_refptr<FontPalette> palette2 = FontPalette::Mix(
       FontPalette::Create(FontPalette::kDarkPalette), FontPalette::Create(), 90,
-      10, 0.1, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
+      10, 0.1, 1.0, Color::ColorSpace::kOklab, std::nullopt);
   EXPECT_FALSE(*palette1.get() == *palette2.get());
 }
 
@@ -96,7 +96,7 @@ TEST(FontPaletteTest, InterpolableAndNonInterpolablePalettesNotEqual) {
   scoped_refptr<FontPalette> palette2 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
                        FontPalette::Create(FontPalette::kLightPalette), 90, 10,
-                       0.1, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
+                       0.1, 1.0, Color::ColorSpace::kSRGB, std::nullopt);
   EXPECT_FALSE(*palette1.get() == *palette2.get());
 }
 
@@ -116,11 +116,11 @@ TEST(FontPaletteTest, PalettesEqual) {
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
                        FontPalette::Create(FontPalette::kLightPalette), 90, 10,
-                       0.1, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
+                       0.1, 1.0, Color::ColorSpace::kOklab, std::nullopt);
   scoped_refptr<FontPalette> palette2 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
                        FontPalette::Create(FontPalette::kLightPalette), 90, 10,
-                       0.1, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
+                       0.1, 1.0, Color::ColorSpace::kOklab, std::nullopt);
   EXPECT_TRUE(*palette1.get() == *palette2.get());
 }
 

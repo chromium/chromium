@@ -15,9 +15,7 @@
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/dtfmtsym.h"
 
-namespace autofill {
-
-namespace data_util {
+namespace autofill::data_util {
 
 std::u16string Expiration2DigitMonthAsString(int expiration_month) {
   if (expiration_month < 1 || expiration_month > 12)
@@ -141,17 +139,16 @@ bool SetExpirationYear(int value, int* expiration_year) {
   return true;
 }
 
-std::u16string FindPossiblePhoneCountryCode(const std::u16string& text) {
+std::u16string FindPossiblePhoneCountryCode(std::u16string_view text) {
   if (text.find(u"00") != std::u16string::npos ||
       text.find('+') != std::u16string::npos) {
     std::vector<std::u16string> captures;
-    if (MatchesRegex<kAugmentedPhoneCountryCodeRe>(text, &captures))
+    if (MatchesRegex<kAugmentedPhoneCountryCodeRe>(text, &captures)) {
       return captures[1];
+    }
   }
 
   return std::u16string();
 }
 
-}  // namespace data_util
-
-}  // namespace autofill
+}  // namespace autofill::data_util

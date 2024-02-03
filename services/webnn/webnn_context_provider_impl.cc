@@ -17,6 +17,10 @@
 #include "services/webnn/dml/context_impl.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "services/webnn/coreml/context_impl.h"
+#endif
+
 namespace webnn {
 
 namespace {
@@ -84,6 +88,21 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       blink_remote.InitWithNewPipeAndPassReceiver(), this)));
   std::move(callback).Run(
       mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
+#elif BUILDFLAG(IS_MAC)
+  if (__builtin_available(macOS 13, *)) {
+    // The remote sent to the renderer.
+    mojo::PendingRemote<mojom::WebNNContext> blink_remote;
+    // The receiver bound to WebNNContextImpl.
+    impls_.push_back(base::WrapUnique<WebNNContextImpl>(new coreml::ContextImpl(
+        blink_remote.InitWithNewPipeAndPassReceiver(), this)));
+    std::move(callback).Run(
+        mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
+  } else {
+    std::move(callback).Run(ToError<mojom::CreateContextResult>(
+        mojom::Error::Code::kNotSupportedError,
+        "WebNN Service is not supported on this platform."));
+    DLOG(ERROR) << "WebNN Service is not supported on this platform.";
+  }
 #else
   // TODO(crbug.com/1273291): Supporting WebNN Service on the platform.
   std::move(callback).Run(ToError<mojom::CreateContextResult>(

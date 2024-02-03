@@ -128,11 +128,11 @@ class MEDIA_EXPORT Picture {
 
   // Returns the color space of the picture.
   const gfx::ColorSpace& color_space() const { return color_space_; }
-  const absl::optional<gfx::HDRMetadata>& hdr_metadata() const {
+  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
     return hdr_metadata_;
   }
 
-  void set_hdr_metadata(const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  void set_hdr_metadata(const std::optional<gfx::HDRMetadata>& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
 
@@ -199,7 +199,7 @@ class MEDIA_EXPORT Picture {
   int32_t bitstream_buffer_id_;
   gfx::Rect visible_rect_;
   gfx::ColorSpace color_space_;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
   bool allow_overlay_;
   bool read_lock_fences_enabled_;
   bool size_changed_;

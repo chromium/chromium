@@ -5,6 +5,7 @@
 #include "media/formats/mp2t/mp2t_stream_parser.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -30,7 +31,6 @@
 #include "media/formats/mp2t/ts_section_pat.h"
 #include "media/formats/mp2t/ts_section_pes.h"
 #include "media/formats/mp2t/ts_section_pmt.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace mp2t {
@@ -1005,7 +1005,7 @@ void Mp2tStreamParser::RegisterNewKeyIdAndIv(const std::string& key_id,
         break;
       case EncryptionScheme::kCbcs:
         decrypt_config_ =
-            DecryptConfig::CreateCbcsConfig(key_id, iv, {}, absl::nullopt);
+            DecryptConfig::CreateCbcsConfig(key_id, iv, {}, std::nullopt);
         break;
     }
   }

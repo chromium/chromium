@@ -44,9 +44,9 @@ uint32_t NextDocumentTag() {
   return next_document_tag++;
 }
 
-absl::optional<Vector<String>> FilterTypes(
-    const absl::optional<Vector<String>>& types) {
-  absl::optional<Vector<String>> result;
+std::optional<Vector<String>> FilterTypes(
+    const std::optional<Vector<String>>& types) {
+  std::optional<Vector<String>> result;
   if (!types) {
     return result;
   }
@@ -129,7 +129,7 @@ const char* ViewTransition::StateToString(State state) {
 ViewTransition* ViewTransition::CreateFromScript(
     Document* document,
     V8ViewTransitionCallback* callback,
-    const absl::optional<Vector<String>>& types,
+    const std::optional<Vector<String>>& types,
     Delegate* delegate) {
   CHECK(document->GetExecutionContext());
   return MakeGarbageCollected<ViewTransition>(PassKey(), document, callback,
@@ -139,7 +139,7 @@ ViewTransition* ViewTransition::CreateFromScript(
 ViewTransition::ViewTransition(PassKey,
                                Document* document,
                                V8ViewTransitionCallback* update_dom_callback,
-                               const absl::optional<Vector<String>>& types,
+                               const std::optional<Vector<String>>& types,
                                Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kScript),
@@ -511,6 +511,16 @@ void ViewTransition::ProcessCurrentState() {
             DocumentUpdateReason::kViewTransition);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kPrePaintClean);
+
+        // Note: this happens after updating the lifecycle since the snapshot
+        // root can depend on layout when using a mobile viewport (i.e.
+        // horizontally overflowing element expanding the size of the frame
+        // view). See also: https://crbug.com/1454207.
+        if (style_tracker_->SnapshotRootDidChangeSize()) {
+          SkipTransition(PromiseResponse::kRejectInvalidState);
+          break;
+        }
+
         style_tracker_->AddTransitionElementsFromCSS();
         process_next_state = AdvanceTo(State::kAnimateRequestPending);
         DCHECK(process_next_state);

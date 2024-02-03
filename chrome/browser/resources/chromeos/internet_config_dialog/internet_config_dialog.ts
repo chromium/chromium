@@ -5,18 +5,18 @@
 import 'chrome://resources/ash/common/network/network_config.js';
 import 'chrome://resources/ash/common/network/network_icon.js';
 import 'chrome://resources/ash/common/network/network_shared.css.js';
-import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_page_host_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {ConfigProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -162,6 +162,12 @@ export class InternetConfigDialogElement extends
 
   private onConnectClick_(): void {
     this.$.networkConfig.connect();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [InternetConfigDialogElement.is]: InternetConfigDialogElement;
   }
 }
 

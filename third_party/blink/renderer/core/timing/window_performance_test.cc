@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -92,8 +93,8 @@ class WindowPerformanceTest : public testing::Test {
 
   void SimulateInteractionId(
       PerformanceEventTiming* entry,
-      absl::optional<int> key_code,
-      absl::optional<PointerId> pointer_id,
+      std::optional<int> key_code,
+      std::optional<PointerId> pointer_id,
       base::TimeTicks event_timestamp = base::TimeTicks(),
       base::TimeTicks presentation_timestamp = base::TimeTicks()) {
     ResponsivenessMetrics::EventTimestamps event_timestamps = {
@@ -111,8 +112,9 @@ class WindowPerformanceTest : public testing::Test {
     init->setKeyCode(key_code);
     KeyboardEvent* keyboard_event =
         MakeGarbageCollected<KeyboardEvent>(type, init);
-    performance_->RegisterEventTiming(*keyboard_event, start_time,
-                                      processing_start, processing_end);
+    performance_->RegisterEventTiming(*keyboard_event, keyboard_event->target(),
+                                      start_time, processing_start,
+                                      processing_end);
     return performance_->event_presentation_promise_count_;
   }
 
@@ -128,8 +130,9 @@ class WindowPerformanceTest : public testing::Test {
     if (target) {
       pointer_event->SetTarget(target);
     }
-    performance_->RegisterEventTiming(*pointer_event, start_time,
-                                      processing_start, processing_end);
+    performance_->RegisterEventTiming(*pointer_event, pointer_event->target(),
+                                      start_time, processing_start,
+                                      processing_end);
   }
 
   PerformanceEventTiming* CreatePerformanceEventTiming(
@@ -181,6 +184,7 @@ class WindowPerformanceTest : public testing::Test {
     performance_->last_visibility_change_timestamp_ = timestamp;
   }
 
+  test::TaskEnvironment task_environment_;
   Persistent<WindowPerformance> performance_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
@@ -229,6 +233,7 @@ TEST_F(WindowPerformanceTest, NavigateAway) {
 // This happens when a page opens a new window and it navigates to a same-origin
 // document.
 TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
+  test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   // Emulate a new window inheriting the origin for its initial empty document
   // from its opener. This is necessary to ensure window reuse below, as that
@@ -1169,7 +1174,7 @@ TEST_F(WindowPerformanceTest, PerformanceMarkTraceEvent) {
 
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
 
-  absl::optional<double> start_time = arg_dict.FindDouble("startTime");
+  std::optional<double> start_time = arg_dict.FindDouble("startTime");
   ASSERT_TRUE(start_time.has_value());
 
   // The navigationId should be recorded if performance.mark is executed by a
@@ -1441,11 +1446,11 @@ TEST_F(WindowPerformanceTest, InteractionID) {
   // Keyboard with max duration 25, total duration 40.
   PerformanceEventTiming* keydown_entry =
       CreatePerformanceEventTiming(event_type_names::kKeydown);
-  SimulateInteractionId(keydown_entry, 1, absl::nullopt, GetTimeStamp(100),
+  SimulateInteractionId(keydown_entry, 1, std::nullopt, GetTimeStamp(100),
                         GetTimeStamp(120));
   PerformanceEventTiming* keyup_entry =
       CreatePerformanceEventTiming(event_type_names::kKeyup);
-  SimulateInteractionId(keyup_entry, 1, absl::nullopt, GetTimeStamp(115),
+  SimulateInteractionId(keyup_entry, 1, std::nullopt, GetTimeStamp(115),
                         GetTimeStamp(140));
   EXPECT_EQ(keydown_entry->interactionId(), keyup_entry->interactionId());
   EXPECT_GT(keydown_entry->interactionId(), 0u);
@@ -1454,15 +1459,15 @@ TEST_F(WindowPerformanceTest, InteractionID) {
   PointerId pointer_id_1 = 10;
   PerformanceEventTiming* pointerdown_entry =
       CreatePerformanceEventTiming(event_type_names::kPointerdown);
-  SimulateInteractionId(pointerdown_entry, absl::nullopt, pointer_id_1,
+  SimulateInteractionId(pointerdown_entry, std::nullopt, pointer_id_1,
                         GetTimeStamp(100), GetTimeStamp(120));
   PerformanceEventTiming* pointerup_entry =
       CreatePerformanceEventTiming(event_type_names::kPointerup);
-  SimulateInteractionId(pointerup_entry, absl::nullopt, pointer_id_1,
+  SimulateInteractionId(pointerup_entry, std::nullopt, pointer_id_1,
                         GetTimeStamp(130), GetTimeStamp(150));
   PerformanceEventTiming* click_entry =
       CreatePerformanceEventTiming(event_type_names::kClick);
-  SimulateInteractionId(click_entry, absl::nullopt, pointer_id_1,
+  SimulateInteractionId(click_entry, std::nullopt, pointer_id_1,
                         GetTimeStamp(130), GetTimeStamp(200));
   EXPECT_GT(pointerdown_entry->interactionId(), 0u);
   EXPECT_EQ(pointerdown_entry->interactionId(),
@@ -1473,11 +1478,11 @@ TEST_F(WindowPerformanceTest, InteractionID) {
   PointerId pointer_id_2 = 20;
   pointerdown_entry =
       CreatePerformanceEventTiming(event_type_names::kPointerdown);
-  SimulateInteractionId(pointerdown_entry, absl::nullopt, pointer_id_2,
+  SimulateInteractionId(pointerdown_entry, std::nullopt, pointer_id_2,
                         GetTimeStamp(150), GetTimeStamp(200));
   performance_->NotifyPotentialDrag(20);
   pointerup_entry = CreatePerformanceEventTiming(event_type_names::kPointerup);
-  SimulateInteractionId(pointerup_entry, absl::nullopt, pointer_id_2,
+  SimulateInteractionId(pointerup_entry, std::nullopt, pointer_id_2,
                         GetTimeStamp(200), GetTimeStamp(230));
   EXPECT_GT(pointerdown_entry->interactionId(), 0u);
   EXPECT_EQ(pointerdown_entry->interactionId(),
@@ -1486,11 +1491,11 @@ TEST_F(WindowPerformanceTest, InteractionID) {
   // Scroll should not be reported in ukm.
   pointerdown_entry =
       CreatePerformanceEventTiming(event_type_names::kPointerdown);
-  SimulateInteractionId(pointerdown_entry, absl::nullopt, pointer_id_2,
+  SimulateInteractionId(pointerdown_entry, std::nullopt, pointer_id_2,
                         GetTimeStamp(300), GetTimeStamp(315));
   PerformanceEventTiming* pointercancel_entry =
       CreatePerformanceEventTiming(event_type_names::kPointercancel);
-  SimulateInteractionId(pointercancel_entry, absl::nullopt, pointer_id_2,
+  SimulateInteractionId(pointercancel_entry, std::nullopt, pointer_id_2,
                         GetTimeStamp(310), GetTimeStamp(330));
   EXPECT_EQ(pointerdown_entry->interactionId(), 0u);
   EXPECT_EQ(pointercancel_entry->interactionId(), 0u);
@@ -1531,8 +1536,8 @@ class InteractionIdTest : public WindowPerformanceTest {
   struct EventForInteraction {
     EventForInteraction(
         const AtomicString& name,
-        absl::optional<int> key_code,
-        absl::optional<PointerId> pointer_id,
+        std::optional<int> key_code,
+        std::optional<PointerId> pointer_id,
         base::TimeTicks event_timestamp = base::TimeTicks(),
         base::TimeTicks presentation_timestamp = base::TimeTicks())
         : name_(name),
@@ -1542,8 +1547,8 @@ class InteractionIdTest : public WindowPerformanceTest {
           presentation_timestamp_(presentation_timestamp) {}
 
     AtomicString name_;
-    absl::optional<int> key_code_;
-    absl::optional<PointerId> pointer_id_;
+    std::optional<int> key_code_;
+    std::optional<PointerId> pointer_id_;
     base::TimeTicks event_timestamp_;
     base::TimeTicks presentation_timestamp_;
   };
@@ -1602,11 +1607,11 @@ class InteractionIdTest : public WindowPerformanceTest {
 TEST_F(InteractionIdTest, InputOutsideComposition) {
   // Insert "a" with a max duration of 50 and total of 50.
   std::vector<EventForInteraction> events1 = {
-      {event_type_names::kKeydown, 65, absl::nullopt, GetTimeStamp(100),
+      {event_type_names::kKeydown, 65, std::nullopt, GetTimeStamp(100),
        GetTimeStamp(150)},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(120), GetTimeStamp(220)},
-      {event_type_names::kKeyup, 65, absl::nullopt, GetTimeStamp(130),
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(120),
+       GetTimeStamp(220)},
+      {event_type_names::kKeyup, 65, std::nullopt, GetTimeStamp(130),
        GetTimeStamp(150)}};
   std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
   EXPECT_GT(ids1[0], 0u) << "Keydown interactionId was nonzero";
@@ -1615,11 +1620,11 @@ TEST_F(InteractionIdTest, InputOutsideComposition) {
 
   // Insert "3" with a max duration of 40 and total of 60.
   std::vector<EventForInteraction> events2 = {
-      {event_type_names::kKeydown, 53, absl::nullopt, GetTimeStamp(200),
+      {event_type_names::kKeydown, 53, std::nullopt, GetTimeStamp(200),
        GetTimeStamp(220)},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(220), GetTimeStamp(320)},
-      {event_type_names::kKeyup, 53, absl::nullopt, GetTimeStamp(250),
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(220),
+       GetTimeStamp(320)},
+      {event_type_names::kKeyup, 53, std::nullopt, GetTimeStamp(250),
        GetTimeStamp(290)}};
   std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
   EXPECT_GT(ids2[0], 0u) << "Second keydown has nonzero interactionId";
@@ -1630,11 +1635,11 @@ TEST_F(InteractionIdTest, InputOutsideComposition) {
 
   // Backspace with max duration of 25 and total of 25.
   std::vector<EventForInteraction> events3 = {
-      {event_type_names::kKeydown, 8, absl::nullopt, GetTimeStamp(300),
+      {event_type_names::kKeydown, 8, std::nullopt, GetTimeStamp(300),
        GetTimeStamp(320)},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(300), GetTimeStamp(400)},
-      {event_type_names::kKeyup, 8, absl::nullopt, GetTimeStamp(300),
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(300),
+       GetTimeStamp(400)},
+      {event_type_names::kKeyup, 8, std::nullopt, GetTimeStamp(300),
        GetTimeStamp(325)}};
   std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
   EXPECT_GT(ids3[0], 0u) << "Third keydown has nonzero interactionId";
@@ -1654,12 +1659,12 @@ TEST_F(InteractionIdTest, InputOutsideComposition) {
 TEST_F(InteractionIdTest, CompositionSingleKeydown) {
   // Insert "a" with a duration of 20.
   std::vector<EventForInteraction> events1 = {
-      {event_type_names::kKeydown, 229, absl::nullopt, GetTimeStamp(100),
+      {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(100),
        GetTimeStamp(200)},
-      {event_type_names::kCompositionstart, absl::nullopt, absl::nullopt},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(120), GetTimeStamp(140)},
-      {event_type_names::kKeyup, 65, absl::nullopt, GetTimeStamp(120),
+      {event_type_names::kCompositionstart, std::nullopt, std::nullopt},
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(120),
+       GetTimeStamp(140)},
+      {event_type_names::kKeyup, 65, std::nullopt, GetTimeStamp(120),
        GetTimeStamp(220)}};
   std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
   EXPECT_EQ(ids1[0], 0u) << "Keydown interactionId was zero";
@@ -1669,13 +1674,13 @@ TEST_F(InteractionIdTest, CompositionSingleKeydown) {
 
   // Insert "b" and finish composition with a duration of 30.
   std::vector<EventForInteraction> events2 = {
-      {event_type_names::kKeydown, 229, absl::nullopt, GetTimeStamp(200),
+      {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(200),
        GetTimeStamp(300)},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(230), GetTimeStamp(260)},
-      {event_type_names::kKeyup, 66, absl::nullopt, GetTimeStamp(270),
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(230),
+       GetTimeStamp(260)},
+      {event_type_names::kKeyup, 66, std::nullopt, GetTimeStamp(270),
        GetTimeStamp(370)},
-      {event_type_names::kCompositionend, absl::nullopt, absl::nullopt}};
+      {event_type_names::kCompositionend, std::nullopt, std::nullopt}};
   std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
   EXPECT_EQ(ids2[0], 0u) << "Second keydown interactionId was zero";
   EXPECT_GT(ids2[1], 0u) << "Second input interactionId was nonzero";
@@ -1693,23 +1698,23 @@ TEST_F(InteractionIdTest, CompositionSingleKeydown) {
 TEST_F(InteractionIdTest, CompositionToFinalInput) {
   // Insert "a" with a duration of 25.
   std::vector<EventForInteraction> events1 = {
-      {event_type_names::kKeydown, 229, absl::nullopt, GetTimeStamp(100),
+      {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(100),
        GetTimeStamp(190)},
-      {event_type_names::kCompositionstart, absl::nullopt, absl::nullopt},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(100), GetTimeStamp(125)},
-      {event_type_names::kKeyup, 65, absl::nullopt, GetTimeStamp(110),
+      {event_type_names::kCompositionstart, std::nullopt, std::nullopt},
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(100),
+       GetTimeStamp(125)},
+      {event_type_names::kKeyup, 65, std::nullopt, GetTimeStamp(110),
        GetTimeStamp(190)}};
   std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
   EXPECT_GT(ids1[2], 0u) << "First input nonzero";
 
   // Insert "b" with a duration of 35.
   std::vector<EventForInteraction> events2 = {
-      {event_type_names::kKeydown, 229, absl::nullopt, GetTimeStamp(200),
+      {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(200),
        GetTimeStamp(290)},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(220), GetTimeStamp(255)},
-      {event_type_names::kKeyup, 66, absl::nullopt, GetTimeStamp(210),
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(220),
+       GetTimeStamp(255)},
+      {event_type_names::kKeyup, 66, std::nullopt, GetTimeStamp(210),
        GetTimeStamp(290)}};
   std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
   EXPECT_GT(ids2[1], 0u) << "Second input nonzero";
@@ -1718,9 +1723,9 @@ TEST_F(InteractionIdTest, CompositionToFinalInput) {
 
   // Select a composed input and finish, with a duration of 140.
   std::vector<EventForInteraction> events3 = {
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(300), GetTimeStamp(440)},
-      {event_type_names::kCompositionend, absl::nullopt, absl::nullopt}};
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(300),
+       GetTimeStamp(440)},
+      {event_type_names::kCompositionend, std::nullopt, std::nullopt}};
   std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
   EXPECT_EQ(ids3[1], 0u) << "Compositionend has zero interactionId";
   EXPECT_GT(ids3[0], 0u) << "Third input has nonzero interactionId";
@@ -1738,14 +1743,14 @@ TEST_F(InteractionIdTest, CompositionToFinalInput) {
 TEST_F(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
   // Insert "a" with a duration of 66.
   std::vector<EventForInteraction> events1 = {
-      {event_type_names::kKeydown, 229, absl::nullopt, GetTimeStamp(0),
+      {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(0),
        GetTimeStamp(100)},
-      {event_type_names::kCompositionstart, absl::nullopt, absl::nullopt},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt, GetTimeStamp(0),
+      {event_type_names::kCompositionstart, std::nullopt, std::nullopt},
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(0),
        GetTimeStamp(66)},
-      {event_type_names::kKeyup, 229, absl::nullopt, GetTimeStamp(0),
+      {event_type_names::kKeyup, 229, std::nullopt, GetTimeStamp(0),
        GetTimeStamp(100)},
-      {event_type_names::kKeyup, 65, absl::nullopt, GetTimeStamp(0),
+      {event_type_names::kKeyup, 65, std::nullopt, GetTimeStamp(0),
        GetTimeStamp(100)}};
   std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
   EXPECT_GT(ids1[2], 0u) << "First input nonzero";
@@ -1754,13 +1759,13 @@ TEST_F(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
 
   // Insert "b" with a duration of 51.
   std::vector<EventForInteraction> events2 = {
-      {event_type_names::kKeydown, 229, absl::nullopt, GetTimeStamp(200),
+      {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(200),
        GetTimeStamp(300)},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(200), GetTimeStamp(251)},
-      {event_type_names::kKeyup, 229, absl::nullopt, GetTimeStamp(200),
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(200),
+       GetTimeStamp(251)},
+      {event_type_names::kKeyup, 229, std::nullopt, GetTimeStamp(200),
        GetTimeStamp(300)},
-      {event_type_names::kKeyup, 66, absl::nullopt, GetTimeStamp(200),
+      {event_type_names::kKeyup, 66, std::nullopt, GetTimeStamp(200),
        GetTimeStamp(300)}};
   std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
   EXPECT_GT(ids2[1], 0u) << "Second input nonzero";
@@ -1771,9 +1776,9 @@ TEST_F(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
 
   // Select a composed input and finish, with duration of 85.
   std::vector<EventForInteraction> events3 = {
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(300), GetTimeStamp(385)},
-      {event_type_names::kCompositionend, absl::nullopt, absl::nullopt}};
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(300),
+       GetTimeStamp(385)},
+      {event_type_names::kCompositionend, std::nullopt, std::nullopt}};
   std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
   EXPECT_GT(ids3[0], 0u) << "Third input has nonzero interactionId";
   EXPECT_NE(ids1[2], ids3[0])
@@ -1790,21 +1795,21 @@ TEST_F(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
 TEST_F(InteractionIdTest, SmartSuggestion) {
   // Insert "A" with a duration of 9.
   std::vector<EventForInteraction> events1 = {
-      {event_type_names::kKeydown, 229, absl::nullopt, GetTimeStamp(0),
+      {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(0),
        GetTimeStamp(16)},
-      {event_type_names::kCompositionstart, absl::nullopt, absl::nullopt},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt, GetTimeStamp(0),
+      {event_type_names::kCompositionstart, std::nullopt, std::nullopt},
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(0),
        GetTimeStamp(9)},
-      {event_type_names::kKeyup, 229, absl::nullopt, GetTimeStamp(0),
+      {event_type_names::kKeyup, 229, std::nullopt, GetTimeStamp(0),
        GetTimeStamp(16)}};
   std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
   EXPECT_GT(ids1[2], 0u) << "First input nonzero";
 
   // Compose to "At" with a duration of 14.
   std::vector<EventForInteraction> events2 = {
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(100), GetTimeStamp(114)},
-      {event_type_names::kCompositionend, absl::nullopt, absl::nullopt}};
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(100),
+       GetTimeStamp(114)},
+      {event_type_names::kCompositionend, std::nullopt, std::nullopt}};
   std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
   EXPECT_GT(ids2[0], 0u) << "Second input nonzero";
   EXPECT_NE(ids1[2], ids2[1])
@@ -1813,11 +1818,11 @@ TEST_F(InteractionIdTest, SmartSuggestion) {
   // Add "the". No composition so need to consider the keydown and keyup.
   // Max duration of 43 and total duration of 70
   std::vector<EventForInteraction> events3 = {
-      {event_type_names::kKeydown, 229, absl::nullopt, GetTimeStamp(200),
+      {event_type_names::kKeydown, 229, std::nullopt, GetTimeStamp(200),
        GetTimeStamp(243)},
-      {event_type_names::kInput, absl::nullopt, absl::nullopt,
-       GetTimeStamp(200), GetTimeStamp(300)},
-      {event_type_names::kKeyup, 229, absl::nullopt, GetTimeStamp(235),
+      {event_type_names::kInput, std::nullopt, std::nullopt, GetTimeStamp(200),
+       GetTimeStamp(300)},
+      {event_type_names::kKeyup, 229, std::nullopt, GetTimeStamp(235),
        GetTimeStamp(270)}};
   std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
   EXPECT_GT(ids3[0], 0u) << "Keydown nonzero";
@@ -1831,9 +1836,9 @@ TEST_F(InteractionIdTest, SmartSuggestion) {
 
 TEST_F(InteractionIdTest, TapWithoutClick) {
   std::vector<EventForInteraction> events = {
-      {event_type_names::kPointerdown, absl::nullopt, 1, GetTimeStamp(100),
+      {event_type_names::kPointerdown, std::nullopt, 1, GetTimeStamp(100),
        GetTimeStamp(140)},
-      {event_type_names::kPointerup, absl::nullopt, 1, GetTimeStamp(120),
+      {event_type_names::kPointerup, std::nullopt, 1, GetTimeStamp(120),
        GetTimeStamp(150)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
   EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";
@@ -1852,9 +1857,9 @@ TEST_F(InteractionIdTest, TapWithoutClick) {
 
 TEST_F(InteractionIdTest, PointerupClick) {
   std::vector<EventForInteraction> events = {
-      {event_type_names::kPointerup, absl::nullopt, 1, GetTimeStamp(100),
+      {event_type_names::kPointerup, std::nullopt, 1, GetTimeStamp(100),
        GetTimeStamp(140)},
-      {event_type_names::kClick, absl::nullopt, 1, GetTimeStamp(120),
+      {event_type_names::kClick, std::nullopt, 1, GetTimeStamp(120),
        GetTimeStamp(150)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
   EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";
@@ -1867,7 +1872,7 @@ TEST_F(InteractionIdTest, PointerupClick) {
 TEST_F(InteractionIdTest, JustClick) {
   // Hitting enter on a keyboard may cause just a trusted click event.
   std::vector<EventForInteraction> events = {
-      {event_type_names::kClick, absl::nullopt, -1, GetTimeStamp(120),
+      {event_type_names::kClick, std::nullopt, -1, GetTimeStamp(120),
        GetTimeStamp(150)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
   EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";
@@ -1879,9 +1884,9 @@ TEST_F(InteractionIdTest, JustClick) {
 TEST_F(InteractionIdTest, PointerdownClick) {
   // Contextmenus may cause us to only see pointerdown and click (no pointerup).
   std::vector<EventForInteraction> events = {
-      {event_type_names::kPointerdown, absl::nullopt, 1, GetTimeStamp(100),
+      {event_type_names::kPointerdown, std::nullopt, 1, GetTimeStamp(100),
        GetTimeStamp(140)},
-      {event_type_names::kClick, absl::nullopt, 1, GetTimeStamp(120),
+      {event_type_names::kClick, std::nullopt, 1, GetTimeStamp(120),
        GetTimeStamp(150)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
   EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";
@@ -1895,13 +1900,13 @@ TEST_F(InteractionIdTest, MultiTouch) {
   // In multitouch, we report an interaction per pointerId. We do not see
   // clicks.
   std::vector<EventForInteraction> events = {
-      {event_type_names::kPointerdown, absl::nullopt, 1, GetTimeStamp(100),
+      {event_type_names::kPointerdown, std::nullopt, 1, GetTimeStamp(100),
        GetTimeStamp(110)},
-      {event_type_names::kPointerdown, absl::nullopt, 2, GetTimeStamp(120),
+      {event_type_names::kPointerdown, std::nullopt, 2, GetTimeStamp(120),
        GetTimeStamp(140)},
-      {event_type_names::kPointerup, absl::nullopt, 2, GetTimeStamp(200),
+      {event_type_names::kPointerup, std::nullopt, 2, GetTimeStamp(200),
        GetTimeStamp(230)},
-      {event_type_names::kPointerup, absl::nullopt, 1, GetTimeStamp(200),
+      {event_type_names::kPointerup, std::nullopt, 1, GetTimeStamp(200),
        GetTimeStamp(250)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
   for (uint32_t id : ids) {
@@ -1920,9 +1925,9 @@ TEST_F(InteractionIdTest, ClickIncorrectPointerId) {
   // On mobile, in cases where touchstart is skipped, click does not get the
   // correct pointerId. See crbug.com/1264930 for more details.
   std::vector<EventForInteraction> events = {
-      {event_type_names::kPointerup, absl::nullopt, 1, GetTimeStamp(100),
+      {event_type_names::kPointerup, std::nullopt, 1, GetTimeStamp(100),
        GetTimeStamp(130)},
-      {event_type_names::kClick, absl::nullopt, 0, GetTimeStamp(120),
+      {event_type_names::kClick, std::nullopt, 0, GetTimeStamp(120),
        GetTimeStamp(160)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
   EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";

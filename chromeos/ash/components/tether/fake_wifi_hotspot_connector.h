@@ -24,7 +24,9 @@ class FakeWifiHotspotConnector : public WifiHotspotConnector {
   ~FakeWifiHotspotConnector() override;
 
   // Pass an empty string for |wifi_guid| to signify a failed connection.
-  void CallMostRecentCallback(const std::string& wifi_guid);
+  void CallMostRecentCallback(
+      base::expected<std::string,
+                     WifiHotspotConnector::WifiHotspotConnectionError> result);
 
   std::string most_recent_ssid() { return most_recent_ssid_; }
 

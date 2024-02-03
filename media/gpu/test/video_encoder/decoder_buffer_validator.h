@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/test/bitstream_helpers.h"
 #include "media/parsers/vp8_parser.h"
 #include "media/video/h264_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -71,7 +72,7 @@ class H264Validator : public DecoderBufferValidator {
   H264Validator(VideoCodecProfile profile,
                 const gfx::Rect& visible_rect,
                 const size_t num_temporal_layers,
-                absl::optional<uint8_t> level = absl::nullopt);
+                std::optional<uint8_t> level = std::nullopt);
   ~H264Validator() override;
 
  private:
@@ -101,8 +102,8 @@ class H264Validator : public DecoderBufferValidator {
   // The expected h264 profile of |decoder_buffer|.
   const int profile_;
   // The expected h264 level of |decoder_buffer|. Check if it is not
-  // absl::nullopt.
-  absl::optional<uint8_t> level_;
+  // std::nullopt.
+  std::optional<uint8_t> level_;
 };
 
 class VP8Validator : public DecoderBufferValidator {
@@ -168,10 +169,10 @@ class VP9Validator : public DecoderBufferValidator {
   // An optional state for each specified VP9 reference buffer.
   // A nullopt indicates either keyframe not yet seen, or that a
   // buffer has been invalidated (e.g. due to sync points).
-  std::vector<std::array<absl::optional<BufferState>, kVp9NumRefFrames>>
+  std::vector<std::array<std::optional<BufferState>, kVp9NumRefFrames>>
       reference_buffers_;
 
-  absl::optional<base::TimeDelta> dropped_superframe_timestamp_;
+  std::optional<base::TimeDelta> dropped_superframe_timestamp_;
 };
 
 class AV1Validator : public DecoderBufferValidator {
@@ -188,7 +189,7 @@ class AV1Validator : public DecoderBufferValidator {
   libgav1::InternalFrameBufferList buffer_list_;
   libgav1::BufferPool buffer_pool_;
   libgav1::DecoderState decoder_state_;
-  absl::optional<libgav1::ObuSequenceHeader> sequence_header_ = absl::nullopt;
+  std::optional<libgav1::ObuSequenceHeader> sequence_header_ = std::nullopt;
   uint64_t frame_num_ = 0;
 };
 }  // namespace test

@@ -26,12 +26,6 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     // Exclude to prevent PartitionAlloc<->raw_ptr<T> cyclical dependency.
     "base/allocator/",
 
-    // Exclude dependences of raw_ptr.h
-    // TODO(bartekn): Update the list of dependencies.
-    "base/logging.h",
-    "base/synchronization/lock_impl.h",
-    "base/check.h",
-
     // win:pe_image target that uses this file does not depend on base/.
     "base/no_destructor.h",
 

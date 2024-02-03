@@ -42,7 +42,7 @@ std::unique_ptr<PixelBufferPool> PixelBufferPool::Create(
     OSType format,
     int width,
     int height,
-    absl::optional<size_t> max_buffers) {
+    std::optional<size_t> max_buffers) {
   // Pixel buffer attributes: The attributes of buffers created by the pool.
   CFStringRef pixel_buffer_attribute_keys[] = {
       kCVPixelBufferIOSurfacePropertiesKey,  // We want IOSurfaces.
@@ -91,7 +91,7 @@ std::unique_ptr<PixelBufferPool> PixelBufferPool::Create(
 
 PixelBufferPool::PixelBufferPool(
     base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool,
-    absl::optional<size_t> max_buffers)
+    std::optional<size_t> max_buffers)
     : buffer_pool_(std::move(buffer_pool)),
       max_buffers_(std::move(max_buffers)),
       num_consecutive_errors_(0) {

@@ -477,7 +477,8 @@ String MediaKeySession::sessionId() const {
   return session_id_;
 }
 
-ScriptPromise MediaKeySession::closed(ScriptState* script_state) {
+ScriptPromiseTyped<V8MediaKeySessionClosedReason> MediaKeySession::closed(
+    ScriptState* script_state) {
   return closed_promise_->Promise(script_state->World());
 }
 

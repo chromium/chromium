@@ -94,10 +94,23 @@ enum class ItemAction {
   kMaxValue = kResume,
 };
 
+// Enumeration of sources for events that occur in (and to) holding space.
+enum class EventSource {
+  kHoldingSpaceBubble = 0,
+  kHoldingSpaceItem = 1,
+  kHoldingSpaceItemContextMenu = 2,
+  kHoldingSpaceTray = 3,
+  kFilesApp = 4,
+  kTest = 5,
+  kWallpaper = 6,
+  kMaxValue = kWallpaper,
+};
+
 // Records the specified `action` taken on a set of holding space `items`.
 ASH_PUBLIC_EXPORT void RecordItemAction(
     const std::vector<const HoldingSpaceItem*>& items,
-    ItemAction action);
+    ItemAction action,
+    EventSource event_source);
 
 // Records an attempt to launch a holding space item of the specified `type`
 // backed by the empty file at the specified `file_path`.

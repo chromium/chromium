@@ -192,7 +192,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         &OnHostResolution, common_connect_job_params_->spdy_session_pool,
         // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
         SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
-                       proxy_chain, group_id.privacy_mode(),
+                       group_id.privacy_mode(), proxy_chain,
                        SessionUsage::kDestination, socket_tag,
                        group_id.network_anonymization_key(),
                        group_id.secure_dns_policy()),

@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">在新标签页中打开链接，同时留在当前标签页中</translation>
 <translation id="353086728817903341">已连接到 <ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="3533126039236445965">任务栏中的应用</translation>
+<translation id="3537350467437346467">您查看过</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3540893133818942399">取消设置查看手机中的近期照片和媒体内容</translation>
 <translation id="3542066395059568317">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过右键点击建议项目将其移除。</translation>
+<translation id="3547318469722231257">您修改过</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
 <translation id="3554215588514239132">显示或隐藏开发者工具面板</translation>
 <translation id="3554637740840164787">“<ph name="ITEM_TITLE" />”已被固定</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">开头</translation>
 <translation id="3859364108019690">无法流式传输应用</translation>
 <translation id="3861651314799684201">按 Enter 键即可录制整个屏幕</translation>
+<translation id="3882323608730650973">修改过</translation>
 <translation id="3886872229787704059">今天打开过</translation>
 <translation id="3891340733213178823">连按两次Ctrl+Shift+Q即可退出。</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
@@ -893,6 +896,7 @@
 <translation id="4582666543382004902">为了使用 Wi-Fi，已关闭热点。若要使用热点，请关闭 Wi-Fi。</translation>
 <translation id="4585337515783392668">停止投放至不明接收器</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
+<translation id="4596442969149038771"><ph name="USER" />分享过</translation>
 <translation id="4611292653554630842">登录</translation>
 <translation id="462160925400706389">已连接到“<ph name="NAME" />”</translation>
 <translation id="4623167406982293031">验证账号</translation>
@@ -1335,6 +1339,7 @@
 <translation id="6298183524022479114">在应用内自定义此设备</translation>
 <translation id="6309219492973062892">点击或点按任务栏图标 1-8</translation>
 <translation id="6315170314923504164">语音</translation>
+<translation id="6319058840130157106">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间向后移动</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6330012934079202188">正在显示所有桌面中的窗口，按向上键即可显示当前桌面中的窗口</translation>
 <translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>
@@ -1498,6 +1503,7 @@
 <translation id="6981291220124935078">启用使用权限</translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="698231206551913481">移除该用户后，与其关联的所有文件和本地数据都会被永久删除。</translation>
+<translation id="6984028004251196682">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> 赫兹）。分辨率已更改为 <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" /> 赫兹）。点击“确认”可保留更改。系统将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="6989752354829085073">不妨观看快速导览，了解如何玩转 Chromebook。只需 6 步，即可启动并运行。</translation>
 <translation id="7004910047186208204">连接到移动数据网络</translation>
 <translation id="7005239792648594238">打开一款应用即可开始使用</translation>
@@ -1812,6 +1818,7 @@
 <translation id="8314772463905284467">Caps Lock 已打开</translation>
 <translation id="8315514906653279104">正在开启…</translation>
 <translation id="8331351032546853669">待下载</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
 <translation id="8349826889576450703">启动器</translation>
@@ -1918,6 +1925,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />，已安装的应用，已禁用</translation>
 <translation id="8785070478575117577">连接到“<ph name="NETWORK_NAME" />”</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间向前移动</translation>
 <translation id="8792626944327216835">麦克风</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">文件夹“<ph name="FOLDER_NAME" />”</translation>
@@ -2031,6 +2039,7 @@
 <translation id="953431725143473984">要关闭设备吗？</translation>
 <translation id="954052413789300507">空间不足，无法下载“<ph name="FILENAME" />”。请先释放空间。</translation>
 <translation id="954520015070501466">30 分钟</translation>
+<translation id="954786879461589145"><ph name="USER" />修改过</translation>
 <translation id="974545358917229949">显示了 <ph name="RESULT_COUNT" /> 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="981011780479609956">无截止日期</translation>
 <translation id="98120814841227350">转到文档末尾</translation>

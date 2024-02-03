@@ -23,9 +23,7 @@ class NavigationURLLoaderDelegate;
 
 // Test implementation of NavigationURLLoader to simulate the network stack
 // response.
-class TestNavigationURLLoader
-    : public NavigationURLLoader,
-      public base::SupportsWeakPtr<TestNavigationURLLoader> {
+class TestNavigationURLLoader final : public NavigationURLLoader {
  public:
   TestNavigationURLLoader(std::unique_ptr<NavigationRequestInfo> request_info,
                           NavigationURLLoaderDelegate* delegate,
@@ -59,6 +57,10 @@ class TestNavigationURLLoader
 
   int redirect_count() { return redirect_count_; }
 
+  base::WeakPtr<TestNavigationURLLoader> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   ~TestNavigationURLLoader() override;
 
@@ -69,6 +71,8 @@ class TestNavigationURLLoader
   const NavigationURLLoader::LoaderType loader_type_;
 
   bool was_resource_hints_received_ = false;
+
+  base::WeakPtrFactory<TestNavigationURLLoader> weak_ptr_factory_{this};
 };
 
 }  // namespace content

@@ -291,16 +291,6 @@ public class ContentSettingsResources {
                         0,
                         R.string.website_settings_category_mic_a11y);
 
-            case ContentSettingsType.MIDI:
-                return new ResourceItem(
-                        R.drawable.gm_filled_piano_24,
-                        R.string.midi_permission_title,
-                        null,
-                        null,
-                        0,
-                        0,
-                        0);
-
             case ContentSettingsType.MIDI_SYSEX:
                 return new ResourceItem(
                         R.drawable.gm_filled_piano_24,

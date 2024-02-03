@@ -139,7 +139,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSTabGridToolbarItemFeature,
     &kIPHiOSHistoryOnOverflowMenuFeature,
     &kIPHiOSShareToolbarItemFeature,
-    &kIPHiOSDefaultBrowserVideoPromoTriggerFeature,
     &kIPHiOSPromoPostRestoreDefaultBrowserFeature,
     &kIPHiOSPromoPasswordManagerWidgetFeature,
     &kIPHiOSChoiceScreenFeature,

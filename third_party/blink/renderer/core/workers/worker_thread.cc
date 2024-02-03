@@ -167,7 +167,7 @@ WorkerThread::~WorkerThread() {
 
 void WorkerThread::Start(
     std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
-    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    const std::optional<WorkerBackingThreadStartupData>& thread_startup_data,
     std::unique_ptr<WorkerDevToolsParams> devtools_params) {
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   devtools_worker_token_ = devtools_params->devtools_worker_token;
@@ -596,7 +596,7 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
 
 void WorkerThread::InitializeOnWorkerThread(
     std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
-    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    const std::optional<WorkerBackingThreadStartupData>& thread_startup_data,
     std::unique_ptr<WorkerDevToolsParams> devtools_params) {
   DCHECK(IsCurrentThread());
   backing_thread_weak_factory_.emplace(this);
@@ -607,6 +607,7 @@ void WorkerThread::InitializeOnWorkerThread(
     DCHECK_EQ(ThreadState::kNotStarted, thread_state_);
 
     if (IsOwningBackingThread()) {
+      global_scope_creation_params->is_default_world_of_isolate = true;
       DCHECK(thread_startup_data.has_value());
       GetWorkerBackingThread().InitializeOnBackingThread(*thread_startup_data);
     } else {
@@ -745,7 +746,7 @@ void WorkerThread::PrepareForShutdownOnWorkerThread() {
     SetThreadState(ThreadState::kReadyToShutdown);
   }
 
-  backing_thread_weak_factory_ = absl::nullopt;
+  backing_thread_weak_factory_ = std::nullopt;
   if (pause_or_freeze_count_ > 0) {
     DCHECK(nested_runner_);
     pause_or_freeze_count_ = 0;

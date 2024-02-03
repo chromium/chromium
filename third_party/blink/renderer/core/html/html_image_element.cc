@@ -958,8 +958,8 @@ static SourceSizeValueResult SourceSizeValue(const Element* element,
   return result;
 }
 
-absl::optional<float> HTMLImageElement::GetResourceWidth() const {
-  absl::optional<float> resource_width;
+std::optional<float> HTMLImageElement::GetResourceWidth() const {
+  std::optional<float> resource_width;
   Element* element = source_.Get();
   const SourceSizeValueResult source_size_val_res =
       SourceSizeValue(element ? element : this, GetDocument());
@@ -1055,8 +1055,8 @@ void HTMLImageElement::EnsureCollapsedOrFallbackContent() {
     return;
 
   ImageResourceContent* image_content = GetImageLoader().GetContent();
-  absl::optional<ResourceError> error =
-      image_content ? image_content->GetResourceError() : absl::nullopt;
+  std::optional<ResourceError> error =
+      image_content ? image_content->GetResourceError() : std::nullopt;
   SetLayoutDisposition(error && error->ShouldCollapseInitiator()
                            ? LayoutDisposition::kCollapsed
                            : LayoutDisposition::kFallbackContent);

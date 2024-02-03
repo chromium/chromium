@@ -179,7 +179,7 @@ bool CanRemoveUser(const user_manager::User* user) {
   if (user->GetAccountId() == GetOwnerAccountId()) {
     return false;
   }
-  if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
+  if (user->GetType() == user_manager::UserType::kPublicAccount ||
       user->is_logged_in() || IsSigninToAdd()) {
     return false;
   }
@@ -218,7 +218,7 @@ proximity_auth::mojom::AuthType GetInitialUserAuthType(
   const user_manager::User::OAuthTokenStatus token_status =
       user->oauth_token_status();
   const bool is_public_session =
-      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+      user->GetType() == user_manager::UserType::kPublicAccount;
   const bool has_gaia_account = user->HasGaiaAccount();
 
   if (is_public_session) {
@@ -558,7 +558,7 @@ const user_manager::UserList UserSelectionScreen::PrepareUserListForSending(
   for (user_manager::User* user : users) {
     bool is_owner = user->GetAccountId() == owner;
     bool is_public_account =
-        user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+        user->GetType() == user_manager::UserType::kPublicAccount;
 
     if ((is_public_account && !is_signin_to_add) || is_owner ||
         (!is_public_account && non_owner_count < max_non_owner_users)) {
@@ -786,7 +786,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     const AccountId& account_id = user->GetAccountId();
     bool is_owner = owner == account_id;
     const bool is_public_account =
-        user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+        user->GetType() == user_manager::UserType::kPublicAccount;
     const proximity_auth::mojom::AuthType initial_auth_type =
         is_public_account
             ? proximity_auth::mojom::AuthType::EXPAND_THEN_USER_CLICK
@@ -822,7 +822,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
 
     user_info.show_pin_pad_for_password = false;
     if (known_user.GetIsEnterpriseManaged(user->GetAccountId()) &&
-        user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+        user->GetType() != user_manager::UserType::kPublicAccount) {
       if (const std::string* account_manager =
               known_user.GetAccountManager(user->GetAccountId())) {
         user_info.user_account_manager = *account_manager;
@@ -850,7 +850,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     }
 
     // Fill public session data.
-    if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+    if (user->GetType() == user_manager::UserType::kPublicAccount) {
       std::string manager;
       user_info.public_account_info.emplace();
       if (GetDeviceManager(&manager)) {

@@ -170,8 +170,7 @@ struct VectorTypeOperations {
     if constexpr (VectorTraits<T>::kCanInitializeWithMemset) {
       size_t size =
           reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin);
-      if constexpr (!Allocator::kIsGarbageCollected ||
-                    !IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+      if constexpr (!Allocator::kIsGarbageCollected || !IsTraceable<T>::value) {
         if (size != 0) {
           // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
           memset(begin, 0, size);
@@ -204,7 +203,7 @@ struct VectorTypeOperations {
         }
       }
     } else if constexpr (Allocator::kIsGarbageCollected &&
-                         IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+                         IsTraceable<T>::value) {
       static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
       AtomicWriteMemcpy(dst, src,
                         reinterpret_cast<const char*>(src_end) -
@@ -246,7 +245,7 @@ struct VectorTypeOperations {
         }
       }
     } else if constexpr (Allocator::kIsGarbageCollected &&
-                         IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+                         IsTraceable<T>::value) {
       static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
       if (dst < src) {
         for (T *s = src, *d = dst; s < src_end; ++s, ++d)
@@ -276,7 +275,7 @@ struct VectorTypeOperations {
     if constexpr (!VectorTraits<T>::kCanMoveWithMemcpy) {
       std::swap_ranges(src, src_end, dst);
     } else if constexpr (Allocator::kIsGarbageCollected &&
-                         IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+                         IsTraceable<T>::value) {
       static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
       constexpr size_t boundary = std::max(alignof(T), sizeof(size_t));
       alignas(boundary) char buf[sizeof(T)];
@@ -306,7 +305,7 @@ struct VectorTypeOperations {
     if constexpr (!VectorTraits<T>::kCanCopyWithMemcpy) {
       std::copy(src, src_end, dst);
     } else if constexpr (Allocator::kIsGarbageCollected &&
-                         IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+                         IsTraceable<T>::value) {
       static_assert(VectorTraits<T>::kCanCopyWithMemcpy);
       AtomicWriteMemcpy(dst, src,
                         reinterpret_cast<const char*>(src_end) -
@@ -506,8 +505,7 @@ class VectorBufferBase {
     // Tracing and finalization access all slots of a vector backing. In case
     // there's work to be done there unused slots should be cleared.
     return Allocator::kIsGarbageCollected &&
-           (IsTraceableInCollectionTrait<VectorTraits<T>>::value ||
-            VectorTraits<T>::kNeedsDestruction);
+           (IsTraceable<T>::value || VectorTraits<T>::kNeedsDestruction);
   }
 
   void AllocateBufferNoBarrier(wtf_size_t new_capacity) {
@@ -1103,6 +1101,9 @@ class Vector
           VectorNeedsDestructor<T,
                                 INLINE_CAPACITY,
                                 Allocator::kIsGarbageCollected>::value> {
+  // This condition is relied upon by TraceCollectionIfEnabled.
+  static_assert(!IsWeak<T>::value);
+
   USE_ALLOCATOR(Vector, Allocator);
   using Base = VectorBuffer<T, INLINE_CAPACITY, Allocator>;
   using TypeOperations = VectorTypeOperations<T, Allocator>;
@@ -2383,7 +2384,7 @@ namespace base {
 #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ <= 7
 // Workaround for g++7 and earlier family.
 // Due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80654, without this
-// absl::optional<WTF::Vector<T>> where T is non-copyable causes a compile
+// std::optional<WTF::Vector<T>> where T is non-copyable causes a compile
 // error. As we know it is not trivially copy constructible, explicitly declare
 // so.
 //

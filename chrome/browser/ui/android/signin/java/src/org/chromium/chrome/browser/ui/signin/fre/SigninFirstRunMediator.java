@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator.Delegate;
@@ -373,7 +374,13 @@ public class SigninFirstRunMediator
                         mSelectedAccountEmail);
         if (selectedAccount != null) {
             mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
-            signinManager.signin(selectedAccount, SigninAccessPoint.START_PAGE, signInCallback);
+            SigninUtils.checkAccountManagementAndSignIn(
+                    selectedAccount,
+                    signinManager,
+                    SigninAccessPoint.START_PAGE,
+                    signInCallback,
+                    mContext,
+                    mModalDialogManager);
         }
     }
 

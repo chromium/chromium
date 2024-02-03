@@ -24,8 +24,9 @@ class InformationTextArea;
 // CandidateWindowView is the main container of the candidate window UI.
 class UI_CHROMEOS_EXPORT CandidateWindowView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(CandidateWindowView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(CandidateWindowView);
   // The object can be monitored by the observer.
   class Observer {
    public:

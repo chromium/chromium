@@ -356,10 +356,6 @@ targets.legacy_compound_suite(
         "telemetry_perf_unittests_isolated_scripts",
         "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",
-        # TODO(weizhong): we should eventually run chrome_wpt_tests where
-        # blink_wpt_tests runs on Linux. There should not have any resource
-        # concern on this because those are all CI builders.
-        #"chromium_wpt_tests_isolated_scripts",
     ],
 )
 
@@ -398,7 +394,6 @@ targets.legacy_compound_suite(
         # TODO(crbug.com/1498364): Remove this once the BackgroundResourceFetch
         # feature launches.
         "chromium_web_tests_brfetch_isolated_scripts",
-        "chromium_wpt_tests_isolated_scripts",
     ],
 )
 
@@ -861,10 +856,18 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "gpu_dawn_telemetry_tests_fxc",
+    basic_suites = [
+        "gpu_dawn_webgpu_cts_fxc",
+        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "gpu_dawn_telemetry_win_x64_tests",
     basic_suites = [
         "gpu_dawn_webgpu_cts",
-        "gpu_dawn_webgpu_cts_dxc",
+        "gpu_dawn_webgpu_cts_fxc",
         "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
     ],
 )

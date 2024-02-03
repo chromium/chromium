@@ -48,12 +48,13 @@
       </shortcut-input-key>
     </div>
     <div class="lock-icon-container"
-        hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
+        hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]"
+        aria-label="[[i18n('lock')]]" role="img">
       <iron-icon icon="shortcut-customization:lock"></iron-icon>
     </div>
     <div class="edit-icon-container"
         hidden="[[!shouldShowEditIcon(acceleratorInfo.locked, sourceIsLocked)]]"
-        aria-label="[[i18n('edit')]]">
+        aria-label="[[getEditButtonAriaLabel(description)]]">
       <cr-icon-button class="edit-button" class="clickable-button" part="edit-icon"
           iron-icon="shortcut-customization:edit"
           on-click="onEditIconClicked">

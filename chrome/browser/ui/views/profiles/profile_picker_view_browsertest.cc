@@ -1664,8 +1664,16 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 // TODO(crbug.com/1248040): Extend this test to support lacros.
+// TODO(crbug.com/1524012): Flaky on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_CreateSignedInProfileExtendedInfoDelayed \
+  DISABLED_CreateSignedInProfileExtendedInfoDelayed
+#else
+#define MAYBE_CreateSignedInProfileExtendedInfoDelayed \
+  CreateSignedInProfileExtendedInfoDelayed
+#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       CreateSignedInProfileExtendedInfoDelayed) {
+                       MAYBE_CreateSignedInProfileExtendedInfoDelayed) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartDiceSignIn();
 

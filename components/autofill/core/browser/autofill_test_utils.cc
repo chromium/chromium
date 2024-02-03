@@ -129,7 +129,7 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 [[nodiscard]] FormData CreateTestAddressFormData(const char* unique_id) {
   FormData form;
   form.host_frame = MakeLocalFrameToken();
-  form.unique_renderer_id = MakeFormRendererId();
+  form.renderer_id = MakeFormRendererId();
   form.name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
   form.button_titles = {std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
@@ -590,6 +590,15 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
             /*challenge_info=*/u"a******b@google.com",
             /*challenge_input_length=*/6U);
         break;
+      case CardUnmaskChallengeOptionType::kThreeDomainSecure: {
+        CardUnmaskChallengeOption challenge_option;
+        challenge_option.id =
+            CardUnmaskChallengeOption::ChallengeOptionId("456");
+        challenge_option.type = type;
+        challenge_option.url_to_open = GURL("https://www.example.com");
+        challenge_options.emplace_back(std::move(challenge_option));
+        break;
+      }
       default:
         NOTREACHED();
         break;
@@ -826,9 +835,9 @@ void GenerateTestAutofillPopup(
   FormData form;
   FormFieldData field;
   form.host_frame = MakeLocalFrameToken();
-  form.unique_renderer_id = MakeFormRendererId();
+  form.renderer_id = MakeFormRendererId();
   field.host_frame = MakeLocalFrameToken();
-  field.unique_renderer_id = MakeFieldRendererId();
+  field.renderer_id = MakeFieldRendererId();
   field.is_focusable = true;
   field.should_autocomplete = true;
   autofill_external_delegate->OnQuery(

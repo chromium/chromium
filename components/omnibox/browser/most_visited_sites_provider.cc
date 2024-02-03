@@ -151,7 +151,7 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
     }
   } else {
     AutocompleteMatch match =
-        BuildMatch(provider, client, std::u16string(), GURL::EmptyGURL(),
+        BuildMatch(provider, client, std::u16string(), GURL(),
                    kMostVisitedTilesAggregateRelevance,
                    AutocompleteMatchType::TILE_NAVSUGGEST);
 

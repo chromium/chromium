@@ -63,8 +63,9 @@ constexpr gfx::Insets kDropdownButtonBorderInsets{4};
 const int kAudioDevicesCountHistogramMax = 30;
 
 class ExpandDeviceSelectorLabel : public views::Label {
+  METADATA_HEADER(ExpandDeviceSelectorLabel, views::Label)
+
  public:
-  METADATA_HEADER(ExpandDeviceSelectorLabel);
   explicit ExpandDeviceSelectorLabel(
       global_media_controls::GlobalMediaControlsEntryPoint entry_point);
   ~ExpandDeviceSelectorLabel() override = default;
@@ -72,12 +73,13 @@ class ExpandDeviceSelectorLabel : public views::Label {
   void OnColorsChanged(SkColor foreground_color, SkColor background_color);
 };
 
-BEGIN_METADATA(ExpandDeviceSelectorLabel, views::Label)
+BEGIN_METADATA(ExpandDeviceSelectorLabel)
 END_METADATA
 
 class ExpandDeviceSelectorButton : public views::ToggleImageButton {
+  METADATA_HEADER(ExpandDeviceSelectorButton, views::ToggleImageButton)
+
  public:
-  METADATA_HEADER(ExpandDeviceSelectorButton);
   explicit ExpandDeviceSelectorButton(PressedCallback callback,
                                       SkColor background_color);
   ~ExpandDeviceSelectorButton() override = default;
@@ -85,7 +87,7 @@ class ExpandDeviceSelectorButton : public views::ToggleImageButton {
   void OnColorsChanged(SkColor foreground_color);
 };
 
-BEGIN_METADATA(ExpandDeviceSelectorButton, views::ToggleImageButton)
+BEGIN_METADATA(ExpandDeviceSelectorButton)
 END_METADATA
 
 }  // namespace
@@ -179,7 +181,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
     ShowDevices();
   }
   SetBackground(views::CreateSolidBackground(background_color_));
-  Layout();
+  DeprecatedLayoutImmediately();
 
   // This view will become visible when devices are discovered.
   SetVisible(false);
@@ -212,7 +214,7 @@ void MediaItemUIDeviceSelectorView::UpdateCurrentAudioDevice(
   current_audio_device_entry_view_->SetHighlighted(true);
   device_entry_views_container_->ReorderChildView(
       current_audio_device_entry_view_, 0);
-  current_audio_device_entry_view_->Layout();
+  current_audio_device_entry_view_->DeprecatedLayoutImmediately();
 }
 
 MediaItemUIDeviceSelectorView::~MediaItemUIDeviceSelectorView() {
@@ -500,7 +502,7 @@ void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
       entry->OnColorsChanged(foreground_color_, background_color_);
     }
   }
-  device_entry_views_container_->Layout();
+  device_entry_views_container_->DeprecatedLayoutImmediately();
 
   UpdateVisibility();
   for (auto& observer : observers_) {

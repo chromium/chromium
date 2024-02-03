@@ -289,6 +289,8 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   [self.consumer removeItemWithID:detachedWebState->GetUniqueIdentifier()
                    selectedItemID:GetActiveNonPinnedTabID(webStateList)];
 
+  [self removeFromSelectionItemID:detachedWebState->GetUniqueIdentifier()];
+
   // The pinned WebState could be detached only in case it was displayed in
   // the Tab Search and was closed from the context menu. In such a case
   // there were no observation added for it. Therefore, there is no need to
@@ -686,6 +688,8 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     return nil;
   }
 
+  NSMutableArray<UIMenuElement*>* actions = [[NSMutableArray alloc] init];
+
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:kMenuScenarioHistogramTabGridAddTo];
 
@@ -705,12 +709,25 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     bookmarkAction.attributes = UIMenuElementAttributesDisabled;
   }
 
-  return @[
-    [actionFactory actionToAddToReadingListWithBlock:^{
-      [weakSelf addItemsWithIDsToReadingList:itemIDsCopy];
-    }],
-    bookmarkAction
-  ];
+  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+    ProceduralBlock createTabGroupActionBlock = ^{
+      BOOL incognito = [weakSelf isIncognitoBrowser];
+      [weakSelf.delegate showTabGroupCreationWithWithIdentifiers:itemIDsCopy
+                                                       incognito:incognito];
+    };
+    UIAction* addToNewTabGroupAction = [actionFactory
+        actionToAddTabsToNewGroupWithTabsNumber:itemIDs.size()
+                                          block:createTabGroupActionBlock];
+    [actions addObject:addToNewTabGroupAction];
+  }
+
+  [actions addObject:[actionFactory actionToAddToReadingListWithBlock:^{
+             [weakSelf addItemsWithIDsToReadingList:itemIDsCopy];
+           }]];
+
+  [actions addObject:bookmarkAction];
+
+  return actions;
 }
 
 - (void)searchItemsWithText:(NSString*)searchText {
@@ -806,7 +823,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 - (NSArray<UIDragItem*>*)allSelectedDragItems {
   NSMutableArray<UIDragItem*>* dragItems = [[NSMutableArray alloc] init];
   for (web::WebStateID itemID : _selectedEditingItemIDs) {
-    [dragItems addObject:[self dragItemForItemWithID:itemID]];
+    UIDragItem* dragItem = [self dragItemForItemWithID:itemID];
+    if (dragItem) {
+      [dragItems addObject:dragItem];
+    }
   }
   return dragItems;
 }
@@ -1101,6 +1121,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
                              .pinned_state = PinnedState::kNonPinned,
                          });
   return CreateTabDragItem(webState);
+}
+
+- (BOOL)isIncognitoBrowser {
+  return static_cast<BOOL>(self.browserState->IsOffTheRecord());
 }
 
 #pragma mark - TabGridPageMutator

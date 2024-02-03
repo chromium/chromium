@@ -12,11 +12,12 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// IndexPath of the selected item.
   public var selectedIndexPath: IndexPath?
 
+  /// Static decoration views that border the collection view.
+  public var leftStaticSeparator: TabStripDecorationView?
+  public var rightStaticSeparator: TabStripDecorationView?
+
   /// Dynamic size of a tab.
   private var tabCellSize: CGSize = .zero
-
-  /// Last update item action.
-  public var lastUpdateAction: UICollectionViewUpdateItem.Action = .none
 
   /// Index paths of animated items.
   private var indexPathsOfDeletingItems: [IndexPath] = []
@@ -62,11 +63,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
       switch item.updateAction {
       case .insert:
         indexPathsOfInsertingItems.append(item.indexPathAfterUpdate!)
-        lastUpdateAction = .insert
         break
       case .delete:
         indexPathsOfDeletingItems.append(item.indexPathBeforeUpdate!)
-        lastUpdateAction = .delete
         break
       default:
         break
@@ -84,31 +83,36 @@ class TabStripLayout: UICollectionViewFlowLayout {
     -> UICollectionViewLayoutAttributes?
   {
     guard
-      let attributes: UICollectionViewLayoutAttributes =
-        self
-        .layoutAttributesForItem(at: itemIndexPath)
+      let attributes: UICollectionViewLayoutAttributes = super
+        .initialLayoutAttributesForAppearingItem(at: itemIndexPath),
+      let selectedAttributes: UICollectionViewLayoutAttributes = layoutAttributesForSelectedCell(
+        layoutAttributes: attributes)
     else { return nil }
 
-    if indexPathsOfInsertingItems.contains(itemIndexPath) {
-      // Animate the appearing item by starting it with zero opacity and
-      // translated down by its height.
-      attributes.alpha = 0
-      attributes.transform = CGAffineTransform(
-        translationX: 0,
-        y: attributes.frame.size.height
-      )
-    }
-
-    return attributes
+    // Animate the appearing item by starting it with zero opacity and
+    // translated down by its height.
+    selectedAttributes.alpha = 0
+    selectedAttributes.transform = CGAffineTransform(
+      translationX: 0,
+      y: attributes.frame.size.height)
+    return selectedAttributes
   }
 
   override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath)
     -> UICollectionViewLayoutAttributes?
   {
     guard
-      let attributes: UICollectionViewLayoutAttributes = super
-        .finalLayoutAttributesForDisappearingItem(at: itemIndexPath)
+      var attributes: UICollectionViewLayoutAttributes =
+        super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)
     else { return nil }
+
+    /// Update `attributes` if the disappearing cell is selected.
+    if let selectedAttributes = self.layoutAttributesForSelectedCell(
+      layoutAttributes: attributes)
+    {
+      attributes = selectedAttributes
+    }
+
     if indexPathsOfDeletingItems.contains(itemIndexPath) {
       // Animate the disappearing item by fading it out and translating it down
       // by its height.
@@ -173,6 +177,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
       // If intersects with the left bounds.
       if frame.minX < leftBounds {
+        cell.leadingSeparatorHidden = false
 
         // Update the frame origin and width.
         frame.origin.x = max(leftBounds, frame.origin.x)
@@ -209,6 +214,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
       // If intersects with the right bounds.
       else if frame.maxX > rightBounds {
+        cell.trailingSeparatorHidden = false
 
         // Update the frame origin and width.
         frame.origin.x = min(rightBounds, frame.origin.x)
@@ -296,29 +302,69 @@ class TabStripLayout: UICollectionViewFlowLayout {
       return nil
     }
 
-    if let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell {
-      // Update cell separators.
-      cell.leadingSeparatorHidden = true
-      cell.trailingSeparatorHidden = true
-      cell.leadingSeparatorGradientViewHidden = true
-      cell.trailingSeparatorGradientViewHidden = true
+    var cellAnimated = false
+    let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell
+    if let animationKeys = cell?.layer.animationKeys() {
+      cellAnimated = !animationKeys.isEmpty
     }
 
+    // Update cell separators.
+    cell?.leadingSeparatorHidden = true
+    cell?.trailingSeparatorHidden = true
+    cell?.leadingSeparatorGradientViewHidden = true
+    cell?.trailingSeparatorGradientViewHidden = true
+
+    let isScrollable: Bool = collectionView.contentSize.width > collectionView.frame.width
     let collectionViewWidth = collectionView.bounds.size.width
     let horizontalOffset = collectionView.contentOffset.x
     let frame = layoutAttributes.frame
     var origin = layoutAttributes.frame.origin
+    var horizontalInset: CGFloat = 0
+
+    let staticSeparatorHorizontalInset =
+      tabCellSize.width - TabStripConstants.AnimatedSeparator.collapseHorizontalInsetThreshold
+    var hideLeftStaticSeparator = true
+    var hideRightStaticSeparator = true
+
+    // If the collection view is scrollable, add an horizontal inset to its
+    // origin.
+    if isScrollable {
+      horizontalInset = TabStripConstants.TabItem.horizontalSelectedInset
+    }
 
     // Update the cell's origin horizontally to prevent it from being
     // partially hidden off-screen.
 
     // Check the left side.
-    let minOringin = horizontalOffset + sectionInset.left
+    let minOringin = horizontalOffset + sectionInset.left + horizontalInset
+    // Show left static separators when all of the following conditions are
+    // satisfied:
+    // - The selected cell is on the left edge.
+    // - A cell behind the selected cell is also reaching the left edge.
+    // - The cell is not animated (inserted / deleted).
+    if (minOringin - staticSeparatorHorizontalInset) >= origin.x {
+      hideLeftStaticSeparator = !isScrollable || cellAnimated
+    }
     origin.x = max(origin.x, minOringin)
+
     // Check the right side.
     let maxOrigin =
       horizontalOffset + collectionViewWidth - frame.size.width - sectionInset.right
+      - horizontalInset
+    // Show right static separators when all of the following conditions are
+    // satisfied:
+    // - The selected cell is on the right edge.
+    // - A cell behind the selected cell is also reaching the right edge.
+    // - The cell is not animated (inserted / deleted).
+    if (maxOrigin + staticSeparatorHorizontalInset) <= origin.x {
+      hideRightStaticSeparator = !isScrollable || cellAnimated
+    }
     origin.x = min(origin.x, maxOrigin)
+
+    leftStaticSeparator?.isHidden = hideLeftStaticSeparator
+    rightStaticSeparator?.isHidden = hideRightStaticSeparator
+    cell?.leftSelectedBorderBackgroundViewHidden = hideLeftStaticSeparator
+    cell?.rightSelectedBorderBackgroundViewHidden = hideRightStaticSeparator
 
     layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
     return layoutAttributes

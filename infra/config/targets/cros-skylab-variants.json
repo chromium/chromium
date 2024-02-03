@@ -46,41 +46,6 @@
     "enabled": true,
     "identifier": "BRYA_RELEASE_STABLE"
   },
-  "CROS_DEDEDE_RELEASE_LKGM": {
-    "skylab": {
-      "cros_board": "dedede",
-      "use_lkgm": true
-    },
-    "enabled": true,
-    "identifier": "DEDEDE_RELEASE_LKGM"
-  },
-  "CROS_DEDEDE_RELEASE_DEV": {
-    "skylab": {
-      "cros_board": "dedede",
-      "cros_chrome_version": "122.0.6241.0",
-      "cros_img": "dedede-release/R122-15748.0.0"
-    },
-    "enabled": true,
-    "identifier": "DEDEDE_RELEASE_DEV"
-  },
-  "CROS_DEDEDE_RELEASE_BETA": {
-    "skylab": {
-      "cros_board": "dedede",
-      "cros_chrome_version": "121.0.6167.82",
-      "cros_img": "dedede-release/R121-15699.40.0"
-    },
-    "enabled": true,
-    "identifier": "DEDEDE_RELEASE_BETA"
-  },
-  "CROS_DEDEDE_RELEASE_STABLE": {
-    "skylab": {
-      "cros_board": "dedede",
-      "cros_chrome_version": "120.0.6099.235",
-      "cros_img": "dedede-release/R120-15662.76.0"
-    },
-    "enabled": true,
-    "identifier": "DEDEDE_RELEASE_STABLE"
-  },
   "CROS_FIZZ_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "fizz",
@@ -227,8 +192,8 @@
   "CROS_TROGDOR_PUBLIC_LKGM": {
     "skylab": {
       "cros_board": "trogdor",
-      "cros_chrome_version": "123.0.6265.0",
-      "cros_img": "trogdor-public/R123-15759.0.0",
+      "cros_chrome_version": "123.0.6268.0",
+      "cros_img": "trogdor-public/R123-15763.0.0",
       "bucket": "chromiumos-image-archive"
     },
     "enabled": true,
@@ -270,8 +235,8 @@
     "skylab": {
       "cros_board": "volteer",
       "cros_model": "voxel",
-      "cros_chrome_version": "123.0.6265.0",
-      "cros_img": "volteer-public/R123-15759.0.0",
+      "cros_chrome_version": "123.0.6268.0",
+      "cros_img": "volteer-public/R123-15763.0.0",
       "bucket": "chromiumos-image-archive",
       "dut_pool": "chromium",
       "public_builder": "cros_test_platform_public",

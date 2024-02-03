@@ -87,9 +87,9 @@ int64_t EncodedAudioChunk::timestamp() const {
   return buffer_->timestamp().InMicroseconds();
 }
 
-absl::optional<uint64_t> EncodedAudioChunk::duration() const {
+std::optional<uint64_t> EncodedAudioChunk::duration() const {
   if (buffer_->duration() == media::kNoTimestamp)
-    return absl::nullopt;
+    return std::nullopt;
   return buffer_->duration().InMicroseconds();
 }
 

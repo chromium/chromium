@@ -50,7 +50,7 @@ GURL EntryURLForOfflineURL(const GURL& offline_url) {
       return entry_url;
     }
   }
-  return GURL::EmptyGURL();
+  return GURL();
 }
 
 GURL ReloadURLForOfflineURL(const GURL& offline_url) {
@@ -62,7 +62,7 @@ GURL ReloadURLForOfflineURL(const GURL& offline_url) {
       return reload_url;
     }
   }
-  return GURL::EmptyGURL();
+  return GURL();
 }
 
 bool IsOfflineURL(const GURL& url) {

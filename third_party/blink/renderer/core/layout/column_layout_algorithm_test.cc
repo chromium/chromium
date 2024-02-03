@@ -2754,7 +2754,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   ColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
-  absl::optional<MinMaxSizes> sizes;
+  std::optional<MinMaxSizes> sizes;
 
   // Both column-count and column-width set. See
   // https://www.w3.org/TR/2016/WD-css-sizing-3-20160510/#multicol-intrinsic

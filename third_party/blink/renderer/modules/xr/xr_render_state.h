@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_RENDER_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_RENDER_STATE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -31,7 +32,7 @@ class XRRenderState : public ScriptWrappable {
   // Session's views.
   double depthNear() const { return depth_near_; }
   double depthFar() const { return depth_far_; }
-  absl::optional<double> inlineVerticalFieldOfView() const;
+  std::optional<double> inlineVerticalFieldOfView() const;
   XRWebGLLayer* baseLayer() const { return base_layer_.Get(); }
   const FrozenArray<XRLayer>& layers() const { return *layers_.Get(); }
 
@@ -52,7 +53,7 @@ class XRRenderState : public ScriptWrappable {
   Member<XRWebGLLayer> base_layer_;
   Member<FrozenArray<XRLayer>> layers_ =
       MakeGarbageCollected<FrozenArray<XRLayer>>();
-  absl::optional<double> inline_vertical_fov_;
+  std::optional<double> inline_vertical_fov_;
 };
 
 }  // namespace blink

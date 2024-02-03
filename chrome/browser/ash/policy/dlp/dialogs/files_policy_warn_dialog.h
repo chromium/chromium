@@ -25,9 +25,9 @@ namespace policy {
 // of file warnings caused by by data protection policies.
 class FilesPolicyWarnDialog : public FilesPolicyDialog,
                               public views::TextfieldController {
- public:
-  METADATA_HEADER(FilesPolicyWarnDialog);
+  METADATA_HEADER(FilesPolicyWarnDialog, FilesPolicyDialog)
 
+ public:
   FilesPolicyWarnDialog() = delete;
   FilesPolicyWarnDialog(WarningWithJustificationCallback callback,
                         dlp::FileAction action,

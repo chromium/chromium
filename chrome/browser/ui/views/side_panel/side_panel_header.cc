@@ -14,8 +14,8 @@ SidePanelHeader::SidePanelHeader() {
   layer()->SetFillsBoundsOpaquely(false);
 }
 
-void SidePanelHeader::Layout() {
-  views::View::Layout();
+void SidePanelHeader::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   if (features::IsChromeRefresh2023()) {
     // The side panel header should draw on top of its parent's border.

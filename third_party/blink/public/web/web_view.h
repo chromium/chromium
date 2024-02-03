@@ -31,7 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
@@ -135,7 +136,7 @@ class BLINK_EXPORT WebView {
       bool is_hidden,
       bool is_prerendering,
       bool is_inside_portal,
-      absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+      std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
           fenced_frame_mode,
       bool compositing_enabled,
       bool widgets_never_composited,
@@ -144,7 +145,7 @@ class BLINK_EXPORT WebView {
           page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
-      absl::optional<SkColor> page_base_background_color,
+      std::optional<SkColor> page_base_background_color,
       const BrowsingContextGroupInfo& browsing_context_group_info);
 
   // Destroys the WebView synchronously.
@@ -300,7 +301,7 @@ class BLINK_EXPORT WebView {
 
   // Override the screen orientation override.
   virtual void SetScreenOrientationOverrideForTesting(
-      absl::optional<display::mojom::ScreenOrientation> orientation) = 0;
+      std::optional<display::mojom::ScreenOrientation> orientation) = 0;
 
   // Set the window rect synchronously for testing. The normal flow is an
   // asynchronous request to the browser.
@@ -466,7 +467,7 @@ class BLINK_EXPORT WebView {
   // History list ---------------------------------------------------------
   virtual void SetHistoryListFromNavigation(
       int32_t history_offset,
-      absl::optional<int32_t> history_length) = 0;
+      std::optional<int32_t> history_length) = 0;
   virtual void IncreaseHistoryListFromNavigation() = 0;
 
   // Session history -----------------------------------------------------

@@ -15,3 +15,10 @@ NSString* const kPageInfoSecurityFooterAccessibilityIdentifier =
 
 NSString* const kPageInfoViewNavigationBarAccessibilityIdentifier =
     @"PageInfoViewNavigationBarAccessibilityIdentifier";
+
+NSString* const kPageInfoSecurityViewNavigationBarAccessibilityIdentifier =
+    @"PageInfoSecurityViewNavigationBarAccessibilityIdentifier";
+
+const CGFloat kPageInfoTableViewSeparatorInset = 16.0f;
+
+const CGFloat kPageInfoPaddingFirstSectionHeader = 28.0f;

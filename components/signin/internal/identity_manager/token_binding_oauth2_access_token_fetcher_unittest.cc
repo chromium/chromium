@@ -26,7 +26,13 @@ class MockOAuth2MintAccessTokenFetcherAdapter
     : public OAuth2MintAccessTokenFetcherAdapter {
  public:
   explicit MockOAuth2MintAccessTokenFetcherAdapter()
-      : OAuth2MintAccessTokenFetcherAdapter(nullptr, nullptr, "", "", "", "") {}
+      : OAuth2MintAccessTokenFetcherAdapter(nullptr,
+                                            nullptr,
+                                            "",
+                                            "",
+                                            "",
+                                            "",
+                                            "") {}
 
   MOCK_METHOD(void,
               Start,

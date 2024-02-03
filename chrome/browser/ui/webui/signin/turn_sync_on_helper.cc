@@ -167,7 +167,8 @@ bool IsLacrosOrUnoDesktopEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return true;
 #else
-  return base::FeatureList::IsEnabled(switches::kUnoDesktop);
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kExperimental);
 #endif  // IS_CHROMEOS_LACROS
 }
 
@@ -790,7 +791,8 @@ void TurnSyncOnHelper::AbortAndDelete() {
       break;
     }
     case SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY: {
-      CHECK(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+      CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental));
       if (account_info_.account_id ==
           identity_manager_
               ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)

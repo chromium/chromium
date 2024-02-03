@@ -19,7 +19,7 @@ TEST(WebTransportErrorTest, DefaultConstruct) {
   auto* error = WebTransportError::Create(WebTransportErrorInit::Create());
 
   EXPECT_EQ(error->code(), 0);
-  EXPECT_EQ(error->streamErrorCode(), absl::nullopt);
+  EXPECT_EQ(error->streamErrorCode(), std::nullopt);
   EXPECT_EQ(error->message(), "");
   EXPECT_EQ(error->source(), "stream");
 }

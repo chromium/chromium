@@ -141,6 +141,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                      Maybe<std::string> url,
                      Maybe<std::string> domain,
                      Maybe<std::string> path,
+                     Maybe<std::string> partition_key,
                      std::unique_ptr<DeleteCookiesCallback> callback) override;
   void SetCookie(const std::string& name,
                  const std::string& value,

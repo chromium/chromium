@@ -19,7 +19,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     mojom::blink::ScriptType script_type,
     const String& global_scope_name,
     const String& user_agent,
-    const absl::optional<UserAgentMetadata>& ua_metadata,
+    const std::optional<UserAgentMetadata>& ua_metadata,
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr>
         outside_content_security_policies,
@@ -44,7 +44,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     const PermissionsPolicy* parent_permissions_policy,
     base::UnguessableToken agent_cluster_id,
     ukm::SourceId ukm_source_id,
-    const absl::optional<ExecutionContextToken>& parent_context_token,
+    const std::optional<ExecutionContextToken>& parent_context_token,
     bool parent_cross_origin_isolated_capability,
     bool parent_is_isolated_context,
     InterfaceRegistry* interface_registry,

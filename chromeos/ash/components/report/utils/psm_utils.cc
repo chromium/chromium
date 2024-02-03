@@ -23,7 +23,7 @@ std::string GetDigestString(const std::string& key,
   if (!hmac.Init(key) || !hmac.Sign(message, &digest[0], digest.size())) {
     return std::string();
   }
-  return base::HexEncode(&digest[0], digest.size());
+  return base::HexEncode(digest);
 }
 
 }  // namespace

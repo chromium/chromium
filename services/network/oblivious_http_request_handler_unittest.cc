@@ -286,8 +286,8 @@ class TestObliviousHttpRequestHandler : public testing::Test {
   void VerifyNetLog(const net::RecordingNetLogObserver& net_log_observer,
                     bool expected_has_response_data_and_headers,
                     int expected_net_error,
-                    absl::optional<int> expected_outer_response_error_code,
-                    absl::optional<int> expected_inner_response_code) {
+                    std::optional<int> expected_outer_response_error_code,
+                    std::optional<int> expected_inner_response_code) {
     auto entries = net_log_observer.GetEntries();
     size_t pos = net::ExpectLogContainsSomewhereAfter(
         entries, /*start_offset=*/0,
@@ -327,7 +327,7 @@ class TestObliviousHttpRequestHandler : public testing::Test {
   }
 
  private:
-  absl::optional<quiche::ObliviousHttpGateway> ohttp_gateway_;
+  std::optional<quiche::ObliviousHttpGateway> ohttp_gateway_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<network::NetworkService> network_service_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
@@ -512,7 +512,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
     VerifyNetLog(net_log_observer,
                  /*expected_has_response_data_and_headers=*/true,
                  /*expected_net_error=*/net::OK,
-                 /*expected_outer_response_error_code=*/absl::nullopt,
+                 /*expected_outer_response_error_code=*/std::nullopt,
                  /*expected_inner_response_code=*/net::HTTP_OK);
   }
 }
@@ -536,8 +536,8 @@ TEST_F(TestObliviousHttpRequestHandler, TestTimeout) {
     VerifyNetLog(net_log_observer,
                  /*expected_has_response_data_and_headers=*/false,
                  /*expected_net_error=*/net::ERR_TIMED_OUT,
-                 /*expected_outer_response_error_code=*/absl::nullopt,
-                 /*expected_inner_response_code=*/absl::nullopt);
+                 /*expected_outer_response_error_code=*/std::nullopt,
+                 /*expected_inner_response_code=*/std::nullopt);
   }
   // Configured timeout.
   {
@@ -572,7 +572,7 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesOuterHttpError) {
                  /*expected_has_response_data_and_headers=*/false,
                  /*expected_net_error=*/net::ERR_HTTP_RESPONSE_CODE_FAILURE,
                  /*expected_outer_response_error_code=*/net::HTTP_NOT_FOUND,
-                 /*expected_inner_response_code=*/absl::nullopt);
+                 /*expected_inner_response_code=*/std::nullopt);
   }
   {
     net::RecordingNetLogObserver net_log_observer;
@@ -593,8 +593,8 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesOuterHttpError) {
     VerifyNetLog(net_log_observer,
                  /*expected_has_response_data_and_headers=*/false,
                  /*expected_net_error=*/net::ERR_CONNECTION_RESET,
-                 /*expected_outer_response_error_code=*/absl::nullopt,
-                 /*expected_inner_response_code=*/absl::nullopt);
+                 /*expected_outer_response_error_code=*/std::nullopt,
+                 /*expected_inner_response_code=*/std::nullopt);
   }
 }
 
@@ -618,7 +618,7 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesInnerHttpError) {
     VerifyNetLog(net_log_observer,
                  /*expected_has_response_data_and_headers=*/true,
                  /*expected_net_error=*/net::OK,
-                 /*expected_outer_response_error_code=*/absl::nullopt,
+                 /*expected_outer_response_error_code=*/std::nullopt,
                  /*expected_inner_response_code=*/net::HTTP_NOT_FOUND);
   }
   {
@@ -638,8 +638,8 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesInnerHttpError) {
     VerifyNetLog(net_log_observer,
                  /*expected_has_response_data_and_headers=*/false,
                  /*expected_net_error=*/net::ERR_INVALID_RESPONSE,
-                 /*expected_outer_response_error_code=*/absl::nullopt,
-                 /*expected_inner_response_code=*/absl::nullopt);
+                 /*expected_outer_response_error_code=*/std::nullopt,
+                 /*expected_inner_response_code=*/std::nullopt);
   }
 }
 

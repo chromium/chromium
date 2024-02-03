@@ -121,7 +121,7 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
 
 HRESULT BuildCdmProperties(
     const base::UnguessableToken& origin_id,
-    const absl::optional<std::vector<uint8_t>>& client_token,
+    const std::optional<std::vector<uint8_t>>& client_token,
     const base::FilePath& store_path,
     ComPtr<IPropertyStore>& properties) {
   DCHECK(!origin_id.is_empty());
@@ -165,7 +165,7 @@ HRESULT CreateMediaFoundationCdm(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
-    const absl::optional<std::vector<uint8_t>>& cdm_client_token,
+    const std::optional<std::vector<uint8_t>>& cdm_client_token,
     const base::FilePath& cdm_store_path_root,
     ComPtr<IMFContentDecryptionModule>& mf_cdm) {
   DVLOG(1) << __func__ << ": cdm_config=" << cdm_config

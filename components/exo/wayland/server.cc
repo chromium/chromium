@@ -23,7 +23,6 @@
 #include <pointer-gestures-unstable-v1-server-protocol.h>
 #include <presentation-time-server-protocol.h>
 #include <relative-pointer-unstable-v1-server-protocol.h>
-#include <secure-output-unstable-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
 #include <sys/socket.h>
 #include <text-input-extension-unstable-v1-server-protocol.h>
@@ -32,7 +31,6 @@
 #include <viewporter-server-protocol.h>
 #include <vsync-feedback-unstable-v1-server-protocol.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
-#include <xdg-output-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 
 #include <memory>
@@ -40,7 +38,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -57,12 +54,10 @@
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/surface_augmenter.h"
-#include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wayland/wayland_dmabuf_feedback_manager.h"
 #include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wayland/wl_compositor.h"
 #include "components/exo/wayland/wl_data_device_manager.h"
-#include "components/exo/wayland/wl_output.h"
 #include "components/exo/wayland/wl_seat.h"
 #include "components/exo/wayland/wl_shell.h"
 #include "components/exo/wayland/wl_shm.h"
@@ -72,7 +67,6 @@
 #include "components/exo/wayland/wp_single_pixel_buffer.h"
 #include "components/exo/wayland/wp_viewporter.h"
 #include "components/exo/wayland/xdg_shell.h"
-#include "components/exo/wayland/zaura_output_manager.h"
 #include "components/exo/wayland/zaura_shell.h"
 #include "components/exo/wayland/zcr_alpha_compositing.h"
 #include "components/exo/wayland/zcr_color_manager.h"
@@ -84,7 +78,6 @@
 #include "components/exo/wayland/zcr_notification_shell.h"
 #include "components/exo/wayland/zcr_remote_shell.h"
 #include "components/exo/wayland/zcr_remote_shell_v2.h"
-#include "components/exo/wayland/zcr_secure_output.h"
 #include "components/exo/wayland/zcr_stylus.h"
 #include "components/exo/wayland/zcr_stylus_tools.h"
 #include "components/exo/wayland/zcr_touchpad_haptics.h"
@@ -100,9 +93,6 @@
 #include "components/exo/wayland/zwp_relative_pointer_manager.h"
 #include "components/exo/wayland/zwp_text_input_manager.h"
 #include "components/exo/wayland/zxdg_decoration_manager.h"
-#include "components/exo/wayland/zxdg_output_manager.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace exo {
@@ -262,7 +252,6 @@ Server::Server(Display* display,
 
   wl_display_.reset(wl_display_create());
   SetSecurityDelegate(wl_display_.get(), security_delegate_.get());
-  display_manager_observation_.Observe(ash::Shell::Get()->display_manager());
 
   client_tracker_ = std::make_unique<ClientTracker>(wl_display_.get());
 }
@@ -282,19 +271,9 @@ void Server::Initialize() {
                      wayland_feedback_manager_.get(), bind_linux_dmabuf);
   }
 
-  // aura_output_manager needs to be registered before the wl_output globals to
-  // ensure clients can bind to the aura_output_manager before any wl_outputs.
-  // This is necessary to ensure aura_output_manager can send relevant output
-  // events immediately after an output is bound to the client and before the
-  // data in these events might be needed by the client.
-  wl_global_create(wl_display_.get(), &zaura_output_manager_interface,
-                   kZAuraOutputManagerVersion, this, bind_aura_output_manager);
   wl_global_create(wl_display_.get(), &wl_subcompositor_interface,
                    /*version=*/1, display_, bind_subcompositor);
-  OnDidProcessDisplayChanges(
-      {ash::Shell::Get()->display_manager()->active_display_list(),
-       Displays(),
-       {}});
+  output_controller_ = std::make_unique<OutputController>(this);
   wl_global_create(wl_display_.get(), &zcr_vsync_feedback_v1_interface,
                    /*version=*/1, display_, bind_vsync_feedback);
 
@@ -318,8 +297,6 @@ void Server::Initialize() {
                    display_, bind_viewporter);
   wl_global_create(wl_display_.get(), &wp_presentation_interface, /*version=*/1,
                    display_, bind_presentation);
-  wl_global_create(wl_display_.get(), &zcr_secure_output_v1_interface,
-                   /*version=*/1, display_, bind_secure_output);
   wl_global_create(wl_display_.get(), &zcr_alpha_compositing_v1_interface,
                    /*version=*/1, display_, bind_alpha_compositing);
   wl_global_create(wl_display_.get(), &zcr_stylus_v2_interface,
@@ -383,8 +360,6 @@ void Server::Initialize() {
                    /*version=*/1, display_, bind_zxdg_decoration_manager);
   wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface,
                    /*version=*/1, display_, bind_extended_drag);
-  wl_global_create(wl_display_.get(), &zxdg_output_manager_v1_interface,
-                   /*version=*/3, display_, bind_zxdg_output_manager);
   wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface,
                    /*version=*/1, display_, bind_zwp_idle_inhibit_manager);
 
@@ -510,53 +485,16 @@ void Server::Flush() {
   }
 }
 
-void Server::OnDidProcessDisplayChanges(
-    const DisplayConfigurationChange& configuration_change) {
-  // Process added displays before removed displays to ensure exo does not leave
-  // clients in a temporary state where no outputs are present.
-  for (const display::Display& added_display :
-       configuration_change.added_displays) {
-    auto output = std::make_unique<WaylandDisplayOutput>(added_display.id());
-    output->set_global(wl_global_create(wl_display_.get(), &wl_output_interface,
-                                        kWlOutputVersion, output.get(),
-                                        bind_output));
-    CHECK_EQ(outputs_.count(added_display.id()), 0u);
-    outputs_.insert(std::make_pair(added_display.id(), std::move(output)));
-  }
-
-  for (const display::Display& removed_display :
-       configuration_change.removed_displays) {
-    // There should always be at least one display tracked by Exo.
-    CHECK(outputs_.size() > 1);
-    CHECK_EQ(outputs_.count(removed_display.id()), 1u);
-    std::unique_ptr<WaylandDisplayOutput> output =
-        std::move(outputs_[removed_display.id()]);
-    outputs_.erase(removed_display.id());
-    output.release()->OnDisplayRemoved();
-  }
-
-  // Flush updated outputs to clients immediately.
-  // TODO(crbug.com/1502682): Exo should be updated to automatically flush
-  // buffers at the end of task processing if necessary.
-  Flush();
+wl_display* Server::GetWaylandDisplay() {
+  return wl_display_.get();
 }
 
 wl_resource* Server::GetOutputResource(wl_client* client, int64_t display_id) {
-  DCHECK_NE(display_id, display::kInvalidDisplayId);
-  auto iter = outputs_.find(display_id);
-  if (iter == outputs_.end()) {
-    return nullptr;
-  }
-  return iter->second.get()->GetOutputResourceForClient(client);
+  return output_controller_->GetOutputResource(client, display_id);
 }
 
 bool Server::IsClientDestroyed(wl_client* client) const {
   return client_tracker_->IsClientDestroyed(client);
-}
-
-void Server::AddWaylandOutput(int64_t id,
-                              std::unique_ptr<WaylandDisplayOutput> output) {
-  outputs_.insert(std::make_pair(id, std::move(output)));
 }
 
 }  // namespace wayland

@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_CHROMEOS_MAILBOX_VIDEO_FRAME_CONVERTER_H_
 #define MEDIA_GPU_CHROMEOS_MAILBOX_VIDEO_FRAME_CONVERTER_H_
 
+#include <optional>
+
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
 #include "base/functional/callback_forward.h"
@@ -16,7 +18,6 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
@@ -56,7 +57,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
     virtual ~GpuDelegate() = default;
 
     virtual bool Initialize() = 0;
-    virtual absl::optional<gpu::SharedImageCapabilities> GetCapabilities() = 0;
+    virtual std::optional<gpu::SharedImageCapabilities> GetCapabilities() = 0;
     virtual gpu::SharedImageStub::SharedImageDestructionCallback
     CreateSharedImage(const gpu::Mailbox& mailbox,
                       gfx::GpuMemoryBufferHandle handle,

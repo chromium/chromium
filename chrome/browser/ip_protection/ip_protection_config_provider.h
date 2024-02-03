@@ -176,6 +176,9 @@ class IpProtectionConfigProvider
   // to enable OAuth Token inclusion in the GetProxyConfig API call to Phosphor.
   void CallGetProxyConfig(GetProxyListCallback callback,
                           std::optional<std::string> oauth_token);
+  void OnGetProxyConfigCompleted(
+      GetProxyListCallback callback,
+      absl::StatusOr<ip_protection::GetProxyConfigResponse> response);
 
   // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
   // request a blind-signed auth token for use at the IP Protection proxies.

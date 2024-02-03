@@ -74,7 +74,7 @@ TEST_F(ScreenAIInstallStateTest, DownloadedBeforeObservation) {
 
 TEST_F(ScreenAIInstallStateTest, ObservationAfterFailure) {
   ScreenAIInstallState::GetInstance()->SetStateForTesting(
-      screen_ai::ScreenAIInstallState::State::kFailed);
+      screen_ai::ScreenAIInstallState::State::kDownloadFailed);
   StartObservation();
   EXPECT_TRUE(ComponentDownloadedReceived());
 }

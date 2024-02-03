@@ -469,7 +469,7 @@ void ChromeShelfController::SetAppStatus(const std::string& app_id,
     const ash::ShelfID shelf_id = ash::ShelfID(app_id);
     std::unique_ptr<ash::ShelfItem> new_item =
         shelf_item_factory_->CreateShelfItemForApp(
-            shelf_id, status, ash::TYPE_APP, /*title=*/base::EmptyString16());
+            shelf_id, status, ash::TYPE_APP, /*title=*/std::u16string());
     InsertAppItem(std::move(new_item),
                   std::make_unique<AppShortcutShelfItemController>(shelf_id),
                   model_->item_count());
@@ -1496,7 +1496,7 @@ bool ChromeShelfController::EnsureAppPinnedInModelAtIndex(
   std::unique_ptr<ash::ShelfItem> item =
       shelf_item_factory_->CreateShelfItemForApp(
           ash::ShelfID(app_id), ash::STATUS_CLOSED, ash::TYPE_PINNED_APP,
-          /*title=*/base::EmptyString16());
+          /*title=*/std::u16string());
   InsertAppItem(std::move(item), std::move(item_delegate), target_index);
   return true;
 }

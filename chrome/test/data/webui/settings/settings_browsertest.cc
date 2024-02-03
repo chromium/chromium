@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/config/coverage/buildflags.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -273,10 +274,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PerformanceMenu) {
   RunTest("settings/settings_performance_menu_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PreloadingPage) {
-  RunTest("settings/preloading_page_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, ProtocolHandlers) {
   RunTest("settings/protocol_handlers_test.js", "mocha.run()");
 }
@@ -482,19 +479,8 @@ IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableFirstPartySets) {
 }
 
 class SettingsBasicPageTest : public SettingsBrowserTest {
- protected:
-  SettingsBasicPageTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kSafetyHub, {}},
-            {features::kPerformanceSettingsPreloadingSubpage,
-             {{"use_v2_preloading_subpage", "true"}}},
-        },
-        {});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
 };
 
 // TODO(crbug.com/1298753): Flaky on all platforms.
@@ -1060,6 +1046,18 @@ IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest, ManageTopics) {
           "runMochaSuite('ManageTopics')");
 }
 
+IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
+                       FledgeSubpageWithProactiveTopicsBlockingEnabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('FledgeSubpageWithProactiveTopicsBlockingEnabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
+                       ManageTopicsAndAdTopicsPageState) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('ManageTopicsAndAdTopicsPageState')");
+}
+
 class SettingsReviewNotificationPermissionsTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -1138,7 +1136,13 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubModule) {
   RunTest("settings/safety_hub_module_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubPage) {
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+// TODO(crbug.com/1523686): Webviews don't work properly with JS coverage.
+#define MAYBE_SafetyHubPage DISABLED_SafetyHubPage
+#else
+#define MAYBE_SafetyHubPage SafetyHubPage
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, MAYBE_SafetyHubPage) {
   RunTest("settings/safety_hub_page_test.js", "mocha.run()");
 }
 

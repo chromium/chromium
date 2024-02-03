@@ -79,7 +79,7 @@ class CORE_EXPORT CSSTransitionData final : public CSSTimingData {
   }
   Vector<TransitionBehavior>& BehaviorList() { return behavior_list_; }
 
-  static absl::optional<double> InitialDuration() { return 0; }
+  static std::optional<double> InitialDuration() { return 0; }
 
   static TransitionProperty InitialProperty() {
     return TransitionProperty(CSSPropertyID::kAll);

@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     ~CorbResponseAnalyzer() override;
     Decision Init(
         const GURL& request_url,
-        const absl::optional<url::Origin>& request_initiator,
+        const std::optional<url::Origin>& request_initiator,
         mojom::RequestMode request_mode,
         mojom::RequestDestination /*request_destination_from_renderer*/,
         const network::mojom::URLResponseHead& response) override;
@@ -172,7 +172,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     static Decision ShouldBlockBasedOnHeaders(
         mojom::RequestMode request_mode,
         const GURL& request_url,
-        const absl::optional<url::Origin>& request_initiator,
+        const std::optional<url::Origin>& request_initiator,
         const network::mojom::URLResponseHead& response,
         MimeType canonical_mime_type);
 

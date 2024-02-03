@@ -29,18 +29,38 @@ such a test is missing (see `reason_for_missing_test`).
 
 ## Running the tests
 
-To run the preference mapping tests, use `browser_tests` command with a
-`--gtest_filter` for one of the following
+The simplest way to run preference mapping tests is to use `tools/autotest.py`
+and list the files you want to test. For example:
+
+```bash
+$ testing/xvfb.py tools/autotest.py -C out/Default \
+    components/policy/test/data/pref_mapping/CrostiniAllowed.json \
+    components/policy/test/data/pref_mapping/CrostiniPortForwardingAllowed.json
+```
+
+To do the same manually, build and run `browser_tests` with `--gtest_filter`
+set to one of the following:
 
 - `PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase`
-- `PolicyPrefsTest.PolicyToPrefsMapping`
+- `*ChunkedPolicyPrefsTest.PolicyToPrefsMapping*`
 - `SigninPolicyPrefsTest.PolicyToPrefsMapping` (CrOS only)
-- `PolicyTest.AllPoliciesHaveATestCase` (iOS only)
-- `PolicyTest.PolicyToPrefMappings` (iOS only)
 
-Individual policies for PolicyPrefsTest.PolicyToPrefsMapping could be filtered
-by `--test_policy_to_pref_mappings_filter` flag. The flag accepts policy names
+Individual policies in `ChunkedPolicyPrefsTest` can be filtered with the
+`--test_policy_to_pref_mappings_filter` flag. The flag accepts policy names
 (with the .optionalTestNameSuffix) separated by colon.
+
+```bash
+$ autoninja -C out/Default browser_tests
+$ testing/xvfb.py out/Default/browser_tests \
+    --gtest_filter="*ChunkedPolicyPrefsTest.PolicyToPrefsMapping*" \
+    --test_policy_to_pref_mappings_filter="CrostiniAllowed:CrostiniPortForwardingAllowed"
+```
+
+There are also iOS only policy pref mapping `unit_tests`. To run them, execute
+the test binary with the `--gtest_filter` set to one of:
+
+- `PolicyTest.AllPoliciesHaveATestCase`
+- `PolicyTest.PolicyToPrefMappings`
 
 ## Example
 

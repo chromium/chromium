@@ -168,28 +168,28 @@ bool WebFontTypefaceFactory::CreateTypeface(
   struct {
     CheckFunction check_function;
     InstantionFunctionWithInstantiator instantiation_function;
-    absl::optional<InstantiationResult> reportSuccess;
-    absl::optional<InstantiationResult> reportFailure;
+    std::optional<InstantiationResult> reportSuccess;
+    std::optional<InstantiationResult> reportFailure;
   } instantiation_rules[] = {
       // We don't expect variable CBDT/CBLC or Sbix variable fonts for now.
       {&FontFormatCheck::IsCbdtCblcColorFont, &MakeUseFallbackIfNeeded,
-       InstantiationResult::kSuccessCbdtCblcColorFont, absl::nullopt},
+       InstantiationResult::kSuccessCbdtCblcColorFont, std::nullopt},
       {&FontFormatCheck::IsColrCpalColorFontV1, &MakeUseFallbackIfNeeded,
-       InstantiationResult::kSuccessColrV1Font, absl::nullopt},
+       InstantiationResult::kSuccessColrV1Font, std::nullopt},
       {&FontFormatCheck::IsSbixColorFont, &MakeSbixTypeface,
-       InstantiationResult::kSuccessSbixFont, absl::nullopt},
+       InstantiationResult::kSuccessSbixFont, std::nullopt},
       {&FontFormatCheck::IsCff2OutlineFont, &MakeUseFallbackIfNeeded,
-       InstantiationResult::kSuccessCff2Font, absl::nullopt},
+       InstantiationResult::kSuccessCff2Font, std::nullopt},
       // We need to special case variable COLRv0 for backend instantiation as
       // certain Mac and Windows versions supported COLRv0 only without
       // variations.
       {&FontFormatCheck::IsVariableColrV0Font, &MakeColrV0VariationsTypeface,
-       InstantiationResult::kSuccessColrCpalFont, absl::nullopt},
+       InstantiationResult::kSuccessColrCpalFont, std::nullopt},
       {&FontFormatCheck::IsVariableFont, &MakeVariationsTypeface,
        InstantiationResult::kSuccessVariableWebFont,
        InstantiationResult::kErrorInstantiatingVariableFont},
       {&FontFormatCheck::IsColrCpalColorFontV0, &MakeColrV0Typeface,
-       InstantiationResult::kSuccessColrCpalFont, absl::nullopt}};
+       InstantiationResult::kSuccessColrCpalFont, std::nullopt}};
 
   for (auto& rule : instantiation_rules) {
     if (std::invoke(rule.check_function, format_check)) {

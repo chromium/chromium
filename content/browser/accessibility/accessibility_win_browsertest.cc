@@ -2332,8 +2332,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   EXPECT_TRUE(found);
 
   // Remove all accessibility modes.
-  content::BrowserAccessibilityStateImpl::GetInstance()
-      ->RemoveAccessibilityModeFlags(ui::kAXModeComplete);
+  content::BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
 
   // Ensure accessibility is not enabled before we begin the test.
   EXPECT_TRUE(content::BrowserAccessibilityStateImpl::GetInstance()

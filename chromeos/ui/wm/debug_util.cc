@@ -73,10 +73,14 @@ std::vector<std::string> PrintWindowHierarchy(
     std::ostringstream* out,
     GetChildrenCallback children_callback) {
   aura::Window* root0 = roots[0];
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1523875): Make ActiveClient and FocusClient return the
+  // same window across all instances of the clients on Lacros.
   aura::Window* active_window =
       ::wm::GetActivationClient(root0)->GetActiveWindow();
   aura::Window* focused_window =
       aura::client::GetFocusClient(root0)->GetFocusedWindow();
+#endif
   aura::Window* capture_window =
       aura::client::GetCaptureClient(root0)->GetCaptureWindow();
 
@@ -84,14 +88,21 @@ std::vector<std::string> PrintWindowHierarchy(
   for (size_t i = 0; i < roots.size(); ++i) {
     *out << "RootWindow " << i << ":\n";
     aura::Window* root = roots[i];
-    // These windows must be same across root windows, on both ash-chrome and
-    // lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    aura::Window* active_window =
+        ::wm::GetActivationClient(root)->GetActiveWindow();
+    aura::Window* focused_window =
+        aura::client::GetFocusClient(root)->GetFocusedWindow();
+#else
+    // These windows must be the same across root windows.
     DCHECK_EQ(active_window,
               ::wm::GetActivationClient(root)->GetActiveWindow());
     DCHECK_EQ(focused_window,
               aura::client::GetFocusClient(root)->GetFocusedWindow());
+#endif
     DCHECK_EQ(capture_window,
               aura::client::GetCaptureClient(root)->GetCaptureWindow());
+
     PrintWindowHierarchy(active_window, focused_window, capture_window, root, 0,
                          scrub_data, children_callback, &window_titles, out);
   }

@@ -147,9 +147,9 @@ void MessagePort::postMessage(ScriptState* script_state,
       CHECK(post_message_task_container_);
       post_message_task_container_->AddPostMessageTask(task);
       msg.parent_task_id =
-          absl::optional<scheduler::TaskAttributionId>(task->Id());
+          std::optional<scheduler::TaskAttributionId>(task->Id());
     } else {
-      msg.parent_task_id = absl::nullopt;
+      msg.parent_task_id = std::nullopt;
     }
   }
 
@@ -470,7 +470,7 @@ void MessagePort::PostMessageTaskContainer::AddPostMessageTask(
 
 scheduler::TaskAttributionInfo*
 MessagePort::PostMessageTaskContainer::GetAndDecrementPostMessageTask(
-    absl::optional<scheduler::TaskAttributionId> id) {
+    std::optional<scheduler::TaskAttributionId> id) {
   if (!id) {
     return nullptr;
   }

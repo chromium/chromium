@@ -31,11 +31,11 @@ cros::mojom::Camera3CaptureRequestPtr RequestBuilder::BuildRequest(
     // contain buffer handles.
     if (use_buffer_management_apis_) {
       capture_request->output_buffers.push_back(
-          CreateStreamBuffer(stream_type, absl::nullopt));
+          CreateStreamBuffer(stream_type, std::nullopt));
       continue;
     }
 
-    absl::optional<BufferInfo> buffer_info =
+    std::optional<BufferInfo> buffer_info =
         request_buffer_callback_.Run(stream_type);
     if (!buffer_info) {
       return capture_request;
@@ -51,7 +51,7 @@ cros::mojom::Camera3CaptureRequestPtr RequestBuilder::BuildRequest(
 
 cros::mojom::Camera3StreamBufferPtr RequestBuilder::CreateStreamBuffer(
     StreamType stream_type,
-    absl::optional<BufferInfo> buffer_info) {
+    std::optional<BufferInfo> buffer_info) {
   cros::mojom::Camera3StreamBufferPtr buffer =
       cros::mojom::Camera3StreamBuffer::New();
   buffer->stream_id = static_cast<uint64_t>(stream_type);

@@ -24,7 +24,7 @@ class FakeConnection : public Connection {
     // Connection::Factory:
     std::unique_ptr<Connection> Create(
         NearbyConnection* nearby_connection,
-        SessionContext session_context,
+        SessionContext* session_context,
         mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
         ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated) override;
@@ -34,7 +34,7 @@ class FakeConnection : public Connection {
 
   FakeConnection(
       NearbyConnection* nearby_connection,
-      SessionContext session_context,
+      SessionContext* session_context,
       mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
       ConnectionClosedCallback on_connection_closed,
       ConnectionAuthenticatedCallback on_connection_authenticated);

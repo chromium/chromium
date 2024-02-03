@@ -217,10 +217,15 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   // Element::isFocusable, which requires an up-to-date layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  // Showing a <dialog> should hide all open popovers.
-  auto& document = GetDocument();
+  // Proposed new behavior: top layer elements like dialogs and fullscreen
+  // elements can be nested inside popovers.
+  // Old/existing behavior: showing a modal dialog or fullscreen
+  // element should hide all open popovers.
+  auto* hide_until = HTMLElement::TopLayerElementPopoverAncestor(
+      *this, TopLayerElementType::kDialog);
+  DCHECK(RuntimeEnabledFeatures::NestedTopLayerSupportEnabled() || !hide_until);
   HTMLElement::HideAllPopoversUntil(
-      nullptr, document, HidePopoverFocusBehavior::kNone,
+      hide_until, GetDocument(), HidePopoverFocusBehavior::kNone,
       HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
 
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
@@ -316,9 +321,15 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
     }
   }
 
-  // Showing a <dialog> should hide all open popovers.
+  // Proposed new behavior: top layer elements like dialogs and fullscreen
+  // elements can be nested inside popovers.
+  // Old/existing behavior: showing a modal dialog or fullscreen
+  // element should hide all open popovers.
+  auto* hide_until = HTMLElement::TopLayerElementPopoverAncestor(
+      *this, TopLayerElementType::kDialog);
+  DCHECK(RuntimeEnabledFeatures::NestedTopLayerSupportEnabled() || !hide_until);
   HTMLElement::HideAllPopoversUntil(
-      nullptr, document, HidePopoverFocusBehavior::kNone,
+      hide_until, document, HidePopoverFocusBehavior::kNone,
       HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
 
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {

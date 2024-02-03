@@ -92,35 +92,35 @@ int FindClosestWebStateInRange(const RemovingIndexes& removing_indexes,
 
 // static
 OrderController::InsertionParams OrderController::InsertionParams::Automatic(
-    ItemGroup group) {
+    Range range) {
   return InsertionParams{
       .desired_index = WebStateList::kInvalidIndex,
       .opener_index = WebStateList::kInvalidIndex,
-      .group = group,
+      .range = range,
   };
 }
 
 // static
 OrderController::InsertionParams OrderController::InsertionParams::ForceIndex(
     int desired_index,
-    ItemGroup group) {
+    Range range) {
   DCHECK_NE(desired_index, WebStateList::kInvalidIndex);
   return InsertionParams{
       .desired_index = desired_index,
       .opener_index = WebStateList::kInvalidIndex,
-      .group = group,
+      .range = range,
   };
 }
 
 // static
 OrderController::InsertionParams OrderController::InsertionParams::WithOpener(
     int opener_index,
-    ItemGroup group) {
+    Range range) {
   DCHECK_NE(opener_index, WebStateList::kInvalidIndex);
   return InsertionParams{
       .desired_index = WebStateList::kInvalidIndex,
       .opener_index = opener_index,
-      .group = group,
+      .range = range,
   };
 }
 
@@ -130,6 +130,10 @@ OrderController::OrderController(const OrderControllerSource& source)
 OrderController::~OrderController() = default;
 
 int OrderController::DetermineInsertionIndex(InsertionParams params) const {
+  DCHECK_GE(params.range.begin, 0);
+  DCHECK_LE(params.range.begin, params.range.end);
+  DCHECK_LE(params.range.end, source_->GetCount());
+
   int desired_index = WebStateList::kInvalidIndex;
   if (params.desired_index != WebStateList::kInvalidIndex) {
     // "Forced position" has the highest priority.
@@ -148,13 +152,9 @@ int OrderController::DetermineInsertionIndex(InsertionParams params) const {
     }
   }
 
-  // In all cases, ensure that the index is in the correct range according
-  // to the `pinned` status of the item.
-  const int pinned_items_count = source_->GetPinnedCount();
-  const int min = params.pinned() ? 0 : pinned_items_count;
-  const int max = params.pinned() ? pinned_items_count : source_->GetCount();
-  if (desired_index < min || desired_index > max) {
-    return max;
+  // In all cases, ensure that the index is in the correct range.
+  if (desired_index < params.range.begin || desired_index > params.range.end) {
+    return params.range.end;
   }
 
   return desired_index;

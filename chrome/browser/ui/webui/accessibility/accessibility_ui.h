@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ACCESSIBILITY_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ACCESSIBILITY_UI_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -17,9 +18,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/browser/webui_config.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace content {
 struct AXEventNotificationDetails;
+class ScopedAccessibilityMode;
 class WebContents;
 }  // namespace content
 
@@ -75,10 +78,12 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  std::vector<std::string> event_logs_;
-  std::unique_ptr<AccessibilityUIObserver> observer_;
+  // Applies `mode` to `web_contents` for the lifetime of the accessibility
+  // UI page.
+  void SetAccessibilityModeForWebContents(content::WebContents* web_contents,
+                                          ui::AXMode mode);
 
-  void ToggleAccessibility(const base::Value::List& args);
+  void ToggleAccessibilityForWebContents(const base::Value::List& args);
   void SetGlobalFlag(const base::Value::List& args);
   void GetRequestTypeAndFilters(const base::Value::Dict& data,
                                 std::string& request_type,
@@ -91,6 +96,37 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
   void RequestAccessibilityEvents(const base::Value::List& args);
   void Callback(const std::string&);
   void StopRecording(content::WebContents* web_contents);
+
+  // A ScopedAccessibilityMode for a page hosted in a WebContents.
+  struct PageAccessibilityMode {
+    base::WeakPtr<content::WebContents> web_contents;
+    std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode;
+
+    PageAccessibilityMode() = delete;
+    PageAccessibilityMode(
+        base::WeakPtr<content::WebContents> web_contents,
+        std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode);
+    PageAccessibilityMode(PageAccessibilityMode&& other) noexcept;
+    PageAccessibilityMode& operator=(PageAccessibilityMode&& other) noexcept =
+        default;
+    ~PageAccessibilityMode();
+  };
+
+  // Accessibility modes for pages in WebContentses. The map's key is a pointer
+  // to a WebContents. AccessibilityUIMessageHandler does not observe the
+  // lifecycle of these WebContentses, so any additions or modifications to the
+  // data for a WebContents in this mapping MUST be preceded by a sweep to erase
+  // any entries for which the value's WeakPtr<WebContents> has been
+  // invalidated.
+  std::map<void*, PageAccessibilityMode> page_accessibility_modes_;
+
+  // A ScopedAccessibilityMode that holds the process-wide ("global") mode flags
+  // modified via the `setGlobalFlag` callback from the page. Guaranteed to hold
+  // at least an instance with no mode flags set.
+  std::unique_ptr<content::ScopedAccessibilityMode> process_accessibility_mode_;
+
+  std::vector<std::string> event_logs_;
+  std::unique_ptr<AccessibilityUIObserver> observer_;
 
   base::WeakPtrFactory<AccessibilityUIMessageHandler> weak_ptr_factory_{this};
 };

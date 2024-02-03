@@ -249,7 +249,7 @@ class ImageCarouselView : public views::View {
     }
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     // Use a fixed height that guarantees to fit the screenshot with max ratio
     // and still show a clip for the next screenshot.
     const int fixed_height = base::checked_cast<int>(

@@ -38,7 +38,7 @@ class PhysicalFragmentRareData
   PhysicalFragmentRareData(const PhysicalRect* scrollable_overflow,
                            const PhysicalBoxStrut* borders,
                            const PhysicalBoxStrut* padding,
-                           absl::optional<PhysicalRect> inflow_bounds,
+                           std::optional<PhysicalRect> inflow_bounds,
                            BoxFragmentBuilder& builder,
                            wtf_size_t num_fields);
   PhysicalFragmentRareData(const PhysicalFragmentRareData& other);

@@ -106,13 +106,13 @@ webrtc::VideoDecoder::DecoderInfo StatsCollectingDecoder::GetDecoderInfo()
 
 // Implementation of webrtc::DecodedImageCallback.
 int32_t StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage) {
-  Decoded(decodedImage, absl::nullopt, absl::nullopt);
+  Decoded(decodedImage, std::nullopt, std::nullopt);
   return WEBRTC_VIDEO_CODEC_OK;
 }
 
 void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
-                                     absl::optional<int32_t> decode_time_ms,
-                                     absl::optional<uint8_t> qp) {
+                                     std::optional<int32_t> decode_time_ms,
+                                     std::optional<uint8_t> qp) {
   // Decoded may be called on either the decoding sequence (SW decoding) or
   // media sequence (HW decoding). However, these calls are not happening at the
   // same time. If there's a fallback from SW decoding to HW decoding, a call to

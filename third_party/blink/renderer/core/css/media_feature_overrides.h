@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_FEATURE_OVERRIDES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_FEATURE_OVERRIDES_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -23,49 +24,47 @@ class CORE_EXPORT MediaFeatureOverrides {
  public:
   void SetOverride(const AtomicString& feature, const String& value_string);
 
-  absl::optional<ColorSpaceGamut> GetColorGamut() const { return color_gamut_; }
-  absl::optional<mojom::blink::PreferredColorScheme> GetPreferredColorScheme()
+  std::optional<ColorSpaceGamut> GetColorGamut() const { return color_gamut_; }
+  std::optional<mojom::blink::PreferredColorScheme> GetPreferredColorScheme()
       const {
     return preferred_color_scheme_;
   }
-  absl::optional<mojom::blink::PreferredContrast> GetPreferredContrast() const {
+  std::optional<mojom::blink::PreferredContrast> GetPreferredContrast() const {
     return preferred_contrast_;
   }
-  absl::optional<bool> GetPrefersReducedMotion() const {
+  std::optional<bool> GetPrefersReducedMotion() const {
     return prefers_reduced_motion_;
   }
-  absl::optional<bool> GetPrefersReducedData() const {
+  std::optional<bool> GetPrefersReducedData() const {
     return prefers_reduced_data_;
   }
-  absl::optional<bool> GetPrefersReducedTransparency() const {
+  std::optional<bool> GetPrefersReducedTransparency() const {
     return prefers_reduced_transparency_;
   }
-  absl::optional<ForcedColors> GetForcedColors() const {
-    return forced_colors_;
-  }
+  std::optional<ForcedColors> GetForcedColors() const { return forced_colors_; }
 
-  static absl::optional<mojom::blink::PreferredColorScheme>
+  static std::optional<mojom::blink::PreferredColorScheme>
   ConvertPreferredColorScheme(const MediaQueryExpValue&);
-  static absl::optional<mojom::blink::PreferredContrast>
+  static std::optional<mojom::blink::PreferredContrast>
   ConvertPreferredContrast(const MediaQueryExpValue&);
-  static absl::optional<bool> ConvertPrefersReducedMotion(
+  static std::optional<bool> ConvertPrefersReducedMotion(
       const MediaQueryExpValue& value);
-  static absl::optional<bool> ConvertPrefersReducedData(
+  static std::optional<bool> ConvertPrefersReducedData(
       const MediaQueryExpValue& value);
-  static absl::optional<bool> ConvertPrefersReducedTransparency(
+  static std::optional<bool> ConvertPrefersReducedTransparency(
       const MediaQueryExpValue& value);
 
   static MediaQueryExpValue ParseMediaQueryValue(const AtomicString&,
                                                  const String&);
 
  private:
-  absl::optional<ColorSpaceGamut> color_gamut_;
-  absl::optional<mojom::blink::PreferredColorScheme> preferred_color_scheme_;
-  absl::optional<mojom::blink::PreferredContrast> preferred_contrast_;
-  absl::optional<bool> prefers_reduced_motion_;
-  absl::optional<bool> prefers_reduced_data_;
-  absl::optional<bool> prefers_reduced_transparency_;
-  absl::optional<ForcedColors> forced_colors_;
+  std::optional<ColorSpaceGamut> color_gamut_;
+  std::optional<mojom::blink::PreferredColorScheme> preferred_color_scheme_;
+  std::optional<mojom::blink::PreferredContrast> preferred_contrast_;
+  std::optional<bool> prefers_reduced_motion_;
+  std::optional<bool> prefers_reduced_data_;
+  std::optional<bool> prefers_reduced_transparency_;
+  std::optional<ForcedColors> forced_colors_;
 };
 
 }  // namespace blink

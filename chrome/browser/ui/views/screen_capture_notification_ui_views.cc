@@ -58,8 +58,9 @@ const float kWindowAlphaValue = 0.96f;
 // ScreenCaptureNotificationUIViews uses this class to make the notification bar
 // draggable.
 class NotificationBarClientView : public views::ClientView {
+  METADATA_HEADER(NotificationBarClientView, views::ClientView)
+
  public:
-  METADATA_HEADER(NotificationBarClientView);
   NotificationBarClientView(views::Widget* widget, views::View* view)
       : views::ClientView(widget, view) {
   }
@@ -91,7 +92,7 @@ class NotificationBarClientView : public views::ClientView {
   gfx::Rect rect_;
 };
 
-BEGIN_METADATA(NotificationBarClientView, views::ClientView)
+BEGIN_METADATA(NotificationBarClientView)
 ADD_PROPERTY_METADATA(gfx::Rect, ClientRect)
 END_METADATA
 
@@ -99,8 +100,9 @@ END_METADATA
 class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
                                          public views::WidgetDelegateView,
                                          public views::ViewObserver {
+  METADATA_HEADER(ScreenCaptureNotificationUIViews, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(ScreenCaptureNotificationUIViews);
   ScreenCaptureNotificationUIViews(
       const std::u16string& text,
       content::WebContents* capturing_web_contents);
@@ -341,7 +343,7 @@ void ScreenCaptureNotificationUIViews::SetWindowsAppId(views::Widget* widget) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-BEGIN_METADATA(ScreenCaptureNotificationUIViews, views::WidgetDelegateView)
+BEGIN_METADATA(ScreenCaptureNotificationUIViews)
 END_METADATA
 
 }  // namespace

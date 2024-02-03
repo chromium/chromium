@@ -70,15 +70,17 @@ void DOMViewTransition::skipTransition() {
   view_transition_->SkipTransition();
 }
 
-ScriptPromise DOMViewTransition::finished(ScriptState* script_state) const {
+ScriptPromiseTyped<IDLUndefined> DOMViewTransition::finished(
+    ScriptState* script_state) const {
   return finished_promise_property_->Promise(script_state->World());
 }
 
-ScriptPromise DOMViewTransition::ready(ScriptState* script_state) const {
+ScriptPromiseTyped<IDLUndefined> DOMViewTransition::ready(
+    ScriptState* script_state) const {
   return ready_promise_property_->Promise(script_state->World());
 }
 
-ScriptPromise DOMViewTransition::updateCallbackDone(
+ScriptPromiseTyped<IDLUndefined> DOMViewTransition::updateCallbackDone(
     ScriptState* script_state) const {
   return dom_updated_promise_property_->Promise(script_state->World());
 }

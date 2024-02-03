@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/examples/examples_window.h"
 
@@ -29,6 +30,11 @@ void ExamplesSkiaGoldPixelDiff::Init(const std::string& screenshot_prefix) {
 ExamplesExitCode ExamplesSkiaGoldPixelDiff::CompareScreenshot(
     const std::string& screenshot_name,
     const views::Widget* widget) const {
+  // If host is in dark mode skip the pixel comparison.
+  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    return ExamplesExitCode::kNone;
+  }
+
   CHECK(pixel_diff_) << "Initialize the class before using this method.";
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);

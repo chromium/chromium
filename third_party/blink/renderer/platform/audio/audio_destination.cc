@@ -83,7 +83,7 @@ scoped_refptr<AudioDestination> AudioDestination::Create(
     const WebAudioSinkDescriptor& sink_descriptor,
     unsigned number_of_output_channels,
     const WebAudioLatencyHint& latency_hint,
-    absl::optional<float> context_sample_rate,
+    std::optional<float> context_sample_rate,
     unsigned render_quantum_frames) {
   TRACE_EVENT0("webaudio", "AudioDestination::Create");
   return base::AdoptRef(
@@ -342,7 +342,7 @@ AudioDestination::AudioDestination(
     const WebAudioSinkDescriptor& sink_descriptor,
     unsigned number_of_output_channels,
     const WebAudioLatencyHint& latency_hint,
-    absl::optional<float> context_sample_rate,
+    std::optional<float> context_sample_rate,
     unsigned render_quantum_frames)
     : web_audio_device_(
           Platform::Current()->CreateAudioDevice(sink_descriptor,

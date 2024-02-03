@@ -1,4 +1,3 @@
-<?xml version='1.0' encoding='UTF-8'?>
 <grit base_dir="." latest_public_release="0" current_release="1" output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
   <!--
   This file contains definition of resources that will be translated for each
@@ -422,6 +421,9 @@
       <message name="IDS_IOS_AUTOFILL_ZIP" desc="Title of the field of a profile address representing the postal code of the address. [Length: 15em] [iOS only]">
         Zip Code
       </message>
+      <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
+        You can swipe the edge to go back or forward.
+      </message>
       <message name="IDS_IOS_BADGE_INCOGNITO_HINT" desc="Button displayed when the user is in Incognito mode. [iOS only]">
         Current Webpage is on Incognito
       </message>
@@ -607,14 +609,8 @@
       <message name="IDS_IOS_BOOKMARK_NEW_MOVE_BUTTON_LABEL" desc="Accessibility label for a button that allows the user to move the position of one or many bookmarks. [Length: 30em.]">
         Move
       </message>
-      <message name="IDS_IOS_BOOKMARK_NEW_MULTIPLE_BOOKMARK_MOVE" desc="A description presented to the user that they just moved multiple bookmarks. [Length: 30em.] [iOS only]">
-        <ph name="NUMBER_OF_SELECTED_BOOKMARKS">$1<ex>2</ex></ph> items moved
-      </message>
       <message name="IDS_IOS_BOOKMARK_NEW_ONE_ITEM_LABEL" desc="Text that indicates that a user has selected one bookmark for editing. [Length: 30em.]">
         1 selected
-      </message>
-      <message name="IDS_IOS_BOOKMARK_NEW_SINGLE_BOOKMARK_MOVE" desc="A description presented to the user that they just moved 1 bookmark. [Length: 30em.] [iOS only]">
-        1 item moved
       </message>
       <message name="IDS_IOS_BOOKMARK_NEW_UNDO_BUTTON_TITLE" desc="Text shown for the undo button. [Length: 30em.] [iOS only]">
         Undo
@@ -910,8 +906,10 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTACTS_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's contacts while the app is in use [Length: unlimited] [iOS only].">
         This will be used to show you possible invitees to your event.
       </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP" desc="The iOS context menu item for adding a tab to a new tab group. Title case. [iOS only]">
-        Add Tab to New Group
+      <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP" desc="The iOS context menu item for adding one or multiple tabs to a new tab group. Title case. [iOS only]">
+        {count, plural,
+        =1 {Add Tab to New Group}
+        other {Add Tabs to New Group}}
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP" desc="The iOS context menu item for adding a tab to an existing tab group. Title case. [iOS only]">
         Add Tab to Group
@@ -934,11 +932,17 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSETAB" desc="The iOS context menu item for closing a tab. [iOS only]" meaning="Close the current tab [Title Case].">
         Close Tab
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP" desc="The iOS context menu item for closing a tab group. Title case. [iOS only]">
+        Close Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPY" desc="The iOS menu item for copying a link's URL into the pasteboard. Shorter than the desktop version [iOS only]">
         Copy Link URL
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPYIMAGE" desc="The name of the Copy Image command in the content area context menu.">
         Copy Image
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP" desc="The iOS context menu item for adding a new tab in a tab group. [iOS only]">
+        New Tab in Group
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE" desc="Text for the Chrome content notifications confirmation snackbar action.">
         Manage
@@ -970,11 +974,17 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_PINTAB" desc="The iOS context menu item for pinning a tab.[iOS only]">
         Pin Tab
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP" desc="The iOS context menu item for renaming a tab group. Title case. [iOS only]">
+        Rename Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE" desc="The name of the Save Image As command in the content area context menu">
         Save in Photos
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SELECTTABS" desc="The iOS context menu item for entering into the selection mode, where users can select tabs to perform bulk actions on them.[iOS only]">
         Select Tabs
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_UNGROUP" desc="The iOS context menu item for ungrouping a tab group. Title case. [iOS only]">
+        Ungroup
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_UNPINTAB" desc="The iOS context menu item for unpinning a tab.[iOS only]">
         Unpin Tab
@@ -2433,6 +2443,21 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS" desc="The label for a button that takes the user to the app's Notifications Settings page.">
         Manage
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_CONTENT_TOGGLE_MESSSAGE" desc="The label for the notification opt-in toggle message for content notifications.">
+        News and content based on your interests.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_MESSAGE" desc="The label for the notification opt-in toggle message for price tracking notifications.">
+        Recieve price drop alerts for products you track.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_TITLE" desc="The label for the notification opt-in toggle title for price tracking notifications.">
+        Price Tracking
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_TITLE" desc="The title of the screen that prompts to select which notifications to opt-in to.">
+        Choose the notifications you want to receive
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON" desc="The text for the button in notifications opt-in screen that enables the selected notifications.">
+        Turn on Notifications
+      </message>
       <message name="IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo (compact version), explaining that users will content based on users interests if they enable sync. [iOS only]">
         Sync to get content based on your interests.
       </message>
@@ -2799,6 +2824,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OVERSCROLL_RELOAD_LABEL" desc="The text to use for the tooltip for the overscroll reload action. [Length: 20em] [iOS only]">
         Reload
       </message>
+      <message name="IDS_IOS_PAGE_INFO_CONNECTION" desc="Title of the button opening the connection information (in page info)">
+        Connection
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_CONNECTION_SECURITY" desc="Title of the navigation controller to display when the page's security is presented.">
+        Connection Security
+      </message>
       <message name="IDS_IOS_PAGE_INFO_COOKIES_BLOCKED_LABEL" desc="Title of the item that displays the number of blocked Cookies in the site information screen.">
         Blocked Cookies
       </message>
@@ -2841,10 +2872,16 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_SECURITY_BUTTON_ACCESSIBILITY_LABEL" desc="The accessibility text for the page security info button">
         Page Security Info
       </message>
-      <message name="IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE" desc="The label informing that a website is not secure">
+      <message name="IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_NOT_SECURE" desc="The label informing that a website's connection is not secure">
+        Connection is Not Secure
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_SECURE" desc="The label informing that a website's connection is secure">
+        Connection is Secure
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE" desc="The label informing that a website's connection is not secure">
         Not Secure
       </message>
-      <message name="IDS_IOS_PAGE_INFO_SECURITY_STATUS_SECURE" desc="The label informing that a website is secure">
+      <message name="IDS_IOS_PAGE_INFO_SECURITY_STATUS_SECURE" desc="The label informing that a website's connection is secure">
         Secure
       </message>
       <message name="IDS_IOS_PAGE_INFO_SITE_INFORMATION" desc="Title of the navigation controller to display when the page info is presented.">
@@ -2852,9 +2889,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PAGE_INFO_SITE_SECURITY" desc="Title of the button opening the site security information (in page info)">
         Site Security
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_CONNECTION" desc="Title of the button opening the connection information (in page info)">
-        Connection
       </message>
       <message name="IDS_IOS_PAGE_LOADED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement when a page has loaded. [Length: unlimited] [iOS only]">
         Webpage loaded
@@ -4446,6 +4480,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_MENU" desc="Accessibility label for the Set Up List menu button.">
         Options
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to enable Chrome notifications.">
+        Keep up with the latest news, price tracking updates and more.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
+        Get Notifications
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL" desc="Title for the item to cancel opening the Set Up List Settings action sheet.">
         Cancel
       </message>
@@ -5770,6 +5810,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared, tabs will be closed and the user will be signed out.">
           Tabs were closed and browsing data was deleted. You were signed out
+      </message>
+      <message name="IDS_IOS_DOCKING_EDIT_HOME_SCREEN_LOTTIE_INSTRUCTION" desc="Title of the instruction shown in the Docking Promo Lottie, which describes the Edit Home Screen text when the user long presses on the Chrome app.">
+        Edit Home Screen
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE" desc="Title of the primary button in the Docking Promo, which confirms the promo has been seen by the user.">
+        Got It
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_SECOND_INSTRUCTION" desc="Title of the second step instruction shown in the Docking Promo, which tells users to drag the app icon to their iOS dock.">
+        Drag it to the dock at the bottom of your Home Screen
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_SECONDARY_BUTTON_TITLE" desc="Title of the secondary button in the Docking Promo, which schedules the Docking Promo for display at a later time, i.e. Remind Me Later functionality.">
+        Remind Me Later
       </message>
     </messages>
   </release>

@@ -282,6 +282,7 @@
 <translation id="6144416395842701622">登入以充分運用 Chromium 嘅所有功能</translation>
 <translation id="6145820983052037069">您可在此處切換不同的 Chromium 設定檔</translation>
 <translation id="615103374448673771">如果你允許 Cookie，Chromium 可能會在預先載入時使用 Cookie</translation>
+<translation id="6174920971222007286">此檔案可能不安全<ph name="LINE_BREAK" />如果你提供密碼，Chromium 可為你檢查此下載項目。系統會向「Google 安全瀏覽」傳送檔案的資料，但檔案內容和密碼只會儲存在裝置上。</translation>
 <translation id="6175304430031192654">視乎你的設定，Chromium 亦可能會傳送 Cookie 和你目前的網址</translation>
 <translation id="6182736845697986886">由於更新伺服器發生內部錯誤，因此無法安裝。</translation>
 <translation id="6183079672144801177">請確認您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chromium，然後再傳送一次。</translation>

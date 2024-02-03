@@ -197,7 +197,7 @@ InspectorAnimationAgent::BuildObjectForAnimation(blink::Animation& animation) {
   id_to_animation_.Set(id, &animation);
 
   double current_time = Timing::NullValue();
-  absl::optional<AnimationTimeDelta> animation_current_time =
+  std::optional<AnimationTimeDelta> animation_current_time =
       animation.CurrentTimeInternal();
   if (animation_current_time) {
     current_time = animation_current_time.value().InMillisecondsF();
@@ -249,17 +249,17 @@ protocol::Response InspectorAnimationAgent::getCurrentTime(
 
   *current_time = Timing::NullValue();
   if (animation->Paused() || !animation->TimelineInternal()->IsActive()) {
-    absl::optional<AnimationTimeDelta> animation_current_time =
+    std::optional<AnimationTimeDelta> animation_current_time =
         animation->CurrentTimeInternal();
     if (animation_current_time) {
       *current_time = animation_current_time.value().InMillisecondsF();
     }
   } else {
     // Use startTime where possible since currentTime is limited.
-    absl::optional<AnimationTimeDelta> animation_start_time =
+    std::optional<AnimationTimeDelta> animation_start_time =
         animation->StartTimeInternal();
     if (animation_start_time) {
-      absl::optional<AnimationTimeDelta> timeline_time =
+      std::optional<AnimationTimeDelta> timeline_time =
           animation->TimelineInternal()->CurrentTime();
       // TODO(crbug.com/916117): Handle NaN values for scroll linked animations.
       if (timeline_time) {
@@ -286,14 +286,14 @@ protocol::Response InspectorAnimationAgent::setPaused(
     }
     if (paused && !clone->Paused()) {
       // Ensure we restore a current time if the animation is limited.
-      absl::optional<AnimationTimeDelta> current_time;
+      std::optional<AnimationTimeDelta> current_time;
       if (!clone->TimelineInternal()->IsActive()) {
         current_time = clone->CurrentTimeInternal();
       } else {
-        absl::optional<AnimationTimeDelta> start_time =
+        std::optional<AnimationTimeDelta> start_time =
             clone->StartTimeInternal();
         if (start_time) {
-          absl::optional<AnimationTimeDelta> timeline_time =
+          std::optional<AnimationTimeDelta> timeline_time =
               clone->TimelineInternal()->CurrentTime();
           // TODO(crbug.com/916117): Handle NaN values.
           if (timeline_time) {
@@ -530,15 +530,22 @@ void InspectorAnimationAgent::AnimationPlayStateChanged(
   if (cleared_animations_.Contains(animation_id))
     return;
 
+  // We don't care about non document timeline animations before updating
+  // the animations panel for scroll driven animations.
+  if (!animation->timeline()->IsDocumentTimeline()) {
+    return;
+  }
+
   // Record newly starting animations only once, as |buildObjectForAnimation|
   // constructs and caches our internal representation of the given |animation|.
   if ((new_play_state == blink::Animation::kRunning ||
        new_play_state == blink::Animation::kFinished) &&
-      !id_to_animation_.Contains(animation_id))
+      !id_to_animation_.Contains(animation_id)) {
     GetFrontend()->animationStarted(BuildObjectForAnimation(*animation));
-  else if (new_play_state == blink::Animation::kIdle ||
-           new_play_state == blink::Animation::kPaused)
+  } else if (new_play_state == blink::Animation::kIdle ||
+             new_play_state == blink::Animation::kPaused) {
     GetFrontend()->animationCanceled(animation_id);
+  }
 }
 
 void InspectorAnimationAgent::DidClearDocumentOfWindowObject(
@@ -570,7 +577,7 @@ DocumentTimeline& InspectorAnimationAgent::ReferenceTimeline() {
 double InspectorAnimationAgent::NormalizedStartTime(
     blink::Animation& animation) {
   double time_ms = Timing::NullValue();
-  absl::optional<AnimationTimeDelta> start_time = animation.StartTimeInternal();
+  std::optional<AnimationTimeDelta> start_time = animation.StartTimeInternal();
   if (start_time) {
     time_ms = start_time.value().InMillisecondsF();
   }

@@ -113,7 +113,7 @@ void ActionHighlight::VisibilityChanged(views::View* starting_from,
   }
 }
 
-BEGIN_METADATA(ActionHighlight, views::View)
+BEGIN_METADATA(ActionHighlight)
 END_METADATA
 
 }  // namespace arc::input_overlay

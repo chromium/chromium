@@ -26,7 +26,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/signatures.h"
@@ -56,13 +56,6 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
-  enum AutofillProfileAction {
-    EXISTING_PROFILE_USED,
-    EXISTING_PROFILE_UPDATED,
-    NEW_PROFILE_CREATED,
-    AUTOFILL_PROFILE_ACTION_ENUM_SIZE,
-  };
-
   enum AutofillFormSubmittedState {
     NON_FILLABLE_FORM_OR_NEW_DATA,
     FILLABLE_FORM_AUTOFILLED_ALL,
@@ -1100,12 +1093,6 @@ class AutofillMetrics {
   // always offered, regardless of how recently they have been used.
   static void LogNumberOfAddressesSuppressedForDisuse(size_t num_profiles);
 
-  // Log the number of unverified autofill addresses deleted because they have
-  // not been used for a long time, and are not used as billing addresses of
-  // valid credit cards. Note the deletion only happens once per major version
-  // upgrade.
-  static void LogNumberOfAddressesDeletedForDisuse(size_t num_profiles);
-
   // Log the number of Autofill address suggestions presented to the user when
   // filling a form.
   static void LogAddressSuggestionsCount(size_t num_suggestions);
@@ -1143,10 +1130,6 @@ class AutofillMetrics {
 
   // This should be called each time a server response is parsed for a form.
   static void LogServerResponseHasDataForForm(bool has_data);
-
-  // This should be called at each form submission to indicate what profile
-  // action happened.
-  static void LogProfileActionOnFormSubmitted(AutofillProfileAction action);
 
   // This should be called at each form submission to indicate the autofilled
   // state of the form.
@@ -1191,12 +1174,6 @@ class AutofillMetrics {
 
   // This should be called when parsing each form.
   static void LogParseFormTiming(const base::TimeDelta& duration);
-
-  // Log how many profiles were considered for the deduplication process.
-  static void LogNumberOfProfilesConsideredForDedupe(size_t num_considered);
-
-  // Log how many profiles were removed as part of the deduplication process.
-  static void LogNumberOfProfilesRemovedDuringDedupe(size_t num_removed);
 
   // Log whether the Autofill query on a credit card form is made in a secure
   // context.

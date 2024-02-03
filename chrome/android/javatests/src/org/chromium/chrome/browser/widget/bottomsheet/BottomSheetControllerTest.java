@@ -283,6 +283,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @Feature({"BottomSheetController"})
+    @DisabledTest(message = "https://crbug.com/1523222")
     public void testGestureCannotMoveSheetDuringHideAnimation() {
         Rect visibleViewportRect = new Rect();
         mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(visibleViewportRect);

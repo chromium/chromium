@@ -30,6 +30,7 @@ export class AccessibilityCommon {
   // setOnLoadDesktopCallbackForTest() is migrated to typescript.
   private magnifierLoadCallbackForTest_: (() => void)|null = null;
   private dictationLoadCallbackForTest_: Function|null = null;
+  private facegazeLoadCallbackForTest_: Function|null = null;
 
   static readonly FACEGAZE_PREF_NAME = 'settings.a11y.face_gaze.enabled';
 
@@ -138,6 +139,10 @@ export class AccessibilityCommon {
     if (details.value && !this.faceGaze_) {
       // Initialize the FaceGaze extension.
       this.faceGaze_ = new FaceGaze();
+      if (this.facegazeLoadCallbackForTest_) {
+        this.facegazeLoadCallbackForTest_();
+        this.facegazeLoadCallbackForTest_ = null;
+      }
     } else if (!details.value && this.faceGaze_) {
       this.faceGaze_.onFaceGazeDisabled();
       this.faceGaze_ = null;
@@ -207,6 +212,13 @@ export class AccessibilityCommon {
       }
       // Magnifier already loaded.
       this.magnifier_.setOnLoadDesktopCallbackForTest(callback);
+    } else if (feature === 'facegaze') {
+      if (!this.faceGaze_) {
+        this.facegazeLoadCallbackForTest_ = callback;
+        return;
+      }
+      // Facegaze already loaded.
+      callback();
     }
   }
 }

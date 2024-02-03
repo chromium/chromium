@@ -104,7 +104,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // Use an index instead of an offset, in case during the animated transition
   // the session history is updated (e.g., history.pushState()) and we don't
   // want to lead the user to the wrong entry.
-  absl::optional<int> destination_entry_index_;
+  std::optional<int> destination_entry_index_;
 
   // Only instantiated if the user gesture will trigger an animated session
   // history preview. Created when the eligible `OnGestureStarted()` arrives,

@@ -215,8 +215,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSDefaultBrowserSettingsBadge"
       summary="default browser badge promo on the settings menu row"/>
   <variant name="IPH_iOSDefaultBrowserVideoPromoTrigger"
-      summary="notifying that the conditions to show the default browser
-               video promo have been met."/>
+      summary="(obsolete) notifying that the conditions to show the default
+               browser video promo have been met."/>
   <variant name="IPH_iOSDockingPromoFeature"
       summary="Showing the Docking Promo on iOS"/>
   <variant name="IPH_iOSDockingPromoRemindMeLaterFeature"
@@ -645,7 +645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.AbortStep" units="int"
-    expires_after="2024-05-19">
+    expires_after="2024-07-28">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>

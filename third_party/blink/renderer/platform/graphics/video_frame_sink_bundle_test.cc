@@ -171,7 +171,7 @@ TEST_F(VideoFrameSinkBundleTest, PassThrough) {
   CreateTestBundle();
   VideoFrameSinkBundle& bundle = test_bundle();
   bundle.SubmitCompositorFrame(
-      2, kTestSurfaceId, viz::MakeDefaultCompositorFrame(), absl::nullopt, 0);
+      2, kTestSurfaceId, viz::MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_CALL(mock_frame_sink_bundle(),
               Submit(ElementsAre(AllOf(IsFrame(), ForSink(2u)))))
       .Times(1);
@@ -215,7 +215,7 @@ TEST_F(VideoFrameSinkBundleTest, BatchSubmissionsDuringOnBeginFrame) {
   EXPECT_CALL(mock_client1, OnBeginFrame).Times(1).WillOnce([&] {
     bundle.SubmitCompositorFrame(kTestVideoSinkId1.sink_id(), kTestSurfaceId,
                                  viz::MakeDefaultCompositorFrame(),
-                                 absl::nullopt, 0);
+                                 std::nullopt, 0);
   });
   EXPECT_CALL(mock_client2, OnBeginFrame).Times(1).WillOnce([&] {
     bundle.DidNotProduceFrame(kTestVideoSinkId2.sink_id(),
@@ -224,7 +224,7 @@ TEST_F(VideoFrameSinkBundleTest, BatchSubmissionsDuringOnBeginFrame) {
   EXPECT_CALL(mock_client3, OnBeginFrame).Times(1).WillOnce([&] {
     bundle.SubmitCompositorFrame(kTestVideoSinkId3.sink_id(), kTestSurfaceId,
                                  viz::MakeDefaultCompositorFrame(),
-                                 absl::nullopt, 0);
+                                 std::nullopt, 0);
   });
 
   WTF::Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames;

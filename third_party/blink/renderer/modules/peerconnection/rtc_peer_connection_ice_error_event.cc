@@ -10,7 +10,7 @@ namespace blink {
 
 RTCPeerConnectionIceErrorEvent* RTCPeerConnectionIceErrorEvent::Create(
     const String& address,
-    absl::optional<uint16_t> port,
+    std::optional<uint16_t> port,
     const String& host_candidate,
     const String& url,
     int error_code,
@@ -30,7 +30,7 @@ RTCPeerConnectionIceErrorEvent* RTCPeerConnectionIceErrorEvent::Create(
 
 RTCPeerConnectionIceErrorEvent::RTCPeerConnectionIceErrorEvent(
     const String& address,
-    absl::optional<uint16_t> port,
+    std::optional<uint16_t> port,
     const String& host_candidate,
     const String& url,
     uint16_t error_code,
@@ -67,7 +67,7 @@ String RTCPeerConnectionIceErrorEvent::address() const {
   return address_;
 }
 
-absl::optional<uint16_t> RTCPeerConnectionIceErrorEvent::port() const {
+std::optional<uint16_t> RTCPeerConnectionIceErrorEvent::port() const {
   return port_;
 }
 

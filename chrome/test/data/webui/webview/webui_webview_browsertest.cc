@@ -149,8 +149,10 @@ IN_PROC_BROWSER_TEST_F(
                   GetTestUrl("empty.html").spec()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
+#if (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)) || \
+    BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
 // TODO(crbug.com/859320) Fails on CrOS dbg with --enable-features=Mash.
+// TODO(crbug.com/1523686): Webviews don't work properly with JS coverage.
 #define MAYBE_AddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView \
   DISABLED_AddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView
 #else

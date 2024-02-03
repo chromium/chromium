@@ -29,7 +29,7 @@ namespace blink {
 
 namespace {
 std::unique_ptr<gfx::Transform> TryGetTransform(
-    const absl::optional<gfx::Transform>& transform) {
+    const std::optional<gfx::Transform>& transform) {
   if (transform) {
     return std::make_unique<gfx::Transform>(*transform);
   }
@@ -228,7 +228,7 @@ void XRInputSource::SetGamepadConnected(bool state) {
 }
 
 void XRInputSource::UpdateGamepad(
-    const absl::optional<device::Gamepad>& gamepad) {
+    const std::optional<device::Gamepad>& gamepad) {
   if (gamepad) {
     if (!gamepad_) {
       gamepad_ = MakeGarbageCollected<Gamepad>(this, -1, state_.base_timestamp,
@@ -257,16 +257,16 @@ void XRInputSource::UpdateHand(
   }
 }
 
-absl::optional<gfx::Transform> XRInputSource::MojoFromInput() const {
+std::optional<gfx::Transform> XRInputSource::MojoFromInput() const {
   if (!mojo_from_input_.get()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *(mojo_from_input_.get());
 }
 
-absl::optional<gfx::Transform> XRInputSource::InputFromPointer() const {
+std::optional<gfx::Transform> XRInputSource::InputFromPointer() const {
   if (!input_from_pointer_.get()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *(input_from_pointer_.get());
 }

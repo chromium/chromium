@@ -234,11 +234,14 @@ bool IntersectionGeometry::RootGeometry::operator==(
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
 String IntersectionGeometry::CachedRects::ToString() const {
+  auto transform_to_string = [](const gfx::Transform& t) {
+    return t.IsIdentityOr2dTranslation() ? t.To2dTranslation().ToString()
+                                         : t.ToString();
+  };
   return String::Format(
-      "local_target_rect: %s target_rect: %s local_root_rect: %s root_rect: %s "
-      "intersection_rect: %s %s %s min_scroll_delta_to_update %s %s"
-      "target_transform: %s root_transform: %s does_intersect: %d "
-      "relationship: %d root_scrolls_target: %d",
+      "target_rect: %s %s root_rect: %s %s intersection: %s %s %s "
+      "min_to_update %s %s target_t: %s root_t: %s intersect: %d "
+      "rel: %d r_scrolls_t: %d",
       local_target_rect.ToString().c_str(), target_rect.ToString().c_str(),
       local_root_rect.ToString().c_str(), root_rect.ToString().c_str(),
       unscrolled_unclipped_intersection_rect.ToString().c_str(),
@@ -246,9 +249,9 @@ String IntersectionGeometry::CachedRects::ToString() const {
       intersection_rect.ToString().c_str(),
       computed_min_scroll_delta_to_update.ToString().c_str(),
       min_scroll_delta_to_update.ToString().c_str(),
-      target_to_view_transform.ToString().c_str(),
-      root_to_view_transform.ToString().c_str(), does_intersect, relationship,
-      root_scrolls_target);
+      transform_to_string(target_to_view_transform).c_str(),
+      transform_to_string(root_to_view_transform).c_str(), does_intersect,
+      relationship, root_scrolls_target);
 }
 #endif
 
@@ -271,7 +274,7 @@ IntersectionGeometry::IntersectionGeometry(
     const Vector<Length>& target_margin,
     const Vector<Length>& scroll_margin,
     unsigned flags,
-    absl::optional<RootGeometry>& root_geometry,
+    std::optional<RootGeometry>& root_geometry,
     CachedRects* cached_rects)
     : flags_(flags & kConstructorFlagsMask) {
   // Only one of root_margin or target_margin can be specified.
@@ -654,14 +657,6 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     flags_ |= kIsVisible;
   }
 
-  if (flags_ & kShouldConvertToCSSPixels) {
-    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(target_rect_,
-                                                           *target);
-    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(intersection_rect_,
-                                                           *target);
-    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(root_rect_, *root);
-  }
-
   if (cached_rects) {
     cached_rects->min_scroll_delta_to_update = ComputeMinScrollDeltaToUpdate(
         root_and_target, target_to_view_transform,
@@ -682,6 +677,15 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     cached_rects->root_scrolls_target = root_and_target.root_scrolls_target;
 #endif
   }
+
+  // This must be the last step after all calculations in zoomed coordinates.
+  if (flags_ & kShouldConvertToCSSPixels) {
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(target_rect_,
+                                                           *target);
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(intersection_rect_,
+                                                           *target);
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(root_rect_, *root);
+  }
 }
 
 bool IntersectionGeometry::ClipToRoot(const RootAndTarget& root_and_target,
@@ -698,7 +702,7 @@ bool IntersectionGeometry::ClipToRoot(const RootAndTarget& root_and_target,
     for (const LayoutBox* scroller : root_and_target.intermediate_scrollers) {
       gfx::RectF scroller_rect =
           gfx::RectF(scroller->OverflowClipRect(PhysicalOffset()));
-      if (absl::optional<gfx::RectF> clip_path_box =
+      if (std::optional<gfx::RectF> clip_path_box =
               ClipPathClipper::LocalClipPathBoundingBox(*scroller)) {
         scroller_rect.Intersect(*clip_path_box);
       }

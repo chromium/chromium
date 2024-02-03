@@ -327,7 +327,7 @@ void HTMLPermissionElement::OnPermissionStatusChange(PermissionStatus status) {
 
 void HTMLPermissionElement::OnEmbeddedPermissionControlRegistered(
     bool allowed,
-    const absl::optional<Vector<PermissionStatus>>& statuses) {
+    const std::optional<Vector<PermissionStatus>>& statuses) {
   CHECK_EQ(permission_status_map_.size(), 0U);
   CHECK(!permissions_granted_);
   if (!allowed) {

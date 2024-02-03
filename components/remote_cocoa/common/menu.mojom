@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remote_cocoa.mojom;
+
+import "components/remote_cocoa/common/font.mojom";
+import "skia/public/mojom/skcolor.mojom";
+
+// Parameters that are used to determine how to render certain aspects of items
+// in a menu.
+struct MenuControllerParams {
+    // Menu items with `is_new_feature` set should include a "new" badge. This
+    // is rendered with the following font, color and sizing.
+    Font badge_font;
+    skia.mojom.SkColor badge_color;
+    skia.mojom.SkColor badge_text_color;
+    uint32 badge_horizontal_margin;
+    uint32 badge_internal_padding;
+    uint32 badge_min_height;
+    uint32 badge_radius;
+
+    // Menu items with `is_alerted` set will include a dot with the given color.
+    skia.mojom.SkColor iph_dot_color;
+};

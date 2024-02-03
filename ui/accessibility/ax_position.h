@@ -838,8 +838,14 @@ class AXPosition {
           return true;
         }
 
+        // If the anchor is ignored, then by default it will not have a
+        // PreviousOnLineID set since we only set this on unignored nodes.
+        // However, it could still have something previous to it on the same
+        // line, like for example if we have some text on the same line, and a
+        // text node in the middle is set to aria-hidden.
         return text_position->GetPreviousOnLineID() == kInvalidAXNodeID &&
-               text_position->AtStartOfAnchor();
+               text_position->AtStartOfAnchor() &&
+               !text_position->GetAnchor()->IsIgnored();
     }
   }
 
@@ -4357,15 +4363,12 @@ class AXPosition {
   // text representation. Some platforms use an embedded object replacement
   // character that replaces the text coming from most child nodes and empty
   // objects.
-  const std::u16string GetText(
+  std::u16string GetText(
       const AXEmbeddedObjectBehavior embedded_object_behavior =
           g_ax_embedded_object_behavior) const {
-    // Note that the use of `base::EmptyString16()` is a special case here. For
-    // performance reasons `base::EmptyString16()` should only be used when
-    // returning a const reference to a string and there is an error condition,
-    // not in any other case when an empty string16 is required.
-    if (IsNullPosition())
-      return base::EmptyString16();
+    if (IsNullPosition()) {
+      return std::u16string();
+    }
 
     static const base::NoDestructor<std::u16string> embedded_character_str(
         AXNode::kEmbeddedObjectCharacterUTF16);

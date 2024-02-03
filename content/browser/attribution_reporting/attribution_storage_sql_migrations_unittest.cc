@@ -388,7 +388,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion56ToCurrent) {
     // Verify pre-conditions.
     sql::Database db;
     ASSERT_TRUE(db.Open(DbPath()));
-
+  }
+  {
     AttributionStorageSql storage(
         temp_directory_.GetPath(),
         std::make_unique<ConfigurableStorageDelegate>());

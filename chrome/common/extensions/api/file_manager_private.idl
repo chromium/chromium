@@ -1087,7 +1087,7 @@ dictionary OpenWindowParams {
   DOMString? selectionURL;
 };
 
-dictionary IOTaskParams {
+dictionary IoTaskParams {
   // Destination folder for tasks that require one. Not required by |delete|
   // task.
   [instanceOf=DirectoryEntry] object? destinationFolder;
@@ -1489,7 +1489,7 @@ interface Functions {
   // |descriptor| The unique identifier of task to execute.
   // |entries| Array of entries
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void executeTask(FileTaskDescriptor descriptor,
                           [instanceOf=Entry] object[] entries,
                           ExecuteTaskCallback callback);
@@ -1501,7 +1501,7 @@ interface Functions {
   // |entries| Array of selected entries to extract path extensions from.
   // |mimeTypes| Array of selected file MIME types.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void setDefaultTask(FileTaskDescriptor descriptor,
                              [instanceOf=Entry] object[] entries,
                              DOMString[] mimeTypes,
@@ -1512,7 +1512,7 @@ interface Functions {
   // |dlpSourceUrls| Array of source URLs corresponding to the entries, used to
   // check Data Leak Prevention (DLP) restrictions
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getFileTasks([instanceOf=Entry] object[] entries,
                            DOMString[] dlpSourceUrls,
                            GetFileTasksCallback callback);
@@ -1520,14 +1520,14 @@ interface Functions {
   // Gets the MIME type of an entry.
   // |entry| The entry to be checked.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getMimeType([instanceOf=Entry] object entry,
                           GetMimeTypeCallback callback);
 
   // Gets the content sniffed MIME type of a file.
   // |fileEntry| The file entry to be checked.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getContentMimeType([instanceOf=FileEntry] object fileEntry,
                                  GetContentMimeTypeCallback callback);
 
@@ -1537,7 +1537,7 @@ interface Functions {
   // |includeImages| False returns metadata tags only. True returns
   //     metadata tags and metadata (thumbnail) images.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getContentMetadata([instanceOf=FileEntry] object fileEntry,
                                  DOMString mimeType,
                                  boolean includeImages,
@@ -1545,20 +1545,20 @@ interface Functions {
 
   // Gets localized strings and initialization data.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getStrings(GetStringsCallback callback);
 
   // Adds file watch.
   // |entry| Entry to watch
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void addFileWatch([instanceOf=Entry] object entry,
                            AddFileWatchCallback callback);
 
   // Removes file watch.
   // |entry| Watched entry
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void removeFileWatch([instanceOf=Entry] object entry,
                               RemoveFileWatchCallback callback);
 
@@ -1571,14 +1571,14 @@ interface Functions {
   // invalid or not backed by the external file system.
   // |entryUrls| Urls for the entries to be accessed.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void grantAccess(DOMString[] entryUrls, SimpleCallback callback);
 
   // Selects multiple files.
   // |selectedPaths| Array of selected paths
   // |shouldReturnLocalPath| true if paths need to be resolved to local paths.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void selectFiles(DOMString[] selectedPaths,
                           boolean shouldReturnLocalPath,
                           SimpleCallback callback);
@@ -1589,7 +1589,7 @@ interface Functions {
   // |forOpening| true if paths are selected for opening. false if for saving.
   // |shouldReturnLocalPath| true if paths need to be resolved to local paths.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void selectFile(DOMString selectedPath,
                          long index,
                          boolean forOpening,
@@ -1602,7 +1602,7 @@ interface Functions {
   // |callback| Completion callback. May return less than requested properties
   //     if some are not available. In the same time, it can return properties
   //     which were not requested (if it's cheap to compute them).
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getEntryProperties(
       [instanceOf=Entry] object[] entries,
       EntryPropertyName[] names,
@@ -1613,7 +1613,7 @@ interface Functions {
   // |pin| Pass true to pin the file.
   // |callback| Completion callback. $(ref:runtime.lastError) will be set if
   //     there was an error.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void pinDriveFile([instanceOf=Entry] object entry,
                            boolean pin,
                            SimpleCallback callback);
@@ -1622,7 +1622,7 @@ interface Functions {
   // entries in the external file system mounted to Chrome OS file manager
   // backend. If resolving entry fails, the entry will be just ignored and the
   // corresponding entry does not appear in the result.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void resolveIsolatedEntries(
       [instanceOf=Entry] object[] entries,
       ResolveEntriesCallback callback);
@@ -1631,24 +1631,24 @@ interface Functions {
   // |fileUrl| Mount point source.
   // |password| Optional password to decrypt the archive.
   // |callback| Callback called with the source path of the mount.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void addMount(DOMString fileUrl, optional DOMString password,
                        AddMountCallback callback);
 
   // Cancels an archive mounting operation.
   // |fileUrl| Mount point source. Should be same as the one passed to addMount.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void cancelMounting(DOMString fileUrl, SimpleCallback callback);
 
   // Unmounts a mounted resource.
   // |volumeId| An ID of the volume.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void removeMount(DOMString volumeId, SimpleCallback callback);
 
   // Get the list of mounted volumes.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getVolumeMetadataList(GetVolumeMetadataListCallback callback);
 
   // Returns the list of files not allowed to be transfered.
@@ -1656,7 +1656,7 @@ interface Functions {
   // |destinationEntry| Entry for the destination (parent) directory.
   // |isMove| True if the operation is move, false otherwise.
   // |callback| Result callback.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getDisallowedTransfers(
       [instanceOf=Entry] object[] entries,
       [instanceOf=DirectoryEntry] object destinationEntry,
@@ -1667,7 +1667,7 @@ interface Functions {
   // about the entries.
   // |entries| List of the source entries to be checked.
   // |callback| Result callback.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getDlpMetadata(
       [instanceOf=Entry] object[] entries,
       GetDlpMetadataCallback callback);
@@ -1675,7 +1675,7 @@ interface Functions {
   // Retrieves Data Leak Prevention (DLP) restriction details.
   // |sourceUrl| Source URL of the Entry for which the details should be shown.
   // |callback| Result callback.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getDlpRestrictionDetails(
       DOMString sourceUrl,
       GetDlpRestrictionDetailsCallback callback);
@@ -1684,20 +1684,20 @@ interface Functions {
   // is blocked by Data Leak Prevention (DLP) policy.
   // |sourceUrl| Source URL of the Entry that should be checked.
   // |callback| Result callback.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getDlpBlockedComponents(
       DOMString sourceUrl,
       GetDlpBlockedComponentsCallback callback);
 
   // Retrieves the caller that created the dialog (Save As/File Picker).
   // |callback| Result callback.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getDialogCaller(GetDialogCallerCallback callback);
 
   // Retrieves total and remaining size of a mount point.
   // |volumeId| ID of the volume to be checked.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getSizeStats(DOMString volumeId, GetSizeStatsCallback callback);
 
 
@@ -1705,7 +1705,7 @@ interface Functions {
   // |entry| If entry is within a Shared Drive, then the applicable shared
   // drive quota is returned, else the overall Drive quota is returned.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getDriveQuotaMetadata([instanceOf=Entry] object entry,
                                     GetDriveQuotaMetadataCallback callback);
 
@@ -1733,7 +1733,7 @@ interface Functions {
 
   // Retrieves file manager preferences.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getPreferences(GetPreferencesCallback callback);
 
   // Sets file manager preferences.
@@ -1743,42 +1743,43 @@ interface Functions {
   // Performs drive content search.
   // |searchParams|
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void searchDrive(SearchParams searchParams,
                           SearchDriveCallback callback);
 
   // Performs drive metadata search.
   // |searchParams|
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void searchDriveMetadata(SearchMetadataParams searchParams,
                                   SearchDriveMetadataCallback callback);
 
   // Search files in the volume having |volumeId| by using |hashList|.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void searchFilesByHashes(DOMString volumeId,
                                   DOMString[] hashList,
                                   SearchFilesByHashesCallback callback);
 
   // Search files in My Files.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void searchFiles(SearchMetadataParams searchParams,
                           SearchFilesCallback callback);
 
   // Retrieves the current device connection status.
   // |callback|
+  [doesNotSupportPromises]
   static void getDeviceConnectionState(GetDeviceConnectionStateCallback callback);
 
   // Retrieves the state of the current drive connection.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getDriveConnectionState(GetDriveConnectionStateCallback callback);
 
   // Checks whether the path name length fits in the limit of the filesystem.
   // |parentEntry| The entry of the parent directory entry.
   // |name| The name of the file.
   // |callback| Called back when the check is finished.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void validatePathNameLength(
       [instanceOf=DirectoryEntry] object parentEntry,
       DOMString name,
@@ -1789,7 +1790,7 @@ interface Functions {
   static void zoom(ZoomOperationType operation);
 
   // Obtains a list of profiles that are logged-in.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getProfiles(GetProfilesCallback callback);
 
   // Opens inspector window.
@@ -1803,34 +1804,34 @@ interface Functions {
   // Computes an MD5 checksum for the given file.
   // |entry| The entry of the file to checksum.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void computeChecksum([instanceOf=Entry] object entry,
                               ComputeChecksumCallback callback);
 
   // Returns list of available providers.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getProviders(GetProvidersCallback callback);
 
   // Requests adding a new provided file system. On failure, sets
   // $(ref:runtime.lastError).
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void addProvidedFileSystem(DOMString providerId,
                                     SimpleCallback callback);
 
   // Requests configuring an existing volume. On failure, sets
   // $(ref:runtime.lastError).
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void configureVolume(DOMString volumeId, SimpleCallback callback);
 
   // Requests list of custom actions for the specified entries. On failure, sets
   // $(ref:runtime.lastError).
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getCustomActions([instanceOf=Entry] object[] entries,
                                GetCustomActionsCallback callback);
 
   // Executes a custom action for a set of entries. On failure, sets
   // $(ref:runtime.lastError).
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void executeCustomAction([instanceOf=Entry] object[] entries,
                                   DOMString actionId,
                                   SimpleCallback callback);
@@ -1838,7 +1839,7 @@ interface Functions {
   // Get the total size of a directory.
   // |entry| Entry of the target directory.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getDirectorySize([instanceOf=DirectoryEntry] object entry,
                                GetDirectorySizeCallback callback);
 
@@ -1848,7 +1849,7 @@ interface Functions {
   // |query| When not empty, removes files with non-matching names.
   // |cutoffDays| Specifies oldest modification time.
   // |callback| Called with zero or more matched files.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getRecentFiles(SourceRestriction restriction,
                              DOMString query,
                              long cutoffDays,
@@ -1858,13 +1859,13 @@ interface Functions {
 
   // Requests the root directory of the volume with the ID specified in
   // |options.volumeId|.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getVolumeRoot(GetVolumeRootOptions options,
                             GetVolumeRootCallback callback);
 
   // Starts and mounts crostini container.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void mountCrostini(SimpleCallback callback);
 
   // Shares paths with crostini container.
@@ -1872,7 +1873,7 @@ interface Functions {
   // |entries| Entries of the files or directories to share.
   // |persist| If true, shares will persist across restarts.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void sharePathsWithCrostini(DOMString vmName,
                                      [instanceOf=Entry] object[] entries,
                                      boolean persist,
@@ -1882,7 +1883,7 @@ interface Functions {
   // |vmName| VM to unshare path from.
   // |entry| Entry of the file or directory to unshare.
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void unsharePathWithCrostini(DOMString vmName,
                                       [instanceOf=Entry] object entry,
                                       SimpleCallback callback);
@@ -1891,18 +1892,18 @@ interface Functions {
   // |observeFirstForSession| If true, callback provides whether this is the
   // |vmName| VM to get shared paths of.
   // first time this function has been called with observeFirstForSession true.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getCrostiniSharedPaths(boolean observeFirstForSession,
                                      DOMString vmName,
                                      GetCrostiniSharedPathsCallback callback);
 
   // Requests information about a Linux package. |entry| is a .deb file.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void getLinuxPackageInfo([instanceOf=Entry] object entry,
                                   GetLinuxPackageInfoCallback callback);
 
   // Starts installation of a Linux package.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void installLinuxPackage([instanceOf=Entry] object entry,
                                   InstallLinuxPackageCallback callback);
 
@@ -1912,12 +1913,12 @@ interface Functions {
   static void importCrostiniImage([instanceOf=Entry] object entry);
 
   // Returns a list of Android picker apps to be shown in file selector.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getAndroidPickerApps(DOMString[] extensions,
                                    GetAndroidPickerAppsCallback callback);
 
   // Called when the user selects an Android picker app in file selector.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void selectAndroidPickerApp(AndroidApp androidApp,
                                      SimpleCallback callback);
 
@@ -1926,7 +1927,7 @@ interface Functions {
   // |callback| is called with error in case of failure and with no arguments
   // if successfully launched the Sharesheet dialog, but before user has
   // finished the sharing.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void sharesheetHasTargets([instanceOf=Entry] object[] entries,
                            BooleanCallback callback);
 
@@ -1936,7 +1937,7 @@ interface Functions {
   // |dlpSourceUrls| Array of source URLs corresponding to the entries, used to
   // check Data Leak Prevention (DLP) restrictions
   // |callback|
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void invokeSharesheet([instanceOf=Entry] object[] entries,
                                SharesheetLaunchSource launchSource,
                                DOMString[] dlpSourceUrls,
@@ -1948,7 +1949,7 @@ interface Functions {
   // |entries| The list of entries whose holding space needs to be updated.
   // |add| Whether items should be added or removed from the holding space.
   // |callback| Completion callback.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void toggleAddedToHoldingSpace([instanceOf=Entry] object[] entries,
                                         boolean added,
                                         optional SimpleCallback callback);
@@ -1956,11 +1957,11 @@ interface Functions {
   // Retrieves the current holding space state, for example the list of items
   // the holding space currently contains.
   // |callback| The result callback.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getHoldingSpaceState(HoldingSpaceStateCallback callback);
 
   // Returns true via `callback` if tablet mode is enabled, false otherwise.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void isTabletModeEnabled(BooleanCallback callback);
 
   // Notifies the browser of the result of a dialog displayed earlier as a
@@ -1971,7 +1972,7 @@ interface Functions {
   static void openURL(DOMString url);
 
   // Creates a new Files app window in the directory provided in `params`.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void openWindow(OpenWindowParams params, BooleanCallback callback);
 
   // Opens the feedback report window.
@@ -1979,11 +1980,11 @@ interface Functions {
 
   // Starts an I/O task of type |type| on |entries|. Task type specific
   // parameters are passed via |params|.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void startIOTask(
       IoTaskType type,
       [instanceOf=Entry] object[] entries,
-      IOTaskParams params,
+      IoTaskParams params,
       optional IOTaskIdCallback callback);
 
   // Cancels an I/O task by id. Task ids are communicated to the Files App in
@@ -1996,12 +1997,12 @@ interface Functions {
 
   // Notifies the browser that any info still stored about an already completed
   // I/O task identified by |taskId| can be cleared.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void dismissIOTask(long taskId, SimpleCallback callback);
 
   // Shows a policy dialog for a task. Task ids are communicated to the Files
   // App in each I/O task's progress status.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void showPolicyDialog(
       long taskId,
       PolicyDialogType type,
@@ -2009,16 +2010,16 @@ interface Functions {
 
   // Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task
   // progress status.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void progressPausedTasks(SimpleCallback callback);
 
   // Lists mountable Guest OSs.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void listMountableGuests(ListMountableGuestsCallback callback);
 
   // Starts and mounts the target Guest OS.
   // |callback|
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void mountGuest(long id, SimpleCallback callback);
 
   // Tells DriveFS to update its cached pin states of hosted files (once).
@@ -2028,17 +2029,17 @@ interface Functions {
   static void openManageSyncSettings();
 
   // Validates and parses the supplied `entries` as .trashinfo files.
-  [nocompile, supportsPromises]
+  [nocompile, doesNotSupportPromises]
   static void parseTrashInfoFiles([instanceOf=Entry] object[] entries,
                                   ParseTrashInfoFilesCallback callback);
 
   // Returns the current progress of the bulk pinning manager.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void getBulkPinProgress(GetBulkPinProgressCallback callback);
 
   // Starts calculating the space required to pin all the items in a users My
   // drive.
-  [supportsPromises]
+  [doesNotSupportPromises]
   static void calculateBulkPinRequiredSpace(SimpleCallback callback);
 };
 

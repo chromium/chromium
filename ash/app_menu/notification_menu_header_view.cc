@@ -63,7 +63,7 @@ gfx::Size NotificationMenuHeaderView::CalculatePreferredSize() const {
       GetInsets().height() + notification_title_->GetPreferredSize().height());
 }
 
-void NotificationMenuHeaderView::Layout() {
+void NotificationMenuHeaderView::Layout(PassKey) {
   const gfx::Insets insets = GetInsets();
 
   const gfx::Size notification_title_preferred_size =

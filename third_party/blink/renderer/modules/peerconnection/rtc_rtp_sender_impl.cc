@@ -273,7 +273,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
 
   void SetParameters(
       Vector<webrtc::RtpEncodingParameters> encodings,
-      absl::optional<webrtc::DegradationPreference> degradation_preference,
+      std::optional<webrtc::DegradationPreference> degradation_preference,
       base::OnceCallback<void(webrtc::RTCError)> callback) {
     DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -532,7 +532,7 @@ std::unique_ptr<webrtc::RtpParameters> RTCRtpSenderImpl::GetParameters() const {
 
 void RTCRtpSenderImpl::SetParameters(
     Vector<webrtc::RtpEncodingParameters> encodings,
-    absl::optional<webrtc::DegradationPreference> degradation_preference,
+    std::optional<webrtc::DegradationPreference> degradation_preference,
     blink::RTCVoidRequest* request) {
   internal_->SetParameters(
       std::move(encodings), degradation_preference,

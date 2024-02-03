@@ -1111,8 +1111,8 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
   }
 }
 
-// TODO(crbug.com/1373962): Remove this testing class when
-// Persistent Permissions is launched.
+// TODO(crbug.com/1011533): Remove usage of this testing class when the feature
+// flag for Persistent Permissions is removed.
 class PersistentPermissionsSiteSettingsHelperTest
     : public SiteSettingsHelperTest {
  public:

@@ -69,6 +69,10 @@ extern const BASE_EXPORT base::FeatureParam<int>
 // Feature to use a JobTaskSource implementation that minimizes lock contention.
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseNewJobImplementation);
 
+// Feature to use ThreadGroupSemaphore instead of ThreadGroupImpl.
+BASE_EXPORT BASE_DECLARE_FEATURE(kThreadGroupSemaphore);
+extern const BASE_EXPORT base::FeatureParam<int> kMaxNumWorkersCreated;
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_

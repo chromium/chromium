@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ALTERNATE_SIGNED_EXCHANGE_RESOURCE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ALTERNATE_SIGNED_EXCHANGE_RESOURCE_INFO_H_
 
+#include <optional>
+
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -103,7 +104,7 @@ class CORE_EXPORT AlternateSignedExchangeResourceInfo {
   // [1]
   // https://httpwg.org/http-extensions/draft-ietf-httpbis-variants.html#cache
   Entry* FindMatchingEntry(const KURL& url,
-                           absl::optional<ResourceType> resource_type,
+                           std::optional<ResourceType> resource_type,
                            const Vector<String>& languages) const;
   Entry* FindMatchingEntry(
       const KURL& url,

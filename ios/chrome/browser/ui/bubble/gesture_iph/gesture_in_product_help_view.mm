@@ -54,8 +54,8 @@ const base::TimeDelta kSlideAnimationDuration = base::Milliseconds(1500);
 const base::TimeDelta kStartShrinkingGestureIndicator =
     base::Milliseconds(2250);
 
-// Maximum animation repeat count.
-const int kMaxAnimationRepeatCount = 3;
+// Time taken for the bubble to fade for bidirectional swipes.
+const base::TimeDelta kBubbleDisappearDuration = base::Milliseconds(250);
 
 // Whether bubble with arrow direction `direction` is pointing left.
 BOOL IsArrowPointingLeft(BubbleArrowDirection direction) {
@@ -72,6 +72,20 @@ BOOL ShouldGestureIndicatorOffsetFromCenter(
   return trait_collection.horizontalSizeClass ==
              UIUserInterfaceSizeClassCompact &&
          trait_collection.verticalSizeClass == UIUserInterfaceSizeClassRegular;
+}
+
+// Returns the opposite direction of `direction`.
+BubbleArrowDirection GetOppositeDirection(BubbleArrowDirection direction) {
+  switch (direction) {
+    case BubbleArrowDirectionUp:
+      return BubbleArrowDirectionDown;
+    case BubbleArrowDirectionDown:
+      return BubbleArrowDirectionUp;
+    case BubbleArrowDirectionLeading:
+      return BubbleArrowDirectionTrailing;
+    case BubbleArrowDirectionTrailing:
+      return BubbleArrowDirectionLeading;
+  }
 }
 
 // The anchor point for the bubble arrow of the side swipe view.
@@ -177,14 +191,11 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   return dismiss_button;
 }
 
-// Returns the relative timing for a single keyframe animation.
-double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
-  return time.InMillisecondsF() / kAnimationDuration.InMillisecondsF();
-}
-
 }  // namespace
 
 @implementation GestureInProductHelpView {
+  // Bubble text.
+  NSString* _text;
   // Bubble view.
   BubbleView* _bubbleView;
   // Ellipsis that instructs the user's finger movement.
@@ -216,11 +227,14 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
               arrowDirection:(BubbleArrowDirection)direction {
   if (self = [super initWithFrame:CGRectZero]) {
     self.isAccessibilityElement = YES;
+    _text = text;
     _needsRepositionBubbleAndGestureIndicator = NO;
     _currentAnimationRepeatCount = 0;
     _dismissCallback = ^(IPHDismissalReasonType reason,
                          feature_engagement::Tracker::SnoozeAction action) {
     };
+    _animationRepeatCount = 3;
+    _bidirectional = NO;
 
     // Background view.
     UIView* backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -234,16 +248,8 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
 
     // Bubble view. This has to be positioned according to the initial view's
     // size.
-    _bubbleView = [[BubbleView alloc] initWithText:text
-                                    arrowDirection:direction
-                                         alignment:BubbleAlignmentCenter];
-    _bubbleView.frame =
-        GetInitialBubbleFrameForView(bubbleBoundingSize, _bubbleView);
-    _bubbleView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-    _bubbleView.accessibilityIdentifier = kGestureInProductHelpViewBubbleAXId;
-    [self addSubview:_bubbleView];
-    [_bubbleView setArrowHidden:!UIAccessibilityIsReduceMotionEnabled()
-                       animated:NO];
+    [self setInitialBubbleViewWithDirection:direction
+                               boundingSize:bubbleBoundingSize];
 
     // Gesture indicator ellipsis.
     _gestureIndicator = CreateInitialGestureIndicator();
@@ -332,6 +338,7 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
 
 - (void)startAnimationAfterDelay:(base::TimeDelta)delay {
   CHECK(self.superview);
+  CHECK_GT(self.animationRepeatCount, 0);
   __weak GestureInProductHelpView* weakSelf = self;
 
   if (UIAccessibilityIsReduceMotionEnabled()) {
@@ -340,53 +347,77 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
         FROM_HERE, base::BindOnce(^{
           [weakSelf dismissWithReason:IPHDismissalReasonType::kTimedOut];
         }),
-        kAnimationDuration * kMaxAnimationRepeatCount);
+        kAnimationDuration * self.animationRepeatCount);
     return;
   }
 
+  // Total and relative time for each cycle of keyframe animation.
+  base::TimeDelta keyframeAnimationDurationPerCycle = kAnimationDuration;
+  if (self.bidirectional) {
+    keyframeAnimationDurationPerCycle -= kBubbleDisappearDuration;
+  }
   double gestureIndicatorSizeChangeDuration =
-      GetRelativeTimeForKeyframeAnimation(kGestureIndicatorShrinkOrExpandTime);
+      kGestureIndicatorShrinkOrExpandTime / keyframeAnimationDurationPerCycle;
   double startSlidingTime =
-      GetRelativeTimeForKeyframeAnimation(kStartSlideAnimation);
+      kStartSlideAnimation / keyframeAnimationDurationPerCycle;
   double slidingDuration =
-      GetRelativeTimeForKeyframeAnimation(kSlideAnimationDuration);
+      kSlideAnimationDuration / keyframeAnimationDurationPerCycle;
   double startShrinkingTime =
-      GetRelativeTimeForKeyframeAnimation(kStartShrinkingGestureIndicator);
+      kStartShrinkingGestureIndicator / keyframeAnimationDurationPerCycle;
 
-  ProceduralBlock keyframes = ^{
+  ProceduralBlock gestureIndicatorKeyframes = ^{
     [UIView
         addKeyframeWithRelativeStartTime:0
                         relativeDuration:gestureIndicatorSizeChangeDuration
                               animations:^{
                                 [weakSelf
-                                    keyframeThatShowsAndShrinksGestureIndicator];
+                                    animateGestureIndicatorForVisibility:YES];
                               }];
     [UIView addKeyframeWithRelativeStartTime:startSlidingTime
                             relativeDuration:slidingDuration
                                   animations:^{
-                                    [weakSelf keyframeThatSwipes];
+                                    [weakSelf animateGestureIndicatorSwipe];
                                   }];
     [UIView
         addKeyframeWithRelativeStartTime:startShrinkingTime
                         relativeDuration:gestureIndicatorSizeChangeDuration
                               animations:^{
                                 [weakSelf
-                                    keyframeThatExpandsAndHidesGestureIndicator];
+                                    animateGestureIndicatorForVisibility:NO];
                               }];
   };
-  ProceduralBlock animationWithKeyframesWithCompletionHandler = ^{
+  ProceduralBlock bubbleKeyframes = ^{
+    [UIView addKeyframeWithRelativeStartTime:startSlidingTime
+                            relativeDuration:slidingDuration
+                                  animations:^{
+                                    [weakSelf
+                                        animateBubbleSwipeInReverseDrection:NO];
+                                  }];
     [UIView
-        animateKeyframesWithDuration:kAnimationDuration.InSecondsF()
+        addKeyframeWithRelativeStartTime:startShrinkingTime
+                        relativeDuration:gestureIndicatorSizeChangeDuration
+                              animations:^{
+                                [weakSelf
+                                    animateBubbleSwipeInReverseDrection:YES];
+                              }];
+  };
+  ProceduralBlock animation = ^{
+    [UIView
+        animateKeyframesWithDuration:keyframeAnimationDurationPerCycle
+                                         .InSecondsF()
                                delay:0
-                             options:UIViewKeyframeAnimationOptionLayoutSubviews
-                          animations:keyframes
-                          completion:^(BOOL completed) {
-                            // This block gets invoked earlier than the
-                            // completion block of `_animator`.
-                            if (completed) {
-                              [weakSelf onAnimationCycleComplete];
-                            }
-                          }];
+                             options:
+                                 UIViewKeyframeAnimationOptionCalculationModeLinear
+                          animations:gestureIndicatorKeyframes
+                          completion:nil];
+    [UIView
+        animateKeyframesWithDuration:keyframeAnimationDurationPerCycle
+                                         .InSecondsF()
+                               delay:0
+                             options:
+                                 UIViewKeyframeAnimationOptionCalculationModeCubic
+                          animations:bubbleKeyframes
+                          completion:nil];
   };
 
   // Position gesture indicator at the start of each animation cycle, as it
@@ -396,10 +427,13 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
   _animator = [UIViewPropertyAnimator
       runningPropertyAnimatorWithDuration:kAnimationDuration.InSecondsF()
                                     delay:delay.InSecondsF()
-                                  options:UIViewAnimationOptionCurveEaseInOut
-                               animations:
-                                   animationWithKeyframesWithCompletionHandler
-                               completion:nil];
+                                  options:UIViewAnimationOptionTransitionNone
+                               animations:animation
+                               completion:^(UIViewAnimatingPosition position) {
+                                 if (position == UIViewAnimatingPositionEnd) {
+                                   [weakSelf onAnimationCycleComplete];
+                                 }
+                               }];
 }
 
 - (void)dismissWithReason:(IPHDismissalReasonType)reason {
@@ -415,15 +449,49 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
 
 // Handles the completion of each round of animation.
 - (void)onAnimationCycleComplete {
+  if (!self.superview) {
+    return;
+  }
   _currentAnimationRepeatCount++;
-  if (_currentAnimationRepeatCount == kMaxAnimationRepeatCount) {
+  if (_currentAnimationRepeatCount == self.animationRepeatCount) {
     [self dismissWithReason:IPHDismissalReasonType::kTimedOut];
   } else {
-    [self startAnimation];
+    if (self.bidirectional) {
+      BubbleView* previousBubbleView = _bubbleView;
+      __weak GestureInProductHelpView* weakSelf = self;
+      [UIView animateWithDuration:kBubbleDisappearDuration.InSecondsF()
+          animations:^{
+            previousBubbleView.alpha = 0;
+          }
+          completion:^(BOOL completed) {
+            [previousBubbleView removeFromSuperview];
+            [weakSelf setInitialBubbleViewWithDirection:GetOppositeDirection(
+                                                            previousBubbleView
+                                                                .direction)
+                                           boundingSize:weakSelf.frame.size];
+            [weakSelf startAnimation];
+          }];
+    } else {
+      [self startAnimation];
+    }
   }
 }
 
 #pragma mark - Initial positioning helpers
+
+// Initial bubble setup and positioning.
+- (void)setInitialBubbleViewWithDirection:(BubbleArrowDirection)direction
+                             boundingSize:(CGSize)boundingSize {
+  _bubbleView = [[BubbleView alloc] initWithText:_text
+                                  arrowDirection:direction
+                                       alignment:BubbleAlignmentCenter];
+  _bubbleView.frame = GetInitialBubbleFrameForView(boundingSize, _bubbleView);
+  _bubbleView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+  _bubbleView.accessibilityIdentifier = kGestureInProductHelpViewBubbleAXId;
+  [self addSubview:_bubbleView];
+  [_bubbleView setArrowHidden:!UIAccessibilityIsReduceMotionEnabled()
+                     animated:NO];
+}
 
 // Initial distance between the bubble and the center of the gesture indicator
 // ellipsis.
@@ -570,44 +638,32 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
   return @[ centerConstraint, marginConstraint ];
 }
 
-#pragma mark - Animation keyframes
+#pragma mark - Animation Helpers
 
-// Fades in the gesture indicator, starting with a large size and ends with the
-// correct size.
-- (void)keyframeThatShowsAndShrinksGestureIndicator {
+// Animation block that resizes the gesture indicator and update transparency.
+// If `visible`, the gesture indicator will shrink from a large size and ends
+// with the correct size and correct visiblity; otherwise, it will enlarge and
+// fade into background.
+- (void)animateGestureIndicatorForVisibility:(BOOL)visible {
+  const CGFloat radius =
+      visible ? kGestureIndicatorRadius : kFadingGestureIndicatorRadius;
   for (NSLayoutConstraint* constraint in _gestureIndicatorSizeConstraints) {
-    constraint.constant = kGestureIndicatorRadius * 2;
+    constraint.constant = radius * 2;
   }
-  _gestureIndicator.layer.cornerRadius = kGestureIndicatorRadius;
-  _gestureIndicator.alpha =
-      UIAccessibilityIsReduceTransparencyEnabled() ? 1.0f : 0.5f;
+  _gestureIndicator.layer.cornerRadius = radius;
+  if (visible) {
+    _gestureIndicator.alpha =
+        UIAccessibilityIsReduceTransparencyEnabled() ? 1.0f : 0.5f;
+  } else {
+    _gestureIndicator.alpha = 0;
+  }
   [self layoutIfNeeded];
 }
 
-// Moves the bubble and the gesture indicator away from the edge of the view
-// that the bubble arrow points to.
-- (void)keyframeThatSwipes {
-  CGRect newFrame = _bubbleView.frame;
+// Animate the "swipe" movement of the gesture indicator in accordance to the
+// direction.
+- (void)animateGestureIndicatorSwipe {
   BubbleArrowDirection direction = _bubbleView.direction;
-  switch (direction) {
-    case BubbleArrowDirectionUp:
-      newFrame.origin.y += kBubbleDistanceAnimated;
-      break;
-    case BubbleArrowDirectionDown:
-      newFrame.origin.y -= kBubbleDistanceAnimated;
-      break;
-    case BubbleArrowDirectionLeading:
-    case BubbleArrowDirectionTrailing:
-      if (IsArrowPointingLeft(direction)) {
-        newFrame.origin.x += kBubbleDistanceAnimated;
-      } else {
-        newFrame.origin.x -= kBubbleDistanceAnimated;
-      }
-      break;
-  }
-  _bubbleView.frame = newFrame;
-  [_bubbleView setArrowHidden:NO animated:YES];
-
   CGFloat gestureIndicatorAnimatedDistance =
       [self gestureIndicatorAnimatedDistance];
   CGFloat animateDistance = (direction == BubbleArrowDirectionUp ||
@@ -618,33 +674,33 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
   [self layoutIfNeeded];
 }
 
-// Fades out the gesture indicator by expanding its size and decreasing opacity.
-- (void)keyframeThatExpandsAndHidesGestureIndicator {
-  for (NSLayoutConstraint* constraint in _gestureIndicatorSizeConstraints) {
-    constraint.constant = kFadingGestureIndicatorRadius * 2;
-  }
-  _gestureIndicator.layer.cornerRadius = kFadingGestureIndicatorRadius;
-  _gestureIndicator.alpha = 0;
-  CGRect newFrame = _bubbleView.frame;
+// If `reverse` is `NO`, animate the "swipe" movement of the bubble view in
+// accordance to the direction; otherwise, swipe it in the reverse direction.
+// Note that swiping in reverse direction hides the bubble arrow.
+- (void)animateBubbleSwipeInReverseDrection:(BOOL)reverse {
   BubbleArrowDirection direction = _bubbleView.direction;
+  if (reverse) {
+    direction = GetOppositeDirection(direction);
+  }
+  CGRect newFrame = _bubbleView.frame;
   switch (direction) {
     case BubbleArrowDirectionUp:
-      newFrame.origin.y -= kBubbleDistanceAnimated;
+      newFrame.origin.y += kBubbleDistanceAnimated;
       break;
     case BubbleArrowDirectionDown:
-      newFrame.origin.y += kBubbleDistanceAnimated;
+      newFrame.origin.y -= kBubbleDistanceAnimated;
       break;
     case BubbleArrowDirectionLeading:
     case BubbleArrowDirectionTrailing:
       if (IsArrowPointingLeft(direction)) {
-        newFrame.origin.x -= kBubbleDistanceAnimated;
-      } else {
         newFrame.origin.x += kBubbleDistanceAnimated;
+      } else {
+        newFrame.origin.x -= kBubbleDistanceAnimated;
       }
       break;
   }
   _bubbleView.frame = newFrame;
-  [_bubbleView setArrowHidden:YES animated:YES];
+  [_bubbleView setArrowHidden:reverse animated:YES];
   [self layoutIfNeeded];
 }
 

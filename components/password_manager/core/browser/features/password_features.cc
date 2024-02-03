@@ -41,15 +41,6 @@ BASE_FEATURE(kRemoveUPMUnenrollment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kEnablePasswordsAccountStorage,
-             "EnablePasswordsAccountStorage",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid,
              "FillingAcrossAffiliatedWebsitesAndroid",
@@ -127,6 +118,14 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
              "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Setting the default value to 0 is convenient for testing. Every Android bot
+// has *some* version of GmsCore installed, so all of them will satisfy the
+// min version check.
+constinit const base::FeatureParam<int> kUPMLocalPasswordsMinGmsVersionCode(
+    &kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+    "min_gms_version",
+    /*default_value=*/0);
 
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
              "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",

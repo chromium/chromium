@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_CONTROLLER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -31,7 +32,7 @@ class ReadableStreamDefaultController : public ReadableStreamController {
   explicit ReadableStreamDefaultController(ScriptState*);
 
   // https://streams.spec.whatwg.org/#rs-default-controller-desired-size
-  absl::optional<double> desiredSize() const { return GetDesiredSize(); }
+  std::optional<double> desiredSize() const { return GetDesiredSize(); }
 
   // https://streams.spec.whatwg.org/#rs-default-controller-close
   void close(ScriptState*, ExceptionState&);
@@ -59,7 +60,7 @@ class ReadableStreamDefaultController : public ReadableStreamController {
                     v8::Local<v8::Value> e);
 
   // https://streams.spec.whatwg.org/#readable-stream-default-controller-get-desired-size
-  absl::optional<double> GetDesiredSize() const;
+  std::optional<double> GetDesiredSize() const;
 
   //
   // Used by TransformStream

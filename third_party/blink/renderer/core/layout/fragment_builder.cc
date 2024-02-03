@@ -60,7 +60,7 @@ LogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
 
 }  // namespace
 
-PhysicalFragment::BoxType FragmentBuilder::BoxType() const {
+PhysicalFragment::BoxType FragmentBuilder::GetBoxType() const {
   if (box_type_ != PhysicalFragment::BoxType::kNormalBox) {
     return box_type_;
   }
@@ -154,7 +154,7 @@ LogicalAnchorQuery& FragmentBuilder::EnsureAnchorQuery() {
 
 void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
                                             const LogicalOffset& child_offset) {
-  absl::optional<LogicalAnchorQuery::SetOptions> options;
+  std::optional<LogicalAnchorQuery::SetOptions> options;
   if (child.IsBox() &&
       (child.Style().AnchorName() || child.IsImplicitAnchor())) {
     // Set the child's `anchor-name` before propagating its descendants', so
@@ -672,7 +672,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
 
       // TODO(layout-dev): Adjust any clipped container block-offset. For now,
       // just reset it, rather than passing an incorrect value.
-      absl::optional<LayoutUnit> fixedpos_clipped_container_block_offset;
+      std::optional<LayoutUnit> fixedpos_clipped_container_block_offset;
 
       AddMulticolWithPendingOOFs(
           BlockNode(multicol.key),
@@ -760,7 +760,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
         [&containing_block, &offset, &fragment,
          &containing_block_adjustment](const OofContainingBlock<PhysicalOffset>&
                                            descendant_containing_block) {
-          absl::optional<LayoutUnit> clipped_container_offset =
+          std::optional<LayoutUnit> clipped_container_offset =
               descendant_containing_block.ClippedContainerBlockOffset();
           if (!clipped_container_offset &&
               fragment.HasNonVisibleBlockOverflow()) {
@@ -785,7 +785,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
           return clipped_container_offset;
         };
 
-    absl::optional<LayoutUnit> clipped_container_block_offset =
+    std::optional<LayoutUnit> clipped_container_block_offset =
         UpdatedClippedContainerBlockOffset(descendant.containing_block);
 
     LogicalOffset inline_relative_offset = converter.ToLogical(
@@ -822,7 +822,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
 
     LogicalOffset fixedpos_containing_block_offset;
     LogicalOffset fixedpos_containing_block_rel_offset;
-    absl::optional<LayoutUnit> fixedpos_clipped_container_block_offset;
+    std::optional<LayoutUnit> fixedpos_clipped_container_block_offset;
     if (fixedpos_containing_block_fragment) {
       fixedpos_containing_block_offset =
           converter.ToLogical(descendant.fixedpos_containing_block.Offset(),
@@ -910,7 +910,7 @@ void FragmentBuilder::AdjustFixedposContainerInfo(
 }
 
 void FragmentBuilder::PropagateSpaceShortage(
-    absl::optional<LayoutUnit> space_shortage) {
+    std::optional<LayoutUnit> space_shortage) {
   // Space shortage should only be reported when we already have a tentative
   // fragmentainer block-size. It's meaningless to talk about space shortage
   // in the initial column balancing pass, because then we have no

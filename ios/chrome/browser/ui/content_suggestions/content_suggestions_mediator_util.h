@@ -15,21 +15,13 @@
 // Recent Tab" tile for the Start Surface.
 ContentSuggestionsSectionInformation* ReturnToRecentTabSectionInformation();
 
-// Creates and returns a SectionInfo for the section containing the logo and
-// omnibox.
-ContentSuggestionsSectionInformation* LogoSectionInformation();
-
-// Creates and returns a SectionInfo for the Most Visited section.
-ContentSuggestionsSectionInformation* MostVisitedSectionInformation();
-
 // Creates and returns a SectionInfo for the single cell parent item.
 ContentSuggestionsSectionInformation* SingleCellSectionInformation();
 
 // Converts a ntp_tiles::NTPTile `tile` to a ContentSuggestionsMostVisitedItem
 // with a `sectionInfo`.
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(
-    const ntp_tiles::NTPTile& tile,
-    ContentSuggestionsSectionInformation* sectionInfo);
+    const ntp_tiles::NTPTile& tile);
 
 // Creates and returns a Bookmarks action item.
 ContentSuggestionsMostVisitedActionItem* BookmarkActionItem();

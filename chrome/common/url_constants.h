@@ -61,6 +61,18 @@ inline constexpr char kBatterySaverModeLearnMoreUrl[] =
 inline constexpr char kBluetoothAdapterOffHelpURL[] =
     "https://support.google.com/chrome?p=bluetooth";
 
+// "Chrome Settings" URL for website camera access permissions.
+inline constexpr char kBrowserCameraPermissionsSettingsURL[] =
+    "chrome://settings/content/camera";
+
+// "Chrome Settings" URL for website location access permissions.
+inline constexpr char kBrowserLocationPermissionsSettingsURL[] =
+    "chrome://settings/content/location";
+
+// "Chrome Settings" URL for website microphone access permissions.
+inline constexpr char kBrowserMicrophonePermissionsSettingsURL[] =
+    "chrome://settings/content/microphone";
+
 // "Learn more" URL shown in the dialog to enable cloud services for Cast.
 inline constexpr char kCastCloudServicesHelpURL[] =
     "https://support.google.com/chromecast/?p=casting_cloud_services";

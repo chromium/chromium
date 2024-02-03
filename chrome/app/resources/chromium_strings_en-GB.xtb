@@ -282,6 +282,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6144416395842701622">Sign in to get the most out of Chromium</translation>
 <translation id="6145820983052037069">You can switch between Chromium profiles here</translation>
 <translation id="615103374448673771">If you allow cookies, Chrome may use them when preloading.</translation>
+<translation id="6174920971222007286">This file may be dangerous<ph name="LINE_BREAK" />Chromium can check this download for you if you provide the password. Info about the file gets sent to Google Safe Browsing, but the file content and password stay on your device.</translation>
 <translation id="6175304430031192654">Depending on your settings, Chromium may also send cookies and your current URL</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
 <translation id="6183079672144801177">Make sure that you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>

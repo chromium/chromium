@@ -48,11 +48,13 @@ class QuickDeleteMediator
      */
     @Override
     public void onTimePeriodChanged(@TimePeriod int timePeriod) {
+        mQuickDeleteTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
+
         mPropertyModel.set(
                 QuickDeleteProperties.IS_SIGNED_IN, QuickDeleteDelegate.isSignedIn(mProfile));
         mPropertyModel.set(
                 QuickDeleteProperties.CLOSED_TABS_COUNT,
-                mQuickDeleteTabsFilter.getListOfTabsToBeClosed(timePeriod).size());
+                mQuickDeleteTabsFilter.getListOfTabsFilteredToBeClosed().size());
         mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, timePeriod);
 
         mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY, false);

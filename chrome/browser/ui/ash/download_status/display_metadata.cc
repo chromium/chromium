@@ -43,14 +43,17 @@ DisplayMetadata::~DisplayMetadata() = default;
 Progress::Progress()
     : Progress(/*received_bytes=*/std::nullopt,
                /*total_bytes=*/std::nullopt,
-               /*complete=*/false) {}
+               /*complete=*/false,
+               /*hidden=*/false) {}
 
 Progress::Progress(const std::optional<int64_t>& received_bytes,
                    const std::optional<int64_t>& total_bytes,
-                   bool complete)
+                   bool complete,
+                   bool hidden)
     : received_bytes_(received_bytes),
       total_bytes_(total_bytes),
-      complete_(complete) {
+      complete_(complete),
+      hidden_(hidden) {
   const bool is_indeterminate = (!received_bytes_ || !total_bytes_);
 
   CHECK(is_indeterminate || received_bytes_ <= total_bytes_);

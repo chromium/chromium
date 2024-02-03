@@ -44,11 +44,14 @@ std::string BrowserDMTokenStorageAndroid::InitClientId() {
 }
 
 std::string BrowserDMTokenStorageAndroid::InitEnrollmentToken() {
-  // When a DMToken is available, it's possible that this method was called
-  // very early in the initialization process, even before `g_browser_process`
-  // be initialized.
+  // When a DMToken is available or main profile is managed, it's possible that
+  // this method was called very early in the initialization process, even
+  // before `g_browser_process` be initialized.
+  // However, if DM token is available we don't need enrollment token. And main
+  // profile only requires the device identity to calculate the profile id.
+  // Neither of them actually need enrollment token so it's safe to return an
+  // empty string for now.
   if (!CanInitEnrollmentToken()) {
-    DCHECK(!android::ReadDmTokenFromSharedPreferences().empty());
     return std::string();
   }
 

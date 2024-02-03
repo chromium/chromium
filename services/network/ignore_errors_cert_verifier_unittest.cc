@@ -52,7 +52,6 @@ static std::vector<std::string> MakeAllowlist() {
   base::FilePath certs_dir = net::GetTestCertsDirectory();
   net::CertificateList certs = net::CreateCertificateListFromFile(
       certs_dir, "x509_verify_results.chain.pem", X509Certificate::FORMAT_AUTO);
-  std::string hash_base64;
   std::string_view cert_spki;
   SHA256HashValue hash;
   net::asn1::ExtractSPKIFromDERCert(
@@ -60,9 +59,7 @@ static std::vector<std::string> MakeAllowlist() {
       &cert_spki);
 
   crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-  base::Base64Encode(std::string_view(reinterpret_cast<const char*>(hash.data),
-                                      sizeof(hash.data)),
-                     &hash_base64);
+  std::string hash_base64 = base::Base64Encode(hash.data);
   return {"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "foobar", hash_base64,
           "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="};
 }

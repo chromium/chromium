@@ -56,8 +56,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
         {{optimization_guide::features::kOptimizationTargetPrediction, {}},
          {features::kSegmentationPlatformFeature, {}},
          {features::kSegmentationPlatformUkmEngine, {}},
-         {features::kContextualPageActionShareModel,
-          {{"ukm-input-enabled", "true"}}},
+         {features::kContextualPageActionShareModel, {}},
          {features::kSegmentationPlatformIosModuleRanker,
           {{kDefaultModelEnabledParam, "true"}}}},
         {});

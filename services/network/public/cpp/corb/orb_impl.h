@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_IMPL_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_CORB_ORB_IMPL_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/component_export.h"
@@ -12,7 +13,6 @@
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
   // Implementation of the `corb::ResponseAnalyzer` abstract interface.
   ~OpaqueResponseBlockingAnalyzer() override;
   Decision Init(const GURL& request_url,
-                const absl::optional<url::Origin>& request_initiator,
+                const std::optional<url::Origin>& request_initiator,
                 mojom::RequestMode request_mode,
                 mojom::RequestDestination request_destination_from_renderer,
                 const network::mojom::URLResponseHead& response) override;
@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
 
   // Whether Content length was 0, or the HTTP status was 204.
   bool is_empty_response_ = false;
+
+  // Whether the response carried Attribution Reporting headers.
+  bool is_attribution_response_ = false;
 
   // Remembering which past requests sniffed as media.  Never null.
   // TODO(lukasza): Replace with raw_ref<T> or nonnull_raw_ptr<T> once

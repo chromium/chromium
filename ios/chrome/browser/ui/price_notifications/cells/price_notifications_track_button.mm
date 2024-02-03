@@ -7,9 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button_util.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

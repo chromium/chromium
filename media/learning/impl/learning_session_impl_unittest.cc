@@ -45,8 +45,8 @@ class LearningSessionImplTest : public testing::Test {
     void BeginObservation(
         base::UnguessableToken id,
         const FeatureVector& features,
-        const absl::optional<TargetValue>& default_target,
-        const absl::optional<ukm::SourceId>& source_id) override {
+        const std::optional<TargetValue>& default_target,
+        const std::optional<ukm::SourceId>& source_id) override {
       id_ = id;
       observation_features_ = features;
       default_target_ = default_target;
@@ -67,7 +67,7 @@ class LearningSessionImplTest : public testing::Test {
 
     void UpdateDefaultTarget(
         base::UnguessableToken id,
-        const absl::optional<TargetValue>& default_target) override {
+        const std::optional<TargetValue>& default_target) override {
       // Should not be called, since LearningTaskControllerImpl doesn't support
       // default values.
       updated_id_ = id;
@@ -86,15 +86,15 @@ class LearningSessionImplTest : public testing::Test {
     FeatureVector observation_features_;
     FeatureVector predict_features_;
     PredictionCB predict_cb_;
-    absl::optional<TargetValue> default_target_;
-    absl::optional<ukm::SourceId> source_id_;
+    std::optional<TargetValue> default_target_;
+    std::optional<ukm::SourceId> source_id_;
     LabelledExample example_;
 
     // Most recently cancelled id.
     base::UnguessableToken cancelled_id_;
 
     // Id of most recently changed default target value.
-    absl::optional<base::UnguessableToken> updated_id_;
+    std::optional<base::UnguessableToken> updated_id_;
   };
 
   class FakeFeatureProvider : public FeatureProvider {
@@ -191,7 +191,7 @@ TEST_F(LearningSessionImplTest, ExamplesAreForwardedToCorrectTask) {
   std::unique_ptr<LearningTaskController> ltc_0 =
       session_->GetController(task_0_.name);
   ukm::SourceId source_id(123);
-  ltc_0->BeginObservation(id, example_0.features, absl::nullopt, source_id);
+  ltc_0->BeginObservation(id, example_0.features, std::nullopt, source_id);
   ltc_0->CompleteObservation(
       id, ObservationCompletion(example_0.target_value, example_0.weight));
 
@@ -290,7 +290,7 @@ TEST_F(LearningSessionImplTest, ChangeDefaultTargetToValue) {
 
   // Start an observation without a default, then add one.
   base::UnguessableToken id = base::UnguessableToken::Create();
-  controller->BeginObservation(id, FeatureVector(), absl::nullopt);
+  controller->BeginObservation(id, FeatureVector(), std::nullopt);
   TargetValue default_target(123);
   controller->UpdateDefaultTarget(id, default_target);
   task_environment_.RunUntilIdle();
@@ -316,7 +316,7 @@ TEST_F(LearningSessionImplTest, ChangeDefaultTargetToNoValue) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   TargetValue default_target(123);
   controller->BeginObservation(id, FeatureVector(), default_target);
-  controller->UpdateDefaultTarget(id, absl::nullopt);
+  controller->UpdateDefaultTarget(id, std::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(task_controllers_[0]->id_, id);
 
@@ -341,7 +341,7 @@ TEST_F(LearningSessionImplTest, PredictDistribution) {
   controller->PredictDistribution(
       features, base::BindOnce(
                     [](TargetHistogram* test_storage,
-                       const absl::optional<TargetHistogram>& predicted) {
+                       const std::optional<TargetHistogram>& predicted) {
                       *test_storage = *predicted;
                     },
                     &observed_prediction));

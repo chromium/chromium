@@ -455,7 +455,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
     const {
   // Supervised users are not allowed to use multi-profiles.
   if (GetLoggedInUsers().size() == 1 &&
-      GetPrimaryUser()->GetType() != user_manager::USER_TYPE_REGULAR) {
+      GetPrimaryUser()->GetType() != user_manager::UserType::kRegular) {
     return user_manager::UserList();
   }
 
@@ -463,7 +463,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
   const user_manager::UserList& users = GetUsers();
   for (user_manager::UserList::const_iterator it = users.begin();
        it != users.end(); ++it) {
-    if ((*it)->GetType() == user_manager::USER_TYPE_REGULAR &&
+    if ((*it)->GetType() == user_manager::UserType::kRegular &&
         !(*it)->is_logged_in()) {
       MultiProfileUserController::UserAllowedInSessionReason check;
       multi_profile_user_controller_.IsUserAllowedInSession(
@@ -607,7 +607,7 @@ void ChromeUserManagerImpl::OnPolicyUpdated(const std::string& user_id) {
   const AccountId account_id = known_user.GetAccountId(
       user_id, std::string() /* id */, AccountType::UNKNOWN);
   const user_manager::User* user = FindUser(account_id);
-  if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
     return;
   }
   UpdatePublicAccountDisplayName(user_id);
@@ -1143,9 +1143,9 @@ void ChromeUserManagerImpl::OnProfileManagerDestroying() {
 
 bool ChromeUserManagerImpl::IsUserAllowed(
     const user_manager::User& user) const {
-  DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
-         user.GetType() == user_manager::USER_TYPE_GUEST ||
-         user.GetType() == user_manager::USER_TYPE_CHILD);
+  DCHECK(user.GetType() == user_manager::UserType::kRegular ||
+         user.GetType() == user_manager::UserType::kGuest ||
+         user.GetType() == user_manager::UserType::kChild);
 
   return chrome_user_manager_util::IsUserAllowed(
       user, IsGuestSessionAllowed(),

@@ -26,7 +26,7 @@ class FakeBlobURLStore : public mojom::blink::BlobURLStore {
       const KURL&,
       // TODO(https://crbug.com/1224926): Remove this once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
-      const absl::optional<BlinkSchemefulSite>& unsafe_top_level_site,
+      const std::optional<BlinkSchemefulSite>& unsafe_top_level_site,
       RegisterCallback) override;
   void Revoke(const KURL&) override;
   void Resolve(const KURL&, ResolveCallback) override;

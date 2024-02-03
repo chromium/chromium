@@ -45,4 +45,12 @@ public interface ModuleProviderBuilder {
             @NonNull PropertyModel model,
             @NonNull ViewGroup view,
             @NonNull PropertyKey propertyKey);
+
+    /**
+     * Returns whether the module can be built due to special restrictions, like location. This
+     * method should be called after profile is initialized.
+     */
+    default boolean isEligible() {
+        return true;
+    }
 }

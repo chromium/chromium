@@ -399,7 +399,7 @@ void PausableScriptExecutor::HandleResults(
   }
 
   if (callback_) {
-    absl::optional<base::Value> value;
+    std::optional<base::Value> value;
     switch (want_result_option_) {
       case mojom::blink::WantResultOption::kWantResult:
       case mojom::blink::WantResultOption::kWantResultDateAndRegExpAllowed:

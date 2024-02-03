@@ -152,7 +152,6 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.IDLE_DETECTION:
       case ContentSettingsTypes.LOCAL_FONTS:
       case ContentSettingsTypes.MIC:
-      case ContentSettingsTypes.MIDI:
       case ContentSettingsTypes.MIDI_DEVICES:
       case ContentSettingsTypes.NOTIFICATIONS:
       case ContentSettingsTypes.SERIAL_PORTS:

@@ -83,7 +83,7 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
   void NotifyClientOnReceiveResponse() {
     client_remote_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                       mojo::ScopedDataPipeConsumerHandle(),
-                                      absl::nullopt);
+                                      std::nullopt);
   }
 
   void NotifyClientOnReceiveRedirect() {
@@ -139,7 +139,7 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     headers_removed_on_redirect_ = removed_headers;
     headers_modified_on_redirect_ = modified_headers;
     cors_exempt_headers_modified_on_redirect_ = modified_cors_exempt_headers;
@@ -209,7 +209,7 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     on_received_response_called_++;
     if (on_received_response_callback_)
       std::move(on_received_response_callback_).Run();
@@ -412,8 +412,8 @@ class ThrottlingURLLoaderTest : public testing::Test {
   }
 
   void CreateLoaderAndStart(
-      absl::optional<network::ResourceRequest::TrustedParams> trusted_params =
-          absl::nullopt) {
+      std::optional<network::ResourceRequest::TrustedParams> trusted_params =
+          std::nullopt) {
     network::ResourceRequest request;
     request.url = request_url;
     request.trusted_params = std::move(trusted_params);

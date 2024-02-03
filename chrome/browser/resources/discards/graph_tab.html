@@ -45,6 +45,20 @@
     text-align: center;
   }
 
+  @media (prefers-color-scheme: dark) {
+    div.tooltip {
+      background: dimgray;
+    }
+
+    .separator {
+      fill: var(--cr-secondary-text-color);
+    }
+
+    .separators line {
+      stroke: var(--cr-secondary-text-color);
+    }
+  }
+
   tr {
     font: 10px sans-serif;
   }

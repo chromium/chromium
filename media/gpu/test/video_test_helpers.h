@@ -6,6 +6,7 @@
 #define MEDIA_GPU_TEST_VIDEO_TEST_HELPERS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/test/raw_video.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -125,8 +125,8 @@ class EncodedDataHelper {
   scoped_refptr<DecoderBuffer> GetNextFragment();
   // For VP8/9.
   scoped_refptr<DecoderBuffer> GetNextFrame();
-  absl::optional<IvfFrameHeader> GetNextIvfFrameHeader() const;
-  absl::optional<IvfFrame> ReadNextIvfFrame();
+  std::optional<IvfFrameHeader> GetNextIvfFrameHeader() const;
+  std::optional<IvfFrame> ReadNextIvfFrame();
 
   // Helpers for GetBytesForNextFragment above.
   size_t GetBytesForNextNALU(size_t pos);
@@ -222,7 +222,7 @@ class AlignedDataHelper {
   const VideoFrame::StorageType storage_type_;
 
   // The layout of VideoFrames returned by GetNextFrame().
-  absl::optional<VideoFrameLayout> layout_;
+  std::optional<VideoFrameLayout> layout_;
   const gfx::Rect visible_rect_;
   const gfx::Size natural_size_;
 

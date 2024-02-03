@@ -55,8 +55,9 @@ class Checkbox::FocusRingHighlightPathGenerator
   SkPath GetHighlightPath(const views::View* view) override {
     SkPath path;
     auto* checkbox = static_cast<const views::Checkbox*>(view);
-    if (checkbox->image()->bounds().IsEmpty())
+    if (checkbox->image_container_view()->bounds().IsEmpty()) {
       return path;
+    }
     return checkbox->GetFocusRingPath();
   }
 };
@@ -77,7 +78,9 @@ Checkbox::Checkbox(const std::u16string& label,
       [](Checkbox* host) {
         // The "small" size is 21dp, the large size is 1.33 * 21dp = 28dp.
         return InkDrop::Get(host)->CreateSquareRipple(
-            host->image()->GetMirroredContentsBounds().CenterPoint(),
+            host->image_container_view()
+                ->GetMirroredContentsBounds()
+                .CenterPoint(),
             gfx::Size(21, 21));
       },
       this));
@@ -104,40 +107,44 @@ Checkbox::Checkbox(const std::u16string& label,
   views::InstallEmptyHighlightPathGenerator(this);
 
   if (features::IsChromeRefresh2023()) {
-    InkDrop::Install(image(), std::make_unique<InkDropHost>(image()));
-    SetInkDropView(image());
-    InkDrop::Get(image())->SetMode(InkDropHost::InkDropMode::ON);
+    InkDrop::Install(image_container_view(),
+                     std::make_unique<InkDropHost>(image_container_view()));
+    SetInkDropView(image_container_view());
+    InkDrop::Get(image_container_view())->SetMode(InkDropHost::InkDropMode::ON);
 
     // Allow ImageView to capture mouse events in order for InkDrop effects to
     // trigger.
-    image()->SetCanProcessEventsWithinSubtree(true);
+    image_container_view()->SetCanProcessEventsWithinSubtree(true);
 
     // Avoid the default ink-drop mask to allow the InkDrop effect to extend
     // beyond the image view (otherwise it gets clipped which looks weird).
-    views::InstallEmptyHighlightPathGenerator(image());
+    views::InstallEmptyHighlightPathGenerator(image_container_view());
 
-    InkDrop::Get(image())->SetCreateHighlightCallback(base::BindRepeating(
-        [](ImageView* host) {
-          int radius =
-              InkDropHost::GetLargeSize(kCheckboxInkDropSize).width() / 2;
-          return std::make_unique<views::InkDropHighlight>(
-              gfx::PointF(host->GetContentsBounds().CenterPoint()),
-              std::make_unique<CircleLayerDelegate>(
-                  views::InkDrop::Get(host)->GetBaseColor(), radius));
-        },
-        image()));
+    InkDrop::Get(image_container_view())
+        ->SetCreateHighlightCallback(base::BindRepeating(
+            [](View* host) {
+              int radius =
+                  InkDropHost::GetLargeSize(kCheckboxInkDropSize).width() / 2;
+              return std::make_unique<views::InkDropHighlight>(
+                  gfx::PointF(host->GetContentsBounds().CenterPoint()),
+                  std::make_unique<CircleLayerDelegate>(
+                      views::InkDrop::Get(host)->GetBaseColor(), radius));
+            },
+            image_container_view()));
 
-    InkDrop::Get(image())->SetCreateRippleCallback(base::BindRepeating(
-        [](ImageView* host) {
-          return InkDrop::Get(host)->CreateSquareRipple(
-              host->GetContentsBounds().CenterPoint(), kCheckboxInkDropSize);
-        },
-        image()));
+    InkDrop::Get(image_container_view())
+        ->SetCreateRippleCallback(base::BindRepeating(
+            [](View* host) {
+              return InkDrop::Get(host)->CreateSquareRipple(
+                  host->GetContentsBounds().CenterPoint(),
+                  kCheckboxInkDropSize);
+            },
+            image_container_view()));
 
     // Usually ink-drop ripples match the text color. Checkboxes use the
     // color of the unchecked, enabled icon.
-    InkDrop::Get(image())->SetBaseColorId(
-        ui::kColorCheckboxForegroundUnchecked);
+    InkDrop::Get(image_container_view())
+        ->SetBaseColorId(ui::kColorCheckboxForegroundUnchecked);
   }
 }
 
@@ -150,6 +157,7 @@ void Checkbox::SetChecked(bool checked) {
   NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
   UpdateImage();
   OnPropertyChanged(&checked_, kPropertyEffectsNone);
+  NotifyViewControllerCallback();
 }
 
 bool Checkbox::GetChecked() const {
@@ -221,13 +229,17 @@ std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
   return border;
 }
 
+std::unique_ptr<ActionViewInterface> Checkbox::GetActionViewInterface() {
+  return std::make_unique<CheckboxActionViewInterface>(this);
+}
+
 void Checkbox::OnThemeChanged() {
   LabelButton::OnThemeChanged();
 }
 
 SkPath Checkbox::GetFocusRingPath() const {
   SkPath path;
-  gfx::Rect bounds = image()->GetMirroredContentsBounds();
+  gfx::Rect bounds = image_container_view()->GetMirroredContentsBounds();
   // Don't add extra insets in the ChromeRefresh case so that the focus ring can
   // be drawn in the ChromeRefresh style.
   if (!features::IsChromeRefresh2023()) {
@@ -311,6 +323,23 @@ ui::NativeTheme::Part Checkbox::GetThemePart() const {
 void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   LabelButton::GetExtraParams(params);
   absl::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
+}
+
+CheckboxActionViewInterface::CheckboxActionViewInterface(Checkbox* action_view)
+    : LabelButtonActionViewInterface(action_view), action_view_(action_view) {}
+
+void CheckboxActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  LabelButtonActionViewInterface::ActionItemChangedImpl(action_item);
+  action_view_->SetChecked(action_item->GetChecked());
+}
+
+void CheckboxActionViewInterface::OnViewChangedImpl(
+    actions::ActionItem* action_item) {
+  LabelButtonActionViewInterface::OnViewChangedImpl(action_item);
+  // The checked property is tied together for all checkboxes that are linked to
+  // the same ActionItem.
+  action_item->SetChecked(action_view_->GetChecked());
 }
 
 BEGIN_METADATA(Checkbox)

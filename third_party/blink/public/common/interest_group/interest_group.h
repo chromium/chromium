@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/auction_server_request_flags.h"
@@ -60,14 +60,13 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     explicit Ad(base::PassKey<content::InterestGroupStorage>,
                 std::string render_url);
     Ad(GURL render_gurl,
-       absl::optional<std::string> metadata,
-       absl::optional<std::string> size_group = absl::nullopt,
-       absl::optional<std::string> buyer_reporting_id = absl::nullopt,
-       absl::optional<std::string> buyer_and_seller_reporting_id =
-           absl::nullopt,
-       absl::optional<std::string> ad_render_id = absl::nullopt,
-       absl::optional<std::vector<url::Origin>> allowed_reporting_origins =
-           absl::nullopt);
+       std::optional<std::string> metadata,
+       std::optional<std::string> size_group = std::nullopt,
+       std::optional<std::string> buyer_reporting_id = std::nullopt,
+       std::optional<std::string> buyer_and_seller_reporting_id = std::nullopt,
+       std::optional<std::string> ad_render_id = std::nullopt,
+       std::optional<std::vector<url::Origin>> allowed_reporting_origins =
+           std::nullopt);
     ~Ad();
 
     // Returns the approximate size of the contents of this InterestGroup::Ad,
@@ -77,21 +76,21 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     const std::string& render_url() const { return render_url_; }
 
     // Optional size group assigned to this Ad.
-    absl::optional<std::string> size_group;
+    std::optional<std::string> size_group;
     // Opaque JSON data, passed as an object to auction worklet.
-    absl::optional<std::string> metadata;
+    std::optional<std::string> metadata;
 
     // Optional alternative identifiers for reporting purposes that can be
     // passed to reporting scripts in lieu of group name if they pass k-anon
     // checks. These are only set on ads, not on component ads.
-    absl::optional<std::string> buyer_reporting_id;
-    absl::optional<std::string> buyer_and_seller_reporting_id;
+    std::optional<std::string> buyer_reporting_id;
+    std::optional<std::string> buyer_and_seller_reporting_id;
 
     // Optional alias to use for B&A auctions
-    absl::optional<std::string> ad_render_id;
+    std::optional<std::string> ad_render_id;
 
     // Optional origins that can receive macro expanded reports.
-    absl::optional<std::vector<url::Origin>> allowed_reporting_origins;
+    std::optional<std::vector<url::Origin>> allowed_reporting_origins;
 
     // Only used in tests, but provided as an operator instead of as
     // IsEqualForTesting() to make it easier to implement InterestGroup's
@@ -144,34 +143,33 @@ struct BLINK_COMMON_EXPORT InterestGroup {
 
   double priority = 0;
   bool enable_bidding_signals_prioritization = false;
-  absl::optional<base::flat_map<std::string, double>> priority_vector;
-  absl::optional<base::flat_map<std::string, double>>
-      priority_signals_overrides;
+  std::optional<base::flat_map<std::string, double>> priority_vector;
+  std::optional<base::flat_map<std::string, double>> priority_signals_overrides;
 
-  absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+  std::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
       seller_capabilities;
   SellerCapabilitiesType all_sellers_capabilities;
   ExecutionMode execution_mode = ExecutionMode::kCompatibilityMode;
-  absl::optional<GURL> bidding_url;
-  absl::optional<GURL> bidding_wasm_helper_url;
-  absl::optional<GURL> update_url;
-  absl::optional<GURL> trusted_bidding_signals_url;
-  absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
+  std::optional<GURL> bidding_url;
+  std::optional<GURL> bidding_wasm_helper_url;
+  std::optional<GURL> update_url;
+  std::optional<GURL> trusted_bidding_signals_url;
+  std::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   TrustedBiddingSignalsSlotSizeMode trusted_bidding_signals_slot_size_mode =
       TrustedBiddingSignalsSlotSizeMode::kNone;
   int32_t max_trusted_bidding_signals_url_length = 0;
-  absl::optional<std::string> user_bidding_signals;
-  absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
-  absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
-  absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+  std::optional<std::string> user_bidding_signals;
+  std::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
+  std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
+  std::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
 
   AuctionServerRequestFlags auction_server_request_flags;
 
-  absl::optional<AdditionalBidKey> additional_bid_key;
-  absl::optional<url::Origin> aggregation_coordinator_origin;
+  std::optional<AdditionalBidKey> additional_bid_key;
+  std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 174, R"(
+  static_assert(__LINE__ == 172, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

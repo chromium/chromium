@@ -210,8 +210,8 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // scrollbar-width CSS property
   EScrollbarWidth CSSScrollbarWidth() const;
   // scrollbar-color CSS property
-  absl::optional<blink::Color> ScrollbarThumbColor() const;
-  absl::optional<blink::Color> ScrollbarTrackColor() const;
+  std::optional<blink::Color> ScrollbarThumbColor() const;
+  std::optional<blink::Color> ScrollbarTrackColor() const;
 
   virtual bool IsOpaque() const;
 

@@ -864,8 +864,8 @@ SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
     DCHECK(session_key_proxy_chain.is_direct());
   }
   return SpdySessionKey(
-      params_->proxy_server().host_port_pair(), session_key_proxy_chain,
-      PRIVACY_MODE_DISABLED, SessionUsage::kProxy, socket_tag(),
+      params_->proxy_server().host_port_pair(), PRIVACY_MODE_DISABLED,
+      session_key_proxy_chain, SessionUsage::kProxy, socket_tag(),
       params_->network_anonymization_key(), params_->secure_dns_policy());
 }
 

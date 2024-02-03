@@ -876,8 +876,8 @@ void AppListFolderView::AddedToWidget() {
   shadow_->ObserveColorProviderSource(GetWidget());
 }
 
-void AppListFolderView::Layout() {
-  views::View::Layout();
+void AppListFolderView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   if (gradient_helper_)
     gradient_helper_->UpdateGradientMask();
@@ -1297,7 +1297,7 @@ void AppListFolderView::CancelReparentDragFromRootGrid() {
   items_grid_view_->EndDrag(/*cancel=*/true);
 }
 
-BEGIN_METADATA(AppListFolderView, views::View)
+BEGIN_METADATA(AppListFolderView)
 END_METADATA
 
 }  // namespace ash

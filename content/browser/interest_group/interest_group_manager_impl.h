@@ -40,6 +40,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
@@ -145,7 +146,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   //
   // `url_loader_factory` is the factory for renderer frame where
   // navigator.joinAdInterestGroup() was invoked, and will be used for the
-  // .well-known fetch if one is needed. It will also be used to pre-fetch
+  // .well-known fetch if one is needed.
+  //
+  // `url_loader_factory_for_keyfetch`  will  be used to pre-fetch
   // B&A server keys if the B&A server is enabled and if this is the first
   // joinAdInterestGroup call since browser start.
   //
@@ -164,6 +167,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const net::NetworkIsolationKey& network_isolation_key,
       bool report_result_only,
       network::mojom::URLLoaderFactory& url_loader_factory,
+      scoped_refptr<network::WrapperSharedURLLoaderFactory>
+          url_loader_factory_for_keyfetch,
       AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback);
 
@@ -484,6 +489,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       blink::InterestGroup group,
       const GURL& joining_url,
       bool report_result_only,
+      scoped_refptr<network::WrapperSharedURLLoaderFactory>
+          url_loader_factory_for_keyfetch,
       AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
       bool can_join);

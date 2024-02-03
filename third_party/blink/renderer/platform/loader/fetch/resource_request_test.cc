@@ -262,12 +262,12 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     policy->SetHeaderPolicy(
         {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
           {mojom::blink::PermissionsPolicyFeature::kSharedStorage,
            /*allowed_origins=*/{},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false}}});
 
@@ -345,12 +345,12 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     policy->SetHeaderPolicy(
         {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/true,
            /*matches_opaque_src=*/false},
           {mojom::blink::PermissionsPolicyFeature::kSharedStorage,
            /*allowed_origins=*/{},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/true,
            /*matches_opaque_src=*/false}}});
 
@@ -429,13 +429,13 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
         {{{mojom::blink::PermissionsPolicyFeature::
                kBrowsingTopics, /*allowed_origins=*/
            {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
           {mojom::blink::PermissionsPolicyFeature::
                kSharedStorage, /*allowed_origins=*/
            {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
-           /*self_if_matches=*/absl::nullopt,
+           /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false}}});
 

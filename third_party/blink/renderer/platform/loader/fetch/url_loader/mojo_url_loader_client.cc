@@ -54,7 +54,7 @@ class MojoURLLoaderClient::DeferredOnReceiveResponse final
   explicit DeferredOnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata,
+      std::optional<mojo_base::BigBuffer> cached_metadata,
       base::TimeTicks response_ipc_arrival_time)
       : response_head_(std::move(response_head)),
         body_(std::move(body)),
@@ -71,7 +71,7 @@ class MojoURLLoaderClient::DeferredOnReceiveResponse final
  private:
   network::mojom::URLResponseHeadPtr response_head_;
   mojo::ScopedDataPipeConsumerHandle body_;
-  absl::optional<mojo_base::BigBuffer> cached_metadata_;
+  std::optional<mojo_base::BigBuffer> cached_metadata_;
   const base::TimeTicks response_ipc_arrival_time_;
 };
 
@@ -305,7 +305,7 @@ void MojoURLLoaderClient::OnReceiveEarlyHints(
 void MojoURLLoaderClient::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT1("loading", "MojoURLLoaderClient::OnReceiveResponse", "url",
                last_loaded_url_.GetString().Utf8());
 

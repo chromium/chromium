@@ -6,6 +6,8 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/search_engines/search_engines_switches.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -28,28 +30,8 @@ const char kCustomSearchEngineName[] = "Custom Search Engine";
 const char kGoogleURL[] = "google";
 const char kYahooURL[] = "yahoo";
 
-id<GREYMatcher> GetCustomeSearchEngineAccessibilityLabel() {
-  NSString* label =
-      [NSString stringWithFormat:@"%s, 127.0.0.1", kCustomSearchEngineName];
-  return grey_accessibilityLabel(label);
-}
-
 std::string GetSearchExample() {
   return std::string(kSearchURL) + "example";
-}
-
-// Returns the GREYElementInteraction* for the item on the password list with
-// the given `matcher`. It scrolls in `direction` if necessary to ensure that
-// the matched item is sufficiently visible, thus interactable.
-GREYElementInteraction* GetInteractionForCustomeSearchEngine() {
-  id<GREYMatcher> customSearchEngineCell =
-      GetCustomeSearchEngineAccessibilityLabel();
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(customSearchEngineCell,
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
-      onElementWithMatcher:grey_accessibilityID(
-                               kSearchEngineTableViewControllerId)];
 }
 
 // Responses for different search engine. The name of the search engine is
@@ -126,14 +108,17 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [super tearDown];
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.additional_args.push_back(
+      std::string("--") + switches::kSearchEngineChoiceCountry + "=US");
+  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
+  return config;
+}
+
 // Tests that when changing the default search engine, the URL used for the
 // search is updated.
 - (void)testChangeSearchEngine {
-  // TODO(crbug.com/1469573): Test flaky on iOS 17.
-  if (base::ios::IsRunningOnIOS17OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 17.");
-  }
-
   self.testServer->RegisterRequestHandler(base::BindRepeating(&SearchResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
@@ -152,7 +137,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"test")];
+      performAction:grey_replaceText(@"firstsearch")];
   // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
@@ -182,8 +167,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
+  // Search something different than the first search to make sure the omnibox
+  // doesn't use the history instead of really searching.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"test")];
+      performAction:grey_replaceText(@"secondsearch")];
   // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
@@ -195,12 +182,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testDeleteCustomSearchEngineSwipeAndTap {
   [self enterSettingsWithCustomSearchEngine];
 
-  [GetInteractionForCustomeSearchEngine()
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Swipe all the way to the left, to delete the custom search engine.
-  id<GREYMatcher> customSearchEngineCell =
-      GetCustomeSearchEngineAccessibilityLabel();
+  id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
+      settingsCustomSearchEngineAccessibilityLabelWithName:
+          kCustomSearchEngineName];
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.9, 0.5)];
@@ -212,15 +201,40 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Deletes a custom engine by swiping it.
 - (void)testDeleteCustomSearchEngineSwipe {
   [self enterSettingsWithCustomSearchEngine];
-  [GetInteractionForCustomeSearchEngine()
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.9, 0.5)];
-  [[EarlGrey
-      selectElementWithMatcher:GetCustomeSearchEngineAccessibilityLabel()]
+  id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
+      settingsCustomSearchEngineAccessibilityLabelWithName:
+          kCustomSearchEngineName];
+  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       assertWithMatcher:grey_nil()];
 }
 
-// Deletes a custom search engine by entering edit mode.
+// Deletes the selected custom engine by swiping it.
+- (void)testDeleteSelectedCustomSearchEngineBySwipe {
+  [self enterSettingsWithCustomSearchEngine];
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
+      performAction:grey_tap()];
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
+      performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
+                                                            0.9, 0.5)];
+  id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
+      settingsCustomSearchEngineAccessibilityLabelWithName:
+          kCustomSearchEngineName];
+  // Verify that the custom search engine disappeared.
+  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+      assertWithMatcher:grey_nil()];
+  // Verify the default search engine is back to Google.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+  [SearchEngineChoiceEarlGreyUI verifyDefaultSearchEngineSetting:@"Google"];
+}
+
+// Deletes a non-selecetd custom search engine by entering edit mode.
 - (void)testDeleteCustomSearchEngineEdit {
   [self enterSettingsWithCustomSearchEngine];
 
@@ -231,9 +245,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
   [[EarlGrey selectElementWithMatcher:editButton] performAction:grey_tap()];
 
-  id<GREYMatcher> customSearchEngineCell =
-      GetCustomeSearchEngineAccessibilityLabel();
-  [GetInteractionForCustomeSearchEngine()
+  id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
+      settingsCustomSearchEngineAccessibilityLabelWithName:
+          kCustomSearchEngineName];
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       performAction:grey_tap()];
@@ -246,6 +262,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       assertWithMatcher:grey_nil()];
+  // Verify the default search engine is still Google.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+  [SearchEngineChoiceEarlGreyUI verifyDefaultSearchEngineSetting:@"Google"];
 }
 
 #pragma mark - helpers

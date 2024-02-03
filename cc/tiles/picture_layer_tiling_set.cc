@@ -212,11 +212,11 @@ void PictureLayerTilingSet::VerifyTilings(
 #if DCHECK_IS_ON()
   for (const auto& tiling : tilings_) {
     DCHECK(tiling->tile_size() ==
-           client_->CalculateTileSize(tiling->tiling_size()))
+           client_->CalculateTileSize(tiling->tiling_rect().size()))
         << "tile_size: " << tiling->tile_size().ToString()
-        << " tiling_size: " << tiling->tiling_size().ToString()
+        << " tiling_size: " << tiling->tiling_rect().ToString()
         << " CalculateTileSize: "
-        << client_->CalculateTileSize(tiling->tiling_size()).ToString();
+        << client_->CalculateTileSize(tiling->tiling_rect().size()).ToString();
   }
 
   if (!tilings_.empty()) {
@@ -502,7 +502,7 @@ void PictureLayerTilingSet::UpdatePriorityRects(
     eventually_rectf.Inset(-tiling_interest_area_padding_ /
                            ideal_contents_scale);
     if (eventually_rectf.Intersects(
-            gfx::RectF(gfx::SizeF(raster_source_->GetSize())))) {
+            gfx::RectF(raster_source_->recorded_bounds()))) {
       visible_rect_in_layer_space_ = visible_rect_in_layer_space;
       eventually_rect_in_layer_space_ = gfx::ToEnclosingRect(eventually_rectf);
     }

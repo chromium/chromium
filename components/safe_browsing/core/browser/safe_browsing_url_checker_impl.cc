@@ -124,7 +124,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
-    HashRealTimeSelection hash_realtime_selection)
+    HashRealTimeSelection hash_realtime_selection,
+    bool is_async_check)
     : headers_(headers),
       load_flags_(load_flags),
       request_destination_(request_destination),
@@ -146,7 +147,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       ui_task_runner_(ui_task_runner),
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
-      hash_realtime_selection_(hash_realtime_selection) {
+      hash_realtime_selection_(hash_realtime_selection),
+      is_async_check_(is_async_check) {
   DCHECK(!can_urt_check_subresource_url_ || url_real_time_lookup_enabled_);
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
 
@@ -215,6 +217,7 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
   resource.navigation_id = navigation_id_;
   resource.weak_web_state = weak_web_state_;
   resource.threat_source = threat_source;
+  resource.is_async_check = is_async_check_;
   if (rt_lookup_response) {
     resource.rt_lookup_response = *rt_lookup_response;
   }

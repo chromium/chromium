@@ -259,14 +259,26 @@ bool BindingSecurity::ShouldAllowAccessTo(
                          nullptr);
 }
 
-namespace {
-
-bool ShouldAllowAccessToV8ContextInternal(
-    v8::Local<v8::Context> accessing_context,
-    v8::MaybeLocal<v8::Context> maybe_target_context,
+bool BindingSecurity::ShouldAllowAccessToV8ContextInternal(
+    ScriptState* accessing_script_state,
+    ScriptState* target_script_state,
     ExceptionState* exception_state) {
   // Workers and worklets do not support multiple contexts, so both of
   // |accessing_context| and |target_context| must be windows at this point.
+
+  const DOMWrapperWorld& accessing_world = accessing_script_state->World();
+  const DOMWrapperWorld& target_world = target_script_state->World();
+  CHECK_EQ(accessing_world.GetWorldId(), target_world.GetWorldId());
+  return !accessing_world.IsMainWorld() ||
+         CanAccessWindow(ToLocalDOMWindow(accessing_script_state),
+                         ToLocalDOMWindow(target_script_state),
+                         exception_state);
+}
+
+bool BindingSecurity::ShouldAllowAccessToV8Context(
+    v8::Local<v8::Context> accessing_context,
+    v8::MaybeLocal<v8::Context> maybe_target_context) {
+  ExceptionState* exception_state = nullptr;
 
   // remote_object->GetCreationContext() returns the empty handle. Remote
   // contexts are unconditionally treated as cross origin.
@@ -277,26 +289,14 @@ bool ShouldAllowAccessToV8ContextInternal(
                        exception_state);
     return false;
   }
+
   // Fast path for the most likely case.
-  if (accessing_context == target_context)
+  if (LIKELY(accessing_context == target_context))
     return true;
 
-  const DOMWrapperWorld& accessing_world =
-      DOMWrapperWorld::World(accessing_context);
-  const DOMWrapperWorld& target_world = DOMWrapperWorld::World(target_context);
-  CHECK_EQ(accessing_world.GetWorldId(), target_world.GetWorldId());
-  return !accessing_world.IsMainWorld() ||
-         CanAccessWindow(ToLocalDOMWindow(accessing_context),
-                         ToLocalDOMWindow(target_context), exception_state);
-}
-
-}  // namespace
-
-bool BindingSecurity::ShouldAllowAccessToV8Context(
-    v8::Local<v8::Context> accessing_context,
-    v8::MaybeLocal<v8::Context> target_context) {
-  return ShouldAllowAccessToV8ContextInternal(accessing_context, target_context,
-                                              nullptr);
+  return ShouldAllowAccessToV8ContextInternal(
+      ScriptState::From(accessing_context), ScriptState::From(target_context),
+      exception_state);
 }
 
 void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,

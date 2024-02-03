@@ -194,7 +194,7 @@ suite('<settings-text-to-speech-subpage>', function() {
     assertEquals(page.i18n('pdfOcrSubtitle'), pdfOcrToggle.subLabel);
 
     webUIListenerCallback(
-        'pdf-ocr-state-changed', ScreenAiInstallStatus.FAILED);
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOAD_FAILED);
     assertEquals(page.i18n('pdfOcrDownloadErrorLabel'), pdfOcrToggle.subLabel);
 
     webUIListenerCallback(
@@ -209,8 +209,5 @@ suite('<settings-text-to-speech-subpage>', function() {
         'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
     assertEquals(
         page.i18n('pdfOcrDownloadCompleteLabel'), pdfOcrToggle.subLabel);
-
-    webUIListenerCallback('pdf-ocr-state-changed', ScreenAiInstallStatus.READY);
-    assertEquals(page.i18n('pdfOcrSubtitle'), pdfOcrToggle.subLabel);
   });
 });

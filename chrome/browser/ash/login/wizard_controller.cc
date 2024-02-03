@@ -930,12 +930,10 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnApplyOnlinePasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (features::AreLocalPasswordsEnabledForConsumers()) {
-    append(std::make_unique<LocalPasswordSetupScreen>(
-        oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<LocalPasswordSetupScreen>(
+      oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<LocalDataLossWarningScreen>(
       oobe_ui->GetView<LocalDataLossWarningScreenHandler>()->AsWeakPtr(),
@@ -1670,7 +1668,7 @@ void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
   switch (result) {
     case GuestTosScreen::Result::ACCEPT:
       ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
-          UserContext(user_manager::USER_TYPE_GUEST,
+          UserContext(user_manager::UserType::kGuest,
                       user_manager::GuestAccountId()),
           SigninSpecifics());
       break;

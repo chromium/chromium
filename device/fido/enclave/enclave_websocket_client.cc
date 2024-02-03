@@ -15,6 +15,10 @@
 namespace device::enclave {
 namespace {
 
+// WebSockets can negotiate an application-level protocol. In the case of
+// enclave communication, that must be this value:
+constexpr char kEnclaveWebSocketProtocol[] = "cloudauthenticator";
+
 constexpr size_t kMaxIncomingMessageSize = 1 << 20;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -118,9 +122,10 @@ void EnclaveWebSocketClient::Connect() {
       net::HttpRequestHeaders::kAuthorization, "Bearer " + access_token_));
 
   network_context_->CreateWebSocket(
-      service_url_, {}, net::SiteForCookies(), /*has_storage_access=*/false,
-      net::IsolationInfo(), std::move(additional_headers),
-      network::mojom::kBrowserProcessId, url::Origin::Create(service_url_),
+      service_url_, {kEnclaveWebSocketProtocol}, net::SiteForCookies(),
+      /*has_storage_access=*/false, net::IsolationInfo(),
+      std::move(additional_headers), network::mojom::kBrowserProcessId,
+      url::Origin::Create(service_url_),
       network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_remote),

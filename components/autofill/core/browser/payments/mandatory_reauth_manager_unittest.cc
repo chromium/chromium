@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -56,6 +57,11 @@ class MandatoryReauthManagerTest : public testing::Test {
                             "1");
   }
 
+  device_reauth::MockDeviceAuthenticator& device_authenticator() {
+    return *static_cast<device_reauth::MockDeviceAuthenticator*>(
+        mandatory_reauth_manager_->GetDeviceAuthenticatorPtrForTesting());
+  }
+
  protected:
   void ExpectUniqueOfferOptInDecision(
       MandatoryReauthOfferOptInDecision opt_in_decision) {
@@ -77,44 +83,23 @@ class MandatoryReauthManagerTest : public testing::Test {
 // Test that `MandatoryReauthManager::Authenticate()` triggers
 // `DeviceAuthenticator::AuthenticateWithMessage()`.
 TEST_F(MandatoryReauthManagerTest, Authenticate) {
-  EXPECT_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-              AuthenticateWithMessage)
-      .Times(1);
+  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage).Times(1);
 
   mandatory_reauth_manager_->Authenticate(
       /*callback=*/base::DoNothing());
-
-  // Test that `MandatoryReauthManager::OnAuthenticationCompleted()` resets the
-  // device authenticator.
-  EXPECT_TRUE(mandatory_reauth_manager_->GetDeviceAuthenticatorPtrForTesting());
-  mandatory_reauth_manager_->OnAuthenticationCompleted(
-      /*callback=*/base::DoNothing(), /*success=*/true);
-  EXPECT_FALSE(
-      mandatory_reauth_manager_->GetDeviceAuthenticatorPtrForTesting());
 }
 
 // Test that `MandatoryReauthManager::AuthenticateWithMessage()` triggers
 // `DeviceAuthenticator::AuthenticateWithMessage()`.
 TEST_F(MandatoryReauthManagerTest, AuthenticateWithMessage) {
-  EXPECT_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-              AuthenticateWithMessage)
-      .Times(1);
+  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage).Times(1);
 
   mandatory_reauth_manager_->AuthenticateWithMessage(
       /*message=*/u"Test", /*callback=*/base::DoNothing());
-
-  // Test that `MandatoryReauthManager::OnAuthenticationCompleted()` resets the
-  // device authenticator.
-  EXPECT_TRUE(mandatory_reauth_manager_->GetDeviceAuthenticatorPtrForTesting());
-  mandatory_reauth_manager_->OnAuthenticationCompleted(
-      /*callback=*/base::DoNothing(), /*success=*/true);
-  EXPECT_FALSE(
-      mandatory_reauth_manager_->GetDeviceAuthenticatorPtrForTesting());
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_Biometric) {
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-          CanAuthenticateWithBiometrics)
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
       .WillByDefault(testing::Return(true));
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
@@ -122,11 +107,9 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_Biometric) {
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_ScreenLock) {
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-          CanAuthenticateWithBiometrics)
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
       .WillByDefault(testing::Return(false));
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-          CanAuthenticateWithBiometricOrScreenLock)
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(testing::Return(true));
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
@@ -134,15 +117,42 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_ScreenLock) {
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-          CanAuthenticateWithBiometrics)
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
       .WillByDefault(testing::Return(false));
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-          CanAuthenticateWithBiometricOrScreenLock)
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(testing::Return(false));
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
             MandatoryReauthAuthenticationMethod::kUnsupportedMethod);
+}
+
+TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_Biometric) {
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
+  mandatory_reauth_manager_->StartDeviceAuthentication(base::DoNothing());
+}
+
+TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_ScreenLock) {
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
+  mandatory_reauth_manager_->StartDeviceAuthentication(base::DoNothing());
+}
+
+TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_Unsupported) {
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(false));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(true));
+  mandatory_reauth_manager_->StartDeviceAuthentication(callback.Get());
 }
 
 // Test that the MandatoryReauthManager returns that we should offer re-auth
@@ -276,8 +286,7 @@ TEST_F(MandatoryReauthManagerTest,
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-          CanAuthenticateWithBiometricOrScreenLock)
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(testing::Return(false));
 
   autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
@@ -360,10 +369,9 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-          AuthenticateWithMessage)
-      .WillByDefault(testing::WithArg<1>(
-          [](base::OnceCallback<void(bool)> callback) {
+  ON_CALL(device_authenticator(), AuthenticateWithMessage)
+      .WillByDefault(
+          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
           }));
 
@@ -384,13 +392,12 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
   auto mock_device_authenticator2 =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
-  autofill_client_->SetDeviceAuthenticator(
+  mandatory_reauth_manager_->SetDeviceAuthenticatorPtrForTesting(
       std::move(mock_device_authenticator2));
 
-  ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
-          AuthenticateWithMessage)
-      .WillByDefault(testing::WithArg<1>(
-          [](base::OnceCallback<void(bool)> callback) {
+  ON_CALL(device_authenticator(), AuthenticateWithMessage)
+      .WillByDefault(
+          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
           }));
 
@@ -473,10 +480,8 @@ class MandatoryReauthManagerOptInFlowTest
     }
   }
 
-  void SetUpDeviceAuthenticator(
-      device_reauth::MockDeviceAuthenticator* device_authenticator_ptr,
-      bool success) {
-    ON_CALL(*device_authenticator_ptr, AuthenticateWithMessage)
+  void SetUpDeviceAuthenticator(bool success) {
+    ON_CALL(device_authenticator(), AuthenticateWithMessage)
         .WillByDefault(testing::WithArg<1>(
             [success](base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(success);
@@ -503,11 +508,10 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
   auto mock_device_authenticator2 =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
-  autofill_client_->SetDeviceAuthenticator(
+  mandatory_reauth_manager_->SetDeviceAuthenticatorPtrForTesting(
       std::move(mock_device_authenticator2));
 
-  SetUpDeviceAuthenticator(autofill_client_->GetDeviceAuthenticatorPtr(),
-                           /*success=*/true);
+  SetUpDeviceAuthenticator(/*success=*/true);
 
   // Start OptIn flow.
   static_cast<MandatoryReauthManager*>(mandatory_reauth_manager_.get())
@@ -557,12 +561,11 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
   auto mock_device_authenticator2 =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
-  autofill_client_->SetDeviceAuthenticator(
+  mandatory_reauth_manager_->SetDeviceAuthenticatorPtrForTesting(
       std::move(mock_device_authenticator2));
 
   // Simulate authentication failure.
-  SetUpDeviceAuthenticator(autofill_client_->GetDeviceAuthenticatorPtr(),
-                           /*success=*/false);
+  SetUpDeviceAuthenticator(/*success=*/false);
 
   // Start OptIn flow.
   static_cast<MandatoryReauthManager*>(mandatory_reauth_manager_.get())

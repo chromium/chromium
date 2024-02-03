@@ -19,6 +19,8 @@
 
 namespace os_crypt {
 
+namespace {
+
 // See the switch definitions in test_support.cc for the arguments used to
 // control the behavior of this function.
 HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
@@ -32,15 +34,24 @@ HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
   CHECK(base::ReadFileToString(in_file, &input_data))
       << "Cannot read input file.";
 
+  // The test data header prevents the test executable ever being used to
+  // encrypt or decrypt production data.
+  const std::string kTestHeader("TESTDATAHEADER");
+
   std::string output_data;
   DWORD last_error;
   HRESULT hr = S_FALSE;
 
   if (cmd_line.HasSwitch(switches::kAppBoundTestModeEncrypt)) {
+    input_data.insert(0, kTestHeader);
     hr = EncryptAppBoundString(ProtectionLevel::PATH_VALIDATION, input_data,
                                output_data, last_error);
   } else if (cmd_line.HasSwitch(switches::kAppBoundTestModeDecrypt)) {
     hr = DecryptAppBoundString(input_data, output_data, last_error);
+    if (SUCCEEDED(hr)) {
+      CHECK_EQ(output_data.compare(0, kTestHeader.length(), kTestHeader), 0);
+      output_data.erase(0, kTestHeader.length());
+    }
   } else {
     NOTREACHED_NORETURN() << "A valid mode must be specified";
   }
@@ -54,6 +65,8 @@ HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
   }
   return hr;
 }
+
+}  // namespace
 
 }  // namespace os_crypt
 

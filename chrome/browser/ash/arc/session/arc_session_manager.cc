@@ -1159,6 +1159,8 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(activation_necessity_checker_);
 
+  base::UmaHistogramBoolean("Arc.ArcOnDemand.ActivationIsDelayed", !result);
+
   activation_necessity_checker_.reset();
   if (result) {
     AllowActivation();

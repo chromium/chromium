@@ -62,7 +62,7 @@ gfx::Size GetSampleBufferSize(CMSampleBufferRef sample_buffer) {
 }
 
 #if BUILDFLAG(IS_IOS)
-absl::optional<int> MaybeGetVideoRotation(
+std::optional<int> MaybeGetVideoRotation(
     UIDeviceOrientation orientation,
     AVCaptureDevicePosition camera_position) {
   bool is_front_camera = NO;
@@ -72,7 +72,7 @@ absl::optional<int> MaybeGetVideoRotation(
     is_front_camera = NO;
   }
 
-  absl::optional<int> rotation;
+  std::optional<int> rotation;
   switch (orientation) {
     case UIDeviceOrientationPortrait:
       rotation = 90;

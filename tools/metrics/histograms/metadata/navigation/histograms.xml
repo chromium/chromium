@@ -63,14 +63,9 @@ chromium-metrics-reviews@google.com.
   <variant name="SameSite"/>
 </variants>
 
-<variants name="SurfaceIdStatus">
-  <variant name="LocalSurfaceIdNotUpdated"/>
-  <variant name="LocalSurfaceIdUpdated"/>
-</variants>
-
 <histogram name="BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
-    expires_after="2024-03-03">
+    expires_after="2024-07-07">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -99,7 +94,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.BlocklistedFeature"
-    enum="WebSchedulerTrackedFeature" expires_after="2024-06-02">
+    enum="WebSchedulerTrackedFeature" expires_after="2024-07-07">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -133,7 +128,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.DisabledForRenderFrameHostReason2"
     enum="BackForwardCacheDisabledForRenderFrameHostReason2"
-    expires_after="2023-12-31">
+    expires_after="2024-07-07">
   <owner>fergal@chromium.org</owner>
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -185,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Eviction.Renderer"
-    enum="BackForwardCacheRendererEvictionReason" expires_after="2024-05-05">
+    enum="BackForwardCacheRendererEvictionReason" expires_after="2024-07-07">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -223,7 +218,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame.TimeUntilIPCReceived"
-    units="ms" expires_after="2023-12-31">
+    units="ms" expires_after="2024-07-07">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -306,7 +301,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.DisallowActivationReason"
-    enum="InactiveFrameDisallowActivationReason" expires_after="2024-03-03">
+    enum="InactiveFrameDisallowActivationReason" expires_after="2024-07-07">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -399,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.PageWithForm.RestoreResult"
-    enum="BackForwardCacheHistoryNavigationOutcome" expires_after="2024-05-26">
+    enum="BackForwardCacheHistoryNavigationOutcome" expires_after="2024-07-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -462,7 +457,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName"
-    enum="MojoInterfaceName" expires_after="2023-12-31">
+    enum="MojoInterfaceName" expires_after="2024-07-07">
   <owner>fergal@google.com</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -573,7 +568,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame"
     enum="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame"
-    expires_after="2024-03-03">
+    expires_after="2024-09-03">
   <owner>xiaochenzh@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
@@ -829,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -926,7 +921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrame.MaxFrameCount" units="frames"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -1052,18 +1047,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.MainframeSameDocumentNavigationCommitToPresentFirstFrame.{SurfaceIdStatus}"
+    name="Navigation.MainframeSameDocumentNavigationCommitToPresentFirstFrame"
     units="ms" expires_after="M130">
   <owner>liuwilliam@chromium.org</owner>
   <owner>chrome-seamless-core@google.com</owner>
   <summary>
     Records the time to present the first frame since the same-document
     navigation has finished in the mainframe's renderer.
-
-    LocalSurfaceIdUpdated indicates whether the LocalSurfaceId was incremented
-    in the renderer due to this navigation.
   </summary>
-  <token key="SurfaceIdStatus" variants="SurfaceIdStatus"/>
 </histogram>
 
 <histogram name="Navigation.MainFrameScheme2" enum="NavigationScheme"
@@ -1890,7 +1881,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.PrerenderLoadingFailureError{PreloadingTriggerType}"
-    enum="NetErrorCodes" expires_after="2024-04-28">
+    enum="NetErrorCodes" expires_after="2024-07-28">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

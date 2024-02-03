@@ -30,7 +30,7 @@ class RemoteFrameClient : public FrameClient {
   // when we pass a RemoteFrame handle outside of blink.
   virtual void CreateRemoteChild(
       const RemoteFrameToken& token,
-      const absl::optional<FrameToken>& opener_frame_token,
+      const std::optional<FrameToken>& opener_frame_token,
       mojom::blink::TreeScopeType tree_scope_type,
       mojom::blink::FrameReplicationStatePtr replication_state,
       mojom::blink::FrameOwnerPropertiesPtr owner_properties,

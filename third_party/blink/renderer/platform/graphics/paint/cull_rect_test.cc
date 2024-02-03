@@ -24,7 +24,7 @@ class CullRectTest : public testing::Test,
       const PropertyTreeState& root,
       const PropertyTreeState& source,
       const PropertyTreeState& destination,
-      const absl::optional<CullRect>& old_cull_rect = absl::nullopt) {
+      const std::optional<CullRect>& old_cull_rect = std::nullopt) {
     return cull_rect.ApplyPaintProperties(root, source, destination,
                                           old_cull_rect, disable_expansion_);
   }
@@ -36,7 +36,7 @@ class CullRectTest : public testing::Test,
 
   bool ChangedEnough(const gfx::Rect& old_rect,
                      const gfx::Rect& new_rect,
-                     const absl::optional<gfx::Rect>& bounds = absl::nullopt) {
+                     const std::optional<gfx::Rect>& bounds = std::nullopt) {
     return CullRect(new_rect).ChangedEnough(CullRect(old_rect), bounds);
   }
 

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MIN_MAX_SIZES_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MIN_MAX_SIZES_CACHE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -40,7 +41,7 @@ class MinMaxSizesCache final : public GarbageCollected<MinMaxSizesCache> {
   };
 
   // Given an initial block-size returns a min/max sizes result if one matches.
-  absl::optional<MinMaxSizesResult> Find(LayoutUnit initial_block_size) {
+  std::optional<MinMaxSizesResult> Find(LayoutUnit initial_block_size) {
     DCHECK_NE(initial_block_size, kIndefiniteSize);
     for (auto it = cache_.rbegin(); it != cache_.rend(); ++it) {
       if (it->initial_block_size == initial_block_size) {
@@ -57,7 +58,7 @@ class MinMaxSizesCache final : public GarbageCollected<MinMaxSizesCache> {
         return MinMaxSizesResult(copy.sizes, copy.depends_on_block_constraints);
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Adds a result to the cache. NOTE: the entry shouldn't already exist.

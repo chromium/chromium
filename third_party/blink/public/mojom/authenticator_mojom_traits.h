@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_MOJOM_AUTHENTICATOR_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_MOJOM_AUTHENTICATOR_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "mojo/public/cpp/bindings/array_traits_stl.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 
@@ -155,7 +155,7 @@ struct BLINK_COMMON_EXPORT
     return in.id;
   }
 
-  static const absl::optional<std::string>& name(
+  static const std::optional<std::string>& name(
       const device::PublicKeyCredentialRpEntity& in) {
     return in.name;
   }
@@ -173,12 +173,12 @@ struct BLINK_COMMON_EXPORT
     return in.id;
   }
 
-  static const absl::optional<std::string>& name(
+  static const std::optional<std::string>& name(
       const device::PublicKeyCredentialUserEntity& in) {
     return in.name;
   }
 
-  static const absl::optional<std::string>& display_name(
+  static const std::optional<std::string>& display_name(
       const device::PublicKeyCredentialUserEntity& in) {
     return in.display_name;
   }
@@ -203,44 +203,44 @@ struct BLINK_COMMON_EXPORT
     }
   }
 
-  static absl::optional<device::CableEidArray> client_eid(
+  static std::optional<device::CableEidArray> client_eid(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V1) {
       return in.v1->client_eid;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static const absl::optional<device::CableEidArray> authenticator_eid(
+  static const std::optional<device::CableEidArray> authenticator_eid(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V1) {
       return in.v1->authenticator_eid;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static const absl::optional<device::CableSessionPreKeyArray> session_pre_key(
+  static const std::optional<device::CableSessionPreKeyArray> session_pre_key(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V1) {
       return in.v1->session_pre_key;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static const absl::optional<std::vector<uint8_t>> server_link_data(
+  static const std::optional<std::vector<uint8_t>> server_link_data(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V2) {
       return in.v2->server_link_data;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static const absl::optional<std::vector<uint8_t>> experiments(
+  static const std::optional<std::vector<uint8_t>> experiments(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V2) {
       return in.v2->experiments;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static bool Read(blink::mojom::CableAuthenticationDataView data,

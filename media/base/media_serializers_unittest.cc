@@ -41,7 +41,7 @@ TEST(MediaSerializersTest, BaseTypes) {
 }
 
 TEST(MediaSerializersTest, Optional) {
-  absl::optional<int> foo;
+  std::optional<int> foo;
   ASSERT_EQ(ToString(MediaSerialize(foo)), "unset");
 
   foo = 1;

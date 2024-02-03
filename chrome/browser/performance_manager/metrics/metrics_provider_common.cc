@@ -6,8 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 
 namespace performance_manager {
 
@@ -54,8 +54,9 @@ MetricsProviderCommon::MetricsProviderCommon() = default;
 MetricsProviderCommon::~MetricsProviderCommon() = default;
 
 void MetricsProviderCommon::RecordA11yFlags() {
-  ui::AXMode mode = ui::AXPlatformNode::GetAccessibilityMode();
-  bool is_mode_on = !mode.is_mode_off();
+  const ui::AXMode mode =
+      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
+  const bool is_mode_on = !mode.is_mode_off();
 
   UMA_HISTOGRAM_BOOLEAN(
       "PerformanceManager.Experimental.HasAccessibilityModeFlag", is_mode_on);

@@ -4,12 +4,12 @@
 
 #include "services/data_decoder/structured_headers_parser_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "net/http/structured_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 

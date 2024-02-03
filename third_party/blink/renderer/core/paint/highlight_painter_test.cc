@@ -51,7 +51,7 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
     PhysicalRect physical_rect{};
     const FragmentItem& text_item = *cursor.CurrentItem();
     const ComputedStyle& style = text_item.Style();
-    absl::optional<HighlightPainter::SelectionPaintState> maybe_selection;
+    std::optional<HighlightPainter::SelectionPaintState> maybe_selection;
     HighlightPainter::SelectionPaintState* selection = nullptr;
     if (text_item.GetLayoutObject()->IsSelected()) {
       maybe_selection.emplace(cursor, physical_offset);

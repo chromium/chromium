@@ -59,6 +59,12 @@ namespace storage {
 //    The distinction can matter for web pages containing third-party iframes.
 //  - see the "Cracking" section, below.
 //
+// Buckets and storage keys are relevant for the kFileSystemTypeTemporary mount
+// type.
+//
+// Cracking is relevant for kFileSystemTypeIsolated and kFileSystemTypeExternal
+// mount types.
+//
 // This extra data isn't part of the string form. Creating a `FileSystemURL`
 // (from a factory method) and then optionally calling its setter methods
 // (`SetBucket`) fills in these other fields. Converting such a `FileSystemURL`

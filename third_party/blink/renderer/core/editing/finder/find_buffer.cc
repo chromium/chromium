@@ -170,7 +170,7 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
     const EphemeralRangeInFlatTree& range,
     String search_text,
     FindOptions options,
-    absl::optional<base::TimeDelta> timeout_ms) {
+    std::optional<base::TimeDelta> timeout_ms) {
   if (!range.StartPosition().IsConnected())
     return EphemeralRangeInFlatTree();
 

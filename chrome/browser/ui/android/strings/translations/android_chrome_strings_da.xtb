@@ -91,6 +91,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1416550906796893042">Appversion</translation>
 <translation id="1428770807407000502">Vil du deaktivere synkronisering?</translation>
 <translation id="1430915738399379752">Udskriv</translation>
+<translation id="1435593198351412143">Åbn PDF-filer automatisk</translation>
 <translation id="1436784010935106834">Fjernet</translation>
 <translation id="1437543266176261764">Kører i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiser de produkter, du holder øje med, i Bogmærker</translation>
@@ -138,6 +139,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1749561566933687563">Synkroniser dine bogmærker</translation>
 <translation id="1750259112639922169">Fanegruppe – <ph name="TAB_COUNT" /> faner</translation>
 <translation id="17513872634828108">Åbne faner</translation>
+<translation id="1755203724116202818">Med henblik på at måle en annonces effektivitet deles der begrænsede typer data mellem websites, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="1757620656501361327">Opdatering af Google Adgangskodeadministrator</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sider, 1 side på listen}one{Sider, # side på listen}other{Sider, # sider på listen}}</translation>
 <translation id="1778457539567749232">Markér som ulæst</translation>
@@ -179,7 +181,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1986685561493779662">Navnet findes allerede</translation>
 <translation id="1995884366040846621">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" />.</translation>
 <translation id="200114059308480249">Vil du medtage omgivende tekst i Google-søgninger?</translation>
-<translation id="2009341475524975924">Med henblik på at måle en annonces effektivitet kan der deles begrænsede typer data mellem websites, f.eks. det tidspunkt på dagen, hvor annoncen blev vist til dig.</translation>
 <translation id="201060170519281460">Din profillås beskytter dine oplysninger i bilen, bl.a. synkroniserede adgangskoder og betalinger.</translation>
 <translation id="2021896219286479412">Kontrolelementer på website i fuld skærm</translation>
 <translation id="2038563949887743358">Slå computerversionen af websitet til</translation>
@@ -334,6 +335,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2870560284913253234">Website</translation>
 <translation id="2871733351037274014">Forudindlæs sider</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vil have dig til at godkende dette website:</translation>
+<translation id="2876194821763651818">Adgangskoderne er gemt på <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Se, <ph name="BEGIN_LINK" />hvordan Chrome beskytter dine data<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Stop sideindlæsning</translation>
@@ -341,6 +343,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2894821468041866720">Gør ikke din browser eller enhed mærkbart langsommere.</translation>
 <translation id="2900528713135656174">Opret begivenhed</translation>
 <translation id="2901411048554510387">Viser forslag for <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">Downloadede PDF-filer åbnes automatisk med en af PDF-fremviserne på din enhed</translation>
 <translation id="2904414404539560095">Åben liste i fuld højde over enheder, der skal deles en fane med.</translation>
 <translation id="2908243544703713905">Ulæste historier er tilgængelige</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -450,6 +453,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3443221991560634068">Genindlæs den aktuelle side</translation>
 <translation id="3444179773590444986">Vil du dele feedback om Mørkt tema på websites?</translation>
 <translation id="3452832259067974318">Af hensyn til privatlivsbeskyttelsen udfylder Chrome ikke din adgangskode automatisk i dette felt.</translation>
+<translation id="3467081767799433066">Med annoncemåling deles begrænsede typer data mellem websites for at måle, hvor effektive deres annoncer er, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Du kan vælge din søgemaskine</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
@@ -592,7 +596,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4257230861809842349">Vil du slette adgangskoderne fra Google Adgangskodeadministrator?</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
 <translation id="4277529130885813215">Brug en anden enhed</translation>
-<translation id="4283102315569707115">Vil du anmode om computerwebsites som standard?</translation>
 <translation id="4285846616383034558">Cookies, cache og andre websitedata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivér skærmlåsen i Android-indstillingerne<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
@@ -606,7 +609,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4335835283689002019">Beskyttet browsing er slået fra</translation>
 <translation id="4351244548802238354">Luk dialogboksen</translation>
 <translation id="4355272626458588338">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke.</translation>
-<translation id="4369735607080757018">Begrænsede typer af data deles mellem websites for at måle effektiviteten af deres annoncer, f.eks. hvilket tidspunkt på dagen du fik vist en annonce</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Hvis problemet fortsætter, kan du prøve at fortsætte på andre måder på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Søgning via Sogou</translation>
@@ -632,6 +634,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4494806687727322324">Din administrator har aktiveret lagring af adgangskoder</translation>
 <translation id="4508528996305412043">Feedkortmenuen er åbnet</translation>
 <translation id="4509501256689523862">Om de annoncer, du ser på nettet, er personligt tilpasset, afhænger af denne indstilling for <ph name="BEGIN_LINK_1" />Annonceemner<ph name="END_LINK_1" />, dine <ph name="BEGIN_LINK_2" />cookieindstillinger<ph name="END_LINK_2" />, og om det website, du besøger, tilpasser annoncer.</translation>
+<translation id="4509741852167209430">Begrænsede typer af data deles mellem websites for at måle, hvor effektive deres annoncer er, f.eks. om du har foretaget et køb, når du har besøgt et website</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{1 dag siden}one{1 dag siden}other{# dag siden}}</translation>
 <translation id="451872707440238414">Søg i dine bogmærker</translation>
 <translation id="4521489764227272523">De valgte data er fjernet fra Chrome og synkroniserede enheder.
@@ -657,7 +660,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4616150815774728855">Åbn <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificer din identitet</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
-<translation id="4637420359569396807">Med annoncemåling kan der deles begrænsede typer data mellem websites og apps for at måle, hvor effektive deres annoncer er, f.eks. det tidspunkt på dagen, hvor der blev vist en annonce til dig.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kompromitteret adgangskode}one{# kompromitteret adgangskode}other{# kompromitterede adgangskoder}}</translation>
 <translation id="4645146721047390964">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på forskellige websites, f.eks. til at foretage personlig tilpasning af annoncer. Funktioner på visse websites virker muligvis ikke.</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
@@ -674,6 +676,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4699172675775169585">Billeder og filer, der er gemt i cache</translation>
 <translation id="4710167854527459075">Sortér efter nyeste</translation>
 <translation id="4719927025381752090">Tilbyd at oversætte</translation>
+<translation id="4720556299488643018">Afmeld</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Opdater</translation>
@@ -896,9 +899,11 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="5814749351757353073">Hold dig opdateret om dine foretrukne websites</translation>
 <translation id="5822875253699806474">Synkroniser dine faner og din historik for hurtigt at vende tilbage til de websites, du har besøgt</translation>
+<translation id="5829586821381540080">Gemt i <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5833984609253377421">Del link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">Vil du åbne PDF-filen med <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">sat på pause</translation>
 <translation id="5855546874025048181">Juster: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Noget gik galt. Overvåg pris kunne ikke opdateres.</translation>
@@ -1194,6 +1199,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7313188324932846546">Tryk for at konfigurere synkronisering</translation>
 <translation id="7324354302972299151">Send en "Do Not Track"-anmodning</translation>
 <translation id="7332075081379534664">Login blev fuldført</translation>
+<translation id="7333041109965360609">Du har afmeldt notifikationer</translation>
 <translation id="7333232495927792353">Synkroniser data for at få det mest relevante indhold fra Google</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7340958967809483333">Indstillinger for Discover</translation>
@@ -1381,6 +1387,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8127542551745560481">Rediger startside</translation>
 <translation id="8130309322784422030">Dine gemte loginoplysninger kan være forældede</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
+<translation id="8135406045838672858">Downloadede PDF-filer åbnes automatisk med <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangskodeadministrator.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer tilbage</translation>
 <translation id="8190358571722158785">1 dag tilbage</translation>
@@ -1451,6 +1458,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8505766168025405649">Se notifikation for downloadstatus</translation>
 <translation id="8506357771923193001">Her finder du dine downloads</translation>
+<translation id="8512053371384421952">Du vil ikke længere modtage notifikationer fra <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Eksportér adgangskoder, der er gemt med Chrome</translation>
 <translation id="8516012719330875537">Billedredigering</translation>
 <translation id="8523928698583292556">Slet den gemte adgangskode</translation>
@@ -1535,6 +1543,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>
 <translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
 <translation id="8998729206196772491">Du er ved at logge ind med en konto, der administreres af <ph name="MANAGED_DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
+<translation id="8998837250940831980">Fanen kunne ikke minimeres. Prøv igen senere.</translation>
 <translation id="9012585441087414258">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Hvis en side udviser mistænkelig adfærd, sendes webadresser og uddrag af sideindhold til Google Beskyttet browsing.</translation>
 <translation id="9019199799064251516">Vil du fortsætte uden en profillås i bilen?</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>

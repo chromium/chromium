@@ -255,6 +255,10 @@ public class HomeModulesMediator {
     /** Adds all of the cached responses to the RecyclerView after time out. */
     @VisibleForTesting
     void onModuleFetchTimeOut() {
+        // It is possible that onModuleFetchTimeOut() is called after home modules hide, early exits
+        // here.
+        if (!mIsFetchingModules) return;
+
         // Will reject any late responses from modules.
         mIsFetchingModules = false;
 

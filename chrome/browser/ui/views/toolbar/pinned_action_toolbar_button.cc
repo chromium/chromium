@@ -259,6 +259,7 @@ void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
           ? l10n_util::GetStringFUTF16(
                 IDS_PINNED_ACTION_BUTTON_ACCESSIBLE_TITLE, accessible_name)
           : accessible_name;
+  action_view_->SetAccessibleName(stateful_accessible_name);
 }
 
 BEGIN_METADATA(PinnedActionToolbarButton, ToolbarButton)

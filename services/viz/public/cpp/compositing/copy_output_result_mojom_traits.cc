@@ -127,19 +127,19 @@ const gfx::Rect& StructTraits<viz::mojom::CopyOutputResultDataView,
 }
 
 // static
-absl::optional<viz::CopyOutputResult::ScopedSkBitmap>
+std::optional<viz::CopyOutputResult::ScopedSkBitmap>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     bitmap(const std::unique_ptr<viz::CopyOutputResult>& result) {
   if (result->destination() !=
       viz::CopyOutputResult::Destination::kSystemMemory)
-    return absl::nullopt;
+    return std::nullopt;
   auto scoped_bitmap = result->ScopedAccessSkBitmap();
   if (!scoped_bitmap.bitmap().readyToDraw()) {
     // During shutdown or switching to background on Android, Chrome will
     // release GPU context, it will release mapped GPU memory which is used
     // in SkBitmap, in that case, a null bitmap will be sent.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return scoped_bitmap;
 }
@@ -247,7 +247,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
     case viz::CopyOutputResult::Format::RGBA:
       switch (destination) {
         case viz::CopyOutputResult::Destination::kSystemMemory: {
-          absl::optional<SkBitmap> bitmap_opt;
+          std::optional<SkBitmap> bitmap_opt;
           if (!data.ReadBitmap(&bitmap_opt))
             return false;
           if (!bitmap_opt) {
@@ -268,13 +268,13 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
         }
 
         case viz::CopyOutputResult::Destination::kNativeTextures: {
-          absl::optional<gpu::Mailbox> mailbox;
+          std::optional<gpu::Mailbox> mailbox;
           if (!data.ReadMailbox(&mailbox) || !mailbox)
             return false;
-          absl::optional<gpu::SyncToken> sync_token;
+          std::optional<gpu::SyncToken> sync_token;
           if (!data.ReadSyncToken(&sync_token) || !sync_token)
             return false;
-          absl::optional<gfx::ColorSpace> color_space;
+          std::optional<gfx::ColorSpace> color_space;
           if (!data.ReadColorSpace(&color_space) || !color_space)
             return false;
 

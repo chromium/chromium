@@ -839,7 +839,7 @@ TEST_F(PredictionManagerTest,
       "google.internal.chrome.optimizationguide.v1.PageEntitiesModelMetadata");
   std::string encoded_metadata;
   metadata.SerializeToString(&encoded_metadata);
-  base::Base64Encode(encoded_metadata, &encoded_metadata);
+  encoded_metadata = base::Base64Encode(encoded_metadata);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s:%s",

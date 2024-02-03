@@ -25,18 +25,14 @@ std::string SerializeAndEncodeEntityInfo(
     const omnibox::EntityInfo& entity_info) {
   std::string serialized_entity_info;
   entity_info.SerializeToString(&serialized_entity_info);
-  std::string encoded_entity_info;
-  base::Base64Encode(serialized_entity_info, &encoded_entity_info);
-  return encoded_entity_info;
+  return base::Base64Encode(serialized_entity_info);
 }
 
 std::string SerializeAndEncodeGroupsInfo(
     const omnibox::GroupsInfo& groups_info) {
   std::string serialized_groups_info;
   groups_info.SerializeToString(&serialized_groups_info);
-  std::string encoded_groups_info;
-  base::Base64Encode(serialized_groups_info, &encoded_groups_info);
-  return encoded_groups_info;
+  return base::Base64Encode(serialized_groups_info);
 }
 
 // (Rudimentary) mechanism comparing two protobuf MessageLite objects.

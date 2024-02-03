@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">乘以</translation>
 <translation id="1145018782460575098">更新外部裝置韌體的視窗已開啟。<ph name="NUM_UPDATES" /> 項可用的更新。</translation>
 <translation id="1145516343487477149">尋找說明文章，並回答 Chromebook 常見問題</translation>
 <translation id="1154390310959620237">你只能自訂 5 個快速鍵。如要新增快速鍵，請刪除現有快速鍵。</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">符合掃描區大小</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
+<translation id="1371650399987522809">對 Google AI 桌布提供意見</translation>
 <translation id="1387854245479784695">這是所有核心的匯總值</translation>
 <translation id="1394661041439318933">裝置的充電盒電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可連線偵測到閘道</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">觸控板</translation>
 <translation id="1561927818299383735">背光顏色</translation>
 <translation id="1565038567006703504">無法更新「<ph name="DEVICE_NAME" />」</translation>
+<translation id="1566493343215789965">除以</translation>
 <translation id="1567064801249837505">相簿</translation>
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1578784163189013834">選擇螢幕保護程式背景</translation>
 <translation id="160633243685262989">預覽圖片</translation>
 <translation id="1611649489706141841">往前</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
+<translation id="1615576200479539465">正在生成圖片...</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1626590945318984973">這組快速鍵無法使用，請使用其他快速鍵，而且當中不得有功能鍵和<ph name="META_KEY" />鍵。</translation>
 <translation id="1639239467298939599">載入中</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
 <translation id="2880569433548999039">雲朵動態螢幕保護程式</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
+<translation id="2938573842839598578">求近似結果，將<ph name="CATEGORY_TEXT" />的值<ph name="OPERATOR_TEXT" /><ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">無法測試裝置。請重新打開機蓋即進行測試。</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Chrome OS 更新</translation>
 <translation id="3527036260304016759">失敗 - 不明的錯誤</translation>
 <translation id="3532980081107202182">大約還剩 <ph name="MIN_REMAINING" /> 分鐘</translation>
+<translation id="3547264467365135390">公式</translation>
 <translation id="3557205324756024651">本機識別 (選用)</translation>
 <translation id="3565064564551103223">已允許的 IP</translation>
 <translation id="3569407787324516067">螢幕保護程式</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7184043045742675738">按一下任何按鍵可自訂按鈕，使用滑鼠或方向鍵可調整位置。</translation>
+<translation id="7206979415662233817">服務條款</translation>
 <translation id="7212547870105584639">管理網路 APN 設定。APN 會在行動網路和網際網路之間建立連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部裝置適用的韌體更新</translation>
 <translation id="7216409898977639127">行動網路提供者</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">鍵盤顏色</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">您必須年滿 18 歲，並同意在使用 AI 桌布時遵守《<ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 服務條款<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />》和《<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />生成式 AI 附加服務條款<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />》。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI 生成的桌布只能用於個人和非商業用途。當您使用這項服務時，系統會將文字內容傳送到 Google AI 伺服器生成桌布建議，並在處理資料的過程中遵守《<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 隱私權政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />》的規定。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按下搜尋鍵加空白鍵即可在 Google 搜尋中查看結果。</translation>
 <translation id="7343649194310845056">網路裝置</translation>
 <translation id="7353413232959255829">第 <ph name="LIST_POSITION" /> 項搜尋結果，共 <ph name="LIST_SIZE" /> 項：<ph name="SEARCH_RESULT_TEXT" />。按下 Enter 鍵即可前往捷徑。</translation>

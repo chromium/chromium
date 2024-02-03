@@ -1450,7 +1450,7 @@ TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
 
   gfx::Transform transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
-  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
   EXPECT_EQ(0, decomp->perspective[2]);
 }
@@ -1470,7 +1470,7 @@ TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
 
   gfx::Transform transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
-  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
   EXPECT_EQ(-0.01, decomp->perspective[2]);
 }

@@ -133,25 +133,6 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   driver_map_.erase(it);
 }
 
-void ContentAutofillDriverFactory::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(crbug/1117451): Clean up experiment code.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillProbableFormSubmissionInBrowser) &&
-      navigation_handle->IsRendererInitiated() &&
-      !navigation_handle->WasInitiatedByLinkClick() &&
-      navigation_handle->IsInPrimaryMainFrame()) {
-    content::GlobalRenderFrameHostId id =
-        navigation_handle->GetPreviousRenderFrameHostId();
-    content::RenderFrameHost* render_frame_host =
-        content::RenderFrameHost::FromID(id);
-    if (render_frame_host) {
-      if (auto* driver = DriverForFrame(render_frame_host))
-        driver->ProbablyFormSubmitted({});
-    }
-  }
-}
-
 void ContentAutofillDriverFactory::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||

@@ -79,7 +79,7 @@ public class QuickDeleteBridgeTest {
         // Clear history.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     callbackHelper::notifyCalled,
                                     new int[] {BrowsingDataType.HISTORY},

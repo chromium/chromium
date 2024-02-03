@@ -60,6 +60,7 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -278,7 +279,7 @@ mojo::PendingRemote<mojom::blink::Blob> DataURLToBlob(const String& data_url) {
 }
 
 RemoteFrame* SourceFrameForOptionalToken(
-    const absl::optional<RemoteFrameToken>& source_frame_token) {
+    const std::optional<RemoteFrameToken>& source_frame_token) {
   if (!source_frame_token)
     return nullptr;
   return RemoteFrame::FromFrameToken(source_frame_token.value());
@@ -1053,8 +1054,16 @@ void LocalFrame::HookBackForwardCacheEviction() {
             DCHECK(window);
             LocalFrame* frame = window->GetFrame();
             if (frame) {
+              std::unique_ptr<SourceLocation> source_location = nullptr;
+              if (base::FeatureList::IsEnabled(
+                      features::kCaptureJSExecutionLocation)) {
+                // Capture the source location of the JS execution if the flag
+                // is enabled.
+                source_location = CaptureSourceLocation();
+              }
               frame->EvictFromBackForwardCache(
-                  mojom::blink::RendererEvictionReason::kJavaScriptExecution);
+                  mojom::blink::RendererEvictionReason::kJavaScriptExecution,
+                  std::move(source_location));
               if (base::FeatureList::IsEnabled(
                       features::kBackForwardCacheDWCOnJavaScriptExecution)) {
                 // Adding |DumpWithoutCrashing()| here to make sure this is not
@@ -1269,8 +1278,8 @@ void LocalFrame::DidChangeThemeColor(bool update_theme_color_cache) {
   if (update_theme_color_cache)
     GetDocument()->UpdateThemeColorCache();
 
-  absl::optional<Color> color = GetDocument()->ThemeColor();
-  absl::optional<SkColor> sk_color;
+  std::optional<Color> color = GetDocument()->ThemeColor();
+  std::optional<SkColor> sk_color;
   if (color)
     sk_color = color->Rgb();
 
@@ -1606,7 +1615,7 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
 }
 
 void LocalFrame::OverrideDevicePostureForEmulation(
-    device::mojom::blink::DevicePostureType device_posture_param) {
+    mojom::blink::DevicePostureType device_posture_param) {
   mojo_handler_->OverrideDevicePostureForEmulation(device_posture_param);
 }
 
@@ -1614,7 +1623,7 @@ void LocalFrame::DisableDevicePostureOverrideForEmulation() {
   mojo_handler_->DisableDevicePostureOverrideForEmulation();
 }
 
-device::mojom::blink::DevicePostureType LocalFrame::GetDevicePosture() {
+mojom::blink::DevicePostureType LocalFrame::GetDevicePosture() {
   return mojo_handler_->GetDevicePosture();
 }
 
@@ -2345,9 +2354,9 @@ void LocalFrame::SetOpener(Frame* opener_frame) {
   if (web_frame && Opener() != opener_frame) {
     GetLocalFrameHostRemote().DidChangeOpener(
         opener_frame
-            ? absl::optional<blink::LocalFrameToken>(
+            ? std::optional<blink::LocalFrameToken>(
                   opener_frame->GetFrameToken().GetAs<LocalFrameToken>())
-            : absl::nullopt);
+            : std::nullopt);
   }
   SetOpenerDoNotNotify(opener_frame);
 }
@@ -2609,8 +2618,7 @@ mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {
   return mojo_handler_->ReportingService();
 }
 
-device::mojom::blink::DevicePostureProvider*
-LocalFrame::GetDevicePostureProvider() {
+mojom::blink::DevicePostureProvider* LocalFrame::GetDevicePostureProvider() {
   return mojo_handler_->DevicePostureProvider();
 }
 
@@ -2734,9 +2742,9 @@ struct DowncastTraits<FrameColorOverlay> {
   }
 };
 
-absl::optional<SkColor> LocalFrame::GetFrameOverlayColorForTesting() const {
+std::optional<SkColor> LocalFrame::GetFrameOverlayColorForTesting() const {
   if (!frame_color_overlay_)
-    return absl::nullopt;
+    return std::nullopt;
   return DynamicTo<FrameColorOverlay>(frame_color_overlay_->GetDelegate())
       ->GetColorForTesting();
 }
@@ -3133,11 +3141,21 @@ void LocalFrame::WasAttachedAsLocalMainFrame() {
 }
 
 void LocalFrame::EvictFromBackForwardCache(
-    mojom::blink::RendererEvictionReason reason) {
+    mojom::blink::RendererEvictionReason reason,
+    std::unique_ptr<SourceLocation> source_location) {
   if (!GetPage()->GetPageScheduler()->IsInBackForwardCache())
     return;
   UMA_HISTOGRAM_ENUMERATION("BackForwardCache.Eviction.Renderer", reason);
-  GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache(reason);
+  mojom::blink::BlockingDetailsPtr details =
+      mojom::blink::BlockingDetails::New();
+  if (source_location) {
+    details->url = source_location->Url();
+    details->function_name = source_location->Function();
+    details->line_number = source_location->LineNumber();
+    details->column_number = source_location->ColumnNumber();
+  }
+  GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache(
+      std::move(reason), std::move(details));
 }
 
 void LocalFrame::DidBufferLoadWhileInBackForwardCache(
@@ -3538,7 +3556,7 @@ void LocalFrame::AdvanceFocusForIME(mojom::blink::FocusType focus_type) {
 }
 
 void LocalFrame::PostMessageEvent(
-    const absl::optional<RemoteFrameToken>& source_frame_token,
+    const std::optional<RemoteFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {

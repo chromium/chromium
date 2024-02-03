@@ -103,11 +103,11 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   //   |UserCloudPolicyManagerAsh| is created here.
   // - For device-local accounts, policy is provided by
   //   |DeviceLocalAccountPolicyService|.
-  // For non-enterprise accounts only for users with type USER_TYPE_CHILD
+  // For non-enterprise accounts only for users with type kChild
   //   |UserCloudPolicyManagerAsh| is created here.
   // All other user types do not have user policy.
   const AccountId& account_id = user->GetAccountId();
-  if (user->GetType() != user_manager::USER_TYPE_CHILD &&
+  if (user->GetType() != user_manager::UserType::kChild &&
       signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
           account_id.GetUserEmail()) ==
           signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
@@ -206,7 +206,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   // block signin. Policy refresh will fail without the token that is available
   // only after profile initialization.
   const bool policy_refresh_requires_oauth_token =
-      user->GetType() == user_manager::USER_TYPE_CHILD &&
+      user->GetType() == user_manager::UserType::kChild &&
       base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser);
 
   base::TimeDelta policy_refresh_timeout;

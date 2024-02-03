@@ -48,7 +48,7 @@ constexpr int kDismissButtonIconSize = 20;
 constexpr int kDismissButtonBackgroundRadius = 15;
 constexpr gfx::Size kCrOSDismissButtonSize = gfx::Size(20, 20);
 constexpr int kCrOSDismissButtonIconSize = 12;
-constexpr int kCrOSDeviceSelectorSeparatorHeight = 22;
+constexpr int kDeviceSelectorSeparatorHeight = 22;
 constexpr gfx::Insets kSwipeableContainerInsets =
     gfx::Insets::TLBR(4, 16, 8, 16);
 
@@ -95,21 +95,20 @@ MediaItemUIView::MediaItemUIView(
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The updated UI requires media color theme to be set while the toolbar
-  // media button does not provide it, so we need to verify the source display
-  // page is from the quick settings.
-  use_cros_updated_ui_ =
+  // media button does not provide it.
+  use_updated_ui_ =
       base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI) &&
-      chromeos::features::IsJellyrollEnabled() &&
-      media_display_page.has_value();
+      media_color_theme.has_value();
 #else
-  use_cros_updated_ui_ = false;
+  use_updated_ui_ =
+      base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI);
 #endif
 
   auto swipeable_container = std::make_unique<views::View>();
   swipeable_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   swipeable_container->SetPaintToLayer();
   swipeable_container->layer()->SetFillsBoundsOpaquely(false);
-  if (use_cros_updated_ui_) {
+  if (use_updated_ui_) {
     swipeable_container->SetBorder(
         views::CreateEmptyBorder(kSwipeableContainerInsets));
   }
@@ -119,7 +118,7 @@ MediaItemUIView::MediaItemUIView(
   // in MediaItemUIDetailedView because it only wants to activate the original
   // web contents when media labels are pressed, but it also relies on the
   // button callback here to go to detailed media view.
-  if (use_cros_updated_ui_ &&
+  if (use_updated_ui_ &&
       media_display_page == MediaDisplayPage::kQuickSettingsMediaView) {
     SetCallback(base::BindRepeating(&MediaItemUIView::ContainerClicked,
                                     base::Unretained(this),
@@ -131,7 +130,7 @@ MediaItemUIView::MediaItemUIView(
   }
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
-  if (use_cros_updated_ui_) {
+  if (use_updated_ui_) {
     CHECK(media_color_theme.has_value());
     if (footer_view) {
       footer_view_ = footer_view.get();
@@ -470,7 +469,7 @@ void MediaItemUIView::ContainerClicked(bool activate_original_media) {
 
 void MediaItemUIView::OnSizeChanged() {
   gfx::Size new_size;
-  if (use_cros_updated_ui_) {
+  if (use_updated_ui_) {
     new_size = kCrOSMediaItemUpdatedUISize;
   } else {
     new_size = is_expanded_ ? kExpandedSize : kNormalSize;
@@ -485,9 +484,8 @@ void MediaItemUIView::OnSizeChanged() {
     if (device_selector_view_size.height() > 0) {
       new_size.set_height(new_size.height() +
                           device_selector_view_size.height());
-      if (use_cros_updated_ui_) {
-        new_size.set_height(new_size.height() +
-                            kCrOSDeviceSelectorSeparatorHeight);
+      if (use_updated_ui_) {
+        new_size.set_height(new_size.height() + kDeviceSelectorSeparatorHeight);
       }
     }
     view_->UpdateDeviceSelectorVisibility(device_selector_view_->GetVisible());

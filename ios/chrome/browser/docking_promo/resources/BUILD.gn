@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+bundle_data("resources") {
+  sources = [
+    "docking_promo.json",
+    "docking_promo_darkmode.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}

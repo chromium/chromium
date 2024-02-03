@@ -74,7 +74,7 @@ DnsProbeRunner::Result EvaluateResponse(
 
 DnsProbeRunner::DnsProbeRunner(
     net::DnsConfigOverrides dns_config_overrides,
-    const NetworkContextGetter& network_context_getter)
+    const network::NetworkContextGetter& network_context_getter)
     : dns_config_overrides_(dns_config_overrides),
       network_context_getter_(network_context_getter) {
   CreateHostResolver();

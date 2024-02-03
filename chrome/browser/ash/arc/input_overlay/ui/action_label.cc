@@ -596,7 +596,7 @@ std::u16string ActionLabel::CalculateAccessibleName() {
       .append(GetDisplayTextAccessibleName(label()->GetText()));
 }
 
-BEGIN_METADATA(ActionLabel, views::LabelButton)
+BEGIN_METADATA(ActionLabel)
 END_METADATA
 
 }  // namespace arc::input_overlay

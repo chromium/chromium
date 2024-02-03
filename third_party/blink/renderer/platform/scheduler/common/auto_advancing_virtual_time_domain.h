@@ -77,7 +77,7 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
 
   // TimeDomain implementation:
   bool MaybeFastForwardToWakeUp(
-      absl::optional<base::sequence_manager::WakeUp> wakeup,
+      std::optional<base::sequence_manager::WakeUp> wakeup,
       bool quit_when_idle_requested) override;
   const char* GetName() const override;
 

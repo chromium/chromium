@@ -3,8 +3,6 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap-style'] = "balance" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['text-wrap-style'] = "pretty" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap-style'] = "stable" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap-style'] = "initial" should set the property value

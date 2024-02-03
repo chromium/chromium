@@ -568,8 +568,43 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
 
   if (output->format() == PIXEL_FORMAT_P016LE) {
     if (input_config_.fourcc == Fourcc(Fourcc::MT2T)) {
-      return LIBYUV_FUNC(MT2TToP010, Y_UV_DATA(input),
-                         Y_UV_DATA_W_10BIT(output));
+      // stride is 5/4 because MT2T is a packed 10bit format
+      const uint32_t src_stride_mt2t =
+          (input->stride(VideoFrame::kYPlane) * 5) >> 2;
+
+      int libyuv_result = libyuv::MT2TToP010(
+          input->visible_data(VideoFrame::kYPlane), src_stride_mt2t,
+          input->visible_data(VideoFrame::kUVPlane), src_stride_mt2t,
+          reinterpret_cast<uint16_t*>(
+              output->GetWritableVisibleData(VideoFrame::kYPlane)),
+          output->stride(VideoFrame::kYPlane) >> 1,
+          reinterpret_cast<uint16_t*>(
+              output->GetWritableVisibleData(VideoFrame::kUVPlane)),
+          output->stride(VideoFrame::kUVPlane) >> 1,
+          output->visible_rect().width(), output->visible_rect().height());
+
+      if (libyuv_result) {
+        return libyuv_result;
+      }
+
+      // TODO(b/322549084): libyuv currently outputs in P010, but the conversion
+      // is requesting P016LE. This loop converts between the two formats by
+      // downshifting by 6. This is not performant and the downshift should
+      // be moved into the libyuv conversion, or the compositor needs to support
+      // P010.
+      std::vector<int> planes = {VideoFrame::kYPlane, VideoFrame::kUVPlane};
+      for (int plane : planes) {
+        uint16_t* data_plane =
+            reinterpret_cast<uint16_t*>(output->GetWritableVisibleData(plane));
+        const int32_t pixels_in_plane =
+            output->visible_rect().height() * output->stride(plane) >>
+            VideoFrame::SampleSize(output->format(), plane).height();
+
+        for (int32_t i = 0; i < pixels_in_plane; ++i) {
+          data_plane[i] >>= 6;
+        }
+      }
+      return 0;
     }
   }
 

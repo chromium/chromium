@@ -119,7 +119,7 @@ copy("check_seed_corpus_archive") {
 #   options again.
 if (fuzztest_supported) {
   test("fuzztest_tests") {
-    enable_fuzztest = true
+    fuzztests = [ "FuzzTestSmokeTest.StringsAlwaysOccupyPositiveSpace" ]
     deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
     sources = [ "fuzztest_smoketest.cc" ]
   }

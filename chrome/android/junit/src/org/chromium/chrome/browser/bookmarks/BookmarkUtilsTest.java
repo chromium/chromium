@@ -7,11 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.DESKTOP_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
@@ -20,9 +16,6 @@ import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.OTH
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.PARTNER_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.ROOT_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_D;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_ITEM_D;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,9 +33,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-
-import java.util.Arrays;
-import java.util.List;
 
 /** Unit tests for {@link BookmarkUtils}. */
 @Batch(Batch.UNIT_TESTS)
@@ -132,55 +122,5 @@ public class BookmarkUtilsTest {
         assertEquals(
                 ROOT_BOOKMARK_ID,
                 BookmarkUtils.getParentFolderForViewing(mBookmarkModel, OTHER_BOOKMARK_ID));
-    }
-
-    @Test
-    public void testMoveBookmarkToParent() {
-        BookmarkUtils.moveBookmarksToParent(
-                mBookmarkModel, Arrays.asList(URL_BOOKMARK_ID_A), FOLDER_BOOKMARK_ID_A);
-
-        List<BookmarkId> expected = Arrays.asList(URL_BOOKMARK_ID_A);
-        verify(mBookmarkModel).moveBookmarks(expected, FOLDER_BOOKMARK_ID_A);
-    }
-
-    @Test
-    public void testMoveBookmarkToParent_Folder() {
-        BookmarkUtils.moveBookmarksToParent(
-                mBookmarkModel, Arrays.asList(FOLDER_BOOKMARK_ID_A), MOBILE_BOOKMARK_ID);
-
-        List<BookmarkId> expected = Arrays.asList(FOLDER_BOOKMARK_ID_A);
-        verify(mBookmarkModel).moveBookmarks(expected, MOBILE_BOOKMARK_ID);
-    }
-
-    @Test
-    public void testMoveBookmarkToParent_readingList() {
-        BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
-        doReturn(newBookmarkId)
-                .when(mBookmarkModel)
-                .addBookmark(FOLDER_BOOKMARK_ID_A, 0, URL_ITEM_D.getTitle(), URL_ITEM_D.getUrl());
-
-        BookmarkUtils.moveBookmarksToParent(
-                mBookmarkModel, Arrays.asList(URL_BOOKMARK_ID_D), FOLDER_BOOKMARK_ID_A);
-        verify(mBookmarkModel)
-                .addBookmark(FOLDER_BOOKMARK_ID_A, 0, URL_ITEM_D.getTitle(), URL_ITEM_D.getUrl());
-        verify(mBookmarkModel, never()).moveBookmarks(any(), any());
-    }
-
-    @Test
-    public void testMoveBookmarkToParent_readingListAndBookmark() {
-        BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
-        doReturn(newBookmarkId)
-                .when(mBookmarkModel)
-                .addBookmark(FOLDER_BOOKMARK_ID_A, 0, URL_ITEM_D.getTitle(), URL_ITEM_D.getUrl());
-
-        BookmarkUtils.moveBookmarksToParent(
-                mBookmarkModel,
-                Arrays.asList(URL_BOOKMARK_ID_D, URL_BOOKMARK_ID_A),
-                FOLDER_BOOKMARK_ID_A);
-
-        List<BookmarkId> expected = Arrays.asList(URL_BOOKMARK_ID_A);
-        verify(mBookmarkModel)
-                .addBookmark(FOLDER_BOOKMARK_ID_A, 0, URL_ITEM_D.getTitle(), URL_ITEM_D.getUrl());
-        verify(mBookmarkModel, times(1)).moveBookmarks(expected, FOLDER_BOOKMARK_ID_A);
     }
 }

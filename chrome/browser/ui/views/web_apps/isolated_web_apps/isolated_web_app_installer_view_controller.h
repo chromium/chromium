@@ -106,6 +106,7 @@ class IsolatedWebAppInstallerViewController
   void OnSettingsLinkClicked() override;
   void OnChildDialogCanceled() override;
   void OnChildDialogAccepted() override;
+  void OnChildDialogDestroying() override;
 
   // `IsolatedWebAppInstallerModel::Observer`:
   void OnStepChanged() override;
@@ -124,6 +125,7 @@ class IsolatedWebAppInstallerViewController
   raw_ptr<IsolatedWebAppInstallerView> view_ = nullptr;
   raw_ptr<views::DialogDelegate> dialog_delegate_ = nullptr;
   raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::Widget> child_widget_ = nullptr;
 
   std::unique_ptr<CallbackDelayer> callback_delayer_;
   std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer_;

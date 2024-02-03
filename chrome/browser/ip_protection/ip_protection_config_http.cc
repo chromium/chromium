@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -85,7 +86,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
       ""
     )");
 
-const char kGoogApiKeyHeader[] = "X-Goog-Api-Key";
+constexpr std::string_view kGoogApiKeyHeader = "X-Goog-Api-Key";
 const char kChromeIpBlinding[] = "chromeipblinding";
 
 // The maximum size of the IP Protection requests - 256 KB (in practice these
@@ -212,14 +213,17 @@ void IpProtectionConfigHttp::GetProxyConfig(
   resource_request->url = std::move(request_url);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->headers.SetHeader(kGoogApiKeyHeader,
-                                      google_apis::GetAPIKey());
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kProtobufContentType);
+  // Set the OAuth token if it's available or otherwise fallback to sending the
+  // Google API key.
   if (oauth_token.has_value()) {
     resource_request->headers.SetHeader(
         net::HttpRequestHeaders::kAuthorization,
         base::StrCat({"Bearer ", oauth_token.value()}));
+  } else {
+    resource_request->headers.SetHeader(kGoogApiKeyHeader,
+                                        google_apis::GetAPIKey());
   }
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =

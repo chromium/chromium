@@ -520,27 +520,27 @@ TEST(ToV8TraitsTest, Nullable) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
   // Nullable Boolean
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLBoolean>, "null", absl::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLBoolean>, "null", std::nullopt);
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLBoolean>, "true", true);
   // Nullable Integer
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLByte>, "null", absl::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLByte>, "null", std::nullopt);
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLUnsignedLong>, "0",
-                   absl::optional<uint32_t>(0));
+                   std::optional<uint32_t>(0));
   // Nullable Float
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "null",
-                   absl::optional<float>());
+                   std::optional<float>());
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "0.5",
-                   absl::optional<float>(0.5));
+                   std::optional<float>(0.5));
   // Nullable Double
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "null",
-                   absl::optional<double>());
+                   std::optional<double>());
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "3.14",
-                   absl::optional<double>(3.14));
+                   std::optional<double>(3.14));
   // Nullable DOMHighResTimeStamp
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLDOMHighResTimeStamp>, "null",
-                   absl::optional<base::Time>());
+                   std::optional<base::Time>());
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLDOMHighResTimeStamp>, "123.456",
-                   absl::optional<base::Time>(
+                   std::optional<base::Time>(
                        base::Time::FromMillisecondsSinceUnixEpoch(123.456)));
 }
 
@@ -622,8 +622,8 @@ TEST(ToV8TraitsTest, NullableCallbackInterface) {
 TEST(ToV8TraitsTest, NullableEnumeration) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
-  TEST_TOV8_TRAITS(scope, IDLNullable<V8AlignSetting>, "null", absl::nullopt);
-  const absl::optional<V8AlignSetting> v8_align_setting =
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8AlignSetting>, "null", std::nullopt);
+  const std::optional<V8AlignSetting> v8_align_setting =
       V8AlignSetting::Create("start");
   TEST_TOV8_TRAITS(scope, IDLNullable<V8AlignSetting>, "start",
                    v8_align_setting);
@@ -633,7 +633,7 @@ TEST(ToV8TraitsTest, NullableArray) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLArray<DOMPointInit>>, "null",
-                   absl::nullopt);
+                   std::nullopt);
 
   DOMPointInit* dom_point_init1 = DOMPointInit::Create();
   DOMPointInit* dom_point_init2 = DOMPointInit::Create();
@@ -647,13 +647,13 @@ TEST(ToV8TraitsTest, NullableArray) {
 TEST(ToV8TraitsTest, NullableDate) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDate>, "null", absl::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDate>, "null", std::nullopt);
 
   base::Time expected_date;
   EXPECT_TRUE(
       base::Time::FromString("Fri, 01 Jan 2021 00:00:00 GMT", &expected_date));
   v8::Local<v8::Value> result = ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-      scope.GetScriptState(), absl::optional<base::Time>(expected_date));
+      scope.GetScriptState(), std::optional<base::Time>(expected_date));
   String actual_string =
       ToCoreString(scope.GetIsolate(),
                    result->ToString(scope.GetContext()).ToLocalChecked());

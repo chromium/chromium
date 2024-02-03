@@ -443,6 +443,21 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
             PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED));
   });
 
+  test(
+      'Clicking Chrome row opens Chrome browser camera permission settings',
+      async () => {
+        assertEquals(
+            PermissionType.kUnknown,
+            fakeHandler.getLastOpenedBrowserPermissionSettingsType());
+
+        getManagePermissionsInChromeRow()!.click();
+        await fakeHandler.whenCalled('openBrowserPermissionSettings');
+
+        assertEquals(
+            PermissionType.kCamera,
+            fakeHandler.getLastOpenedBrowserPermissionSettingsType());
+      });
+
   test('System services section when camera is allowed', async () => {
     assertEquals(
         privacyHubCameraSubpage.i18n('privacyHubSystemServicesSectionTitle'),

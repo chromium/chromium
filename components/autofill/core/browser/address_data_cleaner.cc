@@ -4,152 +4,59 @@
 
 #include "components/autofill/core/browser/address_data_cleaner.h"
 
-#include "base/logging.h"
+#include <set>
+
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/address_data_cleaner_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace autofill {
 
-AddressDataCleaner::AddressDataCleaner(
-    PersonalDataManager* personal_data_manager,
-    AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
-    PrefService* pref_service)
-    : personal_data_manager_(personal_data_manager),
-      pref_service_(pref_service),
-      alternative_state_name_map_updater_(alternative_state_name_map_updater) {
-  // Check if profile cleanup has already been performed this major version.
-  is_autofill_profile_dedupe_pending_ =
-      pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
-      CHROME_VERSION_MAJOR;
-}
+namespace {
 
-AddressDataCleaner::~AddressDataCleaner() = default;
-
-void AddressDataCleaner::MaybeCleanupAddressData() {
-  // The profile de-duplication is run once every major chrome version. If the
-  // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
-  // |AlternativeStateNameMap| needs to be populated first. Otherwise,
-  // defer the insertion to when the observers are notified.
-  if (!alternative_state_name_map_updater_
-           ->is_alternative_state_name_map_populated() &&
-      is_autofill_profile_dedupe_pending_) {
-    alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(&AddressDataCleaner::MaybeCleanupAddressData,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
+// Determines whether cleanups should be deferred because the latest data wasn't
+// synced down yet.
+bool ShouldWaitForSync(syncer::SyncService* sync_service) {
+  // No need to wait if the user is not syncing addresses.
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kAutofill)) {
+    return false;
   }
 
-  // If the user has chosen to sync addresses, wait for sync to start before
-  // performing cleanups. Otherwise do them now.
-  if (!personal_data_manager_->IsUserSelectableTypeEnabled(
-          syncer::UserSelectableType::kAutofill)) {
-    ApplyAddressFixesAndCleanups();
-  }
-}
-
-void AddressDataCleaner::MaybeCleanupAddressDataAfterSyncChange(
-    syncer::ModelType model_type) {
-  // The profile de-duplication is run once every major chrome version. If the
-  // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
-  // |AlternativeStateNameMap| needs to be populated first. Otherwise,
-  // defer the insertion to when the observers are notified.
-  // TODO(crbug.com/1111960): If sync is disabled and re-enabled, the
-  // alternative state name map should be re-populated. This is currently not
-  // the case due to the `is_alternative_state_name_map_populated()` check. This
-  // state should be reset when sync is disabled, together with
-  // `autofill_profile_sync_started_` and `contact_info_sync_started_`.
-  autofill_profile_sync_started_ |= model_type == syncer::AUTOFILL_PROFILE;
-  contact_info_sync_started_ |= model_type == syncer::CONTACT_INFO;
-  if (autofill_profile_sync_started_ && contact_info_sync_started_ &&
-      !alternative_state_name_map_updater_
-           ->is_alternative_state_name_map_populated() &&
-      is_autofill_profile_dedupe_pending_) {
-    alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(
-            &AddressDataCleaner::MaybeCleanupAddressDataAfterSyncChange,
-            weak_ptr_factory_.GetWeakPtr(), model_type));
-    return;
-  }
-
-  // Run deferred autofill address profile startup code.
-  if (autofill_profile_sync_started_ && contact_info_sync_started_ &&
-      (model_type == syncer::AUTOFILL_PROFILE ||
-       model_type == syncer::CONTACT_INFO)) {
-    ApplyAddressFixesAndCleanups();
-  }
-}
-
-void AddressDataCleaner::ApplyAddressFixesAndCleanups() {
-  if (!is_profile_cleanup_pending_) {
-    return;
-  }
-
-  // Once per major version, otherwise NOP.
-  ApplyAddressDedupingRoutine();
-
-  // Ran once on browser startup.
-  DeleteDisusedAddresses();
-
-  is_profile_cleanup_pending_ = false;
-}
-
-void AddressDataCleaner::ApplyAddressDedupingRoutine() {
-  // Check if de-duplication has already been performed on this major version.
-  if (!is_autofill_profile_dedupe_pending_) {
-    return;
-  }
-
-  const std::vector<AutofillProfile*>& profiles =
-      personal_data_manager_->GetProfiles();
-  // Early return to prevent polluting metrics with uninteresting events.
-  if (profiles.size() < 2) {
-    pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
-                              CHROME_VERSION_MAJOR);
-    return;
-  }
-  std::unordered_set<std::string> profiles_to_delete;
-  profiles_to_delete.reserve(profiles.size());
-
-  // `profiles` contains pointers to the PDM's state. Modifying them directly
-  // won't update them in the database and calling `PDM:UpdateProfile()`
-  // would discard them as a duplicate.
-  std::vector<std::unique_ptr<AutofillProfile>> new_profiles;
-  for (AutofillProfile* profile : profiles) {
-    new_profiles.push_back(std::make_unique<AutofillProfile>(*profile));
-  }
-
-  DedupeProfiles(new_profiles, profiles_to_delete);
-
-  // Apply the profile changes to the database.
-  for (const auto& profile : new_profiles) {
-    // If the profile was set to be deleted, remove it from the database,
-    // otherwise update it.
-    if (profiles_to_delete.contains(profile->guid())) {
-      personal_data_manager_->RemoveByGUID(profile->guid());
-    } else {
-      personal_data_manager_->UpdateProfile(*profile);
+  auto should_wait = [&sync_service](syncer::ModelType model_type) {
+    switch (sync_service->GetDownloadStatusFor(model_type)) {
+      case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates:
+        return true;
+      case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate:
+      // If the download status is kError, it will likely not become available
+      // anytime soon. In this case, don't defer the cleanups.
+      case syncer::SyncService::ModelTypeDownloadStatus::kError:
+        return false;
     }
-  }
-
-  is_autofill_profile_dedupe_pending_ = false;
-  // Set the pref to the current major version.
-  pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
-                            CHROME_VERSION_MAJOR);
+    NOTREACHED_NORETURN();
+  };
+  return should_wait(syncer::ModelType::AUTOFILL_PROFILE) ||
+         should_wait(syncer::ModelType::CONTACT_INFO);
 }
 
-void AddressDataCleaner::DedupeProfiles(
+// Goes through all the `existing_profiles` and merges all similar profiles
+// together. All the profiles except the results of the merges will be added to
+// `profile_guids_to_delete`.
+// Comparisons are done using `comparator`.
+void DeduplicateProfiles(
+    const AutofillProfileComparator comparator,
     std::vector<std::unique_ptr<AutofillProfile>>& existing_profiles,
-    std::unordered_set<std::string>& profiles_to_delete) const {
-  AutofillMetrics::LogNumberOfProfilesConsideredForDedupe(
+    std::set<std::string>& profiles_to_delete) {
+  autofill_metrics::LogNumberOfProfilesConsideredForDedupe(
       existing_profiles.size());
 
   // Sort the profiles by ranking score. That way the most relevant profiles
@@ -170,7 +77,6 @@ void AddressDataCleaner::DedupeProfiles(
         return a->HasGreaterRankingThan(b.get(), comparison_time);
       });
 
-  AutofillProfileComparator comparator(personal_data_manager_->app_locale());
   for (auto i = existing_profiles.begin(); i != existing_profiles.end(); ++i) {
     AutofillProfile* profile_to_merge = i->get();
 
@@ -205,8 +111,8 @@ void AddressDataCleaner::DedupeProfiles(
       }
 
       // The profiles are found to be mergeable; update the existing profile.
-      existing_profile.SaveAdditionalInfo(*profile_to_merge,
-                                          personal_data_manager_->app_locale());
+      existing_profile.MergeDataFrom(*profile_to_merge,
+                                     comparator.app_locale());
       profiles_to_delete.insert(profile_to_merge->guid());
 
       // Account profiles track from which service they originate. This allows
@@ -234,8 +140,86 @@ void AddressDataCleaner::DedupeProfiles(
       }
     }
   }
-  AutofillMetrics::LogNumberOfProfilesRemovedDuringDedupe(
+  autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(
       profiles_to_delete.size());
+}
+
+}  // namespace
+
+AddressDataCleaner::AddressDataCleaner(
+    PersonalDataManager& personal_data_manager,
+    syncer::SyncService* sync_service,
+    PrefService& pref_service,
+    AlternativeStateNameMapUpdater* alternative_state_name_map_updater)
+    : personal_data_manager_(personal_data_manager),
+      sync_service_(sync_service),
+      pref_service_(pref_service),
+      alternative_state_name_map_updater_(alternative_state_name_map_updater) {
+  pdm_observer_.Observe(&personal_data_manager_.get());
+  if (sync_service_) {
+    sync_observer_.Observe(sync_service_);
+  }
+}
+
+AddressDataCleaner::~AddressDataCleaner() = default;
+
+void AddressDataCleaner::MaybeCleanupAddressData() {
+  if (!are_cleanups_pending_ || ShouldWaitForSync(sync_service_)) {
+    return;
+  }
+  are_cleanups_pending_ = false;
+
+  // Ensure that deduplication is only run one per milestone.
+  if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
+      CHROME_VERSION_MAJOR) {
+    pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
+                              CHROME_VERSION_MAJOR);
+    ApplyDeduplicationRoutine();
+  }
+
+  // Other cleanups are performed on every browser start.
+  DeleteDisusedAddresses();
+}
+
+void AddressDataCleaner::ApplyDeduplicationRoutine() {
+  // Since deduplication (more specifically, comparing profiles) depends on the
+  // `AlternativeStateNameMap`, make sure that it gets populated first.
+  if (alternative_state_name_map_updater_ &&
+      !alternative_state_name_map_updater_
+           ->is_alternative_state_name_map_populated()) {
+    alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
+        base::BindOnce(&AddressDataCleaner::ApplyDeduplicationRoutine,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  const std::vector<AutofillProfile*>& profiles =
+      personal_data_manager_->GetProfiles();
+  // Early return to prevent polluting metrics with uninteresting events.
+  if (profiles.size() < 2) {
+    return;
+  }
+
+  // `profiles` contains pointers to the PDM's state. Modifying them directly
+  // won't update them in the database and calling `PDM:UpdateProfile()`
+  // would discard them as a duplicate.
+  std::vector<std::unique_ptr<AutofillProfile>> new_profiles;
+  for (const AutofillProfile* profile : profiles) {
+    new_profiles.push_back(std::make_unique<AutofillProfile>(*profile));
+  }
+  std::set<std::string> profiles_to_delete;
+  DeduplicateProfiles(
+      AutofillProfileComparator(personal_data_manager_->app_locale()),
+      new_profiles, profiles_to_delete);
+
+  // Apply the profile changes to the database.
+  for (const std::unique_ptr<AutofillProfile>& profile : new_profiles) {
+    if (profiles_to_delete.contains(profile->guid())) {
+      personal_data_manager_->RemoveByGUID(profile->guid());
+    } else {
+      personal_data_manager_->UpdateProfile(*profile);
+    }
+  }
 }
 
 void AddressDataCleaner::DeleteDisusedAddresses() {
@@ -257,7 +241,21 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
   for (const std::string& guid : guids_to_delete) {
     personal_data_manager_->RemoveByGUID(guid);
   }
-  AutofillMetrics::LogNumberOfAddressesDeletedForDisuse(guids_to_delete.size());
+  autofill_metrics::LogNumberOfAddressesDeletedForDisuse(
+      guids_to_delete.size());
+}
+
+void AddressDataCleaner::OnPersonalDataFinishedProfileTasks() {
+  MaybeCleanupAddressData();
+}
+
+void AddressDataCleaner::OnStateChanged(syncer::SyncService* sync_service) {
+  // After sync has started, it's possible that the PDM is still reloading any
+  // changed data from the database. In this case, delay the cleanups slightly
+  // longer until `OnPersonalDataFinishedProfileTasks()` is called.
+  if (!personal_data_manager_->IsAwaitingPendingChanges()) {
+    MaybeCleanupAddressData();
+  }
 }
 
 }  // namespace autofill

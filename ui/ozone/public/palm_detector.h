@@ -15,6 +15,10 @@ namespace ui {
 class COMPONENT_EXPORT(OZONE_BASE) PalmDetector {
  public:
   enum class DetectionResult { kNoPalm = 0, kPalm = 1 };
+  enum class DeviceId {
+    kRex = 0,
+    kGeralt = 1,
+  };
 
   using DetectionDoneCallback = base::OnceCallback<void(DetectionResult)>;
 
@@ -23,10 +27,17 @@ class COMPONENT_EXPORT(OZONE_BASE) PalmDetector {
   PalmDetector& operator=(const PalmDetector&) = delete;
   virtual ~PalmDetector();
 
-  // Detects if a frame of heatmap data, provided by `data`, contains a palm.
-  // The `callback` will be supplied with the detection result asynchronously.
-  virtual void DetectPalm(const std::vector<double>& data,
-                          DetectionDoneCallback callback) = 0;
+  // Starts the palm detection service based on the device id and path.
+  virtual void Start(DeviceId device, std::string_view path) = 0;
+
+  // Gets the palm detection results of the latest heatmap data.
+  virtual DetectionResult GetDetectionResult() const = 0;
+
+  // Returns if the palm detection results is ready.
+  bool IsReady() const { return is_ready_; }
+
+ protected:
+  bool is_ready_ = false;
 };
 
 }  // namespace ui

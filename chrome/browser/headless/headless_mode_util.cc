@@ -15,6 +15,7 @@
 #include "base/base_switches.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "chrome/browser/headless/headless_mode_switches.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
 
@@ -125,6 +126,11 @@ bool IsOldHeadlessMode() {
   return GetHeadlessMode() == kOldHeadlessMode;
 }
 
+bool IsChromeSchemeUrlAllowed() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(switches::kAllowChromeSchemeUrl);
+}
+
 std::unique_ptr<HeadlessModeHandle> InitHeadlessMode() {
   CHECK(IsHeadlessMode());
 
@@ -150,6 +156,10 @@ bool IsOldHeadlessMode() {
 #else
   return false;
 #endif
+}
+
+bool IsChromeSchemeUrlAllowed() {
+  return false;
 }
 
 void SetUpCommandLine(const base::CommandLine* command_line) {}

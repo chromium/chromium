@@ -114,6 +114,12 @@ class WebState;
 // the moment extraction started and completion).
 - (void)processWithNoSavedCredentialsWithFrameId:(const std::string&)frameId;
 
+// Returns NO if the field does not have the "password" field type or if the
+// field is confirmed to NOT be a password field by server predictions.
+// Returns YES otherwise.
+- (BOOL)isPasswordFieldOnForm:(FormSuggestionProviderQuery*)formQuery
+                     webFrame:(web::WebFrame*)webFrame;
+
 @end
 
 NS_ASSUME_NONNULL_END

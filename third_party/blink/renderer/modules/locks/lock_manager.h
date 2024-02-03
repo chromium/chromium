@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_LOCKS_LOCK_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_LOCKS_LOCK_MANAGER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/locks/lock_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_lock_options.h"
@@ -102,7 +103,7 @@ class LockManager final : public ScriptWrappable,
   HeapMojoRemote<mojom::blink::LockManager> service_;
   HeapMojoRemote<mojom::blink::FeatureObserver> observer_;
 
-  absl::optional<bool> cached_allowed_;
+  std::optional<bool> cached_allowed_;
 };
 
 }  // namespace blink

@@ -144,7 +144,8 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
     test_profile_ = profile_manager_.CreateTestingProfile(kFakeTestProfile);
 
     // Set up routine with fakes.
-    https_latency_routine_ = std::make_unique<HttpsLatencyRoutine>();
+    https_latency_routine_ = std::make_unique<HttpsLatencyRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     https_latency_routine_->set_network_context_getter(base::BindRepeating(
         &HttpsLatencyRoutineTest::GetNetworkContext, base::Unretained(this)));
     https_latency_routine_->set_http_request_manager_getter(

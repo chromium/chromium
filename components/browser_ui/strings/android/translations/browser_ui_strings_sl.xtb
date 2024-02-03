@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1384959399684842514">Prenos je zaustavljen</translation>
 <translation id="1415402041810619267">URL je skrajšan</translation>
-<translation id="1426410128494586442">Da</translation>
 <translation id="1434873037477293673">kartica z znižano ceno</translation>
 <translation id="1448064542941920355">Zmanjšanje povečave/pomanjšave</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> spletnem mestu}one{<ph name="SITE_COUNT" /> spletnem mestu}two{<ph name="SITE_COUNT" /> spletnih mestih}few{<ph name="SITE_COUNT" /> spletnih mestih}other{<ph name="SITE_COUNT" /> spletnih mestih}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Piškotki drugih spletnih mest so blokirani</translation>
 <translation id="2238944249568001759">Predlagana iskanja na podlagi zadnjega zavihka</translation>
+<translation id="2241587408274973373">Kartice strani s povezavami</translation>
 <translation id="2241634353105152135">Samo enkrat</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Odstrani</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Blokirani so za 1 spletno mesto}one{Blokirani so za # spletno mesto}two{Blokirani so za # spletni mesti}few{Blokirani so za # spletna mesta}other{Blokirani so za # spletnih mest}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Spletna mesta lahko prikazujejo pozive za prijavo zunanjih ponudnikov.</translation>
 <translation id="2790501146643349491">Če je ta možnost vklopljena, nedavno zaprta spletna mesta lahko dokončajo pošiljanje in prejemanje podatkov. Če je ta možnost izklopljena, nedavno zaprta spletna mesta ne smejo dokončati pošiljanja ali prejemanja podatkov.</translation>
 <translation id="2822354292072154809">Ali ste prepričani, da želite ponastaviti vsa dovoljenja za spletna mesta za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" />, <ph name="SEPARATOR" />, <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Zahtevanje pogleda za mobilno napravo</translation>
 <translation id="2870560284913253234">Spletno mesto</translation>
 <translation id="2874939134665556319">Prejšnja skladba</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Pregledovalnik potrdil</translation>
 <translation id="2979365474350987274">Piškotki tretjih oseb so omejeni</translation>
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
-<translation id="3013291976881901233">Naprave MIDI</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
 <translation id="3069226013421428034">Omogočanje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Povezano z napravo USB</translation>
 <translation id="4194328954146351878">Vprašaj, preden se spletnim mestom dovoli ogled in spreminjanje podatkov v napravah NFC (priporočeno)</translation>
 <translation id="4200726100658658164">Odpri nastavitve lokacije</translation>
-<translation id="4212246570487010370">Nadaljevanje brskanja</translation>
 <translation id="4226663524361240545">Ob prejemanju obvestil naprava morda vibrira</translation>
 <translation id="4259722352634471385">Krmarjenje je blokirano: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Premakni dol</translation>
 <translation id="6749077623962119521">Želite ponastaviti dovoljenja?</translation>
 <translation id="6766622839693428701">Povlecite navzdol, da zaprete.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> iz naprave »<ph name="FROM_DEVICE" />«</translation>
 <translation id="6787751205395685251">Izberite možnost za spletno mesto <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6818926723028410516">Izberite elemente</translation>

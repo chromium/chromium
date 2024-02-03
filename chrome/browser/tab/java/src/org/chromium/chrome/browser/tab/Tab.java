@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -37,6 +38,21 @@ public interface Tab extends TabLifecycle {
     public @interface TabLoadStatus {
         int PAGE_LOAD_FAILED = 0;
         int DEFAULT_PAGE_LOAD = 1;
+    }
+
+    /** The result of the loadUrl. */
+    public static class LoadUrlResult {
+        /** Tab load status. */
+        public final @TabLoadStatus int tabLoadStatus;
+
+        /** NavigationHandle for the loaded url. */
+        public final @Nullable NavigationHandle navigationHandle;
+
+        LoadUrlResult(
+                @TabLoadStatus int tabLoadStatus, @Nullable NavigationHandle navigationHandle) {
+            this.tabLoadStatus = tabLoadStatus;
+            this.navigationHandle = navigationHandle;
+        }
     }
 
     /**
@@ -213,12 +229,13 @@ public interface Tab extends TabLifecycle {
 
     /**
      * Causes this tab to navigate to the specified URL.
+     *
      * @param params parameters describing the url load. Note that it is important to set correct
-     *         page transition as it is used for ranking URLs in the history so the omnibox
-     *         can report suggestions correctly.
-     * @return PAGE_LOAD_FAILED if the URL could not be loaded, otherwise DEFAULT_PAGE_LOAD.
+     *     page transition as it is used for ranking URLs in the history so the omnibox can report
+     *     suggestions correctly.
+     * @return a {@link LoadUrlResult} for this load.
      */
-    int loadUrl(LoadUrlParams params);
+    LoadUrlResult loadUrl(LoadUrlParams params);
 
     /**
      * Loads the tab if it's not loaded (e.g. because it was killed in background).

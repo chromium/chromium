@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
+
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
@@ -20,7 +22,7 @@ namespace growth {
 namespace {
 
 bool MatchPref(const base::Value::List* criterias,
-               base::StringPiece pref_path,
+               std::string_view pref_path,
                const PrefService* pref_service) {
   if (!pref_service) {
     LOG(ERROR) << "Matching pref before pref service is available";

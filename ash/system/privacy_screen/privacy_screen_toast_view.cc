@@ -170,7 +170,7 @@ void PrivacyScreenToastView::SetPrivacyScreenEnabled(bool enabled,
       IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOAST_ACCESSIBILITY_TEXT,
       enabled_state, managed_state));
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 bool PrivacyScreenToastView::IsButtonFocused() const {

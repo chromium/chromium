@@ -452,7 +452,7 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
     void OnDeferCommitsChanged(
         bool defer_status,
         cc::PaintHoldingReason reason,
-        absl::optional<cc::PaintHoldingCommitTrigger> trigger) override {
+        std::optional<cc::PaintHoldingCommitTrigger> trigger) override {
       commit_defer_status_ = defer_status;
       last_paint_holding_trigger_ = trigger;
     }
@@ -482,7 +482,7 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
 
     bool commit_defer_status() const { return commit_defer_status_; }
 
-    const absl::optional<cc::PaintHoldingCommitTrigger>&
+    const std::optional<cc::PaintHoldingCommitTrigger>&
     last_paint_holding_trigger() const {
       return last_paint_holding_trigger_;
     }
@@ -492,7 +492,7 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
     bool did_request_frame_observer_ = false;
     bool service_frame_sink_request_ = false;
     bool commit_defer_status_ = false;
-    absl::optional<cc::PaintHoldingCommitTrigger> last_paint_holding_trigger_;
+    std::optional<cc::PaintHoldingCommitTrigger> last_paint_holding_trigger_;
   };
 
   class LayerTreeViewForTesting : public LayerTreeView {
@@ -629,13 +629,13 @@ TEST_F(LayerTreeViewDelegateChangeTest, SwapAfterFrameSinkInitialization) {
 TEST_F(LayerTreeViewDelegateChangeTest, StopDeferringCommitsOnSwap) {
   EXPECT_FALSE(old_layer_tree_view_delegate_.commit_defer_status());
   EXPECT_EQ(old_layer_tree_view_delegate_.last_paint_holding_trigger(),
-            absl::nullopt);
+            std::nullopt);
 
   layer_tree_view_.layer_tree_host()->StartDeferringCommits(
       base::Seconds(1), cc::PaintHoldingReason::kFirstContentfulPaint);
   EXPECT_TRUE(old_layer_tree_view_delegate_.commit_defer_status());
   EXPECT_EQ(old_layer_tree_view_delegate_.last_paint_holding_trigger(),
-            absl::nullopt);
+            std::nullopt);
 
   SwapDelegate();
   EXPECT_FALSE(old_layer_tree_view_delegate_.commit_defer_status());

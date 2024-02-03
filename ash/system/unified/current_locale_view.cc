@@ -52,7 +52,7 @@ void CurrentLocaleView::OnLocaleListSet() {
       break;
     }
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 const char* CurrentLocaleView::GetClassName() const {

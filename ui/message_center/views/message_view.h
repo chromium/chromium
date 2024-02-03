@@ -143,6 +143,14 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void CloseSwipeControl();
   virtual void SlideOutAndClose(int direction);
 
+  // This function is called when the UI changes from notification view to
+  // inline settings or vice versa.
+  virtual void ToggleInlineSettings(const ui::Event& event);
+
+  // This function is called when the UI changes from notification view to
+  // snooze settings or vice versa.
+  virtual void ToggleSnoozeSettings(const ui::Event& event);
+
   // Update corner radii of the notification. Subclasses will override this to
   // implement rounded corners if they don't use MessageView's default
   // background.
@@ -203,6 +211,10 @@ class MESSAGE_CENTER_EXPORT MessageView
   // MessageView::Mode enum for detail.
   void SetSettingMode(bool setting_mode);
 
+  // Disable notifications from the source associated with this view's
+  // `notification_id`.
+  void DisableNotification();
+
   // Disables slide by vertical swipe regardless of the current notification
   // mode.
   void DisableSlideForcibly(bool disable);
@@ -229,6 +241,16 @@ class MESSAGE_CENTER_EXPORT MessageView
   MessageView* parent_message_view() { return parent_message_view_; }
 
   void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
+
+  bool inline_settings_enabled() const { return inline_settings_enabled_; }
+  void set_inline_settings_enabled(bool inline_settings_enabled) {
+    inline_settings_enabled_ = inline_settings_enabled;
+  }
+
+  bool snooze_settings_enabled() const { return snooze_settings_enabled_; }
+  void set_snooze_settings_enabled(bool snooze_settings_enabled) {
+    snooze_settings_enabled_ = snooze_settings_enabled;
+  }
 
  protected:
   class HighlightPathGenerator : public views::HighlightPathGenerator {
@@ -305,6 +327,12 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   // True if the view is in a slide.
   bool is_sliding_ = false;
+
+  // Describes whether the view can display inline settings or not.
+  bool inline_settings_enabled_ = false;
+
+  // Describes whether the view can display snooze settings or not.
+  bool snooze_settings_enabled_ = false;
 
   raw_ptr<MessageView> parent_message_view_ = nullptr;
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;

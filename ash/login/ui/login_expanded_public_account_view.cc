@@ -225,7 +225,7 @@ class SelectionButtonView : public LoginButton {
         gfx::Size(left_margin_, kNonEmptyHeight));
     right_margin_view_->SetPreferredSize(
         gfx::Size(right_margin_, kNonEmptyHeight));
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   void SetTextColorId(ui::ColorId color_id) {
@@ -234,7 +234,7 @@ class SelectionButtonView : public LoginButton {
   void SetText(const std::u16string& text) {
     SetAccessibleName(text);
     label_->SetText(text);
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   void SetIcon(const gfx::VectorIcon& icon, ui::ColorId color_id) {
@@ -311,7 +311,7 @@ class MonitoringWarningView : public NonAccessibleView {
            label_->GetHeightForWidth(w);
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     int y = 0;
 
     image_->SizeToPreferredSize();
@@ -348,7 +348,7 @@ class MonitoringWarningView : public NonAccessibleView {
     }
     label_->SetText(label_text);
     InvalidateLayout();
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   friend class LoginExpandedPublicAccountView::TestApi;
@@ -464,9 +464,14 @@ class RightPaneView : public NonAccessibleView {
 
   ~RightPaneView() override = default;
 
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    return GetLayoutManager()->GetPreferredSize(this, available_size);
+  }
+
   void UpdateForUser(const LoginUserInfo& user) {
     DCHECK_EQ(user.basic_user_info.type,
-              user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+              user_manager::UserType::kPublicAccount);
     current_user_ = user;
     if (!language_changed_by_user_) {
       selected_language_item_value_ = user.public_account_info->default_locale;
@@ -932,8 +937,8 @@ int LoginExpandedPublicAccountView::GetHeightForWidth(int width) const {
   return GetPreferredSizePortrait().height();
 }
 
-void LoginExpandedPublicAccountView::Layout() {
-  View::Layout();
+void LoginExpandedPublicAccountView::Layout(PassKey) {
+  LayoutSuperclass<View>(this);
 
   submit_button_->SizeToPreferredSize();
   const int submit_button_x =

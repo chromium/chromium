@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
@@ -105,7 +106,8 @@ class SessionImpl::ContextProcessor
     session_->GetOrCreateSession().AddContext(
         on_device_model::mojom::InputOptions::New(
             input_, num_tokens, tokens_processed_, /*ignore_context=*/false,
-            /*max_output_tokens=*/std::nullopt, /*ts_interval=*/std::nullopt),
+            /*max_output_tokens=*/std::nullopt,
+            /*safety_interval=*/std::nullopt),
         client_.BindNewPipeAndPassRemote());
   }
 
@@ -329,15 +331,18 @@ void SessionImpl::ExecuteModel(
       FROM_HERE, features::GetOnDeviceModelTimeForInitialResponse(),
       base::BindOnce(&SessionImpl::DestroyOnDeviceStateAndFallbackToRemote,
                      base::Unretained(this), ExecuteModelResult::kTimedOut));
+
+  auto options = on_device_model::mojom::InputOptions::New();
+  options->text = input->input_string;
+  options->max_tokens = features::GetOnDeviceModelMaxTokensForExecute();
+  options->ignore_context = input->should_ignore_input_context;
+  options->max_output_tokens = features::GetOnDeviceModelMaxTokensForOutput();
+  if (safety_config_) {
+    options->safety_interval =
+        features::GetOnDeviceModelTextSafetyTokenInterval();
+  }
   GetOrCreateSession().Execute(
-      on_device_model::mojom::InputOptions::New(
-          input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
-          /*token_offset=*/std::nullopt, input->should_ignore_input_context,
-          features::GetOnDeviceModelMaxTokensForOutput(),
-          safety_config_
-              ? std::make_optional(
-                    features::GetOnDeviceModelTextSafetyTokenInterval())
-              : std::nullopt),
+      std::move(options),
       on_device_state_->receiver.BindNewPipeAndPassRemote());
   on_device_state_->receiver.set_disconnect_handler(
       base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
@@ -365,7 +370,7 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
     // Check for repeats here instead of SendResponse since we see each new
     // token as it comes in here, and SendResponse will only see tokens if
-    // ts_scores are available.
+    // safety info is available.
     int num_repeats = features::GetOnDeviceModelNumRepeats();
     if (num_repeats > 1 &&
         HasRepeatingSuffix(features::GetOnDeviceModelMinRepeatChars(),
@@ -375,13 +380,15 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     }
   }
 
-  if (chunk->ts_scores) {
-    on_device_state_->current_text_safety_scores = *chunk->ts_scores;
+  bool chunk_provided_safety_info = false;
+  if (chunk->safety_info) {
+    on_device_state_->current_safety_info = std::move(chunk->safety_info);
+    chunk_provided_safety_info = true;
   }
 
   // Only proceed to send the response if we are not evaluating text safety or
   // if there are text safety scores to evaluate.
-  if (!safety_config_ || chunk->ts_scores) {
+  if (!safety_config_ || chunk_provided_safety_info) {
     SendResponse(ResponseType::kPartial);
   }
 }
@@ -401,7 +408,7 @@ void SessionImpl::OnComplete(
     controller_->access_controller(/*pass_key=*/{})->OnResponseCompleted();
   }
 
-  if (safety_config_ && !summary->ts_scores) {
+  if (safety_config_ && !summary->safety_info) {
     on_device_state_->receiver.ReportBadMessage(
         "Missing required safety scores on complete");
     CancelPendingResponse(
@@ -410,8 +417,8 @@ void SessionImpl::OnComplete(
     return;
   }
 
-  if (summary->ts_scores) {
-    on_device_state_->current_text_safety_scores = *summary->ts_scores;
+  if (summary->safety_info) {
+    on_device_state_->current_safety_info = std::move(summary->safety_info);
   }
   SendResponse(ResponseType::kComplete);
   on_device_state_->ResetRequestState();
@@ -510,12 +517,14 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   }
 
   const bool is_complete = response_type != ResponseType::kPartial;
-
-  bool is_unsafe = IsUnsafeText(on_device_state_->current_text_safety_scores);
+  const bool is_unsupported_language =
+      IsTextInUnsupportedOrUndeterminedLanguage(
+          on_device_state_->current_safety_info);
+  const bool is_unsafe = IsUnsafeText(on_device_state_->current_safety_info);
   if (is_unsafe || is_complete) {
     on_device_state_->AddTextSafetyExecutionLogging(is_unsafe);
   }
-  if (is_unsafe) {
+  if (is_unsafe || is_unsupported_language) {
     if (on_device_state_->histogram_logger) {
       on_device_state_->histogram_logger->set_result(
           ExecuteModelResult::kUsedOnDeviceOutputUnsafe);
@@ -524,7 +533,10 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     if (features::GetOnDeviceModelRetractUnsafeContent()) {
       on_device_state_->current_response.clear();
       CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
-                            ModelExecutionError::kFiltered);
+                            is_unsupported_language
+                                ? ModelExecutionError::kUnsupportedLanguage
+                                : ModelExecutionError::kFiltered);
+
       return;
     }
   }
@@ -558,8 +570,8 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     // OnComplete event.
     on_device_state_->receiver.reset();
     auto summary = on_device_model::mojom::ResponseSummary::New();
-    if (!on_device_state_->current_text_safety_scores.empty()) {
-      summary->ts_scores = on_device_state_->current_text_safety_scores;
+    if (on_device_state_->current_safety_info) {
+      summary->safety_info = std::move(on_device_state_->current_safety_info);
     }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -630,23 +642,60 @@ std::unique_ptr<google::protobuf::MessageLite> SessionImpl::MergeContext(
   return message;
 }
 
-bool SessionImpl::IsUnsafeText(const std::vector<float>& scores) const {
+bool SessionImpl::IsTextInUnsupportedOrUndeterminedLanguage(
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
+  if (!safety_config_) {
+    // No safety config, so no language requirements.
+    return false;
+  }
+
+  CHECK(safety_config_);
+  if (safety_config_->allowed_languages().empty()) {
+    // No language requirements.
+    return false;
+  }
+
+  CHECK(safety_info);
+  if (!safety_info->language) {
+    // No language detection available, but language detection is required.
+    // Treat as an unsupported language.
+    return true;
+  }
+
+  if (!base::Contains(safety_config_->allowed_languages(),
+                      safety_info->language->code)) {
+    // Unsupported language.
+    return true;
+  }
+
+  if (safety_info->language->reliability <
+      features::GetOnDeviceModelLanguageDetectionMinimumReliability()) {
+    // Unreliable language detection. Treat as an unsupported language.
+    return true;
+  }
+
+  // Language was detected reliably and is supported.
+  return false;
+}
+
+bool SessionImpl::IsUnsafeText(
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
   if (!safety_config_) {
     // If no safety config and we are allowed here, that means we don't care
     // about the safety scores so just mark the content as safe.
     return false;
   }
 
-  CHECK(!scores.empty());
-
+  CHECK(safety_info);
+  CHECK(!safety_info->class_scores.empty());
   for (const auto& threshold : safety_config_->safety_category_thresholds()) {
     size_t output_index = static_cast<size_t>(threshold.output_index());
-    if (static_cast<size_t>(output_index) >= scores.size()) {
+    if (static_cast<size_t>(output_index) >= safety_info->class_scores.size()) {
       // Needed to evaluate a score, but output was invalid. Mark it as unsafe.
       return true;
     }
 
-    if (scores.at(output_index) >= threshold.threshold()) {
+    if (safety_info->class_scores.at(output_index) >= threshold.threshold()) {
       // Output score exceeded threshold.
       return true;
     }
@@ -679,7 +728,7 @@ SessionImpl::OnDeviceState::MutableLoggedResponse() {
 }
 
 void SessionImpl::OnDeviceState::AddTextSafetyExecutionLogging(bool is_unsafe) {
-  if (current_text_safety_scores.empty()) {
+  if (!current_safety_info) {
     return;
   }
 
@@ -693,8 +742,8 @@ void SessionImpl::OnDeviceState::AddTextSafetyExecutionLogging(bool is_unsafe) {
       ->set_text(current_response);
   auto* ts_resp = ts_execution_info->mutable_response()
                       ->mutable_text_safety_model_response();
-  *ts_resp->mutable_scores() = {current_text_safety_scores.begin(),
-                                current_text_safety_scores.end()};
+  *ts_resp->mutable_scores() = {current_safety_info->class_scores.begin(),
+                                current_safety_info->class_scores.end()};
   ts_resp->set_is_unsafe(is_unsafe);
 }
 
@@ -702,7 +751,7 @@ void SessionImpl::OnDeviceState::ResetRequestState() {
   receiver.reset();
   callback.Reset();
   current_response.clear();
-  current_text_safety_scores.clear();
+  current_safety_info.reset();
   start = base::TimeTicks();
   timer_for_first_response.Stop();
   histogram_logger.reset();

@@ -105,6 +105,20 @@ std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
   return results;
 }
 
+std::optional<size_t> GetLengthOfLongestResponse(
+    const std::vector<orca::mojom::TextQueryResultPtr>& responses) {
+  if (responses.size() == 0) {
+    return std::nullopt;
+  }
+  size_t max_response_length = 0;
+  for (const auto& response : responses) {
+    if (response->text.length() > max_response_length) {
+      max_response_length = response->text.length();
+    }
+  }
+  return max_response_length;
+}
+
 }  // namespace
 
 TextQueryProviderForOrca::TextQueryProviderForOrca(
@@ -140,6 +154,8 @@ void TextQueryProviderForOrca::Process(orca::mojom::TextQueryRequestPtr request,
             if (status.status_code == manta::MantaStatusCode::kOk) {
               auto responses = ParseSuccessResponse(request_id, dict);
               int number_of_responses = responses.size();
+              std::optional<size_t> max_response_length =
+                  GetLengthOfLongestResponse(responses);
 
               std::move(process_callback)
                   .Run(orca::mojom::TextQueryResponse::NewResults(
@@ -148,6 +164,10 @@ void TextQueryProviderForOrca::Process(orca::mojom::TextQueryRequestPtr request,
               metrics_recorder->LogEditorState(EditorStates::kSuccessResponse);
               metrics_recorder->LogNumberOfResponsesFromServer(
                   number_of_responses);
+              if (max_response_length.has_value()) {
+                metrics_recorder->LogLengthOfLongestResponseFromServer(
+                    *max_response_length);
+              }
               return;
             }
 

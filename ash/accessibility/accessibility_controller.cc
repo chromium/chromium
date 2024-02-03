@@ -317,7 +317,7 @@ bool IsSigninPrefService(PrefService* pref_service) {
 bool IsCurrentSessionGuest() {
   const std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
-  return user_type && *user_type == user_manager::USER_TYPE_GUEST;
+  return user_type && *user_type == user_manager::UserType::kGuest;
 }
 
 bool IsUserFirstLogin() {
@@ -1241,13 +1241,39 @@ void AccessibilityController::RegisterProfilePrefs(
       prefs::kAccessibilitySelectToSpeakVoiceName,
       kDefaultAccessibilitySelectToSpeakVoiceName,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityColorVisionCorrectionAmount, 100,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityColorVisionCorrectionType,
+      ColorVisionCorrectionType::kDeuteranomaly,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  if (::features::IsAccessibilityFaceGazeEnabled()) {
     registry->RegisterIntegerPref(
-        prefs::kAccessibilityColorVisionCorrectionAmount, 100,
+        prefs::kAccessibilityFaceGazeCursorSpeedUp, kDefaultFaceGazeCursorSpeed,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterIntegerPref(
-        prefs::kAccessibilityColorVisionCorrectionType,
-        ColorVisionCorrectionType::kDeuteranomaly,
+        prefs::kAccessibilityFaceGazeCursorSpeedDown,
+        kDefaultFaceGazeCursorSpeed,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityFaceGazeCursorSpeedLeft,
+        kDefaultFaceGazeCursorSpeed,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityFaceGazeCursorSpeedRight,
+        kDefaultFaceGazeCursorSpeed,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityFaceGazeCursorSmoothing,
+        kDefaultFaceGazeCursorSmoothing,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterBooleanPref(
+        prefs::kAccessibilityFaceGazeCursorUseAcceleration,
+        kDefaultFaceGazeCursorUseAcceleration,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  }
 }
 
 void AccessibilityController::Shutdown() {

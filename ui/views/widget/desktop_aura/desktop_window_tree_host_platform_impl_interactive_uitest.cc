@@ -122,6 +122,10 @@ class FakeWmMoveResizeHandler : public ui::WmMoveResizeHandler {
 
   void set_bounds(const gfx::Rect& bounds) { bounds_ = bounds; }
 
+  void set_platform_window(ui::PlatformWindow* platform_window) {
+    platform_window_ = platform_window;
+  }
+
   // ui::WmMoveResizeHandler
   void DispatchHostWindowDragMovement(
       int hittest,
@@ -440,6 +444,8 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
                                        ui::EF_LEFT_MOUSE_BUTTON));
     }
   }
+  handler->set_platform_window(nullptr);
+  widget.reset();
 }
 
 // Tests that the window is maximized in response to a double click event.

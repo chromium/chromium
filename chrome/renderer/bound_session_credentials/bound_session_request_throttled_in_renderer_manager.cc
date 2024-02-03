@@ -58,7 +58,9 @@ void BoundSessionRequestThrottledInRendererManager::
   if (!remote_.is_connected()) {
     // TODO(b/279719656): Make sure the callback is always called
     // asynchronously.
-    std::move(callback).Run(UnblockAction::kCancel);
+    std::move(callback).Run(
+        UnblockAction::kCancel,
+        chrome::mojom::ResumeBlockedRequestsTrigger::kRendererDisconnected);
     return;
   }
 
@@ -81,27 +83,29 @@ void BoundSessionRequestThrottledInRendererManager::OnRemoteDisconnected() {
   // happen on profile shutdown. Cancel requests to mitigate the risk of sending
   // requests without the required short lived cookie.
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  CancelAllDeferredRequests();
+  CancelAllDeferredRequests(
+      chrome::mojom::ResumeBlockedRequestsTrigger::kRendererDisconnected);
 }
 
-void BoundSessionRequestThrottledInRendererManager::
-    CancelAllDeferredRequests() {
+void BoundSessionRequestThrottledInRendererManager::CancelAllDeferredRequests(
+    chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  RunAllCallbacks(UnblockAction::kCancel);
+  RunAllCallbacks(UnblockAction::kCancel, resume_trigger);
 }
 
-void BoundSessionRequestThrottledInRendererManager::
-    ResumeAllDeferredRequests() {
+void BoundSessionRequestThrottledInRendererManager::ResumeAllDeferredRequests(
+    chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  RunAllCallbacks(UnblockAction::kResume);
+  RunAllCallbacks(UnblockAction::kResume, resume_trigger);
 }
 
 void BoundSessionRequestThrottledInRendererManager::RunAllCallbacks(
-    UnblockAction action) {
+    UnblockAction action,
+    chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   std::vector<ResumeOrCancelThrottledRequestCallback> callbacks;
   std::swap(callbacks, resume_or_cancel_deferred_request_callbacks_);
   for (auto& callback : callbacks) {
-    std::move(callback).Run(action);
+    std::move(callback).Run(action, resume_trigger);
   }
 }

@@ -281,6 +281,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Opened"/>
 </enum>
 
+<enum name="BooleanThumbsUp">
+  <int value="0" label="Thumbs down"/>
+  <int value="1" label="Thumbs up"/>
+</enum>
+
 <enum name="BrowserDataBackMigratorFinalStatus">
   <int value="0" label="Succeeded"/>
   <int value="1" label="PreMigrationCleanUpDeleteTmpDirFailed"/>
@@ -1058,6 +1063,11 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Focus panel"/>
   <int value="1" label="Contextual panel"/>
   <int value="2" label="Feature pod"/>
+</enum>
+
+<enum name="FocusModeStartSessionSource">
+  <int value="0" label="Focus panel"/>
+  <int value="1" label="Feature pod"/>
 </enum>
 
 <enum name="GlanceableStudentAssignmentList">

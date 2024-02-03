@@ -247,10 +247,11 @@ void SplitCookieVectorIntoSecureAndNonSecure(
     CookieMonster::CookieItVector* non_secure_cookie_its) {
   DCHECK(secure_cookie_its && non_secure_cookie_its);
   for (const auto& curit : cookie_its) {
-    if (curit->second->IsSecure())
+    if (curit->second->SecureAttribute()) {
       secure_cookie_its->push_back(curit);
-    else
+    } else {
       non_secure_cookie_its->push_back(curit);
+    }
   }
 }
 
@@ -314,7 +315,7 @@ bool IsCookieEligibleForEviction(CookiePriority current_priority_level,
                                  bool protect_secure_cookies,
                                  const CanonicalCookie* cookie) {
   if (cookie->Priority() == current_priority_level && protect_secure_cookies)
-    return !cookie->IsSecure();
+    return !cookie->SecureAttribute();
 
   return cookie->Priority() == current_priority_level;
 }
@@ -326,8 +327,9 @@ size_t CountCookiesForPossibleDeletion(
   size_t cookies_count = 0U;
   for (const auto& cookie : *cookies) {
     if (cookie->second->Priority() == priority) {
-      if (!protect_secure_cookies || cookie->second->IsSecure())
+      if (!protect_secure_cookies || cookie->second->SecureAttribute()) {
         cookies_count++;
+      }
     }
   }
   return cookies_count;
@@ -343,7 +345,7 @@ void HistogramExpirationDuration(const CanonicalCookie& cookie,
 
   int expiration_duration_minutes =
       (cookie.ExpiryDate() - creation_time).InMinutes();
-  if (cookie.IsSecure()) {
+  if (cookie.SecureAttribute()) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDurationMinutesSecure",
                                 expiration_duration_minutes, 1,
                                 kMinutesInTenYears, 50);
@@ -1419,7 +1421,8 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     // equivalence is slightly more inclusive than the usual IsEquivalent() one.
     //
     // See: https://tools.ietf.org/html/draft-ietf-httpbis-cookie-alone
-    if (cur_existing_cookie->IsSecure() && !allowed_to_set_secure_cookie &&
+    if (cur_existing_cookie->SecureAttribute() &&
+        !allowed_to_set_secure_cookie &&
         cookie_being_set.IsEquivalentForSecureCookieMatching(
             *cur_existing_cookie)) {
       // Hold onto this for additional Netlogging later if we end up preserving
@@ -1551,7 +1554,7 @@ void CookieMonster::LogCookieTypeToUMA(
           ? 1 << COOKIE_TYPE_SAME_SITE
           : 0;
   type_sample |= cc->IsHttpOnly() ? 1 << COOKIE_TYPE_HTTPONLY : 0;
-  type_sample |= cc->IsSecure() ? 1 << COOKIE_TYPE_SECURE : 0;
+  type_sample |= cc->SecureAttribute() ? 1 << COOKIE_TYPE_SECURE : 0;
   UMA_HISTOGRAM_EXACT_LINEAR("Cookie.Type", type_sample,
                              (1 << COOKIE_TYPE_LAST_ENTRY));
 }
@@ -1710,10 +1713,10 @@ void CookieMonster::SetCanonicalCookie(
       // it was added to evaluate has been implemented and standardized.
       CookieSource cookie_source_sample =
           (source_url.SchemeIsCryptographic()
-               ? (cc->IsSecure()
+               ? (cc->SecureAttribute()
                       ? CookieSource::kSecureCookieCryptographicScheme
                       : CookieSource::kNonsecureCookieCryptographicScheme)
-               : (cc->IsSecure()
+               : (cc->SecureAttribute()
                       ? CookieSource::kSecureCookieNoncryptographicScheme
                       : CookieSource::kNonsecureCookieNoncryptographicScheme));
       UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceScheme",

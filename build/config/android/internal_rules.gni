@@ -4273,10 +4273,14 @@ if (enable_java_templates) {
                   [ get_path_info(source_file, "abspath") ]
             }
           }
-
+          _abs_jar_path = ""
+          if (defined(invoker.jar_path)) {
+            _abs_jar_path = get_path_info(invoker.jar_path, "abspath")
+          }
           # See crbug/1449896 for more details about the metadata fields
           # and why they are added.
           metadata = {
+            jar_path = [ _abs_jar_path ]
             source_files = _abs_path_source_files
             all_deps = _abs_deps
             target_type = [ _type ]

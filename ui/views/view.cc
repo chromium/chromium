@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -18,6 +19,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
@@ -62,7 +64,7 @@
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/action_view_interface.h"
+#include "ui/views/actions/action_view_interface.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/buildflags.h"
@@ -237,6 +239,11 @@ View::View() {
 }
 
 View::~View() {
+  if (layouts_since_last_paint_) {
+    UMA_HISTOGRAM_COUNTS_100("Views.UnnecessaryLayouts",
+                             layouts_since_last_paint_);
+  }
+
   for (ViewObserver& observer : observers_) {
     observer.OnViewHierarchyWillBeDeleted(this);
   }
@@ -391,7 +398,7 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
       needs_layout_ = false;
       TRACE_EVENT1("views", "View::Layout(set_bounds)", "class",
                    GetClassName());
-      Layout();
+      LayoutImmediately();
     }
     return;
   }
@@ -440,7 +447,7 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
     needs_layout_ = false;
     TRACE_EVENT1("views", "View::Layout(bounds_changed)", "class",
                  GetClassName());
-    Layout();
+    LayoutImmediately();
   }
 
   if (GetNeedsNotificationWhenVisibleBoundsChange())
@@ -860,26 +867,32 @@ int View::GetMirroredXWithWidthInView(int x, int w) const {
 
 // Layout ----------------------------------------------------------------------
 
-void View::Layout() {
+void View::DeprecatedLayoutImmediately() {
+  TRACE_EVENT1("ui", "View::DeprecatedLayoutImmediately", "view class",
+               GetClassName());
+  LayoutImmediately(false);
+}
+
+void View::Layout(PassKey) {
   needs_layout_ = false;
 
   // If we have a layout manager, let it handle the layout for us.
   if (HasLayoutManager())
     GetLayoutManager()->Layout(this);
 
-  // Make sure to propagate the Layout() call to any children that haven't
-  // received it yet through the layout manager and need to be laid out. This
-  // is needed for the case when the child requires a layout but its bounds
-  // weren't changed by the layout manager. If there is no layout manager, we
-  // just propagate the Layout() call down the hierarchy, so whoever receives
-  // the call can take appropriate action.
+  // Make sure to propagate layout to any children that haven't received it yet
+  // through the layout manager and need to be laid out. This is needed for the
+  // case when the child requires a layout but its bounds weren't changed by the
+  // layout manager. If there is no layout manager, we just propagate layout
+  // down the hierarchy, so whoever receives the call can take appropriate
+  // action.
   internal::ScopedChildrenLock lock(this);
   for (views::View* child : children_) {
     if (child->needs_layout_ || !HasLayoutManager()) {
       TRACE_EVENT1("views", "View::LayoutChildren", "class",
                    child->GetClassName());
       child->needs_layout_ = false;
-      child->Layout();
+      child->LayoutImmediately();
     }
   }
 }
@@ -1234,6 +1247,11 @@ void View::Paint(const PaintInfo& parent_paint_info) {
   }
 
   TRACE_EVENT1("views", "View::Paint", "class", GetClassName());
+  if (layouts_since_last_paint_) {
+    UMA_HISTOGRAM_COUNTS_100("Views.UnnecessaryLayouts",
+                             layouts_since_last_paint_ - 1);
+    layouts_since_last_paint_ = 0;
+  }
 
   // If the view is backed by a layer, it should paint with itself as the origin
   // rather than relative to its parent.
@@ -3407,6 +3425,15 @@ void View::CreateMaskLayer() {
 bool View::HasLayoutManager() const {
   return ((default_fill_layout_.has_value() && !children_.empty()) ||
           layout_manager_);
+}
+
+void View::LayoutImmediately(bool collect_trace) {
+  if (collect_trace) {
+    TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
+  }
+  ++layouts_since_last_paint_;
+  base::AutoReset allow_layout(&layout_allowed_, true);
+  Layout(PassKey());
 }
 
 // Input -----------------------------------------------------------------------

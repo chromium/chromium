@@ -256,7 +256,7 @@ TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
   TestSessionControllerClient* const session_controller_client =
       GetSessionControllerClient();
   session_controller_client->AddUserSession(kUserAccountId.GetUserEmail(),
-                                            user_manager::USER_TYPE_REGULAR,
+                                            user_manager::UserType::kRegular,
                                             false /* provide_pref_service */);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
@@ -281,7 +281,7 @@ TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
-  SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_FALSE(ShouldShowNotification(notifier_id));
 }

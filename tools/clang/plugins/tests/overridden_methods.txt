@@ -55,12 +55,12 @@ In file included from overridden_methods.cpp:5:
 ./overridden_methods.h:58:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethodWithExceptionSpec() throw() {}
   ^~~~~~~
-./overridden_methods.h:61:68: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
-  virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
-                                                                   ^
-                                                                    override
+./overridden_methods.h:61:73: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
+  virtual void SomeConstMethodWithExceptionSpec() const noexcept(false) {}
+                                                                        ^
+                                                                         override
 ./overridden_methods.h:61:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
-  virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
+  virtual void SomeConstMethodWithExceptionSpec() const noexcept(false) {}
   ^~~~~~~
 ./overridden_methods.h:63:40: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeNonPureBaseMethod() {}
@@ -136,12 +136,12 @@ overridden_methods.cpp:36:54: warning: [chromium-style] Overriding method must b
 overridden_methods.cpp:36:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethodWithExceptionSpec() throw() {}
   ^~~~~~~
-overridden_methods.cpp:39:68: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
-  virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
-                                                                   ^
-                                                                    override
+overridden_methods.cpp:39:73: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
+  virtual void SomeConstMethodWithExceptionSpec() const noexcept(false) {}
+                                                                        ^
+                                                                         override
 overridden_methods.cpp:39:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
-  virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
+  virtual void SomeConstMethodWithExceptionSpec() const noexcept(false) {}
   ^~~~~~~
 overridden_methods.cpp:41:40: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeNonPureBaseMethod() {}

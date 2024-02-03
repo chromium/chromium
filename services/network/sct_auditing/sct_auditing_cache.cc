@@ -79,14 +79,14 @@ mojom::SCTAuditingConfigurationPtr SCTAuditingCache::GetConfiguration() const {
   return configuration_.Clone();
 }
 
-absl::optional<SCTAuditingCache::ReportEntry>
+std::optional<SCTAuditingCache::ReportEntry>
 SCTAuditingCache::MaybeGenerateReportEntry(
     const net::HostPortPair& host_port_pair,
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps) {
   if (!configuration_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!histogram_timer_.IsRunning()) {
     // High-water-mark metrics get logged hourly (rather than once-per-session
@@ -120,7 +120,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   }
   // Don't handle reports if there were no valid SCTs.
   if (tls_report->included_sct().empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   net::HashValue cache_key(net::HASH_VALUE_SHA256);
   SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
@@ -130,7 +130,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   auto it = dedupe_cache_.Get(cache_key);
   if (it != dedupe_cache_.end()) {
     RecordSCTAuditingReportDeduplicatedMetrics(true);
-    return absl::nullopt;
+    return std::nullopt;
   }
   RecordSCTAuditingReportDeduplicatedMetrics(false);
 
@@ -142,7 +142,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
 
   if (base::RandDouble() > configuration_->sampling_rate) {
     RecordSCTAuditingReportSampledMetrics(false);
-    return absl::nullopt;
+    return std::nullopt;
   }
   RecordSCTAuditingReportSampledMetrics(true);
 

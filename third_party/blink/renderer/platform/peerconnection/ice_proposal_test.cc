@@ -69,7 +69,7 @@ TEST_F(IceProposalTest, ConstructIceSwitchProposal) {
               SwitchProposalEq(reason, switch_result, reply_expected));
 
   IceControllerInterface::SwitchResult empty_switch_result{
-      absl::nullopt, recheck_event, conns_to_forget};
+      std::nullopt, recheck_event, conns_to_forget};
   EXPECT_THAT(IceSwitchProposal(reason, empty_switch_result, reply_expected),
               SwitchProposalEq(reason, empty_switch_result, reply_expected));
 
@@ -79,7 +79,7 @@ TEST_F(IceProposalTest, ConstructIceSwitchProposal) {
               SwitchProposalEq(reason, null_switch_result, reply_expected));
 
   IceControllerInterface::SwitchResult switch_result_no_recheck{
-      conn, absl::nullopt, conns_to_forget};
+      conn, std::nullopt, conns_to_forget};
   EXPECT_THAT(
       IceSwitchProposal(reason, switch_result_no_recheck, reply_expected),
       SwitchProposalEq(reason, switch_result_no_recheck, reply_expected));

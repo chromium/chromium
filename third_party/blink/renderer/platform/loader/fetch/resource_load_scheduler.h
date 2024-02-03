@@ -407,8 +407,8 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   Member<LoadingBehaviorObserver> loading_behavior_observer_;
 
-  absl::optional<base::TimeDelta> http_rtt_ = absl::nullopt;
-  absl::optional<base::TimeDelta> http_rtt_for_testing_ = absl::nullopt;
+  std::optional<base::TimeDelta> http_rtt_ = std::nullopt;
+  std::optional<base::TimeDelta> http_rtt_for_testing_ = std::nullopt;
 };
 
 }  // namespace blink

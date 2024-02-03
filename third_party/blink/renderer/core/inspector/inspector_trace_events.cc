@@ -302,6 +302,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoNthLastOfType)
     DEFINE_STRING_MAPPING(PseudoPart)
     DEFINE_STRING_MAPPING(PseudoState)
+    DEFINE_STRING_MAPPING(PseudoStateDeprecatedSyntax)
     DEFINE_STRING_MAPPING(PseudoLink)
     DEFINE_STRING_MAPPING(PseudoVisited)
     DEFINE_STRING_MAPPING(PseudoAny)
@@ -1256,7 +1257,7 @@ void inspector_compile_script_event::Data(
     perfetto::TracedValue context,
     const String& url,
     const TextPosition& text_position,
-    absl::optional<V8ConsumeCacheResult> consume_cache_result,
+    std::optional<V8ConsumeCacheResult> consume_cache_result,
     bool eager,
     bool streamed,
     ScriptStreamer::NotStreamingReason not_streaming_reason) {

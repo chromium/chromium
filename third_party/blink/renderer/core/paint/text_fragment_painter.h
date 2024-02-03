@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_FRAGMENT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_FRAGMENT_PAINTER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -61,7 +62,7 @@ class TextFragmentPainter {
 
   const InlineCursor& cursor_;
   PhysicalOffset parent_offset_;
-  absl::optional<InlineCursor> inline_cursor_for_block_flow_;
+  std::optional<InlineCursor> inline_cursor_for_block_flow_;
   InlinePaintContext* inline_context_ = nullptr;
 };
 

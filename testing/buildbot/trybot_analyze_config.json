@@ -28,8 +28,7 @@
       "tools/clang/scripts/process_crashreports.py"
     ],
     "ignores": [
-      "infra/config/recipes.cfg",
-      "infra/recipes/.*"
+      "(.+/)?PRESUBMIT\\.py"
     ]
   },
   "chromeos": {

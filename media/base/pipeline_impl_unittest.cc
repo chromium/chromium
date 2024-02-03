@@ -295,7 +295,7 @@ class PipelineImplTest : public ::testing::Test {
   }
 
   std::unique_ptr<Renderer> TakeRenderer(
-      absl::optional<RendererType> /* renderer_type */) {
+      std::optional<RendererType> /* renderer_type */) {
     return std::move(scoped_renderer_);
   }
 

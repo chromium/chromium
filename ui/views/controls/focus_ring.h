@@ -97,7 +97,7 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   bool ShouldPaintForTesting();
 
   // View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
   void OnPaint(gfx::Canvas* canvas) override;

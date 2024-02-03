@@ -19,13 +19,11 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
 
 class GURL;
-struct ExtensionMsg_ExternalConnectionInfo;
 
 namespace content {
 class BrowserContext;
@@ -107,11 +105,7 @@ class MessageService : public BrowserContextKeyedAPI,
                               mojom::ChannelType channel_type,
                               const std::string& channel_name);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  using ExternalConnectionInfo = ExtensionMsg_ExternalConnectionInfo;
-#else
   using ExternalConnectionInfo = mojom::ExternalConnectionInfo;
-#endif
   void OpenChannelToExtension(
       const ChannelEndpoint& source,
       const PortId& source_port_id,
@@ -180,7 +174,7 @@ class MessageService : public BrowserContextKeyedAPI,
       int tab_id,
       int frame_id,
       const std::string& document_id,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       mojom::ChannelType channel_type,
       const std::string& channel_name,
       mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,

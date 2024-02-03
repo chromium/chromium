@@ -94,6 +94,7 @@ component("cpp") {
     "net_adapters.h",
     "network_connection_tracker.cc",
     "network_connection_tracker.h",
+    "network_context_getter.h",
     "network_quality_tracker.cc",
     "network_quality_tracker.h",
     "network_switches.cc",

@@ -123,6 +123,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     AnnotationsTextManager::CreateForWebState(web_state());
     auto* manager = AnnotationsTextManager::FromWebState(web_state());
     manager->AddObserver(&observer_);
+    manager->SetSupportedTypes(NSTextCheckingAllTypes);
 
     WKWebViewConfigurationProvider& configuration_provider =
         WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
@@ -301,6 +302,25 @@ TEST_F(AnnotationTextManagerTest, ExtractText) {
             "\nCastro Street, Mountain View, CA"
             "\nEnjoy",
             observer()->extracted_text());
+}
+
+// Tests no page text extraction if there is no supported type.
+TEST_F(AnnotationTextManagerTest, ExtractNoText) {
+  auto* manager = AnnotationsTextManager::FromWebState(web_state());
+  manager->SetSupportedTypes(0);
+
+  int seq_id = observer()->seq_id();
+
+  ASSERT_TRUE(LoadHtml("<html><body>"
+                       "<p>You'll find it on</p>"
+                       "<p>Castro Street, <span>Mountain View</span>, CA</p>"
+                       "<p>Enjoy</p>"
+                       "</body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->seq_id() > seq_id;
+  }));
+  EXPECT_EQ("", observer()->extracted_text());
 }
 
 TEST_F(AnnotationTextManagerTest, CheckMetadata) {

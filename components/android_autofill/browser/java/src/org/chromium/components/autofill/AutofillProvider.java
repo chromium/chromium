@@ -98,7 +98,9 @@ public class AutofillProvider {
             mContainerView = containerView;
             mAutofillUMA =
                     new AutofillProviderUMA(
-                            context, mAutofillManager.isAwGCurrentAutofillService());
+                            context,
+                            mAutofillManager.isAwGCurrentAutofillService(),
+                            mAutofillManager.getPackageName());
             mInputUIObserver =
                     new AutofillManagerWrapper.InputUIObserver() {
                         @Override

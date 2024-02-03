@@ -42,6 +42,13 @@ class GenerateTokenTest(TestCase):
       self.assertEqual(generate_token.HostnameFromArg(hostname),
                        expected_result)
 
+  def test_extension_id_validation(self):
+    for extension_id, expected_result in [("a" * 32, True), ("p" * 32, True),
+                                          ("a" * 2, False), ("a" * 33, False),
+                                          ("q" * 32, False), ("A" * 32, False)]:
+      self.assertEqual(generate_token.IsExtensionId(extension_id),
+                       expected_result)
+
   def test_origin_constructed_correctly(self):
     for origin_arg, expected_result in [
         ("example.com", "https://example.com:443"),
@@ -49,17 +56,22 @@ class GenerateTokenTest(TestCase):
         ("https://example.com/", "https://example.com:443"),
         ("http://example.com", "http://example.com:80"),
         ("http://127.0.0.1:8000", "http://127.0.0.1:8000"),
-        ("http://user:pass@example.com/path", "http://example.com:80")]:
+        ("http://user:pass@example.com/path", "http://example.com:80"),
+        ("chrome-extension://" + "a" * 32, "chrome-extension://" + "a" * 32),
+        ("chrome-extension://" + "a" * 32 + "/",
+         "chrome-extension://" + "a" * 32)
+    ]:
       self.assertEqual(generate_token.OriginFromArg(origin_arg),
                        expected_result)
 
   def test_origin_fails_correctly(self):
     for invalid_hostname in [
-        "example..com",
-        "gopher://gopher.tc.umn.edu",
-        "https://",
-        "https://example.com:NaN/",
-        "Not even close"]:
+        "example..com", "gopher://gopher.tc.umn.edu", "https://",
+        "https://example.com:NaN/", "chrome-extension://user:pass@" + "a" * 32,
+        "chrome-extension://" + "a" * 32 + ":1", "chrome-extension://aaa",
+        "chrome-extension://" + "a" * 32 + "x",
+        "chrome-extension://x" + "a" * 32, "Not even close"
+    ]:
       self.assertRaises(argparse.ArgumentTypeError,
                         generate_token.OriginFromArg,
                         invalid_hostname)

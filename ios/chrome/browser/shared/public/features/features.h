@@ -19,9 +19,6 @@ class TimeDelta;
 // Feature flag to enable the Keyboard Accessory Upgrade.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgrade);
 
-// Feature flag to enable the Payments Bottom Sheet.
-BASE_DECLARE_FEATURE(kIOSPaymentsBottomSheet);
-
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling
 // features in tests works.
@@ -268,6 +265,10 @@ BASE_DECLARE_FEATURE(kDynamicThemeColor);
 // toolbars.
 BASE_DECLARE_FEATURE(kDynamicBackgroundColor);
 
+// Feature flag enabling the Tab Grid to always bounce (even when the content
+// fits the screen already).
+BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
+
 // Feature flag enabling tab grid refactoring.
 BASE_DECLARE_FEATURE(kTabGridRefactoring);
 
@@ -350,6 +351,9 @@ BASE_DECLARE_FEATURE(kTabGroupsInGrid);
 // Feature flag to enable the handling of external actions passed to Chrome.
 // Enabled by default.
 BASE_DECLARE_FEATURE(kIOSExternalActionURLs);
+
+// Feature flag to disable Lens LVF features.
+BASE_DECLARE_FEATURE(kDisableLensCamera);
 
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
@@ -556,6 +560,10 @@ BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
 
 // Feature flag to enable Tips Notifications.
 BASE_DECLARE_FEATURE(kIOSTipsNotifications);
+
+// Feature param to specify how much time after the app starts to trigger
+// Tips notifications.
+extern const char kIOSTipsNotificationsTriggerTimeParam[];
 
 // Helper for whether Tips Notifications are enabled.
 bool IsIOSTipsNotificationsEnabled();

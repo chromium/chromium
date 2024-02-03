@@ -40,9 +40,9 @@ class CaptureModeTypeView;
 //   NormalCaptureBarView
 //
 class ASH_EXPORT NormalCaptureBarView : public CaptureModeBarView {
- public:
-  METADATA_HEADER(NormalCaptureBarView);
+  METADATA_HEADER(NormalCaptureBarView, CaptureModeBarView)
 
+ public:
   // The `active_behavior` decides the capture bar configurations.
   explicit NormalCaptureBarView(CaptureModeBehavior* active_behavior);
   NormalCaptureBarView(const NormalCaptureBarView&) = delete;

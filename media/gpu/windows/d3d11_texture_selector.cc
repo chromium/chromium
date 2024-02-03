@@ -79,7 +79,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     bool shared_image_use_shared_handle) {
   VideoPixelFormat output_pixel_format;
   DXGI_FORMAT output_dxgi_format;
-  absl::optional<gfx::ColorSpace> output_color_space;
+  std::optional<gfx::ColorSpace> output_color_space;
 
   bool needs_texture_copy = !SupportsZeroCopy(gpu_preferences, workarounds);
 
@@ -210,7 +210,7 @@ CopyTextureSelector::CopyTextureSelector(
     VideoPixelFormat pixfmt,
     DXGI_FORMAT input_dxgifmt,
     DXGI_FORMAT output_dxgifmt,
-    absl::optional<gfx::ColorSpace> output_color_space,
+    std::optional<gfx::ColorSpace> output_color_space,
     ComD3D11VideoDevice video_device,
     ComD3D11DeviceContext device_context,
     bool shared_image_use_shared_handle)

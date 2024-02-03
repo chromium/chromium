@@ -191,7 +191,7 @@ void ProcessedLocalAudioSource::SendLogMessageWithSessionId(
                  "]");
 }
 
-absl::optional<blink::AudioProcessingProperties>
+std::optional<blink::AudioProcessingProperties>
 ProcessedLocalAudioSource::GetAudioProcessingProperties() const {
   return audio_processing_properties_;
 }
@@ -586,7 +586,7 @@ void ProcessedLocalAudioSource::Capture(const media::AudioBus* audio_bus,
   // along.
   force_report_nonzero_energy_ = false;
   DeliverProcessedAudio(*audio_bus, audio_capture_time,
-                        /*new_volume=*/absl::nullopt);
+                        /*new_volume=*/std::nullopt);
 }
 
 void ProcessedLocalAudioSource::OnCaptureError(
@@ -634,7 +634,7 @@ void ProcessedLocalAudioSource::SetOutputDeviceForAec(
 void ProcessedLocalAudioSource::DeliverProcessedAudio(
     const media::AudioBus& processed_audio,
     base::TimeTicks audio_capture_time,
-    absl::optional<double> new_volume) {
+    std::optional<double> new_volume) {
   TRACE_EVENT1("audio", "ProcessedLocalAudioSource::DeliverProcessedAudio",
                "capture-time", audio_capture_time);
   level_calculator_.Calculate(processed_audio, force_report_nonzero_energy_);

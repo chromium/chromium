@@ -32,6 +32,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/bluetooth/bluetooth_manifest_data.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 using content::BrowserThread;
 
@@ -340,7 +341,7 @@ void BluetoothLowEnergyEventRouter::Connect(bool persistent,
     return;
   }
 
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
   const std::string connect_id = extension_id + device_address;
 
   if (connecting_devices_.count(connect_id) != 0) {
@@ -387,7 +388,7 @@ void BluetoothLowEnergyEventRouter::Disconnect(
     return;
   }
 
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   BluetoothLowEnergyConnection* conn =
       FindConnection(extension_id, device_address);
@@ -698,7 +699,7 @@ void BluetoothLowEnergyEventRouter::StartCharacteristicNotifications(
     return;
   }
 
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
   const std::string session_id = extension_id + instance_id;
 
   if (pending_session_calls_.count(session_id) != 0) {
@@ -758,7 +759,7 @@ void BluetoothLowEnergyEventRouter::StopCharacteristicNotifications(
     return;
   }
 
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   BluetoothLowEnergyNotifySession* session =
       FindNotifySession(extension_id, instance_id);
@@ -1095,7 +1096,7 @@ void BluetoothLowEnergyEventRouter::OnCharacteristicReadRequest(
     return;
   }
 
-  const std::string& extension_id = service_id_to_extension_id_.at(service_id);
+  const ExtensionId& extension_id = service_id_to_extension_id_.at(service_id);
   // TODO(crbug.com/730593): Delete NullCallback when write callbacks combined.
   apibtle::Request request = PopulateDevice(device);
   request.request_id = StoreSentRequest(
@@ -1123,7 +1124,7 @@ void BluetoothLowEnergyEventRouter::OnCharacteristicWriteRequest(
     return;
   }
 
-  const std::string& extension_id = service_id_to_extension_id_.at(service_id);
+  const ExtensionId& extension_id = service_id_to_extension_id_.at(service_id);
 
   apibtle::Request request = PopulateDevice(device);
   request.request_id = StoreSentRequest(
@@ -1165,7 +1166,7 @@ void BluetoothLowEnergyEventRouter::OnDescriptorReadRequest(
     return;
   }
 
-  const std::string& extension_id = service_id_to_extension_id_.at(service_id);
+  const ExtensionId& extension_id = service_id_to_extension_id_.at(service_id);
 
   // TODO(crbug.com/730593): Delete NullCallback when write callbacks combined.
   apibtle::Request request = PopulateDevice(device);
@@ -1196,7 +1197,7 @@ void BluetoothLowEnergyEventRouter::OnDescriptorWriteRequest(
     return;
   }
 
-  const std::string& extension_id = service_id_to_extension_id_.at(service_id);
+  const ExtensionId& extension_id = service_id_to_extension_id_.at(service_id);
 
   apibtle::Request request = PopulateDevice(device);
   request.request_id = StoreSentRequest(
@@ -1465,7 +1466,7 @@ void BluetoothLowEnergyEventRouter::DispatchEventToExtensionsWithPermission(
           .GetEventListenersByName(event_name);
 
   for (const std::unique_ptr<EventListener>& listener : listeners) {
-    const std::string& extension_id = listener->extension_id();
+    const ExtensionId& extension_id = listener->extension_id();
     if (handled_extensions.find(extension_id) != handled_extensions.end())
       continue;
 
@@ -1499,7 +1500,7 @@ void BluetoothLowEnergyEventRouter::DispatchEventToExtensionsWithPermission(
 }
 
 void BluetoothLowEnergyEventRouter::DispatchEventToExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
     base::Value::List args) {
@@ -1636,7 +1637,7 @@ void BluetoothLowEnergyEventRouter::OnReadRemoteDescriptor(
 
 void BluetoothLowEnergyEventRouter::OnRegisterGattServiceSuccess(
     const std::string& service_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     base::OnceClosure callback) {
   VLOG(2) << "Register GATT service successful.";
   service_id_to_extension_id_[service_id] = extension_id;
@@ -1645,7 +1646,7 @@ void BluetoothLowEnergyEventRouter::OnRegisterGattServiceSuccess(
 
 void BluetoothLowEnergyEventRouter::OnUnregisterGattServiceSuccess(
     const std::string& service_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     base::OnceClosure callback) {
   VLOG(2) << "Unregister GATT service successful.";
   const auto& iter = service_id_to_extension_id_.find(service_id);
@@ -1656,7 +1657,7 @@ void BluetoothLowEnergyEventRouter::OnUnregisterGattServiceSuccess(
 
 void BluetoothLowEnergyEventRouter::OnCreateGattConnection(
     bool persistent,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& device_address,
     ErrorCallback callback,
     std::unique_ptr<BluetoothGattConnection> connection,
@@ -1699,7 +1700,7 @@ void BluetoothLowEnergyEventRouter::OnError(
 
 void BluetoothLowEnergyEventRouter::OnStartNotifySession(
     bool persistent,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& characteristic_id,
     base::OnceClosure callback,
     std::unique_ptr<device::BluetoothGattNotifySession> session) {
@@ -1725,7 +1726,7 @@ void BluetoothLowEnergyEventRouter::OnStartNotifySession(
 }
 
 void BluetoothLowEnergyEventRouter::OnStartNotifySessionError(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& characteristic_id,
     ErrorCallback error_callback,
     BluetoothGattService::GattErrorCode error_code) {
@@ -1740,7 +1741,7 @@ void BluetoothLowEnergyEventRouter::OnStartNotifySessionError(
 }
 
 void BluetoothLowEnergyEventRouter::OnStopNotifySession(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& characteristic_id,
     base::OnceClosure callback) {
   VLOG(2) << "Value update session terminated.";
@@ -1755,7 +1756,7 @@ void BluetoothLowEnergyEventRouter::OnStopNotifySession(
 }
 
 BluetoothLowEnergyConnection* BluetoothLowEnergyEventRouter::FindConnection(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& device_address) {
   ConnectionResourceManager* manager =
       GetConnectionResourceManager(browser_context_);
@@ -1780,7 +1781,7 @@ BluetoothLowEnergyConnection* BluetoothLowEnergyEventRouter::FindConnection(
 }
 
 bool BluetoothLowEnergyEventRouter::RemoveConnection(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& device_address) {
   ConnectionResourceManager* manager =
       GetConnectionResourceManager(browser_context_);
@@ -1806,7 +1807,7 @@ bool BluetoothLowEnergyEventRouter::RemoveConnection(
 
 BluetoothLowEnergyNotifySession*
 BluetoothLowEnergyEventRouter::FindNotifySession(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& characteristic_id) {
   NotifySessionResourceManager* manager =
       GetNotifySessionResourceManager(browser_context_);
@@ -1830,7 +1831,7 @@ BluetoothLowEnergyEventRouter::FindNotifySession(
 }
 
 bool BluetoothLowEnergyEventRouter::RemoveNotifySession(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& characteristic_id) {
   NotifySessionResourceManager* manager =
       GetNotifySessionResourceManager(browser_context_);
@@ -1855,7 +1856,7 @@ bool BluetoothLowEnergyEventRouter::RemoveNotifySession(
 }
 
 size_t BluetoothLowEnergyEventRouter::StoreSentRequest(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::unique_ptr<AttributeValueRequest> request) {
   // Either find or create a request_id -> request map for this extension.
   RequestIdToRequestMap* request_id_map = nullptr;

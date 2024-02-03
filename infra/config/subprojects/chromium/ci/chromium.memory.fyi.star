@@ -91,7 +91,6 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "tsan",
-            "disable_nacl",
             "fail_on_san_warnings",
             "release_builder",
             "reclient",
@@ -165,7 +164,6 @@ ci.builder(
             "asan",
             "lsan",
             "dcheck_always_on",
-            "disable_nacl",
             "release_builder",
             "reclient",
         ],
@@ -203,7 +201,6 @@ ci.builder(
         configs = [
             "ubsan_no_recover",
             "dcheck_always_on",
-            "disable_nacl",
             "release_builder",
             "reclient",
         ],

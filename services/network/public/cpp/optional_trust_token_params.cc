@@ -7,7 +7,7 @@
 namespace network {
 
 OptionalTrustTokenParams::OptionalTrustTokenParams() = default;
-OptionalTrustTokenParams::OptionalTrustTokenParams(absl::nullopt_t) {}
+OptionalTrustTokenParams::OptionalTrustTokenParams(std::nullopt_t) {}
 OptionalTrustTokenParams::OptionalTrustTokenParams(
     mojom::TrustTokenParamsPtr ptr)
     : ptr_(std::move(ptr)) {}

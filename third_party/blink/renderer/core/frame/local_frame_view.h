@@ -106,7 +106,6 @@ class RemoteFrameView;
 class RootFrameViewport;
 class ScrollableArea;
 class Scrollbar;
-class ScrollingCoordinator;
 class TapFriendlinessChecker;
 class TransformState;
 class LocalFrameUkmAggregator;
@@ -933,12 +932,10 @@ class CORE_EXPORT LocalFrameView final
   // Methods to do point conversion via layoutObjects, in order to take
   // transforms into account.
   gfx::Rect ConvertToContainingEmbeddedContentView(const gfx::Rect&) const;
-  gfx::Point ConvertToContainingEmbeddedContentView(const gfx::Point&) const;
   PhysicalOffset ConvertToContainingEmbeddedContentView(
       const PhysicalOffset&) const;
   gfx::PointF ConvertToContainingEmbeddedContentView(const gfx::PointF&) const;
   gfx::Rect ConvertFromContainingEmbeddedContentView(const gfx::Rect&) const;
-  gfx::Point ConvertFromContainingEmbeddedContentView(const gfx::Point&) const;
   PhysicalOffset ConvertFromContainingEmbeddedContentView(
       const PhysicalOffset&) const;
   gfx::PointF ConvertFromContainingEmbeddedContentView(
@@ -953,8 +950,6 @@ class CORE_EXPORT LocalFrameView final
   AXObjectCache* ExistingAXObjectCache() const;
 
   void SetLayoutSizeInternal(const gfx::Size&);
-
-  ScrollingCoordinator* GetScrollingCoordinator() const;
 
   void CollectAnnotatedRegions(LayoutObject&,
                                Vector<AnnotatedRegionValue>&) const;
@@ -972,7 +967,7 @@ class CORE_EXPORT LocalFrameView final
 
   bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
-      absl::optional<base::TimeTicks>& monotonic_time) override;
+      std::optional<base::TimeTicks>& monotonic_time) override;
   void DeliverSynchronousIntersectionObservations();
 
   bool RunScrollSnapshotClientSteps();
@@ -995,7 +990,7 @@ class CORE_EXPORT LocalFrameView final
   // need to happen in post-layout.
   void ComputePostLayoutIntersections(
       unsigned parent_flags,
-      absl::optional<base::TimeTicks>& monotonic_time);
+      std::optional<base::TimeTicks>& monotonic_time);
 
   // Returns true if the root object was laid out. Returns false if the layout
   // was prevented (e.g. by ancestor display-lock) or not needed.
@@ -1046,7 +1041,6 @@ class CORE_EXPORT LocalFrameView final
   bool layout_scheduling_enabled_;
   unsigned layout_count_for_testing_;
   uint32_t block_layout_count_for_testing_ = 0;
-  unsigned lifecycle_update_count_for_testing_;
   HeapTaskRunnerTimer<LocalFrameView> update_plugins_timer_;
 
   bool first_layout_ = true;
@@ -1057,7 +1051,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Used for tracking the frame's size and replicating it to the browser
   // process when it changes.
-  absl::optional<gfx::Size> frame_size_;
+  std::optional<gfx::Size> frame_size_;
 
   AtomicString media_type_;
   AtomicString media_type_when_not_printing_;
@@ -1097,10 +1091,6 @@ class CORE_EXPORT LocalFrameView final
 
   bool root_layer_did_scroll_;
 
-  // Mark if something has changed in the mapping from Frame to GraphicsLayer
-  // and the Frame Timing regions should be recalculated.
-  bool frame_timing_requests_dirty_;
-
   // Exists only on root frame.
   Member<RootFrameViewport> viewport_scrollable_area_;
 
@@ -1133,8 +1123,6 @@ class CORE_EXPORT LocalFrameView final
   gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
 
   mojom::blink::ViewportIntersectionState last_intersection_state_;
-
-  bool needs_focus_on_fragment_;
 
   // True if the frame has deferred commits at least once per document load.
   // We won't defer again for the same document. This is only meaningful for

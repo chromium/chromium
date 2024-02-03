@@ -59,6 +59,9 @@ class PasswordStoreBackend {
   // after the shutdown has concluded and it is safe to delete the backend.
   virtual void Shutdown(base::OnceClosure shutdown_completed) = 0;
 
+  // Necessary condition to offer saving passwords.
+  virtual bool IsAbleToSavePasswords() = 0;
+
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status). Callback is called on the main sequence.
   virtual void GetAllLoginsAsync(LoginsOrErrorReply callback) = 0;

@@ -27,12 +27,9 @@ This information is collected by `device::CpuProbe` and bubbled up by
 the information to the `content::PressureClientImpl` instances first and then
 to `blink::PressureClientImpl` instances.
 
-`device::CpuProbe` is an abstract base class that drives measuring the
-device's compute pressure state from the operating system. The class
-is responsible for invoking platform-specific measurement code at
-regular intervals, and for straddling between sequences to meet
-the platform-specific code's requirements. This interface is also
-a dependency injection point for tests.
+`device::CpuProbeManager` is an interface for measuring the device's compute
+pressure state. It maintains a `system_cpu::CpuProbe` and requests CPU samples
+from it at regular intervals.
 
 `content::PressureService*` is the bridge between the renderer and the
 services sides. This class maintains `content::PressureClientImpl` instances

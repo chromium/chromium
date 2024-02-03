@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
 
+#include <optional>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -12,7 +13,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/test_util.h"

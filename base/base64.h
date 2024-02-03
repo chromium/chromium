@@ -25,11 +25,6 @@ BASE_EXPORT void Base64EncodeAppend(span<const uint8_t> input,
                                     std::string* output);
 
 // Encodes the input string in base64.
-// DEPRECATED, use `std::string Base64Encode(StringPiece input)` instead.
-// TODO(crbug.com/1486214): Remove this.
-BASE_EXPORT void Base64Encode(StringPiece input, std::string* output);
-
-// Encodes the input string in base64.
 BASE_EXPORT std::string Base64Encode(StringPiece input);
 
 // Decodes the base64 input string.  Returns true if successful and false

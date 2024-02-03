@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilesAppState} from '../files_app_state.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sendTestMessage, SharedOption, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
@@ -29,7 +28,7 @@ async function getSelectedOptionText(appId, type) {
     `xf-select#${type}-selector`,
     '#selected-option',
   ]);
-  return option.text;
+  return option.text ?? '';
 }
 
 /**
@@ -151,8 +150,6 @@ testcase.searchDownloadsClearSearchKeyDown = async () => {
       // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
       // parameter of type 'string'.
       await remoteCall.waitForElement(appId, '#search-box [type="search"]');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('', searchInput.value);
 
   // Wait until the search button get the focus.
@@ -316,10 +313,6 @@ testcase.searchButtonToggles = async () => {
 testcase.searchQueryLaunchParam = async () => {
   // Open Files app with LaunchParam.searchQuery='gdoc'.
   const query = 'gdoc';
-  /** @type {!FilesAppState} */
-  // @ts-ignore: error TS2740: Type '{ searchQuery: string; }' is missing the
-  // following properties from type 'FilesAppState': currentDirectoryURL,
-  // selectionURL, targetName, type, and 5 more.
   const appState = {searchQuery: query};
   const appId = await setupAndWaitUntilReady(
       null, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, appState);
@@ -330,8 +323,6 @@ testcase.searchQueryLaunchParam = async () => {
   await repeatUntil(async () => {
     const searchBoxInput =
         await remoteCall.waitForElement(appId, '#search-box cr-input');
-    // @ts-ignore: error TS2339: Property 'value' does not exist on type
-    // 'ElementObject'.
     if (searchBoxInput.value !== query) {
       return pending(caller, 'Waiting search box to be filled with the query.');
     }

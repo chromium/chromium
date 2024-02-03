@@ -5,8 +5,7 @@
 #ifndef EXTENSIONS_COMMON_UTILS_EXTENSION_UTILS_H_
 #define EXTENSIONS_COMMON_UTILS_EXTENSION_UTILS_H_
 
-#include <string>
-
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 
 namespace extensions {
@@ -14,11 +13,11 @@ namespace extensions {
 class Extension;
 
 // Returns the extension ID or an empty string if null.
-const std::string& MaybeGetExtensionId(const Extension* extension);
+const ExtensionId& MaybeGetExtensionId(const Extension* extension);
 
 // Returns a HostID instance based on an |extension_id|.
 inline mojom::HostID GenerateHostIdFromExtensionId(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   // Note: an empty |extension_id| can be used to refer to *all* extensions.
   // See comment in dispatcher.cc.
   return mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id);
@@ -34,7 +33,7 @@ inline mojom::HostID GenerateHostIdFromExtension(const Extension* extension) {
 
 // Returns an |extension_id| from a HostID instance. Will CHECK if
 // the HostID type isn't kExtensions.
-inline const std::string& GenerateExtensionIdFromHostId(
+inline const ExtensionId& GenerateExtensionIdFromHostId(
     const mojom::HostID& host_id) {
   CHECK_EQ(host_id.type, mojom::HostID::HostType::kExtensions);
   return host_id.id;

@@ -32,6 +32,7 @@ source_set("plus_addresses") {
     # :plus_addresses to also depend on its features to reduce churn.
     ":features",
     "//base",
+    "//components/autofill/core/browser",
     "//components/keyed_service/core",
     "//third_party/abseil-cpp:absl",
     "//url",
@@ -80,5 +81,8 @@ static_library("test_support") {
     "plus_address_test_utils.h",
     "plus_address_types.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+  ]
 }

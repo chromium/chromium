@@ -16,6 +16,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -28,6 +29,8 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.tab_ui.R;
+
+import java.util.function.DoubleConsumer;
 
 /** A {@link Pane} representing the incognito tab switcher. */
 public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
@@ -71,7 +74,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                     coordinator.setInitialScrollIndexOffset();
                     coordinator.requestAccessibilityFocusOnCurrentTab();
 
-                    mNewTabButtonDataSupplier.set(mEnabledNewTabButtonData);
+                    setNewTabButtonEnabledState(/* enabled= */ true);
                 }
 
                 @Override
@@ -92,21 +95,19 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     /**
      * @param context The activity context.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
-     * @param incognitoTabModelFilter The incognito tab model filter.
+     * @param incognitoTabModelFilterSupplier The incognito tab model filter.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param incognitoReauthControllerSupplier Supplier for the incognito reauth controller.
+     * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      */
     IncognitoTabSwitcherPane(
             @NonNull Context context,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull Supplier<TabModelFilter> incognitoTabModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
-            @Nullable
-                    OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier) {
-        super(
-                context,
-                factory,
-                /* isIncognito= */ true);
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @NonNull DoubleConsumer onToolbarAlphaChange) {
+        super(context, factory, /* isIncognito= */ true, onToolbarAlphaChange);
 
         mIncognitoTabModelFilterSupplier = incognitoTabModelFilterSupplier;
 
@@ -137,9 +138,9 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                                 incognitoReauthController.addIncognitoReauthCallback(
                                         mIncognitoReauthCallback);
                             }));
-            mNewTabButtonDataSupplier.set(mDisabledNewTabButtonData);
+            setNewTabButtonEnabledState(/* enabled= */ false);
         } else {
-            mNewTabButtonDataSupplier.set(mEnabledNewTabButtonData);
+            setNewTabButtonEnabledState(/* enabled= */ true);
         }
     }
 
@@ -207,8 +208,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             coordinator.resetWithTabList(tabList);
         }
 
-        mNewTabButtonDataSupplier.set(
-                incognitoReauthShowing ? mDisabledNewTabButtonData : mEnabledNewTabButtonData);
+        setNewTabButtonEnabledState(/* enabled= */ !incognitoReauthShowing);
         return true;
     }
 
@@ -228,5 +228,15 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         TabModelFilter incognitoTabModelFilter = mIncognitoTabModelFilterSupplier.get();
         assert incognitoTabModelFilter != null;
         return (IncognitoTabModel) incognitoTabModelFilter.getTabModel();
+    }
+
+    private void setNewTabButtonEnabledState(boolean enabled) {
+        if (enabled) {
+            mNewTabButtonDataSupplier.set(mEnabledNewTabButtonData);
+        } else {
+            // The FAB may overlap the reauth buttons. So just remove it by nulling instead.
+            mNewTabButtonDataSupplier.set(
+                    HubFieldTrial.usesFloatActionButton() ? null : mDisabledNewTabButtonData);
+        }
     }
 }

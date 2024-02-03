@@ -235,7 +235,7 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -291,9 +291,9 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   void OnImplicitAnimationsCompleted() override;
 
   // Returns whether the left/right arrow button should show based on the
-  // current layout strategy. Because Layout(), where the visibility of arrow
-  // buttons is updated, may be called in asynchronous way, we should not use
-  // arrow buttons' visibility directly.
+  // current layout strategy. Because the visibility of arrow buttons is updated
+  // during layout, which may happen asynchronously, we should not use arrow
+  // buttons' visibility directly.
   bool ShouldShowLeftArrow() const;
   bool ShouldShowRightArrow() const;
 

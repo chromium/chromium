@@ -49,9 +49,9 @@ class ASH_EXPORT AssistantDialogPlate
       public AssistantInteractionModelObserver,
       public AssistantUiModelObserver,
       public AssistantButtonListener {
- public:
-  METADATA_HEADER(AssistantDialogPlate);
+  METADATA_HEADER(AssistantDialogPlate, views::View)
 
+ public:
   explicit AssistantDialogPlate(AssistantViewDelegate* delegate);
   AssistantDialogPlate(const AssistantDialogPlate&) = delete;
   AssistantDialogPlate& operator=(const AssistantDialogPlate&) = delete;

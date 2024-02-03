@@ -5,12 +5,13 @@
 #ifndef MEDIA_GPU_ANDROID_ANDROID_VIDEO_SURFACE_CHOOSER_H_
 #define MEDIA_GPU_ANDROID_ANDROID_VIDEO_SURFACE_CHOOSER_H_
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/android/android_overlay.h"
 #include "media/base/video_transformation.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -86,7 +87,7 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooser {
   // Updates the current state and makes a new surface choice with the new
   // state. If |new_factory| is empty, the factory is left as-is. Otherwise,
   // the factory is updated to |*new_factory|.
-  virtual void UpdateState(absl::optional<AndroidOverlayFactoryCB> new_factory,
+  virtual void UpdateState(std::optional<AndroidOverlayFactoryCB> new_factory,
                            const State& new_state) = 0;
 };
 

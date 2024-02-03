@@ -113,6 +113,8 @@ class ManagePasswordsUIController
       override;
   void OnBiometricAuthenticationForFilling(PrefService* prefs) override;
   void ShowBiometricActivationConfirmation() override;
+  void ShowMovePasswordBubble(
+      const password_manager::PasswordForm& form) override;
   void OnBiometricAuthBeforeFillingDeclined() override;
   void OnAddUsernameSaveClicked(const std::u16string& username) override;
   void OnKeychainError() override;
@@ -174,10 +176,13 @@ class ManagePasswordsUIController
   void DiscardUnsyncedCredentials() override;
   void MovePasswordToAccountStore() override;
   void BlockMovingPasswordToAccountStore() override;
+  void PromptSaveBubbleAfterDefaultStoreChanged() override;
   void ChooseCredential(
       const password_manager::PasswordForm& form,
       password_manager::CredentialType credential_type) override;
   void NavigateToPasswordManagerSettingsPage(
+      password_manager::ManagePasswordsReferrer referrer) override;
+  void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) override;
   void EnableSync(const AccountInfo& account) override;
   void OnDialogHidden() override;
@@ -226,6 +231,14 @@ class ManagePasswordsUIController
 
   // Check if |web_contents()| is attached to some Browser. Mocked in tests.
   virtual bool HasBrowserWindow() const;
+
+  // Creates new MovePasswordToAccountStoreHelper object and thus starts the
+  // moving process for the pending password.
+  virtual std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>
+  CreateMovePasswordToAccountStoreHelper(
+      const password_manager::PasswordForm& form,
+      password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
+      base::OnceCallback<void()> on_move_finished);
 
   // Returns whether the bubble is currently open.
   bool IsShowingBubbleForTest() const { return IsShowingBubble(); }
@@ -304,7 +317,7 @@ class ManagePasswordsUIController
   // account-storage-eligible user saved a password locally. If the opt-in was
   // successful, this moves the just-saved password into the account store.
   void MoveJustSavedPasswordAfterAccountStoreOptIn(
-      password_manager::PasswordForm form,
+      const password_manager::PasswordForm& form,
       password_manager::PasswordManagerClient::ReauthSucceeded
           reauth_succeeded);
 
@@ -319,6 +332,11 @@ class ManagePasswordsUIController
   // Returns true if the password that is about to be changed was previously
   // phished.
   bool IsPendingPasswordPhished() const;
+
+  // Moves pending password to the account storage.
+  void MovePendingPasswordToAccountStoreUsingHelper(
+      const password_manager::PasswordForm& form,
+      password_manager::metrics_util::MoveToAccountStoreTrigger trigger);
 
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;

@@ -32,7 +32,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning, toggle);
-    absl::optional<blink::StorageKey> maybe_storage_key =
+    std::optional<blink::StorageKey> maybe_storage_key =
         blink::StorageKey::Deserialize(serialized_storage_key);
     if (!maybe_storage_key) {
       // We need a valid storage key to test the MOJOM path.

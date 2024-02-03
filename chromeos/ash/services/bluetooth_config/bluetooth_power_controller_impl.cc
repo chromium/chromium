@@ -21,8 +21,8 @@ namespace {
 // do not represent human account so those account should follow system-wide
 // Bluetooth setting instead.
 bool ShouldApplyUserBluetoothSetting(user_manager::UserType user_type) {
-  return user_type == user_manager::USER_TYPE_REGULAR ||
-         user_type == user_manager::USER_TYPE_CHILD;
+  return user_type == user_manager::UserType::kRegular ||
+         user_type == user_manager::UserType::kChild;
 }
 
 }  // namespace

@@ -53,7 +53,7 @@ std::unique_ptr<ContextualSearchContext> PartialTranslateManager::MakeContext(
   // Country and base URL are not needed for Partial Translate requests.
   context->SetResolveProperties(/*home_country=*/"",
                                 /*may_send_base_page_url=*/false);
-  context->SetBasePageUrl(GURL::EmptyGURL());
+  context->SetBasePageUrl(GURL());
 
   context->SetSelectionSurroundings(0, request.selection_text.length(),
                                     request.selection_text);

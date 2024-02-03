@@ -137,7 +137,8 @@ void RecordDeepScanMetrics(bool is_cloud,
 // Helper function to make ContentAnalysisResponses for tests.
 enterprise_connectors::ContentAnalysisResponse
 SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
-                                        std::optional<bool> malware_success);
+                                        std::optional<bool> malware_success,
+                                        bool has_custom_rule_message);
 
 // Helper function to convert a EventResult to a string that.  The format of
 // string returned is processed by the sever.

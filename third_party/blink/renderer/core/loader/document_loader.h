@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOADER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -38,7 +39,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -229,7 +229,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   const AtomicString& GetReferrer() const;
   const SecurityOrigin* GetRequestorOrigin() const;
   const KURL& UnreachableURL() const;
-  const absl::optional<blink::mojom::FetchCacheMode>& ForceFetchCacheMode()
+  const std::optional<blink::mojom::FetchCacheMode>& ForceFetchCacheMode()
       const;
 
   void DidChangePerformanceTiming();
@@ -257,7 +257,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const SecurityOrigin* initiator_origin,
       bool is_browser_initiated,
       bool is_synchronously_committed,
-      absl::optional<scheduler::TaskAttributionId>
+      std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id);
 
   const ResourceResponse& GetResponse() const { return response_; }
@@ -308,7 +308,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       Element* source_element,
       mojom::blink::TriggeringEventInfo,
       bool is_browser_initiated,
-      absl::optional<scheduler::TaskAttributionId>
+      std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id);
 
   void SetDefersLoading(LoaderFreezeMode);
@@ -414,11 +414,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   HashMap<KURL, EarlyHintsPreloadEntry> GetEarlyHintsPreloadedResources();
 
-  const absl::optional<Vector<KURL>>& AdAuctionComponents() const {
+  const std::optional<Vector<KURL>>& AdAuctionComponents() const {
     return ad_auction_components_;
   }
 
-  const absl::optional<FencedFrame::RedactedFencedFrameProperties>&
+  const std::optional<FencedFrame::RedactedFencedFrameProperties>&
   FencedFrameProperties() const {
     return fenced_frame_properties_;
   }
@@ -546,7 +546,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       bool is_browser_initiated,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
-      absl::optional<scheduler::TaskAttributionId>
+      std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id);
 
   // Use these method only where it's guaranteed that |m_frame| hasn't been
@@ -589,7 +589,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                            int64_t total_encoded_data_length,
                            int64_t total_encoded_body_length,
                            int64_t total_decoded_body_length,
-                           const absl::optional<WebURLError>& error) override;
+                           const std::optional<WebURLError>& error) override;
   ProcessBackgroundDataCallback TakeProcessBackgroundDataCallback() override;
 
   void ApplyClientHintsConfig(
@@ -637,7 +637,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   std::unique_ptr<PolicyContainer> policy_container_;
 
   // The permissions policy to be applied to the window at initialization time.
-  const absl::optional<ParsedPermissionsPolicy> initial_permissions_policy_;
+  const std::optional<ParsedPermissionsPolicy> initial_permissions_policy_;
 
   // These fields are copied from WebNavigationParams, see there for definition.
   DocumentToken token_;
@@ -653,7 +653,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   const KURL pre_redirect_url_for_failed_navigations_;
   std::unique_ptr<WebNavigationBodyLoader> body_loader_;
   const bool grant_load_local_resources_ = false;
-  const absl::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode_;
+  const std::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode_;
   const FramePolicy frame_policy_;
 
   Member<LocalFrame> frame_;
@@ -820,7 +820,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // If this is a navigation to fenced frame from an interest group auction,
   // contains URNs to the ad components returned by the winning bid. Null,
   // otherwise.
-  absl::optional<Vector<KURL>> ad_auction_components_;
+  std::optional<Vector<KURL>> ad_auction_components_;
 
   std::unique_ptr<ExtraData> extra_data_;
 
@@ -831,9 +831,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Provides state from the previous Document that will be replaced by this
   // navigation for a ViewTransition.
-  absl::optional<ViewTransitionState> view_transition_state_;
+  std::optional<ViewTransitionState> view_transition_state_;
 
-  absl::optional<FencedFrame::RedactedFencedFrameProperties>
+  std::optional<FencedFrame::RedactedFencedFrameProperties>
       fenced_frame_properties_;
 
   // Indicates whether the document should be loaded with its has_storage_access
@@ -846,7 +846,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Indicates which browsing context group this frame belongs to. It is only
   // set for a main frame committing in another browsing context group.
-  const absl::optional<BrowsingContextGroupInfo> browsing_context_group_info_;
+  const std::optional<BrowsingContextGroupInfo> browsing_context_group_info_;
 
   // Runtime feature state override is applied to the document. They are applied
   // before JavaScript context creation (i.e. CreateParserPostCommit).

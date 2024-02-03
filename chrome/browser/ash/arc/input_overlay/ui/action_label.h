@@ -21,8 +21,8 @@ class ActionView;
 
 // ActionLabel shows text mapping hint for each action.
 class ActionLabel : public views::LabelButton {
+  METADATA_HEADER(ActionLabel, views::LabelButton)
  public:
-  METADATA_HEADER(ActionLabel);
   static std::vector<raw_ptr<ActionLabel, VectorExperimental>> Show(
       views::View* parent,
       ActionType action_type,

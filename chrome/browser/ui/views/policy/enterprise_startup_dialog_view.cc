@@ -279,7 +279,7 @@ void EnterpriseStartupDialogView::AddContent(
   // TODO(weili): The child views are added after the dialog shows. So it
   // requires relayout and repaint. Consider a refactoring to add content
   // before showing.
-  GetWidget()->GetRootView()->Layout();
+  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
   GetWidget()->GetRootView()->SchedulePaint();
 }
 

@@ -23,8 +23,9 @@
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include <optional>
+
 #include "net/cert/internal/trust_store_chrome.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace cert_verifier {

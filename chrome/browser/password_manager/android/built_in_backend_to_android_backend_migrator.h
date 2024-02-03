@@ -71,6 +71,8 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
+  MigrationType migration_in_progress_type() const;
+
   base::WeakPtr<BuiltInBackendToAndroidBackendMigrator> GetWeakPtr();
 
  private:

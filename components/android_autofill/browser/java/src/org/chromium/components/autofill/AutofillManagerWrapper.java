@@ -56,6 +56,7 @@ public class AutofillManagerWrapper {
     }
 
     private static boolean sIsLoggable;
+    private final String mPackageName;
     private AutofillManager mAutofillManager;
     private boolean mIsAutofillInputUIShowing;
     private AutofillInputUIMonitor mMonitor;
@@ -72,6 +73,7 @@ public class AutofillManagerWrapper {
         mDisabled = mAutofillManager == null || !mAutofillManager.isEnabled();
 
         if (mDisabled) {
+            mPackageName = "";
             mIsAwGCurrentAutofillService = false;
             if (isLoggable()) log("disabled");
             return;
@@ -90,17 +92,24 @@ public class AutofillManagerWrapper {
                 Log.e(TAG, "getAutofillServiceComponentName", e);
             }
             if (componentName != null) {
+                mPackageName = componentName.getPackageName();
                 mIsAwGCurrentAutofillService =
                         AWG_COMPONENT_NAME.equals(componentName.flattenToString());
-                AutofillProviderUMA.logCurrentProvider(componentName.getPackageName());
+                AutofillProviderUMA.logCurrentProvider(mPackageName);
             } else {
+                mPackageName = "";
                 mIsAwGCurrentAutofillService = false;
             }
         } else {
+            mPackageName = "";
             mIsAwGCurrentAutofillService = false;
         }
         mMonitor = new AutofillInputUIMonitor(this);
         mAutofillManager.registerCallback(mMonitor);
+    }
+
+    public String getPackageName() {
+        return mPackageName;
     }
 
     public void notifyVirtualValueChanged(View parent, int childId, AutofillValue value) {

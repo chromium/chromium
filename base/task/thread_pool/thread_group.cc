@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task_tracker.h"
+#include "base/task/thread_pool/thread_group_worker_delegate.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
@@ -153,15 +154,24 @@ ThreadGroup::ThreadGroup(StringPiece histogram_label,
   DCHECK(!thread_group_label_.empty());
 }
 
-void ThreadGroup::Start(
+void ThreadGroup::StartImpl(
     size_t max_tasks,
     size_t max_best_effort_tasks,
     TimeDelta suggested_reclaim_time,
     scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer,
     WorkerEnvironment worker_environment,
+    bool synchronous_thread_start_for_testing,
     absl::optional<TimeDelta> may_block_threshold) {
   DCHECK(!replacement_thread_group_);
+
+  if (synchronous_thread_start_for_testing) {
+    worker_started_for_testing_.emplace(WaitableEvent::ResetPolicy::AUTOMATIC);
+    // Don't emit a ScopedBlockingCallWithBaseSyncPrimitives from this
+    // WaitableEvent or it defeats the purpose of having threads start without
+    // externally visible side-effects.
+    worker_started_for_testing_->declare_only_used_while_idle();
+  }
 
   in_start().no_worker_reclaim = FeatureList::IsEnabled(kNoWorkerThreadReclaim);
   in_start().may_block_threshold =
@@ -175,6 +185,7 @@ void ThreadGroup::Start(
           : kBackgroundBlockedWorkersPoll;
   in_start().ensure_enough_workers_at_end_of_get_work =
       base::FeatureList::IsEnabled(kUseNewJobImplementation);
+  in_start().max_num_workers_created = base::kMaxNumWorkersCreated.Get();
 
   CheckedAutoLock auto_lock(lock_);
 
@@ -353,11 +364,11 @@ void ThreadGroup::UpdateSortKeyImpl(BaseScopedCommandsExecutor* executor,
 void ThreadGroup::PushTaskSourceAndWakeUpWorkersImpl(
     BaseScopedCommandsExecutor* executor,
     RegisteredTaskSourceAndTransaction transaction_with_task_source) {
-  CheckedAutoLock auto_lock(lock_);
   DCHECK(!replacement_thread_group_);
   DCHECK_EQ(delegate_->GetThreadGroupForTraits(
                 transaction_with_task_source.transaction.traits()),
             this);
+  CheckedAutoLock lock(lock_);
   if (transaction_with_task_source.task_source->immediate_heap_handle()
           .IsValid()) {
     // If the task source changed group, it is possible that multiple concurrent
@@ -377,6 +388,27 @@ void ThreadGroup::PushTaskSourceAndWakeUpWorkersImpl(
   EnsureEnoughWorkersLockRequired(executor);
 }
 
+void ThreadGroup::EnqueueAllTaskSources(PriorityQueue* new_priority_queue) {
+  std::unique_ptr<BaseScopedCommandsExecutor> executor = GetExecutor();
+  CheckedAutoLock lock(lock_);
+  while (!new_priority_queue->IsEmpty()) {
+    TaskSourceSortKey top_sort_key = new_priority_queue->PeekSortKey();
+    RegisteredTaskSource task_source = new_priority_queue->PopTaskSource();
+    priority_queue_.Push(std::move(task_source), top_sort_key);
+  }
+}
+
+void ThreadGroup::HandoffAllTaskSourcesToOtherThreadGroup(
+    ThreadGroup* destination_thread_group) {
+  PriorityQueue new_priority_queue;
+  TaskSourceSortKey top_sort_key;
+  {
+    CheckedAutoLock current_thread_group_lock(lock_);
+    new_priority_queue.swap(priority_queue_);
+  }
+  destination_thread_group->EnqueueAllTaskSources(&new_priority_queue);
+}
+
 void ThreadGroup::HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
     ThreadGroup* destination_thread_group) {
   PriorityQueue new_priority_queue;
@@ -391,18 +423,7 @@ void ThreadGroup::HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
     }
     new_priority_queue.swap(priority_queue_);
   }
-  {
-    std::unique_ptr<BaseScopedCommandsExecutor> executor =
-        destination_thread_group->GetExecutor();
-    CheckedAutoLock destination_thread_group_lock(
-        destination_thread_group->lock_);
-    while (!new_priority_queue.IsEmpty()) {
-      top_sort_key = new_priority_queue.PeekSortKey();
-      RegisteredTaskSource task_source = new_priority_queue.PopTaskSource();
-      destination_thread_group->priority_queue_.Push(std::move(task_source),
-                                                     top_sort_key);
-    }
-  }
+  destination_thread_group->EnqueueAllTaskSources(&new_priority_queue);
 }
 
 bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
@@ -473,6 +494,47 @@ size_t ThreadGroup::GetMaxBestEffortTasksForTesting() const {
   return max_best_effort_tasks_;
 }
 
+void ThreadGroup::WaitForWorkersIdleLockRequiredForTesting(size_t n) {
+  // Make sure workers do not cleanup while watching the idle count.
+  AutoReset<bool> ban_cleanups(&worker_cleanup_disallowed_for_testing_, true);
+
+  while (NumberOfIdleWorkersLockRequiredForTesting() < n) {
+    idle_workers_set_cv_for_testing_->Wait();
+  }
+}
+
+void ThreadGroup::WaitForWorkersIdleForTesting(size_t n) {
+  CheckedAutoLock auto_lock(lock_);
+
+#if DCHECK_IS_ON()
+  DCHECK(!some_workers_cleaned_up_for_testing_)
+      << "Workers detached prior to waiting for a specific number of idle "
+         "workers. Doing the wait under such conditions is flaky. Consider "
+         "setting the suggested reclaim time to TimeDelta::Max() in Start().";
+#endif
+
+  WaitForWorkersIdleLockRequiredForTesting(n);
+}
+
+void ThreadGroup::WaitForAllWorkersIdleForTesting() {
+  CheckedAutoLock auto_lock(lock_);
+  WaitForWorkersIdleLockRequiredForTesting(workers_.size());
+}
+
+void ThreadGroup::WaitForWorkersCleanedUpForTesting(size_t n) {
+  CheckedAutoLock auto_lock(lock_);
+
+  if (!num_workers_cleaned_up_for_testing_cv_) {
+    num_workers_cleaned_up_for_testing_cv_ = lock_.CreateConditionVariable();
+  }
+
+  while (num_workers_cleaned_up_for_testing_ < n) {
+    num_workers_cleaned_up_for_testing_cv_->Wait();
+  }
+
+  num_workers_cleaned_up_for_testing_ = 0;
+}
+
 size_t ThreadGroup::GetMaxConcurrentNonBlockedTasksDeprecated() const {
 #if DCHECK_IS_ON()
   CheckedAutoLock auto_lock(lock_);
@@ -481,6 +543,16 @@ size_t ThreadGroup::GetMaxConcurrentNonBlockedTasksDeprecated() const {
       << "thread group has started.";
 #endif
   return after_start().initial_max_tasks;
+}
+
+size_t ThreadGroup::NumberOfWorkersForTesting() const {
+  CheckedAutoLock auto_lock(lock_);
+  return workers_.size();
+}
+
+size_t ThreadGroup::NumberOfIdleWorkersForTesting() const {
+  CheckedAutoLock auto_lock(lock_);
+  return NumberOfIdleWorkersLockRequiredForTesting();
 }
 
 size_t ThreadGroup::GetDesiredNumAwakeWorkersLockRequired() const {
@@ -527,6 +599,51 @@ void ThreadGroup::ScheduleAdjustMaxTasks() {
   after_start().service_thread_task_runner->PostDelayedTask(
       FROM_HERE, BindOnce(&ThreadGroup::AdjustMaxTasks, Unretained(this)),
       after_start().blocked_workers_poll_period);
+}
+
+void ThreadGroup::AdjustMaxTasks() {
+  DCHECK(
+      after_start().service_thread_task_runner->RunsTasksInCurrentSequence());
+
+  std::unique_ptr<BaseScopedCommandsExecutor> executor = GetExecutor();
+  CheckedAutoLock auto_lock(lock_);
+  DCHECK(adjust_max_tasks_posted_);
+  adjust_max_tasks_posted_ = false;
+
+  // Increment max tasks for each worker that has been within a MAY_BLOCK
+  // ScopedBlockingCall for more than may_block_threshold.
+  for (scoped_refptr<WorkerThread> worker : workers_) {
+    // The delegates of workers inside a ThreadGroup should be
+    // WaitableEventWorkerDelegates.
+    ThreadGroupWorkerDelegate* delegate = GetWorkerDelegate(worker.get());
+    AnnotateAcquiredLockAlias annotate(lock_, delegate->lock());
+    delegate->MaybeIncrementMaxTasksLockRequired();
+  }
+
+  // Wake up workers according to the updated |max_tasks_|. This will also
+  // reschedule AdjustMaxTasks() if necessary.
+  EnsureEnoughWorkersLockRequired(executor.get());
+}
+
+void ThreadGroup::OnShutDownStartedImpl(BaseScopedCommandsExecutor* executor) {
+  CheckedAutoLock auto_lock(lock_);
+
+  // Don't do anything if the thread group isn't started.
+  if (max_tasks_ == 0 || UNLIKELY(join_for_testing_started_)) {
+    return;
+  }
+
+  // Start a MAY_BLOCK scope on each worker that is already running a task.
+  for (scoped_refptr<WorkerThread>& worker : workers_) {
+    // The delegates of workers inside a ThreadGroup should be
+    // WorkerThreadDelegateImpls.
+    ThreadGroupWorkerDelegate* delegate = GetWorkerDelegate(worker.get());
+    AnnotateAcquiredLockAlias annotate(lock_, delegate->lock());
+    delegate->OnShutdownStartedLockRequired(executor);
+  }
+  EnsureEnoughWorkersLockRequired(executor);
+
+  shutdown_started_ = true;
 }
 
 bool ThreadGroup::ShouldPeriodicallyAdjustMaxTasksLockRequired() {

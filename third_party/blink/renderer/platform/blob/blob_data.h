@@ -39,6 +39,7 @@
 // required types without reference to the generator output headers.
 
 #include <memory>
+#include <optional>
 
 #include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"
@@ -46,7 +47,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -174,14 +174,14 @@ class PLATFORM_EXPORT BlobDataHandle
       const String& path,
       int64_t offset,
       int64_t length,
-      const absl::optional<base::Time>& expected_modification_time,
+      const std::optional<base::Time>& expected_modification_time,
       const String& content_type);
   static scoped_refptr<BlobDataHandle> CreateForFileSync(
       mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
       const String& path,
       int64_t offset,
       int64_t length,
-      const absl::optional<base::Time>& expected_modification_time,
+      const std::optional<base::Time>& expected_modification_time,
       const String& content_type);
 
   // For initial creation.
@@ -225,7 +225,7 @@ class PLATFORM_EXPORT BlobDataHandle
   // This does synchronous IPC, and possibly synchronous file operations. Think
   // twice before calling this function.
   bool CaptureSnapshot(uint64_t* snapshot_size,
-                       absl::optional<base::Time>* snapshot_modification_time);
+                       std::optional<base::Time>* snapshot_modification_time);
 
   void SetBlobRemoteForTesting(mojo::PendingRemote<mojom::blink::Blob> remote) {
     base::AutoLock locker(blob_remote_lock_);

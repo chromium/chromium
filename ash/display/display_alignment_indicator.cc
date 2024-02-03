@@ -258,7 +258,7 @@ class IndicatorPillView : public views::View {
   }
 
   // views::View:
-  void Layout() override {
+  void Layout(PassKey) override {
     icon_->SetImageSize(gfx::Size(kArrowSize, kArrowSize));
 
     // IndicatorPosition::kRight is a special case for layout as it is the only

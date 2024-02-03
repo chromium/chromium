@@ -14,6 +14,7 @@
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/file_url_loader_factory.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -45,7 +46,6 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -425,29 +425,27 @@ void WorkerScriptFetcher::CreateScriptLoader(
     // safely.
     factory_params->is_trusted = true;
 
-    network::URLLoaderFactoryBuilder factory_builder;
     bool bypass_redirect_checks = false;
-    GetContentClient()->browser()->WillCreateURLLoaderFactory(
-        browser_context, creator_render_frame_host, factory_process->GetID(),
+    // TODO(https://crbug.com/1103288): The UKM ID could be computed.
+    constexpr ukm::SourceIdObj source_id = ukm::kInvalidSourceIdObj;
+    url_loader_factory::CreateAndConnectToPendingReceiver(
+        factory_bundle_for_browser_info->pending_default_factory()
+            .InitWithNewPipeAndPassReceiver(),
         ContentBrowserClient::URLLoaderFactoryType::kWorkerMainResource,
-        request_initiator,
-        /*navigation_id=*/std::nullopt,
-        /* TODO(https://crbug.com/1103288): The UKM ID could be computed */
-        ukm::kInvalidSourceIdObj, factory_builder,
-        &factory_params->header_client, &bypass_redirect_checks,
-        nullptr /* disable_secure_dns */, &factory_params->factory_override,
-        /*navigation_response_task_runner=*/nullptr);
+        url_loader_factory::TerminalParams::ForNetworkContext(
+            factory_process->GetStoragePartition()->GetNetworkContext(),
+            std::move(factory_params),
+            url_loader_factory::HeaderClientOption::kAllow,
+            url_loader_factory::FactoryOverrideOption::kAllow),
+        url_loader_factory::ContentClientParams(
+            browser_context, creator_render_frame_host,
+            factory_process->GetID(), request_initiator, source_id,
+            &bypass_redirect_checks),
+        devtools_instrumentation::WillCreateURLLoaderFactoryParams::
+            ForWorkerMainScript(devtools_agent_host, devtools_worker_token));
+
     factory_bundle_for_browser_info->set_bypass_redirect_checks(
         bypass_redirect_checks);
-
-    devtools_instrumentation::WillCreateURLLoaderFactoryForWorkerMainScript(
-        devtools_agent_host, devtools_worker_token,
-        &factory_params->factory_override);
-    std::move(factory_builder)
-        .Finish(factory_bundle_for_browser_info->pending_default_factory()
-                    .InitWithNewPipeAndPassReceiver(),
-                factory_process, std::move(factory_params));
-
     url_loader_factory = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
         std::move(factory_bundle_for_browser_info));
   }

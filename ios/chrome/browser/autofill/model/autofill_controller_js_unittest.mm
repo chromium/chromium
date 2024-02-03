@@ -1782,7 +1782,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"firstname",
         @"id_attribute" : @"firstname",
         @"identifier" : @"firstname",
-        @"unique_renderer_id" : @"2",
+        @"renderer_id" : @"2",
         @"form_control_type" : @"text",
         @"max_length" : GetDefaultMaxLength(),
         @"placeholder_attribute" : @"",
@@ -1800,7 +1800,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"vehicle",
         @"id_attribute" : @"vehicle1",
         @"identifier" : @"vehicle1",
-        @"unique_renderer_id" : @"3",
+        @"renderer_id" : @"3",
         @"form_control_type" : @"checkbox",
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
@@ -1817,7 +1817,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"vehicle",
         @"id_attribute" : @"vehicle2",
         @"identifier" : @"vehicle2",
-        @"unique_renderer_id" : @"4",
+        @"renderer_id" : @"4",
         @"form_control_type" : @"checkbox",
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
@@ -1834,7 +1834,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"vehicle",
         @"id_attribute" : @"vehicle3",
         @"identifier" : @"vehicle3",
-        @"unique_renderer_id" : @"5",
+        @"renderer_id" : @"5",
         @"form_control_type" : @"checkbox",
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
@@ -1851,7 +1851,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"nameintableth",
         @"id_attribute" : @"nameintableth",
         @"identifier" : @"nameintableth",
-        @"unique_renderer_id" : @"6",
+        @"renderer_id" : @"6",
         @"form_control_type" : @"text",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
@@ -1869,7 +1869,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"",
         @"id_attribute" : @"emailtableth",
         @"identifier" : @"emailtableth",
-        @"unique_renderer_id" : @"7",
+        @"renderer_id" : @"7",
         @"form_control_type" : @"email",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
@@ -1887,7 +1887,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"pwd",
         @"id_attribute" : @"pwd",
         @"identifier" : @"pwd",
-        @"unique_renderer_id" : @"8",
+        @"renderer_id" : @"8",
         @"form_control_type" : @"password",
         @"placeholder_attribute" : @"",
         @"autocomplete_attribute" : @"off",
@@ -1906,7 +1906,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"state",
         @"id_attribute" : @"state",
         @"identifier" : @"state",
-        @"unique_renderer_id" : @"9",
+        @"renderer_id" : @"9",
         @"form_control_type" : @"select-one",
         @"placeholder_attribute" : @"",
         @"is_focusable" : @1,
@@ -1995,23 +1995,23 @@ TEST_F(AutofillControllerJsTest, FillActiveFormField) {
                        "element.focus();"
                        "var "
                        "data={\"name\":\"lastname\",\"value\":\"%@\","
-                       "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
+                       "\"identifier\":\"lastname\",\"renderer_id\":3};"
                        "__gCrWeb.autofill.fillActiveFormField(data);"
                        "element.value",
                       newValue]));
 
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScript([NSString
-                  stringWithFormat:
-                      @"var element=document.getElementsByName('gl')[0];"
-                       "element.focus();"
-                       "var oldValue = element.value;"
-                       "var "
-                       "data={\"name\":\"lastname\",\"value\":\"%@\","
-                       "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
-                       "__gCrWeb.autofill.fillActiveFormField(data);"
-                       "element.value === oldValue",
-                      newValue]))
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"var element=document.getElementsByName('gl')[0];"
+                            "element.focus();"
+                            "var oldValue = element.value;"
+                            "var "
+                            "data={\"name\":\"lastname\",\"value\":\"%@\","
+                            "\"identifier\":\"lastname\",\"renderer_id\":3};"
+                            "__gCrWeb.autofill.fillActiveFormField(data);"
+                            "element.value === oldValue",
+                           newValue]))
       << "A non-form element's value should changed.";
 }
 
@@ -2041,22 +2041,22 @@ TEST_F(AutofillControllerJsTest, FillSpecificFormField) {
                       @"var element=document.getElementsByName('lastname')[0];"
                        "var "
                        "data={\"name\":\"lastname\",\"value\":\"%@\","
-                       "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
+                       "\"identifier\":\"lastname\",\"renderer_id\":3};"
                        "__gCrWeb.autofill.fillSpecificFormField(data);"
                        "element.value",
                       new_value]));
 
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScript([NSString
-                  stringWithFormat:
-                      @"var element=document.getElementsByName('gl')[0];"
-                       "var oldValue = element.value;"
-                       "var "
-                       "data={\"name\":\"lastname\",\"value\":\"%@\","
-                       "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
-                       "__gCrWeb.autofill.fillSpecificFormField(data);"
-                       "element.value === oldValue",
-                      new_value]))
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"var element=document.getElementsByName('gl')[0];"
+                            "var oldValue = element.value;"
+                            "var "
+                            "data={\"name\":\"lastname\",\"value\":\"%@\","
+                            "\"identifier\":\"lastname\",\"renderer_id\":3};"
+                            "__gCrWeb.autofill.fillSpecificFormField(data);"
+                            "element.value === oldValue",
+                           new_value]))
       << "A non-form element's value should changed.";
 }
 

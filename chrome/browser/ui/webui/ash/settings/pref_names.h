@@ -9,6 +9,8 @@ namespace ash::settings::prefs {
 
 extern const char kSyncOsWallpaper[];
 
+extern const char kSanitizeCompleted[];
+
 }  // namespace ash::settings::prefs
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PREF_NAMES_H_

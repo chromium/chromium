@@ -2342,9 +2342,9 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, AllowlistEntryExpires) {
         contents->GetPrimaryMainFrame()->GetStoragePartition()));
   }
 
-  // Simulate the clock advancing by eight days, which is past the expiration
+  // Simulate the clock advancing by 16 days, which is past the expiration
   // point.
-  clock_ptr->Advance(base::Days(8));
+  clock_ptr->Advance(base::Days(16));
 
   // The host should no longer be allowlisted, and the interstitial should
   // trigger again.
@@ -2404,17 +2404,17 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
   EXPECT_TRUE(state->IsHttpAllowedForHost(
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
 
-  // Simulate the clock advancing by five days.
-  clock_ptr->Advance(base::Days(5));
+  // Simulate the clock advancing by ten days.
+  clock_ptr->Advance(base::Days(10));
 
   // Navigate to the host again; this will reset the allowlist expiration to
   // now + 7 days.
   EXPECT_TRUE(content::NavigateToURL(contents, http_url));
 
-  // Simulate the clock advancing another five days. This will be _after_ the
+  // Simulate the clock advancing another ten days. This will be _after_ the
   // initial expiration date of the allowlist entry, but _before_ the bumped
   // expiration date from the second navigation.
-  clock_ptr->Advance(base::Days(5));
+  clock_ptr->Advance(base::Days(10));
   EXPECT_TRUE(state->IsHttpAllowedForHost(
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
   EXPECT_TRUE(content::NavigateToURL(contents, http_url));

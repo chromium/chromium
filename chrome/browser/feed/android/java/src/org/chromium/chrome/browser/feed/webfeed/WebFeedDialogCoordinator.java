@@ -17,12 +17,12 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -149,8 +149,7 @@ class WebFeedDialogCoordinator {
         String primaryButtonText;
         String secondaryButtonText;
         Callback<Integer> buttonClickCallback;
-        boolean uiUpdateEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE);
+        boolean uiUpdateEnabled = FeedFeatures.isFeedFollowUiUpdateEnabled();
         if (isActive) {
             descriptionResId =
                     uiUpdateEnabled

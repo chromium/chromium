@@ -44,7 +44,7 @@ class MODULES_EXPORT TCPServerSocket final : public ScriptWrappable,
   void OnTCPServerSocketOpened(
       mojo::PendingRemote<network::mojom::blink::TCPServerSocket>,
       int32_t result,
-      const absl::optional<net::IPEndPoint>& local_addr);
+      const std::optional<net::IPEndPoint>& local_addr);
 
   void Trace(Visitor*) const override;
 

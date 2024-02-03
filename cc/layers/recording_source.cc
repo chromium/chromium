@@ -28,17 +28,17 @@ namespace cc {
 RecordingSource::RecordingSource() = default;
 RecordingSource::~RecordingSource() = default;
 
-void RecordingSource::UpdateInvalidationForNewViewport(
-    const gfx::Rect& old_recorded_viewport,
-    const gfx::Rect& new_recorded_viewport,
+void RecordingSource::UpdateInvalidationForRecordedBounds(
+    const gfx::Rect& old_recorded_bounds,
+    const gfx::Rect& new_recorded_bounds,
     Region& invalidation) {
   // Invalidate newly-exposed and no-longer-exposed areas.
-  Region newly_exposed_region(new_recorded_viewport);
-  newly_exposed_region.Subtract(old_recorded_viewport);
+  Region newly_exposed_region(new_recorded_bounds);
+  newly_exposed_region.Subtract(old_recorded_bounds);
   invalidation.Union(newly_exposed_region);
 
-  Region no_longer_exposed_region(old_recorded_viewport);
-  no_longer_exposed_region.Subtract(new_recorded_viewport);
+  Region no_longer_exposed_region(old_recorded_bounds);
+  no_longer_exposed_region.Subtract(new_recorded_bounds);
   invalidation.Union(no_longer_exposed_region);
 }
 
@@ -68,63 +68,53 @@ bool RecordingSource::Update(const gfx::Size& layer_size,
                              float recording_scale_factor,
                              ContentLayerClient& client,
                              Region& invalidation) {
-  size_ = layer_size;
-
   invalidation_.Swap(&invalidation);
   invalidation_.Clear();
 
-  // TODO(crbug.com/1517714): Move this invalidation into
-  // UpdateDisplayItemList() based on the change the display list bounds.
-  gfx::Rect new_recorded_viewport(layer_size);
-  if (new_recorded_viewport != recorded_viewport_) {
-    UpdateInvalidationForNewViewport(recorded_viewport_, new_recorded_viewport,
-                                     invalidation);
-    recorded_viewport_ = new_recorded_viewport;
-  } else if (!invalidation.Intersects(recorded_viewport_)) {
-    // If the invalidation did not affect the recording source, then it can be
-    // cleared as an optimization.
-    invalidation.Clear();
+  if (size_ == layer_size && invalidation.IsEmpty()) {
     return false;
   }
 
-  UpdateDisplayItemList(client.PaintContentsToDisplayList(),
-                        recording_scale_factor, invalidation);
-  return true;
-}
-
-void RecordingSource::UpdateDisplayItemList(
-    scoped_refptr<DisplayItemList> display_list,
-    float recording_scale_factor,
-    Region& invalidation) {
-  CHECK(display_list);
+  size_ = layer_size;
   recording_scale_factor_ = recording_scale_factor;
 
+  scoped_refptr<DisplayItemList> display_list =
+      client.PaintContentsToDisplayList();
   if (display_list_ == display_list) {
-    return;
+    return true;
   }
 
   // Do the following only if the display list changes. Though we use
   // recording_scale_factor in DetermineIfSolidColor(), change of it doesn't
   // affect whether the same display list is solid or not.
 
-  if (display_list_ &&
-      display_list->NeedsAdditionalInvalidationForLCDText(*display_list_)) {
-    invalidation = gfx::Rect(size_);
+  gfx::Rect layer_rect(size_);
+  gfx::Rect new_recorded_bounds = layer_rect;
+  if (can_use_recorded_bounds_) {
+    if (std::optional<gfx::Rect> display_list_bounds = display_list->bounds()) {
+      new_recorded_bounds.Intersect(*display_list_bounds);
+    }
   }
 
+  if (display_list_ &&
+      display_list->NeedsAdditionalInvalidationForLCDText(*display_list_)) {
+    invalidation = layer_rect;
+  } else if (new_recorded_bounds != recorded_bounds_) {
+    UpdateInvalidationForRecordedBounds(recorded_bounds_, new_recorded_bounds,
+                                        invalidation);
+  }
+
+  recorded_bounds_ = new_recorded_bounds;
   display_list_ = std::move(display_list);
   FinishDisplayItemListUpdate();
-}
-
-gfx::Size RecordingSource::GetSize() const {
-  return size_;
+  return true;
 }
 
 void RecordingSource::SetEmptyBounds() {
   size_ = gfx::Size();
   is_solid_color_ = false;
 
-  recorded_viewport_ = gfx::Rect();
+  recorded_bounds_ = gfx::Rect();
   display_list_ = nullptr;
 }
 
@@ -140,6 +130,15 @@ void RecordingSource::SetRequiresClear(bool requires_clear) {
   requires_clear_ = requires_clear;
 }
 
+void RecordingSource::SetCanUseRecordedBounds(bool can_use_recorded_bounds) {
+  if (can_use_recorded_bounds_ == can_use_recorded_bounds) {
+    return;
+  }
+  can_use_recorded_bounds_ = can_use_recorded_bounds;
+  // To force update.
+  size_ = gfx::Size();
+}
+
 scoped_refptr<RasterSource> RecordingSource::CreateRasterSource() const {
   return scoped_refptr<RasterSource>(new RasterSource(this));
 }
@@ -152,10 +151,11 @@ void RecordingSource::DetermineIfSolidColor() {
   if (display_list_->TotalOpCount() > kMaxOpsToAnalyzeForLayer)
     return;
 
+  // TODO(crbug.com/1517714): Allow the solid color not to fill the layer.
   TRACE_EVENT1("cc", "RecordingSource::DetermineIfSolidColor", "opcount",
                display_list_->TotalOpCount());
   is_solid_color_ = display_list_->GetColorIfSolidInRect(
-      gfx::ScaleToRoundedRect(gfx::Rect(GetSize()), recording_scale_factor_),
+      gfx::ScaleToRoundedRect(gfx::Rect(size_), recording_scale_factor_),
       &solid_color_, kMaxOpsToAnalyzeForLayer);
 }
 

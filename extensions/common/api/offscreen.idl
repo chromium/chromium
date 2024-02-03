@@ -19,7 +19,7 @@ namespace offscreen {
     // objects (including <code>URL.createObjectURL()</code>).
     BLOBS,
     // Specifies that the offscreen document needs to use the
-    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMParser>DOMParser API</a>.
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMParser">DOMParser API</a>.
     DOM_PARSER,
     // Specifies that the offscreen document needs to interact with
     // media streams from user media (e.g. <code>getUserMedia()</code>).
@@ -28,10 +28,10 @@ namespace offscreen {
     // media streams from display media (e.g. <code>getDisplayMedia()</code>).
     DISPLAY_MEDIA,
     // Specifies that the offscreen document needs to use
-    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API>WebRTC APIs</a>.
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API">WebRTC APIs</a>.
     WEB_RTC,
     // Specifies that the offscreen document needs to interact with the
-    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API>Clipboard API</a>.
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API">Clipboard API</a>.
     CLIPBOARD,
     // Specifies that the offscreen document needs access to
     // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localStorage</a>.

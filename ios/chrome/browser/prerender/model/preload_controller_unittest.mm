@@ -7,7 +7,6 @@
 #import "base/ios/device_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
@@ -63,10 +62,6 @@ class PreloadControllerTest : public PlatformTest {
 
     controller_ = [[PreloadController alloc]
         initWithBrowserState:chrome_browser_state_.get()];
-
-    // Enable URL filtering feature for supervised users.
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   }
 
   // Set the "Preload webpages" setting to "Always".
@@ -109,7 +104,6 @@ class PreloadControllerTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TestNetworkChangeNotifier> network_change_notifier_;
   PreloadController* controller_;

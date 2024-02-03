@@ -361,11 +361,13 @@ void PageLoadMetricsForwardObserver::OnCookiesRead(
     const GURL& first_party_url,
     bool blocked_by_policy,
     bool is_ad_tagged,
-    const net::CookieSettingOverrides& cookie_setting_overrides) {
+    const net::CookieSettingOverrides& cookie_setting_overrides,
+    bool is_partitioned_access) {
   if (!parent_observer_)
     return;
   parent_observer_->OnCookiesRead(url, first_party_url, blocked_by_policy,
-                                  is_ad_tagged, cookie_setting_overrides);
+                                  is_ad_tagged, cookie_setting_overrides,
+                                  is_partitioned_access);
 }
 
 void PageLoadMetricsForwardObserver::OnCookieChange(
@@ -374,12 +376,13 @@ void PageLoadMetricsForwardObserver::OnCookieChange(
     const net::CanonicalCookie& cookie,
     bool blocked_by_policy,
     bool is_ad_tagged,
-    const net::CookieSettingOverrides& cookie_setting_overrides) {
+    const net::CookieSettingOverrides& cookie_setting_overrides,
+    bool is_partitioned_access) {
   if (!parent_observer_)
     return;
-  parent_observer_->OnCookieChange(url, first_party_url, cookie,
-                                   blocked_by_policy, is_ad_tagged,
-                                   cookie_setting_overrides);
+  parent_observer_->OnCookieChange(
+      url, first_party_url, cookie, blocked_by_policy, is_ad_tagged,
+      cookie_setting_overrides, is_partitioned_access);
 }
 
 void PageLoadMetricsForwardObserver::OnStorageAccessed(

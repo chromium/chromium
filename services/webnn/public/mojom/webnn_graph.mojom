@@ -22,7 +22,11 @@ struct Operand {
     kUint8,
   };
 
-  enum Kind { kInput, kConstant, kOutput };
+  enum Kind {
+    kInput,
+    kConstant,
+    kOutput,
+  };
 
   Kind kind;
   // The data type of the operand.
@@ -131,7 +135,10 @@ struct Concat {
 // width), `kChannelsLast` means `nhwc` (batches, height, width, channels).
 // The type is used to get the spatial dimension from input tensor, thus safe to
 // represent as enum.
-enum InputOperandLayout { kChannelsFirst, kChannelsLast };
+enum InputOperandLayout {
+  kChannelsFirst,
+  kChannelsLast,
+};
 
 // A size has height and width values.
 struct Size2d {
@@ -202,7 +209,7 @@ struct Conv2d {
 // The shapes of left-hand side (lhs) operand and right-hand side (rhs) operand
 // must be compatible according to numpy-broadcasting-rule:
 // https://www.w3.org/TR/webnn/#biblio-numpy-broadcasting-rule
-struct ElementWiseBinary  {
+struct ElementWiseBinary {
   enum Kind {
     kAdd,
     kSub,
@@ -233,7 +240,7 @@ struct ElementWiseBinary  {
 
 // Represents an element-wise unary operation, mathematically equivalent to:
 // <output_operand> = <operation_kind>(<input_operand>);
-struct ElementWiseUnary  {
+struct ElementWiseUnary {
   enum Kind {
     kAbs,
     kCeil,
@@ -278,8 +285,11 @@ struct Expand {
 struct ConstantPadding {
   float value = 0;
 };
+
 struct EdgePadding {};
+
 struct ReflectionPadding {};
+
 struct SymmetricPadding {};
 
 union PaddingMode {
@@ -312,7 +322,8 @@ struct InstanceNormalization {
   InputOperandLayout layout;
 };
 
-// Represents matmul operation which compute the matrix product of two input tensors.
+// Represents matmul operation which compute the matrix product of two input
+// tensors.
 struct Matmul {
   // The id of `a` operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
@@ -344,7 +355,7 @@ struct Pad {
   PaddingMode mode;
 };
 
-struct Reduce  {
+struct Reduce {
   enum Kind {
     kL1,
     kL2,
@@ -384,6 +395,7 @@ struct Reduce  {
 struct Pool2d {
   enum Kind {
     kAveragePool2d,
+    kL2Pool2d,
     kMaxPool2d,
   };
 
@@ -545,6 +557,15 @@ struct HardSigmoid {
   float alpha = 0.2;
   // A float scalar addition. The default value is 0.5.
   float beta = 0.5;
+};
+
+// Represents an operation which computes the nonlinear function
+// output = input * max(0, min(6, (input + 3))) / 6
+struct HardSwish {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
 };
 
 // Represents an operation of normalizing the input across the feature
@@ -805,6 +826,7 @@ union Operation {
   Gather gather;
   Gemm gemm;
   HardSigmoid hard_sigmoid;
+  HardSwish hard_swish;
   LayerNormalization layer_normalization;
   InstanceNormalization instance_normalization;
   LeakyRelu leaky_relu;

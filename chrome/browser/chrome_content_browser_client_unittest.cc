@@ -76,6 +76,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
@@ -899,7 +900,7 @@ class ChromeContentSettingsPolicyTrustAnchor
     user_manager::User* user =
         fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
             account_id, false /*is_affiliated*/,
-            user_manager::USER_TYPE_REGULAR, &profile_);
+            user_manager::UserType::kRegular, &profile_);
     fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     false /* browser_restart */,
                                     false /* is_child */);
@@ -931,32 +932,38 @@ TEST_F(ChromeContentSettingsPolicyTrustAnchor, PolicyTrustAnchor) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class CaptivePortalCheckProcessHost : public content::MockRenderProcessHost {
+class CaptivePortalCheckNetworkContext final
+    : public network::TestNetworkContext {
  public:
-  explicit CaptivePortalCheckProcessHost(
-      content::BrowserContext* browser_context)
-      : MockRenderProcessHost(browser_context) {}
+  CaptivePortalCheckNetworkContext(content::BrowserContext* browser_context,
+                                   bool expected_disable_secure_dns)
+      : expected_disable_secure_dns_(expected_disable_secure_dns) {
+    browser_context->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+        receiver_.BindNewPipeAndPassRemote());
+  }
 
-  CaptivePortalCheckProcessHost(const CaptivePortalCheckProcessHost&) = delete;
-  CaptivePortalCheckProcessHost& operator=(
-      const CaptivePortalCheckProcessHost&) = delete;
+  CaptivePortalCheckNetworkContext(const CaptivePortalCheckNetworkContext&) =
+      delete;
+  CaptivePortalCheckNetworkContext& operator=(
+      const CaptivePortalCheckNetworkContext&) = delete;
+
+  ~CaptivePortalCheckNetworkContext() override = default;
 
   void CreateURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       network::mojom::URLLoaderFactoryParamsPtr params) override {
-    *invoked_url_factory_ = true;
-    DCHECK_EQ(expected_disable_secure_dns_, params->disable_secure_dns);
+    invoked_url_factory_.SetValue(true);
+    CHECK_EQ(expected_disable_secure_dns_, params->disable_secure_dns);
   }
 
-  void SetupForTracking(bool* invoked_url_factory,
-                        bool expected_disable_secure_dns) {
-    invoked_url_factory_ = invoked_url_factory;
-    expected_disable_secure_dns_ = expected_disable_secure_dns;
+  bool WaitAndGetInvokedURLLoaderFactory() {
+    return invoked_url_factory_.Get();
   }
 
  private:
-  raw_ptr<bool> invoked_url_factory_ = nullptr;
+  base::test::TestFuture<bool> invoked_url_factory_;
   bool expected_disable_secure_dns_ = false;
+  mojo::Receiver<network::mojom::NetworkContext> receiver_{this};
 };
 
 class CaptivePortalCheckRenderProcessHostFactory
@@ -972,22 +979,19 @@ class CaptivePortalCheckRenderProcessHostFactory
   content::RenderProcessHost* CreateRenderProcessHost(
       content::BrowserContext* browser_context,
       content::SiteInstance* site_instance) override {
-    auto rph = std::make_unique<CaptivePortalCheckProcessHost>(browser_context);
+    auto rph = std::make_unique<content::MockRenderProcessHost>(
+        browser_context,
+        content::StoragePartitionConfig::CreateDefault(browser_context),
+        false /* is_for_guests_only */);
     content::RenderProcessHost* result = rph.get();
     processes_.push_back(std::move(rph));
     return result;
   }
 
-  void SetupForTracking(bool* invoked_url_factory,
-                        bool expected_disable_secure_dns) {
-    processes_.back()->SetupForTracking(invoked_url_factory,
-                                        expected_disable_secure_dns);
-  }
-
   void ClearRenderProcessHosts() { processes_.clear(); }
 
  private:
-  std::list<std::unique_ptr<CaptivePortalCheckProcessHost>> processes_;
+  std::list<std::unique_ptr<content::MockRenderProcessHost>> processes_;
 };
 
 class ChromeContentBrowserClientCaptivePortalBrowserTest
@@ -1005,30 +1009,35 @@ class ChromeContentBrowserClientCaptivePortalBrowserTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  bool invoked_url_factory_ = false;
+  std::unique_ptr<CaptivePortalCheckNetworkContext> SetupForTracking(
+      bool expected_disable_secure_dns) {
+    return std::make_unique<CaptivePortalCheckNetworkContext>(
+        browser_context(), expected_disable_secure_dns);
+  }
+
   CaptivePortalCheckRenderProcessHostFactory cp_rph_factory_;
 };
 
 TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
        NotCaptivePortalWindow) {
-  cp_rph_factory_.SetupForTracking(&invoked_url_factory_,
-                                   false /* expected_disable_secure_dns */);
+  auto network_context =
+      SetupForTracking(false /* expected_disable_secure_dns */);
   NavigateAndCommit(GURL("https://www.google.com"), ui::PAGE_TRANSITION_LINK);
-  EXPECT_TRUE(invoked_url_factory_);
+  EXPECT_TRUE(network_context->WaitAndGetInvokedURLLoaderFactory());
 }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
        CaptivePortalWindow) {
-  cp_rph_factory_.SetupForTracking(&invoked_url_factory_,
-                                   true /* expected_disable_secure_dns */);
+  auto network_context =
+      SetupForTracking(true /* expected_disable_secure_dns */);
   captive_portal::CaptivePortalTabHelper::CreateForWebContents(
       web_contents(), CaptivePortalServiceFactory::GetForProfile(profile()),
       base::NullCallback());
   captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents())
       ->set_is_captive_portal_window();
   NavigateAndCommit(GURL("https://www.google.com"), ui::PAGE_TRANSITION_LINK);
-  EXPECT_TRUE(invoked_url_factory_);
+  EXPECT_TRUE(network_context->WaitAndGetInvokedURLLoaderFactory());
 }
 #endif
 

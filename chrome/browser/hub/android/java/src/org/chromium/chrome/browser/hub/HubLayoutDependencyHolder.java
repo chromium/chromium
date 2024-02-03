@@ -11,8 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+
+import java.util.function.DoubleConsumer;
 
 /**
  * Holds dependencies for initialization of {@link HubLayout}. These dependencies come from the
@@ -24,6 +27,7 @@ public class HubLayoutDependencyHolder {
     private final @NonNull LazyOneshotSupplier<HubManager> mHubManagerSupplier;
     private final @NonNull LazyOneshotSupplier<ViewGroup> mHubRootViewGroupSupplier;
     private final @NonNull HubLayoutScrimController mScrimController;
+    private final @NonNull DoubleConsumer mOnToolbarAlphaChange;
 
     /**
      * @param hubManagerSupplier The supplier of {@link HubManager}.
@@ -34,33 +38,39 @@ public class HubLayoutDependencyHolder {
      *     scrims to. This should not return null after the HubLayout is initialized.
      * @param isIncognitoSupplier Whether the UI is currently in incognito mode. Used only for the
      *     {@link HubLayout} scrims.
+     * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      */
     public HubLayoutDependencyHolder(
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull Supplier<View> scrimAnchorViewSupplier,
-            @NonNull Supplier<Boolean> isIncognitoSupplier) {
+            @NonNull ObservableSupplier<Boolean> isIncognitoSupplier,
+            @NonNull DoubleConsumer onToolbarAlphaChange) {
         this(
                 hubManagerSupplier,
                 hubRootViewGroupSupplier,
                 new HubLayoutScrimController(
-                        scrimCoordinator, scrimAnchorViewSupplier, isIncognitoSupplier));
+                        scrimCoordinator, scrimAnchorViewSupplier, isIncognitoSupplier),
+                onToolbarAlphaChange);
     }
 
     /**
      * @param hubManagerSupplier The supplier of {@link HubManager}.
-     * @param hubRootViewGroup The root view to attach the {@link Hub} to.
+     * @param hubRootViewGroupSupplier Supplier for the root view to attach the hub to.
      * @param scrimController The {@link HubLayoutScrimController} for managing scrims.
+     * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     HubLayoutDependencyHolder(
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
-            @NonNull HubLayoutScrimController scrimController) {
+            @NonNull HubLayoutScrimController scrimController,
+            @NonNull DoubleConsumer onToolbarAlphaChange) {
         mHubManagerSupplier = hubManagerSupplier;
         mHubRootViewGroupSupplier = hubRootViewGroupSupplier;
         mScrimController = scrimController;
+        mOnToolbarAlphaChange = onToolbarAlphaChange;
     }
 
     /** Returns the {@link HubManager} creating it if necessary. */
@@ -76,5 +86,10 @@ public class HubLayoutDependencyHolder {
     /** Returns the {@link HubLayoutScrimController} used for the {@link HubLayout}. */
     public @NonNull HubLayoutScrimController getScrimController() {
         return mScrimController;
+    }
+
+    /** Returns the observer to notify when alpha changes during animations. */
+    public @NonNull DoubleConsumer getOnToolbarAlphaChange() {
+        return mOnToolbarAlphaChange;
     }
 }

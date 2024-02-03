@@ -65,10 +65,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   bool RemoveSuggestion(const Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
 
-  // Returns PopupType::kUnspecified for all popups prior to `onQuery`, or the
-  // popup type after call to `onQuery`.
-  PopupType GetPopupType() const override;
-
   // Returns FillingProduct::kNone for all popups prior to
   // `OnSuggestionsReturned`. Returns the filling product of the first
   // suggestion that has a filling product that is not none.
@@ -248,6 +244,10 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
+  // Returns the trigger source to use to reopen the popup after an edit or
+  // delete address profile dialog is closed.
+  AutofillSuggestionTriggerSource GetReopenTriggerSource() const;
+
   const raw_ref<BrowserAutofillManager> manager_;
 
   // The current form and field selected by Autofill.
@@ -263,8 +263,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // side effects are specific are not "leaked" to other forms.
   base::flat_map<Section, FieldTypeSet>
       last_field_types_to_fill_for_address_form_section_;
-
-  PopupType popup_type_ = PopupType::kUnspecified;
 
   bool show_cards_from_account_suggestion_was_shown_ = false;
 

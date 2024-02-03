@@ -183,14 +183,15 @@ bool FocusRing::ShouldPaintForTesting() {
   return ShouldPaint();
 }
 
-void FocusRing::Layout() {
+void FocusRing::Layout(PassKey) {
   // The focus ring handles its own sizing, which is simply to fill the parent
   // and extend a little beyond its borders.
   gfx::Rect focus_bounds = parent()->GetLocalBounds();
 
   // Make sure the focus-ring path fits.
   // TODO(pbos): Chase down use cases where this path is not in a usable state
-  // by the time layout happens. This may be due to synchronous Layout() calls.
+  // by the time layout happens. This may be due to synchronous
+  // DeprecatedLayoutImmediately() calls.
   const SkPath path = GetPath();
   if (IsPathUsable(path)) {
     const gfx::Rect path_bounds =

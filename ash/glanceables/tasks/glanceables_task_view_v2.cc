@@ -51,21 +51,26 @@
 namespace ash {
 namespace {
 
-constexpr int kIconSize = 24;
+constexpr int kIconSize = 20;
 constexpr char kFormatterPattern[] = "EEE, MMM d";  // "Wed, Feb 28"
 
-constexpr auto kSecondRowItemsMargin = gfx::Insets::TLBR(0, 0, 0, 4);
+// Margins between icons and labels in `tasks_details_view_`.
+constexpr auto kDetailItemsMargin = gfx::Insets::TLBR(0, 0, 0, 4);
 
-constexpr auto kSingleRowButtonMargin = gfx::Insets::VH(8, 0);
-constexpr auto kDoubleRowButtonMargin = gfx::Insets::VH(2, 0);
+constexpr auto kSingleRowInteriorMargin = gfx::Insets::TLBR(6, 0, 2, 0);
+constexpr auto kDoubleRowInteriorMargin = gfx::Insets();
 
-constexpr auto kSingleRowTextMargins = gfx::Insets::TLBR(6, 6, 6, 8);
-constexpr auto kDoubleRowTextMargins = gfx::Insets::TLBR(0, 6, 4, 8);
+constexpr auto kCheckButtonMargin = gfx::Insets::VH(2, 0);
+constexpr auto kContentsMargin = gfx::Insets::TLBR(0, 6, 4, 8);
+// In edit state, the bottom margin is smaller to accommodate
+// `edit_in_browser_button_`.
+constexpr auto kContentsMarginInEditState = gfx::Insets::TLBR(0, 6, 0, 8);
 
 constexpr auto kTitleAndDetailMarginsInViewState =
     gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr auto kTitleMarginsInEditState = gfx::Insets();
-constexpr auto kEditInBrowserMargins = gfx::Insets::TLBR(4, 2, 0, 0);
+constexpr auto kDetailMarginsInEditState = gfx::Insets::TLBR(4, 8, 0, 0);
+constexpr auto kEditInBrowserMargins = gfx::Insets::TLBR(8, 2, 0, 0);
 
 views::Label* SetupLabel(views::View* parent) {
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
@@ -103,7 +108,6 @@ std::u16string GetFormattedDueDate(const base::Time& due) {
 std::unique_ptr<views::ImageView> CreateSecondRowIcon(
     const gfx::VectorIcon& icon) {
   auto icon_view = std::make_unique<views::ImageView>();
-  icon_view->SetProperty(views::kMarginsKey, kSecondRowItemsMargin);
   icon_view->SetImage(ui::ImageModel::FromVectorIcon(
       icon, cros_tokens::kCrosSysOnSurfaceVariant));
   return icon_view;
@@ -188,11 +192,11 @@ class EditInBrowserButton : public views::LabelButton {
                            l10n_util::GetStringUTF16(
                                IDS_GLANCEABLES_TASKS_EDIT_IN_TASKS_LABEL)) {
     SetID(base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(3, 6)));
     SetProperty(views::kMarginsKey, kEditInBrowserMargins);
     SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
-    label()->SetLineHeight(22);
   }
 };
 
@@ -207,6 +211,7 @@ class GlanceablesTaskViewV2::CheckButton : public views::ImageButton {
  public:
   explicit CheckButton(PressedCallback pressed_callback)
       : views::ImageButton(std::move(pressed_callback)) {
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(2)));
     SetAccessibleRole(ax::mojom::Role::kCheckBox);
     UpdateImage();
     SetFlipCanvasOnPaintForRTLUI(/*enable=*/false);
@@ -297,11 +302,11 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
 
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   SetOrientation(views::LayoutOrientation::kHorizontal);
-  SetCollapseMargins(true);
 
   check_button_ =
       AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
           &GlanceablesTaskViewV2::CheckButtonPressed, base::Unretained(this))));
+  check_button_->SetProperty(views::kMarginsKey, kCheckButtonMargin);
 
   contents_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   contents_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -324,10 +329,7 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_details_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_details_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
-  tasks_details_view_->SetProperty(views::kMarginsKey,
-                                   kTitleAndDetailMarginsInViewState);
-
-  UpdateTaskTitleViewForState(TaskTitleViewState::kView);
+  tasks_details_view_->SetDefault(views::kMarginsKey, kDetailItemsMargin);
 
   std::vector<std::u16string> details;
   if (task && task->due.has_value()) {
@@ -343,7 +345,6 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
     due_date_label->SetText(formatted_due_date);
     due_date_label->SetID(
         base::to_underlying(GlanceablesViewId::kTaskItemDueLabel));
-    due_date_label->SetProperty(views::kMarginsKey, kSecondRowItemsMargin);
     due_date_label->SetFontList(
         TypographyProvider::Get()->ResolveTypographyToken(
             TypographyToken::kCrosAnnotation1));
@@ -366,15 +367,13 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
         CreateSecondRowIcon(kGlanceablesTasksNotesIcon));
   }
 
+  UpdateTaskTitleViewForState(TaskTitleViewState::kView);
+
   // Use different margins depending on the number of
   // rows of text shown.
   const bool double_row = tasks_details_view_->children().size() > 0;
-  contents_view_->SetProperty(views::kMarginsKey, double_row
-                                                      ? kDoubleRowTextMargins
-                                                      : kSingleRowTextMargins);
-  check_button_->SetProperty(views::kMarginsKey, double_row
-                                                     ? kDoubleRowButtonMargin
-                                                     : kSingleRowButtonMargin);
+  SetInteriorMargin(double_row ? kDoubleRowInteriorMargin
+                               : kSingleRowInteriorMargin);
 
   auto a11y_description = task_title_;
   if (!details.empty()) {
@@ -400,6 +399,7 @@ bool GlanceablesTaskViewV2::GetCompletedForTest() const {
 void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
     TaskTitleViewState state) {
   task_title_button_ = nullptr;
+  task_title_textfield_ = nullptr;
   tasks_title_view_->RemoveAllChildViews();
 
   switch (state) {
@@ -417,22 +417,43 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
                                base::Unretained(this))));
       task_title_button_->UpdateLabelForState(
           /*completed=*/check_button_->checked());
-      task_title_button_->SetProperty(views::kMarginsKey,
-                                      kTitleAndDetailMarginsInViewState);
       break;
     case TaskTitleViewState::kEdit:
-      auto* const text_field =
+      task_title_textfield_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
               task_title_,
               base::BindOnce(&GlanceablesTaskViewV2::OnFinishedEditing,
                              base::Unretained(this))));
-      text_field->SetProperty(views::kMarginsKey, kTitleMarginsInEditState);
       GetWidget()->widget_delegate()->SetCanActivate(true);
-      text_field->RequestFocus();
+      task_title_textfield_->RequestFocus();
 
       edit_in_browser_button_ = contents_view_->AddChildView(
           std::make_unique<EditInBrowserButton>(edit_in_browser_callback_));
       check_button_->SetEnabled(false);
+      break;
+  }
+
+  UpdateContentsMargins(state);
+}
+
+void GlanceablesTaskViewV2::UpdateContentsMargins(TaskTitleViewState state) {
+  switch (state) {
+    case TaskTitleViewState::kNotInitialized:
+      NOTREACHED_NORETURN();
+    case TaskTitleViewState::kView:
+      contents_view_->SetProperty(views::kMarginsKey, kContentsMargin);
+      task_title_button_->SetProperty(views::kMarginsKey,
+                                      kTitleAndDetailMarginsInViewState);
+      tasks_details_view_->SetProperty(views::kMarginsKey,
+                                       kTitleAndDetailMarginsInViewState);
+      break;
+    case TaskTitleViewState::kEdit:
+      contents_view_->SetProperty(views::kMarginsKey,
+                                  kContentsMarginInEditState);
+      task_title_textfield_->SetProperty(views::kMarginsKey,
+                                         kTitleMarginsInEditState);
+      tasks_details_view_->SetProperty(views::kMarginsKey,
+                                       kDetailMarginsInEditState);
       break;
   }
 }

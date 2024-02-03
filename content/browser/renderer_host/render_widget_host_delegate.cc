@@ -90,6 +90,11 @@ ui::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
   return ui::WindowShowState::SHOW_STATE_DEFAULT;
 }
 
+DevicePostureProviderImpl*
+RenderWidgetHostDelegate::GetDevicePostureProvider() {
+  return nullptr;
+}
+
 bool RenderWidgetHostDelegate::GetResizable() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return false;

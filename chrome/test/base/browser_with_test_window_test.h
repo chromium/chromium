@@ -127,7 +127,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
   Browser* browser() const { return browser_.get(); }
   void set_browser(Browser* browser) { browser_.reset(browser); }
-  [[nodiscard]] Browser* release_browser() { return browser_.release(); }
+  std::unique_ptr<Browser> release_browser() { return std::move(browser_); }
 
   TestingProfile* profile() const { return profile_; }
 
@@ -143,8 +143,8 @@ class BrowserWithTestWindowTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
-  [[nodiscard]] BrowserWindow* release_browser_window() {
-    return window_.release();
+  std::unique_ptr<BrowserWindow> release_browser_window() {
+    return std::move(window_);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -187,13 +187,21 @@ class BrowserWithTestWindowTest : public testing::Test {
   // value.
   virtual TestingProfile* CreateProfile(const std::string& profile_name);
 
+  // Deletes the specified profile.
+  // If `profile_name` is the one returned from GetDefaultProfileName(),
+  // because this instance creates Browser for the profile in SetUp() and keeps
+  // it in a member, the Browser instance will also be destroyed to avoid leak.
+  virtual void DeleteProfile(const std::string& profile_name);
+
   // Returns a vector of testing factories to be used when creating the profile.
   // This is only used by CreateProfile(), and will be irrelevant if that
   // method is overridden.
   virtual TestingProfile::TestingFactories GetTestingFactories();
 
-  // Creates the BrowserWindow used by this test. Can return NULL to use the
-  // default window created by Browser.
+  // Creates the BrowserWindow used by this test. Subclasses can provide their
+  // own test BrowserWindow. If the provided BrowserWindow is null then Browser
+  // will create a production BrowserWindow and the subclass is responsible for
+  // cleaning it up (usually by NativeWidget destruction).
   virtual std::unique_ptr<BrowserWindow> CreateBrowserWindow();
 
   // Creates the browser given |profile|, |browser_type|, |hosted_app|, and

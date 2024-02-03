@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/cloneable_message_mojom_traits.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
@@ -302,7 +302,7 @@ std::unique_ptr<GlobalScopeCreationParams> MakeTestGlobalScopeCreationParams() {
       KURL("https://foo.com"),
       /*script_type=*/mojom::blink::ScriptType::kModule, "SharedStorageWorklet",
       /*user_agent=*/String(),
-      /*ua_metadata=*/absl::optional<UserAgentMetadata>(),
+      /*ua_metadata=*/std::optional<UserAgentMetadata>(),
       /*web_worker_fetch_context=*/nullptr,
       /*outside_content_security_policies=*/
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
@@ -428,7 +428,7 @@ class SharedStorageWorkletTest : public PageTestBase {
 
   Persistent<SharedStorageWorkletMessagingProxy> messaging_proxy_;
 
-  absl::optional<std::u16string> embedder_context_;
+  std::optional<std::u16string> embedder_context_;
   bool private_aggregation_permissions_policy_allowed_ = true;
 
   base::test::TestFuture<void> worklet_terminated_future_;
@@ -3380,8 +3380,8 @@ TEST_F(SharedStoragePrivateAggregationTest,
       register("enable-debug-mode", EnableDebugMode);
   )");
 
-  absl::optional<mojo::ReceiverId> contribute_to_histogram_pipe_id;
-  absl::optional<mojo::ReceiverId> enable_debug_mode_pipe_id;
+  std::optional<mojo::ReceiverId> contribute_to_histogram_pipe_id;
+  std::optional<mojo::ReceiverId> enable_debug_mode_pipe_id;
   base::RunLoop run_loop;
   base::RepeatingClosure closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
@@ -3517,29 +3517,70 @@ class SharedStorageWorkletThreadTest : public testing::Test {};
 // Assert that each `SharedStorageWorkletThread` owns a dedicated
 // `WorkerBackingThread`.
 TEST_F(SharedStorageWorkletThreadTest, DedicatedBackingThread) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kSharedStorageWorkletSharedBackingThreadImplementation);
+
   test::TaskEnvironment task_environment;
 
   MockWorkerReportingProxy reporting_proxy1;
   MockWorkerReportingProxy reporting_proxy2;
-  SharedStorageWorkletThread thread1(reporting_proxy1);
-  SharedStorageWorkletThread thread2(reporting_proxy2);
-  EXPECT_NE(&thread1.GetWorkerBackingThread(),
-            &thread2.GetWorkerBackingThread());
+  auto thread1 = SharedStorageWorkletThread::Create(reporting_proxy1);
+  auto thread2 = SharedStorageWorkletThread::Create(reporting_proxy2);
+  EXPECT_NE(&thread1->GetWorkerBackingThread(),
+            &thread2->GetWorkerBackingThread());
 
   // Start and terminate the threads, so that the test can terminate gracefully.
   auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();
   thread_startup_data.atomics_wait_mode =
       WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow;
 
-  thread1.Start(MakeTestGlobalScopeCreationParams(), thread_startup_data,
-                std::make_unique<WorkerDevToolsParams>());
-  thread2.Start(MakeTestGlobalScopeCreationParams(), thread_startup_data,
-                std::make_unique<WorkerDevToolsParams>());
+  thread1->Start(MakeTestGlobalScopeCreationParams(), thread_startup_data,
+                 std::make_unique<WorkerDevToolsParams>());
+  thread2->Start(MakeTestGlobalScopeCreationParams(), thread_startup_data,
+                 std::make_unique<WorkerDevToolsParams>());
 
-  thread1.TerminateForTesting();
-  thread1.WaitForShutdownForTesting();
-  thread2.TerminateForTesting();
-  thread2.WaitForShutdownForTesting();
+  thread1->TerminateForTesting();
+  thread1->WaitForShutdownForTesting();
+  thread2->TerminateForTesting();
+  thread2->WaitForShutdownForTesting();
+}
+
+// Assert that multiple `SharedStorageWorkletThread`s share a
+// `WorkerBackingThread`.
+//
+// Note: Currently, this would trigger a crash due to a failure in installing
+// the `v8/expose_gc` extension. Even though `--expose-gc` isn't set by default
+// in production, we should still fix this.
+//
+// TODO(yaoxia): We're temporarily leaving this issue unfixed to facilitate our
+// investigation into a crash that occurs in the wild (crbug.com/1501387). We'll
+// re-enable this after investigation.
+TEST_F(SharedStorageWorkletThreadTest, DISABLED_SharedBackingThread) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSharedStorageWorkletSharedBackingThreadImplementation);
+
+  test::TaskEnvironment task_environment;
+  MockWorkerReportingProxy reporting_proxy1;
+  MockWorkerReportingProxy reporting_proxy2;
+  auto thread1 = SharedStorageWorkletThread::Create(reporting_proxy1);
+  auto thread2 = SharedStorageWorkletThread::Create(reporting_proxy2);
+  EXPECT_EQ(&thread1->GetWorkerBackingThread(),
+            &thread2->GetWorkerBackingThread());
+
+  // Start and terminate the threads, so that the test can terminate gracefully.
+  thread1->Start(MakeTestGlobalScopeCreationParams(),
+                 /*thread_startup_data=*/std::nullopt,
+                 std::make_unique<WorkerDevToolsParams>());
+  thread2->Start(MakeTestGlobalScopeCreationParams(),
+                 /*thread_startup_data=*/std::nullopt,
+                 std::make_unique<WorkerDevToolsParams>());
+
+  thread1->TerminateForTesting();
+  thread1->WaitForShutdownForTesting();
+  thread2->TerminateForTesting();
+  thread2->WaitForShutdownForTesting();
 }
 
 }  // namespace blink

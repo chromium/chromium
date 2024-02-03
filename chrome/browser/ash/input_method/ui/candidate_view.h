@@ -20,8 +20,9 @@ namespace ime {
 
 // CandidateView renderes a row of a candidate.
 class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
+  METADATA_HEADER(CandidateView, views::Button)
+
  public:
-  METADATA_HEADER(CandidateView);
   CandidateView(PressedCallback callback,
                 ui::CandidateWindow::Orientation orientation);
   CandidateView(const CandidateView&) = delete;
@@ -50,7 +51,7 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
 
   // Overridden from View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 

@@ -108,6 +108,7 @@ BASE_FEATURE(kProfilesReordering,
              "ProfilesReordering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kForceSigninFlowInProfilePicker,
              "ForceSigninFlowInProfilePicker",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -115,3 +116,4 @@ extern const base::FeatureParam<bool>
     kForceSigninReauthInProfilePickerUseAddSession{
         &kForceSigninFlowInProfilePicker, /*name=*/"reauth_use_add_session",
         /*default_value=*/false};
+#endif  // !BUILDFLAG(IS_ANDROID)

@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/dcheck_is_on.h"
@@ -37,7 +38,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -178,14 +178,14 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
     void RecordAndReset();
 
    protected:  // For testing
-    absl::optional<TypeForMetrics> type() const { return type_; }
+    std::optional<TypeForMetrics> type() const { return type_; }
     const base::TimeTicks& start_time() const { return start_time_; }
     size_t id() const { return id_; }
 
    private:
     friend class IDBRequest;
 
-    absl::optional<TypeForMetrics> type_;
+    std::optional<TypeForMetrics> type_;
     base::TimeTicks start_time_;
 
     // Uniquely generated ID that ties an async trace's begin and end events.

@@ -33,7 +33,7 @@ class FakeRasterSource : public RasterSource {
       const gfx::Size& size);
   static scoped_refptr<FakeRasterSource> CreatePartiallyFilled(
       const gfx::Size& size,
-      const gfx::Rect& recorded_viewport);
+      const gfx::Rect& recorded_bounds);
   static scoped_refptr<FakeRasterSource> CreateEmpty(const gfx::Size& size);
   static scoped_refptr<FakeRasterSource> CreateFromRecordingSource(
       const RecordingSource* recording_source);

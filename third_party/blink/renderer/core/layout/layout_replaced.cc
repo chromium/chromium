@@ -187,30 +187,30 @@ void LayoutReplaced::RecalcVisualOverflow() {
     AddContentsVisualOverflow(ReplacedContentRect());
 }
 
-absl::optional<gfx::SizeF>
+std::optional<gfx::SizeF>
 LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
   if (IntrinsicWidthOverride() || IntrinsicHeightOverride())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (auto view_box = ComputeObjectViewBoxRect())
     return static_cast<gfx::SizeF>(view_box->size);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
+std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const PhysicalSize* overridden_intrinsic_size) const {
   const BasicShape* object_view_box = StyleRef().ObjectViewBox();
   if (LIKELY(!object_view_box))
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto& intrinsic_size =
       overridden_intrinsic_size ? *overridden_intrinsic_size : intrinsic_size_;
   if (intrinsic_size.IsEmpty())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!CanApplyObjectViewBox())
-    return absl::nullopt;
+    return std::nullopt;
 
   DCHECK(object_view_box->GetType() == BasicShape::kBasicShapeRectType ||
          object_view_box->GetType() == BasicShape::kBasicShapeInsetType ||
@@ -224,11 +224,11 @@ absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   const PhysicalRect view_box_rect =
       PhysicalRect::EnclosingRect(path.BoundingRect());
   if (view_box_rect.IsEmpty())
-    return absl::nullopt;
+    return std::nullopt;
 
   const PhysicalRect intrinsic_rect(PhysicalOffset(), intrinsic_size);
   if (view_box_rect == intrinsic_rect)
-    return absl::nullopt;
+    return std::nullopt;
 
   return view_box_rect;
 }

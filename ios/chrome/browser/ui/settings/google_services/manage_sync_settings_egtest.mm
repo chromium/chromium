@@ -183,6 +183,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
     config.features_enabled.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }
+  if ([self
+          isRunningTest:@selector(testRememberCustomPassphraseAfterSignout)]) {
+    config.features_enabled.push_back(
+        syncer::kSyncRememberCustomPassphraseAfterSignout);
+  }
   return config;
 }
 
@@ -743,7 +748,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests closing the account settings with a remote signout.
-- (void)testAccountSettingsWithRemoteSignout_SyncToSigninEnabled {
+- (void)testAccountSettingsWithRemoteSignout {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -760,12 +765,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
       assertWithMatcher:grey_notNil()];
-
-  // Verify the error section is not showing.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that the batch upload button description in the account settings
@@ -1409,6 +1408,87 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests the custom passphrase is remembered per account, kept across signout,
+// and cleared when account is removed from device.
+- (void)testRememberCustomPassphraseAfterSignout {
+  // Enable custom passphrase.
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify the error section is showing.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap "Enter Passphrase" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      performAction:grey_tap()];
+
+  // Enter the passphrase.
+  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
+
+  // Verify it goes back to "manage sync" UI.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify the error section is not showing anymore.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_notVisible()];
+
+  // Sign out.
+  SignOutFromAccountSettings();
+  DismissSignOutSnackbar();
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+
+  // Sign back in with the same identity using the settings sign-in promo.
+  // The history sync opt-in was accepted in the first sign-in earlier in this
+  // test.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/NO);
+
+  // Verify the account settings row is showing in the settings menu.
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify the "enter passphrase" error section is not showing.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_notVisible()];
+
+  // Remove fakeIdentity from device.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Sign back in.
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify the error section is showing because the passphrase was cleared.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

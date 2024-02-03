@@ -6,16 +6,16 @@
  * @fileoverview
  * `settings-toggle-button` is a toggle that controls a supplied preference.
  */
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/action_link.css.js';
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/action_link.css.js';
+import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
-import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import {CrToggleElement} from '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsBooleanControlMixin} from '/shared/settings/controls/settings_boolean_control_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';

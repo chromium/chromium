@@ -64,12 +64,6 @@ namespace {
 const char kWindowTreeHostForAcceleratedWidget[] =
     "__AURA_WINDOW_TREE_HOST_ACCELERATED_WIDGET__";
 
-// Returns the cc::Layer used by a ui::Layer. This is a bit ugly, and is done to
-// avoid exposing cc::Layer outside of ui::Layer.
-cc::Layer* ccLayerFromUiLayer(ui::Layer* layer) {
-  return static_cast<ui::LayerAnimationDelegate*>(layer)->GetCcLayer();
-}
-
 #if DCHECK_IS_ON()
 class ScopedLocalSurfaceIdValidator {
  public:
@@ -101,69 +95,6 @@ class ScopedLocalSurfaceIdValidator {
 #endif
 
 }  // namespace
-
-// In order for viz to drop all references to resources used by the browser
-// (and renderers) a CompositorFrame with *no* references to other surfaces
-// must be generated. To do this a solid color layer is inserted into the
-// layer tree, and the existing root layer is removed. Adding a layer at the top
-// (keeping existing layer tree) is not enough, as the CompositorFrame still
-// contains information about the surfaces/resources that are obscured. Once the
-// frame is generated, the root layer (from `window_`) is inserted back in the
-// Compositor's root layer and then the Compositor is hidden.
-class WindowTreeHost::HideHelper {
- public:
-  explicit HideHelper(WindowTreeHost* host)
-      : host_(host),
-        compositor_root_layer_(
-            ccLayerFromUiLayer(host->window()->layer())->mutable_parent()),
-        layer_for_transition_(
-            std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)) {
-    layer_for_transition_->SetColor(SK_ColorWHITE);
-    aura::Window* host_window = host_->window();
-    ui::Layer* host_window_layer = host_window->layer();
-    ui::Compositor* compositor = host_->compositor();
-    // SetRootLayer() resets the `compositor_` member in Layer. If
-    // SetRootLayer() were used, it would mean the existing layer hierarchy
-    // would no longer think it is in a compositor. As this state is temporary,
-    // and purely to release resources, SetRootLayer() is not used.
-
-    // We do need to disable ticking of animations since the animation code
-    // expects that its callers ensure that any ticking animations reference
-    // element IDs for layers that are currently in the layer tree.
-    DCHECK_EQ(host_window_layer, compositor->root_layer());
-    compositor->DisableAnimations();
-    ccLayerFromUiLayer(host_window_layer)->RemoveFromParent();
-    layer_for_transition_->SetBounds(host_window->bounds());
-    compositor_root_layer_->AddChild(
-        ccLayerFromUiLayer(layer_for_transition_.get()));
-    layer_for_transition_->OnDeviceScaleFactorChanged(
-        host_window->layer()->device_scale_factor());
-    // Request a presentation frame. Once the frame is generated the real root
-    // layer is added back (from the destructor).
-    compositor->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-        &HideHelper::OnFramePresented, weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  ~HideHelper() {
-    ui::Layer* host_window_layer = host_->window()->layer();
-    compositor_root_layer_->AddChild(ccLayerFromUiLayer(host_window_layer));
-    host_window_layer->OnDeviceScaleFactorChanged(
-        layer_for_transition_->device_scale_factor());
-    DCHECK_EQ(host_window_layer, host_->compositor()->root_layer());
-    host_->compositor()->EnableAnimations();
-  }
-
- private:
-  void OnFramePresented(base::TimeTicks presentation_timestamp) {
-    host_->FinishHideTransition();
-    // WARNING: this has been deleted.
-  }
-
-  raw_ptr<WindowTreeHost, DanglingUntriaged> host_;
-  scoped_refptr<cc::Layer> compositor_root_layer_;
-  std::unique_ptr<ui::Layer> layer_for_transition_;
-  base::WeakPtrFactory<HideHelper> weak_ptr_factory_{this};
-};
 
 WindowTreeHost::VideoCaptureLock::~VideoCaptureLock() {
   if (host_)
@@ -453,11 +384,9 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
         HostFrameRateThrottler::GetInstance().RemoveHost(this);
     } else {
       const bool visible = CalculateCompositorVisibilityFromOcclusionState();
-      // Transitioning to hidden means the compositor state hasn't been updated
-      // yet, but will. In this case, always route through
-      // UpdateCompositorVisibility() to ensure state is correctly cleaned up.
-      if (visible != compositor()->IsVisible() || is_transitioning_to_hidden())
+      if (visible != compositor()->IsVisible()) {
         UpdateCompositorVisibility(visible);
+      }
     }
   }
 
@@ -561,18 +490,6 @@ void WindowTreeHost::UpdateCompositorVisibility(bool visible) {
     HostFrameRateThrottler::GetInstance().RemoveHost(this);
   }
 
-  if (visible) {
-    if (is_transitioning_to_hidden())
-      RestoreHideTransitionState();
-  } else {
-    if (is_transitioning_to_hidden())
-      return;
-    if (ShouldReleaseResourcesWhenHidden()) {
-      StartReleasingResourcesForHide();
-      // Compositor visibility is changed once transition completes.
-      return;
-    }
-  }
   compositor()->SetVisible(visible);
 }
 
@@ -581,10 +498,6 @@ void WindowTreeHost::DestroyCompositor() {
     return;
 
   HostFrameRateThrottler::GetInstance().RemoveHost(this);
-
-  // Explicitly delete the HideHelper early as it makes use of `compositor_`
-  // and `window_`.
-  hide_helper_.reset();
 
   compositor_->RemoveObserver(this);
   compositor_.reset();
@@ -777,8 +690,9 @@ void WindowTreeHost::MaybeUpdateComposibleVisibilityForVideoLockCountChange() {
     return;
   }
   const bool visible = CalculateCompositorVisibilityFromOcclusionState();
-  if (visible != compositor()->IsVisible() || is_transitioning_to_hidden())
+  if (visible != compositor()->IsVisible()) {
     UpdateCompositorVisibility(visible);
+  }
 }
 
 bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
@@ -799,23 +713,6 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
   }
 }
 
-bool WindowTreeHost::ShouldReleaseResourcesWhenHidden() const {
-#if BUILDFLAG(IS_WIN)
-  if (!base::FeatureList::IsEnabled(
-          features::kApplyNativeOcclusionToCompositor) ||
-      !IsNativeWindowOcclusionEnabled()) {
-    return false;
-  }
-
-  const std::string type = base::GetFieldTrialParamValueByFeature(
-      features::kApplyNativeOcclusionToCompositor,
-      features::kApplyNativeOcclusionToCompositorType);
-  return type == features::kApplyNativeOcclusionToCompositorTypeRelease;
-#else
-  return false;
-#endif
-}
-
 bool WindowTreeHost::ShouldThrottleWhenOccluded() const {
 #if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
@@ -833,32 +730,10 @@ bool WindowTreeHost::ShouldThrottleWhenOccluded() const {
 #endif
 }
 
-void WindowTreeHost::RestoreHideTransitionState() {
-  DCHECK(is_transitioning_to_hidden());
-  hide_helper_.reset();
-}
-
-void WindowTreeHost::FinishHideTransition() {
-  DCHECK(is_transitioning_to_hidden());
-  compositor_->SetVisible(false);
-  RestoreHideTransitionState();
-}
-
 // static
 const base::flat_set<WindowTreeHost*>&
 WindowTreeHost::GetThrottledHostsForTesting() {
   return HostFrameRateThrottler::GetInstance().hosts();
-}
-
-void WindowTreeHost::StartReleasingResourcesForHide() {
-  DCHECK(!is_transitioning_to_hidden());
-  if (compositor_->size().IsEmpty()) {
-    // This should generally only happen during startup as Compositor silently
-    // ignores changing the size to empty.
-    compositor_->SetVisible(false);
-    return;
-  }
-  hide_helper_ = std::make_unique<HideHelper>(this);
 }
 
 void WindowTreeHost::MoveCursorToInternal(const gfx::Point& root_location,

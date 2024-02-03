@@ -50,12 +50,12 @@ class MockNetworkContext : public TestNetworkContextWithHostResolver {
       std::string_view host_mapping_rules) {
     return std::make_unique<MockNetworkContext>(
         net::HostResolver::CreateStandaloneResolver(
-            net::NetLog::Get(), /*options=*/absl::nullopt, host_mapping_rules,
+            net::NetLog::Get(), /*options=*/std::nullopt, host_mapping_rules,
             /*enable_caching=*/false));
   }
 
   // Resets ResolveHostClient when matching |host| is supplied in ResolveHost().
-  void SetResetClientFor(absl::optional<net::HostPortPair> reset_client_for) {
+  void SetResetClientFor(std::optional<net::HostPortPair> reset_client_for) {
     reset_client_for_ = std::move(reset_client_for);
   }
 
@@ -75,7 +75,7 @@ class MockNetworkContext : public TestNetworkContextWithHostResolver {
                     std::move(pending_response_client));
   }
 
-  absl::optional<net::HostPortPair> reset_client_for_;
+  std::optional<net::HostPortPair> reset_client_for_;
 };
 
 class SimpleHostResolverTest : public testing::Test {
@@ -90,7 +90,7 @@ class SimpleHostResolverTest : public testing::Test {
 
 struct HostResolverResult {
   int result;
-  absl::optional<net::IPEndPoint> resolved_address;
+  std::optional<net::IPEndPoint> resolved_address;
 };
 
 struct HostResolverRequest {
@@ -103,8 +103,8 @@ struct HostResolverRequest {
 using ResolveHostFuture = base::test::TestFuture<
     int,
     const net::ResolveErrorInfo&,
-    const absl::optional<net::AddressList>&,
-    const absl::optional<net::HostResolverEndpointResults>&>;
+    const std::optional<net::AddressList>&,
+    const std::optional<net::HostResolverEndpointResults>&>;
 
 TEST_F(SimpleHostResolverTest, ResolveFourAddresses) {
   auto network_context = MockNetworkContext::CreateNetworkContext(

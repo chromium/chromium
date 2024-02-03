@@ -93,6 +93,7 @@ class FakeAutocompleteController : public AutocompleteController {
 
   // AutocompleteController (methods):
   using AutocompleteController::MaybeRemoveCompanyEntityImages;
+  using AutocompleteController::ShouldRunProvider;
   using AutocompleteController::UpdateResult;
 
   // AutocompleteController (fields):
@@ -102,6 +103,7 @@ class FakeAutocompleteController : public AutocompleteController {
   using AutocompleteController::metrics_;
   using AutocompleteController::providers_;
   using AutocompleteController::published_result_;
+  using AutocompleteController::template_url_service_;
 
   // Used to verify the correct number of notifications occur.
   std::unique_ptr<FakeAutocompleteControllerObserver> observer_;

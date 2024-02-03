@@ -1648,10 +1648,8 @@ void Shell::Init(
   // `SystemNotificationController` is created, because
   // `SystemNotificationController` ctor will creat an instance of
   // `PowerSoundsController`, which will access and play the initialized sounds.
-  if (features::AreSystemSoundsEnabled()) {
     system_sounds_delegate_ = shell_delegate_->CreateSystemSoundsDelegate();
     system_sounds_delegate_->Init();
-  }
 
   privacy_hub_controller_ = PrivacyHubController::CreatePrivacyHubController();
 

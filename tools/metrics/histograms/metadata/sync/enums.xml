@@ -44,6 +44,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Error: CONNECTION_SUSPENDED_DURING_CALL"/>
   <int value="22" label="Error: RECONNECTION_TIMED_OUT"/>
   <int value="11000" label="Error: PASSPHRASE_REQUIRED"/>
+  <int value="11001" label="Error: WRONG_PASSPHRASE"/>
   <int value="11004" label="Error: ACCESS_DENIED"/>
   <int value="11005" label="Error: AUTH_ERROR_RESOLVABLE"/>
   <int value="11006" label="Error: AUTH_ERROR_UNRESOLVABLE"/>
@@ -234,6 +235,8 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="AutofillPaymentCvcStorage"/>
   <int value="65" label="DeleteTimePeriodV2"/>
   <int value="66" label="DeleteTimePeriodV2Basic"/>
+  <int value="67" label="SyncableMergeableListPrefForTesting"/>
+  <int value="68" label="SyncableHistorySensitiveListPrefForTesting"/>
   <int value="100000" label="AppLanguagePromptShown"/>
   <int value="100001" label="(Obsolete) PrefExplicitLanguageAskShown"/>
   <int value="100002" label="ContextualSearchEnabled_Android"/>
@@ -517,6 +520,12 @@ chromium-metrics-reviews@google.com.
       label="kProfileContentSettingsPartitionedExceptionsWindowPlacement"/>
   <int value="100261" label="kStandaloneWindowMigrationNudgeShown"/>
   <int value="100262" label="TabDiscardingExceptionsWithTime"/>
+  <int value="100263" label="kAccessibilityFaceGazeCursorSpeedUp"/>
+  <int value="100264" label="kAccessibilityFaceGazeCursorSpeedDown"/>
+  <int value="100265" label="kAccessibilityFaceGazeCursorSpeedLeft"/>
+  <int value="100266" label="kAccessibilityFaceGazeCursorSpeedRight"/>
+  <int value="100267" label="kAccessibilityFaceGazeCursorSmoothing"/>
+  <int value="100268" label="kAccessibilityFaceGazeCursorUseAcceleration"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
@@ -716,11 +725,17 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="SyncInitialState">
-  <int value="0" label="Can attempt to start"/>
+  <int value="0" label="Sync-the-feature can start"/>
   <int value="1" label="No signed in user"/>
-  <int value="2" label="Turned off by user"/>
-  <int value="3" label="Turned off and setup not completed"/>
-  <int value="4" label="Must confirm sync settings"/>
+  <int value="2"
+      label="Sync-the-transport can start (Sync-the-feature turned off but
+             initial setup complete)"/>
+  <int value="3"
+      label="Sync-the-transport can start (Sync-the-feature turned off with
+             initial setup incomplete"/>
+  <int value="4"
+      label="Sync-the-transport can start (Sync-the-feature turned on but
+             initial setup incomplete"/>
   <int value="5" label="Disallowed by enterprise policy"/>
   <int value="6"
       label="Disallowed by the platform (obsolete, was never recorded)"/>
@@ -808,6 +823,7 @@ chromium-metrics-reviews@google.com.
   <int value="60" label="Outgoing Password Sharing Invitations"/>
   <int value="61" label="Autofill Wallet Credential"/>
   <int value="62" label="WebAPKs"/>
+  <int value="63" label="Shared Tab Group Data"/>
 </enum>
 
 <enum name="SyncPassphraseType">

@@ -247,8 +247,8 @@ gfx::Size AppWindowFrameView::CalculatePreferredSize() const {
       .size();
 }
 
-void AppWindowFrameView::Layout() {
-  NonClientFrameView::Layout();
+void AppWindowFrameView::Layout(PassKey) {
+  LayoutSuperclass<NonClientFrameView>(this);
 
   if (!draw_frame_)
     return;
@@ -406,7 +406,7 @@ void AppWindowFrameView::SetButtonImagesForFrame() {
   }
 }
 
-BEGIN_METADATA(AppWindowFrameView, views::NonClientFrameView)
+BEGIN_METADATA(AppWindowFrameView)
 END_METADATA
 
 }  // namespace apps

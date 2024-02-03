@@ -629,11 +629,10 @@ void DualReadingListModel::ReadingListWillAddEntry(
     return;
   }
 
-  if (local_or_syncable_model_->GetEntryByURL(entry.URL())) {
-    // The presence of the entry in `local_or_syncable_model_` indicates that
-    // this is an update, not an insertion.
-    DCHECK_EQ(model, account_model_.get());
-    DCHECK(account_model_->IsTrackingSyncMetadata());
+  if (local_or_syncable_model_->GetEntryByURL(entry.URL()) ||
+      account_model_->GetEntryByURL(entry.URL())) {
+    // The presence of the entry in one of the models indicates that this is an
+    // update, not an insertion.
     NotifyObserversWithWillUpdateEntry(entry.URL());
     UpdateEntryStateCountersOnEntryRemoval(*GetEntryByURL(entry.URL()));
     return;
@@ -654,12 +653,10 @@ void DualReadingListModel::ReadingListDidAddEntry(
 
   UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
 
-  if (model == account_model_.get() &&
-      local_or_syncable_model_->GetEntryByURL(url)) {
-    // The entry was added to `account_model_`, but since it was already present
-    // in `local_or_syncable_model_`, then this is an update instead of
-    // insertion.
-    DCHECK(account_model_->IsTrackingSyncMetadata());
+  if (local_or_syncable_model_->GetEntryByURL(url) &&
+      account_model_->GetEntryByURL(url)) {
+    // The entry was added to one of the models, but since it was already
+    // present in the other one, then this is an update instead of insertion.
     NotifyObserversWithDidUpdateEntry(url);
     return;
   }
@@ -672,21 +669,19 @@ void DualReadingListModel::ReadingListDidAddEntry(
 void DualReadingListModel::ReadingListWillUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!suppress_observer_notifications_) {
-    // TODO(crbug.com/1424750): This should be reached via sync after merging
-    // ReadingList(Will|Did)MoveEntry() with ReadingList(Will|Did)UpdateEntry().
-    NOTREACHED();
+  if (!loaded() || suppress_observer_notifications_) {
+    return;
   }
+  NotifyObserversWithWillUpdateEntry(url);
 }
 
 void DualReadingListModel::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!suppress_observer_notifications_) {
-    // TODO(crbug.com/1424750): This should be reached via sync after merging
-    // ReadingList(Will|Did)MoveEntry() with ReadingList(Will|Did)UpdateEntry().
-    NOTREACHED();
+  if (!loaded() || suppress_observer_notifications_) {
+    return;
   }
+  NotifyObserversWithDidUpdateEntry(url);
 }
 
 void DualReadingListModel::ReadingListDidApplyChanges(ReadingListModel* model) {

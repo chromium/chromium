@@ -29,9 +29,9 @@
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
-#import "components/autofill/core/browser/ui/popup_types.h"
 #import "components/autofill/core/browser/ui/suggestion.h"
 #import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -96,7 +96,7 @@ void GetFormField(autofill::FormFieldData* field,
                   const autofill::FormData& form,
                   FieldRendererId fieldIdentifier) {
   for (const auto& currentField : form.fields) {
-    if (currentField.unique_renderer_id == fieldIdentifier &&
+    if (currentField.renderer_id == fieldIdentifier &&
         currentField.is_focusable) {
       *field = currentField;
       break;
@@ -530,9 +530,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   return SuggestionProviderTypeAutofill;
 }
 
-- (autofill::PopupType)suggestionType {
-  return _popupDelegate ? _popupDelegate->GetPopupType()
-                        : autofill::PopupType::kUnspecified;
+- (autofill::FillingProduct)mainFillingProduct {
+  return _popupDelegate ? _popupDelegate->GetMainFillingProduct()
+                        : autofill::FillingProduct::kNone;
 }
 
 #pragma mark - AutofillDriverIOSBridge
@@ -541,9 +541,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
              inFrame:(web::WebFrame*)frame {
   base::Value::Dict autofillData;
   autofillData.Set("formName", base::Value(base::UTF16ToUTF8(form.name)));
-  autofillData.Set(
-      "formRendererID",
-      base::Value(static_cast<int>(form.unique_renderer_id.value())));
+  autofillData.Set("formRendererID",
+                   base::Value(static_cast<int>(form.renderer_id.value())));
 
   base::Value::Dict fieldsData;
   for (const auto& field : form.fields) {
@@ -554,7 +553,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     base::Value::Dict fieldData;
     fieldData.Set("value", field.value);
     fieldData.Set("section", field.section.ToString());
-    fieldsData.Set(NumberToString(field.unique_renderer_id.value()),
+    fieldsData.Set(NumberToString(field.renderer_id.value()),
                    std::move(fieldData));
   }
   autofillData.Set("fields", std::move(fieldsData));
@@ -579,7 +578,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                     withValue:(const std::u16string)value
                       inFrame:(web::WebFrame*)frame {
   base::Value::Dict data;
-  data.Set("unique_renderer_id", static_cast<int>(field.value()));
+  data.Set("renderer_id", static_cast<int>(field.value()));
   data.Set("value", value);
 
   __weak AutofillAgent* weakSelf = self;
@@ -624,9 +623,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     base::Value::Dict fieldData;
     DCHECK(form.fields.size() == form.data.fields.size());
     for (size_t i = 0; i < form.fields.size(); i++) {
-      fieldData.Set(
-          NumberToString(form.data.fields[i].unique_renderer_id.value()),
-          base::Value(form.fields[i].overall_type));
+      fieldData.Set(NumberToString(form.data.fields[i].renderer_id.value()),
+                    base::Value(form.fields[i].overall_type));
     }
     predictionData.Set(base::UTF16ToUTF8(form.data.name), std::move(fieldData));
   }
@@ -716,8 +714,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       }
 
       // Only show icon for credit card suggestions.
-      if (delegate &&
-          delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
+      if (delegate && delegate->GetMainFillingProduct() ==
+                          autofill::FillingProduct::kCreditCard) {
         icon = [self createIcon:popup_suggestion];
       }
     } else if (popup_suggestion.popup_item_id ==
@@ -1041,7 +1039,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
             value:(const std::u16string)value
           inFrame:(web::WebFrame*)frame {
   base::Value::Dict data;
-  data.Set("unique_renderer_id", static_cast<int>(uniqueFieldID.value()));
+  data.Set("renderer_id", static_cast<int>(uniqueFieldID.value()));
   data.Set("identifier", fieldIdentifier);
   data.Set("form", formName);
   data.Set("value", value);

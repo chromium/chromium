@@ -100,9 +100,9 @@ struct CrossThreadCopier<
 };
 
 template <>
-struct CrossThreadCopier<absl::optional<mojo_base::BigBuffer>> {
+struct CrossThreadCopier<std::optional<mojo_base::BigBuffer>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = absl::optional<mojo_base::BigBuffer>;
+  using Type = std::optional<mojo_base::BigBuffer>;
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
@@ -285,7 +285,7 @@ class BackgroundURLLoader::Context
     void OnReceivedResponse(
         network::mojom::URLResponseHeadPtr head,
         mojo::ScopedDataPipeConsumerHandle body,
-        absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+        std::optional<mojo_base::BigBuffer> cached_metadata) override {
       context_->PostTaskToMainThread(CrossThreadBindOnce(
           &Context::OnReceivedResponse, context_, std::move(head),
           std::move(body), std::move(cached_metadata)));
@@ -455,7 +455,7 @@ class BackgroundURLLoader::Context
   }
   void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
                           mojo::ScopedDataPipeConsumerHandle body,
-                          absl::optional<mojo_base::BigBuffer> cached_metadata,
+                          std::optional<mojo_base::BigBuffer> cached_metadata,
                           int request_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
     WebURLResponse response = WebURLResponse::Create(
@@ -609,7 +609,7 @@ void BackgroundURLLoader::LoadSynchronously(
     base::TimeDelta timeout_interval,
     URLLoaderClient* client,
     WebURLResponse& response,
-    absl::optional<WebURLError>& error,
+    std::optional<WebURLError>& error,
     scoped_refptr<SharedBuffer>& data,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,

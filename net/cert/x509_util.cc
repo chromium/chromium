@@ -548,9 +548,7 @@ bool SignatureVerifierInitWithCertificate(
     }
   }
 
-  return verifier->VerifyInit(
-      signature_algorithm, signature,
-      base::make_span(tbs.spki_tlv.UnsafeData(), tbs.spki_tlv.Length()));
+  return verifier->VerifyInit(signature_algorithm, signature, tbs.spki_tlv);
 }
 
 bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {

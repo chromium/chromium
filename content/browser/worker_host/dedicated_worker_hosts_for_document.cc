@@ -34,8 +34,10 @@ blink::scheduler::WebSchedulerTrackedFeatures
 DedicatedWorkerHostsForDocument::GetBackForwardCacheDisablingFeatures() const {
   RenderFrameHostImpl::BackForwardCacheDisablingFeatures features;
   for (auto& feature_detail : GetBackForwardCacheBlockingDetails()) {
-    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-        feature_detail->feature));
+    if (feature_detail->feature.has_value()) {
+      features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+          feature_detail->feature.value()));
+    }
   }
   return features;
 }

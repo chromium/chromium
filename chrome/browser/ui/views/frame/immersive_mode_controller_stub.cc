@@ -54,3 +54,6 @@ int ImmersiveModeControllerStub::GetMinimumContentOffset() const {
 int ImmersiveModeControllerStub::GetExtraInfobarOffset() const {
   return 0;
 }
+
+void ImmersiveModeControllerStub::OnContentFullscreenChanged(
+    bool is_content_fullscreen) {}

@@ -61,7 +61,7 @@ enum class ShouldShowChromeSigninBubbleWithReason {
   // priority.
   kShouldNotShowMaxShownCountReached = 1,
   kShouldNotShowAlreadySignedIn = 2,
-  kShouldNotShowSecondaryAccount = 3,
+  // Deprecated: kShouldNotShowSecondaryAccount = 3,
   kShouldNotShowUnknownAccessPoint = 4,
   kShouldNotShowNotFromWebSignin = 5,
 
@@ -137,7 +137,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       bool is_new_account,
       bool is_sync_signin,
       const std::string& email,
-      bool record_signin_metrics = false,
+      bool update_state = false,
       const ProfileAttributesEntry** entry = nullptr) const;
 
   // Returns true if the interception is in progress (running the heuristic or
@@ -221,6 +221,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowMultiUserBubble(
       const AccountInfo& intercepted_account_info) const;
+  bool ShouldShowChromeSigninBubble(const std::string& email);
 
   // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
   void ShowSigninInterceptionBubble(
@@ -349,6 +350,8 @@ class DiceWebSigninInterceptor : public KeyedService,
         interception_type_;
     signin_metrics::AccessPoint access_point_ =
         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+    std::optional<ShouldShowChromeSigninBubbleWithReason>
+        should_show_chrome_signin_bubble_;
 
     // Timeout for waiting for full information to be available (see
     // `ProcessInterceptionOrWait()`).

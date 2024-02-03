@@ -69,8 +69,8 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
-#import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
@@ -146,6 +146,7 @@
 #import "ios/chrome/browser/ui/policy/user_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
+#import "ios/chrome/browser/ui/promos_manager/utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
@@ -894,7 +895,7 @@ void InjectNTP(Browser* browser) {
   // sync promos and displays the sign-in promo if possible.
   __weak SceneController* weakSelf = self;
   base::Time fetch_start = base::Time::Now();
-  system_identity_manager->CanOfferExtendedSyncPromos(
+  system_identity_manager->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
       defaultIdentity, base::BindOnce(^(CapabilityResult result) {
         base::TimeDelta fetch_duration = (base::Time::Now() - fetch_start);
         base::UmaHistogramTimes(
@@ -1024,8 +1025,10 @@ void InjectNTP(Browser* browser) {
   // events.
   [GeolocationLogger sharedInstance];
 
-  [sceneState addAgent:[[PromosManagerSceneAgent alloc]
-                           initWithCommandDispatcher:mainCommandDispatcher]];
+  if (ShouldDisplayPromos()) {
+    [sceneState addAgent:[[PromosManagerSceneAgent alloc]
+                             initWithCommandDispatcher:mainCommandDispatcher]];
+  }
 
   if (IsAppStoreRatingEnabled()) {
     [sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
@@ -1199,8 +1202,6 @@ void InjectNTP(Browser* browser) {
         feature_engagement::TrackerFactory::GetForBrowserState(browserState);
 
     tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
-    tracker->NotifyEvent(
-        feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
   }
 }
 

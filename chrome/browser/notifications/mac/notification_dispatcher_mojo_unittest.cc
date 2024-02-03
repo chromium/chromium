@@ -393,10 +393,6 @@ TEST_F(NotificationDispatcherMojoTest, DidActivateNotification) {
 
   // Handling responses is async, make sure we wait for all tasks to complete.
   task_environment_.RunUntilIdle();
-
-  histograms.ExpectUniqueSample("Notifications.macOS.ActionReceived.Alert",
-                                /*sample=*/true,
-                                /*expected_count=*/1);
 }
 
 TEST_F(NotificationDispatcherMojoTest, TestUnexpectedDisconnectReconnects) {

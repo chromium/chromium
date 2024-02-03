@@ -94,7 +94,7 @@ void CoordinatorImpl::RegisterClientProcess(
     mojo::PendingRemote<mojom::ClientProcess> client_process,
     mojom::ProcessType process_type,
     base::ProcessId process_id,
-    const absl::optional<std::string>& service_name) {
+    const std::optional<std::string>& service_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   mojo::Remote<mojom::ClientProcess> process(std::move(client_process));
   if (receiver.is_valid())
@@ -584,7 +584,7 @@ void CoordinatorImpl::FinalizeGlobalMemoryDumpIfAllManagersReplied() {
 CoordinatorImpl::ClientInfo::ClientInfo(
     mojo::Remote<mojom::ClientProcess> client,
     mojom::ProcessType process_type,
-    absl::optional<std::string> service_name)
+    std::optional<std::string> service_name)
     : client(std::move(client)),
       process_type(process_type),
       service_name(std::move(service_name)) {}

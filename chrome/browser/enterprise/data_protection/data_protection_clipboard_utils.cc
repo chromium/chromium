@@ -251,16 +251,19 @@ void PasteIfAllowedByPolicy(
                       /*allowed=*/true);
 }
 
-bool IsClipboardCopyAllowedByPolicy(content::BrowserContext* browser_context,
-                                    const GURL& url,
-                                    size_t data_size_in_bytes,
-                                    std::u16string& replacement_data) {
+void IsClipboardCopyAllowedByPolicy(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    size_t data_size_in_bytes,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  std::u16string replacement_data;
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
           browser_context);
   if (!service->IsUrlAllowedToCopy(url, data_size_in_bytes,
                                    &replacement_data)) {
-    return false;
+    std::move(callback).Run(std::move(replacement_data));
+    return;
   }
 
   auto verdict =
@@ -272,10 +275,11 @@ bool IsClipboardCopyAllowedByPolicy(content::BrowserContext* browser_context,
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     replacement_data = l10n_util::GetStringUTF16(
         IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
-    return false;
+    std::move(callback).Run(std::move(replacement_data));
+    return;
   }
 
-  return true;
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace enterprise_data_protection

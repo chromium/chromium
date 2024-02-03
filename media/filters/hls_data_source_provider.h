@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 #include "media/formats/hls/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media {
@@ -49,7 +49,7 @@ class MEDIA_EXPORT HlsDataSourceProvider {
   // multiple URIs or from multiple disjoing ranges on the same URI.
   struct UrlDataSegment {
     const GURL uri;
-    const absl::optional<hls::types::ByteRange> range;
+    const std::optional<hls::types::ByteRange> range;
   };
   using SegmentQueue = base::queue<UrlDataSegment>;
 
@@ -100,9 +100,7 @@ class MEDIA_EXPORT HlsDataSourceStream {
 
   size_t buffer_size() const { return buffer_.size(); }
 
-  absl::optional<size_t> max_read_position() const {
-    return max_read_position_;
-  }
+  std::optional<size_t> max_read_position() const { return max_read_position_; }
 
   const uint8_t* raw_data() const { return buffer_.data(); }
 
@@ -152,7 +150,7 @@ class MEDIA_EXPORT HlsDataSourceStream {
 
   // If this optional value is set, then data can't be read past this maximum
   // value.
-  absl::optional<size_t> max_read_position_;
+  std::optional<size_t> max_read_position_;
 
   // The data source read response indicated that the stream has ended.
   bool reached_end_of_stream_ = false;

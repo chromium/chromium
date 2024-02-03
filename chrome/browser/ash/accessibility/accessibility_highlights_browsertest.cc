@@ -189,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
       utils_->GetBoundsForNodeInRootByClassName("OmniboxViewViews");
 
   // Jump to the omnibox.
-  generator_->PressAndReleaseKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+  generator_->PressAndReleaseKeyAndModifierKeys(ui::KeyboardCode::VKEY_L,
+                                                ui::EF_CONTROL_DOWN);
   WaitForFocusRingsChanged();
   AccessibilityCursorRingLayer* caret_layer =
       controller->caret_layer_for_testing();

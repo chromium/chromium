@@ -51,9 +51,9 @@ END_METADATA
 // This View holds two other views which consists of a view on the left onto
 // which the BoxLayout is attached for demonstrating its features. The view
 // on the right contains all the various controls which allow the user to
-// interactively control the various features/properties of BoxLayout. Layout()
-// will ensure the left view takes 75% and the right view fills the remaining
-// 25%.
+// interactively control the various features/properties of BoxLayout.
+// Layout will ensure the left view takes 75% and the right view fills the
+// remaining 25%.
 class FullPanel : public View {
   METADATA_HEADER(FullPanel, View)
 
@@ -99,7 +99,7 @@ LayoutExampleBase::ChildPanel::ChildPanel(LayoutExampleBase* example)
 
 LayoutExampleBase::ChildPanel::~ChildPanel() = default;
 
-void LayoutExampleBase::ChildPanel::Layout() {
+void LayoutExampleBase::ChildPanel::Layout(PassKey) {
   constexpr int kSpacing = 2;
   if (selected_) {
     const gfx::Rect client = GetContentsBounds();

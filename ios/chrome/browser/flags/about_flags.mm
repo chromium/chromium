@@ -81,7 +81,7 @@
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/features.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -223,32 +223,16 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxCompanyEntityAdjustmentMostAggressive), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kDefaultBrowserVideoConditionsHalfscreenPromo[] = {
-        {kDefaultBrowserVideoPromoVariant, kVideoConditionsHalfscreenPromo}};
-const FeatureEntry::FeatureParam
-    kDefaultBrowserVideoConditionsFullscreenPromo[] = {
-        {kDefaultBrowserVideoPromoVariant, kVideoConditionsFullscreenPromo}};
-const FeatureEntry::FeatureParam
-    kDefaultBrowserGenericConsitionsFullscreenPromo[] = {
-        {kDefaultBrowserVideoPromoVariant, kGenericConditionsFullscreenPromo}};
-const FeatureEntry::FeatureParam
-    kDefaultBrowserGenericConditionsHalfscreenPromo[] = {
-        {kDefaultBrowserVideoPromoVariant, kGenericConditionsHalfscreenPromo}};
+const FeatureEntry::FeatureParam kDefaultBrowserVideoFullscreenPromo[] = {
+    {kDefaultBrowserVideoPromoVariant, kVideoFullscreenPromo}};
+const FeatureEntry::FeatureParam kDefaultBrowserVideoHalfscreenPromo[] = {
+    {kDefaultBrowserVideoPromoVariant, kVideoHalfscreenPromo}};
 
 const FeatureEntry::FeatureVariation kDefaultBrowserVideoPromoVariations[] = {
-    {"Show half screen ui with video condtions",
-     kDefaultBrowserVideoConditionsHalfscreenPromo,
-     std::size(kDefaultBrowserVideoConditionsHalfscreenPromo), nullptr},
-    {"Show full screen ui with video condtions",
-     kDefaultBrowserVideoConditionsFullscreenPromo,
-     std::size(kDefaultBrowserVideoConditionsFullscreenPromo), nullptr},
-    {"Show full screen ui with generic condtions",
-     kDefaultBrowserGenericConsitionsFullscreenPromo,
-     std::size(kDefaultBrowserGenericConsitionsFullscreenPromo), nullptr},
-    {"Show half screen ui with generic condtions",
-     kDefaultBrowserGenericConditionsHalfscreenPromo,
-     std::size(kDefaultBrowserGenericConditionsHalfscreenPromo), nullptr},
+    {"Show half screen ui", kDefaultBrowserVideoHalfscreenPromo,
+     std::size(kDefaultBrowserVideoHalfscreenPromo), nullptr},
+    {"Show full screen ui", kDefaultBrowserVideoFullscreenPromo,
+     std::size(kDefaultBrowserVideoFullscreenPromo), nullptr},
 };
 
 // Uses int values from SigninPromoViewStyle enum.
@@ -348,6 +332,19 @@ const FeatureEntry::FeatureVariation
         {"Enabled With Default Model Parameter (Must Set this!)",
          kEnableDefaultModel, std::size(kEnableDefaultModel), nullptr},
     };
+
+const FeatureEntry::FeatureParam kIOSTipsNotifications5SecondTrigger[] = {
+    {kIOSTipsNotificationsTriggerTimeParam, "5s"},
+};
+const FeatureEntry::FeatureParam kIOSTipsNotifications10SecondTrigger[] = {
+    {kIOSTipsNotificationsTriggerTimeParam, "10s"},
+};
+const FeatureEntry::FeatureVariation kIOSTipsNotificationsVariations[] = {
+    {"(5s trigger)", kIOSTipsNotifications5SecondTrigger,
+     std::size(kIOSTipsNotifications10SecondTrigger), nullptr},
+    {"(10s trigger)", kIOSTipsNotifications10SecondTrigger,
+     std::size(kIOSTipsNotifications10SecondTrigger), nullptr},
+};
 
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params.
@@ -878,7 +875,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(shared_highlighting::kIOSSharedHighlightingV2)},
     {"ios-tips-notifications", flag_descriptions::kIOSTipsNotificationsName,
      flag_descriptions::kIOSTipsNotificationsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSTipsNotifications)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSTipsNotifications,
+                                    kIOSTipsNotificationsVariations,
+                                    "IOSTipsNotifications")},
     {"omnibox-new-textfield-implementation",
      flag_descriptions::kOmniboxNewImplementationName,
      flag_descriptions::kOmniboxNewImplementationDescription, flags_ui::kOsIos,
@@ -1065,10 +1064,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kIOSPasswordBottomSheetAutofocus)},
-    {"ios-payments-bottom-sheet",
-     flag_descriptions::kIOSPaymentsBottomSheetName,
-     flag_descriptions::kIOSPaymentsBottomSheetDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSPaymentsBottomSheet)},
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,
      flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription,
@@ -1097,6 +1092,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMaxURLMatches,
                                     kOmniboxMaxURLMatchesVariations,
                                     "OmniboxMaxURLMatches")},
+    {"omnibox-most-visited-tiles-horizontal-render-group",
+     flag_descriptions::kMostVisitedTilesHorizontalRenderGroupName,
+     flag_descriptions::kMostVisitedTilesHorizontalRenderGroupDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesHorizontalRenderGroup)},
     {"metrickit-non-crash-reports",
      flag_descriptions::kMetrickitNonCrashReportName,
      flag_descriptions::kMetrickitNonCrashReportDescription, flags_ui::kOsIos,
@@ -1399,11 +1399,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-pickup-minimum-delay", flag_descriptions::kTabPickupMinimumDelayName,
      flag_descriptions::kTabPickupMinimumDelayDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabPickupMinimumDelay)},
-    {"enable-family-link-controls",
-     flag_descriptions::kEnableFamilyLinkControlsName,
-     flag_descriptions::kEnableFamilyLinkControlsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)},
     {"discover-feed-sport-card", flag_descriptions::kDiscoverFeedSportCardName,
      flag_descriptions::kDiscoverFeedSportCardDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDiscoverFeedSportCard)},
@@ -1590,6 +1585,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncRememberCustomPassphraseAfterSignoutDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kSyncRememberCustomPassphraseAfterSignout)},
+    {"tab-grid-always-bounce", flag_descriptions::kTabGridAlwaysBounceName,
+     flag_descriptions::kTabGridAlwaysBounceDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGridAlwaysBounce)},
+    {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
+     flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDisableLensCamera)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

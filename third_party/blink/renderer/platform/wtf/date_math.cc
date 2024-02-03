@@ -645,14 +645,14 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
          kMsPerSecond;
 }
 
-absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
+std::optional<base::Time> ParseDateFromNullTerminatedCharacters(
     const char* date_string) {
   bool have_tz;
   int offset;
   double ms =
       ParseDateFromNullTerminatedCharacters(date_string, have_tz, offset);
   if (std::isnan(ms))
-    return absl::nullopt;
+    return std::nullopt;
 
   // fall back to local timezone
   if (!have_tz) {

@@ -23,6 +23,10 @@ class TestSearchProvider : public SearchProvider {
   TestSearchProvider(ash::AppListSearchResultType result_type,
                      base::TimeDelta delay);
 
+  TestSearchProvider(ash::AppListSearchResultType result_type,
+                     base::TimeDelta delay,
+                     SearchCategory search_category);
+
   ~TestSearchProvider() override;
 
   void SetNextResults(std::vector<std::unique_ptr<ChromeSearchResult>> results);
@@ -34,8 +38,6 @@ class TestSearchProvider : public SearchProvider {
   void StopQuery() override;
 
   void StartZeroState() override;
-
-  void SetControlCategoryForTest(ControlCategory control_category);
 
  private:
   void SetResults();

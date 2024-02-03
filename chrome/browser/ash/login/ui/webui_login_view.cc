@@ -272,7 +272,7 @@ void WebUILoginView::SetKeyboardEventsAndSystemTrayEnabled(bool enabled) {
 
 // WebUILoginView protected: ---------------------------------------------------
 
-void WebUILoginView::Layout() {
+void WebUILoginView::Layout(PassKey) {
   DCHECK(web_view_);
   web_view_->SetBoundsRect(bounds());
 
@@ -281,7 +281,7 @@ void WebUILoginView::Layout() {
 }
 
 void WebUILoginView::ChildPreferredSizeChanged(View* child) {
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -404,7 +404,7 @@ void WebUILoginView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF16(IDS_OOBE_ACCESSIBLE_SCREEN_NAME));
 }
 
-BEGIN_METADATA(WebUILoginView, views::View)
+BEGIN_METADATA(WebUILoginView)
 END_METADATA
 
 }  // namespace ash

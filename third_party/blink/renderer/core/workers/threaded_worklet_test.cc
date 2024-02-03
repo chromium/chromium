@@ -234,7 +234,7 @@ class ThreadedWorkletMessagingProxyForTest
             nullptr /* parent_permissions_policy */,
             GetExecutionContext()->GetAgentClusterID(), ukm::kInvalidSourceId,
             GetExecutionContext()->GetExecutionContextToken()),
-        absl::nullopt, absl::nullopt);
+        std::nullopt, std::nullopt);
   }
 
  private:

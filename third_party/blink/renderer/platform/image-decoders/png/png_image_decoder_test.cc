@@ -1531,7 +1531,7 @@ TEST(PNGTests, HDRMetadata) {
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
   ASSERT_FALSE(decoder->Failed());
-  const absl::optional<gfx::HDRMetadata> hdr_metadata =
+  const std::optional<gfx::HDRMetadata> hdr_metadata =
       decoder->GetHDRMetadata();
   ASSERT_TRUE(hdr_metadata);
 

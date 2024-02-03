@@ -30,8 +30,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -81,9 +81,9 @@ public class TabGroupCreationDialogDelegateUnitTest {
         mTabGroupCreationDialogDelegate.addObservers();
 
         verify(mRegularTabGroupModelFilter, times(1))
-                .addTabGroupObserver(any(EmptyTabGroupModelFilterObserver.class));
+                .addTabGroupObserver(any(TabGroupModelFilterObserver.class));
         verify(mIncognitoTabGroupModelFilter, times(1))
-                .addTabGroupObserver(any(EmptyTabGroupModelFilterObserver.class));
+                .addTabGroupObserver(any(TabGroupModelFilterObserver.class));
     }
 
     @Test

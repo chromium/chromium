@@ -95,7 +95,7 @@ TEST(AnimationTimingCalculationsTest, ActiveTime) {
   // None
   normalized_timing.active_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(32);
   EXPECT_FALSE(TimingCalculations::CalculateActiveTime(
-      normalized_timing, Timing::FillMode::NONE, absl::nullopt,
+      normalized_timing, Timing::FillMode::NONE, std::nullopt,
       Timing::kPhaseNone));
 }
 
@@ -103,7 +103,7 @@ TEST(AnimationTimingCalculationsTest, OffsetActiveTime) {
   test::TaskEnvironment task_environment;
   // if the active time is null
   EXPECT_FALSE(TimingCalculations::CalculateOffsetActiveTime(
-      ANIMATION_TIME_DELTA_FROM_SECONDS(4), absl::nullopt,
+      ANIMATION_TIME_DELTA_FROM_SECONDS(4), std::nullopt,
       ANIMATION_TIME_DELTA_FROM_SECONDS(5)));
 
   // normal case
@@ -140,7 +140,7 @@ TEST(AnimationTimingCalculationsTest, IterationTime) {
   // if the scaled active time is null
   EXPECT_FALSE(TimingCalculations::CalculateIterationTime(
       ANIMATION_TIME_DELTA_FROM_SECONDS(1),
-      ANIMATION_TIME_DELTA_FROM_SECONDS(1), absl::nullopt,
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1), std::nullopt,
       ANIMATION_TIME_DELTA_FROM_SECONDS(1), Timing::kPhaseActive, timing));
 
   // if (complex-conditions)...
@@ -198,7 +198,7 @@ TEST(AnimationTimingCalculationsTest, OverallProgress) {
   // If the active time is null.
   EXPECT_FALSE(TimingCalculations::CalculateOverallProgress(
       Timing::kPhaseAfter,
-      /*active_time=*/absl::nullopt,
+      /*active_time=*/std::nullopt,
       /*iteration_duration=*/ANIMATION_TIME_DELTA_FROM_SECONDS(1.0),
       /*iteration_count=*/1.0,
       /*iteration_start=*/1.0));
@@ -242,9 +242,9 @@ TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
   // If the overall progress is null.
   EXPECT_FALSE(TimingCalculations::CalculateSimpleIterationProgress(
       Timing::kPhaseAfter,
-      /*overall_progress=*/absl::nullopt,
+      /*overall_progress=*/std::nullopt,
       /*iteration_start=*/1.0,
-      /*active_time=*/absl::nullopt,
+      /*active_time=*/std::nullopt,
       /*active_duration=*/ANIMATION_TIME_DELTA_FROM_SECONDS(1.0),
       /*iteration_count=*/1.0));
 
@@ -282,9 +282,9 @@ TEST(AnimationTimingCalculationsTest, CurrentIteration) {
   // If the active time is null.
   EXPECT_FALSE(TimingCalculations::CalculateCurrentIteration(
       Timing::kPhaseAfter,
-      /*active_time=*/absl::nullopt,
+      /*active_time=*/std::nullopt,
       /*iteration_count=*/1.0,
-      /*overall_progress=*/absl::nullopt,
+      /*overall_progress=*/std::nullopt,
       /*simple_iteration_progress=*/0));
 
   // If the iteration count is infinite.
@@ -355,7 +355,7 @@ TEST(AnimationTimingCalculationsTest, CalculateDirectedProgress) {
 
   // if the simple iteration progress is null
   EXPECT_FALSE(TimingCalculations::CalculateDirectedProgress(
-      absl::nullopt, absl::nullopt, Timing::PlaybackDirection::NORMAL));
+      std::nullopt, std::nullopt, Timing::PlaybackDirection::NORMAL));
 
   // forwards
   EXPECT_EQ(0, TimingCalculations::CalculateDirectedProgress(
@@ -405,7 +405,7 @@ TEST(AnimationTimingCalculationsTest, TransformedProgress) {
 
   // directed_progress is null.
   EXPECT_FALSE(TimingCalculations::CalculateTransformedProgress(
-      Timing::kPhaseActive, absl::nullopt, true, timing_function));
+      Timing::kPhaseActive, std::nullopt, true, timing_function));
 
   // At step boundaries.
   // Forward direction.
@@ -460,7 +460,7 @@ TEST(AnimationTimingCalculationsTest, AlignmentHistogram) {
   Timing::NormalizedTiming normalized_timing;
   normalized_timing.active_duration = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(1);
   normalized_timing.end_time = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
-  absl::optional<AnimationTimeDelta> local_time =
+  std::optional<AnimationTimeDelta> local_time =
       ANIMATION_TIME_DELTA_FROM_MILLISECONDS(1);
 
   const std::string histogram_name = "Blink.Animation.SDA.BoundaryMisalignment";

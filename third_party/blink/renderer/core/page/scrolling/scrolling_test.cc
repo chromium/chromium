@@ -1858,7 +1858,7 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
   gfx::Vector2dF compositor_delta(0, 100.f);
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.push_back(
-      {scrollable_area->GetScrollElementId(), compositor_delta, absl::nullopt});
+      {scrollable_area->GetScrollElementId(), compositor_delta, std::nullopt});
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   // The compositor offset is reflected in blink and cc scroll tree.
   gfx::PointF expected_scroll_position =
@@ -2065,7 +2065,7 @@ TEST_P(ScrollingTest, MainThreadScrollAndDeltaFromImplSide) {
   // beginning of BeginMainFrame.
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.push_back(cc::CompositorCommitData::ScrollUpdateInfo(
-      element_id, gfx::Vector2dF(0, 10), absl::nullopt));
+      element_id, gfx::Vector2dF(0, 10), std::nullopt));
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   EXPECT_EQ(gfx::PointF(0, 210), scrollable_area->ScrollPosition());
   EXPECT_EQ(gfx::PointF(0, 210), CurrentScrollOffset(element_id));

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ContentSuggestionsCommands;
+@protocol MostVisitedTilesCommands;
 @class ContentSuggestionsMostVisitedItem;
 @protocol ContentSuggestionsImageDataSource;
 
@@ -25,7 +25,7 @@
     imageDataSource;
 
 // Command handler for user actions.
-@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
+@property(nonatomic, weak) id<MostVisitedTilesCommands> commandHandler;
 
 @end
 

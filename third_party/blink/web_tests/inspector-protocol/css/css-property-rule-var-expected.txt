@@ -350,4 +350,62 @@ Pseudo Elements:
         value : var(--m)
     }
 ]
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --m
+        range : {
+            endColumn : 11
+            endLine : 22
+            startColumn : 4
+            startLine : 22
+        }
+        text : --m: 0;
+        value : 0
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 20
+            endLine : 23
+            startColumn : 4
+            startLine : 23
+        }
+        text : --len: var(--m);
+        value : var(--m)
+    }
+    [2] : {
+        name : --m
+        value : 0
+    }
+    [3] : {
+        name : --len
+        value : var(--m)
+    }
+]
+Pseudo element registered properties:
+[
+    [0] : {
+        range : {
+            endColumn : 17
+            endLine : 3
+            startColumn : 12
+            startLine : 3
+        }
+        text : --len
+    }
+    [1] : {
+        range : {
+            endColumn : 19
+            endLine : 8
+            startColumn : 12
+            startLine : 8
+        }
+        text : --color
+    }
+]
 

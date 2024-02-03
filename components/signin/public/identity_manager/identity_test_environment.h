@@ -64,7 +64,7 @@ struct SimpleAccountAvailabilityOptions {
   bool set_cookie = false;
 
   // If non-empty, the Gaia ID to use when adding the account.
-  base::StringPiece gaia_id{base::EmptyString()};
+  base::StringPiece gaia_id;
 };
 
 // Class that creates an IdentityManager for use in testing contexts and

@@ -555,6 +555,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserAbandonment{PeriodConsidered}"
+    enum="Boolean" expires_after="2024-06-30">
+  <owner>gujen@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records true if Chrome was likely the default browser in the last
+    {PeriodConsidered}, indicating that Chrome may have recently stopped being
+    the default browser. Records false in all other scenarios. Recorded once per
+    metrics log upload.
+  </summary>
+  <token key="PeriodConsidered">
+    <variant name="21To7" summary="21 days but not in the last 7 days"/>
+    <variant name="28To14" summary="28 days but not in the last 14 days"/>
+    <variant name="35To14" summary="35 days but not in the last 14 days"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2024-06-30">
   <owner>sebsg@chromium.org</owner>
@@ -786,7 +803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DistantTab.TimeSinceLastUse" units="ms"
-    expires_after="2024-03-10">
+    expires_after="2024-09-10">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -798,7 +815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.EditMenu.DismissedMenuOnPage" enum="IOSEditMenuPage"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>olivierrobin@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -814,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.EditMenu.SelectedAction" enum="IOSEditMenuActions"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>olivierrobin@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -824,7 +841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.EditMenu.SelectedActionOnPage" enum="IOSEditMenuPage"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>olivierrobin@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -1155,9 +1172,34 @@ chromium-metrics-reviews@google.com.
     likely to change certain stability metrics. Thus, it will be good to filter
     those metrics by default browser status. This metrics records whether the
     user was deemed to have set Chrome as the device's default browser. This
-    metric will be logged once per metrics log upload. As long as link is opened
-    in Chrome in the last 21 days, the user will be considered a default user.
+    metric will be logged once per metrics log upload. As long as a link is
+    opened in Chrome in the last 21 days, the user will be considered a default
+    user.
   </summary>
+</histogram>
+
+<histogram name="IOS.IsDefaultBrowser{NumberOfDays}" enum="Boolean"
+    expires_after="2024-06-16">
+  <owner>sebsg@chromium.org</owner>
+  <owner>gujen@chromium.org</owner>
+  <summary>
+    As of iOS14, users will be able to set a default browser other than Safari.
+    When Chrome is the default browser, it will receive all URL opens, which is
+    likely to change certain stability metrics. Thus, it will be good to filter
+    those metrics by default browser status. This metrics records whether the
+    user was deemed to have set Chrome as the device's default browser. This
+    metric will be logged once per metrics log upload. As long as a link is
+    opened in Chrome in the last {NumberOfDays} days, the user will be
+    considered a default user.
+  </summary>
+  <token key="NumberOfDays">
+    <variant name="1"/>
+    <variant name="3"/>
+    <variant name="14"/>
+    <variant name="28"/>
+    <variant name="35"/>
+    <variant name="42"/>
+  </token>
 </histogram>
 
 <histogram name="IOS.IsEligibleDefaultBrowserPromoUser" enum="BooleanEligible"
@@ -1814,6 +1856,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="IOS.Omnibox.Promo.SelectedPosition.{Context}.{OmniboxDeviceSwitcherResult}"
+    enum="OmniboxPromoSelectedPositions" expires_after="2024-05-31">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the selected omnibox position when the promo is presented during
+    {Context}. Also records whether the selected position is the default one.
+    Record in a different buckets depending on omnibox device switcher result,
+    current classification is {OmniboxDeviceSwitcherResult}.
+  </summary>
+  <token key="Context">
+    <variant name="FRE" summary="FRE"/>
+    <variant name="Startup" summary="startup"/>
+  </token>
+  <token key="OmniboxDeviceSwitcherResult">
+    <variant name="IsSwitcher" summary="safari switcher"/>
+    <variant name="NotNew" summary="not a new user"/>
+    <variant name="NotSwitcher" summary="not safari switcher"/>
+    <variant name="Unavailable" summary="result unavailable"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Omnibox.Promo.TimeOpen.{Context}" units="ms"
     expires_after="2024-05-31">
   <owner>christianxu@chromium.org</owner>
@@ -2458,7 +2523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.EnabledPermisisons"
-    enum="PushNotificationPermissionPromptStatus" expires_after="2024-05-24">
+    enum="PushNotificationPermissionPromptStatus" expires_after="2024-07-28">
   <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
   <summary>
@@ -2554,6 +2619,17 @@ chromium-metrics-reviews@google.com.
     Logs the permission status, stored in iOS settings, the user has given for
     whether Chrome can receive push notifications on the device. Logged every
     time the metrics provider reports filter metrics.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PushNotification.Provisional.EnabledPermissisons"
+    enum="PushNotificationPermissionPromptStatus" expires_after="2024-05-24">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    Logs whether the provisional push notification permissions were granted for
+    the current device or an error occured. This is logged each time the user
+    responds to a push notification permission prompt.
   </summary>
 </histogram>
 
@@ -2768,7 +2844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.AverageColorSnapshotSize" units="KB"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -2779,7 +2855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.AverageGreySnapshotSize" units="KB"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -3844,7 +3920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.{Type}.TimeSpent" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@google.com</owner>
   <summary>Logs the time a user spent on each feature of What's New.</summary>

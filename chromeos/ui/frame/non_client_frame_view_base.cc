@@ -29,10 +29,10 @@ NonClientFrameViewBase::OverlayView::OverlayView(HeaderView* header_view)
 
 NonClientFrameViewBase::OverlayView::~OverlayView() = default;
 
-void NonClientFrameViewBase::OverlayView::Layout() {
+void NonClientFrameViewBase::OverlayView::Layout(PassKey) {
   // Layout |header_view_| because layout affects the result of
   // GetPreferredOnScreenHeight().
-  header_view_->Layout();
+  header_view_->DeprecatedLayoutImmediately();
 
   int onscreen_height = header_view_->GetPreferredOnScreenHeight();
   int height = header_view_->GetPreferredHeight();
@@ -148,8 +148,8 @@ gfx::Size NonClientFrameViewBase::CalculatePreferredSize() const {
       .size();
 }
 
-void NonClientFrameViewBase::Layout() {
-  views::NonClientFrameView::Layout();
+void NonClientFrameViewBase::Layout(PassKey) {
+  LayoutSuperclass<views::NonClientFrameView>(this);
   if (!GetFrameEnabled())
     return;
   aura::Window* frame_window = frame_->GetNativeWindow();
@@ -217,7 +217,7 @@ bool NonClientFrameViewBase::DoesIntersectRect(const views::View* target,
 
 void NonClientFrameViewBase::PaintAsActiveChanged() {
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
-  frame_->non_client_view()->Layout();
+  frame_->non_client_view()->DeprecatedLayoutImmediately();
 }
 
 }  // namespace chromeos

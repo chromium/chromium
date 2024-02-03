@@ -94,7 +94,11 @@ void ImmersiveModeTabbedControllerCocoa::Init() {
 }
 
 void ImmersiveModeTabbedControllerCocoa::UpdateToolbarVisibility(
-    mojom::ToolbarVisibilityStyle style) {
+    std::optional<mojom::ToolbarVisibilityStyle> style) {
+  if (!style.has_value()) {
+    return;
+  }
+
   // Don't make changes when a reveal lock is active. Do update the
   // `last_used_style` so the style will be updated once all outstanding reveal
   // locks are released.
@@ -108,7 +112,7 @@ void ImmersiveModeTabbedControllerCocoa::UpdateToolbarVisibility(
   // using the `hidden` property. Instead we must entirely remove the view
   // controller to make the view hide. Switch to using the `hidden` property
   // once Apple resolves this bug.
-  switch (style) {
+  switch (style.value()) {
     case mojom::ToolbarVisibilityStyle::kAlways:
       AddController();
       TitlebarReveal();
@@ -160,26 +164,21 @@ void ImmersiveModeTabbedControllerCocoa::OnTopViewBoundsChanged(
                        tab_titlebar_view_controller_.view.frame.size.height)];
 }
 
-void ImmersiveModeTabbedControllerCocoa::RevealLock() {
+void ImmersiveModeTabbedControllerCocoa::RevealLocked() {
   AddController();
   TitlebarReveal();
-
   // Call after TitlebarReveal() for a proper layout.
-  ImmersiveModeControllerCocoa::RevealLock();
+  ImmersiveModeControllerCocoa::RevealLocked();
   LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
-void ImmersiveModeTabbedControllerCocoa::RevealUnlock() {
-  // The reveal lock count will be updated in
-  // ImmersiveModeControllerCocoa::RevealUnlock(), count 1 or less here as
-  // unlocked.
-  if (reveal_lock_count() < 2 &&
-      last_used_style() == mojom::ToolbarVisibilityStyle::kAutohide) {
+void ImmersiveModeTabbedControllerCocoa::RevealUnlocked() {
+  if (last_used_style() == mojom::ToolbarVisibilityStyle::kAutohide) {
     TitlebarHide();
   }
 
-  // Call after TitlebarHide() for a proper layout.
-  ImmersiveModeControllerCocoa::RevealUnlock();
+  // Call after TitlebarReveal() for a proper layout.
+  ImmersiveModeControllerCocoa::RevealUnlocked();
   LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 

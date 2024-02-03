@@ -92,7 +92,7 @@ NetParsedCertificate::~NetParsedCertificate() = default;
 ErrorOr<std::vector<uint8_t>> NetParsedCertificate::SerializeToDER(
     int front_spacing) const {
   std::vector<uint8_t> result;
-  base::span<const uint8_t> der_buffer = cert_->der_cert().AsSpan();
+  base::span<const uint8_t> der_buffer = cert_->der_cert();
   result.reserve(front_spacing + der_buffer.size());
   result.resize(front_spacing);
   result.insert(result.end(), der_buffer.begin(), der_buffer.end());
@@ -152,8 +152,7 @@ bool NetParsedCertificate::VerifySignedData(
   // which is already exported as GetSpkiTlv(). Remove this method altogether
   // and move this into openscreen.
   CBS spki;
-  CBS_init(&spki, cert_->tbs().spki_tlv.UnsafeData(),
-           cert_->tbs().spki_tlv.Length());
+  CBS_init(&spki, cert_->tbs().spki_tlv.data(), cert_->tbs().spki_tlv.size());
   bssl::UniquePtr<EVP_PKEY> pubkey(EVP_parse_public_key(&spki));
   if (!pubkey || CBS_len(&spki) != 0) {
     return false;

@@ -331,8 +331,8 @@ WebGLTexture* XRWebGLLayer::GetCameraTexture() {
 }
 
 void XRWebGLLayer::OnFrameStart(
-    const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
-    const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
+    const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
+    const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
   if (framebuffer_) {
     framebuffer_->MarkOpaqueBufferComplete(true);
     framebuffer_->SetContentsChanged(false);
@@ -359,7 +359,7 @@ void XRWebGLLayer::OnFrameStart(
 }
 
 uint32_t XRWebGLLayer::GetBufferTextureId(
-    const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
+    const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(buffer_mailbox_holder->sync_token.GetConstData());
   DVLOG(3) << __func__ << ": buffer_mailbox_holder->sync_token="
@@ -371,7 +371,7 @@ uint32_t XRWebGLLayer::GetBufferTextureId(
 }
 
 void XRWebGLLayer::BindCameraBufferTexture(
-    const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
+    const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
 
   if (buffer_mailbox_holder) {
@@ -440,7 +440,7 @@ void XRWebGLLayer::OnFrameEnd() {
         }
 
         camera_image_texture_id_ = 0;
-        camera_image_mailbox_holder_ = absl::nullopt;
+        camera_image_mailbox_holder_ = std::nullopt;
       }
     }
   }

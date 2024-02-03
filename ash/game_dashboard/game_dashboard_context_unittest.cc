@@ -780,6 +780,9 @@ TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
 
+  // Verify recording duration is 0, by default.
+  EXPECT_EQ(u"00:00", test_api_->GetRecordingDuration());
+
   // Start recording the game window.
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
@@ -813,6 +816,12 @@ TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
   // Advance clock by 23 hours, and verify hours doesn't overflow to days.
   AdvanceClock(base::Hours(23));
   EXPECT_EQ(u"24:00:30", test_api_->GetRecordingDuration());
+
+  // Stop the recording.
+  LeftClickOn(record_game_button);
+
+  // Verify recording duration is reset to 0.
+  EXPECT_EQ(u"00:00", test_api_->GetRecordingDuration());
 }
 
 // Verifies the welcome dialog displays when the game window first opens and

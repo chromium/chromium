@@ -26,10 +26,6 @@ class COMPONENT_EXPORT(UI_WM) ShadowControllerDelegate {
   // activation change or manually.
   virtual bool ShouldShowShadowForWindow(const aura::Window* window) = 0;
 
-  // Invoked when the shadow on `window` is to be modified, either normally from
-  // activation change or manually.
-  virtual bool ShouldHaveRoundedShadowForWindow(const aura::Window* window) = 0;
-
   // Invoked when the `window` property changes.
   virtual bool ShouldUpdateShadowOnWindowPropertyChange(
       const aura::Window* window,

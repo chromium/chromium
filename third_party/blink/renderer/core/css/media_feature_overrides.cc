@@ -17,10 +17,10 @@ namespace blink {
 
 namespace {
 
-absl::optional<ColorSpaceGamut> ConvertColorGamut(
+std::optional<ColorSpaceGamut> ConvertColorGamut(
     const MediaQueryExpValue& value) {
   if (!value.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (value.Id() == CSSValueID::kSRGB) {
     return ColorSpaceGamut::SRGB;
@@ -32,57 +32,57 @@ absl::optional<ColorSpaceGamut> ConvertColorGamut(
   if (value.Id() == CSSValueID::kRec2020) {
     return ColorSpaceGamut::BT2020;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ForcedColors> ConvertForcedColors(
+std::optional<ForcedColors> ConvertForcedColors(
     const MediaQueryExpValue& value) {
   if (!value.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CSSValueIDToForcedColors(value.Id());
 }
 
 }  // namespace
 
-absl::optional<mojom::blink::PreferredColorScheme>
+std::optional<mojom::blink::PreferredColorScheme>
 MediaFeatureOverrides::ConvertPreferredColorScheme(
     const MediaQueryExpValue& value) {
   if (!value.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CSSValueIDToPreferredColorScheme(value.Id());
 }
 
-absl::optional<mojom::blink::PreferredContrast>
+std::optional<mojom::blink::PreferredContrast>
 MediaFeatureOverrides::ConvertPreferredContrast(
     const MediaQueryExpValue& value) {
   if (!value.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CSSValueIDToPreferredContrast(value.Id());
 }
 
-absl::optional<bool> MediaFeatureOverrides::ConvertPrefersReducedMotion(
+std::optional<bool> MediaFeatureOverrides::ConvertPrefersReducedMotion(
     const MediaQueryExpValue& value) {
   if (!value.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return value.Id() == CSSValueID::kReduce;
 }
 
-absl::optional<bool> MediaFeatureOverrides::ConvertPrefersReducedData(
+std::optional<bool> MediaFeatureOverrides::ConvertPrefersReducedData(
     const MediaQueryExpValue& value) {
   if (!value.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return value.Id() == CSSValueID::kReduce;
 }
 
-absl::optional<bool> MediaFeatureOverrides::ConvertPrefersReducedTransparency(
+std::optional<bool> MediaFeatureOverrides::ConvertPrefersReducedTransparency(
     const MediaQueryExpValue& value) {
   if (!value.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return value.Id() == CSSValueID::kReduce;
 }

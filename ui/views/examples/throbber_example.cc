@@ -36,7 +36,7 @@ class ThrobberView : public View {
     return gfx::Size(width(), height());
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     int diameter = 16;
     throbber_->SetBounds((width() - diameter) / 2, (height() - diameter) / 2,
                          diameter, diameter);

@@ -64,7 +64,8 @@ class BeforeInstallPromptEvent final
   }
 
   Vector<String> platforms() const;
-  ScriptPromise userChoice(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<AppBannerPromptResult> userChoice(ScriptState*,
+                                                       ExceptionState&);
   ScriptPromise prompt(ScriptState*, ExceptionState&);
 
   const AtomicString& InterfaceName() const override;

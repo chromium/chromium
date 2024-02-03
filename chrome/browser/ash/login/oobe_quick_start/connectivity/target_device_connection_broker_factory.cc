@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
 namespace ash::quick_start {
@@ -12,10 +13,11 @@ namespace ash::quick_start {
 // static
 std::unique_ptr<TargetDeviceConnectionBroker>
 TargetDeviceConnectionBrokerFactory::Create(
-    SessionContext session_context,
+    SessionContext* session_context,
     QuickStartConnectivityService* quick_start_connectivity_service) {
   if (test_factory_) {
-    return test_factory_->CreateInstance(quick_start_connectivity_service);
+    return test_factory_->CreateInstance(session_context,
+                                         quick_start_connectivity_service);
   }
 
   auto connection_factory = std::make_unique<Connection::Factory>();

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
@@ -428,6 +429,17 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
     case update_engine::Operation::UPDATED_NEED_REBOOT: {
       g_browser_process->local_state()->SetBoolean(
           prefs::kOobeConsumerUpdateCompleted, true);
+
+      if (context()->quick_start_setup_ongoing) {
+        // Wait to prepare Quick Start for an update until the reboot is ready,
+        // because the user may be able to cancel the update during download
+        // process. Allow more time to exchange message with source device
+        // before reboot.
+        WizardController::default_controller()
+            ->quick_start_controller()
+            ->PrepareForUpdate();
+        wait_before_reboot_time_ += base::Seconds(2);
+      }
 
       base::TimeDelta update_time = base::TimeTicks::Now() - screen_shown_time_;
       RecordUpdateTime(update_time, is_mandatory_update_.value_or(true));

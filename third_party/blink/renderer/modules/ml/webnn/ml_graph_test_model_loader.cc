@@ -70,25 +70,56 @@ blink_mojom::TensorInfoPtr ConvertToMojom(const TfLiteTensor* tensor) {
 class TfLiteOpResolver : public tflite::MutableOpResolver {
  public:
   TfLiteOpResolver() {
-    AddBuiltin(tflite::BuiltinOperator_RELU,
-               tflite::ops::builtin::Register_RELU(), /* min_version = */ 1,
-               /* max_version = */ 2);
+    AddBuiltin(tflite::BuiltinOperator_ABS,
+               tflite::ops::builtin::Register_ABS());
+    AddBuiltin(tflite::BuiltinOperator_AVERAGE_POOL_2D,
+               tflite::ops::builtin::Register_AVERAGE_POOL_2D(),
+               /* min_version */ 1,
+               /* max_version */ 3);
+    AddBuiltin(tflite::BuiltinOperator_CAST,
+               tflite::ops::builtin::Register_CAST());
     AddBuiltin(tflite::BuiltinOperator_ADD,
                tflite::ops::builtin::Register_ADD(),
                /* min_version = */ 1,
                /* max_version = */ 2);
-    AddBuiltin(tflite::BuiltinOperator_SUB,
-               tflite::ops::builtin::Register_SUB(),
-               /* min_version = */ 1,
-               /* max_version = */ 3);
-    AddBuiltin(tflite::BuiltinOperator_MUL,
-               tflite::ops::builtin::Register_MUL(),
+    AddBuiltin(tflite::BuiltinOperator_CEIL,
+               tflite::ops::builtin::Register_CEIL());
+    AddBuiltin(tflite::BuiltinOperator_CONV_2D,
+               tflite::ops::builtin::Register_CONV_2D(),
                /* min_version = */ 1,
                /* max_version = */ 4);
+    AddBuiltin(tflite::BuiltinOperator_COS,
+               tflite::ops::builtin::Register_COS());
+    AddBuiltin(tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
+               tflite::ops::builtin::Register_DEPTHWISE_CONV_2D(),
+               /* min_version = */ 1,
+               /* max_version = */ 5);
     AddBuiltin(tflite::BuiltinOperator_DIV,
                tflite::ops::builtin::Register_DIV(),
                /* min_version */ 1,
                /* max_version */ 2);
+    AddBuiltin(tflite::BuiltinOperator_ELU,
+               tflite::ops::builtin::Register_ELU());
+    AddBuiltin(tflite::BuiltinOperator_EXP,
+               tflite::ops::builtin::Register_EXP());
+    AddBuiltin(tflite::BuiltinOperator_FLOOR,
+               tflite::ops::builtin::Register_FLOOR());
+    AddBuiltin(tflite::BuiltinOperator_HARD_SWISH,
+               tflite::ops::builtin::Register_HARD_SWISH());
+    AddBuiltin(tflite::BuiltinOperator_LEAKY_RELU,
+               tflite::ops::builtin::Register_LEAKY_RELU(),
+               /* min_version = */ 1,
+               /* max_version = */ 2);
+    AddBuiltin(tflite::BuiltinOperator_LOG,
+               tflite::ops::builtin::Register_LOG());
+    AddBuiltin(tflite::BuiltinOperator_LOGISTIC,
+               tflite::ops::builtin::Register_LOGISTIC(),
+               /* min_version = */ 1,
+               /* max_version = */ 3);
+    AddBuiltin(tflite::BuiltinOperator_MAX_POOL_2D,
+               tflite::ops::builtin::Register_MAX_POOL_2D(),
+               /* min_version */ 1,
+               /* max_version */ 3);
     AddBuiltin(tflite::BuiltinOperator_MAXIMUM,
                tflite::ops::builtin::Register_MAXIMUM(),
                /* min_version = */ 1,
@@ -97,30 +128,31 @@ class TfLiteOpResolver : public tflite::MutableOpResolver {
                tflite::ops::builtin::Register_MINIMUM(),
                /* min_version = */ 1,
                /* max_version = */ 4);
+    AddBuiltin(tflite::BuiltinOperator_MUL,
+               tflite::ops::builtin::Register_MUL(),
+               /* min_version = */ 1,
+               /* max_version = */ 4);
+    AddBuiltin(tflite::BuiltinOperator_NEG,
+               tflite::ops::builtin::Register_NEG());
     AddBuiltin(tflite::BuiltinOperator_POW,
                tflite::ops::builtin::Register_POW());
+    AddBuiltin(tflite::BuiltinOperator_RELU,
+               tflite::ops::builtin::Register_RELU(), /* min_version = */ 1,
+               /* max_version = */ 2);
+    AddBuiltin(tflite::BuiltinOperator_RESHAPE,
+               tflite::ops::builtin::Register_RESHAPE());
+    AddBuiltin(tflite::BuiltinOperator_SIN,
+               tflite::ops::builtin::Register_SIN());
     AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
                tflite::ops::builtin::Register_SOFTMAX(),
                /* min_version = */ 1,
                /* max_version = */ 3);
-    AddBuiltin(tflite::BuiltinOperator_RESHAPE,
-               tflite::ops::builtin::Register_RESHAPE());
-    AddBuiltin(tflite::BuiltinOperator_AVERAGE_POOL_2D,
-               tflite::ops::builtin::Register_AVERAGE_POOL_2D(),
-               /* min_version */ 1,
-               /* max_version */ 3);
-    AddBuiltin(tflite::BuiltinOperator_MAX_POOL_2D,
-               tflite::ops::builtin::Register_MAX_POOL_2D(),
-               /* min_version */ 1,
-               /* max_version */ 3);
-    AddBuiltin(tflite::BuiltinOperator_CONV_2D,
-               tflite::ops::builtin::Register_CONV_2D(),
+    AddBuiltin(tflite::BuiltinOperator_SQRT,
+               tflite::ops::builtin::Register_SQRT());
+    AddBuiltin(tflite::BuiltinOperator_SUB,
+               tflite::ops::builtin::Register_SUB(),
                /* min_version = */ 1,
-               /* max_version = */ 4);
-    AddBuiltin(tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
-               tflite::ops::builtin::Register_DEPTHWISE_CONV_2D(),
-               /* min_version = */ 1,
-               /* max_version = */ 5);
+               /* max_version = */ 3);
   }
 };
 
@@ -402,6 +434,89 @@ TEST_P(MLGraphTestTfLite, BuildGraphWithTfliteModel) {
                      .dimensions = {2, 2},
                      .values = {6.0, 8.0, 8.0, 10.0}}}
         .Test(*this, scope);
+  }
+}
+
+template <typename T>
+struct EluTester {
+  OperandInfo<T> input;
+  Vector<T> expected;
+  String error_message;
+
+  void Test(MLGraphTestTfLite& helper,
+            V8TestingScope& scope,
+            MLEluOptions* options = MLEluOptions::Create()) {
+    // Build the graph.
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* output_operand =
+        builder->elu(input_operand, options, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    if (!error_message.empty()) {
+      ASSERT_THAT(graph, testing::IsNull());
+      EXPECT_EQ(build_exception->message(), error_message);
+      return;
+    } else {
+      ASSERT_THAT(graph, testing::NotNull());
+    }
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    ExpectFloatArrayEqual(results, expected);
+  }
+};
+
+TEST_P(MLGraphTestTfLite, EluTest) {
+  MLGraphV8TestingScope scope;
+  {
+    // Test Elu operator with default options.
+    auto* options = MLEluOptions::Create();
+    EluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2, 3},
+                  .values = {0.4301911, 0.54719144, -1.1637765, 0.18390046,
+                             0.58390397, 0.1735679, 0.539724, -0.953514,
+                             -0.59202826, -0.17344485, 0.14395015,
+                             -0.37920907}},
+        .expected = {0.4301911, 0.54719144, -0.6876954670284463, 0.18390046,
+                     0.58390397, 0.1735679, 0.539724, -0.6146155995193658,
+                     -0.44679589568801814, -0.15923648200867868, 0.14395015,
+                     -0.3155974903251695}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test Elu operator for scalar input.
+    auto* options = MLEluOptions::Create();
+    EluTester<float>{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                               .dimensions = {},
+                               .values = {-100}},
+                     .expected = {-1}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test throwing exception because the scalar multiplier is not supported.
+    auto* options = MLEluOptions::Create();
+    options->setAlpha(0.2);
+    EluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {10, 5, -100, 0}},
+        .error_message =
+            "Setting a custom alpha is not supported in tflite schema."}
+        .Test(*this, scope, options);
   }
 }
 

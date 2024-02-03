@@ -1232,7 +1232,7 @@ void PaymentRequest::OnUpdatePaymentDetails(
   }
 
   if (!options_->requestShipping()) {
-    validated_details->shipping_options = absl::nullopt;
+    validated_details->shipping_options = std::nullopt;
   }
 
   if (is_waiting_for_show_promise_to_resolve_) {
@@ -1391,7 +1391,7 @@ PaymentRequest::PaymentRequest(
   if (options_->requestShipping()) {
     shipping_type_ = options_->shippingType();
   } else {
-    validated_details->shipping_options = absl::nullopt;
+    validated_details->shipping_options = std::nullopt;
   }
 
   DCHECK(shipping_type_.IsNull() || shipping_type_ == "shipping" ||

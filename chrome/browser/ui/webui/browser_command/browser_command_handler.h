@@ -93,6 +93,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual bool TutorialServiceExists();
   virtual void NavigateToEnhancedProtectionSetting();
   virtual void OpenPasswordManager();
+  virtual void OpenAISettings();
   void StartTabGroupTutorial();
   void OpenNTPAndStartCustomizeChromeTutorial();
   void StartPasswordManagerTutorial();

@@ -449,15 +449,13 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
   std::string user_policy_payload =
       fake_dmserver.policy_storage()->GetPolicyPayload("google/chromeos/user",
                                                        "");
-  std::string user_policy_output;
-  base::Base64Encode(user_policy_payload, &user_policy_output);
+  std::string user_policy_output = base::Base64Encode(user_policy_payload);
   EXPECT_EQ(user_policy_output, "uhMCEAE=");
 
   std::string device_policy_payload =
       fake_dmserver.policy_storage()->GetPolicyPayload("google/chromeos/device",
                                                        "");
-  std::string device_policy_output;
-  base::Base64Encode(device_policy_payload, &device_policy_output);
+  std::string device_policy_output = base::Base64Encode(device_policy_payload);
   EXPECT_EQ(device_policy_output,
             "qgFSCikSJWRlZmF1bHRNZ3NTZXRCeVRhc3RAbWFuYWdlZGNocm9tZS5jb20YABIlZG"
             "VmYXVsdE1nc1NldEJ5VGFzdEBtYW5hZ2VkY2hyb21lLmNvbQ==");
@@ -465,8 +463,8 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
   std::string publicaccount_policy_payload =
       fake_dmserver.policy_storage()->GetPolicyPayload(
           "google/chromeos/publicaccount", "accountid@managedchrome.com");
-  std::string public_policy_output;
-  base::Base64Encode(publicaccount_policy_payload, &public_policy_output);
+  std::string public_policy_output =
+      base::Base64Encode(publicaccount_policy_payload);
   EXPECT_EQ(public_policy_output,
             "ojCsARKpAXsiaGFzaCI6IjdhMDUyYzVlNGYyM2MxNTk2NjgxNDhkZjJhM2MyMDJiZW"
             "Q0ZDY1NzQ5Y2FiNWVjZDBmYTdkYjIxMWMxMmEzYjgiLCJ1cmwiOiJodHRwczovL3N0"

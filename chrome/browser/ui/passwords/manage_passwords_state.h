@@ -49,6 +49,10 @@ class ManagePasswordsState {
   void OnPendingPassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
 
+  // Move to PASSWORD_STORE_CHANGED_BUBBLE_STATE.
+  void OnDefaultStoreChanged(
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
+
   // Move to PENDING_PASSWORD_UPDATE_STATE.
   void OnUpdatePassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
@@ -92,7 +96,7 @@ class ManagePasswordsState {
   // Move to KEYCHAIN_ERROR_STATE.
   void OnKeychainError();
 
-  // Move to CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE. Triggers a bubble to move the
+  // Move to MOVE_CREDENTIAL_AFTER_LOG_IN_STATE. Triggers a bubble to move the
   // just submitted form to the user's account store.
   void OnPasswordMovable(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move);
@@ -130,6 +134,15 @@ class ManagePasswordsState {
     credentials_callback_ = std::move(callback);
   }
 
+  password_manager::PasswordForm* selected_password() const {
+    return selected_password_.get();
+  }
+  void set_selected_password(
+      std::unique_ptr<password_manager::PasswordForm> form) {
+    selected_password_ = std::move(form);
+  }
+  void clear_selected_password() { selected_password_.reset(); }
+
   bool auth_for_account_storage_opt_in_failed() const {
     return auth_for_account_storage_opt_in_failed_;
   }
@@ -158,6 +171,9 @@ class ManagePasswordsState {
 
   // Contains the password that was submitted.
   std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager_;
+
+  // Contains password selected for moving to the account.
+  std::unique_ptr<password_manager::PasswordForm> selected_password_;
 
   // Contains all the current forms.
   std::vector<std::unique_ptr<password_manager::PasswordForm>>

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/big_endian.h"
@@ -14,7 +16,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
@@ -190,7 +191,7 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
     return nullptr;
   }
 
-  absl::optional<base::Value> data = base::JSONReader::Read(token_payload);
+  std::optional<base::Value> data = base::JSONReader::Read(token_payload);
   if (!data || !data->is_dict()) {
     return nullptr;
   }

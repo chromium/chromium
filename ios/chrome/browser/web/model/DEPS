@@ -25,7 +25,7 @@ include_rules = [
   "+ios/chrome/browser/permissions/model/permissions_tab_helper.h",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prerender/model",
-  "+ios/chrome/browser/promos_manager",
+  "+ios/chrome/browser/promos_manager/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/rlz",
   "+ios/chrome/browser/safe_browsing/model",

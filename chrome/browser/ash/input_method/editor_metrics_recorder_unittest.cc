@@ -178,7 +178,6 @@ INSTANTIATE_TEST_SUITE_P(
          EditorTone::kFreeformRewrite,
          /*number_of_characters=*/1,
          /*tone_string=*/"FreeformRewrite"},
-
     }),
     [](const testing::TestParamInfo<CharectersInsertedCase> info) {
       return info.param.test_name;
@@ -263,6 +262,64 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                          [](const testing::TestParamInfo<SetToneCase> info) {
                            return info.param.test_name;
                          });
+
+TEST_F(EditorMetricsRecorderTest, WriteServerResponseMetrics) {
+  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kWrite);
+  metrics_recorder.SetTone(EditorTone::kUnset);
+
+  metrics_recorder.LogLengthOfLongestResponseFromServer(100);
+
+  histogram_tester_.ExpectUniqueSample(
+      base::StrCat({"InputMethod.Manta.Orca.LengthOfLongestResponse.Write"}),
+      100, 1);
+}
+
+struct ServerResponseRewriteCase {
+  std::string test_name;
+  EditorTone tone;
+  int number_of_characters;
+  std::string expected_tone_string;
+};
+
+class RewriteServerResponseMetricsTest
+    : public EditorMetricsRecorderTest,
+      public testing::WithParamInterface<ServerResponseRewriteCase> {};
+
+TEST_P(RewriteServerResponseMetricsTest, RewriteServerResponseMetrics) {
+  const ServerResponseRewriteCase& test_case = GetParam();
+
+  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kRewrite);
+  metrics_recorder.SetTone(test_case.tone);
+
+  metrics_recorder.LogLengthOfLongestResponseFromServer(
+      test_case.number_of_characters);
+
+  histogram_tester_.ExpectUniqueSample(
+      "InputMethod.Manta.Orca.LengthOfLongestResponse.Rewrite",
+      test_case.number_of_characters, 1);
+  histogram_tester_.ExpectUniqueSample(
+      base::StrCat({"InputMethod.Manta.Orca.LengthOfLongestResponse.",
+                    test_case.expected_tone_string}),
+      test_case.number_of_characters, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    RewriteServerResponseMetricsTests,
+    RewriteServerResponseMetricsTest,
+    testing::ValuesIn<ServerResponseRewriteCase>({
+        {"Elaborate", EditorTone::kElaborate,
+         /*number_of_characters=*/100,
+         /*tone_string=*/"Elaborate"},
+        {"Shorten", EditorTone::kShorten,
+         /*number_of_characters=*/200,
+         /*tone_string=*/"Shorten"},
+        {"Formalize", EditorTone::kFormalize,
+         /*number_of_characters=*/300,
+         /*tone_string=*/"Formalize"},
+    }),
+    [](const testing::TestParamInfo<ServerResponseRewriteCase> info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 }  // namespace ash::input_method

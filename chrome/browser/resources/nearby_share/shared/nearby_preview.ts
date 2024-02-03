@@ -7,13 +7,13 @@
  * sent to a remote device. The data might be some plain text, a URL or a file.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icons.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './nearby_shared_icons.html.js';
 import './nearby_shared_share_type_icons.html.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

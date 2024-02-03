@@ -10,6 +10,7 @@
 #include <IOKit/IOReturn.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_mac.h"
 #include "services/device/utils/mac_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -175,20 +175,20 @@ void UsbServiceMac::AddDevice(io_service_t device) {
   if (IORegistryEntryGetRegistryEntryID(device, &entry_id) != kIOReturnSuccess)
     return;
 
-  absl::optional<uint8_t> property_uint8 =
+  std::optional<uint8_t> property_uint8 =
       GetIntegerProperty<uint8_t>(device, CFSTR("PortNum"));
   if (!property_uint8.has_value())
     return;
   uint8_t port_number = property_uint8.value();
 
-  absl::optional<uint16_t> property_uint16 =
+  std::optional<uint16_t> property_uint16 =
       GetIntegerProperty<uint16_t>(device, CFSTR("bcdUSB"));
   uint16_t usb_version;
   if (!property_uint16.has_value())
     return;
   usb_version = property_uint16.value();
 
-  absl::optional<std::u16string> property_string16 =
+  std::optional<std::u16string> property_string16 =
       GetStringProperty<std::u16string>(device, CFSTR(kUSBVendorString));
   std::u16string manufacturer_string;
   if (property_string16.has_value())

@@ -92,6 +92,7 @@ export const SELECTOR_MAP = {
   settingsHeader: '#settings-header',
   shutter: '.shutter',
   switchDeviceButton: 'switch-device-button',
+  snackbar: '.snackbar',
   tiltDownButton: '#tilt-down',
   tiltUpButton: '#tilt-up',
   timeLapseRecordingOption:

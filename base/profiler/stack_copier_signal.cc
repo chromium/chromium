@@ -15,6 +15,7 @@
 #include <cstring>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
@@ -99,33 +100,39 @@ class ScopedEventSignaller {
   ~ScopedEventSignaller() { event_->Signal(); }
 
  private:
-  raw_ptr<AsyncSafeWaitableEvent> event_;
+  // RAW_PTR_EXCLUSION: raw_ptr<> is not safe within a signal handler.
+  RAW_PTR_EXCLUSION AsyncSafeWaitableEvent* event_;
 };
 
 // Struct to store the arguments to the signal handler.
 struct HandlerParams {
   uintptr_t stack_base_address;
 
+  // RAW_PTR_EXCLUSION: raw_ptr<> is not safe within a signal handler,
+  // as the target thread could be in the middle of an allocation and
+  // PartitionAlloc's external invariants might be violated. So all
+  // the pointers below are C pointers.
+
   // The event is signalled when signal handler is done executing.
-  raw_ptr<AsyncSafeWaitableEvent> event;
+  RAW_PTR_EXCLUSION AsyncSafeWaitableEvent* event;
 
   // Return values:
 
   // Successfully copied the stack segment.
-  raw_ptr<bool> success;
+  RAW_PTR_EXCLUSION bool* success;
 
   // The thread context of the leaf function.
-  raw_ptr<mcontext_t> context;
+  RAW_PTR_EXCLUSION mcontext_t* context;
 
   // Buffer to copy the stack segment.
-  raw_ptr<StackBuffer> stack_buffer;
-  raw_ptr<const uint8_t*> stack_copy_bottom;
+  RAW_PTR_EXCLUSION StackBuffer* stack_buffer;
+  RAW_PTR_EXCLUSION const uint8_t** stack_copy_bottom;
 
   // The timestamp when the stack was copied.
-  raw_ptr<absl::optional<TimeTicks>> maybe_timestamp;
+  RAW_PTR_EXCLUSION absl::optional<TimeTicks>* maybe_timestamp;
 
   // The delegate provided to the StackCopier.
-  raw_ptr<StackCopier::Delegate> stack_copier_delegate;
+  RAW_PTR_EXCLUSION StackCopier::Delegate* stack_copier_delegate;
 };
 
 // Pointer to the parameters to be "passed" to the CopyStackSignalHandler() from

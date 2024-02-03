@@ -66,9 +66,11 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST(WaylandExchangeDataProviderTest, AddAndExtractDataTransferEndpoint) {
   std::string kExpectedEncodedDte =
-      R"({"endpoint_type":"url","url":"https://www.google.com/"})";
-  const DataTransferEndpoint expected_dte =
-      ui::DataTransferEndpoint(GURL("https://www.google.com"));
+      "{\"endpoint_type\":\"url\","
+      "\"off_the_record\":false,"
+      "\"url\":\"https://www.google.com/\"}";
+  const DataTransferEndpoint expected_dte = ui::DataTransferEndpoint(
+      GURL("https://www.google.com"), /*off_the_record=*/false);
 
   WaylandExchangeDataProvider provider;
   std::string extracted;

@@ -31,8 +31,8 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -280,7 +280,12 @@ void AutofillPopupControllerImpl::Show(
     // event when suggestions changed.
     FireControlsChangedEvent(true);
   }
-  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
+
+  time_view_shown_ = base::FeatureList::IsEnabled(
+                         features::kAutofillPopupImprovedTimingChecksV2)
+                         ? NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+                               kIgnoreEarlyClicksOnPopupDuration)
+                         : NextIdleTimeTicks::CaptureNextIdleTimeTicks();
 
   if (IsRootPopup()) {
     // We may already be observing from a previous `Show` call.
@@ -746,10 +751,6 @@ void AutofillPopupControllerImpl::SelectSuggestion(int index) {
 
 void AutofillPopupControllerImpl::UnselectSuggestion() {
   delegate_->ClearPreviewedForm();
-}
-
-PopupType AutofillPopupControllerImpl::GetPopupType() const {
-  return delegate_->GetPopupType();
 }
 
 FillingProduct AutofillPopupControllerImpl::GetMainFillingProduct() const {

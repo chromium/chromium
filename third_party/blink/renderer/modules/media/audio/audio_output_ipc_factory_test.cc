@@ -54,7 +54,7 @@ class FakeRemoteFactory
   void RequestDeviceAuthorization(
       mojo::PendingReceiver<media::mojom::blink::AudioOutputStreamProvider>
           stream_provider,
-      const absl::optional<base::UnguessableToken>& session_id,
+      const std::optional<base::UnguessableToken>& session_id,
       const String& device_id,
       RequestDeviceAuthorizationCallback callback) override {
     std::move(callback).Run(

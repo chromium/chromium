@@ -49,9 +49,9 @@ namespace blink {
 
 namespace {
 
-std::vector<absl::optional<std::u16string>> ToOptionalString16Vector(
+std::vector<std::optional<std::u16string>> ToOptionalString16Vector(
     base::span<const String> input) {
-  std::vector<absl::optional<std::u16string>> output;
+  std::vector<std::optional<std::u16string>> output;
   output.reserve(input.size());
   for (const auto& i : input) {
     output.emplace_back(WebString::ToOptionalString16(i));
@@ -182,26 +182,26 @@ void HistoryItem::SetReferrerPolicy(network::mojom::ReferrerPolicy policy) {
 
 void HistoryItem::SetVisualViewportScrollOffset(const ScrollOffset& offset) {
   if (!view_state_)
-    view_state_ = absl::make_optional<ViewState>();
+    view_state_ = std::make_optional<ViewState>();
   view_state_->visual_viewport_scroll_offset_ = offset;
 }
 
 void HistoryItem::SetScrollOffset(const ScrollOffset& offset) {
   if (!view_state_)
-    view_state_ = absl::make_optional<ViewState>();
+    view_state_ = std::make_optional<ViewState>();
   view_state_->scroll_offset_ = offset;
 }
 
 void HistoryItem::SetPageScaleFactor(float scale_factor) {
   if (!view_state_)
-    view_state_ = absl::make_optional<ViewState>();
+    view_state_ = std::make_optional<ViewState>();
   view_state_->page_scale_factor_ = scale_factor;
 }
 
 void HistoryItem::SetScrollAnchorData(
     const ScrollAnchorData& scroll_anchor_data) {
   if (!view_state_)
-    view_state_ = absl::make_optional<ViewState>();
+    view_state_ = std::make_optional<ViewState>();
   view_state_->scroll_anchor_data_ = scroll_anchor_data;
 }
 
@@ -341,7 +341,7 @@ PageState HistoryItem::ToPageState() const {
   return PageState::CreateFromEncodedData(encoded_data);
 }
 
-std::vector<absl::optional<std::u16string>>
+std::vector<std::optional<std::u16string>>
 HistoryItem::GetReferencedFilePathsForSerialization() const {
   HashSet<String> file_paths;
 
@@ -362,7 +362,7 @@ HistoryItem::GetReferencedFilePathsForSerialization() const {
     file_paths.insert(path);
   }
 
-  std::vector<absl::optional<std::u16string>> result;
+  std::vector<std::optional<std::u16string>> result;
   result.reserve(file_paths.size());
   base::ranges::transform(file_paths, std::back_inserter(result),
                           WebString::ToOptionalString16);

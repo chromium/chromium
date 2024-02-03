@@ -636,8 +636,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.CategoryCountForMinWeightThreshold"
+    units="counts" expires_after="2024-06-30">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of categories in a cluster that met the minimum threshold to
+    be considered relevant for generating category frequency related metrics
+    used for ranking clusters. Logged at module UI creation time when
+    determining the data to display the module. Only logged on the 1P NTP and
+    when the history clusters module is enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.HistoryClusters.DismissReason"
-    enum="NTPHistoryClustersDismissReason" expires_after="2024-05-26">
+    enum="NTPHistoryClustersDismissReason" expires_after="2024-07-28">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -700,7 +713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.HistoryClusters.ImageDisplayState"
-    enum="NTPHistoryClustersImageDisplayState" expires_after="2024-05-26">
+    enum="NTPHistoryClustersImageDisplayState" expires_after="2024-07-28">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -850,6 +863,23 @@ chromium-metrics-reviews@google.com.
     by -100 to make it between 0 and 100 and then round that value to make it an
     integer.
   </summary>
+</histogram>
+
+<histogram
+    name="NewTabPage.HistoryClusters.SegmentationPlatformClientReadyAt{State}"
+    enum="Boolean" expires_after="2024-06-30">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs whether the segmentation platform client was ready when attempting to
+    record a module related event. Logged at a module lifecycle stage, such as
+    when showing or interacting with modules. Only logged on the 1P NTP and when
+    NTP modules are enabled.
+  </summary>
+  <token key="State">
+    <variant name="Seen" summary="module seen state"/>
+    <variant name="Used" summary="module used state"/>
+  </token>
 </histogram>
 
 <histogram name="NewTabPage.Images.ShownTime{ImageType}" units="ms"
@@ -1250,7 +1280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.InfoButtonClicked" enum="NtpModules"
-    expires_after="2024-03-17">
+    expires_after="2024-07-28">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1263,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.InstanceCount" units="count"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>danpeng@google.com</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1327,11 +1357,12 @@ chromium-metrics-reviews@google.com.
     <variant name="photos" summary="the Photos module"/>
     <variant name="recipe_tasks" summary="the Recipe module"/>
     <variant name="shopping_tasks" summary="the Shopping Tasks module"/>
+    <variant name="tab_resumption" summary="the Tab Resumption module"/>
   </token>
 </histogram>
 
 <histogram name="NewTabPage.Modules.Restored" units="count"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1340,18 +1371,6 @@ chromium-metrics-reviews@google.com.
     restores a previously dismissed module via the toast on the New Tab Page.
     Every restoral emits a 1 which has no inherent meaning aside from a restoral
     occurred.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Modules.SegmentationPlatformClientReady"
-    enum="Boolean" expires_after="2024-06-30">
-  <owner>romanarora@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs whether the segmentation platform client was ready when attempting to
-    record a module related event. Logged at a module lifecycle stage, such as
-    when showing or interacting with modules. Only logged on the 1P NTP and when
-    NTP modules are enabled.
   </summary>
 </histogram>
 
@@ -1733,6 +1752,29 @@ chromium-metrics-reviews@google.com.
 
     Recorded every time the user selects the tile to initiate navigation, even
     if the navigation could not be completed (eg. target site did not load).
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.TabResumption.ClickIndex" units="count"
+    expires_after="2024-06-30">
+  <owner>mfacey@google.com</owner>
+  <owner>romanarora@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the position of the tab that was clicked on the NTP Tab Resumption
+    module. Only logged on the 1P NTP and when the Tab Resumption module is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.TabResumption.TimeElapsedSinceLastVisit" units="ms"
+    expires_after="2024-06-30">
+  <owner>mfacey@google.com</owner>
+  <owner>romanarora@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the time elapsed since the tab that was clicked was last visited.
+    Only logged on the 1P NTP and when the Tab Resumption module is enabled.
   </summary>
 </histogram>
 

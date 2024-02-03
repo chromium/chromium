@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -518,7 +519,9 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   // Show Connect To OneDrive dialog only when mounting ODFS for the first time.
   // There will already a ODFS mount if the user is requesting a new mount to
   // replace the unauthenticated one.
-  if (chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile) &&
+  if (ash::cloud_upload::
+          IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
+              profile) &&
       params->provider_id == extension_misc::kODFSExtensionId &&
       first_file_system) {
     // Get Files App window, if it exists.

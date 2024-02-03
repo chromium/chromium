@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Εσωτερικό σφάλμα</translation>
 <translation id="1124772482545689468">Χρήστης</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">πολλαπλασιάστε</translation>
 <translation id="1145018782460575098">Το παράθυρο Ενημέρωσης υλικολογισμικού για εξωτερικές συσκευές είναι ανοικτό. <ph name="NUM_UPDATES" /> διαθέσιμες ενημερώσεις.</translation>
 <translation id="1145516343487477149">Βρείτε άρθρα βοήθειας και απαντήσεις σε συνήθεις ερωτήσεις του Chromebook</translation>
 <translation id="1154390310959620237">Μπορείτε να προσαρμόσετε μόνο 5 συντομεύσεις. Διαγράψτε μια συντόμευση, για να προσθέσετε μια νέα.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Προσαρμογή στην περιοχή σάρωσης</translation>
 <translation id="1367951781824006909">Επιλογή αρχείου</translation>
+<translation id="1371650399987522809">Σχόλια για την ταπετσαρία με την υποστήριξη του Google AI</translation>
 <translation id="1387854245479784695">Αυτή είναι μια αθροιστική προβολή όλων των πυρήνων</translation>
 <translation id="1394661041439318933">Η μπαταρία θήκης της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Η πύλη λαμβάνει ping</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Επιφάνεια Αφής</translation>
 <translation id="1561927818299383735">χρώμα φωτισμού στο πίσω μέρος</translation>
 <translation id="1565038567006703504">Αδυναμία ενημέρωσης <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">διαιρέστε</translation>
 <translation id="1567064801249837505">Λευκώματα</translation>
 <translation id="1572585716423026576">Ορισμός ως ταπετσαρία</translation>
 <translation id="1578784163189013834">Επιλέξτε το παρασκήνιο της προφύλαξης οθόνης</translation>
 <translation id="160633243685262989">Εικόνα προεπισκόπησης</translation>
 <translation id="1611649489706141841">προώθηση</translation>
 <translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Δημιουργία εικόνων…</translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
 <translation id="1626590945318984973">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χωρίς να χρησιμοποιήσετε τα πλήκτρα λειτουργιών και <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Φόρτωση</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Εκφόρτιση <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="2880569433548999039">Προστασία οθόνης Κίνηση των σύννεφων</translation>
 <translation id="2926057806159140518">Εισαγάγετε το όνομα χρήστη και τον κωδικό πρόσβασής σας ή σαρώστε τον κωδικό QR σας</translation>
+<translation id="2938573842839598578">Για ένα αποτέλεσμα κατά προσέγγιση, <ph name="OPERATOR_TEXT" /> την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Δεν είναι δυνατή η δοκιμή της συσκευής. Ανοίξτε ξανά το καπάκι για δοκιμή.</translation>
 <translation id="2941112035454246133">Χαμηλή</translation>
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Ενημέρωση ChromeOS</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
+<translation id="3547264467365135390">Τύπος</translation>
 <translation id="3557205324756024651">Τοπική ταυτότητα (προαιρετικό)</translation>
 <translation id="3565064564551103223">IP που επιτρέπονται</translation>
 <translation id="3569407787324516067">Προφύλαξη οθόνης</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7180865173735832675">Προσαρμογή</translation>
 <translation id="7184043045742675738">Κάντε κλικ σε οποιοδήποτε πλήκτρο για να προσαρμόσετε το κουμπί. Επανατοποθετήστε το πλήκτρο χρησιμοποιώντας το ποντίκι ή τα πλήκτρα βέλους.</translation>
+<translation id="7206979415662233817">Όροι Παροχής Υπηρεσιών</translation>
 <translation id="7212547870105584639">Διαχείριση ρυθμίσεων APN δικτύου. Τα APN δημιουργούν μια σύνδεση μεταξύ ενός δικτύου κινητής τηλεφωνίας και του διαδικτύου. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ενημερώσεις υλικολογισμικού για εξωτερικές συσκευές</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">χρώμα πληκτρολογίου</translation>
 <translation id="7317831949569936035">Εγγραφή του σχολείου</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Πρέπει να είστε τουλάχιστον 18 ετών και να συμφωνήσετε ότι η από μέρους σας χρήση των ταπετσαριών AI υπόκειται στους <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> και στους <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Πρόσθετους Όρους Παροχής Υπηρεσιών Generative AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Μπορείτε να δημιουργήσετε ταπετσαρίες με AI μόνο για προσωπική και μη εμπορική χρήση. Όταν λαμβάνετε βοήθεια για τις ταπετσαρίες, το κείμενο αποστέλλεται στους διακομιστές του Google AI για τη δημιουργία προτάσεων ταπετσαριών σύμφωνα με την <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />. <ph name="RESULT_TEXT" />. Πατήστε το πλήκτρο αναζήτησης και το πλήκτρο διαστήματος, για να δείτε το αποτέλεσμα στην Αναζήτηση Google.</translation>
 <translation id="7343649194310845056">Συσκευές δικτύου</translation>
 <translation id="7353413232959255829">Αποτέλεσμα αναζήτησης <ph name="LIST_POSITION" /> από <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Πατήστε Enter για πλοήγηση στη συντόμευση.</translation>

@@ -125,7 +125,7 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // Force re-layout of the entire dialog client view, which includes the sheet
   // content as well as the button row on the bottom.
   // TODO(ellyjones): Why is this necessary?
-  GetWidget()->GetRootView()->Layout();
+  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 
   // The accessibility title is also sourced from the |sheet_|'s step title.
   GetWidget()->UpdateWindowTitle();

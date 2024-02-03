@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(OobeTest, Accelerator) {
 
   ui::test::EventGenerator generator(login_window->GetRootWindow());
 
-  generator.PressKey(ui::VKEY_E, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_E, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 }
 

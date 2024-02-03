@@ -68,4 +68,11 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
             @NonNull PropertyKey propertyKey) {
         PriceChangeModuleViewBinder.bind(model, view, propertyKey);
     }
+
+    @Override
+    public boolean isEligible() {
+        assert mProfileSupplier.hasValue();
+
+        return PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfileSupplier.get());
+    }
 }

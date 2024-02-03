@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -29,11 +30,12 @@
 
 namespace {
 
-constexpr int kErrorMessageViewSize = 40;
-constexpr int kErrorMessageHorizontalMargin = 16;
-constexpr int kErrorMessageBottomMargin = 12;
-constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(10, 0, 10, 16);
-constexpr gfx::Insets kLabelInsets = gfx::Insets::VH(10, 16);
+constexpr int kErrorMessageRoundedCornerRadius = 13;
+constexpr int kErrorMessageViewSize = 34;
+constexpr int kErrorMessageHorizontalMargin = 4;
+constexpr int kErrorMessageBottomMargin = 4;
+constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(8, 4, 8, 10);
+constexpr gfx::Insets kLabelInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
 }  // namespace
 
@@ -50,7 +52,7 @@ class DismissErrorLabelButton : public views::LabelButton {
         base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageButton));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
     SetProperty(views::kMarginsKey, kButtonInsets);
-    SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnError);
+    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
     label()->SetAutoColorReadabilityEnabled(false);
@@ -64,8 +66,11 @@ END_METADATA
 GlanceablesErrorMessageView::GlanceablesErrorMessageView(
     views::Button::PressedCallback callback,
     const std::u16string& error_message) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysError, kErrorMessageViewSize / 2));
+  SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));
+  SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemBase));
 
   const auto* const typography_provider = TypographyProvider::Get();
 
@@ -73,11 +78,11 @@ GlanceablesErrorMessageView::GlanceablesErrorMessageView(
       views::Builder<views::Label>()
           .SetID(base::to_underlying(
               GlanceablesViewId::kGlanceablesErrorMessageLabel))
-          .SetEnabledColorId(cros_tokens::kCrosSysOnError)
+          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
           .SetFontList(typography_provider->ResolveTypographyToken(
-              TypographyToken::kCrosButton2))
+              TypographyToken::kCrosAnnotation1))
           .SetLineHeight(typography_provider->ResolveLineHeight(
-              TypographyToken::kCrosButton2))
+              TypographyToken::kCrosAnnotation1))
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetText(error_message)
           .SetProperty(views::kMarginsKey, kLabelInsets)

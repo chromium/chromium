@@ -99,7 +99,6 @@ constexpr char kOsName[] = "fake-os-name";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 constexpr char kIdToken[] = "id_token";
-constexpr char kProfileId[] = "profile_id";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
@@ -857,7 +856,6 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
       em::DeviceRegisterRequest::USER,
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   client_->RegisterWithOidcResponse(register_user, kOAuthToken, kIdToken,
-                                    kProfileId,
                                     std::string() /* no client_id*/);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
@@ -897,7 +895,6 @@ TEST_F(CloudPolicyClientTest, OidcRegistrationFailure) {
       em::DeviceRegisterRequest::USER,
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   client_->RegisterWithOidcResponse(register_user, kOAuthToken, kIdToken,
-                                    kProfileId,
                                     std::string() /* no client_id*/);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,

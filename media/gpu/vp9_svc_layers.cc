@@ -39,9 +39,7 @@ struct FrameConfig {
   // totally uses up to 6 reference frame slots. SL0 uses the first two (0, 1)
   // slots, SL1 uses middle two (2, 3) slots, and SL2 uses last two (4, 5)
   // slots.
-  std::vector<uint8_t> GetRefFrameIndices(
-      size_t spatial_idx,
-      SVCInterLayerPredMode inter_layer_pred) const {
+  std::vector<uint8_t> GetRefFrameIndices(size_t spatial_idx) const {
     std::vector<uint8_t> indices;
     for (size_t i = 0; i < kMaxNumUsedRefFramesEachSpatialLayer; ++i) {
       if (buffer_flags_[i] & FrameFlags::kReference) {
@@ -163,7 +161,9 @@ bool VP9SVCLayers::IsKeyFrame() const {
   if (config_.inter_layer_pred == SVCInterLayerPredMode::kOnKeyPic) {
     return spatial_idx_ == 0;
   }
-  CHECK_EQ(config_.inter_layer_pred, SVCInterLayerPredMode::kOff);
+
+  CHECK(config_.active_spatial_layer_resolutions.size() == 1 ||
+        config_.inter_layer_pred == SVCInterLayerPredMode::kOff);
   return true;
 }
 
@@ -260,8 +260,7 @@ void VP9SVCLayers::FillMetadataForNonFirstFrame(
     refresh_frame_flags |= 1 << i;
   }
 
-  reference_frame_indices =
-      frame_config.GetRefFrameIndices(spatial_idx_, config_.inter_layer_pred);
+  reference_frame_indices = frame_config.GetRefFrameIndices(spatial_idx_);
 
   metadata.inter_pic_predicted = !reference_frame_indices.empty();
   metadata.temporal_up_switch = frame_config.temporal_up_switch();

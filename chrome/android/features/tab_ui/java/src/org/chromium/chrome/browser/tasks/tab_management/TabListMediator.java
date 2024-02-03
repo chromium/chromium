@@ -13,11 +13,13 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -69,8 +71,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
@@ -94,10 +96,12 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -533,8 +537,8 @@ class TabListMediator {
 
     private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
 
-    private final TabGroupModelFilter.Observer mTabGroupObserver =
-            new EmptyTabGroupModelFilterObserver() {
+    private final TabGroupModelFilterObserver mTabGroupObserver =
+            new TabGroupModelFilterObserver() {
                 @Override
                 public void didMoveWithinGroup(
                         Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
@@ -1701,6 +1705,9 @@ class TabListMediator {
                         .with(TabProperties.ACCESSIBILITY_DELEGATE, mAccessibilityDelegate)
                         .with(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false)
                         .with(CARD_TYPE, TAB)
+                        .with(
+                                TabProperties.QUICK_DELETE_ANIMATION_STATUS,
+                                ClosableTabGridView.QuickDeleteAnimationStatus.TAB_RESTORE)
                         .build();
 
         tabInfo.set(
@@ -2178,19 +2185,62 @@ class TabListMediator {
      * Prepare and run the Quick Delete animation on the tab list.
      *
      * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     * @param tabs The tabs to fade with the animation. These tabs will get closed after the
+     *     animation is complete.
      * @param recyclerView The {@link TabListRecyclerView} that is showing the tab list UI.
      */
     public void showQuickDeleteAnimation(
-            @NonNull Runnable onAnimationEnd, @NonNull TabListRecyclerView recyclerView) {
+            @NonNull Runnable onAnimationEnd,
+            List<Tab> tabs,
+            @NonNull TabListRecyclerView recyclerView) {
         recyclerView.setBlockTouchInput(true);
         Drawable originalForeground = recyclerView.getForeground();
 
+        HashMap<Integer, List<Integer>> tabIndexesToClose = new HashMap<>();
+        PriorityQueue<Integer> tabOrderForFading = new PriorityQueue<>(Collections.reverseOrder());
+
+        // Prepare the order of tabs to be hidden with the animation.
+        for (Tab tab : tabs) {
+            int index = mModel.indexFromId(tab.getId());
+            Rect tabRect = recyclerView.getRectOfCurrentThumbnail(index, tab.getId());
+
+            // Ignore tabs outside the screen view.
+            if (tabRect == null) continue;
+
+            int bottom = tabRect.bottom;
+            mModel.get(index)
+                    .model
+                    .set(
+                            TabProperties.QUICK_DELETE_ANIMATION_STATUS,
+                            ClosableTabGridView.QuickDeleteAnimationStatus.TAB_PREPARE);
+
+            if (tabIndexesToClose.containsKey(bottom)) {
+                tabIndexesToClose.get(bottom).add(index);
+            } else {
+                tabOrderForFading.add(bottom);
+                tabIndexesToClose.put(bottom, new ArrayList<>(List.of(index)));
+            }
+        }
+
         int tabGridHeight = recyclerView.getHeight();
+        int intersectionHeight =
+                QuickDeleteAnimationGradientDrawable.getAnimationsIntersectionHeight(tabGridHeight);
         QuickDeleteAnimationGradientDrawable gradientDrawable =
                 QuickDeleteAnimationGradientDrawable.createQuickDeleteWipeAnimationDrawable(
                         mContext, tabGridHeight);
 
-        Animator wipeAnimation = gradientDrawable.createWipeAnimator(tabGridHeight);
+        ObjectAnimator wipeAnimation = gradientDrawable.createWipeAnimator(tabGridHeight);
+
+        wipeAnimation.addUpdateListener(
+                valueAnimator -> {
+                    if (tabOrderForFading.isEmpty()) return;
+                    float value = (float) valueAnimator.getAnimatedValue();
+                    int bottomVal = tabOrderForFading.peek();
+                    if (bottomVal >= Math.round(value) + intersectionHeight) {
+                        startQuickDeleteFadeAnimationForTabs(tabIndexesToClose.get(bottomVal));
+                        tabOrderForFading.poll();
+                    }
+                });
 
         wipeAnimation.addListener(
                 new AnimatorListenerAdapter() {
@@ -2204,5 +2254,15 @@ class TabListMediator {
 
         recyclerView.setForeground(gradientDrawable);
         wipeAnimation.start();
+    }
+
+    private void startQuickDeleteFadeAnimationForTabs(List<Integer> indexes) {
+        for (int index : indexes) {
+            mModel.get(index)
+                    .model
+                    .set(
+                            TabProperties.QUICK_DELETE_ANIMATION_STATUS,
+                            ClosableTabGridView.QuickDeleteAnimationStatus.TAB_HIDE);
+        }
     }
 }

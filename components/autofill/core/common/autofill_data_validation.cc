@@ -4,9 +4,11 @@
 
 #include "components/autofill/core/common/autofill_data_validation.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -42,6 +44,12 @@ bool IsValidFormFieldData(const FormFieldData& field) {
 }
 
 bool IsValidFormData(const FormData& form) {
+  if (base::flat_set<FieldGlobalId> field_ids =
+          base::MakeFlatSet<FieldGlobalId>(form.fields, {},
+                                           &FormFieldData::global_id);
+      field_ids.size() != form.fields.size()) {
+    DumpWithoutCrashingForDuplicateIds(form);
+  }
   return IsValidString16(form.name) && IsValidGURL(form.url) &&
          IsValidGURL(form.action) && form.fields.size() <= kMaxListSize &&
          base::ranges::all_of(form.fields, &IsValidFormFieldData);

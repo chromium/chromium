@@ -124,48 +124,5 @@ TEST(ValueResponseConversionTest,
   }
 }
 
-// Convert JSON to an AuthenticatorMakeCredentialResponse successfully.
-TEST(ValueResponseConversionTest,
-     AuthenticatorMakeCredentialResponseFromValueSuccess) {
-  constexpr char kJson[] = R"({
-      "authenticatorData": "EZQijaj9ve79JhvXtllc_XClDXDGQHvPAT3pbU77F94BAAAAAA"
-      })";
-
-  JSONStringValueDeserializer deserializer(kJson);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
-
-  absl::optional<AuthenticatorMakeCredentialResponse> response =
-      AuthenticatorMakeCredentialResponseFromValue(*value);
-  ASSERT_TRUE(response);
-
-  EXPECT_EQ(
-      response->attestation_object.authenticator_data().SerializeToByteArray(),
-      std::vector<uint8_t>(
-          kTestAuthenticatorData,
-          kTestAuthenticatorData + sizeof(kTestAuthenticatorData)));
-}
-
-// Test converting registration response JSON with missing required fields.
-TEST(ValueResponseConversionTest,
-     AuthenticatorMakeCredentialResponseFromValueFailure) {
-  constexpr char kJsonNoAuthenticatorData[] = R"({
-      "clientDataJSON": "test clientDataJSON"
-    })";
-
-  JSONStringValueDeserializer deserializer(kJsonNoAuthenticatorData);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
-
-  absl::optional<AuthenticatorGetAssertionResponse> response =
-      AuthenticatorGetAssertionResponseFromValue(*value);
-  ASSERT_FALSE(response)
-      << "Parsing incorrectly succeeded with no authenticatorData.";
-}
-
 }  // namespace
 }  // namespace device

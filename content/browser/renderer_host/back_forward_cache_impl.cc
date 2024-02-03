@@ -450,8 +450,9 @@ void MarkNoWithMultipleFeatures(BackForwardCacheCanStoreDocumentResult* result,
   BackForwardCacheCanStoreDocumentResult::BlockingDetailsMap map;
   WebSchedulerTrackedFeatures features_added;
   for (const auto& details : rfh->GetBackForwardCacheBlockingDetails()) {
+    CHECK(details->feature.has_value());
     auto feature = static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-        details->feature);
+        details->feature.value());
     // Some features might be recorded but not banned. Do not save the details
     // in this case.
     if (!features.Has(feature)) {

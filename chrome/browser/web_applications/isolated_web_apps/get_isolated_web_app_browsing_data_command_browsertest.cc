@@ -4,11 +4,14 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 
+#include <memory>
+
 #include "base/containers/flat_map.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -34,10 +37,10 @@ using ::testing::UnorderedElementsAre;
 class GetIsolatedWebAppBrowsingDataCommandBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
-  GetIsolatedWebAppBrowsingDataCommandBrowserTest() {
-    isolated_web_app_dev_server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  }
+  GetIsolatedWebAppBrowsingDataCommandBrowserTest()
+      : app_(IsolatedWebAppBuilder(ManifestBuilder())
+                 .AddFolderFromDisk("/", "web_apps/simple_isolated_app")
+                 .BuildAndStartProxyServer()) {}
 
   GetIsolatedWebAppBrowsingDataCommandBrowserTest(
       const GetIsolatedWebAppBrowsingDataCommandBrowserTest&) = delete;
@@ -45,8 +48,8 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
       const GetIsolatedWebAppBrowsingDataCommandBrowserTest&) = delete;
 
  protected:
-  const net::EmbeddedTestServer& isolated_web_app_dev_server() {
-    return *isolated_web_app_dev_server_.get();
+  IsolatedWebAppUrlInfo InstallApp() {
+    return app_->Install(profile()).value();
   }
 
   WebAppProvider& web_app_provider() {
@@ -63,7 +66,7 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
   }
 
  private:
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
+  std::unique_ptr<ScopedProxyIsolatedWebApp> app_;
 };
 
 IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
@@ -78,8 +81,7 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
                        IsolatedWebAppWithoutBrowsingData) {
-  IsolatedWebAppUrlInfo iwa_url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server().GetOrigin());
+  IsolatedWebAppUrlInfo iwa_url_info = InstallApp();
 
   base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
   web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
@@ -91,15 +93,13 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
                        IsolatedWebAppsWithBrowsingData) {
-  IsolatedWebAppUrlInfo iwa1_url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server().GetOrigin());
+  IsolatedWebAppUrlInfo iwa1_url_info = InstallApp();
   content::RenderFrameHost* iwa1_frame = OpenApp(iwa1_url_info.app_id());
   EXPECT_TRUE(
       ExecJs(iwa1_frame, "localStorage.setItem('key', '!'.repeat(100))"));
   FlushLocalStorage(iwa1_frame);
 
-  IsolatedWebAppUrlInfo iwa2_url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server().GetOrigin());
+  IsolatedWebAppUrlInfo iwa2_url_info = InstallApp();
   content::RenderFrameHost* iwa2_frame = OpenApp(iwa2_url_info.app_id());
   EXPECT_TRUE(
       ExecJs(iwa2_frame, "localStorage.setItem('key', '!'.repeat(5000))"));

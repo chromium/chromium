@@ -91,6 +91,6 @@ void RichNudge::VisibilityChanged(views::View* starting_from, bool is_visible) {
   }
 }
 
-BEGIN_METADATA(RichNudge, views::BubbleDialogDelegateView)
+BEGIN_METADATA(RichNudge)
 END_METADATA
 }  // namespace arc::input_overlay

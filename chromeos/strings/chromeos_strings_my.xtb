@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">အမြှောက်</translation>
 <translation id="1145018782460575098">ပြင်ပစက်ပစ္စည်းများအတွက် ဖာမ်းဝဲအပ်ဒိတ်ဝင်းဒိုး ဖွင့်ထားသည်။ <ph name="NUM_UPDATES" /> အပ်ဒိတ်များ ရနိုင်ပါပြီ။</translation>
 <translation id="1145516343487477149">မေးလေ့ရှိသော Chromebook မေးခွန်းများအတွက် အကူအညီပေးဆောင်းပါးနှင့် အဖြေများ ရှာဖွေနိုင်သည်</translation>
 <translation id="1154390310959620237">ဖြတ်လမ်းလင့်ခ် ၅ ခုသာ စိတ်ကြိုက်လုပ်နိုင်သည်။ ဖြတ်လမ်းလင့်ခ်အသစ်ထည့်ရန် လက်ရှိတစ်ခုကို ဖျက်ပါ။</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">စကင်လုပ်မည့်နေရာနှင့် ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="1367951781824006909">ဖိုင်ကို ရွေးရန်</translation>
+<translation id="1371650399987522809">Google AI က ပံ့ပိုးထားသော နောက်ခံအတွက် အကြံပြုချက်</translation>
 <translation id="1387854245479784695">၎င်းသည် core အားလုံး၏ ပေါင်းစည်းဆောင်ရွက်မှု ဖြစ်သည်</translation>
 <translation id="1394661041439318933">ဘူးတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="1397738625398125236">ကွန်ရက်ဂိတ်ဝကို ဆက်သွယ်နိုင်ပါသည်</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">တို့ထိရန် အပြား</translation>
 <translation id="1561927818299383735">နောက်ခံမီးအရောင်</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> အပ်ဒိတ်လုပ်၍ မရပါ</translation>
+<translation id="1566493343215789965">အစား</translation>
 <translation id="1567064801249837505">အယ်လ်ဘမ်များ</translation>
 <translation id="1572585716423026576">နောက်ခံအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="1578784163189013834">စခရင်နားချိန်ပုံ နောက်ခံရွေးရန်</translation>
 <translation id="160633243685262989">ပုံ အစမ်းကြည့်ရှုရန်</translation>
 <translation id="1611649489706141841">ရှေ့သို့</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
+<translation id="1615576200479539465">ပုံများ ထုတ်နေသည်...</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
 <translation id="1626590945318984973">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ လုပ်ဆောင်ချက်နှင့် <ph name="META_KEY" /> ခလုတ်များ မသုံးဘဲ ဖြတ်လမ်းလင့်ခ်အသစ်နှိပ်ပါ။</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားလျော့သွားသည်။</translation>
 <translation id="2880569433548999039">တိမ်များလွှင့်နေသည့် စခရင်နားချိန်ပုံ</translation>
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
+<translation id="2938573842839598578">ခန့်မှန်းခြေရလဒ်အတွက် <ph name="CATEGORY_TEXT" /> တန်ဖိုးကို<ph name="CONVERSION_RATE" /> နှင့် <ph name="OPERATOR_TEXT" /> ပါ</translation>
 <translation id="2940811910881150316">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ။</translation>
 <translation id="2941112035454246133">နိမ့်</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
+<translation id="3547264467365135390">ဖော်မြူလာ</translation>
 <translation id="3557205324756024651">နေရာတွင်း အထောက်အထား (ဆန္ဒရှိလျှင်)</translation>
 <translation id="3565064564551103223">ခွင့်ပြုထားသည့် IP များ</translation>
 <translation id="3569407787324516067">စခရင်နားချိန်ပုံ</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7180865173735832675">ပြုပြင်ရန်</translation>
 <translation id="7184043045742675738">သင့်ခလုတ်ကို စိတ်ကြိုက်လုပ်ရန် ကီးတစ်ခုခုနှိပ်ပါ။ မောက်စ် (သို့) မြားကီးများဖြင့် ကီးကို နေရာပြန်ချပါ။</translation>
+<translation id="7206979415662233817">ဝန်ဆောင်မှုစည်းမျဉ်းများ</translation>
 <translation id="7212547870105584639">ကွန်ရက် APN ဆက်တင်များကို စီမံနိုင်သည်။ APN များက ဆယ်လူလာ ကွန်ရက်နှင့် အင်တာနက်အကြား ချိတ်ဆက်ပေးသည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ပြင်ပစက်များအတွက် ဖာမ်းဝဲအပ်ဒိတ်များ</translation>
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">ကီးဘုတ်အရောင်</translation>
 <translation id="7317831949569936035">ကျောင်းအပ်နှံမှု</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">သင်သည် အနည်းဆုံးအသက် ၁၈ နှစ် ရှိရမည်ဖြစ်ပြီး AI နောက်ခံများကို အသုံးပြုခြင်းသည် <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> နှင့် <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ထုတ်လုပ်မှု AI ထပ်ဆောင်းဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ကို လိုက်နာရမည်ဖြစ်ကြောင်း သင်သဘောတူသည်။
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          တစ်ကိုယ်ရေ အသုံးပြုမှုနှင့် စီးပွားဖြစ်မဟုတ်သော အသုံးပြုမှုအတွက်သာ နောက်ခံများကို AI ဖြင့် ဖန်တီးနိုင်သည်။ နောက်ခံအတွက် အကူအညီ ရယူသည့်အခါ နောက်ခံဆိုင်ရာ အကြံပြုချက်များ ထုတ်ပေးရန် စာသားကို <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> နှင့်အညီ Google AI ဆာဗာများသို့ ပို့သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />။ <ph name="RESULT_TEXT" />။ Google Search တွင် ရလဒ်ကိုကြည့်ရန် ‘ရှာဖွေရန်’ နှင့် Space ကိုနှိပ်ပါ။</translation>
 <translation id="7343649194310845056">ကွန်ရက်ရှိ စက်များ</translation>
 <translation id="7353413232959255829">ရှာဖွေမှု ရလဒ် <ph name="LIST_SIZE" /> ခုအနက် <ph name="LIST_POSITION" />- <ph name="SEARCH_RESULT_TEXT" />။ ဖြတ်လမ်းလင့်ခ်သို့သွားရန် ‘Enter ခလုတ်’ နှိပ်ပါ။</translation>

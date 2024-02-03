@@ -67,8 +67,8 @@ std::shared_ptr<const bssl::ParsedCertificate> GetASSLTrustedBuiltinRoot() {
 absl::optional<unsigned> GetNSSTrustForCert(
     const bssl::ParsedCertificate* cert) {
   SECItem der_cert;
-  der_cert.data = const_cast<uint8_t*>(cert->der_cert().UnsafeData());
-  der_cert.len = base::checked_cast<unsigned>(cert->der_cert().Length());
+  der_cert.data = const_cast<uint8_t*>(cert->der_cert().data());
+  der_cert.len = base::checked_cast<unsigned>(cert->der_cert().size());
   der_cert.type = siDERCertBuffer;
   ScopedCERTCertificate nss_cert(
       CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
@@ -188,8 +188,8 @@ class TrustStoreNSSTestBase : public ::testing::Test {
 
   void AddCertToNSSSlot(const bssl::ParsedCertificate* cert,
                         PK11SlotInfo* slot) {
-    ScopedCERTCertificate nss_cert(x509_util::CreateCERTCertificateFromBytes(
-        base::make_span(cert->der_cert().AsSpan())));
+    ScopedCERTCertificate nss_cert(
+        x509_util::CreateCERTCertificateFromBytes(cert->der_cert()));
     ASSERT_TRUE(nss_cert);
     SECStatus srv = PK11_ImportCert(slot, nss_cert.get(), CK_INVALID_HANDLE,
                                     GetUniqueNickname().c_str(),
@@ -258,8 +258,8 @@ class TrustStoreNSSTestBase : public ::testing::Test {
 
   void ChangeCertTrust(const bssl::ParsedCertificate* cert, int flags) {
     SECItem der_cert;
-    der_cert.data = const_cast<uint8_t*>(cert->der_cert().UnsafeData());
-    der_cert.len = base::checked_cast<unsigned>(cert->der_cert().Length());
+    der_cert.data = const_cast<uint8_t*>(cert->der_cert().data());
+    der_cert.len = base::checked_cast<unsigned>(cert->der_cert().size());
     der_cert.type = siDERCertBuffer;
 
     ScopedCERTCertificate nss_cert(
@@ -450,8 +450,8 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType, CertsNotPresent) {
 // certs. (See https://crbug.com/978854)
 // On other platforms it's not required but doesn't hurt anything.
 TEST_P(TrustStoreNSSTestWithSlotFilterType, TempCertPresent) {
-  ScopedCERTCertificate temp_nss_cert(x509_util::CreateCERTCertificateFromBytes(
-      base::make_span(newintermediate_->der_cert().AsSpan())));
+  ScopedCERTCertificate temp_nss_cert(
+      x509_util::CreateCERTCertificateFromBytes(newintermediate_->der_cert()));
   EXPECT_TRUE(TrustStoreContains(target_, {newintermediate_}));
   EXPECT_TRUE(HasTrust({target_}, bssl::CertificateTrust::ForUnspecified()));
 }
@@ -500,7 +500,7 @@ TEST_P(TrustStoreNSSTestIgnoreSystemCerts, UnknownCertIgnored) {
 // imported into any DB. Should be unspecified trust.
 TEST_P(TrustStoreNSSTestIgnoreSystemCerts, TemporaryCertIgnored) {
   ScopedCERTCertificate nss_cert(
-      x509_util::CreateCERTCertificateFromBytes(newroot_->der_cert().AsSpan()));
+      x509_util::CreateCERTCertificateFromBytes(newroot_->der_cert()));
   EXPECT_TRUE(HasTrust({newroot_}, bssl::CertificateTrust::ForUnspecified()));
 }
 
@@ -944,7 +944,7 @@ class TrustStoreNSSTestDelegate {
   void AddCert(std::shared_ptr<const bssl::ParsedCertificate> cert) {
     ASSERT_TRUE(test_nssdb_.is_open());
     ScopedCERTCertificate nss_cert(
-        x509_util::CreateCERTCertificateFromBytes(cert->der_cert().AsSpan()));
+        x509_util::CreateCERTCertificateFromBytes(cert->der_cert()));
     ASSERT_TRUE(nss_cert);
     SECStatus srv = PK11_ImportCert(
         test_nssdb_.slot(), nss_cert.get(), CK_INVALID_HANDLE,

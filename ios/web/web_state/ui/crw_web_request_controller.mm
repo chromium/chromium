@@ -78,7 +78,7 @@ enum class BackForwardNavigationType {
   }
 
   web::NavigationItem* item = self.currentNavItem;
-  const GURL currentURL = item ? item->GetURL() : GURL::EmptyGURL();
+  const GURL currentURL = item ? item->GetURL() : GURL();
   const bool isCurrentURLAppSpecific =
       web::GetWebClient()->IsAppSpecificURL(currentURL);
   // If it's a chrome URL, but not a native one, create the WebUI instance.
@@ -451,7 +451,7 @@ enum class BackForwardNavigationType {
 // state to finished and call `didFinishWithURL` with failure.
 - (BOOL)maybeLoadRequestForCurrentNavigationItem {
   web::NavigationItem* item = self.currentNavItem;
-  GURL targetURL = item ? item->GetVirtualURL() : GURL::EmptyGURL();
+  GURL targetURL = item ? item->GetVirtualURL() : GURL();
   // Load the url. The UIWebView delegate callbacks take care of updating the
   // session history and UI.
   if (!targetURL.is_valid()) {
@@ -472,8 +472,8 @@ enum class BackForwardNavigationType {
 - (void)defaultNavigationInternal:(NSMutableURLRequest*)request
            sameDocumentNavigation:(BOOL)sameDocumentNavigation {
   web::NavigationItem* item = self.currentNavItem;
-  GURL navigationURL = item ? item->GetURL() : GURL::EmptyGURL();
-  GURL virtualURL = item ? item->GetVirtualURL() : GURL::EmptyGURL();
+  GURL navigationURL = item ? item->GetURL() : GURL();
+  GURL virtualURL = item ? item->GetVirtualURL() : GURL();
 
   // Do not attempt to navigate to file URLs that are typed into the
   // omnibox.
@@ -532,7 +532,7 @@ enum class BackForwardNavigationType {
   // will be a no-op when it is passed the current back forward list item,
   // so `reload` must be explicitly called.
   web::NavigationItem* item = self.currentNavItem;
-  GURL navigationURL = item ? item->GetURL() : GURL::EmptyGURL();
+  GURL navigationURL = item ? item->GetURL() : GURL();
   std::unique_ptr<web::NavigationContextImpl> navigationContext =
       [self registerLoadRequestForURL:navigationURL
                              referrer:self.currentNavItemReferrer
@@ -614,7 +614,7 @@ enum class BackForwardNavigationType {
 // Returns a NSMutableURLRequest that represents the current NavigationItem.
 - (NSMutableURLRequest*)requestForCurrentNavigationItem {
   web::NavigationItem* item = self.currentNavItem;
-  const GURL currentNavigationURL = item ? item->GetURL() : GURL::EmptyGURL();
+  const GURL currentNavigationURL = item ? item->GetURL() : GURL();
   NSMutableURLRequest* request = [NSMutableURLRequest
       requestWithURL:net::NSURLWithGURL(currentNavigationURL)];
   const web::Referrer referrer(self.currentNavItemReferrer);

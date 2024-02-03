@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_IMPL_H_
 
-#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller.h"
 
@@ -31,17 +31,18 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
 
   // Show the error dialog for the given `autofill_error_dialog_context` and the
   // `view_creation_callback`.
-  void Show(
-      const AutofillErrorDialogContext& autofill_error_dialog_context,
-      base::OnceCallback<AutofillErrorDialogView*()> view_creation_callback);
+  void Show(const AutofillErrorDialogContext& autofill_error_dialog_context,
+            base::OnceCallback<base::WeakPtr<AutofillErrorDialogView>()>
+                view_creation_callback);
 
   // AutofillErrorDialogController.
   void OnDismissed() override;
   const std::u16string GetTitle() override;
   const std::u16string GetDescription() override;
   const std::u16string GetButtonLabel() override;
+  base::WeakPtr<AutofillErrorDialogController> GetWeakPtr() override;
 
-  AutofillErrorDialogView* autofill_error_dialog_view() {
+  base::WeakPtr<AutofillErrorDialogView> autofill_error_dialog_view() {
     return autofill_error_dialog_view_;
   }
 
@@ -57,8 +58,12 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   // |error_dialog_context_| should be preferred when displaying the error
   // dialog.
   AutofillErrorDialogContext error_dialog_context_;
+
   // View that displays the error dialog.
-  raw_ptr<AutofillErrorDialogView> autofill_error_dialog_view_ = nullptr;
+  base::WeakPtr<AutofillErrorDialogView> autofill_error_dialog_view_;
+
+  base::WeakPtrFactory<AutofillErrorDialogControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

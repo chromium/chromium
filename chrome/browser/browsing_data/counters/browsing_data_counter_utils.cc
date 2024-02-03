@@ -158,7 +158,8 @@ std::u16string GetChromeCounterTextFromResult(
                 (identity_manager &&
                  identity_manager->HasPrimaryAccount(
                      signin::ConsentLevel::kSignin) &&
-                 base::FeatureList::IsEnabled(switches::kUnoDesktop))
+                 switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                     switches::ExplicitBrowserSigninPhase::kExperimental))
             ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION
             : IDS_DEL_COOKIES_COUNTER_ADVANCED;
 

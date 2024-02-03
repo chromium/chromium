@@ -4801,9 +4801,10 @@ TEST_F(StyleEngineTest, ScrollbarPartPseudoDoesNotMatchElement) {
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetStyleEngine().RecalcStyle();
 
-  // We have one UA rule for <div> that matches.
-  // None of the ::-webkit-scrollbar-* rules should match.
-  EXPECT_EQ(1u, stats->rules_matched);
+  // We have two UA rule for <div> that match:
+  //  div { display: block; }
+  //  div { unicode-bidi: isolate; }
+  EXPECT_EQ(stats->rules_matched, 2u);
 }
 
 TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {
@@ -7003,6 +7004,251 @@ TEST_F(StyleEngineTest, UseCountCSSDeclarationAfterNestedRule) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
 }
 
+TEST_F(StyleEngineTest, UseCountCSSBareDeclarationRequiresShift_Empty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest, UseCountCSSBareDeclarationRequiresShift_NoNesting) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+      }
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest,
+       UseCountCSSBareDeclarationRequiresShift_TrailingUncontested) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        & { color: pink; }
+        width: 100px;
+      }
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest,
+       UseCountCSSBareDeclarationRequiresShift_TrailingDuplicate) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        width: 50px;
+        & { color: pink; }
+        width: 100px;
+      }
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest, UseCountCSSBareDeclarationRequiresShift_LaterRuleWins) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        & { color: red; }
+        width: 100px;
+      }
+      div {
+        width: 42px;
+      }
+    </style>
+    <div id=a></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest,
+       UseCountCSSBareDeclarationRequiresShift_HigherSpecificityWins) {
+  // Rule with higher specificity overwrites the invisible rule.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #a {
+        width: 42px;
+      }
+      div {
+        & { width: 33px; }
+        width: 100px;
+      }
+    </style>
+    <div id=a></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest,
+       UseCountCSSBareDeclarationRequiresShift_ExplicitAmpersand) {
+  // The explicit '&' rule matches with specificity equal to :is(.a,.x.y.z),
+  // but the invisible rule expanded into the full/unwrapped selector list
+  // at parse time, and matches with the specificity of just '.a'.
+  // Therefore the invisible rule doesn't make a difference here.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .a, .x.y.z {
+        & { width: 33px; }
+        width: 100px;
+      }
+    </style>
+    <div class=a></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest, UseCountCSSBareDeclarationRequiresShift_TrailingWin) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        & { width: 33px; }
+        width: 100px;
+      }
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest,
+       UseCountCSSBareDeclarationRequiresShift_TrailingWinMedia) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        @media (width) {
+          width: 33px;
+        }
+        width: 100px;
+      }
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest,
+       UseCountCSSBareDeclarationRequiresShift_TrailingWinSelectorList) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      h1, h2, h3, div {
+        & { width: 33px; }
+        width: 100px;
+      }
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest, UseCountCSSBareDeclarationRequiresShift_DeeplyNested) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .a {
+        &.b {
+          &.c {
+            & { width: 33px; }
+            width: 100px;
+          }
+        }
+      }
+    </style>
+    <div class="a b c"></div>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleEngineTest, UseCountCSSNestedGroupRuleSpecificity_NoNesting) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleEngineTest, UseCountCSSNestedGroupRuleSpecificity_NoContest) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div, .x.y.z {
+        @media (width) {
+          width: 33px;
+        }
+      }
+    </style>
+    <div></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleEngineTest, UseCountCSSNestedGroupRuleSpecificity_LaterRuleWins) {
+  // Lowering the specificity of the implicit &-rule does not matter here,
+  // because there is anyway another rule with even higher specificity that
+  // wins the cascade.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div, .x.y.z {
+        @media (width) {
+          width: 33px;
+        }
+      }
+      :is(div, .x.y.z.w) {
+        width: 100px;
+      }
+    </style>
+    <div class=a></div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleEngineTest,
+       UseCountCSSNestedGroupRuleSpecificity_LaterRuleIsAffected) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div, .x.y.z {
+        @media (width) {
+          width: 33px;
+        }
+      }
+      div {
+        width: 100px;
+      }
+    </style>
+    <div class=a></div>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleEngineTest,
+       UseCountCSSNestedGroupRuleSpecificity_NoBareDeclarationShift) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div, .x.y.z {
+        @media (width) {
+          width: 33px;
+          div:where(&) {
+            width: 100px;
+          }
+        }
+      }
+    </style>
+    <div class=a></div>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+
+  // The kBareDeclarationShift should at no point have been set
+  // by nested group rules.
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
 TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize();
@@ -7054,6 +7300,38 @@ TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
                     [](blink::AnnotatedRegionValue s) { return s.draggable; });
 
   EXPECT_EQ(it, regions.end()) << "There should be no drag regions";
+}
+
+TEST_F(StyleEngineTest, ForcedColorsLightDark) {
+  ScopedForcedColorsForTest scoped_feature(true);
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kActive);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :root { color-scheme: light only; }
+      #light-dark {
+        color: light-dark(GrayText, red);
+      }
+      #reference {
+        color: GrayText;
+      }
+    </style>
+    <div id="light-dark"></div>
+    <div id="reference"></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  const ComputedStyle& light_dark =
+      GetDocument()
+          .getElementById(AtomicString("light-dark"))
+          ->ComputedStyleRef();
+  const ComputedStyle& reference =
+      GetDocument()
+          .getElementById(AtomicString("reference"))
+          ->ComputedStyleRef();
+
+  EXPECT_EQ(light_dark.VisitedDependentColor(GetCSSPropertyColor()),
+            reference.VisitedDependentColor(GetCSSPropertyColor()));
 }
 
 }  // namespace blink

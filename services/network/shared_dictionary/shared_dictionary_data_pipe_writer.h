@@ -5,13 +5,13 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_DATA_PIPE_WRITER_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_DATA_PIPE_WRITER_H_
 
-#include "base/memory/ref_counted.h"
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -76,8 +76,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryDataPipeWriter {
   mojo::SimpleWatcher producer_writable_watcher_;
   mojo::SimpleWatcher producer_closed_watcher_;
 
-  absl::optional<bool> completion_result_;
-  absl::optional<bool> data_pipe_operation_result_;
+  std::optional<bool> completion_result_;
+  std::optional<bool> data_pipe_operation_result_;
 
   base::OnceCallback<void(bool)> finish_callback_;
 };

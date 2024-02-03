@@ -5,6 +5,7 @@
 package org.chromium.chrome.features.tasks;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -23,7 +24,6 @@ import org.chromium.chrome.start_surface.R;
 
 /** View of the tab on the single tab tab switcher. */
 class SingleTabView extends LinearLayout {
-    private final Context mContext;
     private ImageView mFavicon;
     private TextView mTitle;
     @Nullable private TabThumbnailView mTabThumbnail;
@@ -32,7 +32,6 @@ class SingleTabView extends LinearLayout {
     /** Default constructor needed to inflate via XML. */
     public SingleTabView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
     }
 
     @Override
@@ -46,14 +45,22 @@ class SingleTabView extends LinearLayout {
 
         if (mTabThumbnail != null) {
             if (StartSurfaceConfiguration.useMagicStack()) {
+                Resources resources = getResources();
                 MarginLayoutParams marginLayoutParams =
                         (MarginLayoutParams) mTabThumbnail.getLayoutParams();
                 int size =
-                        getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.single_tab_module_tab_thumbnail_size_big);
+                        resources.getDimensionPixelSize(
+                                R.dimen.single_tab_module_tab_thumbnail_size_big);
                 marginLayoutParams.width = size;
                 marginLayoutParams.height = size;
+
+                TextView tabSwitcherTitleDescription =
+                        findViewById(R.id.tab_switcher_title_description);
+                MarginLayoutParams titleDescriptionMarginLayoutParams =
+                        (MarginLayoutParams) tabSwitcherTitleDescription.getLayoutParams();
+                titleDescriptionMarginLayoutParams.bottomMargin =
+                        resources.getDimensionPixelSize(
+                                R.dimen.single_tab_module_title_margin_bottom);
             }
             mTabThumbnail.setScaleType(ScaleType.MATRIX);
             mTabThumbnail.updateThumbnailPlaceholder(

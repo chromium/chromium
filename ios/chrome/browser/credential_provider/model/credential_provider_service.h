@@ -125,6 +125,9 @@ class CredentialProviderService
   MemoryCredentialStore* GetCredentialStore(
       password_manager::PasswordStoreInterface* store) const;
 
+  // The pref service.
+  const raw_ptr<PrefService> prefs_;
+
   // The interfaces for getting and manipulating a user's saved passwords.
   const scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store_;

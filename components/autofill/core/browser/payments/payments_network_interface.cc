@@ -23,10 +23,10 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_iban_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
-#include "components/autofill/core/browser/payments/payments_requests/get_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/opt_change_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
@@ -213,10 +213,12 @@ PaymentsNetworkInterface::OptChangeResponseDetails::OptChangeResponseDetails(
 }
 PaymentsNetworkInterface::OptChangeResponseDetails::~OptChangeResponseDetails() = default;
 
-PaymentsNetworkInterface::UploadRequestDetails::UploadRequestDetails() = default;
-PaymentsNetworkInterface::UploadRequestDetails::UploadRequestDetails(
-    const UploadRequestDetails& other) = default;
-PaymentsNetworkInterface::UploadRequestDetails::~UploadRequestDetails() = default;
+PaymentsNetworkInterface::UploadCardRequestDetails::UploadCardRequestDetails() =
+    default;
+PaymentsNetworkInterface::UploadCardRequestDetails::UploadCardRequestDetails(
+    const UploadCardRequestDetails& other) = default;
+PaymentsNetworkInterface::UploadCardRequestDetails::
+    ~UploadCardRequestDetails() = default;
 
 PaymentsNetworkInterface::UploadIbanRequestDetails::UploadIbanRequestDetails() = default;
 PaymentsNetworkInterface::UploadIbanRequestDetails::UploadIbanRequestDetails(
@@ -325,7 +327,7 @@ void PaymentsNetworkInterface::OptChange(
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
 }
 
-void PaymentsNetworkInterface::GetUploadDetails(
+void PaymentsNetworkInterface::GetCardUploadDetails(
     const std::vector<AutofillProfile>& addresses,
     const int detected_values,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
@@ -337,7 +339,7 @@ void PaymentsNetworkInterface::GetUploadDetails(
     const int billable_service_number,
     const int64_t billing_customer_number,
     UploadCardSource upload_card_source) {
-  IssueRequest(std::make_unique<GetUploadDetailsRequest>(
+  IssueRequest(std::make_unique<GetCardUploadDetailsRequest>(
       addresses, detected_values, client_behavior_signals,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
       app_locale, std::move(callback), billable_service_number,
@@ -345,7 +347,7 @@ void PaymentsNetworkInterface::GetUploadDetails(
 }
 
 void PaymentsNetworkInterface::UploadCard(
-    const PaymentsNetworkInterface::UploadRequestDetails& request_details,
+    const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const UploadCardResponseDetails&)> callback) {
   IssueRequest(std::make_unique<UploadCardRequest>(

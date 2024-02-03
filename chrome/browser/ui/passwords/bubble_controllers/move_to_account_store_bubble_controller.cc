@@ -75,8 +75,12 @@ void MoveToAccountStoreBubbleController::AcceptMove() {
 }
 
 void MoveToAccountStoreBubbleController::RejectMove() {
-  dismissal_reason_ = metrics_util::CLICKED_NEVER;
-  return delegate_->BlockMovingPasswordToAccountStore();
+  if (delegate_->GetState() ==
+      password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE) {
+    dismissal_reason_ = metrics_util::CLICKED_NEVER;
+    return delegate_->BlockMovingPasswordToAccountStore();
+  }
+  dismissal_reason_ = metrics_util::CLICKED_CANCEL;
 }
 
 gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {

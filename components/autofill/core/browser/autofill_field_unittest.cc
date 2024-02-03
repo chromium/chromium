@@ -99,15 +99,7 @@ struct PrecedenceOverAutocompleteParams {
 };
 
 class PrecedenceOverAutocompleteTest
-    : public testing::TestWithParam<PrecedenceOverAutocompleteParams> {
-  base::test::ScopedFeatureList scoped_feature_list;
-
- public:
-  PrecedenceOverAutocompleteTest() {
-    scoped_feature_list.InitAndEnableFeature(
-        features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete);
-  }
-};
+    : public testing::TestWithParam<PrecedenceOverAutocompleteParams> {};
 
 // Tests giving StreetName or HouseNumber predictions, by heuristic or server,
 // precedence over HtmlFieldType::kAddressLine(1|2) autocomplete prediction.

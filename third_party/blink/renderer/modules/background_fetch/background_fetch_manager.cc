@@ -454,42 +454,43 @@ void BackgroundFetchManager::DidGetRegistration(
   NOTREACHED();
 }
 
-ScriptPromise BackgroundFetchManager::getIds(ScriptState* script_state,
-                                             ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLArray<IDLString>> BackgroundFetchManager::getIds(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsInFencedFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "backgroundFetch is not allowed in fenced frames.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLArray<IDLString>>();
   }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLArray<IDLString>>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   // Creating a Background Fetch registration requires an activated worker, so
   // if |registration_| has not been activated we can skip the Mojo roundtrip.
   if (!registration_->active()) {
-    return ScriptPromise::Cast(script_state,
-                               v8::Array::New(script_state->GetIsolate()));
+    resolver->Resolve(Vector<String>());
+  } else {
+    bridge_->GetDeveloperIds(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+        &BackgroundFetchManager::DidGetDeveloperIds, WrapPersistent(this))));
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
-
-  bridge_->GetDeveloperIds(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-      &BackgroundFetchManager::DidGetDeveloperIds, WrapPersistent(this))));
 
   return promise;
 }
 
 void BackgroundFetchManager::DidGetDeveloperIds(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLArray<IDLString>>* resolver,
     mojom::blink::BackgroundFetchError error,
     const Vector<String>& developer_ids) {
   ScriptState::Scope scope(resolver->GetScriptState());
 
   switch (error) {
     case mojom::blink::BackgroundFetchError::NONE:
-      resolver->Resolve<IDLArray<IDLString>>(developer_ids);
+      resolver->Resolve(developer_ids);
       return;
     case mojom::blink::BackgroundFetchError::STORAGE_ERROR:
       DCHECK(developer_ids.empty());

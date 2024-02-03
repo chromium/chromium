@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/invalidation/public/invalidator_state.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cancelation_signal.h"
@@ -97,7 +96,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // potentially blocking) operations.
 
   // Forwards an invalidation state change to the sync manager.
-  void DoOnInvalidatorStateChange(invalidation::InvalidatorState state);
+  void DoOnInvalidatorStateChange(bool enabled);
 
   // Called to perform initialization of the syncapi on behalf of
   // SyncEngine::Initialize.

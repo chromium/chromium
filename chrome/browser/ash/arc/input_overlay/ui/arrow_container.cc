@@ -6,6 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -161,5 +162,8 @@ void ArrowContainer::OnPaintBackground(gfx::Canvas* canvas) {
 gfx::Size ArrowContainer::CalculatePreferredSize() const {
   return gfx::Size(kMenuWidth, GetHeightForWidth(kMenuWidth));
 }
+
+BEGIN_METADATA(ArrowContainer)
+END_METADATA
 
 }  // namespace arc::input_overlay

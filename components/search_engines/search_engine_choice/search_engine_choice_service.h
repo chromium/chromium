@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/country_codes/country_codes.h"
@@ -36,16 +38,6 @@ class SearchEngineChoiceService : public KeyedService {
   // additional search engine info should be shown.
   // TODO(b/318824817): To be removed post-launch.
   bool ShouldShowUpdatedSettings();
-
-#if BUILDFLAG(IS_IOS)
-  // Returns whether the search engine choice screen can be displayed or not
-  // based on device policies and profile properties.
-  // TODO(b/318801987): Move the function to some iOS-specific location and
-  //                    consider removing `is_regular_profile`.
-  bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
-                              bool is_regular_profile,
-                              TemplateURLService* template_url_service);
-#endif
 
   // Returns the choice screen eligibility condition most relevant for the
   // profile associated with `profile_prefs` and `template_url_service`. Only

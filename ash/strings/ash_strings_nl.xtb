@@ -607,9 +607,11 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3526440770046466733">Link openen in een nieuw tabblad en op het huidige tabblad blijven</translation>
 <translation id="353086728817903341">Verbonden met <ph name="NUM_DEVICES" /> apparaten</translation>
 <translation id="3533126039236445965">Apps op plank</translation>
+<translation id="3537350467437346467">Door jou bekeken</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3540893133818942399">Instellen van de weergave van recente foto's en media van je telefoon sluiten</translation>
 <translation id="3542066395059568317">Je ziet aanbevelingen zodat je verder kunt gaan waar je gebleven was. Klik met de rechtermuisknop om aanbevelingen te verwijderen.</translation>
+<translation id="3547318469722231257">Gewijzigd door jou</translation>
 <translation id="3552189655002856821">Wifi staat uit</translation>
 <translation id="3554215588514239132">Developer Tools-deelvenster tonen of verbergen</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vastgezet</translation>
@@ -701,6 +703,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3859364108019690">Kan geen apps streamen</translation>
 <translation id="3861651314799684201">Druk op Enter om het volledige scherm op te nemen</translation>
+<translation id="3882323608730650973">Gewijzigd</translation>
 <translation id="3886872229787704059">Vandaag geopend</translation>
 <translation id="3891340733213178823">Druk twee keer op Ctrl+Shift+Q om uit te loggen.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproken feedback)</translation>
@@ -894,6 +897,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4582666543382004902">De hotspot is uitgezet om wifi te gebruiken. Zet wifi uit om de hotspot te gebruiken.</translation>
 <translation id="4585337515783392668">Casten naar een onbekende ontvanger stopzetten</translation>
 <translation id="4596144739579517758">Donker thema staat uit</translation>
+<translation id="4596442969149038771">Gedeeld door <ph name="USER" /></translation>
 <translation id="4611292653554630842">Inloggen</translation>
 <translation id="462160925400706389"><ph name="NAME" /> gekoppeld</translation>
 <translation id="4623167406982293031">Account verifiëren</translation>
@@ -1337,6 +1341,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6298183524022479114">Dit apparaat aanpassen in de app</translation>
 <translation id="6309219492973062892">Klik of tik op icoon 1-8 op de plank</translation>
 <translation id="6315170314923504164">Spraak</translation>
+<translation id="6319058840130157106">Terugschakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
 <translation id="6330012934079202188">Er worden vensters van alle bureaus getoond, druk op de pijl-omhoog om vensters van het huidige bureau te bekijken</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
@@ -1500,6 +1505,7 @@ Nieuwe installatie</translation>
 <translation id="6981291220124935078">Toegang aanzetten</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="698231206551913481">Alle bestanden en lokale gegevens die zijn gekoppeld aan deze gebruiker, worden definitief verwijderd zodra deze gebruiker is verwijderd.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Klik op Bevestigen om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="6989752354829085073">Volg een korte rondleiding voor meer informatie over hoe je je Chromebook gebruikt. Ga aan de slag in 6 stappen.</translation>
 <translation id="7004910047186208204">Verbinding maken via mobiele data</translation>
 <translation id="7005239792648594238">Open een app om aan de slag te gaan</translation>
@@ -1814,6 +1820,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8314772463905284467">Caps Lock staat aan</translation>
 <translation id="8315514906653279104">Aanzetten…</translation>
 <translation id="8331351032546853669">Download in behandeling</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Venster <ph name="WINDOW_TITLE" /> geselecteerd</translation>
 <translation id="8349826889576450703">launcher</translation>
@@ -1920,6 +1927,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="878215960996152260"><ph name="APP_NAME" />, geïnstalleerde app, geblokkeerd</translation>
 <translation id="8785070478575117577">Verbinding maken met <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Vooruitschakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
 <translation id="8792626944327216835">microfoon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Map <ph name="FOLDER_NAME" /></translation>
@@ -2033,6 +2041,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="953431725143473984">Het apparaat uitzetten?</translation>
 <translation id="954052413789300507">Onvoldoende ruimte voor <ph name="FILENAME" />. Maak ruimte vrij.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Gewijzigd door <ph name="USER" /></translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Geen inleverdatum</translation>
 <translation id="98120814841227350">Naar het einde van het document gaan</translation>

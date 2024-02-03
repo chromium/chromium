@@ -102,8 +102,9 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
-  cc::PaintCanvas* GetPaintCanvas() final;
-  MemoryManagedPaintRecorder* Recorder() final;
+  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
+  const cc::PaintCanvas* GetPaintCanvas() const final;
+  const MemoryManagedPaintRecorder* Recorder() const final;
 
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
@@ -145,7 +146,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
-  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
   int LayerCount() const override;
 

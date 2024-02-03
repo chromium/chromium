@@ -8,6 +8,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/proxy_chain.h"
 
 namespace network {
 
@@ -29,7 +30,7 @@ bool IpProtectionProxyListManagerImpl::IsProxyListAvailable() {
   return have_fetched_proxy_list_;
 }
 
-const std::vector<std::vector<std::string>>&
+const std::vector<net::ProxyChain>&
 IpProtectionProxyListManagerImpl::ProxyList() {
   return proxy_list_;
 }
@@ -48,7 +49,7 @@ void IpProtectionProxyListManagerImpl::RefreshProxyList() {
 }
 
 void IpProtectionProxyListManagerImpl::OnGotProxyList(
-    const absl::optional<std::vector<std::vector<std::string>>>& proxy_list) {
+    const std::optional<std::vector<net::ProxyChain>>& proxy_list) {
   fetching_proxy_list_ = false;
 
   // If an error occurred fetching the proxy list, continue using the existing

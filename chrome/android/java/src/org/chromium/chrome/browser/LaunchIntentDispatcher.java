@@ -344,7 +344,7 @@ public class LaunchIntentDispatcher {
                         CustomTabsSessionToken.getSessionTokenFromIntent(mIntent), mIntent);
 
         boolean isCustomTab = true;
-        if (IntentHandler.shouldIgnoreIntent(mIntent, isCustomTab)) {
+        if (IntentHandler.shouldIgnoreIntent(mIntent, mActivity, isCustomTab)) {
             return false;
         }
 

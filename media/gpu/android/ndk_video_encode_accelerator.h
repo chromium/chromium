@@ -52,7 +52,7 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   bool IsFlushSupported() override;
 
@@ -140,13 +140,13 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   std::vector<uint8_t> config_data_;
 
   // Required for encoders which are missing stride information.
-  absl::optional<gfx::Size> aligned_size_;
+  std::optional<gfx::Size> aligned_size_;
 
   // Currently configured color space.
-  absl::optional<gfx::ColorSpace> encoder_color_space_;
+  std::optional<gfx::ColorSpace> encoder_color_space_;
 
   // Pending color space to be set on the MediaCodec after flushing.
-  absl::optional<gfx::ColorSpace> pending_color_space_;
+  std::optional<gfx::ColorSpace> pending_color_space_;
 
   // True if any frames have been sent to the encoder.
   bool have_encoded_frames_ = false;

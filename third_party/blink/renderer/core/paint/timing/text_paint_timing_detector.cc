@@ -196,7 +196,7 @@ void TextPaintTimingDetector::RecordAggregatedText(
   recorded_set_.insert(&aggregator);
   MaybeRecordTextRecord(aggregator, aggregated_size, property_tree_state,
                         aggregated_visual_rect, mapped_visual_rect);
-  if (absl::optional<PaintTimingVisualizer>& visualizer =
+  if (std::optional<PaintTimingVisualizer>& visualizer =
           frame_view_->GetPaintTimingDetector().Visualizer()) {
     visualizer->DumpTextDebuggingRect(aggregator, mapped_visual_rect);
   }

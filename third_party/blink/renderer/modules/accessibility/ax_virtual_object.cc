@@ -85,7 +85,7 @@ bool AXVirtualObject::HasAOMPropertyOrARIAAttribute(AOMBooleanProperty property,
   if (!accessible_node_)
     return false;
 
-  absl::optional<bool> property_value = accessible_node_->GetProperty(property);
+  std::optional<bool> property_value = accessible_node_->GetProperty(property);
   result = property_value.value_or(false);
   return property_value.has_value();
 }

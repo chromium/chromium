@@ -31,6 +31,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -819,7 +820,7 @@ void NetworkingPrivateChromeOS::AppendThirdPartyProviderName(
     return;
   }
 
-  const std::string extension_id = GetStringFromDictionary(
+  const ExtensionId extension_id = GetStringFromDictionary(
       *third_party_vpn, ::onc::third_party_vpn::kExtensionID);
   const ExtensionSet& extensions =
       ExtensionRegistry::Get(browser_context_)->enabled_extensions();

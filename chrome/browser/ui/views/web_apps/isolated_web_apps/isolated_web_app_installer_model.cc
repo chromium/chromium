@@ -41,7 +41,7 @@ IsolatedWebAppInstallerModel::ConfirmInstallationDialog::
 
 IsolatedWebAppInstallerModel::IsolatedWebAppInstallerModel(
     const base::FilePath& bundle_path)
-    : bundle_path_(bundle_path), step_(Step::kDisabled) {}
+    : bundle_path_(bundle_path), step_(Step::kNone) {}
 
 void IsolatedWebAppInstallerModel::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

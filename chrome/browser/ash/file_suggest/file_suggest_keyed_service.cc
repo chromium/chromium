@@ -30,7 +30,8 @@ FileSuggestKeyedService::FileSuggestKeyedService(
                      weak_factory_.GetWeakPtr()));
   proto_.Init();
 
-  if (features::IsLauncherContinueSectionWithRecentsEnabled()) {
+  if (features::IsLauncherContinueSectionWithRecentsEnabled() ||
+      features::IsForestFeatureEnabled()) {
     drive_file_suggestion_provider_ =
         std::make_unique<DriveRecentFileSuggestionProvider>(
             profile, base::BindRepeating(

@@ -145,7 +145,7 @@ void OnGetNetworkList(std::unique_ptr<net::NetworkInterfaceList> networks,
   if (success) {
     std::move(callback).Run(*networks);
   } else {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 }
 
@@ -240,7 +240,7 @@ void AsyncResolveSystemDnsWithEmptyResult(
 
 void ResolveSystemDnsWithMojo(
     const mojo::Remote<mojom::SystemDnsResolver>& system_dns_override,
-    const absl::optional<std::string>& hostname,
+    const std::optional<std::string>& hostname,
     net::AddressFamily addr_family,
     net::HostResolverFlags flags,
     net::SystemDnsResultsCallback results_cb,

@@ -155,10 +155,10 @@ TEST(HeapArray, First) {
   for (size_t i = 0; i < vec.size(); ++i) {
     vec[i] = i;
   }
-  base::span<uint32_t> empty = vec.first(0);
+  base::span<uint32_t> empty = vec.first(0u);
   EXPECT_TRUE(empty.empty());
 
-  base::span<uint32_t> some = vec.first(2);
+  base::span<uint32_t> some = vec.first(2u);
   EXPECT_EQ(some.size(), 2u);
   EXPECT_EQ(some[0], 0u);
   EXPECT_EQ(some[1], 1u);
@@ -169,10 +169,10 @@ TEST(HeapArray, Last) {
   for (size_t i = 0; i < vec.size(); ++i) {
     vec[i] = i;
   }
-  base::span<uint32_t> empty = vec.first(0);
+  base::span<uint32_t> empty = vec.first(0u);
   EXPECT_TRUE(empty.empty());
 
-  base::span<uint32_t> some = vec.first(2);
+  base::span<uint32_t> some = vec.first(2u);
   EXPECT_EQ(some.size(), 2u);
   EXPECT_EQ(some[0], 0u);
   EXPECT_EQ(some[1], 1u);

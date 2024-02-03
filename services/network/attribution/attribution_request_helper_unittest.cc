@@ -5,6 +5,7 @@
 #include "services/network/attribution/attribution_request_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -34,7 +35,6 @@
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -98,7 +98,7 @@ class AttributionRequestHelperTest : public testing::Test {
         /*original_referrer_policy=*/request.referrer_policy(),
         /*original_referrer=*/request.referrer(),
         /*http_status_code=*/net::HTTP_FOUND,
-        /*new_location=*/to_url, /*referrer_policy_header=*/absl::nullopt,
+        /*new_location=*/to_url, /*referrer_policy_header=*/std::nullopt,
         /*insecure_scheme_was_upgraded=*/false, /*copy_fragment=*/false,
         /*is_signed_exchange_fallback_redirect=*/false);
   }

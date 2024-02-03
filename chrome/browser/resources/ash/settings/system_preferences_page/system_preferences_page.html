@@ -25,6 +25,11 @@
       <startup-settings-card prefs="{{prefs}}"></startup-settings-card>
     </template>
 
+    <template is="dom-if" if="[[shouldShowMultitaskingCard_]]">
+      <multitasking-settings-card prefs="{{prefs}}">
+      </multitasking-settings-card>
+    </template>
+
     <template is="dom-if" if="[[shouldShowResetSettingsCard_]]">
       <reset-settings-card></reset-settings-card>
     </template>
@@ -93,7 +98,7 @@
   </template>
 
   <!-- Search and Assistant subpages -->
-  <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
+  <template is="dom-if" if="[[isQuickAnswersSupported_]]">
     <template is="dom-if" route-path="/osSearch/search">
       <os-settings-subpage page-title="$i18n{searchSubpageTitle}">
         <settings-search-subpage prefs="{{prefs}}">

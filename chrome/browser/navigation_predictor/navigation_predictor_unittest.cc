@@ -215,6 +215,28 @@ TEST_F(NavigationPredictorTest, ReportSameAnchorElementTwice) {
   EXPECT_EQ(1u, data.number_of_anchors_);
 }
 
+TEST_F(NavigationPredictorTest, MedianLinkLocation) {
+  NavigationPredictorMetricsDocumentData::AnchorsData& data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          main_rfh())
+          ->GetAnchorsData();
+
+  // Sets `link_locations_` to some contrived, shuffled values to test the
+  // median calculation.
+
+  // Odd number of elements.
+  data.link_locations_ = {80, 50, 60, 10, 70, 20, 40, 30, 90};
+  EXPECT_EQ(50 * 100, data.MedianLinkLocation());
+
+  // Even number of elements, distinct middle values (50 and 60).
+  data.link_locations_ = {40, 10, 50, 30, 70, 100, 90, 20, 80, 60};
+  EXPECT_EQ(55 * 100, data.MedianLinkLocation());
+
+  // Even number of elements, middle values (50) are equal.
+  data.link_locations_ = {80, 40, 50, 20, 30, 10, 100, 90, 50, 70};
+  EXPECT_EQ(50 * 100, data.MedianLinkLocation());
+}
+
 // Basic test to check the ReportNewAnchorElements method can be
 // called with multiple anchors at once.
 TEST_F(NavigationPredictorTest, ReportNewAnchorElementsMultipleAnchors) {

@@ -161,7 +161,7 @@ class FeaturePromoLifecycleTest : public testing::Test {
         "UserEducation.MessageShown.Type",
         static_cast<int>(lifecycle->promo_type()), shown_count);
     histogram_tester_.ExpectBucketCount(
-        "UserEducation.MessageShown.SubType",
+        "UserEducation.MessageShown.Subtype",
         static_cast<int>(lifecycle->promo_subtype()), shown_count);
   }
 
@@ -422,12 +422,7 @@ TEST_P(FeaturePromoLifecycleTypesTest, BlockDismissedIPH) {
   EXPECT_CALL(tracker_, Dismissed);
   lifecycle->OnPromoEnded(CloseReason::kDismiss);
   lifecycle = CreateLifecycle(kTestIPHFeature);
-  const auto expect_can_show = (promo_subtype() == PromoSubtype::kNormal &&
-                                (promo_type() == PromoType::kLegacy ||
-                                 promo_type() == PromoType::kToast))
-                                   ? FeaturePromoResult::Success()
-                                   : FeaturePromoResult::kPermanentlyDismissed;
-  EXPECT_EQ(expect_can_show, lifecycle->CanShow());
+  EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed, lifecycle->CanShow());
   storage_service_.Reset(kTestIPHFeature);
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());

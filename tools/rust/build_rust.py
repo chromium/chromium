@@ -84,6 +84,8 @@ EXCLUDED_TESTS_MAC = [
     # https://crbug.com/1479875 This fails on Mac. It relates to the large code
     # model which we don't use, so suppress it for now.
     os.path.join('tests', 'ui', 'thread-local', 'thread-local-issue-37508.rs'),
+    # https://crbug.com/1521497 This fails on Mac.
+    os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs#x64'),
 ]
 EXCLUDED_TESTS_MAC_ARM64 = [
     # https://crbug.com/1519640 This fails on Mac/ARM64. We didn't even run it
@@ -602,34 +604,10 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
-    # TODO(crbug.com/1493085): remove once
-    # https://github.com/rust-lang/rust/pull/116672 has been merged.
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  '01c30a41a9952b49405a537e1c8bae3f2272ccf4')
-
     # TODO: Remove once
     # https://github.com/rust-lang/rust/pull/119185 has been merged.
     GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                   '14947b410ad23a09251180af50486e247f70b465')
-
-    # TODO: Remove the following cherry-picks in next rust roll.
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  '81cd7c5b11766ed1e3214a2233371fb6d72ed89c')
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  'b378059e6b2573c5356423fa31d184a89a3b6029')
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  'a0c5079889b1f86dd9e246d8863a5c8b44fbdb78')
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  '46a801559127441675f2341bd1d684809a47def1')
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  '0a285e8de7eec36e1de68c83764d23f2522a4274')
-
-    # compiler-rt's arm64 asm code is invalid with new LLVM, and
-    # compiler_builtins is using old copy of compiler-rt.
-    # Reproduces https://github.com/rust-lang/rust/commits/bb7c483e48ea992f3759fb643962e1e706c8c029
-    # TODO(crbug.com/1504532): remove in next rust roll.
-    GitMoveSubmoduleBranch(RUST_SRC_DIR, 'src/llvm-project',
-                           'rustc/17.0-2023-12-14')
 
     print('Finished applying cherry-picks.')
 

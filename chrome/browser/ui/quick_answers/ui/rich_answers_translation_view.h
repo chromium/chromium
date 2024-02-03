@@ -18,9 +18,9 @@ namespace quick_answers {
 
 // A bubble style view to show QuickAnswer.
 class RichAnswersTranslationView : public RichAnswersView {
- public:
-  METADATA_HEADER(RichAnswersTranslationView);
+  METADATA_HEADER(RichAnswersTranslationView, RichAnswersView)
 
+ public:
   RichAnswersTranslationView(const gfx::Rect& anchor_view_bounds,
                              base::WeakPtr<QuickAnswersUiController> controller,
                              const TranslationResult& translation_result);

@@ -25,6 +25,7 @@
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/verifier_formats.h"
 
@@ -130,7 +131,7 @@ void UpdateDataProvider::GetData(
 }
 
 void UpdateDataProvider::RunInstallCallback(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& public_key,
     const base::FilePath& unpacked_dir,
     bool install_immediately,
@@ -151,7 +152,7 @@ void UpdateDataProvider::RunInstallCallback(
 }
 
 void UpdateDataProvider::InstallUpdateCallback(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& public_key,
     const base::FilePath& unpacked_dir,
     bool install_immediately,

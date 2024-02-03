@@ -200,8 +200,8 @@ export interface ZoomLevelEntry {
 }
 
 /**
- * TODO(crbug.com/1373962): Remove the origin key from `FileSystemGrant`
- * before the launch of the Persistent Permissions settings page UI.
+ * TODO(crbug.com/1523673): Consider refactoring to remove the origin key from
+ * the `FileSystemGrant` interface.
  */
 export interface FileSystemGrant {
   origin: string;

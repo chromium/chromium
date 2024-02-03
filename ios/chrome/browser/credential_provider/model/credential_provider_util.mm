@@ -55,8 +55,7 @@ NSString* GetFaviconFileKey(const GURL& url) {
   // a URL (including the scheme and ://) isn't a valid file name).
   unsigned char result[CC_SHA256_DIGEST_LENGTH];
   CC_SHA256(url.spec().data(), url.spec().length(), result);
-  return base::SysUTF8ToNSString(
-      base::HexEncode(result, CC_SHA256_DIGEST_LENGTH));
+  return base::SysUTF8ToNSString(base::HexEncode(result));
 }
 
 void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,

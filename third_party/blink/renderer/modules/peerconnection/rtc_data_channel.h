@@ -65,11 +65,11 @@ class MODULES_EXPORT RTCDataChannel final
   bool reliable() const;
 
   bool ordered() const;
-  absl::optional<uint16_t> maxPacketLifeTime() const;
-  absl::optional<uint16_t> maxRetransmits() const;
+  std::optional<uint16_t> maxPacketLifeTime() const;
+  std::optional<uint16_t> maxRetransmits() const;
   String protocol() const;
   bool negotiated() const;
-  absl::optional<uint16_t> id() const;
+  std::optional<uint16_t> id() const;
   String readyState() const;
   unsigned bufferedAmount() const;
 
@@ -199,7 +199,7 @@ class MODULES_EXPORT RTCDataChannel final
   // Once an id has been assigned, we'll set this value and use it instead
   // of querying the channel (which requires thread hop). This is a cached
   // value to optimize a const getter, and therefore `mutable`.
-  mutable absl::optional<uint16_t> id_;
+  mutable std::optional<uint16_t> id_;
   unsigned buffered_amount_low_threshold_ = 0u;
   unsigned buffered_amount_ = 0u;
   bool stopped_ = false;

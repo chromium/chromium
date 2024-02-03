@@ -12,9 +12,11 @@ namespace payments::facilitated {
 
 class FaciliatedPaymentsManager;
 
-ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver()
-    : FacilitatedPaymentsDriver(
-          std::make_unique<FacilitatedPaymentsManager>(this)) {}
+ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
+    : FacilitatedPaymentsDriver(std::make_unique<FacilitatedPaymentsManager>(
+          this,
+          optimization_guide_decider)) {}
 
 ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;
 

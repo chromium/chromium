@@ -69,12 +69,12 @@ device::mojom::blink::XRNativeOriginInformationPtr XRAnchor::NativeOrigin()
       this->id());
 }
 
-absl::optional<gfx::Transform> XRAnchor::MojoFromObject() const {
+std::optional<gfx::Transform> XRAnchor::MojoFromObject() const {
   DVLOG(3) << __func__ << ": id_=" << id_;
 
   if (!mojo_from_anchor_) {
     DVLOG(3) << __func__ << ": id_=" << id_ << ", mojo_from_anchor_ is not set";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return mojo_from_anchor_->ToTransform();
@@ -85,7 +85,7 @@ void XRAnchor::Delete() {
 
   if (!is_deleted_) {
     session_->xr()->xrEnvironmentProviderRemote()->DetachAnchor(id_);
-    mojo_from_anchor_ = absl::nullopt;
+    mojo_from_anchor_ = std::nullopt;
     anchor_space_ = nullptr;
   }
 

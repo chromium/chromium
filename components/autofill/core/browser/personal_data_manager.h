@@ -187,6 +187,17 @@ class PersonalDataManager : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+  // Returns true if the PDM is currently awaiting responses from the database.
+  // In this case, the PDM's state is currently potentially inconsistent with
+  // the database. Once the state has converged, PersonalDataManagerObserver::
+  // OnPersonalDataFinishedProfileTasks() will be called.
+  // The PDM's state is inconsistent with the database in two cases:
+  // - When profile modifications are still pending: ProfileChangesAreOngoing().
+  // - When reads are still pending.
+  bool IsAwaitingPendingChanges() const {
+    return ProfileChangesAreOngoing() || HasPendingQueries();
+  }
+
   // history::HistoryServiceObserver
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -930,16 +941,16 @@ class PersonalDataManager : public KeyedService,
   // it.
   void HandleNextProfileChange(const std::string& guid);
   // returns true if there is any profile change that's still ongoing.
-  bool ProfileChangesAreOngoing();
+  bool ProfileChangesAreOngoing() const;
   // returns true if there is any ongoing change for profile with guid = |guid|
   // that's still ongoing.
-  bool ProfileChangesAreOngoing(const std::string& guid);
+  bool ProfileChangesAreOngoing(const std::string& guid) const;
   // Remove the change from the |ongoing_profile_changes_|, handle next task or
   // Refresh.
   void OnProfileChangeDone(const std::string& guid);
 
   // Returns if there are any pending queries to the web database.
-  bool HasPendingQueries();
+  bool HasPendingQueries() const;
 
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();

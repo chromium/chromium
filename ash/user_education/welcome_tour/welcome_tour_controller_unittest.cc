@@ -391,10 +391,10 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
   session_controller_client->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::USER_TYPE_REGULAR,
+      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
       /*provide_pref_service=*/true, /*is_new_profile=*/true);
   session_controller_client->AddUserSession(
-      secondary_account_id.GetUserEmail(), user_manager::USER_TYPE_REGULAR,
+      secondary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
       /*provide_pref_service=*/true, /*is_new_profile=*/true);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
@@ -552,7 +552,7 @@ TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
 
   TestSessionControllerClient* const session = GetSessionControllerClient();
   session->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::USER_TYPE_REGULAR,
+      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
       /*provide_pref_service=*/true, /*is_new_profile=*/true);
   session->SwitchActiveUser(primary_account_id);
 
@@ -727,13 +727,13 @@ INSTANTIATE_TEST_SUITE_P(
                           std::nullopt),
         /*is_new_user_locally=*/::testing::Bool(),
         /*is_managed_user=*/::testing::Bool(),
-        ::testing::Values(user_manager::UserType::USER_TYPE_ARC_KIOSK_APP,
-                          user_manager::UserType::USER_TYPE_CHILD,
-                          user_manager::UserType::USER_TYPE_GUEST,
-                          user_manager::UserType::USER_TYPE_KIOSK_APP,
-                          user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT,
-                          user_manager::UserType::USER_TYPE_REGULAR,
-                          user_manager::UserType::USER_TYPE_WEB_KIOSK_APP)));
+        ::testing::Values(user_manager::UserType::kArcKioskApp,
+                          user_manager::UserType::kChild,
+                          user_manager::UserType::kGuest,
+                          user_manager::UserType::kKioskApp,
+                          user_manager::UserType::kPublicAccount,
+                          user_manager::UserType::kRegular,
+                          user_manager::UserType::kWebKioskApp)));
 
 // Tests -----------------------------------------------------------------------
 
@@ -749,7 +749,7 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
   const bool is_user_eligibility_expected =
       ForceUserEligibility() ||
       (IsNewUserCrossDevice().value_or(false) && IsNewUserLocally() &&
-       !IsManagedUser() && GetUserType() == user_manager::USER_TYPE_REGULAR);
+       !IsManagedUser() && GetUserType() == user_manager::UserType::kRegular);
 
   // Set expectations for whether the Welcome Tour will run.
   EXPECT_CALL(*user_education_delegate(),
@@ -783,7 +783,7 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
   // should be last.
   std::vector<base::Bucket> buckets;
   if (!ForceUserEligibility()) {
-    if (GetUserType() != user_manager::USER_TYPE_REGULAR) {
+    if (GetUserType() != user_manager::UserType::kRegular) {
       buckets.emplace_back(PreventedReason::kUserTypeNotRegular, 1);
     } else if (IsManagedUser()) {
       buckets.emplace_back(PreventedReason::kManagedAccount, 1);

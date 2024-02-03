@@ -37,7 +37,7 @@ void PaintRenderingContext2D::InitializeForRecording(
 }
 
 void PaintRenderingContext2D::RecordingCleared() {
-  previous_frame_ = absl::nullopt;
+  previous_frame_ = std::nullopt;
 }
 
 int PaintRenderingContext2D::Width() const {
@@ -85,7 +85,7 @@ void PaintRenderingContext2D::setShadowOffsetY(double y) {
   BaseRenderingContext2D::setShadowOffsetY(y * effective_zoom_);
 }
 
-cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() {
+const cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() const {
   return &paint_recorder_.getRecordingCanvas();
 }
 
@@ -141,7 +141,7 @@ PaintRecord PaintRenderingContext2D::GetRecord() {
     return *previous_frame_;  // Reuse the previous frame
   }
 
-  return paint_recorder_.finishRecordingAsPicture();
+  return paint_recorder_.ReleaseMainRecording();
 }
 
 }  // namespace blink

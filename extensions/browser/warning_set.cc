@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -34,11 +35,10 @@ namespace extensions {
 // Warning
 //
 
-Warning::Warning(
-    WarningType type,
-    const std::string& extension_id,
-    int message_id,
-    const std::vector<std::string>& message_parameters)
+Warning::Warning(WarningType type,
+                 const ExtensionId& extension_id,
+                 int message_id,
+                 const std::vector<std::string>& message_parameters)
     : type_(type),
       extension_id_(extension_id),
       message_id_(message_id),
@@ -68,8 +68,7 @@ Warning& Warning::operator=(const Warning& other) {
 }
 
 // static
-Warning Warning::CreateNetworkDelayWarning(
-    const std::string& extension_id) {
+Warning Warning::CreateNetworkDelayWarning(const ExtensionId& extension_id) {
   std::vector<std::string> message_parameters;
   message_parameters.push_back(ExtensionsClient::Get()->GetProductName());
   return Warning(
@@ -81,7 +80,7 @@ Warning Warning::CreateNetworkDelayWarning(
 
 // static
 Warning Warning::CreateRepeatedCacheFlushesWarning(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   std::vector<std::string> message_parameters;
   message_parameters.push_back(ExtensionsClient::Get()->GetProductName());
   return Warning(
@@ -112,7 +111,7 @@ Warning Warning::CreateDownloadFilenameConflictWarning(
 
 // static
 Warning Warning::CreateReloadTooFrequentWarning(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   std::vector<std::string> message_parameters;
   return Warning(kReloadTooFrequent,
                           extension_id,
@@ -151,7 +150,7 @@ std::string Warning::GetLocalizedMessage(const ExtensionSet* extensions) const {
   for (size_t i = 0; i < message_parameters_.size(); ++i) {
     std::string message = message_parameters_[i];
     if (base::StartsWith(message, kTranslate, base::CompareCase::SENSITIVE)) {
-      std::string extension_id = message.substr(sizeof(kTranslate) - 1);
+      ExtensionId extension_id = message.substr(sizeof(kTranslate) - 1);
       const extensions::Extension* extension =
           extensions->GetByID(extension_id);
       message = extension ? extension->name() : extension_id;

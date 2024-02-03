@@ -78,6 +78,7 @@ class TestShellDelegate : public ShellDelegate {
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   int GetBrowserWebUITabStripHeight() override;
   DeskProfilesDelegate* GetDeskProfilesDelegate() override;
+  void OpenMultitaskingSettings() override {}
   void BindMultiDeviceSetup(
       mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
           receiver) override;
@@ -136,7 +137,7 @@ class TestShellDelegate : public ShellDelegate {
   MultiDeviceSetupBinder multidevice_setup_binder_;
   UserEducationDelegateFactory user_education_delegate_factory_;
 
-  GURL last_committed_url_ = GURL::EmptyGURL();
+  GURL last_committed_url_;
 
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
 

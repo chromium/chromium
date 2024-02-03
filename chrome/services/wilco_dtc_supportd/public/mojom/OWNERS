@@ -1,7 +1,0 @@
-per-file *.mojom=set noparent
-
-# Primary:
-per-file *.mojom=file://chromeos/SECURITY_OWNERS
-
-# Backup reviewers:
-per-file *.mojom=file://ipc/SECURITY_OWNERS

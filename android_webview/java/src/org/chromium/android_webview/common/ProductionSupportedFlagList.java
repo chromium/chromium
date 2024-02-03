@@ -153,9 +153,6 @@ public final class ProductionSupportedFlagList {
                 GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA,
                 "Use thread-safe media path, requires Android P."),
         Flag.baseFeature(
-                GpuFeatures.AGGRESSIVE_SKIA_GPU_RESOURCE_PURGE,
-                "More aggressively purge skia GPU resources"),
-        Flag.baseFeature(
                 GpuFeatures.PRUNE_OLD_TRANSFER_CACHE_ENTRIES,
                 "Prune old transfer cache entries and disable pruning from client"),
         Flag.baseFeature(
@@ -172,10 +169,6 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.DRAW_IMMEDIATELY_WHEN_INTERACTIVE,
                 "Enable optimization for immediate activation and draw when interactive."),
         Flag.baseFeature(GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_CONNECTIONLESS_SAFE_BROWSING,
-                "Uses GooglePlayService's 'connectionless' APIs for Safe Browsing "
-                        + "security checks."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_BROTLI_SUPPORT,
                 "Enables brotli compression support in WebView."),
@@ -298,10 +291,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_DE_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Germany."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_STREET_NAME_OR_HOUSE_NUMBER_PRECEDENCE_OVER_AUTOCOMPLETE,
-                "When enabled, Autofill prioritizes local heuristics over some server "
-                        + "classifications."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_ZIP_ONLY_ADDRESS_FORMS,
                 "When enabled, Autofill supports forms consisting of only zip code fields."),
         Flag.baseFeature(
@@ -326,6 +315,15 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_CACHE_FOR_REGEX_MATCHING,
                 "When enabled, autofill uses an extra cache for matching regular expressions "
                         + "while executing local heuristics."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ENABLE_LABEL_PRECEDENCE_FOR_TURKISH_ADDRESSES,
+                "When enabled, the precedence is given to the field label over the name when they"
+                        + " match different types. Applied only for parsing of address forms in"
+                        + " Turkish."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_UPLOAD_VOTES_FOR_FIELDS_WITH_EMAIL,
+                "When enabled, autofill will issues votes for EMAIL_ADDRESS field types on fields"
+                        + " where the content matches a valid email format."),
         Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
@@ -506,7 +504,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BlinkFeatures.INTERSECTION_OPTIMIZATION),
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),
         Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
-        Flag.baseFeature(BlinkFeatures.ONE_PASS_RASTER_INVALIDATION),
         Flag.baseFeature(
                 ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
                 "Disable to turn off the new SurfaceSync Fullscreen path."),

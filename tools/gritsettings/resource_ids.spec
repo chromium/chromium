@@ -182,6 +182,10 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [2640],
   },
+  "chrome/browser/resources/chromeos/seal/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [2650],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/parent_access/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2660],
@@ -256,6 +260,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/access_code_cast/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [3080],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commerce/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [3090],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/compose/resources.grd": {
     "META": {"sizes": {"includes": [15]}},
@@ -607,7 +615,7 @@
    "includes": [4760],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/app_settings/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
+    "META": {"sizes": {"includes": [40]}},
     "includes": [4780],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/sync/service/resources/resources.grd": {
@@ -837,11 +845,11 @@
     "META": {"join": 2, "sizes": {"includes": [20]}},
     "includes": [5880],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sample_system_web_app_ui/resources/trusted/ash_sample_system_web_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sample_system_web_app_ui/resources/trusted/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [5900],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sample_system_web_app_ui/resources/untrusted/ash_sample_system_web_app_untrusted_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sample_system_web_app_ui/resources/untrusted/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [5920],
   },
@@ -1101,7 +1109,7 @@
     "META": {"sizes": {"includes": [200],}},
     "includes": [7460],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shortcut_customization_ui/resources/ash_shortcut_customization_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shortcut_customization_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [7480],
   },

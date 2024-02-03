@@ -56,7 +56,7 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   CodecDescription PrepareExtraData();
 
   EncoderStatus::Or<OwnedOpusEncoder> CreateOpusEncoder(
-      const absl::optional<AudioEncoder::OpusOptions>& opus_options);
+      const std::optional<AudioEncoder::OpusOptions>& opus_options);
 
   AudioParameters input_params_;
 

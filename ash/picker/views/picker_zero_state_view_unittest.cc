@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/picker/model/picker_category.h"
-#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -42,7 +41,7 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
               Not(IsEmpty()));
 
-  PickerItemView* category_view =
+  views::View* category_view =
       view->section_views_for_testing()[0]->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(category_view);
   LeftClickOn(category_view);

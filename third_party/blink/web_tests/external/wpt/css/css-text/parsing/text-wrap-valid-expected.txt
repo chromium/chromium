@@ -7,15 +7,11 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "wrap balance" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['text-wrap'] = "wrap pretty" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "wrap stable" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "auto wrap" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "balance wrap" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['text-wrap'] = "pretty wrap" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "stable wrap" should set the property value
   assert_not_equals: property should be set got disallowed value ""
@@ -23,15 +19,11 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "nowrap balance" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['text-wrap'] = "nowrap pretty" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "nowrap stable" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "auto nowrap" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "balance nowrap" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['text-wrap'] = "pretty nowrap" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-wrap'] = "stable nowrap" should set the property value
   assert_not_equals: property should be set got disallowed value ""

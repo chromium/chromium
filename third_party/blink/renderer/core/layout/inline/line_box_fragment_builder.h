@@ -59,7 +59,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   // Mark this line box is an "empty" line box. See LineBoxType.
   void SetIsEmptyLineBox();
 
-  absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
+  std::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
     return line_box_bfc_block_offset_;
   }
   void SetLineBoxBfcBlockOffset(LayoutUnit offset) {
@@ -97,7 +97,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   const LayoutResult* ToLineBoxFragment();
 
  private:
-  absl::optional<LayoutUnit> line_box_bfc_block_offset_;
+  std::optional<LayoutUnit> line_box_bfc_block_offset_;
   LayoutUnit annotation_block_offset_adjustment_;
   FontHeight metrics_ = FontHeight::Empty();
   LayoutUnit hang_inline_size_;

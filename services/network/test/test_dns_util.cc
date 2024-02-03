@@ -22,8 +22,8 @@ namespace network {
 DnsLookupResult::DnsLookupResult(
     int32_t error,
     net::ResolveErrorInfo resolve_error_info,
-    absl::optional<net::AddressList> resolved_addresses,
-    absl::optional<net::HostResolverEndpointResults>
+    std::optional<net::AddressList> resolved_addresses,
+    std::optional<net::HostResolverEndpointResults>
         endpoint_results_with_metadata)
     : error(error),
       resolve_error_info(std::move(resolve_error_info)),
@@ -40,10 +40,9 @@ DnsLookupResult BlockingDnsLookup(
     const net::HostPortPair& host_port_pair,
     network::mojom::ResolveHostParametersPtr params,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
-  base::test::TestFuture<
-      int32_t, const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>&,
-      const absl::optional<net::HostResolverEndpointResults>&>
+  base::test::TestFuture<int32_t, const net::ResolveErrorInfo&,
+                         const std::optional<net::AddressList>&,
+                         const std::optional<net::HostResolverEndpointResults>&>
       future;
   auto resolver = SimpleHostResolver::Create(network_context);
   // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS

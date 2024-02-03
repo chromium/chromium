@@ -281,13 +281,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 HeaderViewBinder::bind);
 
         adapter.registerType(
-                OmniboxSuggestionUiType.PEDAL_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<View>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
-
-        adapter.registerType(
                 OmniboxSuggestionUiType.GROUP_SEPARATOR,
                 parent -> new GroupSeparatorView(parent.getContext()),
                 (m, v, p) -> {});

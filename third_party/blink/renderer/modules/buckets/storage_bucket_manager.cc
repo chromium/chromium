@@ -136,11 +136,13 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise StorageBucketManager::keys(ScriptState* script_state,
-                                         ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLSequence<IDLString>> StorageBucketManager::keys(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
@@ -230,9 +232,10 @@ void StorageBucketManager::DidOpen(
       navigator_base_, name, std::move(bucket_remote)));
 }
 
-void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
-                                      const Vector<String>& keys,
-                                      bool success) {
+void StorageBucketManager::DidGetKeys(
+    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+    const Vector<String>& keys,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
     return;
@@ -245,7 +248,7 @@ void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
         "Unknown error occured while retrieving bucket names."));
     return;
   }
-  resolver->Resolve<IDLSequence<IDLString>>(keys);
+  resolver->Resolve(keys);
 }
 
 void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,

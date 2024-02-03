@@ -106,7 +106,8 @@ v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
     v8::Local<v8::Object> wrapper) {
   // Using the world directly avoids fetching it from a potentially
   // half-initialized context.
-  if (world->DomDataStore().Set(isolate, this, wrapper_type_info, wrapper)) {
+  if (world->DomDataStore().Set</*entered_context=*/false>(
+          isolate, this, wrapper_type_info, wrapper)) {
     V8DOMWrapper::SetNativeInfo(isolate, wrapper, wrapper_type_info, this);
     DCHECK(V8DOMWrapper::HasInternalFieldsSet(wrapper));
   }

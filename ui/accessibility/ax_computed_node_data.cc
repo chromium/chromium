@@ -151,8 +151,6 @@ const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
       // than non-atomic text fields.
       return base::EmptyString();
     default:
-      // This is a special case: for performance reasons do not use
-      // `base::EmptyString()` in other places throughout the codebase.
       return base::EmptyString();
   }
 }

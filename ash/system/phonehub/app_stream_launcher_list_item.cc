@@ -7,7 +7,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -27,10 +26,8 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
     PressedCallback callback,
     const phonehub::Notification::AppMetadata& app_metadata)
     : LabelButton(std::move(callback), app_metadata.visible_app_name) {
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
-                                          *label());
-  }
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                        *label());
 
   gfx::ImageSkia resized_app_icon =
       gfx::ImageSkiaOperations::CreateResizedImage(
@@ -45,14 +42,12 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
                     gfx::ImageSkiaOperations::CreateTransparentImage(
                         resized_app_icon, kAlphaValueForInhibitedIconOpacity)));
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                          /*highlight_on_hover=*/false,
-                                          /*highlight_on_focus=*/true);
-    views::FocusRing::Get(this)->SetColorId(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
-    views::InstallRectHighlightPathGenerator(this);
-  }
+  ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                        /*highlight_on_hover=*/false,
+                                        /*highlight_on_focus=*/true);
+  views::FocusRing::Get(this)->SetColorId(
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
+  views::InstallRectHighlightPathGenerator(this);
 
   SetTooltipText(GetAppAccessibleName(app_metadata));
   SetEnabled(app_metadata.app_streamability_status ==

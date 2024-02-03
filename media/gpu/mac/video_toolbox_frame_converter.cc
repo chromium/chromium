@@ -4,6 +4,8 @@
 
 #include "media/gpu/mac/video_toolbox_frame_converter.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -20,7 +22,6 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -30,15 +31,17 @@ namespace media {
 
 namespace {
 
+// The SharedImages created by this class to back VideoFrames can be read by the
+// raster interface for canvas and by the GLES2 interface for WebGL in addition
+// to being sent to the display compositor and/or used as overlays.
 constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
     gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
-    gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-    gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
 constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
 
-absl::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
+std::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
     OSType pixel_format) {
   switch (pixel_format) {
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
@@ -48,7 +51,7 @@ absl::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
     case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
       return viz::MultiPlaneFormat::kNV12A;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -170,7 +173,7 @@ void VideoToolboxFrameConverter::Convert(
                           base::scoped_policy::RETAIN);
 
   OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface.get());
-  absl::optional<viz::SharedImageFormat> format =
+  std::optional<viz::SharedImageFormat> format =
       PixelFormatToImageFormat(pixel_format);
   if (!format) {
     MEDIA_LOG(ERROR, media_log_.get())

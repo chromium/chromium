@@ -160,7 +160,7 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
   write_reference_time_ = reference_time + input_bus_duration_;
 }
 
-absl::optional<base::TimeTicks> SnooperNode::SuggestLatestRenderTime(
+std::optional<base::TimeTicks> SnooperNode::SuggestLatestRenderTime(
     FrameTicks duration) {
   DCHECK_GE(duration, 0);
 
@@ -168,7 +168,7 @@ absl::optional<base::TimeTicks> SnooperNode::SuggestLatestRenderTime(
   {
     base::AutoLock scoped_lock(lock_);
     if (write_position_ == kNullPosition) {
-      return absl::nullopt;  // OnData() never called yet.
+      return std::nullopt;  // OnData() never called yet.
     }
     checkpoint_time_ = write_reference_time_;
   }
@@ -176,7 +176,7 @@ absl::optional<base::TimeTicks> SnooperNode::SuggestLatestRenderTime(
   // Do not suggest any changes if OnData() has not been called since the last
   // call to this method. This may indicate an input discontinuity is occurring.
   if (checkpoint_time_ == last_checkpoint_time) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Suggest a render time by working backwards from the end time of the data

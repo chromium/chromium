@@ -93,7 +93,7 @@ const gfx::Size GetResolutionFromBitstream(
 // https://aomediacodec.github.io/av1-spec/av1-spec.pdf
 void FillSequenceParams(
     struct v4l2_ctrl_av1_sequence* v4l2_seq_params,
-    const absl::optional<libgav1::ObuSequenceHeader>& seq_header) {
+    const std::optional<libgav1::ObuSequenceHeader>& seq_header) {
   conditionally_set_u32_flags(&v4l2_seq_params->flags,
                               seq_header->still_picture,
                               V4L2_AV1_SEQUENCE_FLAG_STILL_PICTURE);
@@ -233,7 +233,7 @@ void FillQuantizationParams(struct v4l2_av1_quantization* v4l2_quant,
 // Section 5.9.17. Quantizer index delta parameters syntax
 void FillQuantizerIndexDeltaParams(
     struct v4l2_av1_quantization* v4l2_quant,
-    const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
+    const std::optional<libgav1::ObuSequenceHeader>& seq_header,
     const libgav1::ObuFrameHeader& frm_header) {
   // |diff_uv_delta| in the spec doesn't exist in libgav1,
   // because libgav1 infers it using the following logic.
@@ -633,7 +633,7 @@ void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
 // 5.9.2. Uncompressed header syntax
 void Av1Decoder::SetupFrameParams(
     struct v4l2_ctrl_av1_frame* v4l2_frame_params,
-    const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
+    const std::optional<libgav1::ObuSequenceHeader>& seq_header,
     const libgav1::ObuFrameHeader& frm_header) {
   FillLoopFilterParams(&v4l2_frame_params->loop_filter, frm_header.loop_filter);
 

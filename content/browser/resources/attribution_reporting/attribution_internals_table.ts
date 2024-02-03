@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './attribution_internals_table.html.js';
@@ -11,7 +10,7 @@ import {TableModel} from './table_model.js';
 /**
  * Helper function for setting sort attributes on |th|.
  */
-function setSortAttrs(th: HTMLElement, sortDesc: boolean|null) {
+function setSortAttrs(th: HTMLElement, sortDesc: boolean|null): void {
   let nextDir;
   if (sortDesc === null) {
     th.ariaSort = 'none';
@@ -30,24 +29,23 @@ function setSortAttrs(th: HTMLElement, sortDesc: boolean|null) {
 
 /**
  * Table abstracts the logic for rendering and sorting a table. The table's
- * columns are supplied by a TableModel supplied to the decorate function. Each
- * Column knows how to render the underlying value of the row type T, and
- * optionally sort rows of type T by that value.
+ * columns are supplied by a TableModel. Each Column knows how to render the
+ * underlying value of the row type T, and optionally sort rows of type T by
+ * that value.
  */
 export class AttributionInternalsTableElement<T> extends CustomElement {
   static override get template() {
     return getTemplate();
   }
 
-  private model_: TableModel<T>|null = null;
+  private model_?: TableModel<T>;
   private sortDesc_: boolean = false;
 
-  setModel(model: TableModel<T>) {
+  setModel(model: TableModel<T>): void {
     this.model_ = model;
     this.sortDesc_ = false;
 
-    const tr = this.$<HTMLElement>('tr');
-    assert(tr);
+    const tr = this.$<HTMLElement>('tr')!;
     model.cols.forEach((col, idx) => {
       const th = document.createElement('th');
       th.scope = 'col';
@@ -55,50 +53,46 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
 
       if (col.compare) {
         th.setAttribute('role', 'button');
-        setSortAttrs(th, /*sortDesc=*/ null);
+        setSortAttrs(th, idx === model.sortIdx ? this.sortDesc_ : null);
         th.addEventListener('click', () => this.changeSortHeader_(idx));
       }
 
-      tr.appendChild(th);
+      tr.append(th);
     });
 
     this.addSpanningText_();
-    this.model_.rowsChangedListeners.add(() => this.updateTbody());
+    this.model_.rowsChangedListeners.add(() => this.updateTbody_());
   }
 
-  private addSpanningText_() {
+  private addSpanningText_(): void {
     const td = document.createElement('td');
-    assert(this.model_);
-    td.textContent = this.model_.emptyRowText;
-    td.colSpan = this.model_.cols.length;
+    td.innerText = this.model_!.emptyRowText;
+    td.colSpan = this.model_!.cols.length;
     const tr = document.createElement('tr');
-    tr.appendChild(td);
-    const tbody = this.$<HTMLElement>('tbody');
-    assert(tbody);
-    tbody.appendChild(tr);
+    tr.append(td);
+    const tbody = this.$<HTMLElement>('tbody')!;
+    tbody.append(tr);
   }
 
-  private changeSortHeader_(idx: number) {
+  private changeSortHeader_(idx: number): void {
     const ths = this.$all<HTMLElement>('thead th');
 
-    assert(this.model_);
-    if (idx === this.model_.sortIdx) {
+    if (idx === this.model_!.sortIdx) {
       this.sortDesc_ = !this.sortDesc_;
     } else {
       this.sortDesc_ = false;
-      if (this.model_.sortIdx >= 0) {
-        setSortAttrs(ths[this.model_.sortIdx]!, /*descending=*/ null);
+      if (this.model_!.sortIdx >= 0) {
+        setSortAttrs(ths[this.model_!.sortIdx]!, /*descending=*/ null);
       }
     }
 
-    this.model_.sortIdx = idx;
-    setSortAttrs(ths[this.model_.sortIdx]!, this.sortDesc_);
-    this.updateTbody();
+    this.model_!.sortIdx = idx;
+    setSortAttrs(ths[this.model_!.sortIdx]!, this.sortDesc_);
+    this.updateTbody_();
   }
 
-  private sort_(rows: T[]) {
-    assert(this.model_);
-    if (this.model_.sortIdx < 0) {
+  private sort_(rows: T[]): void {
+    if (this.model_!.sortIdx < 0) {
       return;
     }
 
@@ -108,13 +102,11 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
             multiplier);
   }
 
-  updateTbody() {
-    const tbody = this.$<HTMLElement>('tbody');
-    assert(tbody);
+  private updateTbody_(): void {
+    const tbody = this.$<HTMLElement>('tbody')!;
     tbody.innerText = '';
 
-    assert(this.model_);
-    const rows = this.model_.getRows();
+    const rows = this.model_!.getRows();
     if (rows.length === 0) {
       this.addSpanningText_();
       return;
@@ -124,14 +116,13 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
 
     rows.forEach((row) => {
       const tr = document.createElement('tr');
-      assert(this.model_);
-      this.model_.cols.forEach((col) => {
+      this.model_!.cols.forEach((col) => {
         const td = document.createElement('td');
         col.render(td, row);
-        tr.appendChild(td);
+        tr.append(td);
       });
-      this.model_.styleRow(tr, row);
-      tbody.appendChild(tr);
+      this.model_!.styleRow(tr, row);
+      tbody.append(tr);
     });
   }
 }

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 

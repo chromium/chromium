@@ -9,6 +9,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 
+// Size of buffer to allocate on the stack for string conversion.
+#define BUFFER_SIZE 1024
+
 namespace {
 
 // Internal version that does not use a scoped local pointer.
@@ -38,14 +41,29 @@ void ConvertJavaStringToUTF8(JNIEnv* env, jstring str, std::string* result) {
     CheckException(env);
     return;
   }
-  // JNI's GetStringUTFChars() returns strings in Java "modified" UTF8, so
-  // instead get the String in UTF16 and convert using chromium's conversion
-  // function that yields plain (non Java-modified) UTF8.
-  const jchar* chars = env->GetStringChars(str, NULL);
-  DCHECK(chars);
-  UTF16ToUTF8(reinterpret_cast<const char16_t*>(chars),
-              static_cast<size_t>(length), result);
-  env->ReleaseStringChars(str, chars);
+  // JNI's GetStringUTFChars() and GetStringUTFRegion returns strings in Java
+  // "modified" UTF8, so instead get the String in UTF16 and convert using
+  // chromium's conversion function that yields plain (non Java-modified) UTF8.
+  if (length <= BUFFER_SIZE) {
+    // fast path, allocate temporary buffer on the stack and use GetStringRegion
+    // to copy the utf-16 characters into it with no heap allocation.
+    // https://developer.android.com/training/articles/perf-jni#utf-8-and-utf-16-strings:~:text=stack%2Dallocated%20buffer
+    std::array<jchar, BUFFER_SIZE> chars;
+    // GetStringRegion does not copy a null terminated string so the length must
+    // be explicitly passed to UTF16ToUTF8.
+    env->GetStringRegion(str, 0, length, chars.data());
+    UTF16ToUTF8(reinterpret_cast<const char16_t*>(chars.data()),
+                static_cast<size_t>(length), result);
+  } else {
+    // slow path
+    // GetStringChars doesn't NULL-terminate the strings it returns, so the
+    // length must be explicitly passed to UTF16ToUTF8.
+    const jchar* chars = env->GetStringChars(str, NULL);
+    DCHECK(chars);
+    UTF16ToUTF8(reinterpret_cast<const char16_t*>(chars),
+                static_cast<size_t>(length), result);
+    env->ReleaseStringChars(str, chars);
+  }
   CheckException(env);
 }
 
@@ -91,13 +109,26 @@ void ConvertJavaStringToUTF16(JNIEnv* env,
     CheckException(env);
     return;
   }
-  const jchar* chars = env->GetStringChars(str, NULL);
-  DCHECK(chars);
-  // GetStringChars isn't required to NULL-terminate the strings
-  // it returns, so the length must be explicitly checked.
-  result->assign(reinterpret_cast<const char16_t*>(chars),
-                 static_cast<size_t>(length));
-  env->ReleaseStringChars(str, chars);
+  if (length <= BUFFER_SIZE) {
+    // fast path, allocate temporary buffer on the stack and use GetStringRegion
+    // to copy the utf-16 characters into it with no heap allocation.
+    // https://developer.android.com/training/articles/perf-jni#utf-8-and-utf-16-strings:~:text=stack%2Dallocated%20buffer
+    std::array<jchar, BUFFER_SIZE> chars;
+    env->GetStringRegion(str, 0, length, chars.data());
+    // GetStringRegion does not copy a null terminated string so the length must
+    // be explicitly passed to assign.
+    result->assign(reinterpret_cast<const char16_t*>(chars.data()),
+                   static_cast<size_t>(length));
+  } else {
+    // slow path
+    const jchar* chars = env->GetStringChars(str, NULL);
+    DCHECK(chars);
+    // GetStringChars doesn't NULL-terminate the strings it returns, so the
+    // length must be explicitly passed to assign.
+    result->assign(reinterpret_cast<const char16_t*>(chars),
+                   static_cast<size_t>(length));
+    env->ReleaseStringChars(str, chars);
+  }
   CheckException(env);
 }
 

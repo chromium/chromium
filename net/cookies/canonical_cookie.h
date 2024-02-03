@@ -236,7 +236,7 @@ class NET_EXPORT CanonicalCookie {
   const base::Time& LastAccessDate() const { return last_access_date_; }
   const base::Time& LastUpdateDate() const { return last_update_date_; }
   bool IsPersistent() const { return !expiry_date_.is_null(); }
-  bool IsSecure() const { return secure_; }
+  bool SecureAttribute() const { return secure_; }
   bool IsHttpOnly() const { return httponly_; }
   CookieSameSite SameSite() const { return same_site_; }
   CookiePriority Priority() const { return priority_; }
@@ -261,10 +261,17 @@ class NET_EXPORT CanonicalCookie {
   // Returns whether this cookie is Partitioned and its partition key matches a
   // a same-site context by checking if the cookies domain site is the same as
   // the partition key's site.
+  // This function should not be used for third-party cookie blocking
+  // enforcement-related decisions. That logic should rely on `IsPartitioned`.
+  // These functions are for recording metrics about partitioned cookie usage.
   // Returns false if the cookie has no partition key.
   bool IsFirstPartyPartitioned() const;
 
   // Returns whether the cookie is partitioned in a third-party context.
+  // This function should not be used for third-party cookie blocking
+  // enforcement-related decisions. That logic should rely on `IsPartitioned`.
+  // These functions are for recording metrics about partitioned cookie usage.
+  // Returns false if the cookie has no partition key.
   bool IsThirdPartyPartitioned() const;
 
   // Returns the cookie's domain, with the leading dot removed, if present.

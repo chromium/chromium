@@ -6,8 +6,10 @@
 #define SERVICES_NETWORK_CORS_PREFLIGHT_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -23,7 +25,6 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -56,11 +57,25 @@ enum class PrivateNetworkAccessPreflightBehavior {
   // Same as `kWarn`, also apply a short timeout to PNA preflights.
   kWarnWithTimeout,
 };
-
 // A class to manage CORS-preflight, making a CORS-preflight request, checking
 // its result, and owning a CORS-preflight cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
  public:
+  // Indicate whether the current preflight is for CORS or PNA or both.
+  enum class PreflightType {
+    kMinValue = 0,
+
+    kCors = kMinValue,
+    kPrivateNetworkAccess = 1,
+
+    kMaxValue = kPrivateNetworkAccess,
+  };
+
+  using PreflightMode =
+      base::EnumSet<PreflightController::PreflightType,
+                    PreflightController::PreflightType::kMinValue,
+                    PreflightController::PreflightType::kMaxValue>;
+
   // Called with the result of `PerformPreflightCheck()`.
   //
   // `net_error` is the overall result of the operation.
@@ -80,7 +95,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   // `has_authorization_covered_by_wildcard` once the investigation is done.
   using CompletionCallback =
       base::OnceCallback<void(int net_error,
-                              absl::optional<CorsErrorStatus> cors_error_status,
+                              std::optional<CorsErrorStatus> cors_error_status,
                               bool has_authorization_covered_by_wildcard)>;
 
   using WithTrustedHeaderClient =
@@ -103,14 +118,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const ResourceRequest& original_request,
       bool tainted,
       PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
-      absl::optional<CorsErrorStatus>* detected_error_status);
+      std::optional<CorsErrorStatus>* detected_error_status);
 
   // Checks CORS aceess on the CORS-preflight response parameters for testing.
   static base::expected<void, CorsErrorStatus> CheckPreflightAccessForTesting(
       const GURL& response_url,
       const int response_status_code,
-      const absl::optional<std::string>& allow_origin_header,
-      const absl::optional<std::string>& allow_credentials_header,
+      const std::optional<std::string>& allow_origin_header,
+      const std::optional<std::string>& allow_credentials_header,
       mojom::CredentialsMode actual_credentials_mode,
       const url::Origin& origin);
 
@@ -139,7 +154,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const net::NetLogWithSource& net_log,
       bool acam_preflight_spec_conformant,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
-          url_loader_network_service_observer);
+          url_loader_network_service_observer,
+      const PreflightMode& preflight_mode);
 
   // Clears the CORS preflight cache. The time range is always "all time" as
   // the preflight cache max age is capped to 2hrs. in Chrome.

@@ -19,19 +19,26 @@ const BlockBreakToken* CreateBreakToken(
     LayoutInputNode node,
     const BreakTokenVector* child_break_tokens = nullptr,
     bool has_seen_all_children = false) {
-  BoxFragmentBuilder builder(
-      node, &node.Style(), ConstraintSpace(),
-      WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr));
-  DCHECK(!builder.HasBreakTokenData());
-  builder.SetBreakTokenData(MakeGarbageCollected<BlockBreakTokenData>());
-  if (has_seen_all_children)
-    builder.SetHasSeenAllChildren();
+  WritingDirectionMode writing_direction(WritingMode::kHorizontalTb,
+                                         TextDirection::kLtr);
+  ConstraintSpaceBuilder space_builder(writing_direction.GetWritingMode(),
+                                       writing_direction,
+                                       /* is_new_fc */ true);
+  BoxFragmentBuilder fragment_builder(node, &node.Style(),
+                                      space_builder.ToConstraintSpace(),
+                                      writing_direction);
+  DCHECK(!fragment_builder.HasBreakTokenData());
+  fragment_builder.SetBreakTokenData(
+      MakeGarbageCollected<BlockBreakTokenData>());
+  if (has_seen_all_children) {
+    fragment_builder.SetHasSeenAllChildren();
+  }
   if (child_break_tokens) {
     for (const BreakToken* token : *child_break_tokens) {
-      builder.AddBreakToken(token);
+      fragment_builder.AddBreakToken(token);
     }
   }
-  return BlockBreakToken::Create(&builder);
+  return BlockBreakToken::Create(&fragment_builder);
 }
 
 using BlockChildIteratorTest = RenderingTest;

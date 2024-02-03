@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -192,7 +192,7 @@ TEST_P(LazyLoadImagesParamsTest, NearViewport) {
 
   SimSubresourceRequest eager_resource("https://example.com/eager.png",
                                        "image/png");
-  absl::optional<SimSubresourceRequest> lazy_resource, auto_resource,
+  std::optional<SimSubresourceRequest> lazy_resource, auto_resource,
       unset_resource;
   lazy_resource.emplace("https://example.com/lazy.png", "image/png");
   auto_resource.emplace("https://example.com/auto.png", "image/png");
@@ -276,7 +276,7 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
 
   SimSubresourceRequest eager_resource("https://example.com/eager.png",
                                        "image/png");
-  absl::optional<SimSubresourceRequest> lazy_resource, auto_resource,
+  std::optional<SimSubresourceRequest> lazy_resource, auto_resource,
       unset_resource;
   lazy_resource.emplace("https://example.com/lazy.png", "image/png");
   auto_resource.emplace("https://example.com/auto.png", "image/png");

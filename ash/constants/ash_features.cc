@@ -17,6 +17,10 @@
 namespace ash::features {
 namespace {
 
+// Whether 'LocalPasswordsForConsumers' has been force enabled.
+// TODO(b/323178117) - Remove once enabled by default, or by M123 branch.
+static bool g_local_password_for_consumers_force_enable = false;
+
 // Controls whether Instant Tethering supports hosts which use the background
 // advertisement model.
 BASE_FEATURE(kInstantTetheringBackgroundAdvertisementSupport,
@@ -445,14 +449,6 @@ BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
              "CheckPasswordsAgainstCryptohomeHelper",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, an educational footer may appear at the bottom of the clipboard
-// history menu. Whether the educational footer appears is based on user/device
-// state, such as when the user last used the clipboard history menu or when a
-// clipboard history nudge was last seen.
-BASE_FEATURE(kClipboardHistoryFooter,
-             "ClipboardHistoryFooter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
 // select a clipboard history item to replace the initially pasted content.
@@ -586,6 +582,11 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
 // remaining steps are done by separate screens.
 BASE_FEATURE(kCryptohomeRecoveryBeforeFlowSplit,
              "CryptohomeRecoveryBeforeFlowSplit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Toggle different display features based on user setting and power state
+BASE_FEATURE(kDisplayPerformanceMode,
+             "DisplayPerformanceMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Deprecates Ctrl+Alt+/ as shortcut to open Keyboard shortcuts app, shows
@@ -789,6 +790,11 @@ BASE_FEATURE(kDiagnosticsAppJelly,
 BASE_FEATURE(kEnableKeyboardBacklightToggle,
              "EnableKeyboardBacklightToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable keyboard rewriter fix.
+BASE_FEATURE(kEnableKeyboardRewriterFix,
+             "EnableKeyboardRewriterFix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Login WebUI was always loaded for legacy reasons even when it was not needed.
 // When enabled, it will make login WebUI loaded only before showing it.
@@ -1017,12 +1023,6 @@ const base::FeatureParam<std::string> kFastPairPwaCompanionPlayStoreUri{
     &kFastPairPwaCompanion, "pwa-companion-play-store-uri",
     /*default*/ ""};
 
-// Allows Fast Pair to use software scanning on devices which don't support
-// hardware offloading of BLE scans.
-BASE_FEATURE(kFastPairSoftwareScanning,
-             "FastPairSoftwareScanning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables support for software-based scanning on devices that don't support
 // hardware-based BLE advertisement filtering.
 BASE_FEATURE(kFastPairSoftwareScanningSupport,
@@ -1050,22 +1050,13 @@ BASE_FEATURE(kFastPairDevicesBluetoothSettings,
 // window snapped.
 BASE_FEATURE(kFasterSplitScreenSetup,
              "FasterSplitScreenSetup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, allows the creation of up to 16 desks (default is 8). This flag
 // is intended to be controlled by the feature management module.
 BASE_FEATURE(kFeatureManagement16Desks,
              "FeatureManagement16Desks",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, shows a system update notification. This flag is intended to be
-// controlled by the feature management module.
-BASE_FEATURE(kFeatureManagementUpdateNotification,
-             "FeatureManagementUpdateNotification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kUpdateNotification,
-             "UpdateNotification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows borealis on certain boards whose features are determined by
 // FeatureManagement. This feature does not apply to all boards, and does not
@@ -1346,10 +1337,15 @@ BASE_FEATURE(kGrowthFramework,
              "GrowthFramework",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Demo mode customizations with growth campaigns.
+// Enables Demo Mode customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInDemoMode,
              "GrowthCampaignsInDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables consumer session customizations with growth campaigns.
+BASE_FEATURE(kGrowthCampaignsInConsumerSession,
+             "GrowthCampaignsInConsumerSession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables new on-device recognition for legacy handwriting input.
 // This flag should be OVERRIDDEN for devices which do not have on-device
@@ -1513,6 +1509,11 @@ BASE_FEATURE(kSameAppWindowCycle,
              "SameAppWindowCycle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Make Sanitize available. This feature provides a "soft reset" option in CrOS
+// settings. This soft reset will disable extensions and reset some of the
+// settings to default.
+BASE_FEATURE(kSanitize, "CrosSanitize", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the snooping protection prototype is enabled.
 BASE_FEATURE(kSnoopingProtection,
              "SnoopingProtection",
@@ -1583,6 +1584,11 @@ BASE_FEATURE(kImeSystemEmojiPickerGIFSupport,
 BASE_FEATURE(kImeSystemEmojiPickerJellySupport,
              "SystemEmojiPickerJellySupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable or disable system emoji picker mojo based emoji search
+BASE_FEATURE(kImeSystemEmojiPickerMojoSearch,
+             "SystemEmojiPickerMojoSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable system emoji picker search extension
 BASE_FEATURE(kImeSystemEmojiPickerSearchExtension,
@@ -2518,7 +2524,7 @@ BASE_FEATURE(kShelfLauncherNudge,
 // there is not enough space for the app bar.
 BASE_FEATURE(kShelfStackedHotseat,
              "ShelfStackedHotseat",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Shelf Palm Rejection in tablet mode by defining a pixel offset for
 // the swipe gesture to show the extended hotseat. Limited to certain apps.
@@ -2552,12 +2558,6 @@ BASE_FEATURE(kShimlessRMA3pDiagnostics,
 BASE_FEATURE(kShimlessRMA3pDiagnosticsDevMode,
              "ShimlessRMA3pDiagnosticsDevMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the jelly colors will be used in the shortcut customization app.
-// Requires jelly-colors flag to also be enabled.
-BASE_FEATURE(kShortcutCustomizationJelly,
-             "ShortcutCustomizationJelly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
@@ -2667,9 +2667,6 @@ BASE_FEATURE(kFeatureManagementSystemLiveCaption,
 BASE_FEATURE(kSystemNudgeMigration,
              "SystemNudgeMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the ability to play sounds for system services.
-BASE_FEATURE(kSystemSounds, "SystemSounds", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the shadows of system tray bubbles.
 BASE_FEATURE(kSystemTrayShadow,
@@ -3072,10 +3069,6 @@ bool AreSideAlignedToastsEnabled() {
          base::FeatureList::IsEnabled(kSideAlignedToasts);
 }
 
-bool AreSystemSoundsEnabled() {
-  return base::FeatureList::IsEnabled(kSystemSounds);
-}
-
 bool IsAudioHFPMicSRToggleEnabled() {
   return base::FeatureList::IsEnabled(kAudioHFPMicSRToggle);
 }
@@ -3086,11 +3079,6 @@ bool IsAutoEnrollmentKioskInOobeEnabled() {
 
 bool Is16DesksEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagement16Desks);
-}
-
-bool IsUpdateNotificationEnabled() {
-  return base::FeatureList::IsEnabled(kFeatureManagementUpdateNotification) &&
-         base::FeatureList::IsEnabled(kUpdateNotification);
 }
 
 bool IsAdaptiveChargingEnabled() {
@@ -3225,10 +3213,6 @@ bool IsCellularCarrierLockEnabled() {
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
-}
-
-bool IsClipboardHistoryFooterEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryFooter);
 }
 
 bool IsClipboardHistoryLongpressEnabled() {
@@ -3420,10 +3404,6 @@ bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled() {
       kFastPairPreventNotificationsForRecentlyLostDevice);
 }
 
-bool IsFastPairSoftwareScanningEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairSoftwareScanning);
-}
-
 bool IsFastPairSoftwareScanningSupportEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSoftwareScanningSupport);
 }
@@ -3506,8 +3486,8 @@ bool IsForceReSyncDriveEnabled() {
 }
 
 bool IsForestFeatureEnabled() {
-  return switches::IsForestSecretKeyMatched() &&
-         base::FeatureList::IsEnabled(kForestFeature);
+  return base::FeatureList::IsEnabled(kForestFeature) &&
+         switches::IsForestSecretKeyMatched();
 }
 
 bool IsFullscreenAfterUnlockAllowed() {
@@ -3545,6 +3525,11 @@ bool IsGrowthFrameworkEnabled() {
 bool IsGrowthCampaignsInDemoModeEnabled() {
   return IsGrowthFrameworkEnabled() &&
          base::FeatureList::IsEnabled(kGrowthCampaignsInDemoMode);
+}
+
+bool IsGrowthCampaignsInConsumerSessionEnabled() {
+  return IsGrowthFrameworkEnabled() &&
+         base::FeatureList::IsEnabled(kGrowthCampaignsInConsumerSession);
 }
 
 bool AreGlanceablesV2Enabled() {
@@ -3756,8 +3741,7 @@ bool IsJellyEnabledForScanningApp() {
 }
 
 bool IsJellyEnabledForShortcutCustomization() {
-  return chromeos::features::IsJellyEnabled() &&
-         base::FeatureList::IsEnabled(kShortcutCustomizationJelly);
+  return chromeos::features::IsJellyEnabled();
 }
 
 bool IsKerberosRememberPasswordByDefaultEnabled() {
@@ -3766,6 +3750,10 @@ bool IsKerberosRememberPasswordByDefaultEnabled() {
 
 bool IsKeyboardBacklightToggleEnabled() {
   return base::FeatureList::IsEnabled(kEnableKeyboardBacklightToggle);
+}
+
+bool IsKeyboardRewriterFixEnabled() {
+  return base::FeatureList::IsEnabled(kEnableKeyboardRewriterFix);
 }
 
 bool IsLanguagePacksEnabled() {
@@ -3805,7 +3793,15 @@ bool IsLinkCrossDeviceInternalsEnabled() {
 }
 
 bool AreLocalPasswordsEnabledForConsumers() {
+  if (g_local_password_for_consumers_force_enable) {
+    return true;
+  }
+
   return base::FeatureList::IsEnabled(kLocalPasswordForConsumers);
+}
+
+void ForceEnableLocalPasswordsForConsumers() {
+  g_local_password_for_consumers_force_enable = true;
 }
 
 bool IsLockScreenHideSensitiveNotificationsSupported() {

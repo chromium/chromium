@@ -103,13 +103,15 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   // ax::mojom::UserInput:
   void SendSyntheticKeyEventForShortcutOrNavigation(
       ax::mojom::SyntheticKeyEventPtr key_event) override;
+  void SendSyntheticMouseEvent(
+      ax::mojom::SyntheticMouseEventPtr mouse_event) override;
 
   // ax::mojom::UserInterface:
   void DarkenScreen(bool darken) override;
   void OpenSettingsSubpage(const std::string& subpage) override;
   void ShowConfirmationDialog(const std::string& title,
                               const std::string& description,
-                              const absl::optional<std::string>& cancel_name,
+                              const std::optional<std::string>& cancel_name,
                               ShowConfirmationDialogCallback callback) override;
   void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
                      ax::mojom::AssistiveTechnologyType at_type) override;
@@ -143,7 +145,9 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SendTtsUtteranceEvent(mojom::TtsEventPtr tts_event);
 
   void SetSyntheticKeyEventCallback(base::RepeatingCallback<void()> callback);
-  const std::vector<ax::mojom::SyntheticKeyEventPtr>& GetKeyEvents() const;
+  void SetSyntheticMouseEventCallback(base::RepeatingCallback<void()> callback);
+  const std::vector<mojom::SyntheticKeyEventPtr>& GetKeyEvents() const;
+  const std::vector<mojom::SyntheticMouseEventPtr>& GetMouseEvents() const;
 
   bool UserInterfaceIsBound() const;
   void SetDarkenScreenCallback(
@@ -187,17 +191,19 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   mojo::ReceiverSet<mojom::SpeechRecognition> sr_receivers_;
   mojo::Remote<ax::mojom::SpeechRecognitionEventObserver> sr_event_observer_;
   base::RepeatingCallback<void()> speech_recognition_start_callback_;
-  absl::optional<std::string> speech_recognition_start_error_;
-  absl::optional<std::string> speech_recognition_stop_error_;
+  std::optional<std::string> speech_recognition_start_error_;
+  std::optional<std::string> speech_recognition_stop_error_;
 
   base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
       tts_speak_callback_;
   mojo::ReceiverSet<mojom::Tts> tts_receivers_;
   mojo::Remote<ax::mojom::TtsUtteranceClient> tts_utterance_client_;
 
-  base::RepeatingCallback<void()> synthetic_key_event_callback_;
   mojo::ReceiverSet<mojom::UserInput> ui_receivers_;
-  std::vector<ax::mojom::SyntheticKeyEventPtr> key_events_;
+  base::RepeatingCallback<void()> synthetic_key_event_callback_;
+  base::RepeatingCallback<void()> synthetic_mouse_event_callback_;
+  std::vector<mojom::SyntheticKeyEventPtr> key_events_;
+  std::vector<mojom::SyntheticMouseEventPtr> mouse_events_;
 
   base::RepeatingCallback<void(bool darken)> darken_screen_callback_;
   base::RepeatingCallback<void(const std::string& subpage)>

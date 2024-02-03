@@ -18,7 +18,6 @@
 #include "ash/style/typography.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -118,14 +117,8 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_->SetAutoColorReadabilityEnabled(false);
 
-    if (chromeos::features::IsJellyrollEnabled()) {
-      TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
-                                            *title_);
-    } else {
-      title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
-    }
-
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
+                                          *title_);
     title_->SetPaintToLayer();
     title_->layer()->SetFillsBoundsOpaquely(false);
 

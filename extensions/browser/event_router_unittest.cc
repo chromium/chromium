@@ -24,7 +24,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -105,7 +105,7 @@ using EventListenerConstructor =
         base::Value::Dict /* filter */)>;
 
 std::unique_ptr<EventListener> CreateEventListenerForExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
     base::Value::Dict filter) {
@@ -123,7 +123,7 @@ std::unique_ptr<EventListener> CreateEventListenerForURL(
 }
 
 std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int64_t service_worker_version_id,
     int worker_thread_id,
     const std::string& event_name,
@@ -287,14 +287,14 @@ class EventRouterFilterTest : public ExtensionsTest,
 
   EventRouter* event_router() { return EventRouter::Get(browser_context()); }
 
-  const base::Value::Dict* GetFilteredEvents(const std::string& extension_id) {
+  const base::Value::Dict* GetFilteredEvents(const ExtensionId& extension_id) {
     return event_router()->GetFilteredEvents(
         extension_id, is_for_service_worker()
                           ? EventRouter::RegisteredEventType::kServiceWorker
                           : EventRouter::RegisteredEventType::kLazy);
   }
 
-  bool ContainsFilter(const std::string& extension_id,
+  bool ContainsFilter(const ExtensionId& extension_id,
                       const std::string& event_name,
                       const base::Value::Dict& to_check) {
     const base::Value::List* filter_list =
@@ -318,7 +318,7 @@ class EventRouterFilterTest : public ExtensionsTest,
   bool is_for_service_worker() const { return GetParam(); }
 
  private:
-  const base::Value::List* GetFilterList(const std::string& extension_id,
+  const base::Value::List* GetFilterList(const ExtensionId& extension_id,
                                          const std::string& event_name) {
     const base::Value::Dict* filtered_events = GetFilteredEvents(extension_id);
     const auto iter = filtered_events->begin();

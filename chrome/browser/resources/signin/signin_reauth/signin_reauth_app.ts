@@ -14,7 +14,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './signin_reauth_app.html.js';
-import {SigninReauthBrowserProxy, SigninReauthBrowserProxyImpl} from './signin_reauth_browser_proxy.js';
+import type {SigninReauthBrowserProxy} from './signin_reauth_browser_proxy.js';
+import {SigninReauthBrowserProxyImpl} from './signin_reauth_browser_proxy.js';
 
 export interface SigninReauthAppElement {
   $: {

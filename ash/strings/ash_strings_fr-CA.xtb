@@ -607,9 +607,11 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3526440770046466733">Ouvrir le lien dans un nouvel onglet et demeurer dans l'onglet actuel</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="3533126039236445965">Applications dans l'étagère</translation>
+<translation id="3537350467437346467">Consulté par vous</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> point d'accès sans fil</translation>
 <translation id="3540893133818942399">Ignorez la configuration de l'affichage des photos et du contenu multimédia récents de votre téléphone</translation>
 <translation id="3542066395059568317">Des recommandations s'afficheront pour vous permettre de reprendre le cours de vos activités. Vous pouvez faire un clic droit pour retirer les recommandations.</translation>
+<translation id="3547318469722231257">Modifié par vous</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554215588514239132">Afficher ou masquer le panneau Outils pour les développeurs</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
@@ -701,6 +703,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="385300504083504382">Début</translation>
 <translation id="3859364108019690">Impossible de diffuser des applications</translation>
 <translation id="3861651314799684201">Appuyez sur Entrée pour enregistrer en plein écran</translation>
+<translation id="3882323608730650973">Modifié récemment</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
@@ -893,6 +896,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4582666543382004902">Le point d'accès sans fil a été désactivé pour utiliser le Wi-Fi. Pour utiliser le point d'accès sans fil, désactivez le Wi-Fi.</translation>
 <translation id="4585337515783392668">Arrêter la diffusion sur un récepteur inconnu</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé</translation>
+<translation id="4596442969149038771">Partagé par <ph name="USER" /></translation>
 <translation id="4611292653554630842">Connexion</translation>
 <translation id="462160925400706389"><ph name="NAME" /> connecté</translation>
 <translation id="4623167406982293031">Valider le compte</translation>
@@ -1336,6 +1340,7 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="6298183524022479114">Personnalisez cet appareil dans l'application</translation>
 <translation id="6309219492973062892">Cliquer sur les icônes d'étagère 1 à 8 ou les toucher</translation>
 <translation id="6315170314923504164">Voix</translation>
+<translation id="6319058840130157106">Se déplacer vers l'arrière entre le coin inférieur droit, le lanceur, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
 <translation id="6324916366299863871">Modifier un raccourci</translation>
 <translation id="6330012934079202188">Affichage des fenêtres de tous les bureaux. Appuyez sur la flèche vers le haut pour afficher les fenêtres du bureau actuel.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>
@@ -1499,6 +1504,7 @@ Nouvelle installation</translation>
 <translation id="6981291220124935078">Activer l'accès</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">Tous les fichiers et toutes les données locales associés à l'utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) sera utilisée à la place. Cliquez sur Confirmer pour conserver les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Regardez une présentation rapide pour vous familiariser avec votre Chromebook. Configurez votre appareil en six étapes.</translation>
 <translation id="7004910047186208204">Se connecter à un réseau de données cellulaires</translation>
 <translation id="7005239792648594238">Ouvrez une application pour commencer</translation>
@@ -1813,6 +1819,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8314772463905284467">Verrouillage des majuscules activé</translation>
 <translation id="8315514906653279104">Activation en cours…</translation>
 <translation id="8331351032546853669">Téléchargement en attente</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>
 <translation id="8349826889576450703">lanceur d'applications</translation>
@@ -1918,6 +1925,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="878215960996152260"><ph name="APP_NAME" />, application installée, bloquée</translation>
 <translation id="8785070478575117577">Se connecter à <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Se déplacer vers l'avant entre le coin inférieur droit, le lanceur, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
 <translation id="8792626944327216835">Microphone</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Dossier <ph name="FOLDER_NAME" /></translation>
@@ -2031,6 +2039,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="953431725143473984">Éteindre l'appareil?</translation>
 <translation id="954052413789300507">Espace de stockage insuffisant pour <ph name="FILENAME" />. Libérez de l'espace de stockage.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Modifié par <ph name="USER" /></translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Aucune échéance</translation>
 <translation id="98120814841227350">Aller à la fin du document</translation>

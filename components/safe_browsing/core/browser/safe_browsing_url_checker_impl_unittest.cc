@@ -443,7 +443,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         url_real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr()
                                      : nullptr,
         /*hash_realtime_service=*/hash_realtime_service_->GetWeakPtr(),
-        hash_real_time_selection);
+        hash_real_time_selection,
+        /*is_async_check=*/false);
   }
 
  protected:

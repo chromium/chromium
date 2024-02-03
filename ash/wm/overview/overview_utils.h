@@ -28,7 +28,7 @@ class Widget;
 namespace ash {
 
 // Returns true if an overview session is active.
-bool IsInOverviewSession();
+ASH_EXPORT bool IsInOverviewSession();
 
 // Returns the overview session if overview mode is active, otherwise returns
 // nullptr.

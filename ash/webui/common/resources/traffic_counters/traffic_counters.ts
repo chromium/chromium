@@ -11,7 +11,7 @@ import {TrafficCounter} from 'chrome://resources/mojo/chromeos/services/network_
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
 import {getTemplate} from './traffic_counters.html.js';
 import {TrafficCountersAdapter} from './traffic_counters_adapter.js';
@@ -100,7 +100,7 @@ const TrafficCountersElementBase = I18nMixin(PolymerElement);
 
 export class TrafficCountersElement extends TrafficCountersElementBase {
   static get is() {
-    return 'traffic-counters';
+    return 'traffic-counters' as const;
   }
 
   static get template() {
@@ -225,6 +225,12 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
       return '';
     }
     return convertMojoTimeToJS(network.lastResetTime).toLocaleString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [TrafficCountersElement.is]: TrafficCountersElement;
   }
 }
 

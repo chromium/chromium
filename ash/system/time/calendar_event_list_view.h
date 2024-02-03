@@ -46,7 +46,7 @@ class ASH_EXPORT CalendarEventListView
                        const google_apis::calendar::EventList* events) override;
 
   // views::View
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Updates the event list entries.
   void UpdateListItems();

@@ -30,6 +30,10 @@ namespace ash {
 
 class HoldingSpaceImage;
 
+namespace holding_space_metrics {
+enum class EventSource;
+}  // namespace holding_space_metrics
+
 // Contains data needed to display a single item in the holding space UI.
 class ASH_PUBLIC_EXPORT HoldingSpaceItem {
  public:
@@ -38,22 +42,21 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // secondary actions on the item's view itself.
   struct InProgressCommand {
    public:
-    using Handler =
-        base::RepeatingCallback<void(const HoldingSpaceItem* item,
-                                     HoldingSpaceCommandId command_id)>;
+    using Handler = base::RepeatingCallback<void(
+        const HoldingSpaceItem* item,
+        HoldingSpaceCommandId command_id,
+        holding_space_metrics::EventSource event_source)>;
 
     InProgressCommand(HoldingSpaceCommandId command_id,
                       int label_id,
                       const gfx::VectorIcon* icon,
                       Handler handler);
 
-    InProgressCommand(const InProgressCommand& other);
-
-    InProgressCommand& operator=(const InProgressCommand& other);
-
+    InProgressCommand(const InProgressCommand&);
+    InProgressCommand& operator=(const InProgressCommand&);
     ~InProgressCommand();
 
-    bool operator==(const InProgressCommand& other) const;
+    bool operator==(const InProgressCommand&) const;
 
     // The identifier for the command.
     HoldingSpaceCommandId command_id;

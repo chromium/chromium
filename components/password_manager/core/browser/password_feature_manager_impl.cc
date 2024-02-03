@@ -58,17 +58,19 @@ bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
 }
 
 bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
-  return features_util::IsOptedInForAccountStorage(sync_service_);
+  return features_util::IsOptedInForAccountStorage(pref_service_,
+                                                   sync_service_);
 }
 
 bool PasswordFeatureManagerImpl::ShouldShowAccountStorageOptIn() const {
-  return features_util::ShouldShowAccountStorageOptIn(sync_service_);
+  return features_util::ShouldShowAccountStorageOptIn(pref_service_,
+                                                      sync_service_);
 }
 
 bool PasswordFeatureManagerImpl::ShouldShowAccountStorageReSignin(
     const GURL& current_page_url) const {
-  return features_util::ShouldShowAccountStorageReSignin(sync_service_,
-                                                         current_page_url);
+  return features_util::ShouldShowAccountStorageReSignin(
+      pref_service_, sync_service_, current_page_url);
 }
 
 bool PasswordFeatureManagerImpl::ShouldShowAccountStorageBubbleUi() const {
@@ -110,6 +112,13 @@ void PasswordFeatureManagerImpl::SetDefaultPasswordStore(
 bool PasswordFeatureManagerImpl::
     ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
   return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
+}
+
+bool PasswordFeatureManagerImpl::ShouldChangeDefaultPasswordStore() const {
+  return IsOptedInForAccountStorage() && IsDefaultPasswordStoreSet() &&
+         GetDefaultPasswordStore() == PasswordForm::Store::kProfileStore &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kButterOnDesktopFollowup);
 }
 
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)

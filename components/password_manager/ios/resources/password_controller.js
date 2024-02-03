@@ -141,7 +141,7 @@ __gCrWeb.passwords['fillPasswordForm'] = function(
   let filled = false;
 
   const form =
-      __gCrWeb.form.getFormElementFromUniqueFormId(formData.unique_renderer_id);
+      __gCrWeb.form.getFormElementFromUniqueFormId(formData.renderer_id);
   if (form) {
     const inputs = getFormInputElements(form);
     if (fillUsernameAndPassword_(inputs, formData, username, password)) {
@@ -285,7 +285,7 @@ function getPasswordInputElementForFill_(inputs, rendererId) {
  *   form data.
  */
 function fillUsernameAndPassword_(inputs, formData, username, password) {
-  const usernameRendererId = formData.fields[0].unique_renderer_id;
+  const usernameRendererId = formData.fields[0].renderer_id;
   let usernameInput;
   if (usernameRendererId !== Number(fillConstants.RENDERER_ID_NOT_SET)) {
     usernameInput = getUsernameInputElementForFill_(inputs, usernameRendererId);
@@ -296,7 +296,7 @@ function fillUsernameAndPassword_(inputs, formData, username, password) {
     }
   }
 
-  const passwordRendererId = formData.fields[1].unique_renderer_id;
+  const passwordRendererId = formData.fields[1].renderer_id;
   let passwordInput;
   if (passwordRendererId !== Number(fillConstants.RENDERER_ID_NOT_SET)) {
     passwordInput = getPasswordInputElementForFill_(inputs, passwordRendererId);

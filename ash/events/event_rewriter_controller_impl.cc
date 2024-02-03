@@ -23,10 +23,37 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_device_id_event_rewriter.h"
+#include "ui/events/ash/keyboard_modifier_event_rewriter.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_source.h"
 
 namespace ash {
+namespace {
+
+class KeyboardModifierEventRewriterDelegateImpl
+    : public ui::KeyboardModifierEventRewriter::Delegate {
+ public:
+  explicit KeyboardModifierEventRewriterDelegateImpl(
+      ui::EventRewriterAsh::Delegate* event_rewriter_delegate)
+      : event_rewriter_delegate_(event_rewriter_delegate) {}
+
+  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+      int device_id,
+      ui::mojom::ModifierKey modifier_key,
+      const std::string& pref_name) const override {
+    return event_rewriter_delegate_->GetKeyboardRemappedModifierValue(
+        device_id, modifier_key, pref_name);
+  }
+
+  bool RewriteModifierKeys() override {
+    return event_rewriter_delegate_->RewriteModifierKeys();
+  }
+
+ private:
+  raw_ptr<ui::EventRewriterAsh::Delegate> event_rewriter_delegate_;
+};
+
+}  // namespace
 
 // static
 EventRewriterController* EventRewriterController::Get() {
@@ -103,6 +130,15 @@ void EventRewriterControllerImpl::Initialize(
   AddEventRewriter(std::move(accessibility_event_rewriter));
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
   AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
+  if (features::IsKeyboardRewriterFixEnabled()) {
+    auto keyboard_modifier_event_rewriter =
+        std::make_unique<ui::KeyboardModifierEventRewriter>(
+            std::make_unique<KeyboardModifierEventRewriterDelegateImpl>(
+                event_rewriter_delegate),
+            Shell::Get()->keyboard_capability(),
+            ash::input_method::InputMethodManager::Get()->GetImeKeyboard());
+    AddEventRewriter(std::move(keyboard_modifier_event_rewriter));
+  }
   AddEventRewriter(std::move(event_rewriter_ash));
 }
 

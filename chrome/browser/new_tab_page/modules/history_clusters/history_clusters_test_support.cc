@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -31,15 +32,13 @@ MockHistoryClustersModuleService::MockHistoryClustersModuleService()
 
 MockHistoryClustersModuleService::~MockHistoryClustersModuleService() = default;
 
-MockHistoryService::MockHistoryService() = default;
-
-MockHistoryService::~MockHistoryService() = default;
-
 history::ClusterVisit SampleVisitForURL(
     history::VisitID id,
     GURL url,
     bool has_url_keyed_image,
-    const std::vector<std::string>& related_searches) {
+    const std::vector<std::string>& related_searches,
+    const std::vector<history::VisitContentModelAnnotations::Category>&
+        categories) {
   history::VisitRow visit_row;
   visit_row.visit_id = id;
   visit_row.visit_time = base::Time::Now();
@@ -47,6 +46,11 @@ history::ClusterVisit SampleVisitForURL(
   auto content_annotations = history::VisitContentAnnotations();
   content_annotations.has_url_keyed_image = has_url_keyed_image;
   content_annotations.related_searches = related_searches;
+  if (!categories.empty()) {
+    auto model_annotations = history::VisitContentModelAnnotations();
+    model_annotations.categories = categories;
+    content_annotations.model_annotations = std::move(model_annotations);
+  }
   history::AnnotatedVisit annotated_visit;
   annotated_visit.visit_row = std::move(visit_row);
   annotated_visit.content_annotations = std::move(content_annotations);
@@ -60,14 +64,16 @@ history::ClusterVisit SampleVisitForURL(
 }
 
 history::Cluster SampleCluster(
-    int id,
+    int64_t id,
     int srp_visits,
     int non_srp_visits,
-    const std::vector<std::string> related_searches) {
+    const std::vector<std::string>& related_searches,
+    const std::vector<history::VisitContentModelAnnotations::Category>&
+        categories) {
   history::ClusterVisit sample_srp_visit =
       SampleVisitForURL(1, GURL(kSampleSearchUrl), false);
-  history::ClusterVisit sample_non_srp_visit =
-      SampleVisitForURL(2, GURL(kSampleNonSearchUrl), true, related_searches);
+  history::ClusterVisit sample_non_srp_visit = SampleVisitForURL(
+      2, GURL(kSampleNonSearchUrl), true, related_searches, categories);
 
   std::vector<history::ClusterVisit> visits;
   visits.insert(visits.end(), srp_visits, sample_srp_visit);

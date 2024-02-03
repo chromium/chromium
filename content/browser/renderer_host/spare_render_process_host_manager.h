@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -109,6 +110,11 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
   // This is a bare pointer, because RenderProcessHost manages the lifetime of
   // all its instances; see GetAllHosts().
   raw_ptr<RenderProcessHost> spare_render_process_host_ = nullptr;
+
+  // The timer used to track the startup time of the spare renderer process.
+  std::unique_ptr<base::ElapsedTimer> process_startup_timer_;
+  // The timer used to track the delay of spare renderer creation.
+  std::unique_ptr<base::ElapsedTimer> delay_timer_;
 
   base::OneShotTimer deferred_warmup_timer_;
 };

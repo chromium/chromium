@@ -46,10 +46,6 @@ void Base64EncodeAppend(span<const uint8_t> input, std::string* output) {
   CHECK_EQ(output->size(), prefix_len + output_size);
 }
 
-void Base64Encode(StringPiece input, std::string* output) {
-  *output = Base64Encode(base::as_byte_span(input));
-}
-
 std::string Base64Encode(StringPiece input) {
   return Base64Encode(base::as_byte_span(input));
 }

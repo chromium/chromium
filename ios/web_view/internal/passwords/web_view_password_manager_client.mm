@@ -83,7 +83,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
       profile_store_(profile_store),
       account_store_(account_store),
       reuse_manager_(reuse_manager),
-      password_feature_manager_(sync_service),
+      password_feature_manager_(pref_service, sync_service),
       credentials_filter_(
           this,
           base::BindRepeating(&WebViewPasswordManagerClient::GetSyncService,

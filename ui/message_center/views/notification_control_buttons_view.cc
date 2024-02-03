@@ -63,7 +63,7 @@ void NotificationControlButtonsView::ShowCloseButton(bool show) {
         IDS_MESSAGE_CENTER_CLOSE_NOTIFICATION_BUTTON_TOOLTIP));
     close_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    Layout();
+    DeprecatedLayoutImmediately();
   } else if (!show && close_button_) {
     DCHECK(Contains(close_button_));
     RemoveChildViewT(close_button_.get());
@@ -92,7 +92,7 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
         IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
     settings_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    Layout();
+    DeprecatedLayoutImmediately();
   } else if (!show && settings_button_) {
     DCHECK(Contains(settings_button_));
     RemoveChildViewT(settings_button_.get());
@@ -120,7 +120,7 @@ void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
         IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP));
     snooze_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    Layout();
+    DeprecatedLayoutImmediately();
   } else if (!show && snooze_button_) {
     DCHECK(Contains(snooze_button_));
     RemoveChildViewT(snooze_button_.get());

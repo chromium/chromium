@@ -234,11 +234,11 @@ gfx::Size ArcNotificationView::CalculatePreferredSize() const {
                    contents_height + insets.height());
 }
 
-void ArcNotificationView::Layout() {
+void ArcNotificationView::Layout(PassKey) {
   // Setting the bounds before calling the parent to prevent double Layout.
   content_view_->SetBoundsRect(GetContentsBounds());
 
-  message_center::MessageView::Layout();
+  LayoutSuperclass<message_center::MessageView>(this);
 
   // If the content view claims focus, defer focus handling to the content view.
   if (content_view_->IsFocusable()) {

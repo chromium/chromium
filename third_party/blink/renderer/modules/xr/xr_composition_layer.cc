@@ -21,12 +21,12 @@ void XRCompositionLayer::setBlendTextureSourceAlpha(bool value) {
   blend_texture_source_alpha_ = value;
 }
 
-absl::optional<bool> XRCompositionLayer::chromaticAberrationCorrection() const {
+std::optional<bool> XRCompositionLayer::chromaticAberrationCorrection() const {
   return chromatic_aberration_correction_;
 }
 
 void XRCompositionLayer::setChromaticAberrationCorrection(
-    absl::optional<bool> value) {
+    std::optional<bool> value) {
   chromatic_aberration_correction_ = value;
 }
 

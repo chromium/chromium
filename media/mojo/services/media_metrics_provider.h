@@ -6,6 +6,8 @@
 #define MEDIA_MOJO_SERVICES_MEDIA_METRICS_PROVIDER_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -20,7 +22,6 @@
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media {
@@ -161,7 +162,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   PipelineInfo uma_info_;
 
   // The values below are only set if `Initialize` has been called.
-  absl::optional<MediaInfo> media_info_;
+  std::optional<MediaInfo> media_info_;
 
   RendererType renderer_type_ = RendererType::kRendererImpl;
   std::string key_system_;
@@ -172,7 +173,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;
   base::TimeDelta time_to_play_ready_ = kNoTimestamp;
 
-  absl::optional<container_names::MediaContainerName> container_name_;
+  std::optional<container_names::MediaContainerName> container_name_;
 };
 
 }  // namespace media

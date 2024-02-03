@@ -46,7 +46,7 @@ class MEDIA_EXPORT FuchsiaVideoEncodeAccelerator final
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   bool IsFlushSupported() override;
   bool IsGpuFrameResizeSupported() override;

@@ -76,7 +76,7 @@ PageActionIconView::PageActionIconView(
       ephemeral_(ephemeral) {
   DCHECK(delegate_);
 
-  image()->SetFlipCanvasOnPaintForRTLUI(true);
+  image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);

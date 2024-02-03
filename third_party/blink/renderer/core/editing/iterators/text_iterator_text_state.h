@@ -26,7 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_TEXT_ITERATOR_TEXT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_TEXT_ITERATOR_TEXT_STATE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -151,8 +152,8 @@ class CORE_EXPORT TextIteratorTextState {
   const Node* position_node_ = nullptr;
   // |Text| node when |position_node_type_ == kInText| or |ContainerNode|.
   mutable const Node* position_container_node_ = nullptr;
-  mutable absl::optional<unsigned> position_start_offset_;
-  mutable absl::optional<unsigned> position_end_offset_;
+  mutable std::optional<unsigned> position_start_offset_;
+  mutable std::optional<unsigned> position_end_offset_;
   PositionNodeType position_node_type_ = PositionNodeType::kNone;
 
   // Used when deciding whether to emit a "positioning" (e.g. newline) before

@@ -328,8 +328,8 @@ bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {
   // for ARC kiosk as migration to ext4 should always be triggered.
   // Without this check it fails to start after browser crash as
   // compatibility info is stored in RAM.
-  if (user && (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-               user->GetType() == user_manager::USER_TYPE_ARC_KIOSK_APP)) {
+  if (user && (user->GetType() == user_manager::UserType::kPublicAccount ||
+               user->GetType() == user_manager::UserType::kArcKioskApp)) {
     return false;
   }
 

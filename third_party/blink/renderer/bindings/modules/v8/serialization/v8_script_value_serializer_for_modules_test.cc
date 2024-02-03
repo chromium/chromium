@@ -1419,7 +1419,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioData) {
   EXPECT_FALSE(audio_buffer->HasOneRef());
 
   // The transfer should have closed the source data.
-  EXPECT_EQ(audio_data->format(), absl::nullopt);
+  EXPECT_EQ(audio_data->format(), std::nullopt);
 
   // Closing |new_data| should remove all references to |audio_buffer|.
   new_data->close();
@@ -1502,7 +1502,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   EXPECT_EQ(data.content_hint,
             WebMediaStreamTrack::ContentHintType::kVideoMotion);
   EXPECT_EQ(data.ready_state, MediaStreamSource::ReadyState::kReadyStateLive);
-  EXPECT_EQ(data.sub_capture_target_version, absl::optional<uint32_t>(0));
+  EXPECT_EQ(data.sub_capture_target_version, std::optional<uint32_t>(0));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,

@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">डाउनलोड रोका गया</translation>
 <translation id="1415402041810619267">यूआरएल छोटा हो गया</translation>
-<translation id="1426410128494586442">हां</translation>
 <translation id="1434873037477293673">कीमत में गिरावट वाला कार्ड</translation>
 <translation id="1448064542941920355">ज़ूम आउट करें</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}one{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइटें}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> को कैमरे का ऐक्सेस देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी कैमरा चालू करें.</translation>
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
 <translation id="2238944249568001759">आपके आखिरी टैब के आधार पर सुझाई गई खोजें</translation>
+<translation id="2241587408274973373">'नया टैब' पेज पर दिखने वाले कार्ड</translation>
 <translation id="2241634353105152135">बस एक बार</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> हटाएं</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 साइट ब्लॉक की गई}one{# साइट ब्लॉक की गई}other{# साइटें ब्लॉक की गईं}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">साइटें, पहचान करने वाली सेवा से जुड़े, साइन इन करने के अनुरोध दिखा सकती हैं.</translation>
 <translation id="2790501146643349491">इस सेटिंग के चालू होने पर, हाल ही में बंद की गई साइटें, डेटा भेजने और पाने की प्रोसेस पूरी कर सकती हैं. इस सेटिंग के बंद होने पर, हाल ही में बंद की गई साइटें, डेटा भेजने या पाने की प्रोसेस पूरी नहीं कर सकतीं.</translation>
 <translation id="2822354292072154809">क्या आप वाकई <ph name="CHOSEN_OBJECT_NAME" /> की सभी साइट अनुमतियां रीसेट करना चाहते हैं?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">मोबाइल व्यू के लिए अनुरोध करें</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">प्रमाणपत्र व्यूअर</translation>
 <translation id="2979365474350987274">तीसरे पक्ष की कुकी सीमित हैं</translation>
 <translation id="3008272652534848354">अनुमतियां रीसेट करें</translation>
-<translation id="3013291976881901233">MIDI डिवाइस</translation>
 <translation id="301521992641321250">ऑटोमैटिक रूप से ब्लॉक है</translation>
 <translation id="3069226013421428034">किसी साइट पर, तीसरे पक्ष के खाते से साइन इन करने की अनुमति दें.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{समयसीमा कल खत्म हो जाएगी}one{समयसीमा # दिन में खत्म हो जाएगी}other{समयसीमा # दिन में खत्म हो जाएगी}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">यूएसबी डिवाइस से कनेक्ट है</translation>
 <translation id="4194328954146351878">साइटों को एनएफ़सी की सुविधा वाले डिवाइसों पर, जानकारी देखने और उसमें बदलाव करने की अनुमति देने से पहले पूछा जाए (सुझाई गई सेटिंग)</translation>
 <translation id="4200726100658658164">जगह की सेटिंग खोलें</translation>
-<translation id="4212246570487010370">लगातार ब्राउज़िंग</translation>
 <translation id="4226663524361240545">नोटिफ़िकेशन से डिवाइस में कंपन हो सकता है</translation>
 <translation id="4259722352634471385">मार्गदर्शक अवरोधित है: <ph name="URL" /></translation>
 <translation id="4278390842282768270">अनुमति है</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">नीचे ले जाएं</translation>
 <translation id="6749077623962119521">क्या आप अनुमतियां रीसेट करना चाहते हैं?</translation>
 <translation id="6766622839693428701">बंद करने के लिए नीचे स्वाइप करें.</translation>
-<translation id="6785959295338971061"><ph name="FROM_DEVICE" /> से <ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> के लिए कोई विकल्प चुनें</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6818926723028410516">आइटम चुनें</translation>

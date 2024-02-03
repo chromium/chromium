@@ -22,9 +22,9 @@ namespace policy {
 // screen restriction (Screen Capture, Printing, Screen Share) level is set to
 // WARN.
 class DlpWarnDialog : public PolicyDialogBase {
- public:
-  METADATA_HEADER(DlpWarnDialog);
+  METADATA_HEADER(DlpWarnDialog, PolicyDialogBase)
 
+ public:
   // A structure to keep track of optional and configurable parameters of a
   // DlpWarnDialog.
   struct DlpWarnDialogOptions {

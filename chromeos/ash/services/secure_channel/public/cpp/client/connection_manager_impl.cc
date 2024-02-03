@@ -215,6 +215,10 @@ void ConnectionManagerImpl::OnConnectionTimeout() {
   PA_LOG(WARNING) << "AttemptConnection() has timed out. Closing connection "
                   << "attempt.";
 
+  if (secure_channel_structured_metrics_logger_) {
+    secure_channel_structured_metrics_logger_->LogDiscoveryAttempt(
+        mojom::DiscoveryResult::kFailure, mojom::DiscoveryErrorCode::kTimeout);
+  }
   OnConnectionAttemptFailure(
       mojom::ConnectionAttemptFailureReason::TIMEOUT_FINDING_DEVICE);
 }

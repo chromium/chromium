@@ -172,9 +172,13 @@ class CloudOpenMetrics {
   base::WeakPtr<CloudOpenMetrics> GetWeakPtr();
 
  private:
+  // `DumpWithoutCrashing()` using a unique key-value pair representing the last
+  // seen inconsistency.
+  void DumpState();
+
   // Print debug information about the detected inconsistency and every metric.
-  // If `immediately_dump`, `DumpWithoutCrashing()`, otherwise set
-  // `delayed_dump_`.
+  // If `immediately_dump`, `DumpState()` with a key-value pair set representing
+  // the inconsistency, otherwise set `delayed_dump_`.
   template <typename MetricType>
   void OnInconsistencyFound(Metric<MetricType>& metric,
                             bool immediately_dump = true);
@@ -214,8 +218,12 @@ class CloudOpenMetrics {
                                    MetricType value);
 
   bool multiple_files_;
-  // Whether to `DumpWithoutCrashing()` at the end of the destructor.
+  // Whether to `DumpState()` at the end of the destructor.
   bool delayed_dump_ = false;
+  // The last detected inconsistent metric name to use when dumping.
+  std::string inconsistent_metric_name_;
+  // The last detected inconsistent metric state to use when dumping.
+  MetricState inconsistent_state_;
   CloudProvider cloud_provider_;
   Metric<base::File::Error> drive_copy_error_;
   Metric<base::File::Error> one_drive_copy_error_;

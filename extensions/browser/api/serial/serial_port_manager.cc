@@ -16,6 +16,7 @@
 #include "extensions/browser/api/serial/serial_connection.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace extensions {
@@ -92,7 +93,7 @@ void SerialPortManager::OpenPort(
       path, std::move(options), std::move(client), std::move(callback)));
 }
 
-void SerialPortManager::StartConnectionPolling(const std::string& extension_id,
+void SerialPortManager::StartConnectionPolling(const ExtensionId& extension_id,
                                                int connection_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* connection = connections_->Get(extension_id, connection_id);

@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_LACROS_AVAILABILITY_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 
 namespace policy {
 class PolicyMap;
@@ -58,18 +58,18 @@ BASE_DECLARE_FEATURE(kLacrosGooglePolicyRollout);
 // the enum value. Returns nullopt on unknown value.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 std::optional<LacrosAvailability> ParseLacrosAvailability(
-    base::StringPiece value);
+    std::string_view value);
 
 // Returns the policy value name from the given value.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
-base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value);
+std::string_view GetLacrosAvailabilityPolicyName(LacrosAvailability value);
 
 // Given a raw policy value, decides what LacrosAvailability value should be
 // used as a result of policy application.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     const user_manager::User* user,
-    base::StringPiece policy_value);
+    std::string_view policy_value);
 
 // Returns LacrosAvailability policy for the given `user` and its `policy_map`.
 // This function may take a look at more surrounding context.

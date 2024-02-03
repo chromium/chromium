@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintTicket} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
-import {GooglePromotedDestinationId} from 'chrome://print/print_preview.js';
-// </if>
+import type {CrButtonElement, NativeInitialSettings, PrintPreviewAppElement, PrintTicket} from 'chrome://print/print_preview.js';
+import {
+  // <if expr="is_chromeos">
+  GooglePromotedDestinationId,
+  // </if>
+  NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="is_chromeos">

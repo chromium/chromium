@@ -70,7 +70,7 @@ H264SPS::H264SPS() {
 
 // Based on T-REC-H.264 7.4.2.1.1, "Sequence parameter set data semantics",
 // available from http://www.itu.int/rec/T-REC-H.264.
-absl::optional<gfx::Size> H264SPS::GetCodedSize() const {
+std::optional<gfx::Size> H264SPS::GetCodedSize() const {
   // Interlaced frames are twice the height of each field.
   const int mb_unit = 16;
   int map_unit = frame_mbs_only_flag ? 16 : 32;
@@ -84,7 +84,7 @@ absl::optional<gfx::Size> H264SPS::GetCodedSize() const {
   if (pic_width_in_mbs_minus1 > max_mb_minus1 ||
       pic_height_in_map_units_minus1 > max_map_units_minus1) {
     DVLOG(1) << "Coded size is too large.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return gfx::Size(mb_unit * (pic_width_in_mbs_minus1 + 1),
@@ -92,10 +92,10 @@ absl::optional<gfx::Size> H264SPS::GetCodedSize() const {
 }
 
 // Also based on section 7.4.2.1.1.
-absl::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
-  absl::optional<gfx::Size> coded_size = GetCodedSize();
+std::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
+  std::optional<gfx::Size> coded_size = GetCodedSize();
   if (!coded_size)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!frame_cropping_flag)
     return gfx::Rect(coded_size.value());
@@ -124,7 +124,7 @@ absl::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
       coded_size->height() / crop_unit_y < frame_crop_top_offset ||
       coded_size->height() / crop_unit_y < frame_crop_bottom_offset) {
     DVLOG(1) << "Frame cropping exceeds coded size.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   int crop_left = crop_unit_x * frame_crop_left_offset;
   int crop_right = crop_unit_x * frame_crop_right_offset;
@@ -137,7 +137,7 @@ absl::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
   if (coded_size->width() - crop_left <= crop_right ||
       coded_size->height() - crop_top <= crop_bottom) {
     DVLOG(1) << "Frame cropping excludes entire frame.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return gfx::Rect(crop_left, crop_top,

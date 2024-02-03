@@ -4,6 +4,7 @@
 
 #include "services/network/tls_socket_factory.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/ssl_config_type_converter.h"
 #include "services/network/tls_client_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -76,9 +76,9 @@ void TLSSocketFactory::UpgradeToTLS(
     UpgradeToTLSCallback callback) {
   const net::StreamSocket* socket = socket_delegate->BorrowSocket();
   if (!socket || !socket->IsConnected()) {
-    std::move(callback).Run(
-        net::ERR_SOCKET_NOT_CONNECTED, mojo::ScopedDataPipeConsumerHandle(),
-        mojo::ScopedDataPipeProducerHandle(), absl::nullopt);
+    std::move(callback).Run(net::ERR_SOCKET_NOT_CONNECTED,
+                            mojo::ScopedDataPipeConsumerHandle(),
+                            mojo::ScopedDataPipeProducerHandle(), std::nullopt);
     return;
   }
   CreateTLSClientSocket(

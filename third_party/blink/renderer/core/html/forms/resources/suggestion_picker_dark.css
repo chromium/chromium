@@ -7,7 +7,7 @@
  * This file adds missing dark mode styles for datalists.
  * It's separate from suggestion_picker.css so it can be flag controlled.
  * When it's merged back in the media query should be replaced with
- * -internal-light-dark() usages where possible.
+ * light-dark() usages where possible.
  */
 @media (prefers-color-scheme: dark) {
     .suggestion-list {

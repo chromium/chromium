@@ -271,7 +271,7 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
 
   // Only regular non-supervised users could add other users to current session.
   if (UserManager::Get()->GetActiveUser()->GetType() !=
-      user_manager::USER_TYPE_REGULAR) {
+      user_manager::UserType::kRegular) {
     return;
   }
 

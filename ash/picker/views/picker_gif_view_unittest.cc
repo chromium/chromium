@@ -33,18 +33,17 @@ gfx::ImageSkia GetImage(const PickerGifView& gif_view) {
   return gif_view.GetImageModel().GetImage().AsImageSkia();
 }
 
-TEST(PickerGifViewTest, ImageSize) {
+TEST(PickerGifViewTest, PreferredHeightPreservesAspectRatio) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  constexpr gfx::Size kPreferredImageSize(200, 300);
+  constexpr gfx::Size kOriginalGifDimensions(100, 200);
   const std::vector<image_util::AnimationFrame> frames = {
       CreateGifFrame(base::Milliseconds(30)),
       CreateGifFrame(base::Milliseconds(40))};
   PickerGifView gif_view(base::BindOnce(&FetchGifFrames, frames),
-                         kPreferredImageSize);
+                         kOriginalGifDimensions);
 
-  EXPECT_EQ(gif_view.GetImageModel().Size(), kPreferredImageSize);
-  EXPECT_EQ(gif_view.GetPreferredSize(), kPreferredImageSize);
+  EXPECT_EQ(gif_view.GetHeightForWidth(50), 100);
 }
 
 TEST(PickerGifViewTest, FrameDurations) {

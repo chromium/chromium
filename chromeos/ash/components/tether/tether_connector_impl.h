@@ -10,10 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/tether/connect_tethering_operation.h"
 #include "chromeos/ash/components/tether/host_connection_metrics_logger.h"
 #include "chromeos/ash/components/tether/tether_connector.h"
+#include "chromeos/ash/components/tether/wifi_hotspot_connector.h"
 
 namespace ash {
 
@@ -95,8 +97,10 @@ class TetherConnectorImpl : public TetherConnector,
   void OnTetherHostToConnectFetched(
       const std::string& device_id,
       std::optional<multidevice::RemoteDeviceRef> tether_host_to_connect);
-  void OnWifiConnection(const std::string& device_id,
-                        const std::string& wifi_network_guid);
+  void OnWifiConnection(
+      const std::string& device_id,
+      base::expected<std::string,
+                     WifiHotspotConnector::WifiHotspotConnectionError> result);
   void RecordConnectTetheringOperationResult(
       const std::string& device_id,
       ConnectTetheringOperation::HostResponseErrorCode error_code);

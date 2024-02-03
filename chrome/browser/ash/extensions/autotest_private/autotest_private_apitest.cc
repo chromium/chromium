@@ -79,7 +79,8 @@ namespace {
 class TestSearchProvider : public app_list::SearchProvider {
  public:
   explicit TestSearchProvider(ash::AppListSearchResultType result_type)
-      : result_type_(result_type) {}
+      : SearchProvider(app_list::SearchCategory::kTest),
+        result_type_(result_type) {}
 
   ~TestSearchProvider() override = default;
 

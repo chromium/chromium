@@ -97,6 +97,8 @@ class ColorPickerElementView : public views::Button {
     SetAnimateOnStateChange(true);
   }
 
+  ~ColorPickerElementView() override = default;
+
   void SetSelected(bool selected) {
     if (selected_ == selected) {
       return;
@@ -254,11 +256,7 @@ ColorPickerView::ColorPickerView(
               .WithWeight(1));
 }
 
-ColorPickerView::~ColorPickerView() {
-  // Remove child views early since they have references to us through a
-  // callback.
-  RemoveAllChildViews();
-}
+ColorPickerView::~ColorPickerView() = default;
 
 std::optional<int> ColorPickerView::GetSelectedElement() const {
   for (size_t i = 0; i < elements_.size(); ++i) {

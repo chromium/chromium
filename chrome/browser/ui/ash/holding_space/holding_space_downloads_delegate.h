@@ -24,6 +24,10 @@ class DownloadManager;
 
 namespace ash {
 
+namespace holding_space_metrics {
+enum class EventSource;
+}  // namespace holding_space_metrics
+
 // A delegate of `HoldingSpaceKeyedService` tasked with monitoring the status of
 // of downloads on its behalf.
 class HoldingSpaceDownloadsDelegate
@@ -106,9 +110,15 @@ class HoldingSpaceDownloadsDelegate
                                       bool invalidate_image);
 
   // Attempts to cancel/pause/resume the download underlying the given `item`.
-  void Cancel(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
-  void Pause(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
-  void Resume(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Cancel(const HoldingSpaceItem* item,
+              HoldingSpaceCommandId command_id,
+              holding_space_metrics::EventSource event_source);
+  void Pause(const HoldingSpaceItem* item,
+             HoldingSpaceCommandId command_id,
+             holding_space_metrics::EventSource event_source);
+  void Resume(const HoldingSpaceItem* item,
+              HoldingSpaceCommandId command_id,
+              holding_space_metrics::EventSource event_source);
 
   // The collection of currently in-progress downloads.
   std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>

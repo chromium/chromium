@@ -76,8 +76,13 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
 
 }  // namespace
 
-TEST(UnifiedPasswordManagerProtoUtilsTest,
-     ConvertPasswordWithLocalDataToFullPasswordFormAndBack) {
+class UnifiedPasswordManagerProtoUtilsTest
+    : public testing::Test,
+      public testing::WithParamInterface<
+          std::pair<IsAccountStore, PasswordForm::Store>> {};
+
+TEST_P(UnifiedPasswordManagerProtoUtilsTest,
+       ConvertPasswordWithLocalDataToFullPasswordFormAndBack) {
   PasswordWithLocalData password_data;
   *password_data.mutable_password_specifics_data() = CreateSpecificsData(
       kTestOrigin, kTestUsernameElementName, "username_value",
@@ -122,7 +127,7 @@ TEST(UnifiedPasswordManagerProtoUtilsTest,
             password_data_converted_back.SerializeAsString());
 }
 
-TEST(UnifiedPasswordManagerProtoUtilsTest, ConvertListResultToFormVector) {
+TEST_P(UnifiedPasswordManagerProtoUtilsTest, ConvertListResultToFormVector) {
   ListPasswordsResult list_result;
   PasswordWithLocalData password1;
   *password1.mutable_password_specifics_data() =
@@ -135,14 +140,20 @@ TEST(UnifiedPasswordManagerProtoUtilsTest, ConvertListResultToFormVector) {
   *list_result.add_password_data() = password1;
   *list_result.add_password_data() = password2;
 
-  std::vector<PasswordForm> forms = PasswordVectorFromListResult(list_result);
+  std::vector<PasswordForm> forms =
+      PasswordVectorFromListResult(list_result, GetParam().first);
 
-  EXPECT_THAT(forms, ElementsAre(PasswordFromProtoWithLocalData(password1),
-                                 PasswordFromProtoWithLocalData(password2)));
+  std::vector<PasswordForm> expected_forms = {
+      PasswordFromProtoWithLocalData(password1),
+      PasswordFromProtoWithLocalData(password2)};
+  expected_forms[0].in_store = GetParam().second;
+  expected_forms[1].in_store = GetParam().second;
+
+  EXPECT_THAT(forms, testing::ElementsAreArray(expected_forms));
 }
 
-TEST(UnifiedPasswordManagerProtoUtilsTest,
-     ConvertListPasswordsWithUiInfoResultToFormVector) {
+TEST_P(UnifiedPasswordManagerProtoUtilsTest,
+       ConvertListPasswordsWithUiInfoResultToFormVector) {
   ListPasswordsWithUiInfoResult list_result;
   ListPasswordsWithUiInfoResult::PasswordWithUiInfo password1;
   *password1.mutable_password_data()->mutable_password_specifics_data() =
@@ -159,14 +170,29 @@ TEST(UnifiedPasswordManagerProtoUtilsTest,
   *list_result.add_passwords_with_ui_info() = password1;
   *list_result.add_passwords_with_ui_info() = password2;
 
-  std::vector<PasswordForm> forms = PasswordVectorFromListResult(list_result);
+  std::vector<PasswordForm> forms =
+      PasswordVectorFromListResult(list_result, GetParam().first);
   std::vector<PasswordForm> expected_forms = {
       PasswordFromProtoWithLocalData(password1.password_data()),
       PasswordFromProtoWithLocalData(password2.password_data())};
   expected_forms[0].app_display_name = ui_info.display_name();
   expected_forms[0].app_icon_url = GURL(ui_info.icon_url());
+  expected_forms[0].in_store = GetParam().second;
+  expected_forms[1].in_store = GetParam().second;
 
   EXPECT_THAT(forms, testing::ElementsAreArray(expected_forms));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    UnifiedPasswordManagerProtoUtilsTest,
+    testing::ValuesIn({std::make_pair(IsAccountStore(true),
+                                      PasswordForm::Store::kAccountStore),
+                       std::make_pair(IsAccountStore(false),
+                                      PasswordForm::Store::kProfileStore)}),
+    [](const ::testing::TestParamInfo<
+        std::pair<IsAccountStore, PasswordForm::Store>>& info) {
+      return info.param.first ? "Account" : "Profile";
+    });
 
 }  // namespace password_manager

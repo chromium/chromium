@@ -213,6 +213,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddInteger(
       "prerenderStartTimeThreshold",
       features::kNewTabPagePrerenderStartDelayOnMouseHoverByMiliSeconds.Get());
+  source->AddInteger(
+      "preconnectStartTimeThreshold",
+      features::kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds.Get());
 
   source->AddBoolean(
       "oneGoogleBarEnabled",

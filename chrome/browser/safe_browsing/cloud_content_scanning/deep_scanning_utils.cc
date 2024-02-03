@@ -130,6 +130,17 @@ void ModifyKey(ScanningCrashKey key, int delta) {
     crash_key->Set(base::NumberToString(new_value));
 }
 
+void AddCustomMessageRule(
+    enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule&
+        rule) {
+  enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+      CustomRuleMessage custom_message;
+  auto* custom_segments = custom_message.add_message_segments();
+  custom_segments->set_text("Custom rule message");
+  custom_segments->set_link("http://example.com");
+  *rule.mutable_custom_rule_message() = custom_message;
+}
+
 }  // namespace
 
 void MaybeReportDeepScanningVerdict(
@@ -327,7 +338,8 @@ void RecordDeepScanMetrics(bool is_cloud,
 
 enterprise_connectors::ContentAnalysisResponse
 SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
-                                        std::optional<bool> malware_success) {
+                                        std::optional<bool> malware_success,
+                                        bool has_custom_rule_message) {
   enterprise_connectors::ContentAnalysisResponse response;
 
   if (dlp_success.has_value()) {
@@ -339,6 +351,9 @@ SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
       auto* rule = result->add_triggered_rules();
       rule->set_rule_name("dlp");
       rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+      if (has_custom_rule_message) {
+        AddCustomMessageRule(*rule);
+      }
     }
   }
 
@@ -351,6 +366,9 @@ SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
       auto* rule = result->add_triggered_rules();
       rule->set_rule_name("malware");
       rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+      if (has_custom_rule_message) {
+        AddCustomMessageRule(*rule);
+      }
     }
   }
 

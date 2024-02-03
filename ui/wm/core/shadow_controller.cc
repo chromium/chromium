@@ -118,10 +118,7 @@ class ShadowController::Impl :
   // Checks if |window| is visible and contains a property requesting a shadow.
   bool ShouldShowShadowForWindow(aura::Window* window) const;
 
-  // Sets rounded corner on the shadow for the `window`. The default behavior is
-  // to set the radius defined by `aura::client::kWindowCornerRadiusKey`.
-  // However, a ShadowControllerDelegate can decide if the shadow should be
-  // rounded.
+  // Sets rounded corner on the shadow for the `window`.
   void MaybeSetShadowRadiusForWindow(aura::Window* window) const;
 
   // Updates the shadow for windows when activation changes.
@@ -191,14 +188,21 @@ void ShadowController::Impl::OnWindowPropertyChanged(aura::Window* window,
                          static_cast<ui::WindowShowState>(old);
   }
 
+  if (key == aura::client::kWindowCornerRadiusKey) {
+    shadow_will_change =
+        window->GetProperty(aura::client::kWindowCornerRadiusKey) !=
+        static_cast<int>(old);
+  }
+
   shadow_will_change |=
       delegate_ &&
       delegate_->ShouldUpdateShadowOnWindowPropertyChange(window, key, old);
 
   // Check the target visibility. IsVisible() may return false if a parent layer
   // is hidden, but |this| only observes calls to Show()/Hide() on |window|.
-  if (shadow_will_change && window->TargetVisibility())
+  if (shadow_will_change && window->TargetVisibility()) {
     HandlePossibleShadowVisibilityChange(window);
+  }
 }
 
 void ShadowController::Impl::OnWindowVisibilityChanging(aura::Window* window,
@@ -274,11 +278,6 @@ void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
     aura::Window* window) const {
   ui::Shadow* shadow = GetShadowForWindow(window);
   CHECK(shadow);
-
-  if (delegate_ && !delegate_->ShouldHaveRoundedShadowForWindow(window)) {
-    shadow->SetRoundedCornerRadius(0);
-    return;
-  }
 
   const int corner_radius =
       window->GetProperty(aura::client::kWindowCornerRadiusKey);

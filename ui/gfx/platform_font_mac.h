@@ -65,6 +65,10 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   CTFontRef GetCTFont() const override;
   sk_sp<SkTypeface> GetNativeSkTypeface() const override;
 
+  absl::optional<SystemFontType> GetSystemFontType() const {
+    return system_font_type_;
+  }
+
   // A utility function to get the weight of a CTFontRef. Used by the unit test.
   static Font::Weight GetFontWeightFromCTFontForTesting(CTFontRef font);
 

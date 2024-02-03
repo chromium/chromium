@@ -208,17 +208,17 @@ bool ChannelPosix::GetReadPlatformHandlesForIpcz(
 }
 
 void ChannelPosix::StartOnIOThread() {
-  DCHECK(!read_watcher_);
-  DCHECK(!write_watcher_);
-  read_watcher_ =
-      std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
   base::CurrentThread::Get()->AddDestructionObserver(this);
-  write_watcher_ =
+  base::AutoLock lock(write_lock_);
+  DCHECK(!read_watcher_);
+  read_watcher_ =
       std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
   base::CurrentIOThread::Get()->WatchFileDescriptor(
       socket_.get(), true /* persistent */, base::MessagePumpForIO::WATCH_READ,
       read_watcher_.get(), this);
-  base::AutoLock lock(write_lock_);
+  DCHECK(!write_watcher_);
+  write_watcher_ =
+      std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
   FlushOutgoingMessagesNoLock();
 }
 
@@ -232,7 +232,12 @@ void ChannelPosix::WaitForWriteOnIOThreadNoLock() {
     return;
   if (!write_watcher_)
     return;
-  if (io_task_runner_->RunsTasksInCurrentSequence()) {
+  // This may be called from a `RunOrPostTask()` callback running in sequence
+  // with the IO thread, but on a different thread. In that case,
+  // `RunsTaskInCurrentSequence()` would return true, so use
+  // `BelongsToCurrentThread()` to detect that we aren't on the IO thread
+  // (otherwise, `base::CurrentIOThread::Get()` would fail).
+  if (io_task_runner_->BelongsToCurrentThread()) {
     pending_write_ = true;
     base::CurrentIOThread::Get()->WatchFileDescriptor(
         socket_.get(), false /* persistent */,
@@ -313,7 +318,10 @@ void ChannelPosix::OnFileCanReadWithoutBlocking(int fd) {
            total_bytes_read < kMaxBatchReadCapacity && next_read_size > 0);
   if (read_error) {
     // Stop receiving read notifications.
-    read_watcher_.reset();
+    {
+      base::AutoLock lock(write_lock_);
+      read_watcher_.reset();
+    }
     if (validation_error)
       OnError(Error::kReceivedMalformedData);
     else
@@ -475,9 +483,13 @@ void ChannelPosix::AcceptUpgradeOffer() {
 
 void ChannelPosix::OnWriteError(Error error) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(reject_writes_);
+  DCHECK([&]() {
+    base::AutoLock lock(write_lock_);
+    return reject_writes_;
+  }());
 
   if (error == Error::kDisconnected) {
+    base::AutoLock lock(write_lock_);
     // If we can't write because the pipe is disconnected then continue
     // reading to fetch any in-flight messages, relying on end-of-stream to
     // signal the actual disconnection.

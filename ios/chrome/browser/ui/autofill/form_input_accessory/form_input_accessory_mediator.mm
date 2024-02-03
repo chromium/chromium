@@ -633,7 +633,7 @@ class PasswordCounterDelegateBridge
   self.currentProvider = provider;
 
   // Post it to the consumer.
-  self.consumer.suggestionType = provider.suggestionType;
+  self.consumer.mainFillingProduct = provider.mainFillingProduct;
   self.consumer.currentFieldId = _lastSeenParams.unique_field_id;
   [self.consumer showAccessorySuggestions:suggestions];
   if (suggestions.count) {

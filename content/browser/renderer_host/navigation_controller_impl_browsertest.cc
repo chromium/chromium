@@ -5329,9 +5329,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // 6) Restore/copying history state into a new NavigationController.
   {
     // Restore the initial NavigationEntry in a new tab.
-    Shell* restore_shell =
-        Shell::CreateNewWindow(controller.GetBrowserContext(),
-                               GURL::EmptyGURL(), nullptr, gfx::Size());
+    Shell* restore_shell = Shell::CreateNewWindow(
+        controller.GetBrowserContext(), GURL(), nullptr, gfx::Size());
     NavigationControllerImpl& restore_controller =
         static_cast<NavigationControllerImpl&>(
             restore_shell->web_contents()->GetController());
@@ -8139,8 +8138,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // 5. Restore the new entry in a new tab and verify the correct URLs load.
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -8270,8 +8269,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   restored_entry->SetPageState(entry1->GetPageState(), &context);
 
   // 3. Create a new tab with a new NavigationController, and navigate it twice.
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -8350,7 +8349,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // 1. Create a new tab with a new NavigationController, and navigate it twice.
   Shell* new_shell =
       Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
-                             GURL::EmptyGURL(), nullptr, gfx::Size());
+                             GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -8453,8 +8452,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   restored_entry->SetPageState(entry1->GetPageState(), &context);
 
   // 3. Restore the empty URL entry in a new tab.
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   NavigationControllerImpl& new_controller =
       static_cast<NavigationControllerImpl&>(
           new_shell->web_contents()->GetController());
@@ -8525,8 +8524,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   restored_entry2->SetPageState(entry2->GetPageState(), &context);
 
   // 3. Create a new tab and restore the entries.
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   WebContentsImpl* new_web_contents =
       static_cast<WebContentsImpl*>(new_shell->web_contents());
   NavigationControllerImpl& new_controller =
@@ -11024,8 +11023,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // 4. Restore the new entry in a new tab and verify the correct URLs load.
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -11754,8 +11753,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   restored_entries.push_back(std::move(restored_entry2));
 
   // 4. Create a new tab and restore the entries, confirming that it works.
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   WebContentsImpl* new_web_contents =
       static_cast<WebContentsImpl*>(new_shell->web_contents());
   NavigationControllerImpl& new_controller =
@@ -11861,8 +11860,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   restored_entries.push_back(std::move(restored_entry1));
   restored_entries.push_back(std::move(restored_entry2));
   restored_entries.push_back(std::move(restored_entry3));
-  Shell* shell2 = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* shell2 = Shell::CreateNewWindow(controller.GetBrowserContext(), GURL(),
+                                         nullptr, gfx::Size());
   WebContentsImpl* web_contents2 =
       static_cast<WebContentsImpl*>(shell2->web_contents());
   FrameTreeNode* root2 = static_cast<WebContentsImpl*>(shell2->web_contents())
@@ -11919,8 +11918,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
             restored2_entry3->GetFrameEntry(root2));
 
   // 7. Actually restore the entries in a new tab.
-  Shell* shell3 = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* shell3 = Shell::CreateNewWindow(controller.GetBrowserContext(), GURL(),
+                                         nullptr, gfx::Size());
   WebContentsImpl* web_contents3 =
       static_cast<WebContentsImpl*>(shell3->web_contents());
   FrameTreeNode* root3 = static_cast<WebContentsImpl*>(shell3->web_contents())
@@ -11994,8 +11993,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::vector<std::unique_ptr<NavigationEntry>> restored_entries;
   restored_entries.push_back(std::move(restored_entry1));
   restored_entries.push_back(std::move(restored_entry2));
-  Shell* shell2 = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* shell2 = Shell::CreateNewWindow(controller.GetBrowserContext(), GURL(),
+                                         nullptr, gfx::Size());
   WebContentsImpl* web_contents2 =
       static_cast<WebContentsImpl*>(shell2->web_contents());
   FrameTreeNode* root2 = static_cast<WebContentsImpl*>(shell2->web_contents())
@@ -12515,8 +12514,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
             shell()->web_contents()->GetLastCommittedURL());
 
   // There should be no Referrer after loading the original URL.
-  EXPECT_EQ(GURL::EmptyGURL(),
-            controller.GetLastCommittedEntry()->GetReferrer().url);
+  EXPECT_EQ(GURL(), controller.GetLastCommittedEntry()->GetReferrer().url);
 }
 
 // Ensure that loading the original request URL does not reuse state from the
@@ -19700,8 +19698,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(NavigateToURL(shell(), url2));
 
   // Restore into a new shell.
-  Shell* restore_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* restore_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                                GURL(), nullptr, gfx::Size());
   NavigationControllerImpl& restore_controller =
       static_cast<NavigationControllerImpl&>(
           restore_shell->web_contents()->GetController());
@@ -20426,8 +20424,8 @@ IN_PROC_BROWSER_TEST_P(
   // 3. Create a new tab and don't navigate it anywhere.
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -20471,7 +20469,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // anywhere.
   Shell* new_shell =
       Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
-                             GURL::EmptyGURL(), nullptr, gfx::Size());
+                             GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()

@@ -17,6 +17,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -516,11 +517,12 @@ public abstract class XrTestFramework {
      * @param timeoutSec The timeout of the page load in seconds.
      * @return The return value of ChromeActivityTestRule.loadUrl().
      */
-    public int loadFileAndAwaitInitialization(String url, int timeoutSec) {
-        int result = mRule.loadUrl(getUrlForFile(url), timeoutSec);
+    public LoadUrlResult loadFileAndAwaitInitialization(String url, int timeoutSec) {
+        LoadUrlResult result = mRule.loadUrl(getUrlForFile(url), timeoutSec);
         Assert.assertEquals(
-                "Page did not load correctly. Load result enum: " + String.valueOf(result),
-                result,
+                "Page did not load correctly. Load result enum: "
+                        + String.valueOf(result.tabLoadStatus),
+                result.tabLoadStatus,
                 Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
         if (!pollJavaScriptBoolean(
                 "isInitializationComplete()", POLL_TIMEOUT_LONG_MS, mRule.getWebContents())) {

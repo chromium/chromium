@@ -1075,7 +1075,7 @@ MediaSettingsRange* ApplyIdealValueConstraint(
     bool* has_setting_ptr,
     double* setting_ptr,
     MediaSettingsRange* effective_capability,
-    absl::optional<double> ideal_constraint,
+    std::optional<double> ideal_constraint,
     double current_setting) {
   // Clamp and update the setting.
   *has_setting_ptr = true;
@@ -1251,8 +1251,8 @@ MediaSettingsRange* ApplyValueConstraint(
           has_setting_ptr, setting_ptr, new_effective_capability,
           (dictionary_constraint->hasIdeal() &&
            constraint_set_type == MediaTrackConstraintSetType::kBasic)
-              ? absl::make_optional(dictionary_constraint->ideal())
-              : absl::nullopt,
+              ? std::make_optional(dictionary_constraint->ideal())
+              : std::nullopt,
           current_setting);
     }
   }
@@ -1393,7 +1393,7 @@ void ApplyValueConstraint(bool* has_setting_ptr,
 // As a substitute, we use `MediaTrackSettings` and its `pointsOfInterest`
 // field to convey restrictions placed by previous exact `pointsOfInterest`
 // constraints.
-absl::optional<HeapVector<Member<Point2D>>> ApplyValueConstraint(
+std::optional<HeapVector<Member<Point2D>>> ApplyValueConstraint(
     bool* has_setting_ptr,
     Vector<media::mojom::blink::Point2DPtr>* setting_ptr,
     const HeapVector<Member<Point2D>>* effective_setting,
@@ -1403,7 +1403,7 @@ absl::optional<HeapVector<Member<Point2D>>> ApplyValueConstraint(
       CheckValueConstraint(effective_setting, constraint, constraint_set_type));
   if (!IsValueConstraint(constraint, constraint_set_type)) {
     // Keep the effective capability intact.
-    return absl::nullopt;
+    return std::nullopt;
   }
   using ContentType =
       V8UnionConstrainPoint2DParametersOrPoint2DSequence::ContentType;
@@ -1420,7 +1420,7 @@ absl::optional<HeapVector<Member<Point2D>>> ApplyValueConstraint(
       DCHECK_EQ(constraint_set_type, MediaTrackConstraintSetType::kBasic);
       ApplyValueConstraint(has_setting_ptr, setting_ptr, effective_setting,
                            constraint->GetAsPoint2DSequence());
-      return absl::nullopt;
+      return std::nullopt;
     case ContentType::kConstrainPoint2DParameters: {
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
@@ -1437,7 +1437,7 @@ absl::optional<HeapVector<Member<Point2D>>> ApplyValueConstraint(
       DCHECK_EQ(constraint_set_type, MediaTrackConstraintSetType::kBasic);
       ApplyValueConstraint(has_setting_ptr, setting_ptr, effective_setting,
                            dictionary_constraint->ideal());
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 }
@@ -1606,9 +1606,12 @@ ScriptPromise ImageCapture::takePhoto(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise ImageCapture::grabFrame(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<ImageBitmap> ImageCapture::grabFrame(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<ImageBitmap>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   if (TrackIsInactive(*stream_track_)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -2037,7 +2040,7 @@ void ImageCapture::ApplyMediaTrackConstraintSetToSettings(
   if (constraint_set->hasPointsOfInterest()) {
     // There is no |settings->has_points_of_interest|.
     bool has_points_of_interest = !settings->points_of_interest.empty();
-    absl::optional new_effective_setting = ApplyValueConstraint(
+    std::optional new_effective_setting = ApplyValueConstraint(
         &has_points_of_interest, &settings->points_of_interest,
         effective_settings->hasPointsOfInterest()
             ? &effective_settings->pointsOfInterest()
@@ -2183,7 +2186,7 @@ bool ImageCapture::CheckMediaTrackConstraintSet(
     const MediaTrackConstraintSet* constraint_set,
     MediaTrackConstraintSetType constraint_set_type,
     ScriptPromiseResolver* resolver) const {
-  if (absl::optional<const char*> name =
+  if (std::optional<const char*> name =
           GetConstraintWithCapabilityExistenceMismatch(constraint_set,
                                                        constraint_set_type)) {
     MaybeRejectWithOverconstrainedError(resolver, name.value(),
@@ -2725,7 +2728,7 @@ const String& ImageCapture::SourceId() const {
   return stream_track_->Component()->Source()->Id();
 }
 
-const absl::optional<const char*>
+const std::optional<const char*>
 ImageCapture::GetConstraintWithCapabilityExistenceMismatch(
     const MediaTrackConstraintSet* constraint_set,
     MediaTrackConstraintSetType constraint_set_type) const {
@@ -2863,7 +2866,7 @@ ImageCapture::GetConstraintWithCapabilityExistenceMismatch(
           constraint_set_type)) {
     return "faceFraming";
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ImageCapture* ImageCapture::Clone() const {

@@ -6,7 +6,7 @@
  * @fileoverview Polymer element for displaying pausable lottie animation.
  */
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cros_components/lottie_renderer/lottie-renderer.js';
 import './oobe_icons.html.js';
 

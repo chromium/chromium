@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views.h"
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -24,7 +26,7 @@ namespace autofill {
 
 AutofillErrorDialogViewNativeViews::AutofillErrorDialogViewNativeViews(
     AutofillErrorDialogController* controller)
-    : controller_(controller) {
+    : controller_(controller->GetWeakPtr()) {
   SetButtons(ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_->GetButtonLabel());
   SetModalType(ui::MODAL_TYPE_CHILD);
@@ -67,16 +69,18 @@ views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
           vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
           gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon))));
 
-  auto* label = AddChildView(std::make_unique<views::Label>(
-      controller_->GetDescription(),
-      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-      views::style::STYLE_SECONDARY));
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetMultiLine(true);
+  if (controller_) {
+    auto* label = AddChildView(std::make_unique<views::Label>(
+        controller_->GetDescription(),
+        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+        views::style::STYLE_SECONDARY));
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label->SetMultiLine(true);
 
-  // Center-align the error icon vertically with the first line of the label.
-  icon->SetBorder(views::CreateEmptyBorder(gfx::Insets().set_top(
-      (label->GetLineHeight() - icon->GetPreferredSize().height()) / 2)));
+    // Center-align the error icon vertically with the first line of the label.
+    icon->SetBorder(views::CreateEmptyBorder(gfx::Insets().set_top(
+        (label->GetLineHeight() - icon->GetPreferredSize().height()) / 2)));
+  }
 
   return this;
 }
@@ -87,16 +91,21 @@ void AutofillErrorDialogViewNativeViews::AddedToWidget() {
 }
 
 std::u16string AutofillErrorDialogViewNativeViews::GetWindowTitle() const {
-  return controller_->GetTitle();
+  return controller_ ? controller_->GetTitle() : std::u16string();
 }
 
-AutofillErrorDialogView* CreateAndShowAutofillErrorDialog(
+base::WeakPtr<AutofillErrorDialogView>
+AutofillErrorDialogViewNativeViews::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(
     AutofillErrorDialogController* controller,
     content::WebContents* web_contents) {
   AutofillErrorDialogViewNativeViews* dialog_view =
       new AutofillErrorDialogViewNativeViews(controller);
   constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
-  return dialog_view;
+  return dialog_view->GetWeakPtr();
 }
 
 }  // namespace autofill

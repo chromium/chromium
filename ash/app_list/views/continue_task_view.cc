@@ -422,7 +422,7 @@ void ContinueTaskView::LogMetricsOnResultRemoved() {
                                 GetTaskResultType(), TaskResultType::kMaxValue);
 }
 
-BEGIN_METADATA(ContinueTaskView, views::View)
+BEGIN_METADATA(ContinueTaskView)
 END_METADATA
 
 }  // namespace ash

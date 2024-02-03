@@ -4,6 +4,8 @@
 
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
 
+#include <optional>
+
 #include "base/apple/osstatus_logging.h"
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
@@ -23,7 +25,6 @@
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

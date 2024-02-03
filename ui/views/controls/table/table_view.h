@@ -249,7 +249,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   bool header_row_is_active() const { return header_row_is_active_; }
 
   // View overrides:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
@@ -516,7 +516,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // is selected then.
   bool select_on_remove_ = true;
 
-  raw_ptr<TableViewObserver, DanglingUntriaged> observer_ = nullptr;
+  raw_ptr<TableViewObserver> observer_ = nullptr;
   // If |sort_on_paint_| is true, table will sort before painting.
   bool sort_on_paint_ = false;
 
@@ -527,8 +527,8 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   int row_height_;
 
-  // Width of the ScrollView last time Layout() was invoked. Used to determine
-  // when we should invoke UpdateVisibleColumnSizes().
+  // Width of the ScrollView at last layout. Used to determine when we should
+  // invoke UpdateVisibleColumnSizes().
   int last_parent_width_ = 0;
 
   // The width we layout to. This may differ from |last_parent_width_|.

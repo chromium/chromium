@@ -453,14 +453,16 @@ void HoldingSpaceTray::PerformDrop(
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kDragAndDropToPin);
 
-  HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
-  did_drop_to_pin_ = true;
+  HoldingSpaceController::Get()->client()->PinFiles(
+      unpinned_file_paths,
+      holding_space_metrics::EventSource::kHoldingSpaceTray);
 
+  did_drop_to_pin_ = true;
   output_drag_op = DragOperation::kCopy;
 }
 
-void HoldingSpaceTray::Layout() {
-  TrayBackgroundView::Layout();
+void HoldingSpaceTray::Layout(PassKey) {
+  LayoutSuperclass<TrayBackgroundView>(this);
 
   // The `drop_target_overlay_` should always fill this view's bounds as they
   // are perceived by the user. Note that the user perceives the bounds of this

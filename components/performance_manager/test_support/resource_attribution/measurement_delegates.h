@@ -132,17 +132,14 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
   void SetCPUUsage(SimulatedCPUUsage usage,
                    base::TimeTicks start_time = base::TimeTicks::Now());
 
-  // Sets the process to have an error that will be reported as `usage_error`.
-  void SetError(base::TimeDelta usage_error);
-
-  // Clears any error that was set with SetCPUUsageError().
-  void ClearError();
+  // Sets whether the process will report an error from GetCumulativeCPUUsage().
+  void SetError(bool has_error) { has_error_ = has_error; }
 
   // CPUMeasurementDelegate:
 
   // Returns the simulated CPU usage of the process by summing
-  // `cpu_usage_periods`.
-  base::TimeDelta GetCumulativeCPUUsage() final;
+  // `cpu_usage_periods`, or nullopt if SetError(true) was called.
+  std::optional<base::TimeDelta> GetCumulativeCPUUsage() final;
 
  private:
   struct CPUUsagePeriod {
@@ -158,9 +155,9 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
   // List of periods of varying CPU usage.
   std::vector<CPUUsagePeriod> cpu_usage_periods_;
 
-  // If not nullopt, GetCumulativeCPUUsage() will ignore `cpu_usage_periods` and
-  // return this value to simulate an error.
-  std::optional<base::TimeDelta> usage_error_;
+  // If true, GetCumulativeCPUUsage() will ignore `cpu_usage_periods` and
+  // return nullopt to simulate an error.
+  bool has_error_ = false;
 };
 
 // A factory that manages FakeMemoryMeasurementDelegate instances. Embed an

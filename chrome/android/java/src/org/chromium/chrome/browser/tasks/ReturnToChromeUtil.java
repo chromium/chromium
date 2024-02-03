@@ -860,8 +860,10 @@ public final class ReturnToChromeUtil {
             // Model execution failed or no label selected.
             returnTimeMs = -1;
         } else {
-            // Converts to milliseconds.
-            returnTimeMs = Long.parseLong(result.orderedLabels.get(0)) * DateUtils.SECOND_IN_MILLIS;
+            String label = result.orderedLabels.get(0);
+            // When label is non-integer return -1, else convert label to microseconds.
+            returnTimeMs =
+                    isValidLong(label) ? (Long.parseLong(label) * DateUtils.SECOND_IN_MILLIS) : -1;
         }
         ChromeSharedPreferences.getInstance()
                 .writeLong(
@@ -1054,5 +1056,14 @@ public final class ReturnToChromeUtil {
             @FailToShowHomeSurfaceReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 FAIL_TO_SHOW_HOME_SURFACE_UI_UMA, reason, FailToShowHomeSurfaceReason.NUM_ENTRIES);
+    }
+
+    private static boolean isValidLong(String str) {
+        try {
+            Long.parseLong(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

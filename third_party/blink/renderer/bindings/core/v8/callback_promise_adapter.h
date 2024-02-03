@@ -130,25 +130,28 @@ class CallbackPromiseAdapterInternal {
   template <typename S, typename T>
   class Base : public WebCallbacks<typename S::WebType, typename T::WebType> {
    public:
-    explicit Base(ScriptPromiseResolver* resolver) : resolver_(resolver) {}
-    ScriptPromiseResolver* Resolver() { return resolver_; }
+    explicit Base(ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
+        : resolver_(resolver) {}
+    ScriptPromiseResolverTyped<typename S::IDLType>* Resolver() {
+      return resolver_;
+    }
 
    private:
-    Persistent<ScriptPromiseResolver> resolver_;
+    Persistent<ScriptPromiseResolverTyped<typename S::IDLType>> resolver_;
   };
 
   template <typename S, typename T>
   class OnSuccessAdapter : public Base<S, T> {
    public:
-    explicit OnSuccessAdapter(ScriptPromiseResolver* resolver)
+    explicit OnSuccessAdapter(
+        ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
         : Base<S, T>(resolver) {}
     void OnSuccess(typename S::WebType result) override {
       ScriptPromiseResolver* resolver = this->Resolver();
       if (!resolver->GetExecutionContext() ||
           resolver->GetExecutionContext()->IsContextDestroyed())
         return;
-      resolver->Resolve<typename S::IDLType>(
-          S::Take(resolver, std::move(result)));
+      resolver->Resolve(S::Take(resolver, std::move(result)));
     }
   };
   template <typename T>
@@ -168,7 +171,8 @@ class CallbackPromiseAdapterInternal {
   template <typename S, typename T>
   class OnErrorAdapter : public OnSuccessAdapter<S, T> {
    public:
-    explicit OnErrorAdapter(ScriptPromiseResolver* resolver)
+    explicit OnErrorAdapter(
+        ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
         : OnSuccessAdapter<S, T>(resolver) {}
     void OnError(typename T::WebType e) override {
       ScriptPromiseResolver* resolver = this->Resolver();
@@ -185,7 +189,8 @@ class CallbackPromiseAdapterInternal {
             S,
             CallbackPromiseAdapterTrivialWebTypeHolder<void>> {
    public:
-    explicit OnErrorAdapter(ScriptPromiseResolver* resolver)
+    explicit OnErrorAdapter(
+        ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
         : OnSuccessAdapter<S, CallbackPromiseAdapterTrivialWebTypeHolder<void>>(
               resolver) {}
     void OnError() override {
@@ -202,7 +207,9 @@ class CallbackPromiseAdapterInternal {
   class CallbackPromiseAdapter final
       : public OnErrorAdapter<WebTypeHolder<S>, WebTypeHolder<T>> {
    public:
-    explicit CallbackPromiseAdapter(ScriptPromiseResolver* resolver)
+    explicit CallbackPromiseAdapter(
+        ScriptPromiseResolverTyped<typename WebTypeHolder<S>::IDLType>*
+            resolver)
         : OnErrorAdapter<WebTypeHolder<S>, WebTypeHolder<T>>(resolver) {}
 
     CallbackPromiseAdapter(const CallbackPromiseAdapter&) = delete;

@@ -14,16 +14,14 @@ default	rel
 section	.text code align=64
 
 
-EXTERN	OPENSSL_ia32cap_P
-
-global	bn_mul_mont
+global	bn_mul_mont_nohw
 
 ALIGN	16
-bn_mul_mont:
+bn_mul_mont_nohw:
 	mov	QWORD[8+rsp],rdi	;WIN64 prologue
 	mov	QWORD[16+rsp],rsi
 	mov	rax,rsp
-$L$SEH_begin_bn_mul_mont:
+$L$SEH_begin_bn_mul_mont_nohw:
 	mov	rdi,rcx
 	mov	rsi,rdx
 	mov	rdx,r8
@@ -37,20 +35,6 @@ _CET_ENDBR
 	mov	r9d,r9d
 	mov	rax,rsp
 
-	test	r9d,3
-	jnz	NEAR $L$mul_enter
-	cmp	r9d,8
-	jb	NEAR $L$mul_enter
-	lea	r11,[OPENSSL_ia32cap_P]
-	mov	r11d,DWORD[8+r11]
-	cmp	rdx,rsi
-	jne	NEAR $L$mul4x_enter
-	test	r9d,7
-	jz	NEAR $L$sqr8x_enter
-	jmp	NEAR $L$mul4x_enter
-
-ALIGN	16
-$L$mul_enter:
 	push	rbx
 
 	push	rbp
@@ -284,7 +268,8 @@ $L$mul_epilogue:
 	mov	rsi,QWORD[16+rsp]
 	ret
 
-$L$SEH_end_bn_mul_mont:
+$L$SEH_end_bn_mul_mont_nohw:
+global	bn_mul4x_mont
 
 ALIGN	16
 bn_mul4x_mont:
@@ -301,13 +286,10 @@ $L$SEH_begin_bn_mul4x_mont:
 
 
 
+_CET_ENDBR
 	mov	r9d,r9d
 	mov	rax,rsp
 
-$L$mul4x_enter:
-	and	r11d,0x80100
-	cmp	r11d,0x80100
-	je	NEAR $L$mulx4x_enter
 	push	rbx
 
 	push	rbp
@@ -736,6 +718,7 @@ $L$SEH_end_bn_mul4x_mont:
 EXTERN	bn_sqrx8x_internal
 EXTERN	bn_sqr8x_internal
 
+global	bn_sqr8x_mont
 
 ALIGN	32
 bn_sqr8x_mont:
@@ -752,9 +735,10 @@ $L$SEH_begin_bn_sqr8x_mont:
 
 
 
+_CET_ENDBR
+	mov	r9d,r9d
 	mov	rax,rsp
 
-$L$sqr8x_enter:
 	push	rbx
 
 	push	rbp
@@ -829,11 +813,8 @@ DB	102,72,15,110,209
 	pxor	xmm0,xmm0
 DB	102,72,15,110,207
 DB	102,73,15,110,218
-	lea	rax,[OPENSSL_ia32cap_P]
-	mov	eax,DWORD[8+rax]
-	and	eax,0x80100
-	cmp	eax,0x80100
-	jne	NEAR $L$sqr8x_nox
+	test	rdx,rdx
+	jz	NEAR $L$sqr8x_nox
 
 	call	bn_sqrx8x_internal
 
@@ -938,6 +919,7 @@ $L$sqr8x_epilogue:
 	ret
 
 $L$SEH_end_bn_sqr8x_mont:
+global	bn_mulx4x_mont
 
 ALIGN	32
 bn_mulx4x_mont:
@@ -954,9 +936,9 @@ $L$SEH_begin_bn_mulx4x_mont:
 
 
 
+_CET_ENDBR
 	mov	rax,rsp
 
-$L$mulx4x_enter:
 	push	rbx
 
 	push	rbp
@@ -1448,9 +1430,9 @@ $L$common_seh_tail:
 
 section	.pdata rdata align=4
 ALIGN	4
-	DD	$L$SEH_begin_bn_mul_mont wrt ..imagebase
-	DD	$L$SEH_end_bn_mul_mont wrt ..imagebase
-	DD	$L$SEH_info_bn_mul_mont wrt ..imagebase
+	DD	$L$SEH_begin_bn_mul_mont_nohw wrt ..imagebase
+	DD	$L$SEH_end_bn_mul_mont_nohw wrt ..imagebase
+	DD	$L$SEH_info_bn_mul_mont_nohw wrt ..imagebase
 
 	DD	$L$SEH_begin_bn_mul4x_mont wrt ..imagebase
 	DD	$L$SEH_end_bn_mul4x_mont wrt ..imagebase
@@ -1464,7 +1446,7 @@ ALIGN	4
 	DD	$L$SEH_info_bn_mulx4x_mont wrt ..imagebase
 section	.xdata rdata align=8
 ALIGN	8
-$L$SEH_info_bn_mul_mont:
+$L$SEH_info_bn_mul_mont_nohw:
 	DB	9,0,0,0
 	DD	mul_handler wrt ..imagebase
 	DD	$L$mul_body wrt ..imagebase,$L$mul_epilogue wrt ..imagebase

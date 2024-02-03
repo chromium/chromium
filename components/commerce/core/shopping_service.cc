@@ -511,8 +511,7 @@ void ShoppingService::PDPMetricsCallback(
                             is_off_the_record, IsShoppingListEligible());
 
   bool supported_country =
-      IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
-                                   country_on_startup_, locale_on_startup_);
+      IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched);
   metrics::RecordShoppingListIneligibilityReasons(
       pref_service_, account_checker_.get(), is_off_the_record,
       supported_country);
@@ -709,10 +708,17 @@ void ShoppingService::IsShoppingPage(const GURL& url,
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
+bool ShoppingService::IsRegionLockedFeatureEnabled(
+    const base::Feature& feature,
+    const base::Feature& region_specific_feature) {
+  return commerce::IsRegionLockedFeatureEnabled(
+      feature, region_specific_feature, country_on_startup_,
+      locale_on_startup_);
+}
+
 bool ShoppingService::IsProductInfoApiEnabled() {
-  return IsRegionLockedFeatureEnabled(
-             kShoppingList, kShoppingListRegionLaunched, country_on_startup_,
-             locale_on_startup_) ||
+  return IsRegionLockedFeatureEnabled(kShoppingList,
+                                      kShoppingListRegionLaunched) ||
          (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
           IsEnabledForCountryAndLocale(ntp_features::kNtpChromeCartModule,
                                        country_on_startup_,
@@ -721,26 +727,22 @@ bool ShoppingService::IsProductInfoApiEnabled() {
 
 bool ShoppingService::IsPDPMetricsRecordingEnabled() {
   return IsRegionLockedFeatureEnabled(kShoppingPDPMetrics,
-                                      kShoppingPDPMetricsRegionLaunched,
-                                      country_on_startup_, locale_on_startup_);
+                                      kShoppingPDPMetricsRegionLaunched);
 }
 
 bool ShoppingService::IsMerchantViewerEnabled() {
   return IsRegionLockedFeatureEnabled(kCommerceMerchantViewer,
-                                      kCommerceMerchantViewerRegionLaunched,
-                                      country_on_startup_, locale_on_startup_);
+                                      kCommerceMerchantViewerRegionLaunched);
 }
 
 bool ShoppingService::IsCommercePriceTrackingEnabled() {
   return IsRegionLockedFeatureEnabled(kCommercePriceTracking,
-                                      kCommercePriceTrackingRegionLaunched,
-                                      country_on_startup_, locale_on_startup_);
+                                      kCommercePriceTrackingRegionLaunched);
 }
 
 bool ShoppingService::IsPriceInsightsEligible() {
   if (!IsRegionLockedFeatureEnabled(kPriceInsights,
-                                    kPriceInsightsRegionLaunched,
-                                    country_on_startup_, locale_on_startup_)) {
+                                    kPriceInsightsRegionLaunched)) {
     return false;
   }
   return account_checker_ &&
@@ -749,14 +751,12 @@ bool ShoppingService::IsPriceInsightsEligible() {
 
 bool ShoppingService::IsPriceInsightsInfoApiEnabled() {
   return IsRegionLockedFeatureEnabled(kPriceInsights,
-                                      kPriceInsightsRegionLaunched,
-                                      country_on_startup_, locale_on_startup_);
+                                      kPriceInsightsRegionLaunched);
 }
 
 bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
   if (!IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
-                                    kEnableDiscountInfoApiRegionLaunched,
-                                    country_on_startup_, locale_on_startup_)) {
+                                    kEnableDiscountInfoApiRegionLaunched)) {
     return false;
   }
   return account_checker_ && account_checker_->IsSignedIn() &&
@@ -765,8 +765,7 @@ bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
 
 bool ShoppingService::IsParcelTrackingEligible() {
   if (!IsRegionLockedFeatureEnabled(kParcelTracking,
-                                    kParcelTrackingRegionLaunched,
-                                    country_on_startup_, locale_on_startup_)) {
+                                    kParcelTrackingRegionLaunched)) {
     return false;
   }
   return account_checker_ && account_checker_->IsSignedIn();
@@ -774,14 +773,12 @@ bool ShoppingService::IsParcelTrackingEligible() {
 
 bool ShoppingService::IsShoppingPageTypesApiEnabled() {
   return IsRegionLockedFeatureEnabled(kShoppingPageTypes,
-                                      kShoppingPageTypesRegionLaunched,
-                                      country_on_startup_, locale_on_startup_);
+                                      kShoppingPageTypesRegionLaunched);
 }
 
 bool ShoppingService::IsDiscountInfoApiEnabled() {
   return IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
-                                      kEnableDiscountInfoApiRegionLaunched,
-                                      country_on_startup_, locale_on_startup_);
+                                      kEnableDiscountInfoApiRegionLaunched);
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(
@@ -1515,8 +1512,8 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
                                              PrefService* prefs,
                                              const std::string& country_code,
                                              const std::string& locale) {
-  if (!IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
-                                    country_code, locale)) {
+  if (!commerce::IsRegionLockedFeatureEnabled(
+          kShoppingList, kShoppingListRegionLaunched, country_code, locale)) {
     return false;
   }
 

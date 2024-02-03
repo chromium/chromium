@@ -103,7 +103,7 @@ TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   // Allow 1 second difference as iOS rounds expiry time to the nearest second.
   EXPECT_LE(expire_date - base::Seconds(1), chrome_cookie->ExpiryDate());
   EXPECT_GE(expire_date + base::Seconds(1), chrome_cookie->ExpiryDate());
-  EXPECT_FALSE(chrome_cookie->IsSecure());
+  EXPECT_FALSE(chrome_cookie->SecureAttribute());
   EXPECT_TRUE(chrome_cookie->IsHttpOnly());
   EXPECT_EQ(net::COOKIE_PRIORITY_DEFAULT, chrome_cookie->Priority());
   if (@available(iOS 13, *)) {
@@ -121,7 +121,7 @@ TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   ASSERT_TRUE(system_cookie);
   chrome_cookie = CanonicalCookieFromSystemCookie(system_cookie, creation_time);
   EXPECT_FALSE(chrome_cookie->IsPersistent());
-  EXPECT_TRUE(chrome_cookie->IsSecure());
+  EXPECT_TRUE(chrome_cookie->SecureAttribute());
 
   // Test a non-Canonical cookie does not cause a crash.
   system_cookie = [[NSHTTPCookie alloc] initWithProperties:@{

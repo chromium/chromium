@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_AUTOPLAY_POLICY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_AUTOPLAY_POLICY_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -78,7 +79,7 @@ class CORE_EXPORT AutoplayPolicy final
   // Request the playback via play() method. This method will check the autoplay
   // restrictions and record metrics. This method can only be called once
   // per call of play().
-  absl::optional<DOMExceptionCode> RequestPlay();
+  std::optional<DOMExceptionCode> RequestPlay();
 
   // Returns whether an umute action should pause an autoplaying element. The
   // method will check autoplay restrictions and record metrics. This method can
@@ -159,7 +160,7 @@ class CORE_EXPORT AutoplayPolicy final
 
   Member<AutoplayUmaHelper> autoplay_uma_helper_;
 
-  absl::optional<bool> autoplay_initiated_;
+  std::optional<bool> autoplay_initiated_;
 };
 
 }  // namespace blink

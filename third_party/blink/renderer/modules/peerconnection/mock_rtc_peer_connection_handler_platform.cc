@@ -89,7 +89,7 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
     return std::unique_ptr<webrtc::RtpParameters>();
   }
   void SetParameters(Vector<webrtc::RtpEncodingParameters>,
-                     absl::optional<webrtc::DegradationPreference>,
+                     std::optional<webrtc::DegradationPreference>,
                      RTCVoidRequest*) override {}
   void GetStats(RTCStatsReportCallback) override {}
   void SetStreams(const Vector<String>& stream_ids) override {}
@@ -158,7 +158,7 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
   }
 
   void SetJitterBufferMinimumDelay(
-      absl::optional<double> delay_seconds) override {}
+      std::optional<double> delay_seconds) override {}
 
  private:
   const uintptr_t id_;
@@ -240,13 +240,13 @@ class MockRTCPeerConnectionHandlerPlatform::DummyRTCRtpTransceiverPlatform
       webrtc::RtpTransceiverDirection direction) override {
     return internal_->set_direction(direction);
   }
-  absl::optional<webrtc::RtpTransceiverDirection> CurrentDirection()
+  std::optional<webrtc::RtpTransceiverDirection> CurrentDirection()
       const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<webrtc::RtpTransceiverDirection> FiredDirection()
+  std::optional<webrtc::RtpTransceiverDirection> FiredDirection()
       const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
   webrtc::RTCError Stop() override { return webrtc::RTCError::OK(); }
   webrtc::RTCError SetCodecPreferences(
@@ -280,7 +280,6 @@ MockRTCPeerConnectionHandlerPlatform::~MockRTCPeerConnectionHandlerPlatform() =
 bool MockRTCPeerConnectionHandlerPlatform::Initialize(
     ExecutionContext*,
     const webrtc::PeerConnectionInterface::RTCConfiguration&,
-    GoogMediaConstraints*,
     WebLocalFrame*,
     ExceptionState&) {
   return true;

@@ -88,7 +88,10 @@ std::vector<arc::mojom::AppInfoPtr> ArcAppTest::CloneApps(
   return result;
 }
 
-ArcAppTest::ArcAppTest() {
+ArcAppTest::ArcAppTest(UserManagerMode user_manager_mode)
+    : fake_user_manager_(user_manager_mode == UserManagerMode::kDoNothing
+                             ? nullptr
+                             : std::make_unique<ash::FakeChromeUserManager>()) {
   CreateFakeAppsAndPackages();
 }
 
@@ -106,12 +109,15 @@ void ArcAppTest::SetUp(Profile* profile) {
 
   arc::ResetArcAllowedCheckForTesting(profile_);
 
-  const user_manager::User* user = CreateUserAndLogin();
+  if (fake_user_manager_.Get()) {
+    const user_manager::User* user = CreateUserAndLogin();
 
-  // If for any reason the garbage collector kicks in while we are waiting for
-  // an icon, have the user-to-profile mapping ready to avoid using the real
-  // profile manager (which is null).
-  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile_);
+    // If for any reason the garbage collector kicks in while we are waiting for
+    // an icon, have the user-to-profile mapping ready to avoid using the real
+    // profile manager (which is null).
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                 profile_);
+  }
 
   // A valid |arc_app_list_prefs_| is needed for the ARC bridge service and the
   // ARC auth service.

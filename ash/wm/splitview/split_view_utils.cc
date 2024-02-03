@@ -5,6 +5,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -29,6 +30,7 @@
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/window_properties.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,7 +46,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::WindowStateType;
+using chromeos::WindowStateType;
 
 // The animation speed at which the highlights fade in or out.
 constexpr base::TimeDelta kHighlightsFadeInOut = base::Milliseconds(250);
@@ -59,9 +61,6 @@ constexpr base::TimeDelta kPreviewAreaFadeOut = base::Milliseconds(67);
 constexpr base::TimeDelta kLabelAnimation = base::Milliseconds(83);
 // The delay before the indicator labels start fading in.
 constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
-
-// Toast data.
-constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
 
 constexpr char kHistogramPrefix[] = "Ash.SplitViewOverviewSession.";
 
@@ -216,7 +215,7 @@ bool IsAnotherWindowSnappedOppositeOf(aura::Window* window) {
   const auto windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   const auto snap_type = WindowState::Get(window)->GetStateType();
-  const auto opposite_snap_type = window_util::GetOppositeSnapType(window);
+  const auto opposite_snap_type = GetOppositeSnapType(window);
   for (aura::Window* top_window : base::Reversed(windows)) {
     if (top_window == window) {
       // Skip `window` itself.
@@ -524,10 +523,12 @@ bool ShouldAllowSplitView() {
   if (Shell::Get()->screen_pinning_controller()->IsPinned())
     return false;
 
-  // TODO(crubg.com/853588): Disallow window dragging and split screen while
-  // ChromeVox is on until they are in a usable state.
-  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
+  // Disallow window dragging and split screen while ChromeVox is on in tablet
+  // mode.
+  if (display::Screen::GetScreen()->InTabletMode() &&
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return false;
+  }
 
   return true;
 }
@@ -837,6 +838,52 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
   return snapped_window_bounds_in_screen;
 }
 
+chromeos::WindowStateType GetOppositeSnapType(aura::Window* window) {
+  CHECK(window);
+  WindowState* window_state = WindowState::Get(window);
+  CHECK(window_state->IsSnapped());
+  return window_state->GetStateType() ==
+                 chromeos::WindowStateType::kPrimarySnapped
+             ? chromeos::WindowStateType::kSecondarySnapped
+             : chromeos::WindowStateType::kPrimarySnapped;
+}
+
+bool ShouldConsiderWindowForFasterSplitView(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source) {
+  if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    return false;
+  }
+
+  if (!OverviewController::Get()->CanEnterOverview()) {
+    return false;
+  }
+
+  // TODO(michelefan): Currently apply the snap source limitations for faster
+  // flag only. It will be removed when we figure out a good way to restore two
+  // windows in a snap group.
+  if (features::IsFasterSplitScreenSetupEnabled()) {
+    if (PrefService* pref =
+            Shell::Get()->session_controller()->GetActivePrefService();
+        pref && !pref->GetBoolean(prefs::kSnapWindowSuggestions)) {
+      return false;
+    }
+
+    switch (snap_action_source) {
+      case WindowSnapActionSource::kDragWindowToEdgeToSnap:
+      case WindowSnapActionSource::kSnapByWindowLayoutMenu:
+      case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+      case WindowSnapActionSource::kTest:
+        // We only start partial overview for the above snap sources.
+        break;
+      default:
+        return false;
+    }
+  }
+
+  return !IsInOverviewSession();
+}
+
 bool CanStartSplitViewOverviewSessionInClamshell(
     aura::Window* window,
     WindowSnapActionSource snap_action_source) {
@@ -845,48 +892,19 @@ bool CanStartSplitViewOverviewSessionInClamshell(
                 ->split_view_overview_session();
   }
 
-  if (!OverviewController::Get()->CanEnterOverview()) {
-    return false;
-  }
-
-  // TODO(sophiewen): Associated the `if` with the settings pref check.
-  if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
-    return false;
-  }
-
-  switch (snap_action_source) {
-    case WindowSnapActionSource::kDragWindowToEdgeToSnap:
-    case WindowSnapActionSource::kSnapByWindowLayoutMenu:
-    case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
-    case WindowSnapActionSource::kTest:
-      // We only start partial overview for the above snap sources.
-      break;
-    default:
-      return false;
-  }
-
-  // We shouldn't start `SplitViewOverviewSession` if the given `window` belongs
-  // to a snap group.
-  // TODO(michelefan): Revisit and see if this check can be removed.
-  auto* snap_group_controller = SnapGroupController::Get();
-  if (snap_group_controller &&
-      snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-    return false;
-  }
-
   // If `SnapGroups` is not enabled and the topmost window (excluding
   // `window` itself) is snapped on the opposite side, don't start partial
   // overview.
-  if (!snap_group_controller && IsAnotherWindowSnappedOppositeOf(window)) {
+  if (!SnapGroupController::Get() && IsAnotherWindowSnappedOppositeOf(window)) {
     return false;
   }
 
-  return !IsInOverviewSession();
+  return ShouldConsiderWindowForFasterSplitView(window, snap_action_source);
 }
 
 bool IsSnapGroupEnabledInClamshellMode() {
-  auto* snap_group_controller = SnapGroupController::Get();
-  return snap_group_controller && !display::Screen::GetScreen()->InTabletMode();
+  return SnapGroupController::Get() &&
+         !display::Screen::GetScreen()->InTabletMode();
 }
 
 int GetWindowComponentForResize(aura::Window* window) {

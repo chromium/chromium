@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1384959399684842514">Download dijeda</translation>
 <translation id="1415402041810619267">URL dipotong</translation>
-<translation id="1426410128494586442">Ya</translation>
 <translation id="1434873037477293673">kartu penurunan harga</translation>
 <translation id="1448064542941920355">Kurangi zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> situs}other{<ph name="SITE_COUNT" /> situs}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Untuk mengizinkan <ph name="APP_NAME" /> mengakses kamera Anda, aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
 <translation id="2238944249568001759">Penelusuran yang disarankan berdasarkan tab terakhir Anda</translation>
+<translation id="2241587408274973373">Kartu halaman tab baru</translation>
 <translation id="2241634353105152135">Sekali ini saja</translation>
 <translation id="2253414712144136228">Hapus <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 situs diblokir}other{# situs diblokir}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Situs dapat menampilkan perintah login dari layanan identitas.</translation>
 <translation id="2790501146643349491">Jika diaktifkan, situs yang baru saja ditutup dapat menyelesaikan pengiriman dan penerimaan data. Jika dinonaktifkan, situs yang baru saja ditutup tidak dapat menyelesaikan pengiriman atau penerimaan data.</translation>
 <translation id="2822354292072154809">Yakin ingin menyetel ulang semua izin situs untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Minta tampilan seluler</translation>
 <translation id="2870560284913253234">Situs</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Penampil sertifikat</translation>
 <translation id="2979365474350987274">Cookie pihak ketiga dibatasi</translation>
 <translation id="3008272652534848354">Reset izin</translation>
-<translation id="3013291976881901233">Perangkat MIDI</translation>
 <translation id="301521992641321250">Diblokir secara otomatis</translation>
 <translation id="3069226013421428034">Izinkan login pihak ketiga untuk situs tertentu.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Berakhir besok}other{Berakhir dalam # hari}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Terhubung ke perangkat USB</translation>
 <translation id="4194328954146351878">Tanyakan sebelum mengizinkan situs melihat dan mengubah informasi di perangkat NFC (direkomendasikan)</translation>
 <translation id="4200726100658658164">Buka Setelan Lokasi</translation>
-<translation id="4212246570487010370">Lanjutkan menjelajah</translation>
 <translation id="4226663524361240545">Notifikasi dapat membuat perangkat bergetar</translation>
 <translation id="4259722352634471385">Navigasi diblokir: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Diizinkan</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Berpindah ke bawah</translation>
 <translation id="6749077623962119521">Reset izin?</translation>
 <translation id="6766622839693428701">Geser ke bawah untuk menutup.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Dari <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Pilih opsi untuk <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6818926723028410516">Pilih item</translation>

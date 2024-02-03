@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_types.h"
-#include "components/history_clusters/ui/query_clusters_state.h"
+#include "components/history_clusters/core/query_clusters_state.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

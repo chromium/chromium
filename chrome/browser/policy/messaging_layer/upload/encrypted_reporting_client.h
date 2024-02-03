@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -14,9 +15,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/statusor.h"
 
 namespace policy {
@@ -41,10 +46,53 @@ class EncryptedReportingClient {
     virtual policy::DeviceManagementService* device_management_service() const;
   };
 
+  // Reports accumulated payload sizes per hour via UMA.
+  class PayloadSizePerHourUmaReporter {
+   public:
+    PayloadSizePerHourUmaReporter();
+    ~PayloadSizePerHourUmaReporter();
+    PayloadSizePerHourUmaReporter(const PayloadSizePerHourUmaReporter&) =
+        delete;
+    PayloadSizePerHourUmaReporter& operator=(
+        const PayloadSizePerHourUmaReporter&) = delete;
+
+    // Adds request payload size to the accumulated request payload size.
+    void RecordRequestPayloadSize(int payload_size);
+
+    // Adds response payload size to the accumulated response payload size.
+    void RecordResponsePayloadSize(int payload_size);
+
+    // Gets the weak pointer.
+    base::WeakPtr<PayloadSizePerHourUmaReporter> GetWeakPtr();
+
+   private:
+    // Reporting interval.
+    static constexpr base::TimeDelta kReportingInterval = base::Hours(1);
+
+    // Converts bytes to KiB.
+    static int ConvertBytesToKiB(int bytes);
+
+    // Reports the data to UMA.
+    void Report();
+
+    // Accumulated request payload size since last report.
+    int request_payload_size_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+    // Accumulated response payload size since last report.
+    int response_payload_size_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+    // Timer that controls when network usage is reported.
+    base::RepeatingTimer timer_;
+
+    SEQUENCE_CHECKER(sequence_checker_);
+
+    base::WeakPtrFactory<PayloadSizePerHourUmaReporter> weak_factory_{this};
+  };
+
   using ResponseCallback =
       base::OnceCallback<void(StatusOr<base::Value::Dict>)>;
 
-  explicit EncryptedReportingClient(
+  static std::unique_ptr<EncryptedReportingClient> Create(
       std::unique_ptr<Delegate> delegate = std::make_unique<Delegate>());
 
   EncryptedReportingClient(const EncryptedReportingClient&) = delete;
@@ -52,10 +100,18 @@ class EncryptedReportingClient {
 
   ~EncryptedReportingClient();
 
-  // Uploads a report containing `merging_payload` (merged into the default
-  // payload of the job).  The `callback` will be called when the upload is
-  // completed.
-  void UploadReport(base::Value::Dict merging_payload,
+  // Returns true if a generation guid is required for this device or browser.
+  // Returns false otherwise.
+  static bool GenerationGuidIsRequired();
+
+  // Uploads a report containing multiple `records`, augmented with
+  // `need_encryption_key` flag and `config_file_version`. Calls `callback` when
+  // the upload process is completed. Uses `scoped_reservation` to ensure proper
+  // memory management (stops and returns error if memory is insufficient).
+  void UploadReport(bool need_encryption_key,
+                    int config_file_version,
+                    std::vector<EncryptedRecord> records,
+                    ScopedReservation scoped_reservation,
                     std::optional<base::Value::Dict> context,
                     policy::CloudPolicyClient* cloud_policy_client,
                     ResponseCallback callback);
@@ -65,8 +121,26 @@ class EncryptedReportingClient {
       base::flat_set<std::unique_ptr<policy::DeviceManagementService::Job>,
                      base::UniquePtrComparator>;
 
+  // Constructor called by factory only.
+  EncryptedReportingClient(bool is_generation_guid_required,
+                           std::unique_ptr<Delegate> delegate);
+
+  // Constructs upload job after the data is converted into JSON, assigned to
+  // `payload_result` (`nullopt` if there was an error). Calls `callback` once
+  // the job has been responded or if an error has been detected, and releases
+  // `scoped_reservation`.
+  void CreateUploadJob(std::optional<base::Value::Dict> context,
+                       policy::CloudPolicyClient* cloud_policy_client,
+                       ResponseCallback callback,
+                       std::optional<base::Value::Dict> payload_result,
+                       ScopedReservation scoped_reservation);
+
   // Callback for encrypted report upload requests.
-  void OnReportUploadCompleted(ResponseCallback callback,
+  void OnReportUploadCompleted(ScopedReservation scoped_reservation,
+                               std::optional<int> request_payload_size,
+                               base::WeakPtr<PayloadSizePerHourUmaReporter>
+                                   payload_size_per_hour_uma_reporter,
+                               ResponseCallback callback,
                                policy::DeviceManagementService::Job* job,
                                policy::DeviceManagementStatus status,
                                int response_code,
@@ -76,7 +150,11 @@ class EncryptedReportingClient {
 
   JobSet request_jobs_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<Delegate> delegate_;
+  const bool is_generation_guid_required_;
+  const std::unique_ptr<Delegate> delegate_;
+
+  // Reports accumulated payload sizes per hour via UMA.
+  PayloadSizePerHourUmaReporter payload_size_per_hour_uma_reporter_;
 
   base::WeakPtrFactory<EncryptedReportingClient> weak_ptr_factory_{this};
 };

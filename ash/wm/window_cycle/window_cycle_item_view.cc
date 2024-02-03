@@ -94,8 +94,8 @@ gfx::Size WindowCycleItemView::GetPreviewViewSize() const {
   return preview_pref_size;
 }
 
-void WindowCycleItemView::Layout() {
-  WindowMiniView::Layout();
+void WindowCycleItemView::Layout(PassKey) {
+  LayoutSuperclass<WindowMiniView>(this);
 
   if (!preview_view())
     return;

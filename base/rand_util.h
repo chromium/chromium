@@ -219,11 +219,22 @@ class BASE_EXPORT MetricsSubSampler {
   MetricsSubSampler();
   bool ShouldSample(double probability);
 
-  // Disables subsampling in a scope. Useful for testing.
-  class BASE_EXPORT ScopedDisableForTesting {
+  // Make any call to ShouldSample for any instance of MetricsSubSampler
+  // return true for testing. Cannot be used in conjunction with
+  // ScopedNeverSampleForTesting.
+  class BASE_EXPORT ScopedAlwaysSampleForTesting {
    public:
-    ScopedDisableForTesting();
-    ~ScopedDisableForTesting();
+    ScopedAlwaysSampleForTesting();
+    ~ScopedAlwaysSampleForTesting();
+  };
+
+  // Make any call to ShouldSample for any instance of MetricsSubSampler
+  // return false for testing. Cannot be used in conjunction with
+  // ScopedAlwaysSampleForTesting.
+  class BASE_EXPORT ScopedNeverSampleForTesting {
+   public:
+    ScopedNeverSampleForTesting();
+    ~ScopedNeverSampleForTesting();
   };
 
  private:

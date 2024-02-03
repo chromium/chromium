@@ -140,7 +140,7 @@ const FeatureEntry* FindFeatureEntry(const FeatureKey& key) {
 
 }  // namespace
 
-absl::optional<Feature> AddressSpaceFeature(
+std::optional<Feature> AddressSpaceFeature(
     FetchType fetch_type,
     AddressSpace client_address_space,
     bool client_is_secure_context,
@@ -152,7 +152,7 @@ absl::optional<Feature> AddressSpaceFeature(
 
   const FeatureEntry* entry = FindFeatureEntry(key);
   if (!entry) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   switch (fetch_type) {

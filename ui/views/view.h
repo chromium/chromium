@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <concepts>
 #include <memory>
 #include <set>
 #include <string>
@@ -14,6 +15,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -22,6 +24,7 @@
 #include "base/memory/safety_checks.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -52,7 +55,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/action_view_interface.h"
+#include "ui/views/actions/action_view_interface.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
@@ -290,6 +293,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
+  using PassKey = base::NonCopyablePassKey<View>;
   using Views = std::vector<raw_ptr<View, VectorExperimental>>;
 
   // TODO(crbug.com/1289902): The |event| parameter is being removed. Do not add
@@ -790,15 +794,33 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Layout --------------------------------------------------------------------
 
-  // Lay out the child Views (set their bounds based on sizing heuristics
-  // specific to the current Layout Manager)
-  virtual void Layout();
+  // Lays out the child Views (sets their bounds based on sizing heuristics
+  // specific to the current LayoutManager).
+  //
+  // To customize layout behavior, use LayoutManagers; see
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/ui/learn/bestpractices/layout.md?pli=1#Use-LayoutManagers.
+  // For now, classes may override Layout() to customize this manually, but this
+  // will eventually be removed; see https://crbug.com/1005568. Subclasses which
+  // need to invoke a superclass' Layout() method during their own
+  // implementation of Layout() can do so via LayoutSuperclass<SuperT>(this);
+  // calling this in any other way or context is forbidden (and will likely
+  // break at compile or run time).
+  //
+  // To cause a view to be laid out, use InvalidateLayout(), which will
+  // perform layout asynchronously; see
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/ui/learn/bestpractices/layout.md?pli=1#don_t-invoke-layout_directly.
+  // For now, classes may also call DeprecatedLayoutImmediately() to
+  // synchronously lay out a view, but this will eventually be removed; see
+  // https://crbug.com/1521108. Neither of these methods should be called from
+  // Layout(); see https://crbug.com/1121681.
+  void DeprecatedLayoutImmediately();
+  virtual void Layout(PassKey);
 
   bool needs_layout() const { return needs_layout_; }
 
   // Mark this view and all parents to require a relayout. This ensures the
-  // next call to Layout() will propagate to this view, even if the bounds of
-  // parent views do not change.
+  // next layout will propagate to this view, even if the bounds of parent views
+  // do not change.
   void InvalidateLayout();
 
   // TODO(kylixrd): Update comment once UseDefaultFillLayout is true by default.
@@ -1818,6 +1840,20 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // the child by adding its own layer.
   virtual void OnChildLayerChanged(View* child);
 
+  // Layout --------------------------------------------------------------------
+
+  // Invokes Layout() on a superclass on behalf of the subclass. This is to be
+  // used only inside a Layout() override, where a subclass needs to do the
+  // superclass portion of layout. Invoke like `LayoutSuperclass<SuperT>(this)`,
+  // where SuperT is the relevant superclass type.
+  template <typename Super, typename This>
+    requires std::derived_from<Super, View> && std::derived_from<This, Super> &&
+             (!std::same_as<Super, This>)
+  void LayoutSuperclass(This* ptr) {
+    CHECK(layout_allowed_);
+    static_cast<Super*>(ptr)->Super::Layout(PassKey());
+  }
+
   // Input ---------------------------------------------------------------------
 
   virtual DragInfo* GetDragInfo();
@@ -2133,6 +2169,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // default fill layout or the assigned layout manager.
   bool HasLayoutManager() const;
 
+  // Implementation of synchronous layout. DeprecatedLayoutImmediately() is a
+  // temporary public accessor to this; this is the access point for the few
+  // blessed uses.
+  void LayoutImmediately(bool collect_trace = true);
+
   // Input ---------------------------------------------------------------------
 
   bool ProcessMousePressed(const ui::MouseEvent& event);
@@ -2289,6 +2330,14 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Whether the view needs to be laid out.
   bool needs_layout_ = true;
+
+  // Whether Layout() access is currently legal. This is used to prevent calls
+  // to LayoutSuperclass() outside the implementation of Layout().
+  bool layout_allowed_ = false;
+
+  // How many times this view has done layout since the last time it was
+  // painted. This is used to compute metrics around unnecessary layout calls.
+  int layouts_since_last_paint_ = 0;
 
   // The View's LayoutManager defines the sizing heuristics applied to child
   // Views. The default is absolute positioning according to bounds_.

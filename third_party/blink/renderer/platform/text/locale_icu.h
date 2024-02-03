@@ -35,9 +35,9 @@
 #include <unicode/unum.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -99,7 +99,7 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
   bool did_create_short_date_format_;
 
   Vector<String> week_day_short_labels_;
-  absl::optional<unsigned> first_day_of_week_;
+  std::optional<unsigned> first_day_of_week_;
   Vector<String> month_labels_;
   String date_format_;
   String month_format_;

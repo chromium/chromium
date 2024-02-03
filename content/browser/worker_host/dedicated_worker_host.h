@@ -228,7 +228,8 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(
-      blink::mojom::RendererEvictionReason reason) override;
+      blink::mojom::RendererEvictionReason reason,
+      blink::mojom::BlockingDetailsPtr details) override;
   using BackForwardCacheBlockingDetails =
       std::vector<blink::mojom::BlockingDetailsPtr>;
   void DidChangeBackForwardCacheDisablingFeatures(

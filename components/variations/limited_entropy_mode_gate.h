@@ -11,14 +11,18 @@
 namespace variations {
 
 // Returns true iff the given |channel| is eligible to randomize field trials
-// within a layer with LIMITED entropy mode, or if the client has called
-// EnableLimitedEntropyModeForTesting().
+// within a layer with LIMITED entropy mode (aka limited layer), or if the
+// client has called EnableLimitedEntropyModeForTesting().
 COMPONENT_EXPORT(VARIATIONS)
 bool IsLimitedEntropyModeEnabled(version_info::Channel channel);
 
-// Enables the client to randomize field trials within a layer with LIMITED
-// entropy mode. For testing purposes only.
+// Enables the client to randomize field trials within a limited layer. For
+// testing purposes only.
 COMPONENT_EXPORT(VARIATIONS) void EnableLimitedEntropyModeForTesting();
+
+// Disables the client to randomize field trials within a limited layer. For
+// testing purposes only.
+COMPONENT_EXPORT(VARIATIONS) void DisableLimitedEntropyModeForTesting();
 
 }  // namespace variations
 

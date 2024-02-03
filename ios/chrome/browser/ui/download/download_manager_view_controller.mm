@@ -14,6 +14,9 @@
 #import "ios/chrome/browser/ui/download/download_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -130,7 +133,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 }  // namespace
 
-@interface DownloadManagerViewController () {
+@interface DownloadManagerViewController () <FullscreenUIElement> {
   NSString* _fileName;
   int64_t _countOfBytesReceived;
   int64_t _countOfBytesExpectedToReceive;
@@ -169,7 +172,13 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 @end
 
-@implementation DownloadManagerViewController
+@implementation DownloadManagerViewController {
+  // A FullscreenController to hide the UI along the toolbar.
+  raw_ptr<FullscreenController> _fullscreenController;
+
+  // Bridge to observe `_fullscreenController`.
+  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
+}
 
 #pragma mark - UIViewController
 
@@ -362,6 +371,19 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 - (UIView*)openInSourceView {
   return nil;
+}
+
+- (void)setFullscreenController:(FullscreenController*)fullscreenController {
+  if (_fullscreenController) {
+    _fullscreenUIUpdater.reset();
+    self.view.alpha = 1;
+  }
+  _fullscreenController = fullscreenController;
+  if (_fullscreenController) {
+    _fullscreenUIUpdater =
+        std::make_unique<FullscreenUIUpdater>(_fullscreenController, self);
+    [self updateForFullscreenProgress:_fullscreenController->GetProgress()];
+  }
 }
 
 #pragma mark - UI elements
@@ -773,6 +795,27 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED);
   self.detailLabel.text = _fileName;
   self.detailLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+}
+
+#pragma mark - FullscreenUIElement
+
+- (void)updateForFullscreenProgress:(CGFloat)progress {
+  CGFloat alphaValue = fmax((progress - 0.85) / 0.15, 0);
+  self.view.alpha = alphaValue;
+}
+
+- (void)updateForFullscreenEnabled:(BOOL)enabled {
+  if (!enabled) {
+    [self updateForFullscreenProgress:1];
+  }
+}
+
+- (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
+  __weak __typeof(self) weakSelf = self;
+  CGFloat finalProgress = animator.finalProgress;
+  [animator addAnimations:^{
+    [weakSelf updateForFullscreenProgress:finalProgress];
+  }];
 }
 
 #pragma mark - Private

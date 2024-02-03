@@ -82,13 +82,25 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     kUnspecifiedWorldIdStart,
   };
 
+  // Various world types. Isolated worlds get their own security policy.
   enum class WorldType {
+    // The main world for the main rendering thread. World id is 0. Considered
+    // an isolated world.
     kMain,
+    // An isolated world created via `EnsureIsolatedWorld()`. The caller passes
+    // in a world id that should be used. The embedder is supposed to respect
+    // the `kEmbedderWorldIdLimit` for creating the isolated world.
     kIsolated,
+    // An isolated world for the inspector. The world id is generated
+    // internally.
     kInspectorIsolated,
-    kBlinkInternalNonJSExposed,
+    // A utility world that is not considered an isolated world.
+    kRegExp,
+    // A utility world for context snapshotting that is not considered an
+    // isolated world.
     kForV8ContextSnapshotNonMain,
-    kWorker,
+    // A world for each worker/worklet. Not considered an isolated world.
+    kWorkerOrWorklet,
     // Shadow realms do not have a corresponding Frame nor DOMWindow so they're
     // very different from the main world. Shadow realms are not workers nor
     // worklets obviously, nor Chrome extensions' content scripts. So, we use
@@ -104,7 +116,8 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
 
   // Creates a world other than IsolatedWorld. Note this can return nullptr if
   // GenerateWorldIdForType fails to allocate a valid id.
-  static scoped_refptr<DOMWrapperWorld> Create(v8::Isolate*, WorldType);
+  static scoped_refptr<DOMWrapperWorld>
+  Create(v8::Isolate*, WorldType, bool is_default_world_of_isolate = false);
 
   // Ensures an IsolatedWorld for |worldId|.
   static scoped_refptr<DOMWrapperWorld> EnsureIsolatedWorld(v8::Isolate*,
@@ -155,7 +168,9 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
       const base::UnguessableToken& cluster_id) const;
 
   bool IsMainWorld() const { return world_type_ == WorldType::kMain; }
-  bool IsWorkerWorld() const { return world_type_ == WorldType::kWorker; }
+  bool IsWorkerOrWorkletWorld() const {
+    return world_type_ == WorldType::kWorkerOrWorklet;
+  }
   bool IsShadowRealmWorld() const {
     return world_type_ == WorldType::kShadowRealm;
   }
@@ -171,25 +186,21 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     return *v8_object_data_store_;
   }
 
-  // Clear the reference pointing from |object| to |handle| in any world.
-  template <typename HandleType>
-  inline static bool ClearWrapperIfEqualTo(ScriptWrappable* object,
-                                           const HandleType& handle);
-
-  // Clear the reference pointing from |object| to |handle| in the main world.
-  template <typename HandleType>
-  inline static bool ClearMainWorldWrapperIfEqualTo(ScriptWrappable* object,
-                                                    const HandleType& handle);
-
- private:
-  static bool ClearNonMainWorldWrapperIfEqualTo(
+  // Methods iterate all worlds and invokes the clearing methods on
+  // DOMDataStore. The WorldMap is only known to the DOMWrapperWorld and as such
+  // the iteration cannot be folded into DOMDataStore.
+  static bool ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
       ScriptWrappable* object,
       const v8::Local<v8::Object>& handle);
-  static bool ClearNonMainWorldWrapperIfEqualTo(
+  static bool ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
       ScriptWrappable* object,
       const v8::TracedReference<v8::Object>& handle);
 
-  DOMWrapperWorld(v8::Isolate*, WorldType, int32_t world_id);
+ private:
+  DOMWrapperWorld(v8::Isolate*,
+                  WorldType,
+                  int32_t world_id,
+                  bool is_default_world_of_isolate);
 
   static unsigned number_of_non_main_worlds_in_main_thread_;
 
@@ -203,24 +214,6 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
   Persistent<DOMDataStore> dom_data_store_;
   Persistent<V8ObjectDataStore> v8_object_data_store_;
 };
-
-// static
-template <typename HandleType>
-bool DOMWrapperWorld::ClearMainWorldWrapperIfEqualTo(ScriptWrappable* object,
-                                                     const HandleType& handle) {
-  return object->ClearMainWorldWrapperIfEqualTo(handle);
-}
-
-// static
-template <typename HandleType>
-bool DOMWrapperWorld::ClearWrapperIfEqualTo(ScriptWrappable* object,
-                                            const HandleType& handle) {
-  if (ClearMainWorldWrapperIfEqualTo(object, handle)) {
-    return true;
-  }
-  // Slow path: |object| may point to |handle| in any non-main DOM world.
-  return DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(object, handle);
-}
 
 }  // namespace blink
 

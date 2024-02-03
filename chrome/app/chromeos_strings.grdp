@@ -2887,14 +2887,6 @@
     Reset
   </message>
 
-    <!-- Update Notification Strings -->
-  <message name="IDS_UPDATE_NOTIFICATION_HEADER" desc="Notification title shown for a system update.">
-    You’ve been upgraded to <ph name="NAME">$1<ex>Chromebook</ex></ph>
-  </message>
-  <message name="IDS_UPDATE_NOTIFICATION_MESSAGE" desc="Notification shown for a system update.">
-     New features include Magic Eraser on Google Photos to remove distractions, improved video call tools, and more
-  </message>
-
   <!-- Update Required Screen Strings-->
   <message name="IDS_UPDATE_REQUIRED_SCREEN_TITLE" desc="The title of the update required dialog on the login screen to inform the user that policy prevents user sign in before OS version is is updated.">
      Immediate update required

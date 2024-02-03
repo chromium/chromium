@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
-<translation id="1426410128494586442">Ano</translation>
 <translation id="1434873037477293673">karta s poklesem ceny</translation>
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web}few{<ph name="SITE_COUNT" /> weby}many{<ph name="SITE_COUNT" /> webu}other{<ph name="SITE_COUNT" /> webů}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="2238944249568001759">Navrhovaná vyhledávání na základě poslední karty</translation>
+<translation id="2241587408274973373">Karty na stránce Nová karta</translation>
 <translation id="2241634353105152135">Pouze jednou</translation>
 <translation id="2253414712144136228">Odstranit položku <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Je blokován 1 web}few{Jsou blokovány # weby}many{Je blokováno # webu}other{Je blokováno # webů}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Weby mohou zobrazovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
 <translation id="2790501146643349491">Když je tato možnost zapnutá, nedávno zavřené weby mohou dokončit odesílání a přijímání dat. Když je vypnutá, nedávno zavřené weby nemohou dokončit odesílání nebo přijímání dat.</translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Požadovat mobilní zobrazení</translation>
 <translation id="2870560284913253234">Stránky</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Prohlížeč certifikátů</translation>
 <translation id="2979365474350987274">Soubory cookie třetích stran jsou omezovány</translation>
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
-<translation id="3013291976881901233">Zařízení MIDI</translation>
 <translation id="301521992641321250">Automaticky blokováno</translation>
 <translation id="3069226013421428034">Povolení přihlášení třetích stran na konkrétní web.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Platnost vyprší zítra}few{Platnost vyprší za # dny}many{Platnost vyprší za # dne}other{Platnost vyprší za # dní}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Připojeno k zařízení USB</translation>
 <translation id="4194328954146351878">Pokud web bude chtít číst a měnit informace na zařízeních NFC, zobrazit dotaz (doporučeno)</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
-<translation id="4212246570487010370">Pokračovat v prohlížení</translation>
 <translation id="4226663524361240545">Oznámení mohou aktivovat vibraci</translation>
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povoleno</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Posunout dolů</translation>
 <translation id="6749077623962119521">Resetovat oprávnění?</translation>
 <translation id="6766622839693428701">Zavřete přejetím prstem dolů.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Ze zařízení <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Vyberte možnost pro web <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6818926723028410516">Výběr položek</translation>

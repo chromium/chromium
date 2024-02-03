@@ -163,9 +163,7 @@ bool DoIsRelativeURL(const char* base,
 
   // If the scheme isn't valid, then it's relative.
   if (!IsValidScheme(url, scheme)) {
-    if (url[begin] == '#' &&
-        base::FeatureList::IsEnabled(
-            kResolveBareFragmentWithColonOnNonHierarchical)) {
+    if (url[begin] == '#') {
       // |url| is a bare fragment (e.g. "#foo:bar"). This can be resolved
       // against any base. Fall-through.
     } else if (!is_base_hierarchical) {
@@ -328,7 +326,14 @@ bool DoResolveRelativePath(const char* base_url,
   // possible escaped characters.
   output->ReserveSizeIfNeeded(base_parsed.path.begin +
                               std::max({path.end(), query.end(), ref.end()}));
-  output->Append(base_url, base_parsed.path.begin);
+
+  if (base_parsed.path.is_empty()) {
+    // A non-special URL may have an empty path (e.g. "git://host"). In these
+    // cases, attempting to use `base_parsed.path` is invalid.
+    output->Append(base_url, base_parsed.Length());
+  } else {
+    output->Append(base_url, base_parsed.path.begin);
+  }
 
   if (path.is_nonempty()) {
     // The path is replaced or modified.
@@ -363,6 +368,16 @@ bool DoResolveRelativePath(const char* base_url,
       // original path with the file part stripped, and append the new path.
       // The canonicalizer will take care of resolving ".." and "."
       size_t path_begin = output->length();
+
+      if (base_parsed.path.is_empty() && !path.is_empty()) {
+        // Ensure a leading "/" is present before appending a non-empty relative
+        // path when the base URL's path is empty, as can occur with non-special
+        // URLs. This prevents incorrect path concatenation, such as resolving
+        // "path" based on "git://host" resulting in "git://hostpath" instead of
+        // the intended "git://host/path".
+        output->push_back('/');
+      }
+
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
       success &= CanonicalizePartialPathInternal(relative_url, path, path_begin,
@@ -495,17 +510,27 @@ bool DoResolveRelativeURL(const char* base_url,
   if (potentially_dangling_markup)
     out_parsed->potentially_dangling_markup = true;
 
-  // Sanity check: the input should have a host or we'll break badly below.
-  // We can only resolve relative URLs with base URLs that have hosts and
-  // paths (even the default path of "/" is OK).
+  // A flag-dependent condition check is necessary here because non-special URLs
+  // may have an empty path if StandardCompliantNonSpecialSchemeURLParsing flag
+  // is enabled.
   //
-  // We allow hosts with no length so we can handle file URLs, for example.
-  if (base_parsed.path.is_empty()) {
-    // On error, return the input (resolving a relative URL on a non-relative
-    // base = the base).
+  // TODO(crbug.com/1416006): Remove the following comment when we enable the
+  // flag. The comment makes sense only when the flag is disabled.
+  //
+  // > Sanity check: the input should have a host or we'll break badly below.
+  // > We can only resolve relative URLs with base URLs that have hosts and
+  // > paths (even the default path of "/" is OK).
+  // >
+  // > We allow hosts with no length so we can handle file URLs, for example.
+  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing()
+          ? base_parsed.scheme.is_empty()
+          : base_parsed.path.is_empty()) {
+    // On error, return the input (resolving a relative URL on a
+    // non-relative base = the base).
     int base_len = base_parsed.Length();
-    for (int i = 0; i < base_len; i++)
+    for (int i = 0; i < base_len; i++) {
       output->push_back(base_url[i]);
+    }
     return false;
   }
 

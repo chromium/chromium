@@ -14,12 +14,20 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/constants/chromeos_features.h"
 
+namespace {
+// Set the minimum window size to 800 pixels in width and 600 pixels in height.
+// This is to avoid layout issue that text might be overlapping when the SWA
+// window is too small.
+constexpr int kDemoModeAppMinimumWidth = 800;
+constexpr int kDemoModeAppMinimumHeight = 600;
+}  // namespace
+
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
   std::unique_ptr<web_app::WebAppInstallInfo> info =
       std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUntrustedUIDemoModeAppIndexURL);
   info->scope = GURL(ash::kChromeUntrustedUIDemoModeAppURL);
-  // TODO(b/185608502): Convert the title to a localized string
+  // TODO(b/323002417): Convert the title to a localized string
   info->title = u"Demo Mode App";
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
@@ -49,6 +57,10 @@ DemoModeSystemAppDelegate::GetWebAppInfo() const {
 
 bool DemoModeSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
+}
+
+gfx::Size DemoModeSystemAppDelegate::GetMinimumWindowSize() const {
+  return {kDemoModeAppMinimumWidth, kDemoModeAppMinimumHeight};
 }
 
 bool DemoModeSystemAppDelegate::IsAppEnabled() const {

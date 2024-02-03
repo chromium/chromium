@@ -217,8 +217,7 @@ void GrShaderCache::WriteToDisk(const CacheKey& key, CacheData* data) {
 
   data->pending_disk_write = false;
 
-  std::string encoded_key;
-  base::Base64Encode(MakeString(key.data.get()), &encoded_key);
+  std::string encoded_key = base::Base64Encode(MakeString(key.data.get()));
   client_->StoreShader(encoded_key, MakeString(data->data.get()));
 }
 

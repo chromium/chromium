@@ -81,7 +81,8 @@ void ScreenAIComponentInstallerPolicy::ComponentReady(
             if (library_available) {
               state->SetComponentFolder(install_dir);
             } else {
-              state->SetState(screen_ai::ScreenAIInstallState::State::kFailed);
+              state->SetState(
+                  screen_ai::ScreenAIInstallState::State::kDownloadFailed);
             }
           },
           install_dir));

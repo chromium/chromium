@@ -20,8 +20,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
 
 PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
@@ -34,12 +33,12 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   const int vertical_distance =
       layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
-  info_container_ = AddChildView(std::make_unique<views::View>());
-  info_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, button_insets,
-      vertical_distance));
+  SetOrientation(views::LayoutOrientation::kVertical);
+
+  info_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+  info_container_->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  info_container_->SetInsideBorderInsets(button_insets);
+  info_container_->SetBetweenChildSpacing(vertical_distance);
 
   AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -87,7 +86,13 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
   // TODO(crbug.com/1378703): Figure out why without additional horizontal
   // margin the size is being calculated incorrectly and the topics labels are
   // being cut off.
-  description_label->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 1));
+  auto label_margin = gfx::Insets::VH(0, 1);
+  description_label->SetProperty(views::kMarginsKey, label_margin);
+
+  int label_width = PageInfoViewFactory::kMinBubbleWidth -
+                    info_container_->GetInsideBorderInsets().width() -
+                    label_margin.width();
+  description_label->SizeToFit(label_width);
 
   if (!info.accessed_topics.empty()) {
     std::vector<std::u16string> topic_names;

@@ -644,7 +644,7 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
                     std::unique_ptr<ScopedAbortState> scoped_abort_state,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
-                    const absl::optional<KURL>& selected_idp_config_url,
+                    const std::optional<KURL>& selected_idp_config_url,
                     const WTF::String& token,
                     mojom::blink::TokenErrorPtr error,
                     bool is_auto_selected) {
@@ -1447,7 +1447,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
 
     if (options->publicKey()->hasUserVerification() &&
         !mojo::ConvertTo<
-            absl::optional<mojom::blink::UserVerificationRequirement>>(
+            std::optional<mojom::blink::UserVerificationRequirement>>(
             options->publicKey()->userVerification())) {
       resolver->DomWindow()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
@@ -1526,203 +1526,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
   }
 
   if (options->hasIdentity() && options->identity()->hasProviders()) {
-    // TODO(https://crbug.com/1441075): Ideally the logic should be handled in
-    // CredentialManager via Get. However currently it's only for password
-    // management and we should refactor the logic to make it generic.
-
-    ContentSecurityPolicy* policy =
-        resolver->GetExecutionContext()
-            ->GetContentSecurityPolicyForCurrentWorld();
-    if (options->identity()->providers().size() == 0) {
-      exception_state.ThrowTypeError("Need at least one identity provider.");
-      resolver->Detach();
-      return ScriptPromise();
-    }
-    if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
-            context) &&
-        options->identity()->providers().size() > 1) {
-      exception_state.ThrowTypeError(
-          "Multiple providers specified but FedCmMultipleIdentityProviders "
-          "flag is disabled.");
-      resolver->Detach();
-      return ScriptPromise();
-    }
-
-    // Log the UseCounter only when the WebID flag is enabled.
-    UseCounter::Count(context, WebFeature::kFedCm);
-    if (!resolver->DomWindow()->GetFrame()->IsMainFrame()) {
-      UseCounter::Count(resolver->GetExecutionContext(),
-                        WebFeature::kFedCmIframe);
-    }
-    // Track when websites use FedCM with the IDP sign-in status opt-in
-    if (RuntimeEnabledFeatures::FedCmIdpSigninStatusEnabled(
-            resolver->GetExecutionContext())) {
-      UseCounter::Count(resolver->GetExecutionContext(),
-                        WebFeature::kFedCmIdpSigninStatusApi);
-    }
-    int provider_index = 0;
-    Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
-    for (const auto& provider : options->identity()->providers()) {
-      if (provider->hasLoginHint()) {
-        UseCounter::Count(resolver->GetExecutionContext(),
-                          WebFeature::kFedCmLoginHint);
-      }
-      if (RuntimeEnabledFeatures::FedCmDomainHintEnabled() &&
-          provider->hasDomainHint()) {
-        UseCounter::Count(resolver->GetExecutionContext(),
-                          WebFeature::kFedCmDomainHint);
-      }
-      if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled() &&
-          !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-        // TODO(https://crbug.com/1416939): make sure the Digital Credentials
-        //  API works well with the Multiple IdP API.
-        if (provider->hasHolder()) {
-          auto identity_provider =
-              blink::mojom::blink::IdentityProvider::From(*provider);
-          identity_provider_ptrs.push_back(std::move(identity_provider));
-          continue;
-        }
-      }
-
-      if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
-          provider->hasConfigURL() && provider->configURL() == "any") {
-        mojom::blink::IdentityProviderPtr identity_provider =
-            blink::mojom::blink::IdentityProvider::From(*provider);
-        identity_provider_ptrs.push_back(std::move(identity_provider));
-        continue;
-      }
-
-      // TODO(kenrb): Add some renderer-side validation here, such as
-      // validating |provider|, and making sure the calling context is legal.
-      // Some of this has not been spec'd yet.
-      if (!provider->hasConfigURL()) {
-        exception_state.ThrowTypeError("Missing the provider's configURL.");
-        resolver->Detach();
-        return ScriptPromise();
-      }
-
-      KURL provider_url(provider->configURL());
-
-      if (!provider->hasClientId()) {
-        exception_state.ThrowTypeError("Missing the provider's clientId.");
-        resolver->Detach();
-        return ScriptPromise();
-      }
-
-      String client_id = provider->clientId();
-
-      ++provider_index;
-      if (!provider_url.IsValid() || client_id.empty()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kInvalidStateError,
-            String::Format("Provider %i information is incomplete.",
-                           provider_index)));
-        return promise;
-      }
-      // We disallow redirects (in idp_network_request_manager.cc), so it is
-      // enough to check the initial URL here.
-      if (IdentityCredential::IsRejectingPromiseDueToCSP(policy, resolver,
-                                                         provider_url)) {
-        return promise;
-      }
-
-      mojom::blink::IdentityProviderPtr identity_provider =
-          blink::mojom::blink::IdentityProvider::From(*provider);
-      identity_provider_ptrs.push_back(std::move(identity_provider));
-    }
-
-    mojom::blink::RpContext rp_context = mojom::blink::RpContext::kSignIn;
-    if (options->identity()->hasContext()) {
-      UseCounter::Count(resolver->GetExecutionContext(),
-                        WebFeature::kFedCmRpContext);
-      rp_context = mojo::ConvertTo<mojom::blink::RpContext>(
-          options->identity()->context());
-    }
-    base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
-
-    mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
-    if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled()) {
-      // TODO(crbug.com/1429083): add use counters for rp mode.
-      rp_mode =
-          mojo::ConvertTo<mojom::blink::RpMode>(options->identity()->mode());
-    }
-    // TODO(crbug.com/1429083): add uma histograms for rp mode.
-
-    CredentialMediationRequirement mediation_requirement;
-    if (options->mediation() == "conditional") {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Conditional mediation is not supported for this credential type"));
-      return promise;
-    }
-    if (options->mediation() == "silent") {
-      mediation_requirement = CredentialMediationRequirement::kSilent;
-    } else if (options->mediation() == "required") {
-      mediation_requirement = CredentialMediationRequirement::kRequired;
-    } else {
-      DCHECK_EQ("optional", options->mediation());
-      mediation_requirement = CredentialMediationRequirement::kOptional;
-    }
-
-    if (!web_identity_requester_) {
-      web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
-          context, mediation_requirement);
-    }
-
-    std::unique_ptr<ScopedAbortState> scoped_abort_state;
-    if (auto* signal = options->getSignalOr(nullptr)) {
-      if (signal->aborted()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kAbortError, "Request has been aborted."));
-        return promise;
-      }
-
-      auto callback =
-          !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
-              context)
-              ? WTF::BindOnce(&AbortIdentityCredentialRequest,
-                              WrapPersistent(script_state))
-              : WTF::BindOnce(&WebIdentityRequester::AbortRequest,
-                              WrapPersistent(web_identity_requester_.Get()),
-                              WrapPersistent(script_state));
-
-      auto* handle = signal->AddAlgorithm(std::move(callback));
-      scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
-    }
-
-    if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
-            context)) {
-      Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
-      mojom::blink::IdentityProviderGetParametersPtr get_params =
-          mojom::blink::IdentityProviderGetParameters::New(
-              std::move(identity_provider_ptrs), rp_context, rp_mode);
-      idp_get_params.push_back(std::move(get_params));
-
-      auto* auth_request =
-          CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-      auth_request->RequestToken(
-          std::move(idp_get_params), mediation_requirement,
-          WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
-                        std::move(scoped_abort_state),
-                        WrapPersistent(options)));
-
-      // Start recording the duration from when RequestToken is called directly
-      // to when RequestToken would be called if invoked through
-      // web_identity_requester_.
-      web_identity_requester_->StartDelayTimer(resolver);
-
-      return promise;
-    }
-
-    if (scoped_abort_state) {
-      web_identity_requester_->InsertScopedAbortState(
-          std::move(scoped_abort_state));
-    }
-
-    web_identity_requester_->AppendGetCall(
-        resolver, options->identity()->providers(), rp_context, rp_mode);
-
-    return promise;
+    return GetForIdentity(script_state, resolver, promise, options,
+                          *options->identity(), exception_state);
   }
 
   Vector<KURL> providers;
@@ -2005,7 +1810,7 @@ ScriptPromise CredentialsContainer::create(
   }
 
   if (options->publicKey()->hasAttestation() &&
-      !mojo::ConvertTo<absl::optional<AttestationConveyancePreference>>(
+      !mojo::ConvertTo<std::optional<AttestationConveyancePreference>>(
           options->publicKey()->attestation())) {
     resolver->DomWindow()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
@@ -2018,10 +1823,10 @@ ScriptPromise CredentialsContainer::create(
       options->publicKey()
           ->authenticatorSelection()
           ->hasAuthenticatorAttachment()) {
-    absl::optional<String> attachment = options->publicKey()
-                                            ->authenticatorSelection()
-                                            ->authenticatorAttachment();
-    if (!mojo::ConvertTo<absl::optional<AuthenticatorAttachment>>(attachment)) {
+    std::optional<String> attachment = options->publicKey()
+                                           ->authenticatorSelection()
+                                           ->authenticatorAttachment();
+    if (!mojo::ConvertTo<std::optional<AuthenticatorAttachment>>(attachment)) {
       resolver->DomWindow()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
@@ -2034,7 +1839,7 @@ ScriptPromise CredentialsContainer::create(
   if (options->publicKey()->hasAuthenticatorSelection() &&
       options->publicKey()->authenticatorSelection()->hasUserVerification() &&
       !mojo::ConvertTo<
-          absl::optional<mojom::blink::UserVerificationRequirement>>(
+          std::optional<mojom::blink::UserVerificationRequirement>>(
           options->publicKey()->authenticatorSelection()->userVerification())) {
     resolver->DomWindow()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
@@ -2048,7 +1853,7 @@ ScriptPromise CredentialsContainer::create(
   if (options->publicKey()->hasAuthenticatorSelection() &&
       options->publicKey()->authenticatorSelection()->hasResidentKey()) {
     auto rk_requirement =
-        mojo::ConvertTo<absl::optional<mojom::blink::ResidentKeyRequirement>>(
+        mojo::ConvertTo<std::optional<mojom::blink::ResidentKeyRequirement>>(
             options->publicKey()->authenticatorSelection()->residentKey());
     if (!rk_requirement) {
       resolver->DomWindow()->AddConsoleMessage(
@@ -2179,6 +1984,213 @@ void CredentialsContainer::Trace(Visitor* visitor) const {
   visitor->Trace(web_identity_requester_);
   ScriptWrappable::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
+}
+
+ScriptPromise CredentialsContainer::GetForIdentity(
+    ScriptState* script_state,
+    ScriptPromiseResolver* resolver,
+    const ScriptPromise& promise,
+    const CredentialRequestOptions* options,
+    const IdentityCredentialRequestOptions& identity_options,
+    ExceptionState& exception_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  // TODO(https://crbug.com/1441075): Ideally the logic should be handled in
+  // CredentialManager via Get. However currently it's only for password
+  // management and we should refactor the logic to make it generic.
+
+  ContentSecurityPolicy* policy =
+      resolver->GetExecutionContext()
+          ->GetContentSecurityPolicyForCurrentWorld();
+  if (identity_options.providers().size() == 0) {
+    exception_state.ThrowTypeError("Need at least one identity provider.");
+    resolver->Detach();
+    return ScriptPromise();
+  }
+  if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context) &&
+      identity_options.providers().size() > 1) {
+    exception_state.ThrowTypeError(
+        "Multiple providers specified but FedCmMultipleIdentityProviders "
+        "flag is disabled.");
+    resolver->Detach();
+    return ScriptPromise();
+  }
+
+  // Log the UseCounter only when the WebID flag is enabled.
+  UseCounter::Count(context, WebFeature::kFedCm);
+  if (!resolver->DomWindow()->GetFrame()->IsMainFrame()) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kFedCmIframe);
+  }
+  // Track when websites use FedCM with the IDP sign-in status opt-in
+  if (RuntimeEnabledFeatures::FedCmIdpSigninStatusEnabled(
+          resolver->GetExecutionContext())) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kFedCmIdpSigninStatusApi);
+  }
+  int provider_index = 0;
+  Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
+  for (const auto& provider : identity_options.providers()) {
+    if (provider->hasLoginHint()) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kFedCmLoginHint);
+    }
+    if (RuntimeEnabledFeatures::FedCmDomainHintEnabled() &&
+        provider->hasDomainHint()) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kFedCmDomainHint);
+    }
+    if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
+            resolver->GetExecutionContext()) &&
+        !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
+      // TODO(https://crbug.com/1416939): make sure the Digital Credentials
+      //  API works well with the Multiple IdP API.
+      if (provider->hasHolder()) {
+        UseCounter::Count(resolver->GetExecutionContext(),
+                          WebFeature::kIdentityDigitalCredentials);
+
+        auto identity_provider =
+            blink::mojom::blink::IdentityProvider::From(*provider);
+        identity_provider_ptrs.push_back(std::move(identity_provider));
+        continue;
+      }
+    }
+
+    if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
+        provider->hasConfigURL() && provider->configURL() == "any") {
+      mojom::blink::IdentityProviderPtr identity_provider =
+          blink::mojom::blink::IdentityProvider::From(*provider);
+      identity_provider_ptrs.push_back(std::move(identity_provider));
+      continue;
+    }
+
+    // TODO(kenrb): Add some renderer-side validation here, such as
+    // validating |provider|, and making sure the calling context is legal.
+    // Some of this has not been spec'd yet.
+    if (!provider->hasConfigURL()) {
+      exception_state.ThrowTypeError("Missing the provider's configURL.");
+      resolver->Detach();
+      return ScriptPromise();
+    }
+
+    KURL provider_url(provider->configURL());
+
+    if (!provider->hasClientId()) {
+      exception_state.ThrowTypeError("Missing the provider's clientId.");
+      resolver->Detach();
+      return ScriptPromise();
+    }
+
+    String client_id = provider->clientId();
+
+    ++provider_index;
+    if (!provider_url.IsValid() || client_id.empty()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          String::Format("Provider %i information is incomplete.",
+                         provider_index)));
+      return promise;
+    }
+    // We disallow redirects (in idp_network_request_manager.cc), so it is
+    // enough to check the initial URL here.
+    if (IdentityCredential::IsRejectingPromiseDueToCSP(policy, resolver,
+                                                       provider_url)) {
+      return promise;
+    }
+
+    mojom::blink::IdentityProviderPtr identity_provider =
+        blink::mojom::blink::IdentityProvider::From(*provider);
+    identity_provider_ptrs.push_back(std::move(identity_provider));
+  }
+
+  mojom::blink::RpContext rp_context = mojom::blink::RpContext::kSignIn;
+  if (identity_options.hasContext()) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kFedCmRpContext);
+    rp_context =
+        mojo::ConvertTo<mojom::blink::RpContext>(identity_options.context());
+  }
+  base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
+
+  mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
+  if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled()) {
+    // TODO(crbug.com/1429083): add use counters for rp mode.
+    rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(identity_options.mode());
+  }
+  // TODO(crbug.com/1429083): add uma histograms for rp mode.
+
+  CredentialMediationRequirement mediation_requirement;
+  if (options->mediation() == "conditional") {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Conditional mediation is not supported for this credential type"));
+    return promise;
+  }
+  if (options->mediation() == "silent") {
+    mediation_requirement = CredentialMediationRequirement::kSilent;
+  } else if (options->mediation() == "required") {
+    mediation_requirement = CredentialMediationRequirement::kRequired;
+  } else {
+    DCHECK_EQ("optional", options->mediation());
+    mediation_requirement = CredentialMediationRequirement::kOptional;
+  }
+
+  if (!web_identity_requester_) {
+    web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
+        context, mediation_requirement);
+  }
+
+  std::unique_ptr<ScopedAbortState> scoped_abort_state;
+  if (auto* signal = options->getSignalOr(nullptr)) {
+    if (signal->aborted()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "Request has been aborted."));
+      return promise;
+    }
+
+    auto callback =
+        !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context)
+            ? WTF::BindOnce(&AbortIdentityCredentialRequest,
+                            WrapPersistent(script_state))
+            : WTF::BindOnce(&WebIdentityRequester::AbortRequest,
+                            WrapPersistent(web_identity_requester_.Get()),
+                            WrapPersistent(script_state));
+
+    auto* handle = signal->AddAlgorithm(std::move(callback));
+    scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
+  }
+
+  if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context)) {
+    Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
+    mojom::blink::IdentityProviderGetParametersPtr get_params =
+        mojom::blink::IdentityProviderGetParameters::New(
+            std::move(identity_provider_ptrs), rp_context, rp_mode);
+    idp_get_params.push_back(std::move(get_params));
+
+    auto* auth_request =
+        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+    auth_request->RequestToken(
+        std::move(idp_get_params), mediation_requirement,
+        WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
+                      std::move(scoped_abort_state), WrapPersistent(options)));
+
+    // Start recording the duration from when RequestToken is called directly
+    // to when RequestToken would be called if invoked through
+    // web_identity_requester_.
+    web_identity_requester_->StartDelayTimer(resolver);
+
+    return promise;
+  }
+
+  if (scoped_abort_state) {
+    web_identity_requester_->InsertScopedAbortState(
+        std::move(scoped_abort_state));
+  }
+
+  web_identity_requester_->AppendGetCall(resolver, identity_options.providers(),
+                                         rp_context, rp_mode);
+
+  return promise;
 }
 
 }  // namespace blink

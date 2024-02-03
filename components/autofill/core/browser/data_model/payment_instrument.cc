@@ -9,22 +9,21 @@ namespace autofill {
 bool operator==(const PaymentInstrument& a,
                 const PaymentInstrument& b) = default;
 
-PaymentInstrument::PaymentInstrument(int64_t instrument_id,
-                                     std::u16string_view nickname,
-                                     const GURL& display_icon_url)
+PaymentInstrument::PaymentInstrument(
+    int64_t instrument_id,
+    std::u16string_view nickname,
+    const GURL& display_icon_url,
+    const DenseSet<PaymentInstrument::PaymentRail> supported_rails)
     : instrument_id_(instrument_id),
       nickname_(nickname),
-      display_icon_url_(display_icon_url) {}
+      display_icon_url_(display_icon_url),
+      supported_rails_(supported_rails) {}
 
 PaymentInstrument::PaymentInstrument(
     const PaymentInstrument& payment_instrument) = default;
 PaymentInstrument& PaymentInstrument::operator=(
     const PaymentInstrument& other) = default;
 PaymentInstrument::~PaymentInstrument() = default;
-
-void PaymentInstrument::AddPaymentRail(PaymentRail payment_rail) {
-  supported_rails_.insert(payment_rail);
-}
 
 bool PaymentInstrument::IsSupported(PaymentRail payment_rail) const {
   return supported_rails_.contains(payment_rail);

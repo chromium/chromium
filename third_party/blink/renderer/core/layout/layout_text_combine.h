@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_COMBINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_COMBINE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
@@ -125,7 +126,7 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
 
   // |scale_x_| holds scale factor to width of text content to 1em. When we
   // use |scale_x_|, we use |StyleRef().GetFont()| instead of compressed font.
-  absl::optional<float> scale_x_;
+  std::optional<float> scale_x_;
 
   // |compressed_font_| hold width variant of |StyleRef().GetFont()|.
   //

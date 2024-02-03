@@ -396,7 +396,7 @@ gfx::Point PieMenuView::GetButtonContentsCenterInScreen(int button_id) const {
   return gfx::Point();
 }
 
-void PieMenuView::Layout() {
+void PieMenuView::Layout(PassKey) {
   // All child views except the back button (i.e. all
   // `PieSubMenuContainerView`s) should fill the entire bounds of this view. The
   // back button however should be centered.

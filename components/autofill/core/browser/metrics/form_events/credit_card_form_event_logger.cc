@@ -636,6 +636,10 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
     case UnmaskAuthFlowType::kOtpFallbackFromFido:
       flow_type_suffix = ".OtpFallbackFromFido";
       break;
+    case UnmaskAuthFlowType::kThreeDomainSecure:
+    case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
+      // TODO(crbug.com/1521960): Add logging for kThreeDomainSecure and
+      // kThreeDomainSecureConsentAlreadyGiven.
     case UnmaskAuthFlowType::kNone:
       // TODO(crbug.com/1300959): Fix Autofill.BetterAuth logging.
       return;

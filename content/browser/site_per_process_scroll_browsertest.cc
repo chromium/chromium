@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/site_per_process_browsertest.h"
-
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/site_per_process_browsertest.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -268,13 +268,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   CrossProcessFrameConnector* connector =
       proxy_to_parent->cross_process_frame_connector();
 
-  while (blink::mojom::FrameVisibility::kRenderedOutOfViewport !=
-         connector->visibility()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return blink::mojom::FrameVisibility::kRenderedOutOfViewport ==
+           connector->visibility();
+  }));
 }
 
 // This test verifies that smooth scrolling works correctly inside nested OOPIFs

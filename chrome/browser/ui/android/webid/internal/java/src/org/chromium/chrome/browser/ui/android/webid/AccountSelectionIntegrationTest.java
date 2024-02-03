@@ -583,7 +583,7 @@ public class AccountSelectionIntegrationTest {
                             }
                         })
                 .when(mMockBridge)
-                .onLoginToIdP(any());
+                .onLoginToIdP(any(), any());
 
         // Click Add Account.
         runOnUiThreadBlocking(

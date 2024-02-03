@@ -90,6 +90,7 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   int GetMinimumContentOffset() const override;
   int GetExtraInfobarOffset() const override;
+  void OnContentFullscreenChanged(bool is_content_fullscreen) override;
 
   // Set the widget id of the tab hosting widget. Set before calling SetEnabled.
   void SetTabNativeWidgetID(uint64_t widget_id);

@@ -245,7 +245,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
 
   if (context_->GetSharedDictionaryManager() && client_security_state_ &&
       client_security_state_->is_web_secure_context) {
-    absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+    std::optional<net::SharedDictionaryIsolationKey> isolation_key =
         net::SharedDictionaryIsolationKey::MaybeCreate(params->isolation_info);
     if (isolation_key) {
       shared_dictionary_storage_ =
@@ -407,7 +407,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         IsTrustedNavigationRequestFromSecureContext(resource_request)) {
       // For trusted navigation requests, we need to get a storage using
       // `isolation_info_ptr`.
-      absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+      std::optional<net::SharedDictionaryIsolationKey> isolation_key =
           net::SharedDictionaryIsolationKey::MaybeCreate(*isolation_info_ptr);
       if (isolation_key) {
         shared_dictionary_storage =
@@ -552,7 +552,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
 
   // By default we compare the `request_initiator` to the lock below.  This is
   // overridden for renderer navigations, however.
-  absl::optional<url::Origin> origin_to_validate = request.request_initiator;
+  std::optional<url::Origin> origin_to_validate = request.request_initiator;
 
   // Ensure that renderer requests are covered either by CORS or CORB.
   if (process_id_ != mojom::kBrowserProcessId) {

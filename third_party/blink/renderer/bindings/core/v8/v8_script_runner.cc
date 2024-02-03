@@ -123,7 +123,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     v8::ScriptOrigin origin,
     v8::ScriptCompiler::CompileOptions compile_options,
     v8::ScriptCompiler::NoCacheReason no_cache_reason,
-    absl::optional<inspector_compile_script_event::V8ConsumeCacheResult>*
+    std::optional<inspector_compile_script_event::V8ConsumeCacheResult>*
         cache_result) {
   v8::Local<v8::String> code = V8String(isolate, classic_script.SourceText());
 
@@ -271,7 +271,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
             CachedMetadataHandler::kClearPersistentStorage);
       }
       if (cache_result) {
-        *cache_result = absl::make_optional(
+        *cache_result = std::make_optional(
             inspector_compile_script_event::V8ConsumeCacheResult(
                 cached_data->length, cached_data->rejected, full_code_cache));
       }
@@ -324,7 +324,7 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
                                  compile_options, no_cache_reason, nullptr);
   }
 
-  absl::optional<inspector_compile_script_event::V8ConsumeCacheResult>
+  std::optional<inspector_compile_script_event::V8ConsumeCacheResult>
       cache_result;
   v8::MaybeLocal<v8::Script> script =
       CompileScriptInternal(isolate, script_state, classic_script, origin,
@@ -367,7 +367,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
       referrer_info.ToV8HostDefinedOptions(isolate, params.SourceURL()));
 
   v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());
-  absl::optional<inspector_compile_script_event::V8ConsumeCacheResult>
+  std::optional<inspector_compile_script_event::V8ConsumeCacheResult>
       cache_result;
   v8::MaybeLocal<v8::Module> script;
   ScriptStreamer* streamer = params.GetScriptStreamer();
@@ -427,7 +427,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
               ExecutionContext::GetCodeCacheHostFromContext(execution_context),
               CachedMetadataHandler::kClearPersistentStorage);
         }
-        cache_result = absl::make_optional(
+        cache_result = std::make_optional(
             inspector_compile_script_event::V8ConsumeCacheResult(
                 cached_data->length, cached_data->rejected, full_code_cache));
         break;
@@ -988,7 +988,7 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
 
 void V8ScriptRunner::ReportException(v8::Isolate* isolate,
                                      v8::Local<v8::Value> exception) {
-  DCHECK(!exception.IsEmpty());
+  CHECK(!exception.IsEmpty());
 
   // https://html.spec.whatwg.org/C/#report-the-error
   v8::Local<v8::Message> message =

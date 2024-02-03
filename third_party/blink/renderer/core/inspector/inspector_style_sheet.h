@@ -304,7 +304,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   InspectorIndexMap rule_to_source_data_;
   InspectorIndexMap source_data_to_rule_;
   String source_url_;
-  absl::optional<bool> request_failed_to_load_;
+  std::optional<bool> request_failed_to_load_;
   // True means that CSSOM rules are to be synced with the original source text.
   bool marked_for_sync_;
 };

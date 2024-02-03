@@ -22,9 +22,9 @@ class DisplayOverlayController;
 // ActionHighlight is a highlight circle drawn behind an action when it is
 // highlighted.
 class ActionHighlight : public views::View, public views::ViewObserver {
- public:
-  METADATA_HEADER(ActionHighlight);
+  METADATA_HEADER(ActionHighlight, views::View)
 
+ public:
   ActionHighlight(DisplayOverlayController* controller,
                   ActionView* anchor_view);
   ActionHighlight(const ActionHighlight&) = delete;

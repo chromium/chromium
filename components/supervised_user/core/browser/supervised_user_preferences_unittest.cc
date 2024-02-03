@@ -9,10 +9,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -161,16 +161,14 @@ class SupervisedUserPreferencesTestWithUrlFilteringFeature
       feature_list_.InitWithFeatures(
           {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
            supervised_user::kSupervisedPrefsControlledBySupervisedStore,
-           supervised_user::kEnableManagedByParentUi,
-           supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
+           supervised_user::kEnableManagedByParentUi},
           {});
     } else {
       feature_list_.InitWithFeatures(
           {},
           {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
            supervised_user::kSupervisedPrefsControlledBySupervisedStore,
-           supervised_user::kEnableManagedByParentUi,
-           supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn});
+           supervised_user::kEnableManagedByParentUi});
     }
 #endif
   }

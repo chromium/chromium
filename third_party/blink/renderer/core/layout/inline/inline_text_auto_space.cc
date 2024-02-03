@@ -157,7 +157,7 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
   Vector<wtf_size_t, 16> offsets;
   CHECK(!ranges_.empty());
   const RunSegmenter::RunSegmenterRange* range = ranges_.begin();
-  absl::optional<CharType> last_type = kOther;
+  std::optional<CharType> last_type = kOther;
 
   // The initial value does not matter, as the value is used for determine
   // whether to add spacing into the bound of two items.

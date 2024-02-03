@@ -106,7 +106,7 @@ static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
   return false;
 }
 
-static absl::optional<double> ConsumeRelativeColorChannel(
+static std::optional<double> ConsumeRelativeColorChannel(
     CSSParserTokenRange& input_range,
     const CSSParserContext& context,
     const HashMap<CSSValueID, double>& color_channel_keyword_values) {
@@ -125,7 +125,7 @@ static absl::optional<double> ConsumeRelativeColorChannel(
         CSSPrimitiveValue::ValueRange::kAll);
     if (calc_value) {
       if (calc_value->Category() != kCalcNumber) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       // Consume the range, since it has succeeded.
       input_range = calc_range;
@@ -140,7 +140,7 @@ static absl::optional<double> ConsumeRelativeColorChannel(
     return color_channel_keyword_values.at(token.Id());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Relative color syntax requires "channel keyword" substitutions for color
@@ -258,16 +258,16 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
 
 // ConsumeHue takes an angle as input (as angle in radians or in degrees, or as
 // plain number in degrees) and returns a plain number in degrees.
-static absl::optional<double> ConsumeHue(CSSParserTokenRange& range,
-                                         const CSSParserContext& context) {
+static std::optional<double> ConsumeHue(CSSParserTokenRange& range,
+                                        const CSSParserContext& context) {
   CSSPrimitiveValue* value =
-      css_parsing_utils::ConsumeAngle(range, context, absl::nullopt);
+      css_parsing_utils::ConsumeAngle(range, context, std::nullopt);
   double angle_value;
   if (!value) {
     value = css_parsing_utils::ConsumeNumber(
         range, context, CSSPrimitiveValue::ValueRange::kAll);
     if (!value) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     angle_value = value->GetDoubleValueWithoutClamping();
   } else {

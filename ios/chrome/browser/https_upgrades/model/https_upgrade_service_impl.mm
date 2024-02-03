@@ -11,9 +11,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace {
-// The default expiration for certificate error and HTTPS-First Mode bypasses is
-// one week.
-const base::TimeDelta kDeltaDefaultExpiration = base::Days(7);
+// The default expiration for HTTPS-First Mode bypasses is 15 days.
+const base::TimeDelta kDeltaDefaultExpiration = base::Days(15);
 }  // namespace
 
 HttpsUpgradeServiceImpl::HttpsUpgradeServiceImpl(ChromeBrowserState* context)

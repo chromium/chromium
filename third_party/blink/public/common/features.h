@@ -113,6 +113,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidExtendedKeyboardShortcuts);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAudioWorkletThreadRealtimePriority);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAutofillIncludeShadowDomInUnassociatedListedElements);
+
 BLINK_COMMON_EXPORT
 BASE_DECLARE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill);
 
@@ -248,6 +251,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernation);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasCompressHibernatedImage);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasFreeMemoryWhenHidden);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kCanvas2DHibernationReleaseTransferMemory);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCaptureJSExecutionLocation);
 
 // If enabled, the HTMLDocumentParser will only check its budget after parsing a
 // commonly slow token or for one out of 10 fast tokens. Note that this feature
@@ -334,6 +341,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kDelayAsyncScriptExecutionWhenLcpFoundInHtml;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kDelayAsyncScriptExecutionDelayByDefaultParam;
+enum class AsyncScriptExperimentalSchedulingTarget {
+  kAds,
+  kNonAds,
+  kBoth,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    AsyncScriptExperimentalSchedulingTarget>
+    kDelayAsyncScriptExecutionTargetParam;
 
 // If enabled, the ResourceLoadScheculer will take the current network state
 // into consideration, when it plans to delay a low-priority throttleable
@@ -387,6 +402,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDispatchBeforeUnloadOnFreeze);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDisplayLocking);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawingBufferWithoutGpuMemoryBuffer);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDropInputEventsBeforeFirstPaint);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDroppedTouchSequenceIncludesTouchEnd);
@@ -408,6 +425,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kDeprecateUnloadBucket;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDeprecateUnloadAllowlist;
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableMojoJSProtectedMemory);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
@@ -620,8 +639,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanHeuristics);
 // the current direction.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanDirectionCutOff);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPAnimatedImagesReporting);
-
 // When enabled, LCP critical path predictor will optimize the subsequent visits
 // to websites using performance hints collected in the past page loads.
 // It enables boosting a loading priority of the possible LCP element.
@@ -756,8 +773,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover;
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
-
 // Kill-switch for new parsing behaviour of the X-Content-Type-Options header.
 // (Should be removed after the new behaviour has been launched.)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLegacyParsingOfXContentTypeOptions);
@@ -807,6 +822,17 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // enabled for this to work.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam;
+enum class AsyncScriptPrioritisationType {
+  kHigh,
+  kLow,
+  kBestEffort,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    AsyncScriptPrioritisationType>
+    kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    AsyncScriptExperimentalSchedulingTarget>
+    kLowPriorityAsyncScriptExecutionTargetParam;
 
 // If enabled, async scripts will be loaded with a lower fetch priority.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityScriptLoading);
@@ -1094,9 +1120,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kMaxFCPDelayMsForRenderBlockingFonts;
 
-// Report rectangles around lines of text in the currently focused editable
-// element.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportVisibleLineBounds);
 // Enables resampling input events on main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // Enables resampling GestureScroll events on compositor thread.
@@ -1174,6 +1197,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSerializeAccessibilityPostLifecycle);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerUpdateDelay);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerClientIdAlignedWithSpec);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSetLowPriorityForBeacon);
 
@@ -1256,6 +1281,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageSelectURLBitBudgetPerSitePerPageLoad;
 
+// If enabled, the shared storage worklet threads (on the same renderer process)
+// will share the same backing thread; otherwise, each will own a dedicated
+// backing thread.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSharedStorageWorkletSharedBackingThreadImplementation);
+
 // Additional Shared Storage API features shipped in M118.
 // TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
 // shipped.
@@ -1333,7 +1364,7 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kSpeculativeServiceWorkerWarmUpFromLoadingPredictor;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kSpeculativeServiceWorkerWarmUpOnStopped;
+    kSpeculativeServiceWorkerWarmUpOnIdleTimeout;
 
 // Make the browser decide when to turn on the capture indicator (red button)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -1343,8 +1374,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStopInBackground);
 
 // Stylus gestures for editable web content.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusRichGestures);
-// Stylus handwriting recognition to text input feature.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusWritingToInput);
 // Apply touch adjustment for stylus pointer events. This feature allows
 // enabling functions like writing into a nearby input element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusPointerAdjustment);
@@ -1494,6 +1523,8 @@ IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled();
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
 BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
+
+BLINK_COMMON_EXPORT bool IsEnableMojoJSProtectedMemoryEnabled();
 
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 

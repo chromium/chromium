@@ -386,6 +386,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kStorageAccessAPI_hasUnpartitionedCookieAccess,
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_cookies,
+          WebFeature::kFirstPartySharedWorkerSameSiteCookiesNone,
       }));
   return *opt_in_features;
 }

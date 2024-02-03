@@ -52,16 +52,14 @@ namespace blink {
 
 namespace {
 
-template <class ParserTokenStream>
-AtomicString ConsumeVariableName(ParserTokenStream& stream) {
+AtomicString ConsumeVariableName(CSSParserTokenStream& stream) {
   stream.ConsumeWhitespace();
   CSSParserToken ident_token = stream.ConsumeIncludingWhitespaceRaw();
   DCHECK_EQ(ident_token.GetType(), kIdentToken);
   return ident_token.Value().ToAtomicString();
 }
 
-template <class ParserTokenStream>
-bool ConsumeComma(ParserTokenStream& stream) {
+bool ConsumeComma(CSSParserTokenStream& stream) {
   if (stream.Peek().GetType() == kCommaToken) {
     stream.ConsumeRaw();
     return true;
@@ -182,6 +180,17 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
   ProcessPendingSignals();
+
+  // Invisible rules are not supposed to have any effect on the observable
+  // result, so we cascade again if any invisible rules were seen.
+  //
+  // We do this *after* processing signals, because some of the signals may
+  // come from invisible rules.
+  if (has_invisible_rules_) {
+    allow_invisible_rules_ = false;
+    Reanalyze();
+  }
+
   state_.UpdateLengthConversionData();
 
   CascadeResolver resolver(filter, ++generation_);
@@ -304,6 +313,8 @@ void StyleCascade::Reset() {
   interpolations_.Reset();
   generation_ = 0;
   depends_on_cascade_affecting_property_ = false;
+  allow_invisible_rules_ = true;
+  has_invisible_rules_ = false;
 }
 
 const CSSValue* StyleCascade::Resolve(const CSSPropertyName& name,
@@ -408,6 +419,14 @@ void StyleCascade::AnalyzeMatchResult() {
         signal != Signal::kNone) {
       ExpandSignals(properties, index, signal);
     }
+    if (properties.types_.is_invisible) {
+      if (!allow_invisible_rules_) {
+        ++index;
+        continue;
+      }
+      has_invisible_rules_ = true;
+    }
+
     ExpandCascade(
         properties, GetDocument(), index++,
         [this](CascadePriority cascade_priority,
@@ -461,6 +480,7 @@ void StyleCascade::Reanalyze() {
   map_.Reset();
   generation_ = 0;
   depends_on_cascade_affecting_property_ = false;
+  has_invisible_rules_ = false;
 
   needs_match_result_analyze_ = true;
   needs_interpolations_analyze_ = true;
@@ -1194,8 +1214,7 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
   return success;
 }
 
-template <class ParserTokenStream>
-bool StyleCascade::ResolveVarInto(ParserTokenStream& stream,
+bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   CSSTokenizer* parent_tokenizer,
                                   TokenSequence& out) {
@@ -1263,8 +1282,7 @@ bool StyleCascade::ResolveVarInto(ParserTokenStream& stream,
                     CSSVariableData::kMaxVariableBytes);
 }
 
-template <class ParserTokenStream>
-bool StyleCascade::ResolveEnvInto(ParserTokenStream& stream,
+bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   CSSTokenizer* parent_tokenizer,
                                   TokenSequence& out) {

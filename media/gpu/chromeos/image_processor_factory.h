@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -24,9 +24,9 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
  public:
   // Callback to pick a valid format from the given |candidates| formats giving
   // preference to |preferred_fourcc| if provided.
-  using PickFormatCB = base::RepeatingCallback<absl::optional<Fourcc>(
+  using PickFormatCB = base::RepeatingCallback<std::optional<Fourcc>(
       const std::vector<Fourcc>& /* candidates */,
-      absl::optional<Fourcc> /* preferred_fourcc */)>;
+      std::optional<Fourcc> /* preferred_fourcc */)>;
 
   // Factory method to create an ImageProcessor.
   // The caller will either pass in a list of supported inputs,

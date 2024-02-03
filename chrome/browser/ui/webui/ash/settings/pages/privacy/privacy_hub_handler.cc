@@ -7,10 +7,12 @@
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/synchronization/condition_variable.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_hats_trigger.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
+#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/common/chrome_features.h"
 
 namespace ash::settings {
@@ -40,6 +42,18 @@ void PrivacyHubHandler::RegisterMessages() {
         base::BindRepeating(
             &PrivacyHubHandler::HandleInitialCameraLedFallbackState,
             base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        "getCurrentTimeZoneName",
+        base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentTimezoneName,
+                            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        "getCurrentSunriseTime",
+        base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentSunRiseTime,
+                            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        "getCurrentSunsetTime",
+        base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentSunSetTime,
+                            base::Unretained(this)));
   }
 
   if (base::FeatureList::IsEnabled(
@@ -121,6 +135,29 @@ void PrivacyHubHandler::HandleInitialCameraLedFallbackState(
     const base::Value::List& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(privacy_hub_util::UsingCameraLEDFallback());
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleGetCurrentTimezoneName(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto value = base::Value(system::GetCurrentTimezoneName());
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleGetCurrentSunRiseTime(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto value = base::Value(base::TimeFormatTimeOfDay(
+      ash::privacy_hub_util::SunriseSunsetSchedule().first));
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleGetCurrentSunSetTime(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto value = base::Value(base::TimeFormatTimeOfDay(
+      ash::privacy_hub_util::SunriseSunsetSchedule().second));
   ResolveJavascriptCallback(callback_id, value);
 }
 

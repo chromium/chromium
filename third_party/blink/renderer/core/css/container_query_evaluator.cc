@@ -106,7 +106,7 @@ Element* CachedContainer(Element* starting_element,
 
 ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
-      container.GetDocument(), container, absl::nullopt, absl::nullopt,
+      container.GetDocument(), container, std::nullopt, std::nullopt,
       ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
@@ -174,12 +174,12 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   return false;
 }
 
-absl::optional<double> ContainerQueryEvaluator::Width() const {
+std::optional<double> ContainerQueryEvaluator::Width() const {
   CHECK(media_query_evaluator_);
   return media_query_evaluator_->GetMediaValues().Width();
 }
 
-absl::optional<double> ContainerQueryEvaluator::Height() const {
+std::optional<double> ContainerQueryEvaluator::Height() const {
   CHECK(media_query_evaluator_);
   return media_query_evaluator_->GetMediaValues().Height();
 }
@@ -343,8 +343,8 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
   size_ = size;
   contained_axes_ = contained_axes;
 
-  absl::optional<double> width;
-  absl::optional<double> height;
+  std::optional<double> width;
+  std::optional<double> height;
 
   const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
   Element* container = existing_values.ContainerElement();

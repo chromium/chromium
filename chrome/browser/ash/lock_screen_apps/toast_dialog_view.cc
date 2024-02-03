@@ -90,7 +90,7 @@ void ToastDialogView::OnBeforeBubbleWidgetInit(
       params, ash::kShellWindowId_SettingBubbleContainer);
 }
 
-BEGIN_METADATA(ToastDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ToastDialogView)
 END_METADATA
 
 }  // namespace lock_screen_apps

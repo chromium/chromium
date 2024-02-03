@@ -564,7 +564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppSync.InitialSession.Latency" units="seconds"
-    expires_after="2024-01-30">
+    expires_after="2024-06-02">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -607,6 +607,16 @@ chromium-metrics-reviews@google.com.
     Records the result of parsing the ARC Features JSON file off rootfs.
     Recorded every time the file is parsed, which most commonly happens during
     OOBE.
+  </summary>
+</histogram>
+
+<histogram name="Arc.ArcOnDemand.ActivationIsDelayed" enum="Boolean"
+    expires_after="2025-01-26">
+  <owner>yuholong@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Records whether ARC activation is delayed by ARC on Demand or not. Recorded
+    on a regular boot.
   </summary>
 </histogram>
 
@@ -1377,7 +1387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.FileStreamComplete.TimeDelta" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
@@ -1388,7 +1398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.FileStreamFailure" enum="PlatformFileError"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>

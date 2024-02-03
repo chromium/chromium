@@ -20,10 +20,12 @@ build_webui("build") {
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings_ts__generator",
+    "//components/content_settings/core/common:content_settings_types_ts__generator",
     "//components/content_settings/core/common:mojo_bindings_ts__generator",
   ]
   mojo_files = [
     "$root_gen_dir/components/content_settings/core/common/content_settings.mojom-webui.ts",
+    "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom-webui.ts",
   ]
 

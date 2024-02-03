@@ -519,6 +519,10 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="LauncherSearchSessionConclusion">
+<!-- Should be kept in sync with LauncherSearchSessionConclusionVariants in
+  tools/metrics/histograms/metadata/apps/histograms.xml.
+-->
+
   <int value="0" label="Quit"/>
   <int value="1" label="Launch"/>
   <int value="2" label="AnswerCardSeen"/>

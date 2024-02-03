@@ -89,6 +89,7 @@
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/media_interface_proxy.h"
@@ -227,7 +228,6 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -266,6 +266,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
@@ -1626,7 +1627,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
             &RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy,
             base::Unretained(this)));
     broker_.ApplyMojoBinderPolicies(mojo_binder_policy_applier_.get());
-  } else if (frame_tree_->page_delegate()->IsInPreviewMode()) {
+  } else if (frame_tree_->page_delegate()->IsPageInPreviewMode()) {
     mojo_binder_policy_applier_ = MojoBinderPolicyApplier::CreateForPreview(
         base::BindOnce(&RenderFrameHostImpl::CancelPreviewByMojoBinderPolicy,
                        base::Unretained(this)));
@@ -2869,6 +2870,8 @@ void RenderFrameHostImpl::AccessibilityReset() {
     return;
 
   accessibility_reset_token_ = ++g_accessibility_reset_token;
+  is_first_accessibility_request_ = false;
+  accessibility_reset_start_ = base::TimeTicks::Now();
   render_accessibility_->Reset(*accessibility_reset_token_);
 }
 
@@ -4842,8 +4845,10 @@ RenderFrameHostImpl::BackForwardCacheDisablingFeatures
 RenderFrameHostImpl::GetBackForwardCacheDisablingFeatures() const {
   BackForwardCacheDisablingFeatures features;
   for (const auto& details : GetBackForwardCacheBlockingDetails()) {
-    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-        details->feature));
+    if (details->feature.has_value()) {
+      features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+          details->feature.value()));
+    }
   }
   return features;
 }
@@ -7285,7 +7290,21 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivationForAXEvents(
 }
 
 void RenderFrameHostImpl::EvictFromBackForwardCache(
-    blink::mojom::RendererEvictionReason reason) {
+    blink::mojom::RendererEvictionReason reason,
+    blink::mojom::BlockingDetailsPtr details) {
+  if (reason == blink::mojom::RendererEvictionReason::kJavaScriptExecution) {
+    if (details.is_null()) {
+      mojo::ReportBadMessage(
+          "Details must be provided if it's JavaScript execution");
+    };
+    if (details->feature.has_value()) {
+      mojo::ReportBadMessage(
+          "Feature for scheduler shouldn't be provided if it's JavaScript "
+          "execution");
+    }
+  }
+  // TODO(crbug.com/1513120): Use `details` to report the source location of
+  // JavaScript execution.
   EvictFromBackForwardCacheWithReason(
       RendererEvictionReasonToNotRestoredReason(reason));
 }
@@ -9020,7 +9039,7 @@ void RenderFrameHostImpl::DisableUntrustedNetworkInFencedFrame(
     return;
   }
 
-  absl::optional<FencedFrameProperties>& properties =
+  std::optional<FencedFrameProperties>& properties =
       frame_tree_node_->GetFencedFrameProperties();
 
   if (!properties.has_value() || !properties->can_disable_untrusted_network()) {
@@ -9463,6 +9482,16 @@ void RenderFrameHostImpl::HandleAXEvents(
         accessibility_testing_callback_.Run(this, event.event_type, event.id);
       }
     }
+  }
+
+  if (!accessibility_reset_start_.is_null()) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        is_first_accessibility_request_
+            ? "Accessibility.EventProcessingTime.First"
+            : "Accessibility.EventProcessingTime.NotFirst",
+        base::TimeTicks::Now() - accessibility_reset_start_,
+        base::Microseconds(1), base::Seconds(1), 50);
+    accessibility_reset_start_ = base::TimeTicks();
   }
 }
 
@@ -10379,22 +10408,15 @@ void RenderFrameHostImpl::CommitNavigation(
     // See if this is for WebUI.
     const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
     if (base::Contains(webui_schemes, effective_scheme)) {
-      network::URLLoaderFactoryBuilder factory_builder;
-      GetContentClient()->browser()->WillCreateURLLoaderFactory(
-          browser_context, this, GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-          subresource_loader_factories_config.origin(),
-          /*navigation_id=*/std::nullopt,
-          subresource_loader_factories_config.ukm_source_id(), factory_builder,
-          /*header_client=*/nullptr,
-          /*bypass_redirect_checks=*/nullptr,
-          /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
-          /*navigation_response_task_runner=*/nullptr);
-
       mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui =
-          std::move(factory_builder)
-              .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-                  CreateWebUIURLLoaderFactory(this, effective_scheme, {}));
+          url_loader_factory::CreatePendingRemote(
+              ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+              url_loader_factory::TerminalParams::ForNonNetwork(
+                  CreateWebUIURLLoaderFactory(this, effective_scheme, {})),
+              url_loader_factory::ContentClientParams(
+                  browser_context, this, GetProcess()->GetID(),
+                  subresource_loader_factories_config.origin(),
+                  subresource_loader_factories_config.ukm_source_id()));
 
       // If the renderer has webui bindings, then don't give it access to
       // network loader for security reasons.
@@ -10498,14 +10520,17 @@ void RenderFrameHostImpl::CommitNavigation(
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_factory_proxy;
-      network::URLLoaderFactoryBuilder factory_builder;
-      WillCreateURLLoaderFactory(
-          subresource_loader_factories_config.origin(), factory_builder,
-          subresource_loader_factories_config.ukm_source_id());
-
-      std::move(factory_builder)
-          .Finish(pending_factory_proxy.InitWithNewPipeAndPassReceiver(),
-                  std::move(original_pending_factory));
+      url_loader_factory::CreateAndConnectToPendingReceiver(
+          pending_factory_proxy.InitWithNewPipeAndPassReceiver(),
+          ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+          url_loader_factory::TerminalParams::ForNonNetwork(
+              std::move(original_pending_factory)),
+          url_loader_factory::ContentClientParams(
+              GetBrowserContext(), this, GetProcess()->GetID(),
+              subresource_loader_factories_config.origin(),
+              subresource_loader_factories_config.ukm_source_id()),
+          devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+              this));
       subresource_loader_factories->pending_scheme_specific_factories().emplace(
           scheme, std::move(pending_factory_proxy));
     }
@@ -11065,6 +11090,8 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
   }
 
   if (ax_mode.has_mode(ui::AXMode::kWebContents)) {
+    is_first_accessibility_request_ = !render_accessibility_;
+    accessibility_reset_start_ = base::TimeTicks::Now();
     if (!render_accessibility_) {
       // Render accessibility is not enabled yet, so bind the interface first.
       GetRemoteAssociatedInterfaces()->GetInterface(&render_accessibility_);
@@ -11495,42 +11522,24 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
   DCHECK(params->request_initiator_origin_lock.has_value());
-  const url::Origin& request_initiator =
+  const url::Origin request_initiator =
       params->request_initiator_origin_lock.value();
 
-  network::URLLoaderFactoryBuilder factory_builder;
   bool bypass_redirect_checks = false;
-  WillCreateURLLoaderFactory(request_initiator, factory_builder, ukm_source_id,
-                             &params->header_client, &bypass_redirect_checks,
-                             &params->disable_secure_dns,
-                             &params->factory_override);
-
-  std::move(factory_builder)
-      .Finish(std::move(default_factory_receiver), GetProcess(),
-              std::move(params));
-  return bypass_redirect_checks;
-}
-
-void RenderFrameHostImpl::WillCreateURLLoaderFactory(
-    const url::Origin& request_initiator,
-    network::URLLoaderFactoryBuilder& factory_builder,
-    ukm::SourceIdObj ukm_source_id,
-    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
-        header_client,
-    bool* bypass_redirect_checks,
-    bool* disable_secure_dns,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
-  GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      GetBrowserContext(), this, GetProcess()->GetID(),
+  url_loader_factory::CreateAndConnectToPendingReceiver(
+      std::move(default_factory_receiver),
       ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      request_initiator, /*navigation_id=*/std::nullopt, ukm_source_id,
-      factory_builder, header_client, bypass_redirect_checks,
-      disable_secure_dns, factory_override, /*navigation_task_runner=*/nullptr);
-
-  // Keep DevTools proxy last, i.e. closest to the network.
-  devtools_instrumentation::WillCreateURLLoaderFactory(
-      this, /*is_navigation=*/false, /*is_download=*/false, factory_builder,
-      factory_override);
+      url_loader_factory::TerminalParams::ForNetworkContext(
+          GetProcess()->GetStoragePartition()->GetNetworkContext(),
+          std::move(params), url_loader_factory::HeaderClientOption::kAllow,
+          url_loader_factory::FactoryOverrideOption::kAllow,
+          url_loader_factory::DisableSecureDnsOption::kAllow),
+      url_loader_factory::ContentClientParams(
+          GetBrowserContext(), this, GetProcess()->GetID(), request_initiator,
+          ukm_source_id, &bypass_redirect_checks),
+      devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+          this));
+  return bypass_redirect_checks;
 }
 
 bool RenderFrameHostImpl::CanExecuteJavaScript() {
@@ -13435,9 +13444,9 @@ void RenderFrameHostImpl::DidCommitNewDocument(
     const std::optional<::GURL>& initiator_base_url =
         navigation_request->common_params().initiator_base_url;
     SetInheritedBaseUrl(initiator_base_url ? initiator_base_url.value()
-                                           : GURL::EmptyGURL());
+                                           : GURL());
   } else {
-    SetInheritedBaseUrl(GURL::EmptyGURL());
+    SetInheritedBaseUrl(GURL());
   }
 
   navigation_id_ = navigation_request->GetNavigationId();

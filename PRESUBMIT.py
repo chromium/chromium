@@ -118,7 +118,8 @@ _TEST_ONLY_WARNING = (
     'to tell the PRESUBMIT script that the code is inside a *ForTesting()\n'
     'method and can be ignored. Do not do this inside production code.\n'
     'The android-binary-size trybot will block if the method exists in the\n'
-    'release apk.')
+    'release apk.\n'
+    'Note: this warning might be a false positive (crbug.com/1196548).')
 
 
 @dataclass
@@ -2569,35 +2570,6 @@ def CheckNoBannedFunctions(input_api, output_api):
         result.append(
             output_api.PresubmitError('Banned functions were used.\n' +
                                       '\n'.join(errors)))
-    return result
-
-def CheckNoLayoutCallsInTests(input_api, output_api):
-    """Make sure there are no explicit calls to View::Layout() in tests"""
-    warnings = []
-    ban_rule = BanRule(
-        r'/(\.|->)Layout\(\);',
-        (
-        'Direct calls to View::Layout() are not allowed in tests. '
-        'If the view must be laid out here, use RunScheduledLayout(view). It '
-        'is found in //ui/views/test/views_test_utils.h. '
-        'See http://crbug.com/1350521 for more details.',
-        ),
-        False,
-    )
-    file_filter = lambda f: input_api.re.search(
-        r'_(unittest|browsertest|ui_test).*\.(cc|mm)$', f.LocalPath())
-    for f in input_api.AffectedFiles(file_filter = file_filter):
-        for line_num, line in f.ChangedContents():
-            problems = _GetMessageForMatchingType(input_api, f,
-                                                  line_num, line,
-                                                  ban_rule)
-            if problems:
-                warnings.extend(problems)
-    result = []
-    if (warnings):
-        result.append(
-            output_api.PresubmitPromptWarning(
-                'Banned call to View::Layout() in tests.\n\n'.join(warnings)))
     return result
 
 def _CheckAndroidNoBannedImports(input_api, output_api):

@@ -4,10 +4,18 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Defines the host interface for Sync Consent page. */
 public interface SyncConsentDelegate {
     /** Return the {@link WindowAndroid} for the host activity. */
+    @NonNull
     WindowAndroid getWindowAndroid();
+
+    /** Return the {@link Profile} for the Sync Consent. */
+    @NonNull
+    Profile getProfile();
 }

@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_URL_LOADER_FACTORY_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -18,7 +19,6 @@
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       std::unique_ptr<WebBundleMemoryQuotaConsumer>
           web_bundle_memory_quota_consumer,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      absl::optional<std::string> devtools_request_id,
+      std::optional<std::string> devtools_request_id,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojom::CrossOriginEmbedderPolicyReporter* coep_reporter);
   ~WebBundleURLLoaderFactory();
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   void OnBeforeSendHeadersComplete(
       base::WeakPtr<URLLoader> loader,
       int result,
-      const absl::optional<net::HttpRequestHeaders>& headers);
+      const std::optional<net::HttpRequestHeaders>& headers);
   void QueueOrStartLoader(base::WeakPtr<URLLoader> loader);
 
   void StartLoad(base::WeakPtr<URLLoader> loader);
@@ -99,8 +99,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       uint64_t payload_offset,
       uint64_t payload_length,
       int result,
-      const absl::optional<std::string>& headers,
-      const absl::optional<GURL>& preserve_fragment_on_redirect_url);
+      const std::optional<std::string>& headers,
+      const std::optional<GURL>& preserve_fragment_on_redirect_url);
   void SendResponseToLoader(base::WeakPtr<URLLoader> loader,
                             const std::string& headers,
                             uint64_t payload_offset,
@@ -112,18 +112,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
 
   GURL bundle_url_;
   mojo::Remote<mojom::WebBundleHandle> web_bundle_handle_;
-  const absl::optional<::url::Origin> request_initiator_origin_lock_;
+  const std::optional<::url::Origin> request_initiator_origin_lock_;
   std::unique_ptr<WebBundleMemoryQuotaConsumer>
       web_bundle_memory_quota_consumer_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
-  absl::optional<std::string> devtools_request_id_;
+  std::optional<std::string> devtools_request_id_;
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   raw_ptr<mojom::CrossOriginEmbedderPolicyReporter, FlakyDanglingUntriaged>
       coep_reporter_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;
-  absl::optional<SubresourceWebBundleLoadResult> load_result_;
+  std::optional<SubresourceWebBundleLoadResult> load_result_;
   bool data_completed_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
   corb::PerFactoryState corb_state_;

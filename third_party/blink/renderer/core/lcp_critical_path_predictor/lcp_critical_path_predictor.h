@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_H_
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -57,6 +58,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   void set_fetched_fonts(Vector<KURL> fonts);
 
+  void set_preconnected_origins(const Vector<url::Origin>& origins);
+
   const Vector<KURL>& fetched_fonts() { return fetched_fonts_; }
 
   void Reset();
@@ -94,6 +97,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   Vector<std::string> lcp_element_locator_strings_;
   HashSet<KURL> lcp_influencer_scripts_;
   Vector<KURL> fetched_fonts_;
+  Vector<url::Origin> preconnected_origins_;
 
   // Callbacks are called when predicted LCP is painted. Never called if
   // prediction is incorrect.

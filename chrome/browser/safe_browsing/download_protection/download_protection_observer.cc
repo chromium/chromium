@@ -62,13 +62,12 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
   if (!router)
     return;
 
-  std::string raw_digest_sha256 = download->GetHash();
   router->OnDangerousDownloadEvent(
       download->GetURL(), download->GetTabUrl(),
       download->GetTargetFilePath().AsUTF8Unsafe(),
-      base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-      download->GetDangerType(), download->GetMimeType(), /*scan_id*/ "",
-      download->GetTotalBytes(), EventResult::WARNED);
+      base::HexEncode(download->GetHash()), download->GetDangerType(),
+      download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
+      EventResult::WARNED);
 }
 
 void ReportDangerousDownloadWarningBypassed(
@@ -96,12 +95,11 @@ void ReportDangerousDownloadWarningBypassed(
           metadata.scan_response.request_token(), metadata.size);
     }
   } else {
-    std::string raw_digest_sha256 = download->GetHash();
     router->OnDangerousDownloadWarningBypassed(
         download->GetURL(), download->GetTabUrl(),
         download->GetTargetFilePath().AsUTF8Unsafe(),
-        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-        original_danger_type, download->GetMimeType(),
+        base::HexEncode(download->GetHash()), original_danger_type,
+        download->GetMimeType(),
         /*scan_id*/ "", download->GetTotalBytes());
   }
 }
@@ -127,12 +125,10 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
           stored_result->user_justification);
     }
   } else {
-    std::string raw_digest_sha256 = download->GetHash();
     ReportAnalysisConnectorWarningBypass(
         profile, download->GetURL(), download->GetTabUrl(), "", "",
         download->GetTargetFilePath().AsUTF8Unsafe(),
-        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-        download->GetMimeType(),
+        base::HexEncode(download->GetHash()), download->GetMimeType(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
         DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
         enterprise_connectors::ContentAnalysisResponse(),

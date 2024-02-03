@@ -2519,17 +2519,29 @@ void RenderFrameImpl::GetInterfaceProvider(
 
 void RenderFrameImpl::AllowBindings(int32_t enabled_bindings_flags) {
   enabled_bindings_ |= enabled_bindings_flags;
+
+  if (enabled_bindings_flags & BINDINGS_POLICY_MOJO_WEB_UI) {
+    // If mojo web UI is being enabled, update the protected memory bool to
+    // allow MojoJS binding in this process.
+    blink::WebV8Features::AllowMojoJSForProcess();
+  }
 }
 
 void RenderFrameImpl::EnableMojoJsBindings(
     content::mojom::ExtraMojoJsFeaturesPtr features) {
   enable_mojo_js_bindings_ = true;
   mojo_js_features_ = std::move(features);
+
+  // Update the protected memory bool to allow MojoJS binding in this process.
+  blink::WebV8Features::AllowMojoJSForProcess();
 }
 
 void RenderFrameImpl::EnableMojoJsBindingsWithBroker(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker) {
   mojo_js_interface_broker_ = std::move(broker);
+
+  // Update the protected memory bool to allow MojoJS binding in this process.
+  blink::WebV8Features::AllowMojoJSForProcess();
 }
 
 void RenderFrameImpl::BindWebUI(
@@ -2841,18 +2853,14 @@ void RenderFrameImpl::CommitNavigationWithParams(
     CHECK(!commit_params->not_restored_reasons);
   }
 
-  // Skip LCPP hints if the document isn't being loaded in the main frame,
-  // if the LCPP performance experiment is enabled.
-  if (!blink::features::
-           kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements
-               .Get() ||
-      frame_->IsOutermostMainFrame()) {
-    frame_->SetLCPPHint(std::move(commit_params->lcpp_hint));
-  } else {
-    // When there's a pre-existing LCPP hint on frame, we want to remove the
-    // existing hint. Hence calling SetLCPPHint(nullptr) is required.
-    frame_->SetLCPPHint(nullptr);
-  }
+  // |lcpp_hint| is set only when the frame is eligible (e.g. it's an outer
+  // most main frame), which is checked in the browser process. Otherwise
+  // nullptr.
+  //
+  // When there's a pre-existing LCPP hint on frame, we want to remove the
+  // existing hint. Hence calling SetLCPPHint() is always required.
+  CHECK(!commit_params->lcpp_hint || frame_->IsOutermostMainFrame());
+  frame_->SetLCPPHint(std::move(commit_params->lcpp_hint));
 
   // Note: this intentionally does not call |Detach()| before |reset()|. If
   // there is an active |MHTMLBodyLoaderClient|, the browser-side navigation
@@ -5459,29 +5467,16 @@ void RenderFrameImpl::BeginNavigation(
       !is_history_navigation_in_new_child_frame &&
       // Fullscreen navigation requests must go to the browser (for permission
       // checks and other security measures).
-      !info->is_fullscreen_requested;
-
-  if (should_do_synchronous_about_blank_navigation) {
-    if (!IsMainFrame()) {
+      !info->is_fullscreen_requested &&
       // Synchronous about:blank commits on iframes should only be triggered
       // when first creating the iframe with an unset/about:blank URL, which
       // means the origin should inherit from the parent.
-      WebLocalFrame* parent = static_cast<WebLocalFrame*>(frame_->Parent());
-      SCOPED_CRASH_KEY_STRING256(
-          "sync_about_blank", "parent_origin",
-          url::Origin(parent->GetDocument().GetSecurityOrigin())
-              .GetDebugString());
-      SCOPED_CRASH_KEY_STRING256(
-          "sync_about_blank", "request_origin",
-          url::Origin(info->url_request.RequestorOrigin()).GetDebugString());
-      SCOPED_CRASH_KEY_STRING256(
-          "sync_about_blank", "current_origin",
-          url::Origin(frame_->GetSecurityOrigin()).GetDebugString());
-      CHECK(parent);
-      CHECK(parent->GetDocument().GetSecurityOrigin().IsSameOriginWith(
-          info->url_request.RequestorOrigin()));
-    }
+      (IsMainFrame() || info->url_request.RequestorOrigin().IsSameOriginWith(
+                            static_cast<WebLocalFrame*>(frame_->Parent())
+                                ->GetDocument()
+                                .GetSecurityOrigin()));
 
+  if (should_do_synchronous_about_blank_navigation) {
     for (auto& observer : observers_)
       observer.DidStartNavigation(url, info->navigation_type);
     SynchronouslyCommitAboutBlankForBug778318(std::move(info));

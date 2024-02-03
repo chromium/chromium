@@ -80,16 +80,21 @@
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
       sentence2);
+  let previousHighlights =
+      container.querySelectorAll('.previous-read-highlight');
+  assertEquals(previousHighlights.length, 1);
+  assertEquals(previousHighlights[0].textContent, sentence1);
   readAnythingApp.resetPreviousHighlight();
-
-  // TODO(crbug.com/1474951): Add tests for the previous highlight and for the
-  //  the highlight when calling playPreviousGranularity.
 
   // Third sentence is next.
   readAnythingApp.playNextGranularity();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
       sentence3);
+  previousHighlights = container.querySelectorAll('.previous-read-highlight');
+  assertEquals(previousHighlights.length, 2);
+  assertEquals(previousHighlights[0].textContent, sentence1);
+  assertEquals(previousHighlights[1].textContent, sentence2);
 
   // Attempt to speak more utterance than are left.
   readAnythingApp.playNextGranularity();

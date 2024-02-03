@@ -415,8 +415,8 @@ void LoginShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
-void LoginShelfView::Layout() {
-  views::View::Layout();
+void LoginShelfView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
   UpdateButtonUnionBounds();
 }
 
@@ -730,7 +730,7 @@ void LoginShelfView::UpdateUi() {
       features::IsUseLoginShelfWidgetEnabled()) {
     PreferredSizeChanged();
   } else {
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 

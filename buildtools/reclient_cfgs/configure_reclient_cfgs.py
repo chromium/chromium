@@ -37,9 +37,10 @@ use_application_default_credentials=true
 """
 
 GCLOUD_AUTH_FLAGS = """
-use_gcloud_creds=true
 use_external_auth_token=true
-"""
+experimental_credentials_helper={credshelper}
+experimental_credentials_helper_args={args}
+""".format(credshelper=os.path.join(CHROMIUM_SRC, "buildtools", "reclient", "credshelper"), args="--auth_source=gcloud")
 
 
 def ClangRevision():

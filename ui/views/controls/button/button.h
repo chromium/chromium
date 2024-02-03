@@ -19,7 +19,6 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/action_view_controller.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_state.h"

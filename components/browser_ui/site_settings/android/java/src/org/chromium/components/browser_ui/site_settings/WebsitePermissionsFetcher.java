@@ -107,12 +107,6 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.BLUETOOTH_GUARD:
             case ContentSettingsType.USB_GUARD:
                 return WebsitePermissionsType.CHOSEN_OBJECT_INFO;
-            case ContentSettingsType.MIDI:
-                if (PermissionsAndroidFeatureMap.isEnabled(
-                        PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)) {
-                    return WebsitePermissionsType.PERMISSION_INFO;
-                }
-                return null;
             default:
                 return null;
         }

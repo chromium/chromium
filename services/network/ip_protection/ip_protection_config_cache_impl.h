@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
 
   // IpProtectionConfigCache implementation.
   bool AreAuthTokensAvailable() override;
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
       size_t chain_index) override;
   void InvalidateTryAgainAfterTime() override;
   void SetIpProtectionTokenCacheManagerForTesting(
@@ -51,15 +51,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
 
-  static std::vector<net::ProxyChain>
-  ConvertProxyServerStringsToProxyChainListForTesting(
-      const std::vector<std::vector<std::string>>& proxy_server_strings) {
-    return ConvertProxyServerStringsToProxyChainList(proxy_server_strings);
-  }
-
  private:
-  static std::vector<net::ProxyChain> ConvertProxyServerStringsToProxyChainList(
-      const std::vector<std::vector<std::string>>& proxy_server_strings);
   // Source of auth tokens and proxy list, when needed.
   mojo::Remote<network::mojom::IpProtectionConfigGetter> config_getter_;
 

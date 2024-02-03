@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_commands.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 
 @class ContentSuggestionsCoordinator;
 @class FeedHeaderViewController;
@@ -21,7 +22,8 @@
 // Testing category that is intended to only be imported in
 // new_tab_page_coordinator.mm and tests.
 @interface NewTabPageCoordinator (Testing) <FeedWrapperViewControllerDelegate,
-                                            NewTabPageHeaderCommands>
+                                            NewTabPageHeaderCommands,
+                                            NewTabPageMetricsDelegate>
 
 @property(nonatomic, strong, readonly)
     NewTabPageHeaderViewController* headerViewController;

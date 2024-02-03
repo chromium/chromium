@@ -60,8 +60,8 @@ class SynchronousLayerTreeFrameSinkClient {
   virtual void SubmitCompositorFrame(
       uint32_t layer_tree_frame_sink_id,
       const viz::LocalSurfaceId& local_surface_id,
-      absl::optional<viz::CompositorFrame> frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list) = 0;
+      std::optional<viz::CompositorFrame> frame,
+      std::optional<viz::HitTestRegionList> hit_test_region_list) = 0;
   virtual void SetNeedsBeginFrames(bool needs_begin_frames) = 0;
   virtual void SinkDestroyed() = 0;
 

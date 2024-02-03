@@ -67,6 +67,15 @@ class FullRestoreService : public KeyedService,
                            public message_center::NotificationObserver,
                            public AcceleratorController::Observer {
  public:
+  // Delegate class that talks to ash shell. Ash shell is not created in
+  // unit tests so this should be mocked out for testing those behaviors.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    // Starts overview with the pine dialog unless overview is already active.
+    virtual void MaybeStartPineOverviewSession() = 0;
+  };
+
   static FullRestoreService* GetForProfile(Profile* profile);
   static void MaybeCloseNotification(Profile* profile);
 
@@ -74,6 +83,10 @@ class FullRestoreService : public KeyedService,
   FullRestoreService(const FullRestoreService&) = delete;
   FullRestoreService& operator=(const FullRestoreService&) = delete;
   ~FullRestoreService() override;
+
+  FullRestoreAppLaunchHandler* app_launch_handler() {
+    return app_launch_handler_.get();
+  }
 
   // Initialize the full restore service. |show_notification| indicates whether
   // a full restore notification has been shown.
@@ -100,15 +113,12 @@ class FullRestoreService : public KeyedService,
   void OnAcceleratorControllerWillBeDestroyed(
       AcceleratorController* controller) override;
 
-  FullRestoreAppLaunchHandler* app_launch_handler() {
-    return app_launch_handler_.get();
-  }
-
   void SetAppLaunchHandlerForTesting(
       std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler);
 
  private:
   friend class FullRestoreServiceMultipleUsersTest;
+  friend class FullRestoreServiceTest;
   FRIEND_TEST_ALL_PREFIXES(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
                            RestoreChromeApp);
   FRIEND_TEST_ALL_PREFIXES(FullRestoreAppLaunchHandlerArcAppBrowserTest,
@@ -171,6 +181,8 @@ class FullRestoreService : public KeyedService,
   std::unique_ptr<FullRestoreDataHandler> restore_data_handler_;
 
   std::unique_ptr<message_center::Notification> notification_;
+
+  std::unique_ptr<Delegate> delegate_;
 
   base::CallbackListSubscription on_app_terminating_subscription_;
 

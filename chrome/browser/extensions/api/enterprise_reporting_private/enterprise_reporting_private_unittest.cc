@@ -122,6 +122,7 @@ class EnterpriseReportingPrivateGetDeviceIdTest : public ExtensionApiUnittest {
 
   void SetClientId(const std::string& client_id) {
     storage_.SetClientId(client_id);
+    storage_.ResetForTesting();
   }
 
  private:

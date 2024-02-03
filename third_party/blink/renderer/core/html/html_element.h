@@ -23,7 +23,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -93,6 +94,12 @@ enum class HidePopoverTransitionBehavior {
   // higher priority elements are entering the top layer, or when the popover
   // element is being removed from the document.
   kNoEventsNoWaiting,
+};
+
+enum class TopLayerElementType {
+  kPopover,
+  kDialog,
+  kFullscreen,
 };
 
 class CORE_EXPORT HTMLElement : public Element {
@@ -258,9 +265,14 @@ class CORE_EXPORT HTMLElement : public Element {
                            ExceptionState* exception_state);
   void PopoverHideFinishIfNeeded(bool immediate);
   static const HTMLElement* FindTopmostPopoverAncestor(
-      HTMLElement& new_popover,
+      Element& new_popover_or_top_layer_element,
       HeapVector<Member<HTMLElement>>& stack_to_check,
-      Element* new_popovers_invoker);
+      Element* new_popovers_invoker,
+      TopLayerElementType top_layer_element_type =
+          TopLayerElementType::kPopover);
+  static const HTMLElement* TopLayerElementPopoverAncestor(
+      Element& top_layer_element,
+      TopLayerElementType top_layer_element_type);
 
   static void HandlePopoverLightDismiss(const Event& event, const Node& node);
   void InvokePopover(Element& invoker);
@@ -382,9 +394,6 @@ class CORE_EXPORT HTMLElement : public Element {
   void OnLangAttrChanged(const AttributeModificationParams&);
   void OnNonceAttrChanged(const AttributeModificationParams&);
   void OnPopoverChanged(const AttributeModificationParams&);
-
-  // Delegate ParseAttribute to base class
-  void ReparseAttribute(const AttributeModificationParams&);
 
   int AdjustedOffsetForZoom(LayoutUnit);
   int OffsetTopOrLeft(bool top);

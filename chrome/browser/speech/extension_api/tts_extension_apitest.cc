@@ -476,6 +476,27 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, PlatformPauseSpeakNoEnqueue) {
   ASSERT_TRUE(RunExtensionTest("tts/pause_speak_no_enqueue")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(TtsApiTest, ServiceWorkerEnqueue) {
+  EXPECT_CALL(mock_platform_impl_, IsSpeaking());
+
+  InSequence s;
+  EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillOnce(Return(true));
+  EXPECT_CALL(mock_platform_impl_, DoSpeak(_, "text 1", _, _, _))
+      .WillOnce(
+          DoAll(Invoke(&mock_platform_impl_,
+                       &MockTtsPlatformImpl::SendEndEventWhenQueueNotEmpty),
+                Return()));
+  EXPECT_CALL(mock_platform_impl_, DoSpeak(_, "text 2", _, _, _))
+      .WillOnce(DoAll(
+          Invoke(&mock_platform_impl_, &MockTtsPlatformImpl::SendEndEvent),
+          Return()));
+  ASSERT_TRUE(RunExtensionTest("tts/service_worker_enqueue")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(TtsApiTest, ServiceWorkerSpeakError) {
+  ASSERT_TRUE(RunExtensionTest("tts/service_worker_speak_error")) << message_;
+}
+
 //
 // TTS Engine tests.
 //

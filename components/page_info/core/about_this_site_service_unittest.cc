@@ -29,13 +29,16 @@ using DecisionWithMetadata = AboutThisSiteService::DecisionAndMetadata;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationMetadata;
 
-class MockAboutThisSiteServiceClient : public AboutThisSiteService::Client {
+class MockAboutThisSiteService : public AboutThisSiteService {
  public:
-  MockAboutThisSiteServiceClient() = default;
+  MockAboutThisSiteService(TemplateURLService* template_url_service)
+      : AboutThisSiteService(nullptr, false, nullptr, template_url_service) {}
 
-  MOCK_METHOD0(IsOptimizationGuideAllowed, bool());
-  MOCK_METHOD2(CanApplyOptimization,
-               OptimizationGuideDecision(const GURL&, OptimizationMetadata*));
+  MOCK_METHOD(bool, IsOptimizationGuideAllowed, (), (const, override));
+  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
+              CanApplyOptimization,
+              (const GURL&, OptimizationMetadata*),
+              (const, override));
 };
 
 class MockTabHelper : public AboutThisSiteService::TabHelper {
@@ -100,38 +103,31 @@ OptimizationGuideDecision ReturnUnknown(const GURL& url,
 class AboutThisSiteServiceTest : public ::testing::TestWithParam<bool> {
  public:
   void SetUp() override {
-    auto client_mock =
-        std::make_unique<testing::StrictMock<MockAboutThisSiteServiceClient>>();
-
     // Parameterize test until kAboutThisSiteAsyncFetching is enabled by
     // default.
     if (GetParam()) {
       tab_helper_mock_ = std::make_unique<testing::StrictMock<MockTabHelper>>();
     }
 
-    client_ = client_mock.get();
-    SetOptimizationGuideAllowed(true);
-
     template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
 
-    service_ = std::make_unique<AboutThisSiteService>(
-        std::move(client_mock), template_url_service_.get());
+    service_ = std::make_unique<testing::StrictMock<MockAboutThisSiteService>>(
+        template_url_service_.get());
+    SetOptimizationGuideAllowed(true);
   }
 
   void SetOptimizationGuideAllowed(bool allowed) {
-    EXPECT_CALL(*client(), IsOptimizationGuideAllowed())
+    EXPECT_CALL(*service(), IsOptimizationGuideAllowed())
         .WillRepeatedly(Return(allowed));
   }
 
-  MockAboutThisSiteServiceClient* client() { return client_; }
   MockTabHelper* tab_helper() { return tab_helper_mock_.get(); }
   TemplateURLService* templateService() { return template_url_service_.get(); }
-  AboutThisSiteService* service() { return service_.get(); }
+  MockAboutThisSiteService* service() { return service_.get(); }
 
  private:
   std::unique_ptr<TemplateURLService> template_url_service_;
-  std::unique_ptr<AboutThisSiteService> service_;
-  raw_ptr<MockAboutThisSiteServiceClient> client_;
+  std::unique_ptr<MockAboutThisSiteService> service_;
   std::unique_ptr<MockTabHelper> tab_helper_mock_;
 };
 
@@ -143,7 +139,7 @@ TEST_P(AboutThisSiteServiceTest, ValidResponse) {
         .WillOnce(Return(DecisionWithMetadata{OptimizationGuideDecision::kTrue,
                                               CreateValidMetadata()}));
   } else {
-    EXPECT_CALL(*client(), CanApplyOptimization(_, _))
+    EXPECT_CALL(*service(), CanApplyOptimization(_, _))
         .WillOnce(Invoke(&ReturnDescription));
   }
 
@@ -161,10 +157,10 @@ TEST_P(AboutThisSiteServiceTest, ValidResponse) {
 
 // Tests the language specific feature check.
 TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
-  const char* enabled[]{"en-US", "en-UK", "en",    "pt",    "pt-BR",
-                        "pt-PT", "fr",    "fr-CA", "it",    "nl",
-                        "de",    "de-DE", "es",    "es-419"};
-  const char* disabled[]{"da", "id", "zh-TW", "ja"};
+  const char* enabled[]{"en-US", "en-UK",  "en", "pt", "pt-BR", "pt-PT",
+                        "fr",    "fr-CA",  "it", "nl", "de",    "de-DE",
+                        "es",    "es-419", "da", "id", "zh-TW", "ja"};
+  const char* disabled[]{"gl", "si"};
 
   for (const char* lang : enabled) {
     EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled(lang));
@@ -182,7 +178,7 @@ TEST_P(AboutThisSiteServiceTest, InvalidResponse) {
         .WillOnce(Return(DecisionWithMetadata{OptimizationGuideDecision::kTrue,
                                               CreateInvalidDescription()}));
   } else {
-    EXPECT_CALL(*client(), CanApplyOptimization(_, _))
+    EXPECT_CALL(*service(), CanApplyOptimization(_, _))
         .WillOnce(Invoke(&ReturnInvalidDescription));
   }
 
@@ -205,7 +201,7 @@ TEST_P(AboutThisSiteServiceTest, NoResponse) {
         .WillOnce(Return(DecisionWithMetadata{OptimizationGuideDecision::kFalse,
                                               std::nullopt}));
   } else {
-    EXPECT_CALL(*client(), CanApplyOptimization(_, _))
+    EXPECT_CALL(*service(), CanApplyOptimization(_, _))
         .WillOnce(Invoke(&ReturnNoResult));
   }
 
@@ -227,7 +223,7 @@ TEST_P(AboutThisSiteServiceTest, Unknown) {
         .WillOnce(Return(DecisionWithMetadata{
             OptimizationGuideDecision::kUnknown, std::nullopt}));
   } else {
-    EXPECT_CALL(*client(), CanApplyOptimization(_, _))
+    EXPECT_CALL(*service(), CanApplyOptimization(_, _))
         .WillOnce(Invoke(&ReturnUnknown));
   }
 

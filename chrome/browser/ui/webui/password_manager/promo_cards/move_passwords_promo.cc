@@ -92,7 +92,7 @@ bool MovePasswordsPromo::ShouldShowPromo() const {
   syncer::SyncService* sync_service = GetSyncService(profile_);
   if (!sync_service ||
       !password_manager::features_util::IsOptedInForAccountStorage(
-          sync_service)) {
+          profile_->GetPrefs(), sync_service)) {
     return false;
   }
 

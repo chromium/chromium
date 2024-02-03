@@ -32,11 +32,11 @@ bool HasSingleInvalidSVGMaskReferenceMaskLayer(const LayoutObject& object,
 
 }  // namespace
 
-absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
+std::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
     const LayoutObject& object,
     const PhysicalOffset& paint_offset) {
   if (!object.IsBoxModelObject() && !object.IsSVGChild())
-    return absl::nullopt;
+    return std::nullopt;
 
   const ComputedStyle& style = object.StyleRef();
   if (!RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
@@ -56,12 +56,12 @@ absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
     }
 
     if (object.IsSVGChild() && !object.IsSVGForeignObject()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   if (!style.HasMask())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
     if (object.IsSVGChild()) {
@@ -71,7 +71,7 @@ absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
       // [1] https://drafts.fxtf.org/css-masking/#the-mask-image
       if (HasSingleInvalidSVGMaskReferenceMaskLayer(object,
                                                     style.MaskLayers())) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       // foreignObject handled by the regular box code.
       if (!object.IsSVGForeignObject()) {

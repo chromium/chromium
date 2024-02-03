@@ -124,7 +124,7 @@ struct MediaStreamDevice {
 // See common/mediastream/media_stream_controls.h.
 struct TrackControls {
   MediaStreamType stream_type;
-  string device_id;
+  array<string> device_ids;
 };
 
 // See common/mediastream/media_stream_controls.h.

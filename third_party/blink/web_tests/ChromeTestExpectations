@@ -581,6 +581,11 @@ crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/mov
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-external-module.html [ Failure Pass ]
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-inline-classic.html [ Failure Pass ]
 
+# These time out reliably on Linux chrome-wpt only, on the call to `await element.requestFullscreen()`. I don't know why.
+crbug.com/1520938 external/wpt/html/semantics/popovers/popover-top-layer-nesting-anchor.tentative.html [ Timeout ]
+crbug.com/1520938 external/wpt/html/semantics/popovers/popover-top-layer-nesting-hints.tentative.html [ Timeout ]
+crbug.com/1520938 external/wpt/html/semantics/popovers/popover-top-layer-nesting.tentative.html [ Timeout ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.py [ Timeout ]
@@ -744,7 +749,7 @@ crbug.com/1485918 external/wpt/cookies/samesite/setcookie-lax.https.html [ Failu
 crbug.com/1485918 external/wpt/cookies/samesite/setcookie-navigation.https.html [ Failure Timeout ]
 crbug.com/1485918 external/wpt/cookies/schemeful-same-site/schemeful-iframe-subresource.tentative.html [ Failure ]
 crbug.com/1485918 external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Failure ]
-crbug.com/1485918 external/wpt/credential-management/fedcm-context.https.html [ Failure ]
+crbug.com/1485918 external/wpt/credential-management/fedcm-context.https.html [ Failure Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-error-basic.https.html [ Crash Failure Timeout ]
 crbug.com/1485918 external/wpt/html/anonymous-iframe/fenced-frame-bypass.tentative.https.window.html [ Failure ]
 crbug.com/1485918 external/wpt/html/anonymous-iframe/fenced-frame.tentative.https.window.html [ Failure ]

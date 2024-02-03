@@ -5,10 +5,11 @@
 #ifndef MEDIA_CAST_OPENSCREEN_RPC_CALL_MESSAGE_HANDLER_H_
 #define MEDIA_CAST_OPENSCREEN_RPC_CALL_MESSAGE_HANDLER_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace openscreen::cast {
@@ -48,12 +49,12 @@ class RpcDemuxerStreamCBMessageHandler {
 
   virtual void OnRpcInitializeCallback(
       openscreen::cast::RpcMessenger::Handle handle,
-      absl::optional<media::AudioDecoderConfig> audio_config,
-      absl::optional<media::VideoDecoderConfig> video_config) = 0;
+      std::optional<media::AudioDecoderConfig> audio_config,
+      std::optional<media::VideoDecoderConfig> video_config) = 0;
   virtual void OnRpcReadUntilCallback(
       openscreen::cast::RpcMessenger::Handle handle,
-      absl::optional<media::AudioDecoderConfig> audio_config,
-      absl::optional<media::VideoDecoderConfig> video_config,
+      std::optional<media::AudioDecoderConfig> audio_config,
+      std::optional<media::VideoDecoderConfig> video_config,
       uint32_t total_frames_received) = 0;
   virtual void OnRpcEnableBitstreamConverterCallback(
       openscreen::cast::RpcMessenger::Handle handle,

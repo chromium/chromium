@@ -23,12 +23,14 @@ namespace blink {
 
 enum class CloneOption {
   kIncludeDescendants,
-  kIncludeShadowRoots,
   kPreserveDOMParts,
+  // TODO(crbug.com/1510466) This flag can be removed once the
+  // ShadowRootClonable flag is enabled by default.
+  kIncludeAllShadowRoots,
 
   // For `CloneOptionSet`.
   kMinValue = kIncludeDescendants,
-  kMaxValue = kPreserveDOMParts,
+  kMaxValue = kIncludeAllShadowRoots,
 };
 
 using CloneOptionSet =

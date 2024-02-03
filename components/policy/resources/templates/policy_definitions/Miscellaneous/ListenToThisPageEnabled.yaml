@@ -10,8 +10,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- android
 items:
 - caption: Always allow read aloud
   value: true
@@ -22,6 +20,8 @@ owners:
 - file://chrome/browser/readaloud/OWNERS
 schema:
   type: boolean
+supported_on:
+- android:122-
 tags:
 - google-sharing
 type: main

@@ -73,14 +73,15 @@ void GetFileInfo(Profile* profile,
 // otherwise, opens `item` when the underlying download completes.
 std::optional<ItemLaunchFailureReason> OpenInProgressItem(
     Profile* profile,
-    const HoldingSpaceItem& item) {
+    const HoldingSpaceItem& item,
+    holding_space_metrics::EventSource event_source) {
   CHECK(!item.progress().IsComplete());
 
   auto command_iter = base::ranges::find(
       item.in_progress_commands(), HoldingSpaceCommandId::kOpenItem,
       &HoldingSpaceItem::InProgressCommand::command_id);
   if (command_iter != item.in_progress_commands().end()) {
-    command_iter->handler.Run(&item, command_iter->command_id);
+    command_iter->handler.Run(&item, command_iter->command_id, event_source);
     return std::nullopt;
   }
 
@@ -121,10 +122,12 @@ const std::string& HoldingSpaceClientImpl::AddItemOfType(
   return GetHoldingSpaceKeyedService(profile_)->AddItemOfType(type, file_path);
 }
 
-void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
-                                                  SuccessCallback callback) {
+void HoldingSpaceClientImpl::CopyImageToClipboard(
+    const HoldingSpaceItem& item,
+    holding_space_metrics::EventSource event_source,
+    SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(
-      {&item}, holding_space_metrics::ItemAction::kCopy);
+      {&item}, holding_space_metrics::ItemAction::kCopy, event_source);
 
   std::string ext = item.file().file_path.Extension();
   std::string mime_type;
@@ -182,9 +185,10 @@ void HoldingSpaceClientImpl::OpenDownloads(SuccessCallback callback) {
 
 void HoldingSpaceClientImpl::OpenItems(
     const std::vector<const HoldingSpaceItem*>& items,
+    holding_space_metrics::EventSource event_source,
     SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(
-      items, holding_space_metrics::ItemAction::kLaunch);
+      items, holding_space_metrics::ItemAction::kLaunch, event_source);
 
   if (items.empty()) {
     std::move(callback).Run(/*success=*/false);
@@ -213,7 +217,7 @@ void HoldingSpaceClientImpl::OpenItems(
     }
     if (!item->progress().IsComplete()) {
       const std::optional<ItemLaunchFailureReason> failure_to_launch_reason =
-          OpenInProgressItem(profile_, *item);
+          OpenInProgressItem(profile_, *item, event_source);
       if (failure_to_launch_reason) {
         holding_space_metrics::RecordItemLaunchFailure(
             item->type(), item->file().file_path,
@@ -286,7 +290,8 @@ void HoldingSpaceClientImpl::OpenMyFiles(SuccessCallback callback) {
 }
 
 void HoldingSpaceClientImpl::PinFiles(
-    const std::vector<base::FilePath>& file_paths) {
+    const std::vector<base::FilePath>& file_paths,
+    holding_space_metrics::EventSource event_source) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
   for (const base::FilePath& file_path : file_paths) {
@@ -299,12 +304,14 @@ void HoldingSpaceClientImpl::PinFiles(
   }
 
   if (!file_system_urls.empty()) {
-    GetHoldingSpaceKeyedService(profile_)->AddPinnedFiles(file_system_urls);
+    GetHoldingSpaceKeyedService(profile_)->AddPinnedFiles(file_system_urls,
+                                                          event_source);
   }
 }
 
 void HoldingSpaceClientImpl::PinItems(
-    const std::vector<const HoldingSpaceItem*>& items) {
+    const std::vector<const HoldingSpaceItem*>& items,
+    holding_space_metrics::EventSource event_source) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
   // NOTE: In-progress holding space items are neither pin- nor unpin-able.
@@ -323,7 +330,7 @@ void HoldingSpaceClientImpl::PinItems(
   }
 
   if (!file_system_urls.empty()) {
-    service->AddPinnedFiles(file_system_urls);
+    service->AddPinnedFiles(file_system_urls, event_source);
   }
 }
 
@@ -334,10 +341,12 @@ void HoldingSpaceClientImpl::RemoveFileSuggestions(
       ->RemoveSuggestionsAndNotify(absolute_file_paths);
 }
 
-void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
-                                              SuccessCallback callback) {
+void HoldingSpaceClientImpl::ShowItemInFolder(
+    const HoldingSpaceItem& item,
+    holding_space_metrics::EventSource event_source,
+    SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(
-      {&item}, holding_space_metrics::ItemAction::kShowInFolder);
+      {&item}, holding_space_metrics::ItemAction::kShowInFolder, event_source);
 
   if (item.file().file_path.empty()) {
     std::move(callback).Run(/*success=*/false);
@@ -356,7 +365,8 @@ void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
 }
 
 void HoldingSpaceClientImpl::UnpinItems(
-    const std::vector<const HoldingSpaceItem*>& items) {
+    const std::vector<const HoldingSpaceItem*>& items,
+    holding_space_metrics::EventSource event_source) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
   // NOTE: In-progress holding space items are neither pin- nor unpin-able.
@@ -375,7 +385,7 @@ void HoldingSpaceClientImpl::UnpinItems(
   }
 
   if (!file_system_urls.empty()) {
-    service->RemovePinnedFiles(file_system_urls);
+    service->RemovePinnedFiles(file_system_urls, event_source);
   }
 }
 

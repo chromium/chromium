@@ -53,11 +53,10 @@ namespace internal {
 class PreMenuEventDispatchHandler : public ui::EventHandler,
                                     aura::WindowObserver {
  public:
-  PreMenuEventDispatchHandler(const MenuController* controller,
+  PreMenuEventDispatchHandler(MenuController* controller,
                               SubmenuView* submenu,
                               aura::Window* window)
-      : menu_controller_(const_cast<MenuController*>(controller)),
-        submenu_(submenu) {
+      : menu_controller_(controller->AsWeakPtr()), submenu_(submenu) {
     window_observation_.Observe(window);
     window->AddPreTargetHandler(this);
   }
@@ -91,7 +90,8 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-  const raw_ptr<MenuController, DanglingUntriaged> menu_controller_;
+  // Non-null unless the menu is closing.
+  const base::WeakPtr<MenuController> menu_controller_;
   const raw_ptr<SubmenuView> submenu_;
 };
 #endif  // USE_AURA

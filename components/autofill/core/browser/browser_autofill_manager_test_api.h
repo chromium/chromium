@@ -18,18 +18,6 @@ namespace autofill {
 // Exposes some testing operations for BrowserAutofillManager.
 class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
  public:
-  static void DeterminePossibleFieldTypesForUpload(
-      const std::vector<AutofillProfile>& profiles,
-      const std::vector<CreditCard>& credit_cards,
-      const std::u16string& last_unlocked_credit_card_cvc,
-      const std::string& app_locale,
-      FormStructure* form) {
-    // For tests, the observed_submission is hardcoded to true.
-    BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
-        profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale,
-        /*observed_submission=*/true, form);
-  }
-
   explicit BrowserAutofillManagerTestApi(BrowserAutofillManager* manager)
       : AutofillManagerTestApi(manager), manager_(*manager) {}
 
@@ -49,17 +37,20 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void set_limit_before_refill(base::TimeDelta limit) {
-    manager_->limit_before_refill_ = limit;
+    manager_->form_filler_->limit_before_refill_ = limit;
   }
 
+  // TODO(crbug.com/1517894): Remove.
   bool ShouldTriggerRefill(const FormStructure& form_structure,
                            RefillTriggerReason refill_trigger_reason) {
-    return manager_->ShouldTriggerRefill(form_structure, refill_trigger_reason);
+    return manager_->form_filler_->ShouldTriggerRefill(form_structure,
+                                                       refill_trigger_reason);
   }
 
+  // TODO(crbug.com/1517894): Remove.
   void TriggerRefill(const FormData& form,
                      const AutofillTriggerDetails& trigger_details) {
-    manager_->TriggerRefill(form, trigger_details);
+    manager_->form_filler_->TriggerRefill(form, trigger_details);
   }
 
   void PreProcessStateMatchingTypes(
@@ -100,6 +91,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->OnCreditCardFetched(result, credit_card);
   }
 
+  // TODO(crbug.com/1517894): Remove.
   void FillOrPreviewDataModelForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
@@ -109,7 +101,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
       base::optional_ref<const std::u16string> cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field) {
-    return manager_->FillOrPreviewDataModelForm(
+    return manager_->form_filler_->FillOrPreviewDataModelForm(
         action_persistence, form, field, profile_or_credit_card, cvc,
         form_structure, autofill_field,
         {.trigger_source = AutofillTriggerSource::kPopup});
@@ -138,13 +130,18 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         consider_form_as_secure_for_testing;
   }
 
+  // TODO(crbug.com/1517894): Remove.
   void AddFormFillEntry(
       base::span<const FormFieldData* const> filled_fields,
       base::span<const AutofillField* const> filled_autofill_fields,
       FillingProduct filling_product,
       bool is_refill) {
-    manager_->form_autofill_history_.AddFormFillEntry(
+    manager_->form_filler_->form_autofill_history_.AddFormFillEntry(
         filled_fields, filled_autofill_fields, filling_product, is_refill);
+  }
+
+  void set_form_filler(std::unique_ptr<FormFiller> form_filler) {
+    manager_->form_filler_ = std::move(form_filler);
   }
 
  private:

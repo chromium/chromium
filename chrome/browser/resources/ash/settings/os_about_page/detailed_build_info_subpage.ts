@@ -7,10 +7,10 @@
  * information for ChromeOS.
  */
 
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_shared.css.js';
 import './channel_switcher_dialog.js';
@@ -18,10 +18,10 @@ import './consumer_auto_update_toggle_dialog.js';
 import './edit_hostname_dialog.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -47,7 +47,7 @@ const SettingsDetailedBuildInfoSubpageBase =
     DeepLinkingMixin(RouteObserverMixin(
         PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
-class SettingsDetailedBuildInfoSubpageElement extends
+export class SettingsDetailedBuildInfoSubpageElement extends
     SettingsDetailedBuildInfoSubpageBase {
   static get is() {
     return 'settings-detailed-build-info-subpage' as const;

@@ -59,12 +59,11 @@ class DecodedBodyLoader : public StaticDataNavigationBodyLoader {
       client_->DecodedBodyDataReceived(data, encoding_data, encoded_data);
     }
 
-    void BodyLoadingFinished(
-        base::TimeTicks completion_time,
-        int64_t total_encoded_data_length,
-        int64_t total_encoded_body_length,
-        int64_t total_decoded_body_length,
-        const absl::optional<WebURLError>& error) override {
+    void BodyLoadingFinished(base::TimeTicks completion_time,
+                             int64_t total_encoded_data_length,
+                             int64_t total_encoded_body_length,
+                             int64_t total_decoded_body_length,
+                             const std::optional<WebURLError>& error) override {
       client_->BodyLoadingFinished(completion_time, total_encoded_data_length,
                                    total_encoded_body_length,
                                    total_decoded_body_length, error);

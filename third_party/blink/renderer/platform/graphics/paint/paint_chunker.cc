@@ -56,7 +56,7 @@ void PaintChunker::StopMarkingClientsForValidation() {
 void PaintChunker::UpdateCurrentPaintChunkProperties(
     const PropertyTreeStateOrAlias& properties) {
   if (current_properties_ != properties) {
-    next_chunk_id_ = absl::nullopt;
+    next_chunk_id_ = std::nullopt;
     current_properties_ = properties;
   }
 }
@@ -107,7 +107,7 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
     chunks_->emplace_back(begin, begin, next_chunk_id_->second,
                           next_chunk_id_->first, current_properties_,
                           current_effectively_invisible_);
-    next_chunk_id_ = absl::nullopt;
+    next_chunk_id_ = std::nullopt;
     will_force_new_chunk_ = false;
     return true;
   }
@@ -219,8 +219,8 @@ bool PaintChunker::AddRegionCaptureDataToCurrentChunk(
 }
 
 void PaintChunker::AddSelectionToCurrentChunk(
-    absl::optional<PaintedSelectionBound> start,
-    absl::optional<PaintedSelectionBound> end,
+    std::optional<PaintedSelectionBound> start,
+    std::optional<PaintedSelectionBound> end,
     String debug_info) {
   // We should have painted the selection when calling this method.
   DCHECK(chunks_);

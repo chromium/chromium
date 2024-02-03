@@ -614,8 +614,8 @@ cc_library(
         "//absl:__subpackages__",
     ],
     deps = [
-        "//absl/base",
         "//absl/base:config",
+        "//absl/base:no_destructor",
         "//absl/base:raw_logging_internal",
         "//absl/synchronization",
     ],
@@ -918,6 +918,7 @@ cc_test(
         "//absl/container:fixed_array",
         "//absl/functional:function_ref",
         "//absl/hash",
+        "//absl/hash:hash_testing",
         "//absl/log",
         "//absl/log:check",
         "//absl/random",

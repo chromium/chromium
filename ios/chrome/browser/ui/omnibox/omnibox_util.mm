@@ -44,6 +44,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::STARTER_PACK:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
+    case AutocompleteMatchType::TILE_MOST_VISITED_SITE:
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
       return OmniboxSuggestionIconType::kDefaultFavicon;
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
@@ -66,7 +67,6 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
     case AutocompleteMatchType::TILE_SUGGESTION:
-    case AutocompleteMatchType::TILE_MOST_VISITED_SITE:
     case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
       NOTREACHED();
       return OmniboxSuggestionIconType::kDefaultFavicon;

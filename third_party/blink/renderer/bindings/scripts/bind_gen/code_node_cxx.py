@@ -376,7 +376,8 @@ class CxxFuncDefNode(CompositeNode):
 
         # Presence of some attributes only makes sense on inline defitintions,
         # in which case a separate declaration does not make sense.
-        self._inhibit_make_decl = template_params or inline or explicit or constexpr
+        self._inhibit_make_decl = (template_params or inline or explicit
+                                   or constexpr)
 
         template_format = ("{template}"
                            "{static}{inline}{explicit}{constexpr}"

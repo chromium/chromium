@@ -17,8 +17,9 @@ namespace lock_screen_apps {
 // first launched from the lock screen. The dialog will block the app UI until
 // the user closes it.
 class ToastDialogView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(ToastDialogView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ToastDialogView);
   ToastDialogView(const std::u16string& app_name,
                   base::OnceClosure dismissed_callback);
   ToastDialogView(const ToastDialogView&) = delete;

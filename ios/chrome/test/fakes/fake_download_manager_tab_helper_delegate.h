@@ -19,7 +19,15 @@
 // Download task for which
 // `downloadManagerTabHelper:decidePolicyForDownload:completionHandler:` was
 // called. Null if it was never called or if `decidePolicy:` was called.
+// UNRETAINED. Make sur the task is owned by another class.
 @property(nonatomic, readonly) web::DownloadTask* decidingPolicyForDownload;
+
+// The download task that is currently downloaded.
+// UNRETAINED. Make sur the task is owned by another class.
+@property(nonatomic, readonly) web::DownloadTask* currentDownloadTask;
+
+// Whether the delegate was asked to observe fullscreen.
+@property(nonatomic, readonly) BOOL shouldObserveFullscreen;
 
 // Calls `downloadManagerTabHelper:decidePolicyForDownload:completionHandler:`
 // completion handler. Returns YES if the method was called.

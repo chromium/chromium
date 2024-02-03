@@ -39,7 +39,7 @@ LayoutSVGResourceMasker::~LayoutSVGResourceMasker() = default;
 
 void LayoutSVGResourceMasker::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
-  cached_paint_record_ = absl::nullopt;
+  cached_paint_record_ = std::nullopt;
   MarkAllClientsForInvalidation(kPaintPropertiesInvalidation |
                                 kPaintInvalidation);
 }

@@ -81,12 +81,12 @@ const fuchsia::sysmem::ColorSpaceType kSupportedColorSpaces[] = {
     fuchsia::sysmem::ColorSpaceType::REC709,
 };
 
-absl::optional<gfx::Size> ParseMinBufferSize() {
+std::optional<gfx::Size> ParseMinBufferSize() {
   std::string min_buffer_size_arg =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kMinVideoDecoderOutputBufferSize);
   if (min_buffer_size_arg.empty())
-    return absl::nullopt;
+    return std::nullopt;
   size_t width;
   size_t height;
   if (sscanf(min_buffer_size_arg.c_str(), "%zux%zu" SCNu32, &width, &height) !=
@@ -94,13 +94,13 @@ absl::optional<gfx::Size> ParseMinBufferSize() {
     LOG(WARNING) << "Invalid value for --"
                  << switches::kMinVideoDecoderOutputBufferSize << ": '"
                  << min_buffer_size_arg << "'";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return gfx::Size(width, height);
 }
 
-absl::optional<gfx::Size> GetMinBufferSize() {
-  static absl::optional<gfx::Size> value = ParseMinBufferSize();
+std::optional<gfx::Size> GetMinBufferSize() {
+  static std::optional<gfx::Size> value = ParseMinBufferSize();
   return value;
 }
 

@@ -644,7 +644,7 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
       if (!EncryptString(serial_number, &serial_number)) {
         return false;
       }
-      base::Base64Encode(serial_number, &serial_number);
+      serial_number = base::Base64Encode(serial_number);
     }
     resource_request->headers.SetHeader("If-None-Match", serial_number);
   }
@@ -913,7 +913,11 @@ void VariationsService::PerformSimulationWithVersion(
   if (!version.IsValid())
     return;
 
-  auto entropy_providers = state_manager_->CreateEntropyProviders();
+  auto entropy_providers = state_manager_->CreateEntropyProviders(
+      VariationsFieldTrialCreatorBase::
+          IsLimitedEntropyRandomizationSourceEnabled(
+              client()->GetChannelForVariations(),
+              &limited_entropy_synthetic_trial_));
 
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(version);
@@ -966,8 +970,13 @@ std::vector<StudyGroupNames> VariationsService::GetStudiesAvailableToForce() {
     return {};
   }
 
+  // TODO(crbug.com/1519232): chrome://field-trial-internals will not support
+  // studies that are constrained to a layer with LIMITED entropy mode before
+  // limited entropy randomization fully lands.
+  auto entropy_providers = state_manager_->CreateEntropyProviders(
+      /*enable_limited_entropy_mode=*/false);
   return variations::GetStudiesAvailableToForce(
-      std::move(seed), *state_manager_->CreateEntropyProviders(),
+      std::move(seed), *entropy_providers,
       *GetClientFilterableStateForVersion());
 }
 

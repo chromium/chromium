@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor.h"
 #include "chrome/browser/policy/client_data_delegate_desktop.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
-#include "chrome/browser/signin/profile_token_web_signin_interceptor.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_helper.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 
@@ -81,11 +81,13 @@ class ProfileTokenPolicyWebSigninService : public UserPolicySigninServiceBase {
   void OnRegistrationComplete(const std::string& dm_token,
                               const std::string& client_id);
   void OnPolicyFetchComplete(bool success);
+
   // UserPolicySigninServiceBase implementation:
   void InitializeCloudPolicyManager(
       const AccountId& account_id,
       std::unique_ptr<CloudPolicyClient> client) override;
   bool CanApplyPolicies(bool check_for_refresh_token) override;
+  std::string GetProfileId() override;
 
   // Initializes the UserPolicySigninService once its owning Profile becomes
   // ready. If the Profile has a signed-in account associated with it at startup

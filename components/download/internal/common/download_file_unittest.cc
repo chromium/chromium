@@ -66,9 +66,9 @@ int64_t GetBuffersLength(const char** buffers, size_t num_buffer) {
 std::string GetHexEncodedHashValue(crypto::SecureHash* hash_state) {
   if (!hash_state)
     return std::string();
-  std::vector<char> hash_value(hash_state->GetHashLength());
+  std::vector<uint8_t> hash_value(hash_state->GetHashLength());
   hash_state->Finish(&hash_value.front(), hash_value.size());
-  return base::HexEncode(&hash_value.front(), hash_value.size());
+  return base::HexEncode(hash_value);
 }
 
 class MockDownloadDestinationObserver : public DownloadDestinationObserver {

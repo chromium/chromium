@@ -31,7 +31,7 @@ mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
 mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics() {
   return mojom::SoftNavigationMetrics::New(
       blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-      base::EmptyString(), mojom::LargestContentfulPaintTiming::New());
+      std::string(), mojom::LargestContentfulPaintTiming::New());
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {

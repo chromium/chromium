@@ -728,7 +728,7 @@ void CalendarView::CreateCalendarTitleRow() {
       l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_SETTINGS_TOOLTIP));
   tri_view_->AddView(TriView::Container::END, settings_button_);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 views::View* CalendarView::CreateMonthHeaderContainer() {

@@ -29,14 +29,6 @@
 // The init method for the UIWindowSceneDelegate format.
 - (instancetype)initWithUIOpenURLContext:(UIOpenURLContext*)context;
 
-// The init method for the `UIApplicationDelegate
-// application:didFinishLaunchingWithOptions:` format.
-- (instancetype)initWithLaunchOptions:(NSDictionary*)options;
-
-// Converts to the `UIApplicationDelegate
-// application:didFinishLaunchingWithOptions:`.
-- (NSDictionary*)toLaunchOptions;
-
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_URL_OPENER_PARAMS_H_

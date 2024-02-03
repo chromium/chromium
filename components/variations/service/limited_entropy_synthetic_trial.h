@@ -37,6 +37,11 @@ class LimitedEntropySyntheticTrial {
   // Returns the name of the group that the client belongs to for this trial.
   std::string_view GetGroupName();
 
+ protected:
+  // Testing only. Provides a convenient way to instantiate a trial with the
+  // given group assignment.
+  LimitedEntropySyntheticTrial(std::string_view group_name);
+
  private:
   const std::string_view group_name_;
 };

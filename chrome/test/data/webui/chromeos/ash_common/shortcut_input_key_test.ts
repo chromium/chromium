@@ -8,7 +8,6 @@ import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {KeyInputState} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
-import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -85,10 +84,11 @@ suite('ShortcutInputKey', function() {
         shortcutInputKeyElement.shadowRoot!.querySelector('#key > div') as
         HTMLDivElement;
     assertTrue(isVisible(iconWrapperElement));
-    const iconDescriptionElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector(
-            '#icon-description') as HTMLDivElement;
-    assertEquals('take screenshot', iconDescriptionElement.textContent);
+
+    assertEquals(
+        'take screenshot',
+        shortcutInputKeyElement.shadowRoot!.querySelector('#keyIcon')!
+            .getAttribute('aria-label'));
   });
 
   test('MetaKeyShowLauncherIcon', async () => {
@@ -106,10 +106,11 @@ suite('ShortcutInputKey', function() {
     assertTrue(isVisible(iconElement));
     assertTrue(isVisible(iconWrapperElement));
     assertEquals('shortcut-input-keys:launcher', iconElement.icon);
-    const iconDescriptionElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector(
-            '#icon-description') as HTMLDivElement;
-    assertEquals('launcher', iconDescriptionElement.textContent);
+    // Verify meta key's aria-label.
+    assertEquals(
+        'launcher',
+        shortcutInputKeyElement.shadowRoot!.querySelector('#keyIcon')!
+            .getAttribute('aria-label'));
   });
 
   test('MetaKeyShowSearchIcon', async () => {
@@ -127,11 +128,11 @@ suite('ShortcutInputKey', function() {
     assertTrue(isVisible(iconElement));
     assertTrue(isVisible(iconWrapperElement));
     assertEquals('shortcut-input-keys:search', iconElement.icon);
-
-    const iconDescriptionElement =
-        shortcutInputKeyElement.shadowRoot!.querySelector(
-            '#icon-description') as HTMLDivElement;
-    assertEquals('search', iconDescriptionElement.textContent);
+    // Verify meta key's aria-label.
+    assertEquals(
+        'search',
+        shortcutInputKeyElement.shadowRoot!.querySelector('#keyIcon')!
+            .getAttribute('aria-label'));
   });
 
   test('LwinKeyAsSearchModifier', async () => {
@@ -160,29 +161,5 @@ suite('ShortcutInputKey', function() {
     // other keys should keep their original state.
     assertEquals(
         KeyInputState.ALPHANUMERIC_SELECTED, shortcutInputKeyElement.keyState);
-  });
-
-  test('AriaHiddenForSelectedKeys', async () => {
-    shortcutInputKeyElement = initInputKeyElement();
-    shortcutInputKeyElement.key = 'a';
-    shortcutInputKeyElement.keyState = KeyInputState.ALPHANUMERIC_SELECTED;
-    await flushTasks();
-
-    const keyElement = strictQuery(
-        '#key-text', shortcutInputKeyElement.shadowRoot, HTMLSpanElement);
-    assertTrue(!!keyElement);
-    assertEquals('false', keyElement.ariaHidden);
-  });
-
-  test('AriaHiddenForUnselectedKeys', async () => {
-    shortcutInputKeyElement = initInputKeyElement();
-    shortcutInputKeyElement.key = 'a';
-    shortcutInputKeyElement.keyState = KeyInputState.NOT_SELECTED;
-    await flushTasks();
-
-    const keyElement = strictQuery(
-        '#key-text', shortcutInputKeyElement.shadowRoot, HTMLSpanElement);
-    assertTrue(!!keyElement);
-    assertEquals('true', keyElement.ariaHidden);
   });
 });

@@ -12,7 +12,6 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -39,25 +38,21 @@ std::list<SystemWebDialogDelegate*>* GetInstances() {
   return instances.get();
 }
 
-// Creates default initial parameters. If dialog has a non-client frame, corner
-// radius matches the top-level window radii of Chromeos otherwise it is
-// defaulted to 12 dips. If the the dialog uses a non client type frame, we
-// should build a drop shadow. If use a dialog type frame, we don't have to set
-// a shadow since the dialog frame's border has its own shadow.
+// Creates default initial parameters. The system web dialog has 12 dip corner
+// radius by default. If the the dialog uses a non client type frame, we should
+// build a drop shadow. If use a dialog type frame, we don't have to set a
+// shadow since the dialog frame's border has its own shadow.
 views::Widget::InitParams CreateWidgetParams(
     SystemWebDialogDelegate::FrameKind frame_kind) {
   views::Widget::InitParams params;
+  params.corner_radius = kSystemDialogCornerRadiusDp;
   // Set shadow type according to the frame kind.
   switch (frame_kind) {
     case SystemWebDialogDelegate::FrameKind::kNonClient:
-      params.corner_radius = chromeos::features::IsRoundedWindowsEnabled()
-                                 ? chromeos::features::RoundedWindowsRadius()
-                                 : kSystemDialogCornerRadiusDp;
       params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
       break;
     case SystemWebDialogDelegate::FrameKind::kDialog:
       params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
-      params.corner_radius = kSystemDialogCornerRadiusDp;
       break;
   }
   return params;

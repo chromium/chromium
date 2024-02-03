@@ -69,8 +69,9 @@ void SavePasswordProgressLogger::LogFormData(
              (form_data.is_form_tag ? "true" : "false") + "\n";
 
   if (form_data.is_form_tag) {
-    message += "Form renderer id: " +
-               NumberToString(form_data.unique_renderer_id.value()) + "\n";
+    message +=
+        "Form renderer id: " + NumberToString(form_data.renderer_id.value()) +
+        "\n";
   }
 
   // Log fields.
@@ -137,7 +138,7 @@ std::string SavePasswordProgressLogger::GetFormFieldDataLogString(
       ScrubElementID(std::string(autofill::FormControlTypeToString(
                          field.form_control_type)))
           .c_str(),
-      NumberToString(*field.unique_renderer_id).c_str(), is_visible, is_empty,
+      NumberToString(*field.renderer_id).c_str(), is_visible, is_empty,
       autocomplete.c_str());
 }
 
@@ -366,6 +367,9 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Password reused from ";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_SAVING_DISABLED:
       return "Generation disabled: saving disabled";
+    case SavePasswordProgressLogger::
+        STRING_GENERATION_DISABLED_NOT_ABLE_TO_SAVE_PASSWORDS:
+      return "Generation disabled: not able to save passwords";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_NO_SYNC:
       return "Generation disabled: no sync";
     case STRING_GENERATION_RENDERER_AUTOMATIC_GENERATION_AVAILABLE:

@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1384959399684842514">Ներբեռնումը դադարեցվել է</translation>
 <translation id="1415402041810619267">URL-ը կրճատվել է</translation>
-<translation id="1426410128494586442">Այո</translation>
 <translation id="1434873037477293673">«Գնիջեցում» քարտ</translation>
 <translation id="1448064542941920355">Փոքրացնել մասշտաբը</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> կայք}one{<ph name="SITE_COUNT" /> կայք}other{<ph name="SITE_COUNT" /> կայք}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Որպեսզի տեսախցիկը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="2235344399760031203">Երրորդ կողմի քուքիներն արգելափակված են</translation>
 <translation id="2238944249568001759">Առաջարկվող որոնման հարցումներ ձեր վերջին ներդիրի հիման վրա</translation>
+<translation id="2241587408274973373">Քարտեր նոր ներդիրի էջում</translation>
 <translation id="2241634353105152135">Միայն այս անգամ</translation>
 <translation id="2253414712144136228">Հեռացնել «<ph name="NAME_OF_LIST_ITEM" />» կետը</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Արգելափակված են 1 կայքի քուքիները}one{Արգելափակված են # կայքի քուքիները}other{Արգելափակված են # կայքի քուքիները}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Կայքերը կարող են ցույց տալ նույնականացման ծառայությունների մուտքի հարցումներ։</translation>
 <translation id="2790501146643349491">Երբ այս պարամետրը միացված է, վերջերս փակված կայքերը կարող են ավարտել տվյալների ուղարկումն ու ստացումը։ Երբ այն անջատված է, վերջերս փակված կայքերը չեն կարող ավարտել տվյալների ուղարկումն ու ստացումը։</translation>
 <translation id="2822354292072154809">Վերակայե՞լ բոլոր կայքերի թույլտվությունները <ph name="CHOSEN_OBJECT_NAME" />-ի համար:</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Հայցել բջջային տարբերակը</translation>
 <translation id="2870560284913253234">Կայք</translation>
 <translation id="2874939134665556319">Նախորդը</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Վկայագրերի դիտում</translation>
 <translation id="2979365474350987274">Երրորդ կողմի քուքիները սահմանափակված են</translation>
 <translation id="3008272652534848354">Վերակայել թույլտվությունները</translation>
-<translation id="3013291976881901233">MIDI սարքեր</translation>
 <translation id="301521992641321250">Ավտոմատ արգելափակված է</translation>
 <translation id="3069226013421428034">Նշեք այն կայքերը, որոնց համար երրորդ կողմի ծառայությունների միջոցով մուտքը պետք է թույլատրվի։</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Գործողության ժամկետը սպառվում է վաղը}one{Գործողության ժամկետը սպառվում է # օրից}other{Գործողության ժամկետը սպառվում է # օրից}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Կայքը միացած է USB սարքի</translation>
 <translation id="4194328954146351878">Կայքերի համար թույլտվություն խնդրել՝ տեսնելու և փոփոխելու տեղեկությունները NFC սարքերում (խորհուրդ է տրվում)</translation>
 <translation id="4200726100658658164">Բացել տեղադրության կարգավորումները</translation>
-<translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
 <translation id="4226663524361240545">Ծանուցումների ժամանակ սարքը կթրթռա</translation>
 <translation id="4259722352634471385">Նավիգացիան արգելափակված է՝ <ph name="URL" /></translation>
 <translation id="4278390842282768270">Թույլատրված է</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Տեղափոխել վար</translation>
 <translation id="6749077623962119521">Զրոյացնե՞լ թույլտվությունները</translation>
 <translation id="6766622839693428701">Փակելու համար մատը սահեցրեք ներքև։</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-ից</translation>
 <translation id="6787751205395685251">Ընտրեք որևէ տարբերակ <ph name="SITE_NAME" /> կայքի համար</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="6818926723028410516">Ընտրեք տարրեր</translation>

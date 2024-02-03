@@ -128,16 +128,12 @@ void MediaControlsRotateToFullscreenDelegate::OnStateChange() {
 
   if (needs_intersection_observer && !intersection_observer_) {
     intersection_observer_ = IntersectionObserver::Create(
-        /* (root) margin */ Vector<Length>(),
-        /* scroll_margin */ Vector<Length>(),
-        /* thresholds */ {kIntersectionThreshold},
-        /* document */ &video_element_->GetDocument(),
-        /* callback */
+        video_element_->GetDocument(),
         WTF::BindRepeating(
             &MediaControlsRotateToFullscreenDelegate::OnIntersectionChange,
             WrapWeakPersistent(this)),
-        /* ukm_metric_id */
-        LocalFrameUkmAggregator::kMediaIntersectionObserver);
+        LocalFrameUkmAggregator::kMediaIntersectionObserver,
+        IntersectionObserver::Params{.thresholds = {kIntersectionThreshold}});
     intersection_observer_->observe(video_element_);
   } else if (!needs_intersection_observer && intersection_observer_) {
     intersection_observer_->disconnect();
@@ -173,8 +169,8 @@ void MediaControlsRotateToFullscreenDelegate::OnDeviceOrientationAvailable(
   // zero, even though that's a valid (albeit unlikely) device orientation.
   DeviceOrientationData* data = event->Orientation();
   device_orientation_supported_ =
-      absl::make_optional(data->CanProvideBeta() && data->CanProvideGamma() &&
-                          (data->Beta() != 0.0 || data->Gamma() != 0.0));
+      std::make_optional(data->CanProvideBeta() && data->CanProvideGamma() &&
+                         (data->Beta() != 0.0 || data->Gamma() != 0.0));
 }
 
 void MediaControlsRotateToFullscreenDelegate::OnScreenOrientationChange() {

@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(is_chromeos_ash, "Personalization is for ChromeOS only.")
+
+build_webui("build_ts") {
+  grd_prefix = "ash_common_personalization"
+
+  web_component_files = [ "wallpaper_grid_item_element.ts" ]
+
+  icons_html_files = [ "personalization_shared_icons.html" ]
+
+  css_files = [
+    "cros_button_style.css",
+    "common.css",
+    "wallpaper.css",
+  ]
+
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+  ts_out_dir =
+      "$root_gen_dir/ash/webui/common/resources/preprocessed/personalization"
+
+  generate_grdp = true
+  grd_resource_path_prefix = "ash/common/personalization"
+}

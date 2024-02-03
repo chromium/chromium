@@ -1263,6 +1263,30 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_SETTINGS_DESCRIPTION" desc="Label description for the option to configure facial expressions for Face Gaze." translateable="false">
     Use facial expressions to click and trigger key presses
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_UP_LABEL" desc="Label description for a slider that adjusts the cursor speed up for Face Gaze. This makes the cursor move faster or slower as the head moves up." translateable="false">
+    Move up
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_DOWN_LABEL" desc="Label description for a slider that adjusts the cursor speed down for Face Gaze. This makes the cursor move faster or slower as the head moves down." translateable="false">
+    Move down
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_LEFT_LABEL" desc="Label description for a slider that adjusts the cursor speed to the left for Face Gaze. This makes the cursor move faster or slower as the head moves to the left." translateable="false">
+    Move left
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_RIGHT_LABEL" desc="Label description for a slider that adjusts the cursor speed to the right for Face Gaze. This makes the cursor move faster or slower as the head moves to the right." translateable="false">
+    Move right
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SMOOTHING_LABEL" desc="Label description for a slider that adjusts the cursor smoothing rate for Face Gaze. Smoothing makes the cursor movement less jumpy at the expense of being reactive" translateable="false">
+    (Advanced) Smooth pointer
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL" desc="Label description for a toggle button that turns on mouse acceleration for Face Gaze. Mouse acceleration makes the cursor move faster when the head moves quickly." translateable="false">
+    (Advanced) Use mouse acceleration
+  </message>
+  <message name="IDS_OS_SETTINGS_SLIDER_LABEL_100" desc="Label for the side of a slider that goes from or to 100.">
+    100
+  </message>
+  <message name="IDS_OS_SETTINGS_SLIDER_LABEL_1" desc="Label for the side of a slider that goes from or to 1.">
+    1
+  </message>
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_LABEL" desc="Label for a slider which changes the size of large mouse cursor.">
     Cursor size
   </message>
@@ -5414,7 +5438,24 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_FACTORY_CONTINUE_BUTTON_LABEL" desc="Label for the button that navigates from the eSIM warning to the 'Factory Reset' UI.">
     Continue
   </message>
-
+  <message name="IDS_OS_SETTINGS_SANITIZE" desc="The string sanitize will be used for title, button name, and button label.">
+    Sanitize
+  </message>
+  <message name="IDS_OS_SETTINGS_SANITIZE_HEADING" desc="Name of the sanitize dialog describes the feature to the user before they proceed.">
+    Sanitize your device
+  </message>
+  <message name="IDS_OS_SETTINGS_SANITIZE_SHORT_DESCRIPTION" desc="Short description of the sanitize feature on the ChromeOS settings page.">
+    Reset settings on your ChromeOS device to safe defaults.
+  </message>
+  <message name="IDS_OS_SETTINGS_SANITIZE_DESCRIPTION" desc="Description of the sanitize feature on the sanitize window.">
+    Getting unwanted pop-ups, or other unexpected behavior? Sometimes, apps and extensions that you install can change your ChromeOS settings without you knowing.
+  </message>
+  <message name="IDS_OS_SETTINGS_SANITIZE_WARNING" desc="Warning text in the sanitize window.">
+    This will disable extensions and reset your settings to safe defaults. Tabs, files, and cookies will be preserved. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_SANITIZE_FEEDBACK" desc="Feedback label in the Reset Profile Settings dialog.">
+    Help make ChromeOS better by reporting the <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph>current settings<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
   <!-- Google Assistant Page (OS Settings)-->
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT" desc="Name of the settings page for Google Assistant.">
     Google Assistant
@@ -6477,6 +6518,12 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ANDROID_SETTINGS_LINK_ARIA_DESCRIPTION" desc="ARIA (accessibility) description describing the android settings link in the app permission rows of the privacy hub subpages.">
     Opens in new tab, Permission is <ph name="PERMISSION_STATE">$1<ex>Ask every time</ex></ph>
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_BLOCKED_TEXT" desc="The sub-label displayed in the 'Automatic time zone' in the System services section of the privacy hub 'Location access' subpage when location access is not allowed.">
+    Blocked. Time zone is currently set to <ph name="TIMEZONE">$1<ex>(UTC-X:XX)</ex></ph> and can only be updated manually.
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SUNSET_SCHEDULE_BLOCKED_TEXT" desc="The sub-label displayed in the 'Sunset schedule' in the System services section of the privacy hub 'Location access' subpage when location access is not allowed.">
+    Blocked. Schedule is currently set to <ph name="SUNRISE_TIME">$1<ex>6am</ex></ph> - <ph name="SUNSET_TIME">$2<ex>6pm</ex></ph> and can only be updated manually.
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_NAME" desc="The name label of the 'Automatic time zone' service displayed in the System services section of the privacy hub 'Location access' subpage.">
     Automatic time zone
   </message>
@@ -6525,6 +6572,15 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   </message>
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MENU_ITEM_DESCRIPTION" desc="Description for the System Preferences menu item in the left menu. This static list describes device storage, battery/energy saver, and language settings.">
     Storage, power, language
+  </message>
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_TITLE" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
+    Multitasking
+  </message>
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_LABEL" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
+    Show window snap suggestions
+  </message>
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_DESCRIPTION" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
+    If you snap a window, you'll see window suggestions for the other side
   </message>
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE" desc="The title of the Storage and Power settings card in the System Preferences page.">
     Storage and power

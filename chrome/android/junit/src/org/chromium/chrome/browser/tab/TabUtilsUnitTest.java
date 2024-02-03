@@ -372,9 +372,6 @@ public class TabUtilsUnitTest {
                             doReturn(mResources).when(spyActivity).getResources();
                             doReturn(mConfiguration).when(mResources).getConfiguration();
                             doReturn(mDisplayMetrics).when(mResources).getDisplayMetrics();
-                            doReturn(false)
-                                    .when(mResources)
-                                    .getBoolean(R.bool.use_vertical_automotive_back_button_toolbar);
                             doReturn(0).when(mBrowserControlsStateProvider).getTopControlsHeight();
                             mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
                             mConfiguration.screenWidthDp = TEST_SCREEN_WIDTH;
@@ -410,9 +407,6 @@ public class TabUtilsUnitTest {
                             doReturn(mResources).when(spyActivity).getResources();
                             doReturn(mConfiguration).when(mResources).getConfiguration();
                             doReturn(mDisplayMetrics).when(mResources).getDisplayMetrics();
-                            doReturn(true)
-                                    .when(mResources)
-                                    .getBoolean(R.bool.use_vertical_automotive_back_button_toolbar);
                             doReturn(0).when(mBrowserControlsStateProvider).getTopControlsHeight();
                             mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
                             mConfiguration.screenWidthDp = TEST_SCREEN_WIDTH;

@@ -145,14 +145,14 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
   return success;
 }
 
-uint64_t CdmStorageDatabase::GetSizeForFile(
+absl::optional<uint64_t> CdmStorageDatabase::GetSizeForFile(
     const blink::StorageKey& storage_key,
     const media::CdmType& cdm_type,
     const std::string& file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (OpenDatabase() != CdmStorageOpenError::kOk) {
-    return 0;
+    return absl::nullopt;
   }
 
   // clang-format off
@@ -182,14 +182,14 @@ uint64_t CdmStorageDatabase::GetSizeForFile(
   return statement.ColumnInt64(0);
 }
 
-uint64_t CdmStorageDatabase::GetSizeForStorageKey(
+absl::optional<uint64_t> CdmStorageDatabase::GetSizeForStorageKey(
     const blink::StorageKey& storage_key,
     const base::Time begin,
     const base::Time end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (OpenDatabase() != CdmStorageOpenError::kOk) {
-    return 0;
+    return absl::nullopt;
   }
 
   // clang-format off
@@ -221,12 +221,13 @@ uint64_t CdmStorageDatabase::GetSizeForStorageKey(
   return statement.ColumnInt64(0);
 }
 
-uint64_t CdmStorageDatabase::GetSizeForTimeFrame(const base::Time begin,
-                                                 const base::Time end) {
+absl::optional<uint64_t> CdmStorageDatabase::GetSizeForTimeFrame(
+    const base::Time begin,
+    const base::Time end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (OpenDatabase() != CdmStorageOpenError::kOk) {
-    return 0;
+    return absl::nullopt;
   }
 
   // clang-format off

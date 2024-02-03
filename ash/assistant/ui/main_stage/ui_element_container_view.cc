@@ -120,8 +120,8 @@ gfx::Size UiElementContainerView::GetMinimumSize() const {
   return gfx::Size(INT_MAX, 1);
 }
 
-void UiElementContainerView::Layout() {
-  AnimatedContainerView::Layout();
+void UiElementContainerView::Layout(PassKey) {
+  LayoutSuperclass<AnimatedContainerView>(this);
 
   // Scroll indicator.
   scroll_indicator_->SetBounds(0, height() - kScrollIndicatorHeightDip, width(),

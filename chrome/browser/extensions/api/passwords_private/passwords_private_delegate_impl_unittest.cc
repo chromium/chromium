@@ -640,6 +640,26 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
+       AddPasswordDoesNotUpdateDefaultStoreIsFeatureFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kButterOnDesktopFollowup);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  auto delegate = CreateDelegate();
+
+  // Don't update the default store if kButterOnDesktopFollowup feature is
+  // enabled.
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
+      .Times(0);
+  EXPECT_TRUE(
+      delegate->AddPassword("example2.com", u"username2", u"password2", u"",
+                            /*use_account_store=*/true, web_contents.get()));
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
        ImportPasswordsDoesNotUpdateDefaultStore) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
@@ -654,6 +674,31 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   // NOT update default store if not opted-in for account storage.
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(false));
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
+      .Times(0);
+  EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
+  delegate->ImportPasswords(api::passwords_private::PasswordStoreSet::kDevice,
+                            base::DoNothing(), web_contents.get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ImportPasswordsDoesNotUpdateDefaultStoreIfFeatureFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kButterOnDesktopFollowup);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  auto delegate = CreateDelegate();
+
+  auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
+  auto* mock_porter_ptr = mock_porter.get();
+
+  delegate->SetPorterForTesting(std::move(mock_porter));
+
+  // Don't update the default store if kButterOnDesktopFollowup feature is
+  // enabled.
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
   EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
       .Times(0);
   EXPECT_CALL(*mock_porter_ptr, Import).Times(1);

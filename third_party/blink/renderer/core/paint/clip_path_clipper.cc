@@ -222,7 +222,7 @@ void PaintWorkletBasedClip(GraphicsContext& context,
 
   // The bounding rect of the clip-path animation, relative to the layout
   // object.
-  absl::optional<gfx::RectF> bounding_box =
+  std::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
   DCHECK(bounding_box);
 
@@ -291,10 +291,10 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
   return gfx::RectF(reference_box);
 }
 
-absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
+std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     const LayoutObject& object) {
   if (object.IsText() || !object.StyleRef().HasClipPath())
-    return absl::nullopt;
+    return std::nullopt;
 
   gfx::RectF reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
@@ -334,7 +334,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
   LayoutSVGResourceClipper* clipper = ResolveElementReference(
       object, To<ReferenceClipPathOperation>(clip_path));
   if (!clipper)
-    return absl::nullopt;
+    return std::nullopt;
 
   gfx::RectF bounding_box = clipper->ResourceBoundingBox(reference_box);
   if (UsesZoomedReferenceBox(object) &&
@@ -446,7 +446,7 @@ static AffineTransform MaskToContentTransform(
   return mask_to_content;
 }
 
-static absl::optional<Path> PathBasedClipInternal(
+static std::optional<Path> PathBasedClipInternal(
     const LayoutObject& clip_path_owner,
     const gfx::RectF& reference_box,
     const LayoutObject& reference_box_object) {
@@ -465,8 +465,8 @@ static absl::optional<Path> PathBasedClipInternal(
     LayoutSVGResourceClipper* resource_clipper =
         ResolveElementReference(clip_path_owner, *reference_clip);
     if (!resource_clipper)
-      return absl::nullopt;
-    absl::optional<Path> path = resource_clipper->AsPath();
+      return std::nullopt;
+    std::optional<Path> path = resource_clipper->AsPath();
     if (!path)
       return path;
     path->Transform(MaskToContentTransform(*resource_clipper, reference_box,
@@ -538,7 +538,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 
       if (resource_clipper->StyleRef().HasClipPath()) {
         // Try to apply nested clip-path as path-based clip.
-        if (const absl::optional<Path>& path = PathBasedClipInternal(
+        if (const std::optional<Path>& path = PathBasedClipInternal(
                 *resource_clipper, reference_box, layout_object)) {
           context.ClipPath(path->GetSkPath(), kAntiAliased);
           rest_of_the_chain_already_appled = true;
@@ -560,7 +560,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   context.Restore();
 }
 
-absl::optional<Path> ClipPathClipper::PathBasedClip(
+std::optional<Path> ClipPathClipper::PathBasedClip(
     const LayoutObject& clip_path_owner,
     const bool is_in_block_fragmentation) {
   // TODO(crbug.com/1248622): Currently HasCompositeClipPathAnimation is called
@@ -575,7 +575,7 @@ absl::optional<Path> ClipPathClipper::PathBasedClip(
   if (is_in_block_fragmentation)
     SetCompositeClipPathStatus(clip_path_owner.GetNode(), false);
   else if (HasCompositeClipPathAnimation(clip_path_owner))
-    return absl::nullopt;
+    return std::nullopt;
 
   return PathBasedClipInternal(
       clip_path_owner, LocalReferenceBox(clip_path_owner), clip_path_owner);

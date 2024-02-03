@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_H_
 
-#include "services/device/public/mojom/device_posture_provider.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -59,10 +60,10 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
     return true;
   }
 
-  absl::optional<double> InlineSize() const;
-  absl::optional<double> BlockSize() const;
-  virtual absl::optional<double> Width() const { return ViewportWidth(); }
-  virtual absl::optional<double> Height() const { return ViewportHeight(); }
+  std::optional<double> InlineSize() const;
+  std::optional<double> BlockSize() const;
+  virtual std::optional<double> Width() const { return ViewportWidth(); }
+  virtual std::optional<double> Height() const { return ViewportHeight(); }
   virtual int DeviceWidth() const = 0;
   virtual int DeviceHeight() const = 0;
   virtual float DevicePixelRatio() const = 0;
@@ -96,7 +97,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual NavigationControls GetNavigationControls() const = 0;
   virtual int GetHorizontalViewportSegments() const = 0;
   virtual int GetVerticalViewportSegments() const = 0;
-  virtual device::mojom::blink::DevicePostureType GetDevicePosture() const = 0;
+  virtual mojom::blink::DevicePostureType GetDevicePosture() const = 0;
   // For evaluating state(stuck: left), state(stuck: right)
   virtual ContainerStuckPhysical StuckHorizontal() const {
     return ContainerStuckPhysical::kNo;
@@ -189,8 +190,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   static NavigationControls CalculateNavigationControls(LocalFrame*);
   static int CalculateHorizontalViewportSegments(LocalFrame*);
   static int CalculateVerticalViewportSegments(LocalFrame*);
-  static device::mojom::blink::DevicePostureType CalculateDevicePosture(
-      LocalFrame*);
+  static mojom::blink::DevicePostureType CalculateDevicePosture(LocalFrame*);
   static Scripting CalculateScripting(LocalFrame*);
 
   bool ComputeLengthImpl(double value,

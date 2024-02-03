@@ -92,7 +92,7 @@ class FuchsiaCdmManagerTest : public ::testing::Test {
 
   std::unique_ptr<FuchsiaCdmManager> CreateFuchsiaCdmManager(
       std::vector<base::StringPiece> key_systems,
-      absl::optional<uint64_t> cdm_data_quota_bytes = absl::nullopt) {
+      std::optional<uint64_t> cdm_data_quota_bytes = std::nullopt) {
     FuchsiaCdmManager::CreateKeySystemCallbackMap create_key_system_callbacks;
 
     for (const base::StringPiece& name : key_systems) {

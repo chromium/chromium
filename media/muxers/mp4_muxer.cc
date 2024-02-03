@@ -20,7 +20,7 @@ Mp4Muxer::Mp4Muxer(AudioCodec audio_codec,
                    bool has_video,
                    bool has_audio,
                    std::unique_ptr<Mp4MuxerDelegateInterface> delegate,
-                   absl::optional<base::TimeDelta> max_data_output_interval)
+                   std::optional<base::TimeDelta> max_data_output_interval)
     : mp4_muxer_delegate_(std::move(delegate)),
       max_data_output_interval_(
           std::max(max_data_output_interval.value_or(base::TimeDelta()),

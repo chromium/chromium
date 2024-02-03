@@ -255,8 +255,16 @@ DefinitionResultParser::ParseInStructuredResult(
   const Value::Dict* part_of_speech = ResultParser::GetFirstDictElementFromList(
       *first_sense_family, kPartsOfSpeechKey);
   if (!part_of_speech) {
-    DLOG(ERROR) << "Unable to find a part of speech.";
-    return nullptr;
+    // For Spanish dictionary results, the |partsOfSpeech| field is found in
+    // the individual sense information rather than in the sense family.
+    // Try to find the |partsOfSpeech| for the |first_sense| since that is the
+    // definition information we use for Quick Answers.
+    part_of_speech = ResultParser::GetFirstDictElementFromList(
+        *first_sense, kPartsOfSpeechKey);
+    if (!part_of_speech) {
+      DLOG(ERROR) << "Unable to find a part of speech.";
+      return nullptr;
+    }
   }
 
   const std::string* word_class =

@@ -3445,8 +3445,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, TitleUpdateOnRestore) {
   restored_entry->SetTitle(controller.GetLastCommittedEntry()->GetTitle());
 
   // Create a new tab.
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   WebContentsImpl* new_contents =
       static_cast<WebContentsImpl*>(new_shell->web_contents());
   // Before the restore is initiated, the WebContents starts with an empty
@@ -4517,10 +4517,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 // frame and mouse up is on OOF iframe, the mouse up event is delivered to the
 // main frame as well to clear cached mouse states including autoscroll
 // selection state.
-// TODO(crbug.com/1517238): Disabled due to too many timeouts.
 IN_PROC_BROWSER_TEST_F(
     WebContentsImplBrowserTest,
-    DISABLED_MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection) {
+    MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -4570,10 +4569,21 @@ IN_PROC_BROWSER_TEST_F(
   // Click the input element and start typing.
   SimulateMouseClickAt(web_contents, 0, blink::WebMouseEvent::Button::kLeft,
                        gfx::Point(input_center_x, input_center_y));
+  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "var inputElement = document.getElementById('input1');"
+                     "new Promise(function(resolve) {"
+                     "  if (document.activeElement == inputElement)"
+                     "    resolve(true);"
+                     "  inputElement.addEventListener('focus', () => {"
+                     "    resolve(true);"
+                     "  });"
+                     "});"));
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('A'),
                    ui::DomCode::US_A, ui::VKEY_A, false, false, false, false);
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('B'),
                    ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
+  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
   EXPECT_TRUE(ExecJs(web_contents,
                      "var inputElement = document.getElementById('input1');"
                      "new Promise(function(resolve) {"
@@ -4640,6 +4650,7 @@ IN_PROC_BROWSER_TEST_F(
                    ui::DomCode::US_E, ui::VKEY_E, false, false, false, false);
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('F'),
                    ui::DomCode::US_F, ui::VKEY_F, false, false, false, false);
+  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
   EXPECT_TRUE(ExecJs(web_contents,
                      "var inputElement = document.getElementById('input1');"
                      "new Promise(function(resolve) {"

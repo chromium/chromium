@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_STORAGE_KEY_STORAGE_KEY_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_STORAGE_KEY_STORAGE_KEY_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
@@ -39,7 +40,7 @@ class BLINK_COMMON_EXPORT
     return key.top_level_site();
   }
 
-  static const absl::optional<base::UnguessableToken>& nonce(
+  static const std::optional<base::UnguessableToken>& nonce(
       const blink::StorageKey& key) {
     return key.nonce();
   }

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -206,8 +207,12 @@ SqlQueryPlanExplainer::GetPlan(
   command_line.AppendArg(explain_query);
 
   std::string output;
-  if (!base::GetAppOutputAndError(command_line, &output) ||
-      !base::StartsWith(output, "QUERY PLAN")) {
+  if (!base::GetAppOutput(command_line, &output)) {
+    LOG(ERROR) << "command failed output: " << output;
+    return base::unexpected(Error::kCommandFailed);
+  }
+  if (!base::StartsWith(output, "QUERY PLAN")) {
+    LOG(ERROR) << "invalid query plan output: " << output;
     return base::unexpected(Error::kInvalidOutput);
   }
 
@@ -232,6 +237,8 @@ SqlQueryPlanExplainer::GetPlan(
 std::ostream& operator<<(std::ostream& out,
                          SqlQueryPlanExplainer::Error error) {
   switch (error) {
+    case SqlQueryPlanExplainer::Error::kCommandFailed:
+      return out << "kCommandFailed";
     case SqlQueryPlanExplainer::Error::kInvalidOutput:
       return out << "kInvalidOutput";
     case SqlQueryPlanExplainer::Error::kMissingFullScanAnnotation:

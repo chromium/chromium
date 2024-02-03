@@ -5,12 +5,13 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 
 #include <stdint.h>
+
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/types/expected.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -55,7 +56,7 @@ int num_canvas_filter_errors_to_console_allowed_ = 64;
 ColorMatrixFilterOperation* ResolveColorMatrix(
     const Dictionary& dict,
     ExceptionState& exception_state) {
-  absl::optional<Vector<float>> values =
+  std::optional<Vector<float>> values =
       dict.Get<IDLSequence<IDLFloat>>("values", exception_state);
 
   if (!values.has_value()) {
@@ -82,9 +83,9 @@ struct KernelMatrix {
 };
 
 // For resolving feConvolveMatrix type filters
-absl::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
-                                             ExceptionState& exception_state) {
-  absl::optional<Vector<Vector<float>>> km_input =
+std::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
+                                            ExceptionState& exception_state) {
+  std::optional<Vector<Vector<float>>> km_input =
       dict.Get<IDLSequence<IDLSequence<IDLFloat>>>("kernelMatrix",
                                                    exception_state);
   if (!km_input.has_value() || km_input->size() == 0 ||
@@ -92,7 +93,7 @@ absl::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
     exception_state.ThrowTypeError(
         "Failed to construct convolve matrix filter. 'kernelMatrix' must be an "
         "array of arrays of numbers representing an n by m matrix.");
-    return absl::nullopt;
+    return std::nullopt;
   }
   KernelMatrix result;
   result.height = km_input->size();
@@ -103,7 +104,7 @@ absl::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
       exception_state.ThrowTypeError(
           "Failed to construct convolve matrix filter. All rows of the "
           "'kernelMatrix' must be the same length.");
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     result.values.AppendVector(row);
@@ -115,7 +116,7 @@ absl::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
 ConvolveMatrixFilterOperation* ResolveConvolveMatrix(
     const Dictionary& dict,
     ExceptionState& exception_state) {
-  absl::optional<KernelMatrix> kernel_matrix =
+  std::optional<KernelMatrix> kernel_matrix =
       GetKernelMatrix(dict, exception_state);
 
   if (!kernel_matrix.has_value()) {
@@ -181,7 +182,7 @@ ComponentTransferFunction GetComponentTransferFunction(
   else if (type == "discrete")
     result.type = FECOMPONENTTRANSFER_TYPE_DISCRETE;
 
-  absl::optional<Vector<float>> table_values =
+  std::optional<Vector<float>> table_values =
       transfer_dict.Get<IDLSequence<IDLFloat>>("tableValues", exception_state);
   if (table_values.has_value()) {
     result.table_values.AppendVector(*table_values);
@@ -211,7 +212,7 @@ StyleColor ResolveFloodColor(ExecutionContext& execution_context,
   // TODO(crbug.com/1430532): CurrentColor and system colors dependeing on
   // the color-scheme should be stored unresolved, and resolved only when the
   // filter is associated with a context.
-  absl::optional<String> flood_color =
+  std::optional<String> flood_color =
       dict.Get<IDLString>("floodColor", exception_state);
   Color parsed_color;
   if (exception_state.HadException() || !flood_color.has_value() ||
@@ -229,7 +230,7 @@ base::expected<gfx::PointF, String> ResolveFloatOrVec2f(
     const Dictionary& dict,
     ExceptionState& exception_state) {
   // First try to get stdDeviation as a float.
-  absl::optional<float> single_float =
+  std::optional<float> single_float =
       dict.Get<IDLFloat>(property_name, exception_state);
   if (!exception_state.HadException() && single_float.has_value()) {
     return gfx::PointF(*single_float, *single_float);
@@ -237,7 +238,7 @@ base::expected<gfx::PointF, String> ResolveFloatOrVec2f(
     // Clear the exception if it exists in order to try again as a vector.
     exception_state.ClearException();
 
-    absl::optional<Vector<float>> two_floats =
+    std::optional<Vector<float>> two_floats =
         dict.Get<IDLSequence<IDLFloat>>(property_name, exception_state);
     if (exception_state.HadException() || !two_floats.has_value() ||
         two_floats->size() != 2) {
@@ -275,7 +276,7 @@ DropShadowFilterOperation* ResolveDropShadow(
 
   float dx = 2.0f;
   if (dict.HasProperty("dx", no_throw)) {
-    absl::optional<float> input = dict.Get<IDLFloat>("dx", exception_state);
+    std::optional<float> input = dict.Get<IDLFloat>("dx", exception_state);
     if (exception_state.HadException() || !input.has_value()) {
       exception_state.ThrowTypeError(
           "Failed to construct dropShadow filter, \"dx\" must be a number.");
@@ -286,7 +287,7 @@ DropShadowFilterOperation* ResolveDropShadow(
 
   float dy = 2.0f;
   if (dict.HasProperty("dy", no_throw)) {
-    absl::optional<float> input = dict.Get<IDLFloat>("dy", exception_state);
+    std::optional<float> input = dict.Get<IDLFloat>("dy", exception_state);
     if (exception_state.HadException() || !input.has_value()) {
       exception_state.ThrowTypeError(
           "Failed to construct dropShadow filter, \"dy\" must be a number.");
@@ -320,7 +321,7 @@ DropShadowFilterOperation* ResolveDropShadow(
 
   float opacity = 1.0f;
   if (dict.HasProperty("floodOpacity", no_throw)) {
-    absl::optional<float> input =
+    std::optional<float> input =
         dict.Get<IDLFloat>("floodOpacity", exception_state);
     if (exception_state.HadException() || !input.has_value()) {
       exception_state.ThrowTypeError(
@@ -372,7 +373,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
   }
 
   if (dict.HasProperty("seed", no_throw)) {
-    absl::optional<float> seed_input =
+    std::optional<float> seed_input =
         dict.Get<IDLFloat>("seed", exception_state);
     if (exception_state.HadException() || !seed_input.has_value()) {
       exception_state.ThrowTypeError(
@@ -385,7 +386,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
   if (dict.HasProperty("numOctaves", no_throw)) {
     // Get numOctaves as a float and then cast to int so that we throw for
     // inputs like undefined, NaN and Infinity.
-    absl::optional<float> num_octaves_input =
+    std::optional<float> num_octaves_input =
         dict.Get<IDLFloat>("numOctaves", exception_state);
     if (exception_state.HadException() || !num_octaves_input.has_value() ||
         *num_octaves_input < 0) {
@@ -398,7 +399,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
   }
 
   if (dict.HasProperty("stitchTiles", no_throw)) {
-    absl::optional<String> stitch_tiles_input =
+    std::optional<String> stitch_tiles_input =
         dict.Get<IDLString>("stitchTiles", exception_state);
     if (exception_state.HadException() || !stitch_tiles_input.has_value() ||
         (stitch_tiles = static_cast<SVGStitchOptions>(
@@ -412,7 +413,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
   }
 
   if (dict.HasProperty("type", no_throw)) {
-    absl::optional<String> type_input =
+    std::optional<String> type_input =
         dict.Get<IDLString>("type", exception_state);
     if (exception_state.HadException() || !type_input.has_value() ||
         (type = static_cast<TurbulenceType>(
@@ -439,7 +440,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperationsFromList(
   FilterOperations operations;
   for (auto filter : filters) {
     Dictionary filter_dict = Dictionary(filter);
-    absl::optional<String> name =
+    std::optional<String> name =
         filter_dict.Get<IDLString>("name", exception_state);
     if (name == "gaussianBlur") {
       if (auto* blur_operation = ResolveBlur(filter_dict, exception_state)) {

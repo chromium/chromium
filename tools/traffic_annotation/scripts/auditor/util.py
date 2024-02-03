@@ -45,9 +45,9 @@ def import_compiled_proto(build_path) -> Any:
     return traffic_annotation_pb2
   except ImportError as e:
     logger.critical(
-      "Failed to import the compiled traffic annotation proto. Make sure "+ \
-      "Chrome is built in '{}' before running this script.".format(
-        build_path))
+      "Failed to import the compiled traffic annotation proto. Make sure "
+      "you're on Linux or Windows and Chrome is built in '{}' before "
+      "running this script.".format(build_path))
     raise
 
 

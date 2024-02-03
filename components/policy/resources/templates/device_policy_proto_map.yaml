@@ -228,3 +228,4 @@ DeviceChargingSoundsEnabled: device_charging_sounds.enabled
 DeviceDlcPredownloadList: device_dlc_predownload_list.value
 DeviceHardwareVideoDecodingEnabled: DeviceHardwareVideoDecodingEnabled.value
 DeviceExtendedAutoUpdateEnabled: DeviceExtendedAutoUpdateEnabled.value
+DeviceWeeklyScheduledSuspend: DeviceWeeklyScheduledSuspend.value

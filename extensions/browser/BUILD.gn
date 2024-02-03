@@ -352,8 +352,6 @@ source_set("browser_sources") {
     "extension_icon_image.h",
     "extension_icon_placeholder.cc",
     "extension_icon_placeholder.h",
-    "extension_message_filter.cc",
-    "extension_message_filter.h",
     "extension_navigation_throttle.cc",
     "extension_navigation_throttle.h",
     "extension_navigation_ui_data.cc",
@@ -382,8 +380,6 @@ source_set("browser_sources") {
     "extension_registry_factory.cc",
     "extension_registry_factory.h",
     "extension_registry_observer.h",
-    "extension_service_worker_message_filter.cc",
-    "extension_service_worker_message_filter.h",
     "extension_system.cc",
     "extension_system.h",
     "extension_system_provider.cc",
@@ -692,6 +688,7 @@ source_set("browser_sources") {
       "api/clipboard/clipboard_api.h",
     ]
     deps += [
+      "//chromeos/constants",
       "//chromeos/dbus/permission_broker",
       "//components/prefs:prefs",
       "//ui/base/clipboard",

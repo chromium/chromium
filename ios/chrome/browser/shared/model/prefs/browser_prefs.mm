@@ -948,4 +948,7 @@ void MigrateObsoleteUserDefault() {
   // Added 10/2023
   [defaults removeObjectForKey:@"PathToBrowserStateToKeep"];
   [defaults removeObjectForKey:@"HasBrowserStateBeenRemoved"];
+
+  // TODO(b/322004644): Remove in M124+. Added 02/2024.
+  [defaults removeObjectForKey:@"TimestampAppLaunchedOnColdStart"];
 }

@@ -39,12 +39,7 @@ class ExtensionsHatsHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   ExtensionsHatsHandlerTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    base::test::FeatureRefAndParams extensions_hub{
-        features::kHappinessTrackingSurveysExtensionsSafetyHub,
-        {{"settings-time", "15s"}}};
-    scoped_feature_list_.InitWithFeaturesAndParameters({extensions_hub}, {});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -90,8 +85,9 @@ class ExtensionsHatsHandlerTest : public ChromeRenderViewHostTestHarness {
     handler()->PrimaryPageChanged(web_contents()->GetPrimaryPage());
   }
 
-  void ExtensionsSafetyHubTriggerSurvey() {
-    handler()->HandleExtensionsSafetyHubTriggerSurvey(args_);
+  void ExtensionsSafetyHubPanelShown(bool shown) {
+    args_.Append(shown);
+    handler()->HandleExtensionsSafetyHubPanelShown(args_);
   }
 
   void ExtensionsSafetyHubExtensionKept() {
@@ -139,49 +135,58 @@ class ExtensionsHatsHandlerTest : public ChromeRenderViewHostTestHarness {
   base::Value::List args_;
 };
 
-// TODO(http://crbug.com/1510074): Fix and re-enable.
-TEST_F(ExtensionsHatsHandlerTest, DISABLED_ExtensionsPageLoad) {
+TEST_F(ExtensionsHatsHandlerTest, ExtensionsPageLoad) {
+  base::test::FeatureRefAndParams extensions_hub{
+      features::kHappinessTrackingSurveysExtensionsSafetyHub,
+      {{"settings-time", "15s"}, {"extension-survey-arm", "1"}}};
+  scoped_feature_list_.InitWithFeaturesAndParameters({extensions_hub}, {});
   SurveyStringData expected_product_specific_data = {
       {"Average extension age in days", "2"},
+      {"Age of profile in days", "4"},
       {"Number of extensions installed", "2"},
-      {"Time on extension page in minutes", "10"},
+      {"Time on extension page in seconds", "20"},
+      {"Extension review panel shown", "True"},
+      {"Number of extensions kept", "0"},
+      {"Number of extensions removed", "0"},
+      {"Number of non-trigger extensions removed", "0"},
       {"Time since last extension was installed in days", "1"},
       {"Client Channel", "unknown"}};
-  task_environment()->FastForwardBy(base::Minutes(10));
+  task_environment()->FastForwardBy(base::Seconds(20));
 
   // Check that the hats service will show when the review panel is displayed.
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchDelayedSurveyForWebContents(
-          "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(), 15000,
-          _, expected_product_specific_data,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _))
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchDelayedSurvey(kHatsSurveyTriggerExtensions, 0, _,
+                                  expected_product_specific_data))
       .Times(1);
-  ExtensionsSafetyHubTriggerSurvey();
+  ExtensionsSafetyHubPanelShown(true);
+  // After navigating away from the extensions page, a hats
+  // survey should show
+  PrimaryPageChanged(web_contents()->GetPrimaryPage());
   task_environment()->RunUntilIdle();
 }
 
-// TODO(http://crbug.com/1510074): Fix and re-enable.
-TEST_F(ExtensionsHatsHandlerTest, DISABLED_OnSurveyInteraction) {
+TEST_F(ExtensionsHatsHandlerTest, OnSurveyInteraction) {
+  base::test::FeatureRefAndParams extensions_hub{
+      features::kHappinessTrackingSurveysExtensionsSafetyHub,
+      {{"settings-time", "15s"}, {"extension-survey-arm", "2"}}};
+  scoped_feature_list_.InitWithFeaturesAndParameters({extensions_hub}, {});
   SurveyStringData expected_product_specific_data = {
       {"Average extension age in days", "2"},
+      {"Age of profile in days", "4"},
       {"Time since last extension was installed in days", "1"},
       {"Number of extensions installed", "2"},
-      {"Time on extension page in minutes", "10"},
       {"Number of extensions removed", "3"},
-      {"Time on extension page in minutes", "10"},
+      {"Time on extension page in seconds", "10"},
+      {"Extension review panel shown", "False"},
       {"Number of extensions kept", "2"},
       {"Number of non-trigger extensions removed", "1"},
       {"Client Channel", "unknown"}};
 
-  task_environment()->FastForwardBy(base::Minutes(10));
+  task_environment()->FastForwardBy(base::Seconds(10));
 
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchDelayedSurveyForWebContents(
-          "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(), 15000,
-          _, expected_product_specific_data,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _, _))
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchDelayedSurvey(kHatsSurveyTriggerExtensions, 0, _,
+                                  expected_product_specific_data))
       .Times(1);
 
   ExtensionsSafetyHubExtensionKept();

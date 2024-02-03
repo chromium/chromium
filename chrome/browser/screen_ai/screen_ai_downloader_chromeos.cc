@@ -27,7 +27,8 @@ void SetScreenAIComponentPath(
   if (component_path) {
     install_state->SetComponentFolder(*component_path);
   } else if (set_failed_state_if_not_available) {
-    install_state->SetState(screen_ai::ScreenAIInstallState::State::kFailed);
+    install_state->SetState(
+        screen_ai::ScreenAIInstallState::State::kDownloadFailed);
   }
 }
 #else
@@ -107,7 +108,7 @@ void ScreenAIDownloaderChromeOS::MaybeGetComponentFolderFromAsh(
   if (!impl || !impl->IsAvailable<crosapi::mojom::ScreenAIDownloader>()) {
     VLOG(0) << "ScreenAIDownloaderChromeOS is not available.";
     ScreenAIInstallState::GetInstance()->SetState(
-        ScreenAIInstallState::State::kFailed);
+        ScreenAIInstallState::State::kDownloadFailed);
     return;
   }
 

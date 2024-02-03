@@ -14,84 +14,60 @@ found in the LICENSE file.
 </head>
 <body>
 <header>
-<h1>Attribution Reporting API Internals</h1>
-<p>In this browser:
+In this browser:
 <ul>
-<li>Attribution Reporting is <span id="feature-status-content" class="disabled">disabled</span>.
-<li><code>Attribution-Reporting-Support</code> is <strong id="attribution-support">web</strong>.
-<li>Report delays are <strong id="report-delays">enabled</strong>.
-<li>Noise is <strong id="noise">enabled</strong>.
+<li>Attribution Reporting is <b id="feature-status" class="disabled">disabled</b>.
+<li><code>Attribution-Reporting-Support</code> is <b id="attribution-support">web</b>.
+<li>Report delays are <b id="report-delays">enabled</b>.
+<li>Noise is <b id="noise">enabled</b>.
 </ul>
 <button id="refresh">Refresh all page data</button>
 <button id="clear-data">Clear all attribution data</button>
 </header>
-<main>
-  <cr-tab-box hidden>
-    <div id="sources-tab" slot="tab">Active Sources</div>
-    <div id="source-registrations-tab" slot="tab">Source Registrations</div>
-    <div id="triggers-tab" slot="tab">Trigger Registrations</div>
-    <div id="event-level-reports-tab" slot="tab">Event-Level Reports</div>
-    <div id="aggregatable-reports-tab" slot="tab">Aggregatable Reports</div>
-    <div id="debug-reports-tab" slot="tab">Verbose Debug Reports</div>
-    <div id="os-tab" slot="tab">OS Registrations</div>
-    <div slot="panel">
-      <h2>Active Sources</h2>
-      <div class="content">
-        <attribution-internals-table id="sourceTable">
-        </attribution-internals-table>
-      </div>
+<cr-tab-box hidden>
+  <div id="sources-tab" slot="tab">Active Sources</div>
+  <div id="source-registrations-tab" slot="tab">Source Registrations</div>
+  <div id="triggers-tab" slot="tab">Trigger Registrations</div>
+  <div id="event-level-reports-tab" slot="tab">Event-Level Reports</div>
+  <div id="aggregatable-reports-tab" slot="tab">Aggregatable Reports</div>
+  <div id="debug-reports-tab" slot="tab">Verbose Debug Reports</div>
+  <div id="os-tab" slot="tab">OS Registrations</div>
+  <div slot="panel">
+    <attribution-internals-table id="sourceTable">
+    </attribution-internals-table>
+  </div>
+  <div slot="panel">
+    <attribution-internals-table id="sourceRegistrationTable">
+    </attribution-internals-table>
+  </div>
+  <div slot="panel">
+    <attribution-internals-table id="triggerTable">
+    </attribution-internals-table>
+  </div>
+  <div slot="panel">
+    <div id="event-level-report-controls" class="controls">
+      <button disabled>Send Selected Pending Event-Level Reports</button>
+      <label><input type="checkbox" checked>Show Attribution-Success Debug Reports<span></span></label>
     </div>
-    <div slot="panel">
-      <h2>Source Registrations</h2>
-      <div class="content">
-        <attribution-internals-table id="sourceRegistrationTable">
-        </attribution-internals-table>
-      </div>
+    <attribution-internals-table id="reportTable">
+    </attribution-internals-table>
+  </div>
+  <div slot="panel">
+    <div id="aggregatable-report-controls" class="controls">
+      <button disabled>Send Selected Pending Aggregatable Reports</button>
+      <label><input type="checkbox" checked>Show Attribution-Success Debug Reports<span></span></label>
     </div>
-    <div slot="panel">
-      <h2>Trigger Registrations</h2>
-      <div class="content">
-        <attribution-internals-table id="triggerTable">
-        </attribution-internals-table>
-      </div>
-    </div>
-    <div slot="panel">
-      <h2>Sent and Pending Event-Level Reports</h2>
-      <div class="content">
-        <div>
-          <button id="send-reports" disabled>Send Selected Pending Event-Level Reports</button>
-          <label id="show-debug-event-reports"><input type="checkbox" checked>Show Attribution-Success Debug Reports<span></span></label>
-        </div>
-        <attribution-internals-table id="reportTable">
-        </attribution-internals-table>
-      </div>
-    </div>
-    <div slot="panel">
-      <h2>Sent and Pending Aggregatable Reports</h2>
-      <div class="content">
-        <div>
-          <button id="send-aggregatable-reports" disabled>Send Selected Pending Aggregatable Reports</button>
-          <label id="show-debug-aggregatable-reports"><input type="checkbox" checked>Show Attribution-Success Debug Reports<span></span></label>
-        </div>
-        <attribution-internals-table id="aggregatableReportTable">
-        </attribution-internals-table>
-      </div>
-    </div>
-    <div slot="panel">
-      <h2>Verbose Debug Reports</h2>
-      <div class="content">
-        <attribution-internals-table id="debugReportTable">
-        </attribution-internals-table>
-      </div>
-    </div>
-    <div slot="panel">
-      <h2>OS Registrations</h2>
-      <div class="content">
-        <attribution-internals-table id="osRegistrationTable">
-        </attribution-internals-table>
-      </div>
-    </div>
-  </cr-tab-box>
-</main>
+    <attribution-internals-table id="aggregatableReportTable">
+    </attribution-internals-table>
+  </div>
+  <div slot="panel">
+    <attribution-internals-table id="debugReportTable">
+    </attribution-internals-table>
+  </div>
+  <div slot="panel">
+    <attribution-internals-table id="osRegistrationTable">
+    </attribution-internals-table>
+  </div>
+</cr-tab-box>
 </body>
 </html>

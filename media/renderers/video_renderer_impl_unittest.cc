@@ -476,7 +476,7 @@ TEST_F(VideoRendererImplTest, InitializeAndStartPlayingFromWithDuration) {
   EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
   EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
   EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
-  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>(100)));
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>(100)));
   StartPlayingFrom(10);
   Destroy();
 }
@@ -695,7 +695,7 @@ TEST_F(VideoRendererImplTest, StartPlayingFrom_RightBefore) {
   EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
   EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
   EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
-  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>(100)));
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>(100)));
   StartPlayingFrom(59);
   Destroy();
 }
@@ -709,7 +709,7 @@ TEST_F(VideoRendererImplTest, StartPlayingFrom_RightAfter) {
   EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
   EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
   EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
-  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>(100)));
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>(100)));
   StartPlayingFrom(61);
   Destroy();
 }
@@ -1238,12 +1238,12 @@ TEST_F(VideoRendererImplTest, VideoFrameRateChange) {
   EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
 
   // Send 50fps frames first.
-  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>(50)));
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>(50)));
   QueueFrames("0 20 40 60 80 100 120 140 160 180 200");
   QueueFrames("220 240 260 280 300 320 340 360 380 400");
 
   // Also queue some frames that aren't at 50fps, so that we get an unknown fps.
-  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>()));
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>()));
   QueueFrames("500 600");
 
   // Drain everything.
@@ -1467,7 +1467,7 @@ TEST_P(UnderflowTest, UnderflowAndRecoverTest) {
       // the have enough state.
       case UnderflowTestType::NORMAL:
         QueueFrames("80 100 120 140 160");
-        EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>(50)));
+        EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>(50)));
         break;
       // In either of these modes the HAVE_ENOUGH transition should still
       // occur with a single frame.
@@ -1574,7 +1574,7 @@ TEST_F(VideoRendererLatencyHintTest, HaveEnough_LowLatencyHint) {
   EXPECT_EQ(renderer_->frames_queued_for_testing(), 4u);
 
   // Unset latencyHint, to verify default behavior.
-  renderer_->SetLatencyHint(absl::nullopt);
+  renderer_->SetLatencyHint(std::nullopt);
 
   // Flush to return to clean slate.
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _));
@@ -1609,7 +1609,7 @@ TEST_F(VideoRendererLatencyHintTest, HaveEnough_HighLatencyHint) {
 
   // Queue 12 frames, each 30 ms apart. At this framerate, 400ms rounds to 13
   // frames, so 12 frames should be 1 shy of the HaveEnough threshold.
-  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>(33)));
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>(33)));
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
       .Times(0);
   QueueFrames("0 30 60 90 120 150 180 210 240 270 300 330");
@@ -1629,7 +1629,7 @@ TEST_F(VideoRendererLatencyHintTest, HaveEnough_HighLatencyHint) {
   Mock::VerifyAndClearExpectations(&mock_cb_);
 
   // Unset latencyHint, to verify default behavior.
-  renderer_->SetLatencyHint(absl::nullopt);
+  renderer_->SetLatencyHint(std::nullopt);
 
   // Flush to return to clean slate.
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _));
@@ -1665,7 +1665,7 @@ TEST_F(VideoRendererLatencyHintTest,
   EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
   EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
   EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
-  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>(33)));
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>(33)));
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _));
   QueueFrames("0 30 60 90 120 150 180");
   StartPlayingFrom(0);
@@ -1725,7 +1725,7 @@ TEST_F(VideoRendererLatencyHintTest, LatencyHintOverridesLowDelay) {
   // 7 frames, so 6 frames should be 1 shy of the HaveEnough threshold. Verify
   // that HAVE_ENOUGH is not triggered in spite of being initialized with low
   // delay mode.
-  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(absl::optional<int>(33)));
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(std::optional<int>(33)));
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
       .Times(0);
   QueueFrames("0 30 60 90 120 150");
@@ -1745,7 +1745,7 @@ TEST_F(VideoRendererLatencyHintTest, LatencyHintOverridesLowDelay) {
 
   // Unset latencyHint, to verify default behavior. NOTE: low delay mode is not
   // restored when latency hint unset.
-  renderer_->SetLatencyHint(absl::nullopt);
+  renderer_->SetLatencyHint(std::nullopt);
 
   // Flush to return to clean slate.
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _));
@@ -1802,7 +1802,7 @@ TEST_F(VideoRendererLatencyHintTest,
   Mock::VerifyAndClearExpectations(&mock_cb_);
 
   // Unset latency hint to verify 1-frame HAVE_ENOUGH threshold is maintained.
-  renderer_->SetLatencyHint(absl::nullopt);
+  renderer_->SetLatencyHint(std::nullopt);
 
   // Flush to return to clean slate.
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _));

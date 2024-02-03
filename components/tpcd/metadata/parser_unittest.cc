@@ -151,8 +151,7 @@ TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_FailedToUnzip) {
                     "like on old x86 Android: https://crbug.com/815537.";
   }
 
-  std::string encoded;
-  base::Base64Encode("clearly not a proto", &encoded);
+  std::string encoded = base::Base64Encode("clearly not a proto");
   const base::FieldTrialParams params = {
       {Parser::kMetadataFeatureParamName, encoded}};
   // No-op: for consistency.
@@ -171,8 +170,7 @@ TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_InvalidProto) {
 
   std::string compressed;
   compression::GzipCompress("clearly not a proto", &compressed);
-  std::string encoded;
-  base::Base64Encode(compressed, &encoded);
+  std::string encoded = base::Base64Encode(compressed);
   const base::FieldTrialParams params = {
       {Parser::kMetadataFeatureParamName, encoded}};
   // No-op: for consistency.

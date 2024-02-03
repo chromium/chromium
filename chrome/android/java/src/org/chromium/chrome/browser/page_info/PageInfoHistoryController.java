@@ -96,7 +96,8 @@ public class PageInfoHistoryController
                         mTabSupplier,
                         new ObservableSupplierImpl<>(),
                         vg -> null,
-                        new BrowsingHistoryBridge(profile));
+                        new BrowsingHistoryBridge(profile),
+                        null);
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }

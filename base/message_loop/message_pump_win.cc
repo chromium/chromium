@@ -13,6 +13,7 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/base_tracing.h"
@@ -74,7 +75,7 @@ void MessagePumpWin::Run(Delegate* delegate) {
   if (run_state_)
     run_state.is_nested = true;
 
-  AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
+  AutoReset<raw_ptr<RunState>> auto_reset_run_state(&run_state_, &run_state);
   DoRunLoop();
 }
 

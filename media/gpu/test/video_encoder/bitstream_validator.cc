@@ -5,6 +5,7 @@
 #include "media/gpu/test/video_encoder/bitstream_validator.h"
 
 #include <numeric>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -24,7 +25,6 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 #include "media/gpu/test/video_frame_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace test {
@@ -67,8 +67,8 @@ std::unique_ptr<BitstreamValidator> BitstreamValidator::Create(
     const VideoDecoderConfig& decoder_config,
     size_t last_frame_index,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors,
-    absl::optional<size_t> spatial_layer_index_to_decode,
-    absl::optional<size_t> temporal_layer_index_to_decode,
+    std::optional<size_t> spatial_layer_index_to_decode,
+    std::optional<size_t> temporal_layer_index_to_decode,
     const std::vector<gfx::Size>& spatial_layer_resolutions) {
   std::unique_ptr<MediaLog> media_log;
   auto decoder = CreateDecoder(decoder_config.codec(), &media_log);
@@ -130,8 +130,8 @@ BitstreamValidator::BitstreamValidator(
     std::unique_ptr<MediaLog> media_log,
     size_t last_frame_index,
     const gfx::Rect& decoding_rect,
-    absl::optional<size_t> spatial_layer_index_to_decode,
-    absl::optional<size_t> temporal_layer_index_to_decode,
+    std::optional<size_t> spatial_layer_index_to_decode,
+    std::optional<size_t> temporal_layer_index_to_decode,
     const std::vector<gfx::Size>& spatial_layer_resolutions,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors)
     : decoder_(std::move(decoder)),

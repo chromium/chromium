@@ -134,12 +134,10 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
   using GenerateBidCallback = base::OnceCallback<void(
       mojom::BidderWorkletBidPtr bid,
       mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-      uint32_t data_version,
-      bool has_data_version,
+      std::optional<uint32_t> data_version,
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
-      double set_priority,
-      bool has_set_priority,
+      std::optional<double> set_priority,
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
@@ -189,10 +187,10 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
     return base::BindOnce(
         [](mojom::BidderWorkletBidPtr bid,
            mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-           uint32_t data_version, bool has_data_version,
+           std::optional<uint32_t> data_version,
            const std::optional<GURL>& debug_loss_report_url,
-           const std::optional<GURL>& debug_win_report_url, double set_priority,
-           bool has_set_priority,
+           const std::optional<GURL>& debug_win_report_url,
+           std::optional<double> set_priority,
            base::flat_map<std::string,
                           auction_worklet::mojom::PrioritySignalsDoublePtr>
                update_priority_signals_overrides,
@@ -229,12 +227,10 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
   void OnGenerateBidComplete(
       mojom::BidderWorkletBidPtr bid,
       mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-      uint32_t data_version,
-      bool has_data_version,
+      std::optional<uint32_t> data_version,
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
-      double set_priority,
-      bool has_set_priority,
+      std::optional<double> set_priority,
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
@@ -250,8 +246,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
 
     std::move(generate_bid_callback_)
         .Run(std::move(bid), std::move(kanon_bid), data_version,
-             has_data_version, debug_loss_report_url, debug_win_report_url,
-             set_priority, has_set_priority,
+             debug_loss_report_url, debug_win_report_url, set_priority,
              std::move(update_priority_signals_overrides),
              std::move(pa_requests), std::move(non_kanon_pa_requests),
              bidding_latency, std::move(generate_bid_dependency_latencies),
@@ -770,12 +765,10 @@ class BidderWorkletTest : public testing::Test {
   void GenerateBidCallback(
       mojom::BidderWorkletBidPtr bid,
       mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-      uint32_t data_version,
-      bool has_data_version,
+      std::optional<uint32_t> data_version,
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
-      double set_priority,
-      bool has_set_priority,
+      std::optional<double> set_priority,
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
@@ -786,20 +779,12 @@ class BidderWorkletTest : public testing::Test {
           generate_bid_dependency_latencies,
       mojom::RejectReason reject_reason,
       const std::vector<std::string>& errors) {
-    std::optional<uint32_t> maybe_data_version;
-    if (has_data_version) {
-      maybe_data_version = data_version;
-    }
-    std::optional<double> maybe_set_priority;
-    if (has_set_priority) {
-      maybe_set_priority = set_priority;
-    }
     bid_ = std::move(bid);
     kanon_bid_ = std::move(kanon_bid);
-    data_version_ = maybe_data_version;
+    data_version_ = data_version;
     bid_debug_loss_report_url_ = debug_loss_report_url;
     bid_debug_win_report_url_ = debug_win_report_url;
-    set_priority_ = maybe_set_priority;
+    set_priority_ = set_priority;
 
     update_priority_signals_overrides_.clear();
     for (const auto& override : update_priority_signals_overrides) {
@@ -2583,6 +2568,86 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
+// Check that accessing `biddingLogicUrl` displays a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, BiddingLogicUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.biddingLogicUrl) return;"));
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.biddingLogicUrl is deprecated. Please use "
+      "interestGroup.biddingLogicURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `biddingLogicURL` does not display a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when `biddingLogicUrl` is
+// removed.
+TEST_F(BidderWorkletTest, BiddingLogicUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.biddingLogicURL) return;"));
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
   const std::string kGenerateBidBody =
       R"({ad: "biddingWasmHelperURL" in interestGroup ?
@@ -2613,36 +2678,94 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
-// TODO(crbug.com/1441988): Remove once rename is complete.
-TEST_F(BidderWorkletTest,
-       GenerateBidInterestGroupBiddingWasmHelperUrlDeprecatedName) {
-  const std::string kGenerateBidBody =
-      R"({ad: "biddingWasmHelperUrl" in interestGroup ?
-            interestGroup.biddingWasmHelperUrl : "missing",
-        bid:1,
-        render:"https://response.test/"})";
+// Check that accessing `biddingWasmHelperUrl` displays a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, BiddingWasmHelperUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
 
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          R"("missing")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.biddingWasmHelperUrl) return;"));
 
   interest_group_wasm_url_ = GURL(kWasmUrl);
+  // Need a valid WASM response to avoid a hang, and for the script to run.
   AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
               /*charset=*/std::nullopt, ToyWasm());
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          R"("https://foo.test/helper.wasm")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.biddingWasmHelperUrl is deprecated. Please "
+      "use interestGroup.biddingWasmHelperURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `biddingWasmHelperURL` does not display a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when `biddingWasmHelperUrl`
+// is removed.
+TEST_F(BidderWorkletTest, BiddingWasmHelperUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.biddingWasmHelperURL) return;"));
+
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  // Need a valid WASM response to avoid a hang, and for the script to run.
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/std::nullopt, ToyWasm());
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
@@ -2698,6 +2821,131 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
+// Check that accessing `updateUrl` displays a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, UpdateUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.updateUrl) return;"));
+
+  update_url_ = GURL("https://url.test/update");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.updateUrl is deprecated. Please use "
+      "interestGroup.updateURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `dailyUpdateUrl` displays a warning.
+//
+// TODO(https://crbug.com/1420080): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, DailyUpdateUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.dailyUpdateUrl) return;"));
+
+  update_url_ = GURL("https://url.test/update");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.dailyUpdateUrl is deprecated. Please use "
+      "interestGroup.updateURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `updateURL` does not display a warning.
+//
+// TODO(https://crbug.com/1432707) and TODO(https://crbug.com/1420080):
+// Remove this test when `dailyUpdateUrl` and `updateUrl` are removed.
+TEST_F(BidderWorkletTest, UpdateUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.updateURL) return;"));
+
+  update_url_ = GURL("https://url.test/update");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
   const std::string kGenerateBidBody =
       R"({ad: "trustedBiddingSignalsURL" in interestGroup ?
@@ -2732,6 +2980,104 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
           blink::AdDescriptor(GURL("https://response.test/")),
           /*ad_component_descriptors=*/std::nullopt,
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+}
+
+// Check that accessing `trustedBiddingSignalsUrl` displays a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.trustedBiddingSignalsUrl) return;"));
+
+  interest_group_trusted_bidding_signals_url_ =
+      GURL("https://url.test/trusted_signals");
+  // Need trusted signals response to prevent a hang.
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(interest_group_trusted_bidding_signals_url_->spec() +
+           "?hostname=top.window.test&interestGroupNames=Fred"),
+      "{}");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.trustedBiddingSignalsUrl is deprecated. "
+      "Please use interestGroup.trustedBiddingSignalsURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `TrustedBiddingSignalsURL` does not display a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when
+// `trustedBiddingSignalsUrl` is removed.
+TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.trustedBiddingSignalsURL) return;"));
+
+  interest_group_trusted_bidding_signals_url_ =
+      GURL("https://url.test/trusted_signals");
+  // Need trusted signals response to prevent a hang.
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(interest_group_trusted_bidding_signals_url_->spec() +
+           "?hostname=top.window.test&interestGroupNames=Fred"),
+      "{}");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsKeys) {
@@ -2859,10 +3205,10 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
               [&run_loop, &num_generate_bid_calls, bid_value](
                   mojom::BidderWorkletBidPtr bid,
                   mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                  uint32_t data_version, bool has_data_version,
+                  std::optional<uint32_t> data_version,
                   const std::optional<GURL>& debug_loss_report_url,
                   const std::optional<GURL>& debug_win_report_url,
-                  double set_priority, bool has_set_priority,
+                  std::optional<double> set_priority,
                   base::flat_map<
                       std::string,
                       auction_worklet::mojom::PrioritySignalsDoublePtr>
@@ -2879,7 +3225,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                 EXPECT_EQ(GURL("https://response.test/"),
                           bid->ad_descriptor.url);
                 EXPECT_FALSE(kanon_bid);
-                EXPECT_FALSE(has_data_version);
+                EXPECT_FALSE(data_version.has_value());
                 EXPECT_TRUE(errors.empty());
                 ++num_generate_bid_calls;
                 if (num_generate_bid_calls == kNumGenerateBidCalls) {
@@ -2978,10 +3324,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
                 mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                uint32_t data_version, bool has_data_version,
+                std::optional<uint32_t> data_version,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
-                double set_priority, bool has_set_priority,
+                std::optional<double> set_priority,
                 base::flat_map<std::string,
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
@@ -2996,8 +3342,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
-              EXPECT_EQ(10u, data_version);
-              EXPECT_TRUE(has_data_version);
+              ASSERT_TRUE(data_version.has_value());
+              EXPECT_EQ(10u, data_version.value());
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls) {
@@ -3105,10 +3451,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
                 mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                uint32_t data_version, bool has_data_version,
+                std::optional<uint32_t> data_version,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
-                double set_priority, bool has_set_priority,
+                std::optional<double> set_priority,
                 base::flat_map<std::string,
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
@@ -3123,8 +3469,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
-              EXPECT_EQ(42u, data_version);
-              EXPECT_TRUE(has_data_version);
+              ASSERT_TRUE(data_version.has_value());
+              EXPECT_EQ(42u, data_version.value());
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls) {
@@ -3238,10 +3584,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
                 mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                uint32_t data_version, bool has_data_version,
+                std::optional<uint32_t> data_version,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
-                double set_priority, bool has_set_priority,
+                std::optional<double> set_priority,
                 base::flat_map<std::string,
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
@@ -3255,8 +3601,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_FALSE(kanon_bid);
-              EXPECT_EQ(22u, data_version);
-              EXPECT_TRUE(has_data_version);
+              ASSERT_TRUE(data_version.has_value());
+              EXPECT_EQ(22u, data_version.value());
               EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
@@ -3350,10 +3696,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
                 mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                uint32_t data_version, bool has_data_version,
+                std::optional<uint32_t> data_version,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
-                double set_priority, bool has_set_priority,
+                std::optional<double> set_priority,
                 base::flat_map<std::string,
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
@@ -3368,8 +3714,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
-              EXPECT_EQ(i, data_version);
-              EXPECT_TRUE(has_data_version);
+              ASSERT_TRUE(data_version.has_value());
+              EXPECT_EQ(i, data_version.value());
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls) {
@@ -5635,7 +5981,7 @@ TEST_F(BidderWorkletTest, ReportWinIsForAdditionalBid) {
 
 TEST_F(BidderWorkletTest, ReportWinReportingId) {
   const char kScriptBody[] = R"(
-    sendReportTo("https://example.org/?" +
+    sendReportTo("https://example.test/?" +
                  browserSignals.interestGroupName + "/" +
                  browserSignals.buyerReportingId + "/" +
                  browserSignals.buyerAndSellerReportingId);
@@ -5644,17 +5990,17 @@ TEST_F(BidderWorkletTest, ReportWinReportingId) {
   reporting_id_field_ = mojom::ReportingIdField::kInterestGroupName;
   RunReportWinWithFunctionBodyExpectingResult(
       kScriptBody,
-      GURL("https://example.org/?reporting_id/undefined/undefined"));
+      GURL("https://example.test/?reporting_id/undefined/undefined"));
 
   reporting_id_field_ = mojom::ReportingIdField::kBuyerReportingId;
   RunReportWinWithFunctionBodyExpectingResult(
       kScriptBody,
-      GURL("https://example.org/?undefined/reporting_id/undefined"));
+      GURL("https://example.test/?undefined/reporting_id/undefined"));
 
   reporting_id_field_ = mojom::ReportingIdField::kBuyerAndSellerReportingId;
   RunReportWinWithFunctionBodyExpectingResult(
       kScriptBody,
-      GURL("https://example.org/?undefined/undefined/reporting_id"));
+      GURL("https://example.test/?undefined/undefined/reporting_id"));
 }
 
 TEST_F(BidderWorkletTest, ReportWinDataVersion) {
@@ -6159,8 +6505,8 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
     return (candidate_method && *candidate_method == "Debugger.scriptParsed");
   };
 
-  const char kUrl1[] = "http://example.com/first.js";
-  const char kUrl2[] = "http://example.org/second.js";
+  const char kUrl1[] = "http://example.test/first.js";
+  const char kUrl2[] = "http://example2.test/second.js";
 
   AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1),
                         CreateBasicGenerateBidScript());
@@ -6294,8 +6640,8 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   std::string bid_script = CreateGenerateBidScript(
       R"({ad: ["ad"], bid: this.global_bid ? this.global_bid : 1,
           render:"https://response.test/"})");
-  const char kUrl1[] = "http://example.com/first.js";
-  const char kUrl2[] = "http://example.org/second.js";
+  const char kUrl1[] = "http://example.test/first.js";
+  const char kUrl2[] = "http://example2.test/second.js";
 
   AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1), bid_script);
   AddJavascriptResponse(&url_loader_factory_, GURL(kUrl2), bid_script);
@@ -6370,7 +6716,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   ASSERT_TRUE(hit_breakpoints1);
   ASSERT_EQ(1u, hit_breakpoints1->size());
   ASSERT_TRUE((*hit_breakpoints1)[0].is_string());
-  EXPECT_EQ("1:0:0:http://example.com/first.js",
+  EXPECT_EQ("1:0:0:http://example.test/first.js",
             (*hit_breakpoints1)[0].GetString());
   std::string* callframe_id1 = breakpoint_hit1.value.GetDict()
                                    .FindDict("params")
@@ -6419,7 +6765,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   ASSERT_TRUE(hit_breakpoints2);
   ASSERT_EQ(1u, hit_breakpoints2->size());
   ASSERT_TRUE((*hit_breakpoints2)[0].is_string());
-  EXPECT_EQ("1:0:0:http://example.org/second.js",
+  EXPECT_EQ("1:0:0:http://example2.test/second.js",
             (*hit_breakpoints2)[0].GetString());
 
   // Go ahead and resume w/o messing with anything.
@@ -6434,7 +6780,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
 }
 
 TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
-  const char kUrl[] = "http://example.com/bid.js";
+  const char kUrl[] = "http://example.test/bid.js";
 
   AddJavascriptResponse(
       &url_loader_factory_, GURL(kUrl),
@@ -6519,7 +6865,7 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
 TEST_F(BidderWorkletTest, UnloadWhilePaused) {
   // Make sure things are cleaned up properly if the worklet is destroyed while
   // paused on a breakpoint.
-  const char kUrl[] = "http://example.com/bid.js";
+  const char kUrl[] = "http://example.test/bid.js";
 
   AddJavascriptResponse(
       &url_loader_factory_, GURL(kUrl),
@@ -7128,21 +7474,21 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 
 TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   base::flat_map<std::string, GURL> expected_ad_beacon_map = {
-      {"click", GURL("https://click.example.com/")},
-      {"view", GURL("https://view.example.com/")},
+      {"click", GURL("https://click.example.test/")},
+      {"view", GURL("https://view.example.test/")},
   };
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "https://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
 
   // Don't call twice.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "https://view.example.test/",
       });
       registerAdBeacon())",
       /*expected_report_url=*/std::nullopt,
@@ -7155,8 +7501,8 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   // If called twice and the error is caught, use the first result.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-           'click': "https://click.example.com/",
-           'view': "https://view.example.com/",
+           'click': "https://click.example.test/",
+           'view': "https://view.example.test/",
          });
          try { registerAdBeacon() }
          catch (e) {})",
@@ -7167,8 +7513,8 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       R"(try { registerAdBeacon() }
          catch (e) {}
          registerAdBeacon({
-           'click': "https://click.example.com/",
-           'view': "https://view.example.com/",
+           'click': "https://click.example.test/",
+           'view': "https://view.example.test/",
          }))",
       /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
 
@@ -7195,22 +7541,22 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   // OK if parameter attributes are not strings
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        1: "https://view.example.com/",
+        'click': "https://click.example.test/",
+        1: "https://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/
-      {{"click", GURL("https://click.example.com/")},
-       {"1", GURL("https://view.example.com/")}},
+      {{"click", GURL("https://click.example.test/")},
+       {"1", GURL("https://view.example.test/")}},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{}, {});
 
   // ... but keys must be convertible to strings
   RunReportWinWithFunctionBodyExpectingResult(
       R"(let map = {
-           'click': "https://click.example.com/"
+           'click': "https://click.example.test/"
          }
-         map[Symbol('a')] = "https://view.example.com/";
+         map[Symbol('a')] = "https://view.example.test/";
          registerAdBeacon(map))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
@@ -7222,34 +7568,34 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   // Error if invalid reporting URL
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "gopher://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "gopher://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
-       "reporting url for key 'view': 'gopher://view.example.com/'."});
+       "reporting url for key 'view': 'gopher://view.example.test/'."});
 
   // Error if not trustworthy reporting URL
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
         'click': "https://127.0.0.1/",
-        'view': "http://view.example.com/",
+        'view': "http://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
-       "reporting url for key 'view': 'http://view.example.com/'."});
+       "reporting url for key 'view': 'http://view.example.test/'."});
 
   // Error if invalid "reserved.*" reporting event type
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'reserved.bogus': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'reserved.bogus': "https://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
@@ -8473,10 +8819,10 @@ TEST_F(BidderWorkletTest, KAnonRerun) {
 }
 
 TEST_F(BidderWorkletTest, IsKAnonURL) {
-  const GURL kUrl1("https://example.com/1");
-  const GURL kUrl2("https://example.org/2");
-  const GURL kUrl3("https://example.gov/3");
-  const GURL kUrl4("https://example.gov/4");
+  const GURL kUrl1("https://example.test/1");
+  const GURL kUrl2("https://example2.test/2");
+  const GURL kUrl3("https://example3.test/3");
+  const GURL kUrl4("https://example3.test/4");
   mojom::BidderWorkletNonSharedParamsPtr params =
       mojom::BidderWorkletNonSharedParams::New();
   url::Origin owner = url::Origin::Create(interest_group_bidding_url_);
@@ -8503,10 +8849,10 @@ TEST_F(BidderWorkletTest, IsKAnonURL) {
 }
 
 TEST_F(BidderWorkletTest, IsKAnonResult) {
-  const GURL kUrl1("https://example.com/1");
-  const GURL kUrl2("https://example.org/2");
-  const GURL kUrl3("https://example.gov/3");
-  const GURL kUrl4("https://example.gov/4");
+  const GURL kUrl1("https://example.test/1");
+  const GURL kUrl2("https://example2.test/2");
+  const GURL kUrl3("https://example3.test/3");
+  const GURL kUrl4("https://example3.test/4");
   mojom::BidderWorkletNonSharedParamsPtr params =
       mojom::BidderWorkletNonSharedParams::New();
   url::Origin owner = url::Origin::Create(interest_group_bidding_url_);

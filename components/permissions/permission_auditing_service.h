@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_AUDITING_SERVICE_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_AUDITING_SERVICE_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -106,8 +108,7 @@ class PermissionAuditingService final : public KeyedService {
   // Lives on the |backend_task_runner_|, and must only be accessed on that
   // sequence. It is safe to assume the database is alive as long as |db_| is
   // non-null.
-  raw_ptr<PermissionAuditingDatabase, AcrossTasksDanglingUntriaged> db_ =
-      nullptr;
+  std::unique_ptr<PermissionAuditingDatabase> db_;
 
   base::RepeatingTimer timer_;
 

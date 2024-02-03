@@ -202,7 +202,7 @@ FetchRequestData* FetchRequestData::Create(
       DCHECK(RuntimeEnabledFeatures::PrivateStateTokensEnabled(
           ExecutionContext::From(script_state)));
     }
-    absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params =
+    std::optional<network::mojom::blink::TrustTokenParams> trust_token_params =
         std::move(*(fetch_api_request->trust_token_params->Clone().get()));
     request->SetTrustTokenParams(trust_token_params);
   }

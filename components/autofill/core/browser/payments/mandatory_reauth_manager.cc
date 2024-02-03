@@ -18,12 +18,16 @@ using autofill_metrics::LogMandatoryReauthOfferOptInDecision;
 using autofill_metrics::MandatoryReauthOfferOptInDecision;
 
 MandatoryReauthManager::MandatoryReauthManager(AutofillClient* client)
-    : client_(client) {}
+    : client_(client) {
+  if (client_) {
+    device_authenticator_ = client_->GetDeviceAuthenticator();
+  }
+}
+
 MandatoryReauthManager::~MandatoryReauthManager() = default;
 
 void MandatoryReauthManager::Authenticate(
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
-  device_authenticator_ = client_->GetDeviceAuthenticator();
   CHECK(device_authenticator_);
   device_authenticator_->AuthenticateWithMessage(
       u"", base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
@@ -33,7 +37,6 @@ void MandatoryReauthManager::Authenticate(
 void MandatoryReauthManager::AuthenticateWithMessage(
     const std::u16string& message,
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
-  device_authenticator_ = client_->GetDeviceAuthenticator();
   CHECK(device_authenticator_);
   device_authenticator_->AuthenticateWithMessage(
       message,
@@ -41,10 +44,41 @@ void MandatoryReauthManager::AuthenticateWithMessage(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void MandatoryReauthManager::StartDeviceAuthentication(
+    base::OnceCallback<void(bool)> authentication_complete_callback) {
+  MandatoryReauthAuthenticationMethod authentication_method =
+      GetAuthenticationMethod();
+
+  // If there is no supported auth method on the device, we should skip re-auth
+  // and fill the form. Otherwise the user removing authentication on the
+  // device will prevent them from using payments autofill. In the settings
+  // page, we signal to the user through various means that they need to turn
+  // the device's authentication on in order to use re-auth.
+  if (authentication_method ==
+          payments::MandatoryReauthAuthenticationMethod::kUnknown ||
+      authentication_method ==
+          payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod) {
+    std::move(authentication_complete_callback).Run(true);
+    return;
+  }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  AuthenticateWithMessage(
+      l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
+      std::move(authentication_complete_callback));
+#elif BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1427216): Convert this to
+  // DeviceAuthenticator::AuthenticateWithMessage() with the correct message
+  // once it is supported. Currently, the message is "Verify it's you".
+  Authenticate(std::move(authentication_complete_callback));
+#else
+  NOTREACHED_NORETURN();
+#endif
+}
+
 void MandatoryReauthManager::OnAuthenticationCompleted(
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback,
     bool success) {
-  device_authenticator_.reset();
   std::move(callback).Run(success);
 }
 
@@ -70,10 +104,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // If the device authenticator is not present or we can not authenticate with
   // biometric or screen lock, there will be no way to re-auth if the user
   // enrolls, so return that we should not offer mandatory re-auth opt-in.
-  if (std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
-          client_->GetDeviceAuthenticator();
-      !device_authenticator ||
-      !device_authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
+  if (!device_authenticator_ ||
+      !device_authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
     LogMandatoryReauthOfferOptInDecision(
         MandatoryReauthOfferOptInDecision::kNoSupportedReauthMethod);
     return false;
@@ -186,16 +218,14 @@ void MandatoryReauthManager::OnUserClosedOptInPrompt() {
 
 MandatoryReauthAuthenticationMethod
 MandatoryReauthManager::GetAuthenticationMethod() {
-  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
-      client_->GetDeviceAuthenticator();
-  if (!device_authenticator) {
+  if (!device_authenticator_) {
     return MandatoryReauthAuthenticationMethod::kUnknown;
   }
   // Order matters here.
-  if (device_authenticator->CanAuthenticateWithBiometrics()) {
+  if (device_authenticator_->CanAuthenticateWithBiometrics()) {
     return MandatoryReauthAuthenticationMethod::kBiometric;
   }
-  if (device_authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
+  if (device_authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
     return MandatoryReauthAuthenticationMethod::kScreenLock;
   }
   return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;

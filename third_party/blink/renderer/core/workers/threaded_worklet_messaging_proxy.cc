@@ -45,7 +45,7 @@ ThreadedWorkletMessagingProxy::ThreadedWorkletMessagingProxy(
 void ThreadedWorkletMessagingProxy::Initialize(
     WorkerClients* worker_clients,
     WorkletModuleResponsesMap* module_responses_map,
-    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    const std::optional<WorkerBackingThreadStartupData>& thread_startup_data,
     mojom::blink::WorkletGlobalScopeCreationParamsPtr
         client_provided_global_scope_creation_params) {
   DCHECK(IsMainThread());
@@ -82,7 +82,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
         client_provided_global_scope_creation_params->script_url,
         /*script_type=*/mojom::blink::ScriptType::kModule, global_scope_name,
         /*user_agent=*/String(),
-        /*ua_metadata=*/absl::optional<UserAgentMetadata>(),
+        /*ua_metadata=*/std::optional<UserAgentMetadata>(),
         /*web_worker_fetch_context=*/nullptr,
         /*outside_content_security_policies=*/
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
@@ -113,7 +113,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
             devtools_params->agent_host_remote.InitWithNewPipeAndPassReceiver();
 
     InitializeWorkerThread(std::move(creation_params), thread_startup_data,
-                           /*token=*/absl::nullopt, std::move(devtools_params));
+                           /*token=*/std::nullopt, std::move(devtools_params));
 
     mojo::Remote<mojom::blink::WorkletDevToolsHost> devtools_host(
         std::move(client_provided_global_scope_creation_params->devtools_host));
@@ -155,7 +155,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
   // Worklets share the pre-initialized backing thread so that we don't have to
   // specify the backing thread startup data.
   InitializeWorkerThread(std::move(global_scope_creation_params),
-                         thread_startup_data, absl::nullopt);
+                         thread_startup_data, std::nullopt);
 }
 
 void ThreadedWorkletMessagingProxy::Trace(Visitor* visitor) const {

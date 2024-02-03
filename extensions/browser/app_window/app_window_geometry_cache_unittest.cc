@@ -19,6 +19,7 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -27,7 +28,7 @@ const char kWindowId[] = "windowid";
 const char kWindowId2[] = "windowid2";
 
 // Create a very simple extension with id.
-scoped_refptr<const Extension> CreateExtension(const std::string& id) {
+scoped_refptr<const Extension> CreateExtension(const ExtensionId& id) {
   return ExtensionBuilder("test").SetID(id).Build();
 }
 
@@ -40,7 +41,7 @@ class AppWindowGeometryCacheTest : public ExtensionsTest {
   void SetUp() override;
   void TearDown() override;
 
-  void AddGeometryAndLoadExtension(const std::string& extension_id,
+  void AddGeometryAndLoadExtension(const ExtensionId& extension_id,
                                    const std::string& window_id,
                                    const gfx::Rect& bounds,
                                    const gfx::Rect& screen_bounds,
@@ -50,12 +51,12 @@ class AppWindowGeometryCacheTest : public ExtensionsTest {
   // posted to sync the geometry to the value store gets a chance to run.
   void WaitForSync();
 
-  void LoadExtension(const std::string& extension_id);
-  void UnloadExtension(const std::string& extension_id);
+  void LoadExtension(const ExtensionId& extension_id);
+  void UnloadExtension(const ExtensionId& extension_id);
 
   // Creates and adds an extension with associated prefs. Returns the extension
   // ID.
-  std::string AddExtensionWithPrefs(const std::string& name);
+  ExtensionId AddExtensionWithPrefs(const std::string& name);
 
  protected:
   raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_;  // Weak.
@@ -76,7 +77,7 @@ void AppWindowGeometryCacheTest::TearDown() {
 }
 
 void AppWindowGeometryCacheTest::AddGeometryAndLoadExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& window_id,
     const gfx::Rect& bounds,
     const gfx::Rect& screen_bounds,
@@ -102,20 +103,20 @@ void AppWindowGeometryCacheTest::WaitForSync() {
 }
 
 void AppWindowGeometryCacheTest::LoadExtension(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   cache_->LoadGeometryFromStorage(extension_id);
   WaitForSync();
 }
 
 void AppWindowGeometryCacheTest::UnloadExtension(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   scoped_refptr<const Extension> extension = CreateExtension(extension_id);
   cache_->OnExtensionUnloaded(browser_context(), extension.get(),
                               UnloadedExtensionReason::DISABLE);
   WaitForSync();
 }
 
-std::string AppWindowGeometryCacheTest::AddExtensionWithPrefs(
+ExtensionId AppWindowGeometryCacheTest::AddExtensionWithPrefs(
     const std::string& name) {
   // Generate the extension with a path based on the name so that extensions
   // with different names will have different IDs.
@@ -134,15 +135,15 @@ std::string AppWindowGeometryCacheTest::AddExtensionWithPrefs(
 
 // Test getting geometry from an empty store.
 TEST_F(AppWindowGeometryCacheTest, GetGeometryEmptyStore) {
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   ASSERT_FALSE(
       cache_->GetGeometry(extension_id, kWindowId, nullptr, nullptr, nullptr));
 }
 
 // Test getting geometry for an unknown extension.
 TEST_F(AppWindowGeometryCacheTest, GetGeometryUnkownExtension) {
-  const std::string extension_id1 = AddExtensionWithPrefs("ext1");
-  const std::string extension_id2 = AddExtensionWithPrefs("ext2");
+  const ExtensionId extension_id1 = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id2 = AddExtensionWithPrefs("ext2");
   AddGeometryAndLoadExtension(extension_id1,
                               kWindowId,
                               gfx::Rect(4, 5, 31, 43),
@@ -154,7 +155,7 @@ TEST_F(AppWindowGeometryCacheTest, GetGeometryUnkownExtension) {
 
 // Test getting geometry for an unknown window in a known extension.
 TEST_F(AppWindowGeometryCacheTest, GetGeometryUnkownWindow) {
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   AddGeometryAndLoadExtension(extension_id,
                               kWindowId,
                               gfx::Rect(4, 5, 31, 43),
@@ -167,7 +168,7 @@ TEST_F(AppWindowGeometryCacheTest, GetGeometryUnkownWindow) {
 // Test that loading geometry, screen_bounds and state from the store works
 // correctly.
 TEST_F(AppWindowGeometryCacheTest, GetGeometryAndStateFromStore) {
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   gfx::Rect bounds(4, 5, 31, 43);
   gfx::Rect screen_bounds(0, 0, 1600, 900);
   ui::WindowShowState state = ui::SHOW_STATE_NORMAL;
@@ -185,7 +186,7 @@ TEST_F(AppWindowGeometryCacheTest, GetGeometryAndStateFromStore) {
 
 // Test corrupt bounds will not be loaded.
 TEST_F(AppWindowGeometryCacheTest, CorruptBounds) {
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   gfx::Rect bounds;
   gfx::Rect screen_bounds(0, 0, 1600, 900);
   ui::WindowShowState state = ui::SHOW_STATE_NORMAL;
@@ -203,7 +204,7 @@ TEST_F(AppWindowGeometryCacheTest, CorruptBounds) {
 
 // Test corrupt screen bounds will not be loaded.
 TEST_F(AppWindowGeometryCacheTest, CorruptScreenBounds) {
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   gfx::Rect bounds(4, 5, 31, 43);
   gfx::Rect screen_bounds;
   ui::WindowShowState state = ui::SHOW_STATE_NORMAL;
@@ -221,7 +222,7 @@ TEST_F(AppWindowGeometryCacheTest, CorruptScreenBounds) {
 
 // Test corrupt state will not be loaded.
 TEST_F(AppWindowGeometryCacheTest, CorruptState) {
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   gfx::Rect bounds(4, 5, 31, 43);
   gfx::Rect screen_bounds(0, 0, 1600, 900);
   ui::WindowShowState state = ui::SHOW_STATE_DEFAULT;
@@ -240,7 +241,7 @@ TEST_F(AppWindowGeometryCacheTest, CorruptState) {
 // Test saving geometry, screen_bounds and state to the cache and state store,
 // and reading it back.
 TEST_F(AppWindowGeometryCacheTest, SaveGeometryAndStateToStore) {
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   const std::string window_id(kWindowId);
 
   // inform cache of extension
@@ -302,7 +303,7 @@ TEST_F(AppWindowGeometryCacheTest, NoDuplicateWrites) {
   using testing::_;
   using testing::Mock;
 
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   gfx::Rect bounds1(100, 200, 300, 400);
   gfx::Rect bounds2(200, 400, 600, 800);
   gfx::Rect bounds2_duplicate(200, 400, 600, 800);
@@ -361,7 +362,7 @@ TEST_F(AppWindowGeometryCacheTest, NoDuplicateWrites) {
 
 // Tests that no more than kMaxCachedWindows windows will be cached.
 TEST_F(AppWindowGeometryCacheTest, MaxWindows) {
-  const std::string extension_id = AddExtensionWithPrefs("ext1");
+  const ExtensionId extension_id = AddExtensionWithPrefs("ext1");
   // inform cache of extension
   LoadExtension(extension_id);
 

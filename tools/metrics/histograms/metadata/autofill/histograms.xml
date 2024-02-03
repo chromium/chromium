@@ -475,21 +475,21 @@ chromium-metrics-reviews@google.com.
   <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
-<variants name="CreditCardDataAvailability">
-  <variant name=".WithBothServerAndLocalData"
-      summary="both server and local autofill data"/>
-  <variant name=".WithNoData" summary="no autofill data"/>
-  <variant name=".WithOnlyLocalData" summary="only local autofill data"/>
-  <variant name=".WithOnlyServerData" summary="only server autofill data"/>
-</variants>
-
-<variants name="FieldClassificationMatchesFillingProduct">
+<variants name="ClassificationMatchesFillingProduct">
   <variant name=".TriggeringFieldDoesNotMatchFillingProduct"
       summary="The filling product chosen by the user does not match the
                triggering field type."/>
   <variant name=".TriggeringFieldMatchesFillingProduct"
       summary="The filling product chosen by the user matches the triggering
                field type."/>
+</variants>
+
+<variants name="CreditCardDataAvailability">
+  <variant name=".WithBothServerAndLocalData"
+      summary="both server and local autofill data"/>
+  <variant name=".WithNoData" summary="no autofill data"/>
+  <variant name=".WithOnlyLocalData" summary="only local autofill data"/>
+  <variant name=".WithOnlyServerData" summary="only server autofill data"/>
 </variants>
 
 <variants name="FillingProduct">
@@ -615,9 +615,9 @@ chromium-metrics-reviews@google.com.
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    The number of unverified autofill addresses deleted because they have not
-    been used for a long time, and are not used as billing addresses of valid
-    credit cards. Note the deletion only happens once per major version upgrade.
+    Log the number of kLocalOrSyncable Autofill addresses that were deleted
+    because they have not been used for `kDisusedDataModelDeletionTimeDelta`.
+    Emitted once on browser startup, if the user has at least one address.
   </summary>
 </histogram>
 
@@ -1871,19 +1871,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.FieldByFieldFilling.FieldTypeUsed{FillingProduct}{FieldClassificationMatchesFillingProduct}"
+    name="Autofill.FieldByFieldFilling.FieldTypeUsed{FillingProduct}{ClassificationMatchesFillingProduct}"
     enum="AutofillFieldByFieldFillingTypes" expires_after="2024-11-03">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Recorded when a field-by-field filling suggestion is accepted by the user
-    from a {FillingProduct} popup and the
-    {FieldClassificationMatchesFillingProduct}. Specifies the field type used to
-    fill a specific field.
+    Specifies the field type used to fill a specific field and whether the
+    product chosen (Address, payments, passwords etc) matches the field
+    classification. Recorded when a field-by-field filling suggestion is
+    accepted by the user from an Autofill popup.
   </summary>
   <token key="FillingProduct" variants="FillingProduct"/>
-  <token key="FieldClassificationMatchesFillingProduct"
-      variants="FieldClassificationMatchesFillingProduct"/>
+  <token key="ClassificationMatchesFillingProduct"
+      variants="ClassificationMatchesFillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.FieldContextMenuImpressions.ByAutocomplete"
@@ -1919,12 +1919,13 @@ chromium-metrics-reviews@google.com.
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    For {AutofillFillingMethod} and {AutofillFormType} logs an histogram of the
-    number of fields with the {FillingStatus} at submission time. The
-    non-aggregated FillingStatuses are mutually exclusive and each field can
-    only contribute to one of corresponding histograms. However, the combined
-    histograms that are prefixed with Total are not mutually exclusive and a
-    single field can contribute to multiple of those.
+    For a filling method (full form, group filling or field-by-field-filling)
+    and {AutofillFormType} logs an histogram of the number of fields with the
+    {FillingStatus} at submission time. The non-aggregated FillingStatuses are
+    mutually exclusive and each field can only contribute to one of
+    corresponding histograms. However, the combined histograms that are prefixed
+    with Total are not mutually exclusive and a single field can contribute to
+    multiple of those.
   </summary>
   <token key="AutofillFillingMethod" variants="AutofillFillingMethod"/>
   <token key="AutofillFormType" variants="AutofillFormType"/>
@@ -2071,19 +2072,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.FillingMethodUsed{FillingProduct}{FieldClassificationMatchesFillingProduct}"
+    name="Autofill.FillingMethodUsed{FillingProduct}{ClassificationMatchesFillingProduct}"
     enum="AutofillFillingMethodMetric" expires_after="2024-11-03">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Recorded when a {FillingProduct} suggestion is accepted by the user from a
-    {FieldClassificationMatchesFillingProduct}. The filling method defines
-    whether the user chose to fill the whole form, a specific field or a group
-    of fields (address fields, phone fields, name fields or email fields).
+    Recorded when an Autofill suggestion is accepted by the user. The filling
+    method defines whether the user chose to fill the whole form, a specific
+    field or a group of fields (address fields, phone fields, name fields or
+    email fields).
   </summary>
   <token key="FillingProduct" variants="FillingProduct"/>
-  <token key="FieldClassificationMatchesFillingProduct"
-      variants="FieldClassificationMatchesFillingProduct"/>
+  <token key="ClassificationMatchesFillingProduct"
+      variants="ClassificationMatchesFillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.FormContextMenuImpressions.ByNumberOfFields"
@@ -2616,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup"
-    units="Profiles" expires_after="2024-05-26">
+    units="Profiles" expires_after="2024-07-28">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -2841,6 +2842,35 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.ManualFallback.NotClassifiedAsTargetFilling.ExplicitlyTriggered.Total"
+    enum="BooleanSelectManualFallback" expires_after="2025-01-20">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the total acceptance of manual fallback suggestions on fields that
+    are either unclassified or classified differently as the filling product.
+    This tracks the number of times a user accepted/didn't accept the manual
+    fallback option in the context menu. Emitted on navigation (when the
+    AutofillManager is destroyed), at most once per page.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.ManualFallback.NotClassifiedAsTargetFilling.ExplicitlyTriggered{AutofillFormType}"
+    enum="BooleanSelectManualFallback" expires_after="2025-01-20">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records per form type the acceptance of manual fallback suggestions on
+    fields that are either unclassified or classified differently as the filling
+    product. This tracks the number of times a user accepted/didn't accept the
+    manual fallback option in the context menu. Emitted on navigation (when the
+    AutofillManager is destroyed), at most once per page.
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
 <histogram name="Autofill.NameTokenVerificationStatusAtProfileUsage.{NameType}"
     enum="AufofillStructuredTokenVerificationStatus" expires_after="2024-06-30">
   <owner>koerber@google.com</owner>
@@ -2908,6 +2938,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill profiles that have been considered for deduplication.
+    Emitted once per major version, if the user has at least two profiles.
   </summary>
 </histogram>
 
@@ -2917,6 +2948,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill profiles that have been removed during deduplication.
+    Emitted once per major version, if the user has at least two profiles.
   </summary>
 </histogram>
 
@@ -3647,15 +3679,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileActionOnFormSubmitted"
-    enum="AutofillProfileAction" expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The profile action that took place when a form was submitted.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ProfileDeleted.{DeletionType}"
     enum="BooleanAutofillDeleteAddress" expires_after="2024-10-01">
   <owner>tchudakov@google.com</owner>
@@ -3714,7 +3737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.MigrateProfileDecision"
-    enum="AutofillProfileImportDecision" expires_after="2024-05-26">
+    enum="AutofillProfileImportDecision" expires_after="2024-07-28">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
@@ -4567,31 +4590,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.StoredIbanCount{IbanTypeToBeSaved}" units="ibans"
+<histogram name="Autofill.StoredIbanCount" units="ibans"
     expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    The number of local IBANs a user has stored, measured at Chrome profile
-    launch time. It's logged once per profile loaded.
+    The number of local and server IBANs a user has stored, measured at Chrome
+    profile launch time. It's logged once per profile load.
   </summary>
-  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
 </histogram>
 
-<histogram name="Autofill.StoredIbanCount{IbanTypeToBeSaved}.WithNickname"
+<histogram name="Autofill.StoredIbanCount.{IbanRecordType}" units="ibans"
+    expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of local or server IBANs a user has stored, measured at Chrome
+    profile launch time. It's logged once per profile load.
+  </summary>
+  <token key="IbanRecordType" variants="IbanRecordType"/>
+</histogram>
+
+<histogram name="Autofill.StoredIbanCount.{IbanRecordType}.WithNickname"
     units="ibans" expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    The number of local IBANs with nickname a user has stored, measured at
-    Chrome profile launch time. It's logged one per profile loaded.
+    The number of local or server IBANs with nickname a user has stored,
+    measured at Chrome profile launch time. It's logged one per profile load.
   </summary>
-  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+  <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
-<histogram name="Autofill.StoredIbanDisusedCount{IbanTypeToBeSaved}"
+<histogram name="Autofill.StoredIbanDisusedCount.{IbanRecordType}"
     units="ibans" expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
@@ -4601,7 +4635,7 @@ chromium-metrics-reviews@google.com.
     launch time. This is only reported for users who have at least one stored
     IBAN.
   </summary>
-  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+  <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
 <histogram name="Autofill.StoredProfileCount.{Category}" units="Profiles"
@@ -4817,6 +4851,20 @@ chromium-metrics-reviews@google.com.
     Records and emits true when virtual card enrollment is not offered due to
     the required delay not yet passing since candidate's last strike.
   </summary>
+</histogram>
+
+<histogram name="Autofill.SubmissionDetectionSource.{SubmissionComponent}"
+    enum="AutofillSubmissionSource2" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Metric to measure the source of each submission. Emitted once per inferred
+    submission by {SubmissionComponent}.
+  </summary>
+  <token key="SubmissionComponent">
+    <variant name="AutofillAgent"/>
+    <variant name="FormTracker"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.SubmittedCardState" enum="AutofillSubmittedCardState"
@@ -5781,7 +5829,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.WebView.Events" units="Bitmask"
+<histogram name="Autofill.WebView.Events" enum="AutofillWebViewEventsBitmask"
     expires_after="2024-12-12">
   <owner>jkeitel@google.com</owner>
   <owner>battre@chromium.org</owner>

@@ -596,19 +596,25 @@ public class TabUiTestHelper {
             int previousTabIndex = previousTabModel.index();
             Tab previousTab = previousTabModel.getTabAt(previousTabIndex);
 
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(),
-                    rule.getActivity(),
-                    isIncognito,
-                    url == null);
-
-            if (url != null) rule.loadUrl(url);
+            ChromeTabbedActivity cta = rule.getActivity();
+            boolean urlIsNull = url == null;
+            if (urlIsNull) {
+                ChromeTabUtils.newTabFromMenu(
+                        InstrumentationRegistry.getInstrumentation(), cta, isIncognito, urlIsNull);
+            } else {
+                ChromeTabUtils.fullyLoadUrlInNewTab(
+                        InstrumentationRegistry.getInstrumentation(), cta, url, isIncognito);
+            }
 
             TabModel currentTabModel = rule.getActivity().getTabModelSelector().getCurrentModel();
             int currentTabIndex = currentTabModel.index();
 
             boolean fixPendingReadbacks =
-                    rule.getActivity().getTabContentManager().getInFlightCapturesForTesting() != 0;
+                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                            () -> {
+                                return cta.getTabContentManager().getInFlightCapturesForTesting()
+                                        != 0;
+                            });
 
             // When there are pending readbacks due to detached Tabs, try to fix it by switching
             // back to that tab.

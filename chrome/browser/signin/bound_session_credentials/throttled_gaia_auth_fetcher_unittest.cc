@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/common/renderer_configuration.mojom-shared.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -27,6 +28,8 @@ using UnblockAction = BoundSessionRequestThrottledHandler::UnblockAction;
 namespace {
 
 gaia::GaiaSource::Type kGaiaSourceType = gaia::GaiaSource::kChrome;
+chrome::mojom::ResumeBlockedRequestsTrigger kResumeTrigger =
+    chrome::mojom::ResumeBlockedRequestsTrigger::kObservedFreshCookies;
 
 class MockGaiaAuthConsumer : public GaiaAuthConsumer {
  public:
@@ -121,7 +124,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccounts) {
 
   fetcher()->StartListAccounts();
   ASSERT_TRUE(unblock_callback);
-  std::move(unblock_callback).Run(UnblockAction::kResume);
+  std::move(unblock_callback).Run(UnblockAction::kResume, kResumeTrigger);
   EXPECT_CALL(consumer(), OnListAccountsSuccess(_));
   CompleteRequest();
 }
@@ -135,7 +138,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccountsCancel) {
   fetcher()->StartListAccounts();
   ASSERT_TRUE(unblock_callback);
   EXPECT_CALL(consumer(), OnListAccountsFailure(_));
-  std::move(unblock_callback).Run(UnblockAction::kCancel);
+  std::move(unblock_callback).Run(UnblockAction::kCancel, kResumeTrigger);
 }
 
 TEST_F(ThrottledGaiaAuthFetcherTest, ListAccountsNotThrottledNoBoundSessions) {
@@ -169,7 +172,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleMultilogin) {
       gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
       {{"token1", "id1"}, {"token2", "id2"}}, "cc_result");
   ASSERT_TRUE(unblock_callback);
-  std::move(unblock_callback).Run(UnblockAction::kResume);
+  std::move(unblock_callback).Run(UnblockAction::kResume, kResumeTrigger);
   EXPECT_CALL(consumer(), OnOAuthMultiloginFinished(_));
   CompleteRequest();
 }

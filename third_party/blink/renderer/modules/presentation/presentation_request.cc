@@ -262,16 +262,16 @@ ScriptPromise PresentationRequest::reconnect(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise PresentationRequest::getAvailability(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptPromiseTyped<PresentationAvailability>
+PresentationRequest::getAvailability(ScriptState* script_state,
+                                     ExceptionState& exception_state) {
   PresentationController* controller =
       PresentationController::FromContext(GetExecutionContext());
   if (!controller) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The PresentationRequest is no longer associated to a frame.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<PresentationAvailability>();
   }
 
   if (!availability_property_) {

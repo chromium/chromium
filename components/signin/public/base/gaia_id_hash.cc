@@ -42,9 +42,7 @@ std::string GaiaIdHash::ToBinary() const {
 }
 
 std::string GaiaIdHash::ToBase64() const {
-  std::string gaia_id_base64_hash;
-  base::Base64Encode(gaia_id_hash_, &gaia_id_base64_hash);
-  return gaia_id_base64_hash;
+  return base::Base64Encode(gaia_id_hash_);
 }
 
 bool GaiaIdHash::IsValid() const {

@@ -87,8 +87,7 @@ NSDictionary* SerializeOptGuideCommercePayload() {
   any.SerializeToString(&serialized_any);
 
   // Base 64 encoding
-  std::string serialized_any_escaped;
-  base::Base64Encode(serialized_any, &serialized_any_escaped);
+  std::string serialized_any_escaped = base::Base64Encode(serialized_any);
 
   NSDictionary* user_info = @{
     kSerializedPayloadKey : base::SysUTF8ToNSString(serialized_any_escaped)
@@ -268,8 +267,7 @@ TEST_F(CommercePushNotificationClientTest, TestParsing) {
 
   std::string serialized_any;
   any.SerializeToString(&serialized_any);
-  std::string serialized_any_escaped;
-  base::Base64Encode(serialized_any, &serialized_any_escaped);
+  std::string serialized_any_escaped = base::Base64Encode(serialized_any);
 
   std::unique_ptr<optimization_guide::proto::HintNotificationPayload> parsed =
       CommercePushNotificationClient::ParseHintNotificationPayload(
@@ -309,8 +307,7 @@ TEST_F(CommercePushNotificationClientTest, TestHintKeyRemovedUponNotification) {
 
   std::string serialized_any;
   any.SerializeToString(&serialized_any);
-  std::string serialized_any_escaped;
-  base::Base64Encode(serialized_any, &serialized_any_escaped);
+  std::string serialized_any_escaped = base::Base64Encode(serialized_any);
 
   NSDictionary* dict = @{
     kSerializedPayloadKey : base::SysUTF8ToNSString(serialized_any_escaped)

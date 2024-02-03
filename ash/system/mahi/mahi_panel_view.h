@@ -11,9 +11,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
-namespace views {
-class Label;
-}  // namespace views
+namespace ui {
+class Event;
+}  // namespace ui
 
 namespace ash {
 
@@ -22,16 +22,25 @@ namespace ash {
 class ASH_EXPORT MahiPanelView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(MahiPanelView);
+  enum ViewId {
+    kCloseButton = 1,
+    kSummaryLabel,
+    kThumbsUpButton,
+    kThumbsDownButton,
+    kLearnMoreLink,
+  };
+
   MahiPanelView();
   MahiPanelView(const MahiPanelView&) = delete;
   MahiPanelView& operator=(const MahiPanelView&) = delete;
   ~MahiPanelView() override;
 
-  views::Label* summary_label_for_test() { return summary_label_; }
-
  private:
-  // Owned by the views hierarchy.
-  raw_ptr<views::Label> summary_label_ = nullptr;
+  // Callbacks for buttons and link.
+  void OnThumbsUpButtonPressed(const ui::Event& event);
+  void OnThumbsDownButtonPressed(const ui::Event& event);
+  void OnCloseButtonPressed(const ui::Event& event);
+  void OnLearnMoreLinkClicked();
 
   base::WeakPtrFactory<MahiPanelView> weak_ptr_factory_{this};
 };

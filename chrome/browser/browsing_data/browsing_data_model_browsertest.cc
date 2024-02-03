@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/browsing_data/content/browsing_data_model.h"
+
 #include <memory>
 #include <string>
 
@@ -11,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -28,7 +31,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
 #include "components/browsing_data/content/browsing_data_test_util.h"
 #include "components/browsing_data/content/shared_worker_info.h"
@@ -387,12 +389,8 @@ void AddLocalStorageUsage(content::RenderFrameHost* render_frame_host,
 }
 
 void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
-  while (model->size() != expected_size) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return model->size() == expected_size; }));
 }
 
 void RemoveBrowsingDataForDataOwner(BrowsingDataModel* model,
@@ -578,8 +576,9 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 
   base::test::TestFuture<OperationResult> future;
   url::Origin testOrigin = url::Origin::Create(GURL("https://a.test"));
-  shared_storage_manager->Set(testOrigin, u"key", u"value",
-                              future.GetCallback());
+  shared_storage_manager->Set(
+      testOrigin, u"key", u"value", future.GetCallback(),
+      storage::SharedStorageDatabase::SetBehavior::kDefault);
   EXPECT_EQ(OperationResult::kSet, future.Get());
 
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
@@ -1255,7 +1254,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   replacements.SetPathStr("browsing_data/shared_worker.js");
   GURL worker = testOrigin.GetURL().ReplaceComponents(replacements);
   browsing_data::SharedWorkerInfo data_key(
-      worker, /*name=*/"", blink::StorageKey::CreateFirstParty(testOrigin));
+      worker, /*name=*/"", blink::StorageKey::CreateFirstParty(testOrigin),
+      blink::mojom::SharedWorkerSameSiteCookies::kAll);
   ValidateBrowsingDataEntries(
       allowed_browsing_data_model,
       {{kTestHost,
@@ -1452,8 +1452,16 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 }
 
+// TODO(crbug.com/1524052): Flaky on at least Mac11 and Mac13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SharedDictionaryAccessReportedCorrectly \
+  DISABLED_SharedDictionaryAccessReportedCorrectly
+#else
+#define MAYBE_SharedDictionaryAccessReportedCorrectly \
+  SharedDictionaryAccessReportedCorrectly
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       SharedDictionaryAccessReportedCorrectly) {
+                       MAYBE_SharedDictionaryAccessReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
@@ -1502,9 +1510,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 
   // Need this polling because the shared dictionary is used only if the
   // metadata database has been read when sending the HTTP request.
-  while (!HasDataForType("SharedDictionary", web_contents())) {
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  }
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return HasDataForType("SharedDictionary", web_contents()); }));
 
   // Checking HasDataForType("SharedDictionary") accesses the registered
   // shared dictionary. This must be reported to the data model.

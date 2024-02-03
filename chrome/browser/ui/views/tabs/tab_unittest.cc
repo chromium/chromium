@@ -378,7 +378,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
         const int height = GetLayoutConstant(TAB_HEIGHT);
         for (; width >= min_width; --width) {
           SCOPED_TRACE(::testing::Message() << "width=" << width);
-          tab->SetBounds(0, 0, width, height);  // Invokes Tab::Layout().
+          tab->SetBounds(0, 0, width, height);  // Invokes layout.
           CheckForExpectedLayoutAndVisibilityOfElements(*tab);
         }
       }
@@ -386,7 +386,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
   }
 }
 
-// Regression test for http://crbug.com/226253. Calling Layout() more than once
+// Regression test for http://crbug.com/226253. Performing layout more than once
 // shouldn't change the insets of the close button.
 TEST_F(TabTest, CloseButtonLayout) {
   FakeTabSlotController tab_slot_controller;

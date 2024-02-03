@@ -463,12 +463,10 @@ void SyncEngineImpl::HandleMigrationRequestedOnFrontendLoop(
   host_->OnMigrationNeededForTypes(types);
 }
 
-// TODO(crbugg.com/1404927): replace InvalidatorState with a boolean.
-void SyncEngineImpl::OnInvalidatorStateChange(
-    invalidation::InvalidatorState state) {
+void SyncEngineImpl::OnInvalidatorStateChange(bool enabled) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnInvalidatorStateChange,
-                                backend_, state));
+                                backend_, enabled));
 }
 
 void SyncEngineImpl::HandleConnectionStatusChangeOnFrontendLoop(
@@ -617,7 +615,7 @@ void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
   // are any).
   if (!sync_invalidations_service_->GetFCMRegistrationToken().has_value() ||
       !sync_invalidations_service_->HasListener(this)) {
-    OnInvalidatorStateChange(invalidation::TRANSIENT_INVALIDATION_ERROR);
+    OnInvalidatorStateChange(/*enabled=*/false);
     return;
   }
 
@@ -627,7 +625,7 @@ void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
 
   // TODO(crbug.com/1442156): wait for FCM token to be committed before change
   // the state to enabled.
-  OnInvalidatorStateChange(invalidation::INVALIDATIONS_ENABLED);
+  OnInvalidatorStateChange(/*enabled=*/true);
 }
 
 }  // namespace syncer

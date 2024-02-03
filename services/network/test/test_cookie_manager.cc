@@ -29,7 +29,7 @@ void TestCookieManager::SetCanonicalCookie(
 
 void TestCookieManager::AddCookieChangeListener(
     const GURL& url,
-    const absl::optional<std::string>& name,
+    const std::optional<std::string>& name,
     mojo::PendingRemote<network::mojom::CookieChangeListener> listener) {
   mojo::Remote<network::mojom::CookieChangeListener> listener_remote(
       std::move(listener));

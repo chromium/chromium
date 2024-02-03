@@ -97,13 +97,9 @@ class TestFileSystemAccessPermissionContext
 
 class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
  public:
-  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
-  // flag after FSA Persistent Permissions feature launch.
   ChromeFileSystemAccessPermissionContextTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kFileSystemAccessPersistentPermissions,
-         permissions::features::kOneTimePermission},
-        {});
+        {features::kFileSystemAccessPersistentPermissions}, {});
   }
   void SetUp() override {
     // Create a scoped directory under %TEMP% instead of using
@@ -299,8 +295,6 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
 class ChromeFileSystemAccessPermissionContextNoPersistenceTest
     : public ChromeFileSystemAccessPermissionContextTest {
  public:
-  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
-  // flag after FSA Persistent Permissions feature launch.
   ChromeFileSystemAccessPermissionContextNoPersistenceTest() {
     scoped_feature_list_.InitAndDisableFeature(
         features::kFileSystemAccessPersistentPermissions);

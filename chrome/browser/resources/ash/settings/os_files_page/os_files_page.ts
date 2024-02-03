@@ -41,6 +41,13 @@ export class OsSettingsFilesPageElement extends PolymerElement {
         readOnly: true,
       },
 
+      shouldShowOneDriveSettings_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showOneDriveSettings');
+        },
+      },
+
       shouldShowOfficeSettings_: {
         type: Boolean,
         value() {
@@ -51,6 +58,7 @@ export class OsSettingsFilesPageElement extends PolymerElement {
   }
 
   prefs: PrefsState|undefined;
+  private shouldShowOneDriveSettings_: boolean;
   private shouldShowOfficeSettings_: boolean;
   private section_: Section;
 }

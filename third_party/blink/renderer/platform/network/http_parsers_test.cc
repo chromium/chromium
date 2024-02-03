@@ -32,8 +32,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(AtomicString("no-cache no-store"),
                                        AtomicString());
@@ -41,8 +41,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(AtomicString("no-store must-revalidate"),
                                        AtomicString());
@@ -50,8 +50,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_TRUE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header =
       ParseCacheControlDirectives(AtomicString("max-age=0"), AtomicString());
@@ -60,15 +60,15 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
   EXPECT_EQ(base::TimeDelta(), header.max_age.value());
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(AtomicString("max-age"), AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(AtomicString("max-age=0 no-cache"),
                                        AtomicString());
@@ -77,7 +77,7 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
   EXPECT_EQ(base::TimeDelta(), header.max_age.value());
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header =
       ParseCacheControlDirectives(AtomicString("no-cache=foo"), AtomicString());
@@ -85,8 +85,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header =
       ParseCacheControlDirectives(AtomicString("nonsense"), AtomicString());
@@ -94,8 +94,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(AtomicString("\rno-cache\n\t\v\0\b"),
                                        AtomicString());
@@ -103,8 +103,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(AtomicString("      no-cache       "),
                                        AtomicString());
@@ -112,8 +112,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header =
       ParseCacheControlDirectives(AtomicString(), AtomicString("no-cache"));
@@ -121,8 +121,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
-  EXPECT_EQ(absl::nullopt, header.stale_while_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(
       AtomicString("stale-while-revalidate=2,stale-while-revalidate=3"),
@@ -131,7 +131,7 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(absl::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(2.0, header.stale_while_revalidate.value().InSecondsF());
 }
 

@@ -130,6 +130,13 @@ class ImmersiveModeController {
   // visible when revealing topchrome.
   virtual int GetExtraInfobarOffset() const = 0;
 
+  // Called when entering or exiting content fullscreen.
+  // Content fullscreen is distinct from browser fullscreen. Content fullscreen
+  // is when a single tab enters fullscreen, where browser fullscreen is when
+  // the entire browser window, including toolbar, is fullscreen.
+  // This is currently only used on macOS.
+  virtual void OnContentFullscreenChanged(bool is_content_fullscreen) = 0;
+
   virtual void AddObserver(Observer* observer);
   virtual void RemoveObserver(Observer* observer);
 

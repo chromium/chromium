@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -33,10 +32,8 @@ void ScriptWrappableTaskState::Trace(Visitor* visitor) const {
 
 // static
 ScriptWrappableTaskState* ScriptWrappableTaskState::GetCurrent(
-    ScriptState* script_state) {
-  DCHECK(script_state);
-  v8::Isolate* isolate = script_state->GetIsolate();
-  DCHECK(isolate);
+    v8::Isolate* isolate) {
+  CHECK(isolate);
   if (isolate->IsExecutionTerminating()) {
     return nullptr;
   }
@@ -71,11 +68,12 @@ void ScriptWrappableTaskState::SetCurrent(
   // context. We don't need to distinguish between null and undefined values,
   // and V8 has a fast path if the CPED is undefined, so treat null `task_state`
   // as undefined.
-  if (!task_state) {
+  //
+  // TODO(crbug.com/1351643): Since the context no longer matters, change this
+  // to a utility context that will always be valid.
+  if (!script_state->ContextIsValid() || !task_state) {
     isolate->SetContinuationPreservedEmbedderData(v8::Undefined(isolate));
   } else {
-    script_state = V8PerIsolateData::From(isolate)
-                       ->EnsureContinuationPreservedEmbedderDataScriptState();
     ScriptState::Scope scope(script_state);
     isolate->SetContinuationPreservedEmbedderData(
         ToV8Traits<ScriptWrappableTaskState>::ToV8(script_state, task_state));

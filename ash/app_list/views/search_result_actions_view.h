@@ -21,9 +21,9 @@ class SearchResultView;
 // SearchResultActionsView displays a SearchResult::Actions in a button
 // strip. Each action is presented as a button and horizontally laid out.
 class ASH_EXPORT SearchResultActionsView : public views::View {
- public:
-  METADATA_HEADER(SearchResultActionsView);
+  METADATA_HEADER(SearchResultActionsView, views::View)
 
+ public:
   explicit SearchResultActionsView(SearchResultActionsViewDelegate* delegate);
 
   SearchResultActionsView(const SearchResultActionsView&) = delete;

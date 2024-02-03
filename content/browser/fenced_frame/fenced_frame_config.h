@@ -353,7 +353,7 @@ class CONTENT_EXPORT FencedFrameConfig {
   // inheritance. Right now, only FencedFrameConfigs created from JavaScript
   // (non-Protected Audience/Shared Storage) will have a flexible permissions
   // policy.
-  absl::optional<ParentPermissionsInfo> parent_permissions_info_;
+  std::optional<ParentPermissionsInfo> parent_permissions_info_;
 };
 
 // Contains a set of fenced frame properties. These are generated at
@@ -493,7 +493,7 @@ class CONTENT_EXPORT FencedFrameProperties {
     return effective_enabled_permissions_;
   }
 
-  absl::optional<ParentPermissionsInfo> parent_permissions_info() const {
+  std::optional<ParentPermissionsInfo> parent_permissions_info() const {
     return parent_permissions_info_;
   }
 
@@ -508,6 +508,10 @@ class CONTENT_EXPORT FencedFrameProperties {
 
   bool can_disable_untrusted_network() const {
     return can_disable_untrusted_network_;
+  }
+
+  bool has_disabled_untrusted_network() const {
+    return has_disabled_untrusted_network_;
   }
 
   // Safe to call multiple times (will do nothing after the first time).
@@ -610,7 +614,7 @@ class CONTENT_EXPORT FencedFrameProperties {
   // information through its fenced frame properties, so that it can calculate
   // inheritance. Right now, only developer-created fenced frames (non-Protected
   // Audience/Shared Storage) will have a flexible permissions policy.
-  absl::optional<ParentPermissionsInfo> parent_permissions_info_;
+  std::optional<ParentPermissionsInfo> parent_permissions_info_;
 
   // Whether this config allows calls to window.fence.disableUntrustedNetwork()
   // (and then access to unpartitioned storage).

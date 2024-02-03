@@ -199,15 +199,6 @@ class AutofillProfileComparator {
                       const AutofillProfile& p2,
                       Address& address) const;
 
-  // Populates |birthdate| with the result of merging the birthdate in |p1| and
-  // |p2|. Returns true if successful. Expects that |p1| and |p2| have
-  // already been found to be mergeable.
-  //
-  // Heuristic: For each component (day, month, year), take the non empty one.
-  bool MergeBirthdates(const AutofillProfile& p1,
-                       const AutofillProfile& p2,
-                       Birthdate& birthdate) const;
-
   // App locale used when this comparator instance was created.
   const std::string app_locale() const { return app_locale_; }
 
@@ -297,16 +288,6 @@ class AutofillProfileComparator {
   // the addresses.
   bool HaveMergeableAddresses(const AutofillProfile& p1,
                               const AutofillProfile& p2) const;
-
-  // Returns true if |p1| and |p2| have birthdates which are equivalent for
-  // the purposes of merging the two profiles. This means that for every
-  // birthdate component (day, month, year), either one of them is empty or they
-  // are equal.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the birthdates.
-  bool HaveMergeableBirthdates(const AutofillProfile& p1,
-                               const AutofillProfile& p2) const;
 
   // Populates |name_info| with the result of merging the Chinese, Japanese or
   // Korean names in |p1| and |p2|. Returns true if successful. Expects that

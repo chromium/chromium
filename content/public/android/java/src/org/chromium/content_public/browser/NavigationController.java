@@ -75,12 +75,15 @@ public interface NavigationController {
     public void continuePendingReload();
 
     /**
-     * Load url without fixing up the url string. Consumers of NavigationController are
-     * responsible for ensuring the URL passed in is properly formatted (i.e. the
-     * scheme has been added if left off during user input).
+     * Load url without fixing up the url string. Consumers of NavigationController are responsible
+     * for ensuring the URL passed in is properly formatted (i.e. the scheme has been added if left
+     * off during user input).
+     *
      * @param params Parameters for this load.
+     * @return NavigationHandle for the initiated navigation (might be null if the navigation
+     *     couldn't be started for some reason).
      */
-    public void loadUrl(LoadUrlParams params);
+    public @Nullable NavigationHandle loadUrl(LoadUrlParams params);
 
     /**
      * Clears NavigationController's page history in both backwards and

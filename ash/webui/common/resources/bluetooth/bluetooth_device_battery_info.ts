@@ -7,7 +7,7 @@
  * View displaying Bluetooth device battery information.
  */
 
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import './bluetooth_battery_icon_percentage.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

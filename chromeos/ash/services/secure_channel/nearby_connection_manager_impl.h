@@ -5,9 +5,12 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_MANAGER_IMPL_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/ble_scanner.h"
+#include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
 
 namespace ash::secure_channel {
@@ -61,6 +64,10 @@ class NearbyConnectionManagerImpl : public NearbyConnectionManager,
                                ConnectionMedium connection_medium,
                                ConnectionRole connection_role,
                                const std::vector<uint8_t>& eid) override;
+  void OnDiscoveryFailed(
+      const DeviceIdPair& device_id_pair,
+      mojom::DiscoveryResult discovery_result,
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
 
   // SecureChannel::Observer:
   void OnSecureChannelStatusChanged(

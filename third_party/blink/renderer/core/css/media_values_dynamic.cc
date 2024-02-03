@@ -275,8 +275,7 @@ int MediaValuesDynamic::GetVerticalViewportSegments() const {
   return CalculateVerticalViewportSegments(frame_);
 }
 
-device::mojom::blink::DevicePostureType MediaValuesDynamic::GetDevicePosture()
-    const {
+mojom::blink::DevicePostureType MediaValuesDynamic::GetDevicePosture() const {
   return CalculateDevicePosture(frame_);
 }
 

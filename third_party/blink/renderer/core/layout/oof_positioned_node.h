@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OOF_POSITIONED_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OOF_POSITIONED_NODE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
@@ -32,7 +33,7 @@ class OofContainingBlock {
   OofContainingBlock(OffsetType offset,
                      OffsetType relative_offset,
                      const PhysicalFragment* fragment,
-                     absl::optional<LayoutUnit> clipped_container_block_offset,
+                     std::optional<LayoutUnit> clipped_container_block_offset,
                      bool is_inside_column_spanner)
       : offset_(offset),
         relative_offset_(relative_offset),
@@ -47,9 +48,9 @@ class OofContainingBlock {
   }
   OffsetType RelativeOffset() const { return relative_offset_; }
   const PhysicalFragment* Fragment() const { return fragment_.Get(); }
-  absl::optional<LayoutUnit> ClippedContainerBlockOffset() const {
+  std::optional<LayoutUnit> ClippedContainerBlockOffset() const {
     if (clipped_container_block_offset_ == LayoutUnit::Min()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return clipped_container_block_offset_;
   }

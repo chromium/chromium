@@ -140,7 +140,7 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
 
   EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
       .Times(1)
-      .WillOnce(Return(absl::optional<uint32_t>(1)));
+      .WillOnce(Return(std::optional<uint32_t>(1)));
 
   EXPECT_CALL(*media_stream_video_source,
               ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
@@ -180,7 +180,7 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
 
   EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
       .Times(1)
-      .WillOnce(Return(absl::optional<uint32_t>(1)));
+      .WillOnce(Return(std::optional<uint32_t>(1)));
 
   EXPECT_CALL(*media_stream_video_source,
               ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
@@ -222,7 +222,7 @@ TEST_P(
 
   EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
       .Times(1)
-      .WillOnce(Return(absl::nullopt));
+      .WillOnce(Return(std::nullopt));
 
   EXPECT_CALL(*media_stream_video_source,
               ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))

@@ -176,6 +176,15 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
+  if (options.subsampling.value_or(VideoChromaSampling::k420) !=
+          VideoChromaSampling::k420 ||
+      options.bit_depth.value_or(8) != 8) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                      "Unsupported subsampling or bit depth"));
+    return;
+  }
+
   if (ToOpenH264Profile(profile) == PRO_UNKNOWN) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedProfile,
@@ -298,7 +307,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
   if (!h264_converter_) {
     result.size = total_chunk_size;
 
-    output_cb_.Run(std::move(result), absl::optional<CodecDescription>());
+    output_cb_.Run(std::move(result), std::optional<CodecDescription>());
     return EncoderStatus::Codes::kOk;
   }
 
@@ -315,7 +324,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
 
   result.size = converted_output_size;
 
-  absl::optional<CodecDescription> desc;
+  std::optional<CodecDescription> desc;
   if (config_changed) {
     const auto& config = h264_converter_->GetCurrentConfig();
     desc = CodecDescription();

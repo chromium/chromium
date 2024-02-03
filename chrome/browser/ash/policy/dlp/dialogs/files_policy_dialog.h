@@ -39,9 +39,9 @@ enum class Policy {
 // FilesPolicyDialog is a window modal dialog used to show detailed overview of
 // warnings and files blocked by data protection policies.
 class FilesPolicyDialog : public PolicyDialogBase {
- public:
-  METADATA_HEADER(FilesPolicyDialog);
+  METADATA_HEADER(FilesPolicyDialog, PolicyDialogBase)
 
+ public:
   // Reasons for which a file can be blocked either because of an Enterprise
   // Connectors or DLP policy.
   // Please keep in sync with the `available_reasons` array below!

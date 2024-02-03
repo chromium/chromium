@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -148,7 +148,7 @@ class MEDIA_EXPORT MediaCodecBridge {
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsamples,
       EncryptionScheme encryption_scheme,
-      absl::optional<EncryptionPattern> encryption_pattern,
+      std::optional<EncryptionPattern> encryption_pattern,
       base::TimeDelta presentation_time) = 0;
 
   // Submits an empty buffer with the END_OF_STREAM flag set.

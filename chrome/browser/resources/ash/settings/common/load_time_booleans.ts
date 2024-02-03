@@ -73,16 +73,25 @@ export function isPowerwashAllowed(): boolean {
   return loadTimeData.getBoolean('allowPowerwash');
 }
 
+// Reset page
+export function isSanitizeAllowed(): boolean {
+  return loadTimeData.getBoolean('allowSanitize');
+}
+
 // Search page
 export function isAssistantAllowed(): boolean {
   return loadTimeData.getBoolean('isAssistantAllowed');
 }
 
-export function shouldShowQuickAnswersSettings(): boolean {
-  return loadTimeData.getBoolean('shouldShowQuickAnswersSettings');
+export function isQuickAnswersSupported(): boolean {
+  return loadTimeData.getBoolean('isQuickAnswersSupported');
 }
 
 // System preferences page
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');
+}
+
+export function shouldShowMultitasking(): boolean {
+  return loadTimeData.getBoolean('shouldShowMultitasking');
 }

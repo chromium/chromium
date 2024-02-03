@@ -821,7 +821,7 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
 
 // Tests that there's no bubble in the kiosk mode.
 TEST_P(UnifiedSystemTrayTest, NoBubbleAndNoDetailedViewInKioskMode) {
-  SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
 
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();

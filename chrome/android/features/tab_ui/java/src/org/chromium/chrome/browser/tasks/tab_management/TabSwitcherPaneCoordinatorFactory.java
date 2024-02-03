@@ -92,7 +92,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
         mMode =
-                TabUiFeatureUtilities.shouldUseListMode(activity)
+                TabUiFeatureUtilities.shouldUseListMode()
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID;
     }
@@ -183,19 +183,27 @@ public class TabSwitcherPaneCoordinatorFactory {
     ObservableSupplier<TabModelFilter> createTabModelFilterSupplier(boolean isIncognito) {
         ObservableSupplierImpl<TabModelFilter> tabModelFilterSupplier =
                 new ObservableSupplierImpl<>();
+        // This implementation doesn't wait for isTabStateInitialized because we want to be able to
+        // show the TabSwitcherPane before tab state initialization finishes. Tab state
+        // initialization is an async process; when tab state restoration completes
+        // TabModelObserver#restoreCompleted() is called which is listened for in
+        // TabSwitcherPaneMediator to properly refresh the list in the event the contents changed.
         TabModelSelector selector = mTabModelSelector;
-        if (selector.isTabStateInitialized()) {
+        if (!selector.getModels().isEmpty()) {
             tabModelFilterSupplier.set(
                     selector.getTabModelFilterProvider().getTabModelFilter(isIncognito));
         } else {
             selector.addObserver(
                     new TabModelSelectorObserver() {
                         @Override
-                        public void onTabStateInitialized() {
-                            tabModelFilterSupplier.set(
+                        public void onChange() {
+                            assert !selector.getModels().isEmpty();
+                            TabModelFilter filter =
                                     selector.getTabModelFilterProvider()
-                                            .getTabModelFilter(isIncognito));
+                                            .getTabModelFilter(isIncognito);
+                            assert filter != null;
                             selector.removeObserver(this);
+                            tabModelFilterSupplier.set(filter);
                         }
                     });
         }

@@ -472,7 +472,7 @@ BASE_FEATURE(kFencedFramesEnforceFocus,
 // Enables the Digital Credential API.
 BASE_FEATURE(kWebIdentityDigitalCredentials,
              "WebIdentityDigitalCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables scrollers inside Blink to store scroll offsets in fractional
 // floating-point numbers rather than truncating to integers.
@@ -513,6 +513,12 @@ BASE_FEATURE(kInstalledAppProvider,
 // process.
 BASE_FEATURE(kIsolatedWebApps,
              "IsolatedWebApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a new Automatic Fullscreen content setting that lets allowlisted
+// origins use the HTML Fullscreen API without transient activation.
+BASE_FEATURE(kAutomaticFullscreenContentSetting,
+             "AutomaticFullscreenContentSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables process isolation of fenced content (content inside fenced frames)
@@ -1258,6 +1264,13 @@ BASE_FEATURE(kWebXr, "WebXR", base::FEATURE_ENABLED_BY_DEFAULT);
 // the web contents accessibility tree.
 BASE_FEATURE(kAccessibilityIncludeLongClickAction,
              "AccessibilityIncludeLongClickAction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the Android accessibility code will use an experimental code
+// path that is an alternative to the existing JNI path to see if the path
+// can be made more performant.
+BASE_FEATURE(kAccessibilityJNIOptimizations,
+             "AccessibilityJNIOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows the use of page zoom in place of accessibility text autosizing, and

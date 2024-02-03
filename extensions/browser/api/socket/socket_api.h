@@ -21,6 +21,7 @@
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/socket.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -65,13 +66,13 @@ class SocketResourceManagerInterface {
 
   virtual bool SetBrowserContext(content::BrowserContext* context) = 0;
   virtual int Add(Socket* socket) = 0;
-  virtual Socket* Get(const std::string& extension_id, int api_resource_id) = 0;
-  virtual void Remove(const std::string& extension_id, int api_resource_id) = 0;
-  virtual void Replace(const std::string& extension_id,
+  virtual Socket* Get(const ExtensionId& extension_id, int api_resource_id) = 0;
+  virtual void Remove(const ExtensionId& extension_id, int api_resource_id) = 0;
+  virtual void Replace(const ExtensionId& extension_id,
                        int api_resource_id,
                        Socket* socket) = 0;
   virtual std::unordered_set<int>* GetResourceIds(
-      const std::string& extension_id) = 0;
+      const ExtensionId& extension_id) = 0;
 };
 
 // Implementation of SocketResourceManagerInterface using an
@@ -96,22 +97,22 @@ class SocketResourceManager : public SocketResourceManagerInterface {
     return manager_->Add(static_cast<T*>(socket));
   }
 
-  Socket* Get(const std::string& extension_id, int api_resource_id) override {
+  Socket* Get(const ExtensionId& extension_id, int api_resource_id) override {
     return manager_->Get(extension_id, api_resource_id);
   }
 
-  void Replace(const std::string& extension_id,
+  void Replace(const ExtensionId& extension_id,
                int api_resource_id,
                Socket* socket) override {
     manager_->Replace(extension_id, api_resource_id, static_cast<T*>(socket));
   }
 
-  void Remove(const std::string& extension_id, int api_resource_id) override {
+  void Remove(const ExtensionId& extension_id, int api_resource_id) override {
     manager_->Remove(extension_id, api_resource_id);
   }
 
   std::unordered_set<int>* GetResourceIds(
-      const std::string& extension_id) override {
+      const ExtensionId& extension_id) override {
     return manager_->GetResourceIds(extension_id);
   }
 

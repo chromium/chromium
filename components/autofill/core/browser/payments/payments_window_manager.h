@@ -5,6 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_WINDOW_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_WINDOW_MANAGER_H_
 
+#include <optional>
+#include <string>
+
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "url/gurl.h"
+
 namespace autofill::payments {
 
 // Interface for objects that manage popup-related redirect flows for payments
@@ -12,7 +18,18 @@ namespace autofill::payments {
 // systems.
 class PaymentsWindowManager {
  public:
+  // The contextual data required for the VCN 3DS flow.
+  struct Vcn3dsContext {
+    CreditCard card;
+    std::string context_token;
+    GURL url;
+  };
+
   virtual ~PaymentsWindowManager() = default;
+
+  // Initiates the VCN 3DS auth flow. All fields in `context` must be valid and
+  // non-empty.
+  virtual void InitVcn3dsAuthentication(Vcn3dsContext context) = 0;
 };
 
 }  // namespace autofill::payments

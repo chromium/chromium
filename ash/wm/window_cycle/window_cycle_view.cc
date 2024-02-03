@@ -327,7 +327,7 @@ void WindowCycleView::ScaleCycleView(const gfx::Rect& screen_bounds) {
 gfx::Rect WindowCycleView::GetTargetBounds() const {
   // The widget is sized clamped to the screen bounds. Its child, the mirror
   // container which is parent to all the previews may be larger than the
-  // widget as some previews will be offscreen. In `Layout()` of `cycle_view_`
+  // widget as some previews will be offscreen. When `cycle_view_` does layout
   // the mirror container will be slid back and forth depending on the target
   // window.
   gfx::Rect widget_rect = root_window_->GetBoundsInScreen();
@@ -395,7 +395,7 @@ void WindowCycleView::ScrollToWindow(aura::Window* target) {
   horizontal_distance_dragged_ = 0.f;
 
   if (GetWidget())
-    Layout();
+    DeprecatedLayoutImmediately();
 }
 
 void WindowCycleView::SetTargetWindow(aura::Window* new_target) {
@@ -462,7 +462,7 @@ void WindowCycleView::HandleWindowDestruction(aura::Window* destroying_window,
   // With one of its children now gone, we must re-layout `mirror_container_`.
   // This must happen before `ScrollToWindow()` to make sure our own `Layout()`
   // works correctly when it's calculating highlight bounds.
-  parent->Layout();
+  parent->DeprecatedLayoutImmediately();
   SetTargetWindow(new_target);
   ScrollToWindow(new_target);
 }
@@ -480,7 +480,7 @@ void WindowCycleView::DestroyContents() {
 
 void WindowCycleView::Drag(float delta_x) {
   horizontal_distance_dragged_ += delta_x;
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void WindowCycleView::StartFling(float velocity_x) {
@@ -496,7 +496,7 @@ void WindowCycleView::StartFling(float velocity_x) {
 bool WindowCycleView::OnFlingStep(float offset) {
   DCHECK(fling_handler_);
   horizontal_distance_dragged_ += offset;
-  Layout();
+  DeprecatedLayoutImmediately();
   return true;
 }
 
@@ -570,7 +570,7 @@ gfx::Size WindowCycleView::CalculatePreferredSize() const {
   return size;
 }
 
-void WindowCycleView::Layout() {
+void WindowCycleView::Layout(PassKey) {
   if (is_destroying_)
     return;
 
@@ -659,10 +659,9 @@ void WindowCycleView::Layout() {
     no_recent_items_label_->SetBoundsRect(no_recent_item_bounds_);
   }
 
-  // Enable animations only after the first `Layout()` pass. If `this` is
-  // animating or `defer_widget_bounds_update_`, don't animate as well since
-  // the cycle view is already being animated or just finished animating for
-  // mode switch.
+  // Enable animations only after the first layout pass. If `this` is animating
+  // or `defer_widget_bounds_update_`, don't animate as well since the cycle
+  // view is already being animated or just finished animating for mode switch.
   std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
   std::optional<ui::AnimationThroughputReporter> reporter;
   if (!first_layout && !this->layer()->GetAnimator()->is_animating() &&
@@ -704,7 +703,7 @@ void WindowCycleView::Layout() {
 void WindowCycleView::OnImplicitAnimationsCompleted() {
   layer()->SetClipRect(gfx::Rect());
   if (defer_widget_bounds_update_) {
-    // This triggers a `Layout()` so reset `defer_widget_bounds_update_` after
+    // This triggers layout, so reset `defer_widget_bounds_update_` after
     // calling `SetBounds()` to prevent the mirror container from animating.
     GetWidget()->SetBounds(GetTargetBounds());
     defer_widget_bounds_update_ = false;

@@ -7,6 +7,7 @@
 
 #include <bit>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,7 +18,6 @@
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/request_priority.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
@@ -174,8 +174,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kInternalNavigationCancellation = 12,
       kRenderBlocking = 13,
       kLow = 14,
+      kAsyncScript = 15,
 
-      kMaxValue = kLow
+      kMaxValue = kAsyncScript
     };
 
     // Bit width required for the PrioritisationType enumeration
@@ -295,13 +296,13 @@ class PLATFORM_EXPORT MainThreadTaskQueue
         : queue_type(queue_type), spec(NameForQueueType(queue_type)) {}
 
     QueueCreationParams SetWebSchedulingQueueType(
-        absl::optional<WebSchedulingQueueType> type) {
+        std::optional<WebSchedulingQueueType> type) {
       web_scheduling_queue_type = type;
       return *this;
     }
 
     QueueCreationParams SetWebSchedulingPriority(
-        absl::optional<WebSchedulingPriority> priority) {
+        std::optional<WebSchedulingPriority> priority) {
       web_scheduling_priority = priority;
       return *this;
     }
@@ -390,8 +391,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler;
     raw_ptr<FrameSchedulerImpl, ExperimentalRenderer> frame_scheduler = nullptr;
     QueueTraits queue_traits;
-    absl::optional<WebSchedulingQueueType> web_scheduling_queue_type;
-    absl::optional<WebSchedulingPriority> web_scheduling_priority;
+    std::optional<WebSchedulingQueueType> web_scheduling_queue_type;
+    std::optional<WebSchedulingPriority> web_scheduling_priority;
 
    private:
     void ApplyQueueTraitsToSpec() {
@@ -471,11 +472,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner(
       TaskType task_type);
 
-  absl::optional<WebSchedulingQueueType> GetWebSchedulingQueueType() const {
+  std::optional<WebSchedulingQueueType> GetWebSchedulingQueueType() const {
     return web_scheduling_queue_type_;
   }
 
-  absl::optional<WebSchedulingPriority> GetWebSchedulingPriority() const {
+  std::optional<WebSchedulingPriority> GetWebSchedulingPriority() const {
     return web_scheduling_priority_;
   }
 
@@ -568,19 +569,19 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   TaskQueue::Handle task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner>
       task_runner_with_default_task_type_;
-  absl::optional<TaskQueueThrottler> throttler_;
+  std::optional<TaskQueueThrottler> throttler_;
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;
 
   // Set if this is queue is used for the web-exposed scheduling API. Used to
   // differentiate initial tasks from continuations for prioritization.
-  const absl::optional<WebSchedulingQueueType> web_scheduling_queue_type_;
+  const std::optional<WebSchedulingQueueType> web_scheduling_queue_type_;
 
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used in conjunction with the frame
   // scheduling policy to determine the task queue priority.
-  absl::optional<WebSchedulingPriority> web_scheduling_priority_;
+  std::optional<WebSchedulingPriority> web_scheduling_priority_;
 
   // Needed to notify renderer scheduler about completed tasks.
   raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>

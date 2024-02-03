@@ -92,6 +92,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   // `filter`.  Explicit approval is obtained through a Chrome dialog or by
   // adding the extension ID to the list of trusted document scan extensions.
   // The result of the denial or the backend call will be passed to `callback`.
+  // Note that scanner and job handles previously issued by the backend may
+  // become invalid after calling this function.
   void GetScannerList(gfx::NativeWindow native_window,
                       scoped_refptr<const Extension> extension,
                       api::document_scan::DeviceFilter filter,
@@ -100,6 +102,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   // Given `scanner_id` previously returned from `GetScannerList`, opens the
   // device for exclusive access.  The result containing a handle and the set of
   // current device options will be passed to `callback`.
+  // Note that job and scanner handles previously returned by the backend for
+  // the same `scanner_id` will automatically be closed.
   void OpenScanner(scoped_refptr<const Extension> extension,
                    const std::string& scanner_id,
                    OpenScannerCallback callback);
@@ -175,17 +179,17 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
     ExtensionState();
     ~ExtensionState();
 
-    // Map from public-facing scanner ID to the scanner's actual ID, which is
-    // the internal connection string used on the backend (the latter can be
-    // used to look up scanner in `scanner_devices_`).
-    std::map<std::string, std::string> scanner_ids;
+    // Map from scanner IDs returned from the most recent call to
+    // GetScannerList() to their matching device info.  Attempting to open any
+    // scanner ID not in this set will fail.
+    std::map<std::string, ScannerDevice> active_scanner_ids;
 
     // Map from scanner handle to scanner's ID (the latter can be used to look
-    // up scanner in `scanner_devices_`).
+    // up scanner in `active_scanner_ids`).
     std::map<std::string, std::string> scanner_handles;
 
-    // Active job handles.
-    std::set<std::string> active_job_handles;
+    // Map from active job handles back to the originating scanner handle.
+    std::map<std::string, std::string> active_job_handles;
 
     // A set of scanner handles the user has approved for scanning.
     std::set<std::string> approved_scanners;
@@ -224,7 +228,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   void OnGetOptionGroupsResponse(
       GetOptionGroupsCallback callback,
       crosapi::mojom::GetOptionGroupsResponsePtr response);
-  void OnCloseScannerResponse(CloseScannerCallback callback,
+  void OnCloseScannerResponse(const ExtensionId& extension_id,
+                              CloseScannerCallback callback,
                               crosapi::mojom::CloseScannerResponsePtr response);
   void OnSetOptionsResponse(SetOptionsCallback callback,
                             crosapi::mojom::SetOptionsResponsePtr response);
@@ -241,11 +246,6 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
   std::map<ExtensionId, ExtensionState> extension_state_;
-
-  // A global map (across all extensions) from a scanner's ID to its
-  // `ScannerDevice`.  The scanner ID is the connection string used on the
-  // backend to connect to a scanner.
-  std::map<std::string, ScannerDevice> scanner_devices_;
 
   base::WeakPtrFactory<DocumentScanAPIHandler> weak_ptr_factory_{this};
 };

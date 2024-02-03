@@ -641,8 +641,8 @@ PhysicalRect ComputeRubyEmHeightBoxFromChildren(
     const WritingDirectionMode writing_direction;
     const LayoutUnit border_inline_start;
     const LayoutUnit border_block_start;
-    absl::optional<PhysicalBoxStrut> padding_strut;
-    absl::optional<PhysicalRect> lineboxes_enclosing_rect;
+    std::optional<PhysicalBoxStrut> padding_strut;
+    std::optional<PhysicalRect> lineboxes_enclosing_rect;
     PhysicalRect children_overflow;
   } context(fragment);
 

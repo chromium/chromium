@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Открыть ссылку в новой вкладке, но не переходить на нее</translation>
 <translation id="353086728817903341">Подключенных устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Приложения на панели запуска</translation>
+<translation id="3537350467437346467">Вы открывали</translation>
 <translation id="3539957339480430241">Точка доступа устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3540893133818942399">Не настраивать просмотр недавних фотографий и медиафайлов с телефона</translation>
 <translation id="3542066395059568317">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них правой кнопкой мыши, чтобы удалить.</translation>
+<translation id="3547318469722231257">Вы изменили файл</translation>
 <translation id="3552189655002856821">Wi-Fi отключен</translation>
 <translation id="3554215588514239132">Показать или скрыть панель инструментов разработчика</translation>
 <translation id="3554637740840164787">Объект "<ph name="ITEM_TITLE" />" закреплен</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">В начало</translation>
 <translation id="3859364108019690">Ошибка трансляции приложений</translation>
 <translation id="3861651314799684201">Нажмите Ввод, чтобы записать видео со всего экрана</translation>
+<translation id="3882323608730650973">Файл был изменен</translation>
 <translation id="3886872229787704059">Открыто сегодня</translation>
 <translation id="3891340733213178823">Чтобы выйти, дважды нажмите Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосовое сопровождение)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Сейчас используется Wi-Fi. Чтобы снова запустить точку доступа, отключите Wi-Fi.</translation>
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
+<translation id="4596442969149038771">Пользователь <ph name="USER" /> поделился файлом</translation>
 <translation id="4611292653554630842">Войти</translation>
 <translation id="462160925400706389">Подключено устройство "<ph name="NAME" />"</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
@@ -1337,6 +1341,7 @@
 <translation id="6298183524022479114">Настройте его в приложении.</translation>
 <translation id="6309219492973062892">Выбрать значок 1–8 на панели запуска</translation>
 <translation id="6315170314923504164">Микрофон</translation>
+<translation id="6319058840130157106">Переключаться назад между правым нижним углом, панелью запуска, адресной строкой, панелью закладок, открытым сайтом и страницей со скачанными файлами</translation>
 <translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6330012934079202188">Показаны окна со всех рабочих столов. Чтобы показать окна текущего рабочего стола, нажмите на стрелку вверх.</translation>
 <translation id="6338485349199627913">Сеансом "<ph name="DISPLAY_NAME" />" управляет <ph name="MANAGER" /></translation>
@@ -1500,6 +1505,7 @@
 <translation id="6981291220124935078">Разрешить доступ</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="698231206551913481">После удаления пользователя все связанные с ним файлы и локальные данные также будут удалены.</translation>
+<translation id="6984028004251196682">Устройство "<ph name="DISPLAY_NAME" />" не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Установлено разрешение <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Посмотрите краткий обзор и узнайте, как работать на Chromebook. Пройдите обучение за 6 шагов.</translation>
 <translation id="7004910047186208204">Подключиться к мобильному интернету</translation>
 <translation id="7005239792648594238">Чтобы начать, откройте приложение</translation>
@@ -1814,6 +1820,7 @@
 <translation id="8314772463905284467">Включен режим Caps Lock</translation>
 <translation id="8315514906653279104">Включение…</translation>
 <translation id="8331351032546853669">Ожидание скачивания</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Выбрано окно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8349826889576450703">Launcher</translation>
@@ -1920,6 +1927,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, установленное приложение, заблокировано</translation>
 <translation id="8785070478575117577">Подключиться к сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
+<translation id="8790632710469941716">Переключаться вперед между правым нижним углом, панелью запуска, адресной строкой, панелью закладок, открытым сайтом и страницей со скачанными файлами</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" />.</translation>
@@ -2033,6 +2041,7 @@
 <translation id="953431725143473984">Выключить устройство?</translation>
 <translation id="954052413789300507">Недостаточно свободного места для скачивания файла <ph name="FILENAME" />. Освободите пространство.</translation>
 <translation id="954520015070501466">30 минут</translation>
+<translation id="954786879461589145">Пользователь <ph name="USER" /> изменил файл</translation>
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="981011780479609956">Срок сдачи не указан</translation>
 <translation id="98120814841227350">Перейти к концу документа</translation>

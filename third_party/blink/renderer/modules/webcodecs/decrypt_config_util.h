@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_DECRYPT_CONFIG_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_DECRYPT_CONFIG_UTIL_H_
 
+#include <optional>
+
 #include "media/base/encryption_scheme.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decrypt_config.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -22,8 +23,8 @@ MODULES_EXPORT std::unique_ptr<media::DecryptConfig> CreateMediaDecryptConfig(
     const DecryptConfig& js_config);
 
 // Attempts to create a media::EncryptionScheme value given the JS version.
-// Returns absl::nullopt if the scheme is unrecognized.
-MODULES_EXPORT absl::optional<media::EncryptionScheme> ToMediaEncryptionScheme(
+// Returns std::nullopt if the scheme is unrecognized.
+MODULES_EXPORT std::optional<media::EncryptionScheme> ToMediaEncryptionScheme(
     const String& scheme);
 
 }  // namespace blink

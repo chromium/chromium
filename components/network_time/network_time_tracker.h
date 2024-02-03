@@ -6,7 +6,9 @@
 #define COMPONENTS_NETWORK_TIME_NETWORK_TIME_TRACKER_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
@@ -95,11 +97,15 @@ class NetworkTimeTracker {
   // Constructor.  Arguments may be stubbed out for tests. |url_loader_factory|
   // must be non-null unless the kNetworkTimeServiceQuerying is disabled.
   // Otherwise, time is available only if |UpdateNetworkTime| is called.
+  // If |fetch_behavior| is not nullopt, it will control the behavior of the
+  // NetworkTimeTracker, if it is nullopt, it will be controlled via a feature
+  // parameter.
   NetworkTimeTracker(
       std::unique_ptr<base::Clock> clock,
       std::unique_ptr<const base::TickClock> tick_clock,
       PrefService* pref_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::optional<FetchBehavior> fetch_behavior);
 
   NetworkTimeTracker(const NetworkTimeTracker&) = delete;
   NetworkTimeTracker& operator=(const NetworkTimeTracker&) = delete;
@@ -233,6 +239,8 @@ class NetworkTimeTracker {
   std::vector<base::OnceClosure> fetch_completion_callbacks_;
 
   base::ThreadChecker thread_checker_;
+
+  std::optional<FetchBehavior> fetch_behavior_;
 };
 
 }  // namespace network_time

@@ -205,14 +205,14 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view) {
   const gfx::Rect current_widget_bounds =
       desk_widget->GetWindowBoundsInScreen();
   gfx::Rect target_widget_bounds = current_widget_bounds;
-  // While switching desk bar from zero state to expanded state, setting
-  // its bounds to its bounds at expanded state directly without animation,
-  // which will trigger `Layout()` and make sure the contents of
-  // desk bar(e.g, desk mini view, new desk button) are at the correct
-  // positions before the animation. And set `pause_layout_` to be true, which
-  // will help hold Layout until the animation is done. Then set the bounds of
-  // the desk bar back to its bounds at zero state to start the bounds change
-  // animation. See more details at `pause_layout_`.
+  // While switching desk bar from zero state to expanded state, set its bounds
+  // to the expanded state bounds directly without animation, which will attempt
+  // to trigger layout and ensure the contents of desk bar(e.g, desk mini view,
+  // new desk button) are at the correct positions before the animation. And set
+  // `pause_layout_` to be true, which will avoid actually doing layout until
+  // the animation is done. Then set the bounds of the desk bar back to its
+  // bounds at zero state to start the bounds change animation. See more details
+  // at `pause_layout_`.
   target_widget_bounds.set_height(DeskBarViewBase::GetPreferredBarHeight(
       desk_widget->GetNativeWindow()->GetRootWindow(),
       DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded));
@@ -230,7 +230,7 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view) {
         // make sure the button's text will be updated correctly while going
         // back to zero state.
         bar_view->UpdateDeskButtonsVisibility();
-        bar_view->Layout();
+        bar_view->DeprecatedLayoutImmediately();
         if (OverviewController* overview_controller =
                 Shell::Get()->overview_controller()) {
           if (overview_controller->InOverviewSession()) {

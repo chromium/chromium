@@ -360,10 +360,10 @@ class PaymentsNetworkInterface {
 
   // A collection of the information required to make a credit card upload
   // request.
-  struct UploadRequestDetails {
-    UploadRequestDetails();
-    UploadRequestDetails(const UploadRequestDetails& other);
-    ~UploadRequestDetails();
+  struct UploadCardRequestDetails {
+    UploadCardRequestDetails();
+    UploadCardRequestDetails(const UploadCardRequestDetails& other);
+    ~UploadCardRequestDetails();
 
     int64_t billing_customer_number = 0;
     int detected_values;
@@ -390,7 +390,7 @@ class PaymentsNetworkInterface {
     std::u16string nickname;
   };
 
-  // An enum set in the GetUploadDetailsRequest indicating the source of the
+  // An enum set in the GetCardUploadDetailsRequest indicating the source of the
   // request when uploading a card to Google Payments. It should stay consistent
   // with the same enum in Google Payments server code.
   enum UploadCardSource {
@@ -464,7 +464,7 @@ class PaymentsNetworkInterface {
 
   // Starts fetching the OAuth2 token in anticipation of future Payments
   // requests. Called as an optimization, but not strictly necessary. Should
-  // *not* be called in advance of GetUploadDetails or UploadCard because
+  // *not* be called in advance of GetCardUploadDetails or UploadCard because
   // identifying information should not be sent until the user has explicitly
   // accepted an upload prompt.
   void Prepare();
@@ -505,11 +505,11 @@ class PaymentsNetworkInterface {
   // actually available for upload in order to make more informed upload
   // decisions. |callback| is the callback function when get response from
   // server. |billable_service_number| is used to set the billable service
-  // number in the GetUploadDetails request. If the conditions are met, the
+  // number in the GetCardUploadDetails request. If the conditions are met, the
   // legal message will be returned via |callback|. |client_behavior_signals| is
   // used by Payments server to track Chrome behaviors. |upload_card_source| is
   // used by Payments server metrics to track the source of the request.
-  virtual void GetUploadDetails(
+  virtual void GetCardUploadDetails(
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
@@ -525,11 +525,12 @@ class PaymentsNetworkInterface {
 
   // The user has indicated that they would like to upload a card with the given
   // cvc. This request will fail server-side if a successful call to
-  // GetUploadDetails has not already been made.
+  // GetCardUploadDetails has not already been made.
   virtual void UploadCard(
-      const UploadRequestDetails& details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const PaymentsNetworkInterface::UploadCardResponseDetails&)>
+      const UploadCardRequestDetails& details,
+      base::OnceCallback<
+          void(AutofillClient::PaymentsRpcResult,
+               const PaymentsNetworkInterface::UploadCardResponseDetails&)>
           callback);
 
   // Determine if the user meets the Payments service conditions for upload.
@@ -563,7 +564,7 @@ class PaymentsNetworkInterface {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The user has indicated that they would like to migrate their local credit
   // cards. This request will fail server-side if a successful call to
-  // GetUploadDetails has not already been made.
+  // GetCardUploadDetails has not already been made.
   virtual void MigrateCards(
       const MigrationRequestDetails& details,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,

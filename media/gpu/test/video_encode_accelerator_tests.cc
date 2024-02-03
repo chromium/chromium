@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -30,7 +31,6 @@
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace test {
@@ -169,8 +169,8 @@ class VideoEncoderTest : public ::testing::Test {
       const size_t last_frame_index,
       const double validator_threshold,
       VideoFrameValidator::GetModelFrameCB get_model_frame_cb,
-      absl::optional<size_t> spatial_layer_index_to_decode,
-      absl::optional<size_t> temporal_layer_index_to_decode,
+      std::optional<size_t> spatial_layer_index_to_decode,
+      std::optional<size_t> temporal_layer_index_to_decode,
       SVCInterLayerPredMode inter_layer_pred_mode,
       const std::vector<gfx::Size>& spatial_layer_resolutions) {
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
@@ -311,7 +311,7 @@ class VideoEncoderTest : public ::testing::Test {
                               base::Unretained(this), visible_rect);
       bitstream_processors.emplace_back(CreateBitstreamValidator(
           video, decoder_config, config.num_frames_to_encode - 1,
-          validator_threshold, get_model_frame_cb, absl::nullopt, absl::nullopt,
+          validator_threshold, get_model_frame_cb, std::nullopt, std::nullopt,
           config.inter_layer_pred_mode, /*spatial_layer_resolutions=*/{}));
       LOG_ASSERT(bitstream_processors.back());
     }
@@ -853,7 +853,7 @@ int main(int argc, char** argv) {
   std::string codec = "h264";
   std::string svc_mode = "L1T1";
   bool output_bitstream = false;
-  absl::optional<uint32_t> output_bitrate;
+  std::optional<uint32_t> output_bitrate;
   bool reverse = false;
   media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   media::test::FrameOutputConfig frame_output_config;

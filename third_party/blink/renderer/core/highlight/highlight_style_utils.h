@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_STYLE_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_STYLE_UTILS_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
@@ -33,17 +34,17 @@ class CORE_EXPORT HighlightStyleUtils {
                             const ComputedStyle* pseudo_style,
                             PseudoId pseudo,
                             const CSSProperty& property,
-                            absl::optional<Color> previous_layer_color);
-  static absl::optional<AppliedTextDecoration> SelectionTextDecoration(
+                            std::optional<Color> previous_layer_color);
+  static std::optional<AppliedTextDecoration> SelectionTextDecoration(
       const Document& document,
       const ComputedStyle& style,
       const ComputedStyle& pseudo_style,
-      absl::optional<Color> previous_layer_color);
+      std::optional<Color> previous_layer_color);
   static Color HighlightBackgroundColor(
       const Document&,
       const ComputedStyle&,
       Node*,
-      absl::optional<Color> previous_layer_color,
+      std::optional<Color> previous_layer_color,
       PseudoId,
       const AtomicString& pseudo_argument = g_null_atom);
   static TextPaintStyle HighlightPaintingStyle(
@@ -54,11 +55,11 @@ class CORE_EXPORT HighlightStyleUtils {
       const TextPaintStyle& previous_layer_text_style,
       const PaintInfo&,
       const AtomicString& pseudo_argument = g_null_atom);
-  static absl::optional<Color> HighlightTextDecorationColor(
+  static std::optional<Color> HighlightTextDecorationColor(
       const Document&,
       const ComputedStyle&,
       Node*,
-      absl::optional<Color> previous_layer_color,
+      std::optional<Color> previous_layer_color,
       PseudoId);
 
   static const ComputedStyle* HighlightPseudoStyle(

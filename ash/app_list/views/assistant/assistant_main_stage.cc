@@ -151,7 +151,7 @@ void AppListAssistantMainStage::OnThemeChanged() {
 
 void AppListAssistantMainStage::OnViewPreferredSizeChanged(views::View* view) {
   PreferredSizeChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -510,7 +510,7 @@ void AppListAssistantMainStage::InitializeUIForStartingSession(
   }
 }
 
-BEGIN_METADATA(AppListAssistantMainStage, views::View)
+BEGIN_METADATA(AppListAssistantMainStage)
 END_METADATA
 
 }  // namespace ash

@@ -61,7 +61,7 @@ class FakeResolutionMonitor : public ResolutionMonitor {
             webrtc::PayloadStringToCodecType(format.name))) {}
   ~FakeResolutionMonitor() override = default;
 
-  absl::optional<gfx::Size> GetResolution(
+  std::optional<gfx::Size> GetResolution(
       const media::DecoderBuffer& buffer) override {
     if (pass_resolution_monitor_) {
       return gfx::Size(1280, 720);

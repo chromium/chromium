@@ -476,10 +476,10 @@ void NavigateEvent::ProcessScrollBehavior() {
   CHECK_EQ(intercept_state_, InterceptState::kCommitted);
   intercept_state_ = InterceptState::kScrolled;
 
-  absl::optional<HistoryItem::ViewState> view_state =
+  std::optional<HistoryItem::ViewState> view_state =
       dispatch_params_->destination_item
           ? dispatch_params_->destination_item->GetViewState()
-          : absl::nullopt;
+          : std::nullopt;
   // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
   // because we are certain that we want to actually scroll if we reach this
   // point. Using mojom::blink::ScrollRestorationType::kManual would block the

@@ -15,7 +15,7 @@ use crate::mojo_types::*;
 use super::UntypedHandle;
 
 bitflags::bitflags! {
-    #[derive(Default)]
+    #[derive(Clone, Copy, Default)]
     pub struct DuplicateFlags: u32 {
         /// The resulting duplicate shared buffer handle will map to a read only
         /// memory region. If a buffer is ever duplicated without this flag, no

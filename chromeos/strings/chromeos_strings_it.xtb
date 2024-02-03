@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Errore interno</translation>
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">per</translation>
 <translation id="1145018782460575098">È aperta la finestra per aggiornare il firmware dei dispositivi esterni. <ph name="NUM_UPDATES" /> aggiornamenti disponibili.</translation>
 <translation id="1145516343487477149">Trova articoli del Centro assistenza e risposte a domande comuni sui Chromebook</translation>
 <translation id="1154390310959620237">Puoi personalizzare solo 5 scorciatoie. Elimina una scorciatoia per aggiungerne una nuova.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Adatta ad area di scansione</translation>
 <translation id="1367951781824006909">Scegli un file</translation>
+<translation id="1371650399987522809">Feedback per lo sfondo con IA di Google integrata</translation>
 <translation id="1387854245479784695">Si tratta di un valore aggregato di tutti i core</translation>
 <translation id="1394661041439318933">Percentuale di batteria della custodia del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">È possibile inviare un ping al gateway</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">colore retroilluminato</translation>
 <translation id="1565038567006703504">Impossibile aggiornare <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">dividi</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Imposta come sfondo</translation>
 <translation id="1578784163189013834">Scegli lo sfondo del salvaschermo</translation>
 <translation id="160633243685262989">Immagine di anteprima</translation>
 <translation id="1611649489706141841">avanti</translation>
 <translation id="1615335640928990664">Utilizzo dei dati da <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Generazione delle immagini in corso…</translation>
 <translation id="1621067168122174824">Esegui test ricarica</translation>
 <translation id="1626590945318984973">Scorciatoia non disponibile. Premi una nuova scorciatoia senza utilizzare i tasti funzione e <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Caricamento</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="2880569433548999039">Salvaschermo Flusso di nuvole</translation>
 <translation id="2926057806159140518">Inserisci il tuo nome utente e la password o scansiona il codice QR</translation>
+<translation id="2938573842839598578">Per un risultato approssimativo, <ph name="OPERATOR_TEXT" /> il valore di <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Impossibile testare il dispositivo. Riapri il coperchio per testarlo.</translation>
 <translation id="2941112035454246133">Bassa</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Aggiornamento ChromeOS</translation>
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Identità locale (facoltativa)</translation>
 <translation id="3565064564551103223">IP consentiti</translation>
 <translation id="3569407787324516067">Salvaschermo</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7180865173735832675">Personalizza</translation>
 <translation id="7184043045742675738">Fai clic su un tasto qualsiasi per personalizzare il pulsante. Riposiziona il tasto con il mouse o i tasti Freccia.</translation>
+<translation id="7206979415662233817">Termini di servizio</translation>
 <translation id="7212547870105584639">Gestisci le impostazioni APN di rete. Gli APN stabiliscono una connessione tra una rete mobile e internet. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aggiornamenti del firmware per dispositivi esterni</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">colore tastiera</translation>
 <translation id="7317831949569936035">Registrazione per uso scolastico</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Devi avere almeno 18 anni e accettare che l'utilizzo degli sfondi IA è soggetto ai <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Termini di servizio di Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> e ai <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Termini di servizio aggiuntivi per l'IA generativa<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Puoi creare sfondi con l'IA solo per uso personale e non commerciale. Quando ricevi assistenza relativa agli sfondi, ai server dell'IA di Google viene inviato il testo per generare suggerimenti di sfondi, soggetti alle <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nella Ricerca Google.</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
 <translation id="7353413232959255829">Risultato di ricerca <ph name="LIST_POSITION" /> di <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Premi Invio per navigare alla scorciatoia.</translation>
@@ -909,7 +920,7 @@
 <translation id="7665800271478495366">Cambia avatar</translation>
 <translation id="7683228889864052081">Tonalità della tastiera</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
-<translation id="7701040980221191251">Nulla</translation>
+<translation id="7701040980221191251">Nessun dato</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">Luce della tastiera</translation>

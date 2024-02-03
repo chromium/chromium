@@ -1044,7 +1044,7 @@ void NetworkListViewControllerImpl::FocusLastSelectedView() {
   }
 
   parent_view->SizeToPreferredSize();
-  parent_view->Layout();
+  parent_view->DeprecatedLayoutImmediately();
   if (selected_view) {
     parent_view->ScrollRectToVisible(selected_view->bounds());
   }

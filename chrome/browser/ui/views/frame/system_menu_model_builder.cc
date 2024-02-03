@@ -27,7 +27,7 @@
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/user_info.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
@@ -216,7 +216,7 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
     if (command_id > IDC_VISIT_DESKTOP_OF_LRU_USER_LAST) {
       break;
     }
-    const user_manager::UserInfo* user_info = logged_in_users[user_index];
+    const user_manager::User* user_info = logged_in_users[user_index];
     model->AddItem(
         command_id,
         l10n_util::GetStringFUTF16(

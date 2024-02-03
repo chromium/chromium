@@ -96,8 +96,7 @@ TEST_F(FormActivityObserverBridgeTest, DocumentSubmitted) {
   std::string kTestFormName("form-name");
   std::string kTestFormData("[]");
   bool has_user_gesture = true;
-  auto sender_frame =
-      web::FakeWebFrame::Create("sender_frame", true, GURL::EmptyGURL());
+  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true, GURL());
   observer_bridge_.DocumentSubmitted(&fake_web_state_, sender_frame.get(),
                                      kTestFormName, kTestFormData,
                                      has_user_gesture);
@@ -114,8 +113,7 @@ TEST_F(FormActivityObserverBridgeTest, FormActivityRegistered) {
   ASSERT_FALSE([observer_ formActivityInfo]);
 
   autofill::FormActivityParams params;
-  auto sender_frame =
-      web::FakeWebFrame::Create("sender_frame", true, GURL::EmptyGURL());
+  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true, GURL());
   params.form_name = "form-name";
   params.field_type = "field-type";
   params.type = "type";
@@ -140,8 +138,7 @@ TEST_F(FormActivityObserverBridgeTest, FormRemovalRegistered) {
   ASSERT_FALSE([observer_ formRemovalInfo]);
 
   autofill::FormRemovalParams params;
-  auto sender_frame =
-      web::FakeWebFrame::Create("sender_frame", true, GURL::EmptyGURL());
+  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true, GURL());
   params.form_name = "form-name";
   params.unique_form_id = autofill::FormRendererId(1);
   params.input_missing = true;

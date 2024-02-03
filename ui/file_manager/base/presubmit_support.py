@@ -55,7 +55,10 @@ def _IsComment(line):
 
 
 def _CheckBannedTsTags(input_api, output_api):
-    ts_only = lambda f: f.LocalPath().endswith('.ts')
+    # It allow @ts-ignore in test files
+    is_test = lambda fname: '_unittest' in fname or 'mock_' in fname
+    ts_only = lambda f: (f.LocalPath().endswith('.ts') and
+                         not is_test(f.LocalPath()))
     results = []
     offending_files = []
     for f in input_api.AffectedFiles(file_filter=ts_only):

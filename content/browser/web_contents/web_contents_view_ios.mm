@@ -271,4 +271,9 @@ bool WebContentsViewIOS::OnlyExpandTopControlsAtPageTop() const {
   return delegate && delegate->OnlyExpandTopControlsAtPageTop();
 }
 
+BackForwardTransitionAnimationManager*
+WebContentsViewIOS::GetBackForwardTransitionAnimationManager() {
+  return nullptr;
+}
+
 }  // namespace content

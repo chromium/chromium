@@ -104,9 +104,7 @@ std::string ContentPageAnnotatorDriver::GenerateSourceId(
       // We use SHA256 since it has comparable (<2x) speed to e.g. crc32, but
       // has no known collisions (which could lead to cached results for another
       // image being returned for this one).
-      std::string source_id;
-      base::Base64Encode(crypto::SHA256HashString(content), &source_id);
-      return source_id;
+      return base::Base64Encode(crypto::SHA256HashString(content));
     }
   } else if (src_url.SchemeIs("http") || src_url.SchemeIs("https")) {
     return src_url.spec();

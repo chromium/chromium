@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SESSION_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "device/vr/public/mojom/xr_session.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -139,7 +139,7 @@ class XRSession final : public EventTarget,
     return dom_overlay_state_.Get();
   }
   const String visibilityState() const;
-  absl::optional<float> frameRate() const { return absl::nullopt; }
+  std::optional<float> frameRate() const { return std::nullopt; }
   DOMFloat32Array* supportedFrameRates() const { return nullptr; }
   XRRenderState* renderState() const { return render_state_.Get(); }
 
@@ -187,14 +187,14 @@ class XRSession final : public EventTarget,
   // |native_origin_information| describes native origin relative to which the
   // transform is expressed.
   // |maybe_plane_id| is an ID of the plane to which the anchor should be
-  // attached - set to absl::nullopt if the plane is not to be attached to any
+  // attached - set to std::nullopt if the plane is not to be attached to any
   // plane.
   ScriptPromise CreateAnchorHelper(
       ScriptState* script_state,
       const gfx::Transform& native_origin_from_anchor,
       const device::mojom::blink::XRNativeOriginInformationPtr&
           native_origin_information,
-      absl::optional<uint64_t> maybe_plane_id,
+      std::optional<uint64_t> maybe_plane_id,
       ExceptionState& exception_state);
 
   // Helper POD type containing the information needed for anchor creation in
@@ -210,7 +210,7 @@ class XRSession final : public EventTarget,
   // for anchor creation (i.e. the native origin set in the struct will be
   // describing a stationary space). If a stationary reference space is not
   // available, the method returns nullopt.
-  absl::optional<ReferenceSpaceInformation> GetStationaryReferenceSpace() const;
+  std::optional<ReferenceSpaceInformation> GetStationaryReferenceSpace() const;
 
   int requestAnimationFrame(V8XRFrameRequestCallback* callback);
   void cancelAnimationFrame(int id);
@@ -271,8 +271,8 @@ class XRSession final : public EventTarget,
   void OnFocusChanged();
   void OnFrame(
       double timestamp,
-      const absl::optional<gpu::MailboxHolder>& output_mailbox_holder,
-      const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
+      const std::optional<gpu::MailboxHolder>& output_mailbox_holder,
+      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
 
   const HeapVector<Member<XRViewData>>& views();
 
@@ -341,7 +341,7 @@ class XRSession final : public EventTarget,
   // Note: currently, the information about the mojo_from_-floor-type spaces is
   // stored elsewhere, this method will not work for those reference space
   // types.
-  absl::optional<gfx::Transform> GetMojoFrom(
+  std::optional<gfx::Transform> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
   XRCPUDepthInformation* GetCpuDepthInformation(
@@ -387,7 +387,7 @@ class XRSession final : public EventTarget,
   const FrozenArray<XRImageTrackingResult>& ImageTrackingResults(
       ExceptionState&);
 
-  const absl::optional<gfx::Size>& CameraImageSize() const {
+  const std::optional<gfx::Size>& CameraImageSize() const {
     return camera_image_size_;
   }
 
@@ -561,7 +561,7 @@ class XRSession final : public EventTarget,
 
   // Populated iff the raw camera feature has been enabled and the session
   // received a frame from the device that contained the camera image.
-  absl::optional<gfx::Size> camera_image_size_;
+  std::optional<gfx::Size> camera_image_size_;
 
   HeapVector<Member<XRViewData>> views_;
   Vector<device::mojom::blink::XRViewPtr> pending_views_;

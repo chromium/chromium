@@ -31,23 +31,25 @@ common_tsc_dir =
 # TS files to compile.
 ts_modules = [
   "auto_scan_manager.ts",
+  "cache.ts",
   "commands.ts",
   "focus_ring_manager.ts",
   "history.ts",
+  "metrics.ts",
+  "navigator.ts",
   "navigator_interfaces.ts",
+  "nodes/switch_access_node.ts",
   "point_scan_manager.ts",
   "settings_manager.ts",
+  "switch_access_constants.ts",
   "switch_access_loader.ts",
 ]
 
 # JS files needed to compile TS.
 js_modules = [
   "action_manager.js",
-  "cache.js",
   "item_scan_manager.js",
   "menu_manager.js",
-  "metrics.js",
-  "navigator.js",
   "nodes/back_button_node.js",
   "nodes/basic_node.js",
   "nodes/combo_box_node.js",
@@ -57,11 +59,9 @@ js_modules = [
   "nodes/keyboard_node.js",
   "nodes/modal_dialog_node.js",
   "nodes/slider_node.js",
-  "nodes/switch_access_node.js",
   "nodes/tab_node.js",
   "nodes/window_node.js",
   "switch_access.js",
-  "switch_access_constants.js",
   "switch_access_predicate.js",
   "text_navigation_manager.js",
 ]

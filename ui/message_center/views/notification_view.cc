@@ -238,8 +238,7 @@ class NotificationView::NotificationViewPathGenerator
   // This custom PathGenerator is used for the ink drop clipping bounds. By
   // setting |preferred_size_| we set the correct clip bounds in
   // GetRoundRect(). This is needed as the correct bounds for the ink drop are
-  // required before a Layout() on the view is run. See
-  // http://crbug.com/915222.
+  // required before the view does layout. See http://crbug.com/915222.
   gfx::Size preferred_size_;
 };
 
@@ -571,7 +570,7 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
     RemoveBackgroundAnimation();
 
   UpdateHeaderViewBackgroundColor();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 
   // Call DisableNotification() at the end, because |this| can be deleted at any
@@ -628,8 +627,8 @@ void NotificationView::RemoveLayerFromRegions(ui::Layer* layer) {
     child->DestroyLayer();
 }
 
-void NotificationView::Layout() {
-  NotificationViewBase::Layout();
+void NotificationView::Layout(PassKey) {
+  LayoutSuperclass<NotificationViewBase>(this);
 
   // The animation is needed to run inside of the border.
   ink_drop_container_->SetBoundsRect(GetLocalBounds());
@@ -707,7 +706,7 @@ void NotificationView::HeaderRowPressed() {
   // cause |this| to be deleted.
   if (!weak_ptr)
     return;
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 

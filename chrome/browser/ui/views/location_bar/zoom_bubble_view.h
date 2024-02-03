@@ -31,6 +31,8 @@ class ImageButton;
 class ZoomBubbleView : public LocationBarBubbleDelegateView,
                        public ImmersiveModeController::Observer,
                        public extensions::IconImage::Observer {
+  METADATA_HEADER(ZoomBubbleView, LocationBarBubbleDelegateView)
+
  public:
   ZoomBubbleView(const ZoomBubbleView&) = delete;
   ZoomBubbleView& operator=(const ZoomBubbleView&) = delete;

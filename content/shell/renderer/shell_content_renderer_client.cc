@@ -177,20 +177,19 @@ class ShellContentRendererUrlLoaderThrottleProvider
     if (local_frame_token.has_value()) {
       auto throttle =
           content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
-              [](const blink::LocalFrameToken& local_frame_token,
+              [](const blink::LocalFrameToken& token,
                  const scoped_refptr<base::SequencedTaskRunner>
                      main_thread_task_runner,
                  const url::Origin& origin,
                  blink::mojom::IdpSigninStatus status) {
                 if (content::RenderThread::IsMainThread()) {
-                  blink::SetIdpSigninStatus(local_frame_token, origin, status);
+                  blink::SetIdpSigninStatus(token, origin, status);
                   return;
                 }
                 if (main_thread_task_runner) {
                   main_thread_task_runner->PostTask(
-                      FROM_HERE,
-                      base::BindOnce(&blink::SetIdpSigninStatus,
-                                     local_frame_token, origin, status));
+                      FROM_HERE, base::BindOnce(&blink::SetIdpSigninStatus,
+                                                token, origin, status));
                 }
               },
               local_frame_token.value(), main_thread_task_runner_));

@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RESULT_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -78,7 +79,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
                const ConstraintSpace& new_space,
                const MarginStrut& new_end_margin_strut,
                LayoutUnit bfc_line_offset,
-               absl::optional<LayoutUnit> bfc_block_offset,
+               std::optional<LayoutUnit> bfc_block_offset,
                LayoutUnit block_offset_delta);
 
   // Creates a copy of LayoutResult with a new (but "identical") fragment.
@@ -177,8 +178,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return bitfields_.can_use_out_of_flow_positioned_first_tier_cache;
   }
 
-  absl::optional<wtf_size_t> PositionFallbackIndex() const {
-    return rare_data_ ? rare_data_->PositionFallbackIndex() : absl::nullopt;
+  std::optional<wtf_size_t> PositionFallbackIndex() const {
+    return rare_data_ ? rare_data_->PositionFallbackIndex() : std::nullopt;
   }
   const Vector<NonOverflowingScrollRange>*
   PositionFallbackNonOverflowingRanges() const {
@@ -243,14 +244,14 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return bfc_offset_.line_offset;
   }
 
-  const absl::optional<LayoutUnit> BfcBlockOffset() const {
+  const std::optional<LayoutUnit> BfcBlockOffset() const {
     if (bitfields_.has_oof_insets_for_get_computed_style) {
       DCHECK(physical_fragment_->IsOutOfFlowPositioned());
       return LayoutUnit();
     }
 
     if (bitfields_.is_bfc_block_offset_nullopt)
-      return absl::nullopt;
+      return std::nullopt;
 
     return bfc_offset_.block_offset;
   }
@@ -268,15 +269,16 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   //
   // In the above example the |BfcBlockOffset()| will be at 0px, where-as the
   // |LineBoxBfcBlockOffset()| will be at 20px.
-  absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
+  std::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
     if (Status() != kSuccess || !GetPhysicalFragment().IsLineBox()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (rare_data_) {
-      if (absl::optional<LayoutUnit> offset =
-              rare_data_->LineBoxBfcBlockOffset())
+      if (std::optional<LayoutUnit> offset =
+              rare_data_->LineBoxBfcBlockOffset()) {
         return offset;
+      }
     }
 
     return BfcBlockOffset();
@@ -315,10 +317,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return data ? data->clearance_after_line : LayoutUnit();
   }
 
-  absl::optional<LayoutUnit> MinimalSpaceShortage() const {
+  std::optional<LayoutUnit> MinimalSpaceShortage() const {
     if (!rare_data_ || space_.IsInitialColumnBalancingPass() ||
         rare_data_->minimal_space_shortage == kIndefiniteSize) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return rare_data_->minimal_space_shortage;
   }
@@ -534,7 +536,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     }
 
     void SetPositionFallbackResult(
-        absl::optional<wtf_size_t> fallback_index,
+        std::optional<wtf_size_t> fallback_index,
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       layout_result_->EnsureRareData()->SetPositionFallbackResult(
           fallback_index, non_overflowing_ranges);
@@ -856,20 +858,20 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       line_box_bfc_block_offset = offset;
       set_line_box_bfc_block_offset_is_set(true);
     }
-    absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
+    std::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
       if (!line_box_bfc_block_offset_is_set())
-        return absl::nullopt;
+        return std::nullopt;
       return line_box_bfc_block_offset;
     }
 
     void SetPositionFallbackResult(
-        absl::optional<wtf_size_t> fallback_index,
+        std::optional<wtf_size_t> fallback_index,
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       position_fallback_index = fallback_index;
       position_fallback_non_overflowing_ranges = non_overflowing_ranges;
       set_position_fallback_result_is_set(true);
     }
-    absl::optional<wtf_size_t> PositionFallbackIndex() const {
+    std::optional<wtf_size_t> PositionFallbackIndex() const {
       return position_fallback_index;
     }
     const Vector<NonOverflowingScrollRange>*
@@ -918,7 +920,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     // Only valid if line_box_bfc_block_offset_is_set
     LayoutUnit line_box_bfc_block_offset;
 
-    absl::optional<wtf_size_t> position_fallback_index;
+    std::optional<wtf_size_t> position_fallback_index;
 
     // Only valid if position_fallback_result_is_set
     Vector<NonOverflowingScrollRange> position_fallback_non_overflowing_ranges;

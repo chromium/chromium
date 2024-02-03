@@ -20,32 +20,39 @@ namespace device {
 OpenXRSceneUnderstandingManager::OpenXRSceneUnderstandingManager() = default;
 OpenXRSceneUnderstandingManager::~OpenXRSceneUnderstandingManager() = default;
 
-HitTestSubscriptionId OpenXRSceneUnderstandingManager::SubscribeToHitTest(
+std::optional<HitTestSubscriptionId>
+OpenXRSceneUnderstandingManager::SubscribeToHitTest(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
+  if (!OnNewHitTestSubscription()) {
+    return std::nullopt;
+  }
+
   auto subscription_id = hittest_id_generator_.GenerateNextId();
 
   hit_test_subscription_id_to_data_.emplace(
       subscription_id,
       HitTestSubscriptionData{std::move(native_origin_information),
                               entity_types, std::move(ray)});
-  OnNewHitTestSubscription();
 
   return subscription_id;
 }
 
-HitTestSubscriptionId
+std::optional<HitTestSubscriptionId>
 OpenXRSceneUnderstandingManager::SubscribeToHitTestForTransientInput(
     const std::string& profile_name,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
+  if (!OnNewHitTestSubscription()) {
+    return std::nullopt;
+  }
+
   auto subscription_id = hittest_id_generator_.GenerateNextId();
 
   hit_test_subscription_id_to_transient_hit_test_data_.emplace(
       subscription_id, TransientInputHitTestSubscriptionData{
                            profile_name, entity_types, std::move(ray)});
-  OnNewHitTestSubscription();
 
   return subscription_id;
 }

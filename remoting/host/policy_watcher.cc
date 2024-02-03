@@ -203,6 +203,7 @@ base::Value::Dict PolicyWatcher::GetDefaultPolicies() {
   result.Set(key::kRemoteAccessHostAllowClientPairing, true);
   result.Set(key::kRemoteAccessHostAllowGnubbyAuth, true);
   result.Set(key::kRemoteAccessHostAllowFileTransfer, true);
+  result.Set(key::kRemoteAccessHostAllowUrlForwarding, true);
   result.Set(key::kRemoteAccessHostEnableUserInterface, true);
   result.Set(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
   result.Set(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);

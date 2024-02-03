@@ -27,7 +27,7 @@ suite('cr-search-field', function() {
     // Ensure svg, which is referred to by a relative URL, is loaded from
     // chrome://resources and not chrome://test
     const base = document.createElement('base');
-    base.href = 'chrome://resources/cr_elements/';
+    base.href = 'chrome://resources/ash/common/cr_elements/';
     document.head.appendChild(base);
     field = document.createElement('cr-search-field');
     searches = [];

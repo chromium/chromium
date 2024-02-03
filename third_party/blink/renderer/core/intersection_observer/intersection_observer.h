@@ -98,41 +98,42 @@ class CORE_EXPORT IntersectionObserver final
                                       const IntersectionObserverInit*,
                                       ExceptionState& = ASSERT_NO_EXCEPTION);
 
+  struct Params {
+    STACK_ALLOCATED();
+
+   public:
+    Vector<Length> margin;
+    MarginTarget margin_target = kApplyMarginToRoot;
+    Vector<Length> scroll_margin;
+
+    // Elements should be in the range [0,1], and are interpreted according to
+    // the given `semantics`.
+    Vector<float> thresholds;
+    ThresholdInterpretation semantics = kFractionOfTarget;
+
+    DeliveryBehavior behavior = kDeliverDuringPostLifecycleSteps;
+    // Specifies the minimum period between change notifications.
+    DOMHighResTimeStamp delay = 0;
+    bool track_visibility = false;
+    bool always_report_root_bounds = false;
+    // Indicates whether the overflow clip edge should be used instead of the
+    // bounding box if appropriate.
+    bool use_overflow_clip_edge = false;
+    bool needs_initial_observation_with_detached_target = true;
+  };
+
   // Creates an IntersectionObserver that monitors changes to the intersection
   // between its target element relative to its implicit root and notifies via
-  // the given |callback|. |thresholds| should be in the range [0,1], and are
-  // interpreted according to the given |semantics|. |delay| specifies the
-  // minimum period between change notifications.
-  // `use_overflow_clip_edge` indicates whether the overflow clip edge
-  // should be used instead of the bounding box if appropriate.
+  // the given |callback|.
   static IntersectionObserver* Create(
-      const Vector<Length>& margin,
-      const Vector<Length>& scroll_margin,
-      const Vector<float>& thresholds,
-      Document* document,
+      const Document& document,
       EventCallback callback,
       LocalFrameUkmAggregator::MetricId ukm_metric_id,
-      DeliveryBehavior behavior = kDeliverDuringPostLifecycleSteps,
-      ThresholdInterpretation semantics = kFractionOfTarget,
-      DOMHighResTimeStamp delay = 0,
-      bool track_visbility = false,
-      bool always_report_root_bounds = false,
-      MarginTarget margin_target = kApplyMarginToRoot,
-      bool use_overflow_clip_edge = false,
-      bool needs_initial_observation_with_detached_target = true,
-      ExceptionState& = ASSERT_NO_EXCEPTION);
+      Params&& params);
 
-  explicit IntersectionObserver(IntersectionObserverDelegate& delegate,
-                                Node* root,
-                                const Vector<Length>& margin,
-                                const Vector<Length>& scroll_margin,
-                                const Vector<float>& thresholds,
-                                ThresholdInterpretation semantics,
-                                DOMHighResTimeStamp delay,
-                                bool track_visibility,
-                                bool always_report_root_bounds,
-                                MarginTarget margin_target,
-                                bool use_overflow_clip_edge);
+  IntersectionObserver(IntersectionObserverDelegate& delegate,
+                       Node* root,
+                       Params&& params);
 
   // API methods.
   void observe(Element*, ExceptionState& = ASSERT_NO_EXCEPTION);
@@ -179,7 +180,7 @@ class CORE_EXPORT IntersectionObserver final
   // Returns the number of IntersectionObservations that recomputed geometry.
   int64_t ComputeIntersections(
       unsigned flags,
-      absl::optional<base::TimeTicks>& monotonic_time,
+      std::optional<base::TimeTicks>& monotonic_time,
       gfx::Vector2dF accumulated_scroll_delta_since_last_update);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
 
@@ -222,17 +223,16 @@ class CORE_EXPORT IntersectionObserver final
   HeapLinkedHashSet<WeakMember<IntersectionObservation>> observations_;
   // Observations that have updates waiting to be delivered
   HeapHashSet<Member<IntersectionObservation>> active_observations_;
-  Vector<float> thresholds_;
-  DOMHighResTimeStamp delay_;
-  Vector<Length> margin_;
-  Vector<Length> scroll_margin_;
-  MarginTarget margin_target_;
-  gfx::Vector2dF accumulated_scroll_delta_since_last_update_;
-  unsigned root_is_implicit_ : 1;
-  unsigned track_visibility_ : 1;
-  unsigned track_fraction_of_root_ : 1;
-  unsigned always_report_root_bounds_ : 1;
-  unsigned use_overflow_clip_edge_ : 1;
+  const Vector<float> thresholds_;
+  const DOMHighResTimeStamp delay_;
+  const Vector<Length> margin_;
+  const Vector<Length> scroll_margin_;
+  const MarginTarget margin_target_;
+  const unsigned root_is_implicit_ : 1;
+  const unsigned track_visibility_ : 1;
+  const unsigned track_fraction_of_root_ : 1;
+  const unsigned always_report_root_bounds_ : 1;
+  const unsigned use_overflow_clip_edge_ : 1;
 };
 
 }  // namespace blink

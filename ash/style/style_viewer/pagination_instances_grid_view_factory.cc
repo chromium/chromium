@@ -123,9 +123,9 @@ class PaginationTestScrollView : public views::ScrollView,
     return gfx::Size(kPageWidth, kPageHeight);
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     page_container_->SizeToPreferredSize();
-    views::ScrollView::Layout();
+    LayoutSuperclass<views::ScrollView>(this);
   }
 
   // PaginationModelObserver:

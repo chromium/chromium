@@ -9,10 +9,15 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+
+#if DCHECK_IS_ON()
+#include "base/ranges/algorithm.h"
+#endif
 
 namespace views {
 
@@ -44,6 +49,13 @@ gfx::Size LayoutManagerBase::GetPreferredSize(const View* host) const {
   if (!cached_preferred_size_)
     cached_preferred_size_ = CalculateProposedLayout(SizeBounds()).host_size;
   return *cached_preferred_size_;
+}
+
+gfx::Size LayoutManagerBase::GetPreferredSize(
+    const View* host,
+    const SizeBounds& available_size) const {
+  DCHECK_EQ(host_view_, host);
+  return CalculateProposedLayout(available_size).host_size;
 }
 
 gfx::Size LayoutManagerBase::GetMinimumSize(const View* host) const {
@@ -91,6 +103,24 @@ void LayoutManagerBase::Layout(View* host) {
   LayoutImpl();
 }
 
+void LayoutManagerBase::OnViewPropertyChanged(View* observed_view,
+                                              const void* key,
+                                              int64_t old_value) {
+  DCHECK_EQ(GetRootLayoutManager(), this);
+
+  if (key == kViewIgnoredByLayoutKey) {
+    const bool ignored = observed_view->GetProperty(kViewIgnoredByLayoutKey);
+    // TODO(crbug.com/1524149): Shouldn't need to check this, the framework
+    // should avoid calling us when the value hasn't changed.
+    if (ignored == ui::ClassPropertyCaster<bool>::FromInt64(old_value)) {
+      return;
+    }
+    base::AutoReset<bool> setter(&suppress_invalidate_, true);
+    PropagateChildViewIgnoredByLayout(observed_view, ignored);
+    InvalidateHost(false);
+  }
+}
+
 std::vector<raw_ptr<View, VectorExperimental>>
 LayoutManagerBase::GetChildViewsInPaintOrder(const View* host) const {
   DCHECK_EQ(host_view_, host);
@@ -113,23 +143,13 @@ ProposedLayout LayoutManagerBase::GetProposedLayout(
 
 void LayoutManagerBase::SetChildViewIgnoredByLayout(View* child_view,
                                                     bool ignored) {
-  if (child_view->GetProperty(kViewIgnoredByLayoutKey) == ignored) {
-    return;
-  }
-
-  base::AutoReset<bool> setter(&suppress_invalidate_, true);
-  if (ignored) {
-    child_view->SetProperty(kViewIgnoredByLayoutKey, true);
-  } else {
-    child_view->ClearProperty(kViewIgnoredByLayoutKey);
-  }
-
-  PropagateChildViewIgnoredByLayout(child_view, ignored);
-  InvalidateHost(false);
+  // TODO(crbug.com/1267319): Call this directly in callers and remove.
+  child_view->SetProperty(kViewIgnoredByLayoutKey, ignored);
 }
 
 bool LayoutManagerBase::IsChildViewIgnoredByLayout(
     const View* child_view) const {
+  // TODO(crbug.com/1267319): Call this directly in callers and remove.
   return child_view->GetProperty(kViewIgnoredByLayoutKey);
 }
 
@@ -148,8 +168,11 @@ bool LayoutManagerBase::IsChildIncludedInLayout(const View* child,
   // During callbacks when a child is removed we can get in a state where a view
   // in the child list of the host view is not in |child_infos_|. In that case,
   // the view is being removed and is not part of the layout.
-  if (it == child_infos_.end())
+  // TODO(crbug.com/1524187): This is a symptom of bad removal handling. Fix,
+  // then convert this to a CHECK.
+  if (it == child_infos_.end()) {
     return false;
+  }
 
   return !IsChildViewIgnoredByLayout(child) &&
          (include_hidden || it->second.can_be_visible);
@@ -161,8 +184,11 @@ bool LayoutManagerBase::CanBeVisible(const View* child) const {
   // During callbacks when a child is removed we can get in a state where a view
   // in the child list of the host view is not in |child_infos_|. In that case,
   // the view is being removed and is not part of the layout.
-  if (it == child_infos_.end())
+  // TODO(crbug.com/1524187): This is a symptom of bad removal handling. Fix,
+  // then convert this to a CHECK.
+  if (it == child_infos_.end()) {
     return false;
+  }
 
   return it->second.can_be_visible;
 }
@@ -200,7 +226,7 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
       // it here.
       // TODO(dfried): figure out a better way to handle this.
       if (!size_changed && child_layout.available_size != SizeBounds())
-        child_view->Layout();
+        child_view->DeprecatedLayoutImmediately();
     }
   }
 
@@ -235,12 +261,16 @@ bool LayoutManagerBase::OnChildViewIgnoredByLayout(View* child_view,
 }
 
 bool LayoutManagerBase::OnViewAdded(View* host, View* view) {
-  OnLayoutChanged();
+  if (IsChildIncludedInLayout(view)) {
+    OnLayoutChanged();
+  }
   return false;
 }
 
 bool LayoutManagerBase::OnViewRemoved(View* host, View* view) {
-  OnLayoutChanged();
+  if (IsChildIncludedInLayout(view)) {
+    OnLayoutChanged();
+  }
   return false;
 }
 
@@ -271,6 +301,11 @@ void LayoutManagerBase::Installed(View* host_view) {
   DCHECK(host_view);
   DCHECK(!host_view_);
   DCHECK(child_infos_.empty());
+  DCHECK_EQ(GetRootLayoutManager(), this);
+
+  for (View* child : host_view->children()) {
+    view_observations_.AddObservation(child);
+  }
 
   base::AutoReset<bool> setter(&suppress_invalidate_, true);
   PropagateInstalled(host_view);
@@ -279,6 +314,9 @@ void LayoutManagerBase::Installed(View* host_view) {
 void LayoutManagerBase::ViewAdded(View* host, View* view) {
   DCHECK_EQ(host_view_, host);
   DCHECK(!base::Contains(child_infos_, view));
+  DCHECK_EQ(GetRootLayoutManager(), this);
+
+  view_observations_.AddObservation(view);
 
   base::AutoReset<bool> setter(&suppress_invalidate_, true);
   const bool invalidate = PropagateViewAdded(host, view);
@@ -289,11 +327,14 @@ void LayoutManagerBase::ViewAdded(View* host, View* view) {
 void LayoutManagerBase::ViewRemoved(View* host, View* view) {
   DCHECK_EQ(host_view_, host);
   DCHECK(base::Contains(child_infos_, view));
+  DCHECK_EQ(GetRootLayoutManager(), this);
 
   auto it = child_infos_.find(view);
   DCHECK(it != child_infos_.end());
   const bool removed_visible =
       it->second.can_be_visible && !IsChildViewIgnoredByLayout(view);
+
+  view_observations_.RemoveObservation(view);
 
   base::AutoReset<bool> setter(&suppress_invalidate_, true);
   const bool invalidate = PropagateViewRemoved(host, view);
@@ -323,8 +364,23 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
     std::unique_ptr<LayoutManagerBase> owned_layout) {
   DCHECK(owned_layout);
   DCHECK(!owned_layout->parent_layout_);
+
+  // View observations should only exist on the root.
+#if DCHECK_IS_ON()
+  // If `owned_layout` knows about views the root doesn't, something is going to
+  // go wrong.
+  const LayoutManagerBase* const root_layout = GetRootLayoutManager();
+  base::ranges::for_each(
+      owned_layout->view_observations_.sources(), [&](View* source) {
+        DCHECK(root_layout->view_observations_.IsObservingSource(source));
+      });
+#endif
+  owned_layout->view_observations_.RemoveAllObservations();
+
+  // Inform `owned_layout` about `host_view_` and its children.
   if (host_view_) {
-    owned_layout->Installed(host_view_);
+    base::AutoReset<bool> setter(&suppress_invalidate_, true);
+    owned_layout->PropagateInstalled(host_view_);
     for (View* child_view : host_view_->children()) {
       const ChildInfo& child_info = child_infos_.find(child_view)->second;
       owned_layout->PropagateChildViewIgnoredByLayout(
@@ -333,6 +389,8 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
                                                child_info.can_be_visible);
     }
   }
+
+  // Attach `owned_layout` to us.
   owned_layout->parent_layout_ = this;
   owned_layouts_.emplace_back(std::move(owned_layout));
 }
@@ -368,14 +426,15 @@ bool LayoutManagerBase::PropagateViewAdded(View* host, View* view) {
 }
 
 bool LayoutManagerBase::PropagateViewRemoved(View* host, View* view) {
-  child_infos_.erase(view);
-
   bool result = false;
 
   for (auto& owned_layout : owned_layouts_)
     result |= owned_layout->PropagateViewRemoved(host, view);
 
   result |= OnViewRemoved(host, view);
+
+  child_infos_.erase(view);
+
   return result;
 }
 
@@ -395,8 +454,8 @@ bool LayoutManagerBase::PropagateViewVisibilitySet(View* host,
 
 void LayoutManagerBase::PropagateInstalled(View* host) {
   host_view_ = host;
-  for (views::View* it : host->children()) {
-    child_infos_.emplace(it, ChildInfo{it->GetVisible()});
+  for (View* child : host->children()) {
+    child_infos_.emplace(child, ChildInfo{child->GetVisible()});
   }
 
   for (auto& owned_layout : owned_layouts_)

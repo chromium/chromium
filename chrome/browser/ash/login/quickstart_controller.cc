@@ -178,6 +178,8 @@ void QuickStartController::ForceEnableQuickStart() {
   }
 
   InitTargetDeviceBootstrapController();
+  QS_LOG(INFO) << "Force enabling LocalPasswordsForConsumers!";
+  ash::features::ForceEnableLocalPasswordsForConsumers();
 }
 
 void QuickStartController::DetermineEntryPointVisibility(
@@ -238,6 +240,7 @@ void QuickStartController::InitTargetDeviceBootstrapController() {
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->quick_start_setup_ongoing = true;
+    controller_state_ = ControllerState::WAITING_TO_RESUME_AFTER_UPDATE;
   }
 
   StartObservingScreenTransitions();
@@ -360,6 +363,8 @@ void QuickStartController::OnStatusChanged(
       }
       AbortFlow(AbortFlowReason::ERROR);
       return;
+    case Step::FLOW_ABORTED:
+      [[fallthrough]];
     case Step::SETUP_COMPLETE:
       return;
   }
@@ -477,11 +482,23 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     }
 
     StartAdvertising();
+  } else if (controller_state_ ==
+             ControllerState::WAITING_TO_RESUME_AFTER_UPDATE) {
+    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
+
+    if (IsBluetoothDisabled()) {
+      controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION;
+      UpdateUiState(UiState::SHOWING_BLUETOOTH_DIALOG);
+      return;
+    }
+
+    StartAdvertising();
   } else {
     // If the setup has finished, transitioning to QuickStart should
     // show the last step of the flow.
     if (controller_state_ == ControllerState::SETUP_COMPLETE) {
       UpdateUiState(UiState::SETUP_COMPLETE);
+      SavePhoneInstanceID();
       bootstrap_controller_->OnSetupComplete();
       return;
     }
@@ -548,7 +565,6 @@ void QuickStartController::FinishAccountCreation() {
   CHECK(!gaia_creds_.email.empty());
   CHECK(!gaia_creds_.gaia_id.empty());
 
-  SavePhoneInstanceID();
   UpdateUiState(UiState::CREATING_ACCOUNT);
   controller_state_ = ControllerState::SETUP_COMPLETE;
 
@@ -558,7 +574,7 @@ void QuickStartController::FinishAccountCreation() {
   // The user type is known to be regular. The unicorn flow transitions to the
   // Gaia screen and uses its own mechanism for account creation.
   login::BuildUserContextForGaiaSignIn(
-      /*user_type=*/user_manager::USER_TYPE_REGULAR,
+      /*user_type=*/user_manager::UserType::kRegular,
       /*account_id=*/account_id,
       /*using_saml=*/false,
       /*using_saml_api=*/false,

@@ -44,7 +44,7 @@ class MockAnchorElementInteractionHost
     receiver_.Bind(std::move(pending_receiver));
   }
 
-  absl::optional<KURL> url_received_ = absl::nullopt;
+  std::optional<KURL> url_received_ = std::nullopt;
   PointerEventType event_type_{PointerEventType::kNone};
   double mouse_velocity_{0.0};
   bool is_mouse_pointer_{false};
@@ -129,7 +129,7 @@ TEST_F(AnchorElementInteractionTest, SingleAnchor) {
   base::RunLoop().RunUntilIdle();
   KURL expected_url = KURL("https://anchor1.com/");
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
   EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
@@ -147,7 +147,7 @@ TEST_F(AnchorElementInteractionTest, InvalidHref) {
   SendMouseDownEvent();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
 }
 
@@ -168,7 +168,7 @@ TEST_F(AnchorElementInteractionTest, RightClick) {
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
 }
 
@@ -187,7 +187,7 @@ TEST_F(AnchorElementInteractionTest, NestedAnchorElementCheck) {
   base::RunLoop().RunUntilIdle();
   KURL expected_url = KURL("https://anchor2.com/");
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
   EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
@@ -209,7 +209,7 @@ TEST_F(AnchorElementInteractionTest, SiblingAnchorElements) {
   base::RunLoop().RunUntilIdle();
   KURL expected_url = KURL("https://anchor1.com/");
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
   EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
@@ -225,7 +225,7 @@ TEST_F(AnchorElementInteractionTest, NoAnchorElement) {
   SendMouseDownEvent();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
 }
 
@@ -252,7 +252,7 @@ TEST_F(AnchorElementInteractionTest, TouchEvent) {
   base::RunLoop().RunUntilIdle();
   KURL expected_url = KURL("https://anchor1.com/");
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
   EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
@@ -284,7 +284,7 @@ TEST_F(AnchorElementInteractionTest, DestroyedContext) {
   base::RunLoop().RunUntilIdle();
   KURL expected_url = KURL("https://anchor1.com/");
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
 }
 
@@ -317,7 +317,7 @@ TEST_F(AnchorElementInteractionTest, ValidMouseHover) {
 
   KURL expected_url = KURL("https://anchor1.com/");
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
   EXPECT_EQ(PointerEventType::kOnPointerHover, hosts_[0]->event_type_);
@@ -351,7 +351,7 @@ TEST_F(AnchorElementInteractionTest, ShortMouseHover) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
   EXPECT_EQ(PointerEventType::kNone, hosts_[0]->event_type_);
 }
@@ -395,7 +395,7 @@ TEST_F(AnchorElementInteractionTest, MousePointerEnterAndLeave) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_FALSE(url_received.has_value());
   EXPECT_EQ(PointerEventType::kNone, hosts_[0]->event_type_);
 }
@@ -579,7 +579,7 @@ TEST_P(AnchorElementInteractionMouseMotionEstimatorFeatureFlagTest,
 
   KURL expected_url = KURL("https://anchor1.com/");
   EXPECT_EQ(1u, hosts_.size());
-  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
   EXPECT_EQ(PointerEventType::kOnPointerHover, hosts_[0]->event_type_);

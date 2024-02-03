@@ -99,7 +99,7 @@ Color InterpolableStyleColor::Resolve(
 
   if (blend_op_ == BlendOp::kInterpolate) {
     SetupColorInterpolationSpaces(first, second);
-    return Color::InterpolateColors(first.GetColorSpace(), absl::nullopt, first,
+    return Color::InterpolateColors(first.GetColorSpace(), std::nullopt, first,
                                     second, fraction_);
   }
 

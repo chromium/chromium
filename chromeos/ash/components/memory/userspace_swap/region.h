@@ -10,12 +10,12 @@
 #include <cstdint>
 #include <optional>
 #include <ostream>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
-#include "base/strings/string_piece.h"
 
 namespace ash {
 namespace memory {
@@ -75,7 +75,7 @@ class Region {
   }
 
   struct iovec COMPONENT_EXPORT(USERSPACE_SWAP) AsIovec() const;
-  base::StringPiece COMPONENT_EXPORT(USERSPACE_SWAP) AsStringPiece() const;
+  std::string_view COMPONENT_EXPORT(USERSPACE_SWAP) AsStringPiece() const;
 
   bool operator<(const Region& other) const {
     // Because the standard library treats equality as !less(a,b) &&

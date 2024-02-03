@@ -103,6 +103,10 @@ constexpr char kDefaultTasksResponseContent[] = R"(
     }
   )";
 
+using TaskListsFuture = TestFuture<bool, const ui::ListModel<api::TaskList>*>;
+
+using TasksFuture = TestFuture<bool, const ui::ListModel<api::Task>*>;
+
 // Helper class to simplify mocking `net::EmbeddedTestServer` responses,
 // especially useful for subsequent responses when testing pagination logic.
 class TestRequestHandler {
@@ -193,11 +197,12 @@ TEST_F(TasksClientImplTest, GetTaskLists) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTaskListsResponseContent))));
 
-  TestFuture<const ui::ListModel<api::TaskList>*> future;
+  TaskListsFuture future;
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const task_lists = future.Get();
+  const auto [success, task_lists] = future.Take();
+  EXPECT_TRUE(success);
   EXPECT_EQ(task_lists->item_count(), 2u);
 
   EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
@@ -231,17 +236,18 @@ TEST_F(TasksClientImplTest, GetTaskListsOnSubsequentCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTaskListsResponseContent))));
 
-  TestFuture<const ui::ListModel<api::TaskList>*> future;
+  TaskListsFuture future;
   client()->GetTaskLists(future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const task_lists = future.Take();
+  const auto [status, task_lists] = future.Take();
+  EXPECT_TRUE(status);
 
   // Subsequent request doesn't trigger another network call and returns a
   // pointer to the same `ui::ListModel`.
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Take(), task_lists);
+  EXPECT_EQ(std::get<1>(future.Take()), task_lists);
 }
 
 TEST_F(TasksClientImplTest, ConcurrentGetTaskListsCalls) {
@@ -249,17 +255,22 @@ TEST_F(TasksClientImplTest, ConcurrentGetTaskListsCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTaskListsResponseContent))));
 
-  TestFuture<const ui::ListModel<api::TaskList>*> first_future;
+  TaskListsFuture first_future;
   client()->GetTaskLists(first_future.GetCallback());
 
-  TestFuture<const ui::ListModel<api::TaskList>*> second_future;
+  TaskListsFuture second_future;
   client()->GetTaskLists(second_future.GetCallback());
 
   ASSERT_TRUE(first_future.Wait());
   ASSERT_TRUE(second_future.Wait());
 
-  const auto* const task_lists = first_future.Get();
-  EXPECT_EQ(task_lists, second_future.Get());
+  const auto [first_success, task_lists] = first_future.Take();
+  EXPECT_TRUE(first_success);
+
+  const auto [second_success, second_task_lists] = second_future.Take();
+  EXPECT_TRUE(second_success);
+
+  EXPECT_EQ(task_lists, second_task_lists);
   EXPECT_EQ(task_lists->item_count(), 2u);
 
   EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
@@ -303,11 +314,13 @@ TEST_F(TasksClientImplTest,
             }]
           })"))));
 
-  TestFuture<const ui::ListModel<api::TaskList>*> future;
+  TaskListsFuture future;
   client()->GetTaskLists(future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const task_lists = future.Take();
+  const auto [success, task_lists] = future.Take();
+  EXPECT_TRUE(success);
+
   EXPECT_EQ(task_lists->item_count(), 2u);
   EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
   EXPECT_EQ(task_lists->GetItemAt(1)->id, "asdfgh");
@@ -316,20 +329,24 @@ TEST_F(TasksClientImplTest,
 
   // Request to get tasks after glanceables bubble was closed should trigger
   // another fetch.
-  TestFuture<const ui::ListModel<api::TaskList>*> refresh_future;
+  TaskListsFuture refresh_future;
   client()->GetTaskLists(refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto* const refreshed_task_lists = refresh_future.Take();
+  const auto [refresh_success, refreshed_task_lists] = refresh_future.Take();
+  EXPECT_TRUE(refresh_success);
+
   EXPECT_EQ(refreshed_task_lists->item_count(), 2u);
   EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "qwerty");
   EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
 
-  TestFuture<const ui::ListModel<api::TaskList>*> repeated_refresh_future;
+  TaskListsFuture repeated_refresh_future;
   client()->GetTaskLists(repeated_refresh_future.GetCallback());
 
-  const auto* const repeated_refreshed_task_lists =
+  const auto [repeated_refresh_success, repeated_refreshed_task_lists] =
       repeated_refresh_future.Take();
+  EXPECT_TRUE(repeated_refresh_success);
+
   EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 2u);
   EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(0)->id, "qwerty");
   EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
@@ -369,7 +386,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
             }]
           })"))));
 
-  TestFuture<const ui::ListModel<api::TaskList>*> future;
+  TaskListsFuture future;
   client()->GetTaskLists(future.GetRepeatingCallback());
 
   // Simulate bubble closure before first request response arives.
@@ -377,7 +394,9 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
 
   ASSERT_TRUE(future.Wait());
 
-  const auto* const task_lists = future.Take();
+  const auto [success, task_lists] = future.Take();
+  EXPECT_FALSE(success);
+
   EXPECT_EQ(task_lists->item_count(), 0u);
 
   // Wait for the first reqeust response to be generated before making the
@@ -387,20 +406,24 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
 
   // Request to get tasks after glanceables bubble was closed should trigger
   // another fetch.
-  TestFuture<const ui::ListModel<api::TaskList>*> refresh_future;
+  TaskListsFuture refresh_future;
   client()->GetTaskLists(refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto* const refreshed_task_lists = refresh_future.Take();
+  const auto [refresh_success, refreshed_task_lists] = refresh_future.Take();
+  EXPECT_TRUE(refresh_success);
+
   EXPECT_EQ(refreshed_task_lists->item_count(), 2u);
   EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "qwerty");
   EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
 
-  TestFuture<const ui::ListModel<api::TaskList>*> repeated_refresh_future;
+  TaskListsFuture repeated_refresh_future;
   client()->GetTaskLists(repeated_refresh_future.GetCallback());
 
-  const auto* const repeated_refreshed_task_lists =
+  const auto [repeated_refresh_success, repeated_refreshed_task_lists] =
       repeated_refresh_future.Take();
+  EXPECT_TRUE(repeated_refresh_success);
+
   EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 2u);
   EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(0)->id, "qwerty");
   EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
@@ -410,16 +433,180 @@ TEST_F(TasksClientImplTest, GetTaskListsReturnsEmptyVectorOnHttpError) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<const ui::ListModel<api::TaskList>*> future;
+  TaskListsFuture future;
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const task_lists = future.Get();
+  const auto [success, task_lists] = future.Take();
+  EXPECT_FALSE(success);
   EXPECT_EQ(task_lists->item_count(), 0u);
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/1);
   histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(TasksClientImplTest, GetTaskListsReturnsCachedResultsOnHttpError) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "qwerty",
+              "title": "My Tasks 1",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }, {
+              "id": "asdfgh",
+              "title": "My Tasks 2",
+              "updated": "2022-12-21T23:38:22.590Z"
+            }]
+          })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "zxcvb",
+              "title": "My Tasks 3",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }]
+          })"))));
+
+  TaskListsFuture future;
+  client()->GetTaskLists(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto [success, task_lists] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_EQ(task_lists->item_count(), 2u);
+  EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(task_lists->GetItemAt(1)->id, "asdfgh");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
+
+  client()->OnGlanceablesBubbleClosed();
+
+  TaskListsFuture failure_future;
+  client()->GetTaskLists(failure_future.GetCallback());
+  ASSERT_TRUE(failure_future.Wait());
+
+  const auto [failure_status, failed_task_lists] = failure_future.Take();
+  EXPECT_FALSE(failure_status);
+
+  EXPECT_EQ(failed_task_lists->item_count(), 2u);
+  EXPECT_EQ(failed_task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(failed_task_lists->GetItemAt(1)->id, "asdfgh");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/2);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status", 2);
+  histogram_tester()->ExpectBucketCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
+
+  TaskListsFuture retry_future;
+  client()->GetTaskLists(retry_future.GetCallback());
+  ASSERT_TRUE(retry_future.Wait());
+
+  const auto [retry_success, retry_task_lists] = retry_future.Take();
+  EXPECT_TRUE(retry_success);
+
+  EXPECT_EQ(retry_task_lists->item_count(), 1u);
+  EXPECT_EQ(retry_task_lists->GetItemAt(0)->id, "zxcvb");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/3);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status", 3);
+  histogram_tester()->ExpectBucketCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/2);
+}
+
+TEST_F(TasksClientImplTest,
+       GetTaskListsReturnsCachedResultsOnPartialHttpError) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  Not(HasSubstr("pageToken")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "qwerty",
+              "title": "My Tasks 1",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }, {
+              "id": "asdfgh",
+              "title": "My Tasks 2",
+              "updated": "2022-12-21T23:38:22.590Z"
+            }]
+          })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "zxcvb",
+              "title": "My Tasks 3",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }],
+            "nextPageToken": "tt"
+          })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("pageToken=tt"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  TaskListsFuture future;
+  client()->GetTaskLists(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto [success, task_lists] = future.Take();
+  EXPECT_TRUE(success);
+
+  EXPECT_EQ(task_lists->item_count(), 2u);
+  EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(task_lists->GetItemAt(1)->id, "asdfgh");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
+
+  client()->OnGlanceablesBubbleClosed();
+
+  TaskListsFuture failure_future;
+  client()->GetTaskLists(failure_future.GetCallback());
+  ASSERT_TRUE(failure_future.Wait());
+
+  const auto [failed_status, failed_task_lists] = failure_future.Take();
+  EXPECT_FALSE(failed_status);
+
+  EXPECT_EQ(failed_task_lists->item_count(), 2u);
+  EXPECT_EQ(failed_task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(failed_task_lists->GetItemAt(1)->id, "asdfgh");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/3);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status", 3);
+  histogram_tester()->ExpectBucketCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/2);
+  histogram_tester()->ExpectBucketCount(
       "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
       ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
       /*expected_bucket_count=*/1);
@@ -456,11 +643,13 @@ TEST_F(TasksClientImplTest, GetTaskListsFetchesAllPages) {
           }
         )"))));
 
-  TestFuture<const ui::ListModel<api::TaskList>*> future;
+  TaskListsFuture future;
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const task_lists = future.Get();
+  const auto [status, task_lists] = future.Take();
+  EXPECT_TRUE(status);
+
   EXPECT_EQ(task_lists->item_count(), 3u);
   EXPECT_EQ(task_lists->GetItemAt(0)->id, "task-list-from-page-1");
   EXPECT_EQ(task_lists->GetItemAt(1)->id, "task-list-from-page-2");
@@ -527,7 +716,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
           client()->OnGlanceablesBubbleClosed();
         }
       }));
-  TestFuture<const ui::ListModel<api::TaskList>*> future;
+  TaskListsFuture future;
   client()->GetTaskLists(future.GetRepeatingCallback());
 
   // Note that injected tasks lists request test callback simulates bubble
@@ -536,7 +725,9 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
   // bubble cancels the fetch.
   ASSERT_TRUE(future.Wait());
 
-  const auto* const task_lists = future.Take();
+  const auto [success, task_lists] = future.Take();
+  EXPECT_FALSE(success);
+
   EXPECT_EQ(task_lists->item_count(), 0u);
 
   client()->set_task_lists_request_callback_for_testing(
@@ -544,21 +735,25 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
 
   // Request to get tasks after glanceables bubble was closed should trigger
   // another fetch.
-  TestFuture<const ui::ListModel<api::TaskList>*> refresh_future;
+  TaskListsFuture refresh_future;
   client()->GetTaskLists(refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto* const refreshed_task_lists = refresh_future.Take();
+  const auto [refresh_success, refreshed_task_lists] = refresh_future.Take();
+  EXPECT_TRUE(refresh_success);
+
   EXPECT_EQ(refreshed_task_lists->item_count(), 3u);
   EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "task-list-from-page-1-2");
   EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "task-list-from-page-2-2");
   EXPECT_EQ(refreshed_task_lists->GetItemAt(2)->id, "task-list-from-page-3-2");
 
-  TestFuture<const ui::ListModel<api::TaskList>*> repeated_refresh_future;
+  TaskListsFuture repeated_refresh_future;
   client()->GetTaskLists(repeated_refresh_future.GetCallback());
 
-  const auto* const repeated_refreshed_task_lists =
+  const auto [repeated_refresh_success, repeated_refreshed_task_lists] =
       repeated_refresh_future.Take();
+  EXPECT_TRUE(repeated_refresh_success);
+
   EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 3u);
   EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(0)->id,
             "task-list-from-page-1-2");
@@ -566,6 +761,133 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
             "task-list-from-page-2-2");
   EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(2)->id,
             "task-list-from-page-3-2");
+}
+
+TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
+  EXPECT_CALL(request_handler(), HandleRequest(Field(&HttpRequest::relative_url,
+                                                     HasSubstr("lists?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "qwerty",
+              "title": "My Tasks 1",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }, {
+              "id": "asdfgh",
+              "title": "My Tasks 2",
+              "updated": "2022-12-21T23:38:22.590Z"
+            }]
+          })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "qwerty",
+              "title": "My Tasks 1",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }]
+          })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/qwerty/tasks?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{
+              "id": "asd",
+              "title": "Parent task, level 1",
+              "status": "needsAction",
+              "due": "2023-04-19T00:00:00.000Z"
+            }, {
+              "id": "zxc",
+              "title": "Parent task 3, level 1",
+              "status": "needsAction",
+              "links": [{"type": "email"}]
+            }]
+          })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/asdfgh/tasks?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{
+              "id": "fgh",
+              "title": "Parent task, level 1",
+              "status": "needsAction",
+              "due": "2023-04-19T00:00:00.000Z"
+            }]
+          })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  TaskListsFuture future;
+  client()->GetTaskLists(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto [status, task_lists] = future.Take();
+  EXPECT_TRUE(status);
+
+  ASSERT_EQ(task_lists->item_count(), 2u);
+  EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(task_lists->GetItemAt(1)->id, "asdfgh");
+
+  TasksFuture abandoned_tasks_future;
+  client()->GetTasks("asdfgh", abandoned_tasks_future.GetCallback());
+  ASSERT_TRUE(abandoned_tasks_future.Wait());
+
+  const auto [abandoned_tasks_success, abandoned_tasks] =
+      abandoned_tasks_future.Take();
+  EXPECT_TRUE(abandoned_tasks_success);
+
+  EXPECT_EQ(abandoned_tasks->item_count(), 1u);
+  EXPECT_EQ(abandoned_tasks->GetItemAt(0)->id, "fgh");
+
+  TasksFuture tasks_future;
+  client()->GetTasks("qwerty", tasks_future.GetCallback());
+  ASSERT_TRUE(tasks_future.Wait());
+
+  const auto [tasks_success, tasks] = tasks_future.Take();
+  EXPECT_TRUE(tasks_success);
+
+  EXPECT_EQ(tasks->item_count(), 2u);
+  EXPECT_EQ(tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(tasks->GetItemAt(1)->id, "zxc");
+
+  client()->OnGlanceablesBubbleClosed();
+
+  TaskListsFuture refreshed_task_list_future;
+  client()->GetTaskLists(refreshed_task_list_future.GetCallback());
+  ASSERT_TRUE(refreshed_task_list_future.Wait());
+
+  const auto [refresh_status, refreshed_task_lists] =
+      refreshed_task_list_future.Take();
+  EXPECT_TRUE(refresh_status);
+
+  EXPECT_EQ(refreshed_task_lists->item_count(), 1u);
+  EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "qwerty");
+
+  TasksFuture refreshed_abandoned_tasks_future;
+  client()->GetTasks("asdfgh", refreshed_abandoned_tasks_future.GetCallback());
+  ASSERT_TRUE(refreshed_abandoned_tasks_future.Wait());
+
+  const auto [refresh_abandoned_tasks_success, refreshed_abandoned_tasks] =
+      refreshed_abandoned_tasks_future.Take();
+  EXPECT_FALSE(refresh_abandoned_tasks_success);
+
+  EXPECT_EQ(refreshed_abandoned_tasks->item_count(), 0u);
+
+  TasksFuture refreshed_tasks_future;
+  client()->GetTasks("qwerty", refreshed_tasks_future.GetCallback());
+  ASSERT_TRUE(refreshed_tasks_future.Wait());
+
+  const auto [refresh_success, refreshed_tasks] = refreshed_tasks_future.Take();
+  EXPECT_FALSE(refresh_success);
+
+  EXPECT_EQ(refreshed_tasks->item_count(), 2u);
+  EXPECT_EQ(refreshed_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(refreshed_tasks->GetItemAt(1)->id, "zxc");
 }
 
 // ----------------------------------------------------------------------------
@@ -576,11 +898,13 @@ TEST_F(TasksClientImplTest, GetTasks) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTasksResponseContent))));
 
-  TestFuture<const ui::ListModel<api::Task>*> future;
+  TasksFuture future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const root_tasks = future.Get();
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_TRUE(success);
+
   ASSERT_EQ(root_tasks->item_count(), 2u);
 
   EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
@@ -628,17 +952,22 @@ TEST_F(TasksClientImplTest, ConcurrentGetTasksCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTasksResponseContent))));
 
-  TestFuture<const ui::ListModel<api::Task>*> first_future;
+  TasksFuture first_future;
   client()->GetTasks("test-task-list-id", first_future.GetCallback());
 
-  TestFuture<const ui::ListModel<api::Task>*> second_future;
+  TasksFuture second_future;
   client()->GetTasks("test-task-list-id", second_future.GetCallback());
 
   ASSERT_TRUE(first_future.Wait());
   ASSERT_TRUE(second_future.Wait());
 
-  const auto* const root_tasks = first_future.Get();
-  EXPECT_EQ(root_tasks, second_future.Get());
+  const auto [first_success, root_tasks] = first_future.Take();
+  EXPECT_TRUE(first_success);
+
+  const auto [second_success, second_root_tasks] = second_future.Take();
+  EXPECT_TRUE(second_success);
+
+  EXPECT_EQ(root_tasks, second_root_tasks);
 
   ASSERT_EQ(root_tasks->item_count(), 2u);
 
@@ -698,22 +1027,26 @@ TEST_F(TasksClientImplTest, ConcurrentGetTasksCallsForDifferentLists) {
           }]
       })"))));
 
-  TestFuture<const ui::ListModel<api::Task>*> first_future;
+  TasksFuture first_future;
   client()->GetTasks("test-task-list-1", first_future.GetCallback());
 
-  TestFuture<const ui::ListModel<api::Task>*> second_future;
+  TasksFuture second_future;
   client()->GetTasks("test-task-list-2", second_future.GetCallback());
 
   ASSERT_TRUE(first_future.Wait());
   ASSERT_TRUE(second_future.Wait());
 
-  const auto* const first_root_tasks = first_future.Get();
+  const auto [first_success, first_root_tasks] = first_future.Take();
+  EXPECT_TRUE(first_success);
+
   ASSERT_EQ(first_root_tasks->item_count(), 2u);
 
   EXPECT_EQ(first_root_tasks->GetItemAt(0)->id, "task-1-1");
   EXPECT_EQ(first_root_tasks->GetItemAt(1)->id, "task-1-2");
 
-  const auto* const second_root_tasks = second_future.Get();
+  const auto [second_success, second_root_tasks] = second_future.Take();
+  EXPECT_TRUE(second_success);
+
   ASSERT_EQ(second_root_tasks->item_count(), 2u);
 
   EXPECT_EQ(second_root_tasks->GetItemAt(0)->id, "task-2-1");
@@ -731,17 +1064,21 @@ TEST_F(TasksClientImplTest, GetTasksOnSubsequentCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTasksResponseContent))));
 
-  TestFuture<const ui::ListModel<api::Task>*> future;
+  TasksFuture future;
   client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const root_tasks = future.Take();
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_TRUE(success);
 
   // Subsequent request doesn't trigger another network call and returns a
   // pointer to the same `ui::ListModel`.
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Take(), root_tasks);
+
+  const auto [retry_success, retry_root_tasks] = future.Take();
+  EXPECT_TRUE(retry_success);
+  EXPECT_EQ(retry_root_tasks, root_tasks);
 }
 
 TEST_F(TasksClientImplTest,
@@ -775,11 +1112,13 @@ TEST_F(TasksClientImplTest,
           }]
       })"))));
 
-  TestFuture<const ui::ListModel<api::Task>*> future;
+  TasksFuture future;
   client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const root_tasks = future.Take();
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_TRUE(success);
+
   ASSERT_EQ(root_tasks->item_count(), 2u);
 
   EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
@@ -789,22 +1128,26 @@ TEST_F(TasksClientImplTest,
   // to fetch fresh list of tasks.
   client()->OnGlanceablesBubbleClosed();
 
-  TestFuture<const ui::ListModel<api::Task>*> refresh_future;
+  TasksFuture refresh_future;
   client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto* const refreshed_root_tasks = refresh_future.Take();
+  const auto [refresh_success, refreshed_root_tasks] = refresh_future.Take();
+  EXPECT_TRUE(refresh_success);
+
   ASSERT_EQ(refreshed_root_tasks->item_count(), 2u);
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(0)->id, "asd");
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "zxc");
 
-  TestFuture<const ui::ListModel<api::Task>*> repeated_refresh_future;
+  TasksFuture repeated_refresh_future;
   client()->GetTasks("test-task-list-id",
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
 
-  const auto* const repeated_refreshed_root_tasks =
+  const auto [repeated_refresh_success, repeated_refreshed_root_tasks] =
       repeated_refresh_future.Take();
+  EXPECT_TRUE(repeated_refresh_success);
+
   ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 2u);
   EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(0)->id, "asd");
   EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(1)->id, "zxc");
@@ -844,7 +1187,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
           }]
       })"))));
 
-  TestFuture<const ui::ListModel<api::Task>*> future;
+  TasksFuture future;
   client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
 
   // Simulate glanceables bubble closure, which should cause the next tasks call
@@ -852,7 +1195,9 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
   client()->OnGlanceablesBubbleClosed();
   ASSERT_TRUE(future.Wait());
 
-  const auto* const root_tasks = future.Take();
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_FALSE(success);
+
   // Glanceables bubble was closed before receiving tasks response, so
   // `GetTasks()` should have returned an empty list.
   ASSERT_EQ(root_tasks->item_count(), 0u);
@@ -862,22 +1207,26 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
   // by the test server before the first one.
   first_request_waiter.Run();
 
-  TestFuture<const ui::ListModel<api::Task>*> refresh_future;
+  TasksFuture refresh_future;
   client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto* const refreshed_root_tasks = refresh_future.Take();
+  const auto [refresh_success, refreshed_root_tasks] = refresh_future.Take();
+  EXPECT_TRUE(refresh_success);
+
   ASSERT_EQ(refreshed_root_tasks->item_count(), 2u);
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(0)->id, "asd");
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "zxc");
 
-  TestFuture<const ui::ListModel<api::Task>*> repeated_refresh_future;
+  TasksFuture repeated_refresh_future;
   client()->GetTasks("test-task-list-id",
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
 
-  const auto* const repeated_refreshed_root_tasks =
+  const auto [repeated_refresh_success, repeated_refreshed_root_tasks] =
       repeated_refresh_future.Take();
+  EXPECT_TRUE(repeated_refresh_success);
+
   ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 2u);
   EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(0)->id, "asd");
   EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(1)->id, "zxc");
@@ -887,16 +1236,180 @@ TEST_F(TasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<const ui::ListModel<api::Task>*> future;
+  TasksFuture future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const root_tasks = future.Get();
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_FALSE(success);
+
   EXPECT_EQ(root_tasks->item_count(), 0u);
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
   histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnHttpError) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "asd",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }, {
+            "id": "zxc",
+            "title": "Parent task 3, level 1",
+            "status": "needsAction",
+            "links": [{"type": "email"}]
+          }]
+      })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "qwe",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }]
+      })"))));
+
+  TasksFuture future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_TRUE(success);
+
+  EXPECT_EQ(root_tasks->item_count(), 2u);
+  EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->id, "zxc");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
+
+  client()->OnGlanceablesBubbleClosed();
+
+  TasksFuture failed_future;
+  client()->GetTasks("test-task-list-id", failed_future.GetCallback());
+  ASSERT_TRUE(failed_future.Wait());
+
+  const auto [failed_status, failed_root_tasks] = failed_future.Take();
+  EXPECT_FALSE(failed_status);
+
+  EXPECT_EQ(failed_root_tasks->item_count(), 2u);
+  EXPECT_EQ(failed_root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(failed_root_tasks->GetItemAt(1)->id, "zxc");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/2);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", /*expected_count=*/2);
+  histogram_tester()->ExpectBucketCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
+
+  TasksFuture retry_future;
+  client()->GetTasks("test-task-list-id", retry_future.GetCallback());
+  ASSERT_TRUE(retry_future.Wait());
+
+  const auto [retry_success, retry_root_tasks] = retry_future.Take();
+  EXPECT_TRUE(retry_success);
+
+  EXPECT_EQ(retry_root_tasks->item_count(), 1u);
+  EXPECT_EQ(retry_root_tasks->GetItemAt(0)->id, "qwe");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/3);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", /*expected_count=*/3);
+  histogram_tester()->ExpectBucketCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/2);
+}
+
+TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnPartialHttpError) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  Not(HasSubstr("pageToken")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "asd",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }, {
+            "id": "zxc",
+            "title": "Parent task 3, level 1",
+            "status": "needsAction",
+            "links": [{"type": "email"}]
+          }]
+      })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "qwe",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }],
+          "nextPageToken": "tt"
+      })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("pageToken=tt"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  TasksFuture future;
+  client()->GetTasks("task-list-1", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto [success, tasks] = future.Take();
+  EXPECT_TRUE(success);
+
+  EXPECT_EQ(tasks->item_count(), 2u);
+  EXPECT_EQ(tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(tasks->GetItemAt(1)->id, "zxc");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
+
+  client()->OnGlanceablesBubbleClosed();
+
+  TasksFuture failure_future;
+  client()->GetTasks("task-list-1", failure_future.GetCallback());
+  ASSERT_TRUE(failure_future.Wait());
+
+  const auto [failure_status, failed_tasks] = failure_future.Take();
+  EXPECT_FALSE(failure_status);
+
+  EXPECT_EQ(failed_tasks->item_count(), 2u);
+  EXPECT_EQ(failed_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(failed_tasks->GetItemAt(1)->id, "zxc");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/3);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", 3);
+  histogram_tester()->ExpectBucketCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/2);
+  histogram_tester()->ExpectBucketCount(
       "Ash.Glanceables.Api.Tasks.GetTasks.Status",
       ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
       /*expected_bucket_count=*/1);
@@ -938,11 +1451,13 @@ TEST_F(TasksClientImplTest, GetTasksFetchesAllPages) {
           }
         )"))));
 
-  TestFuture<const ui::ListModel<api::Task>*> future;
+  TasksFuture future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const root_tasks = future.Get();
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_TRUE(success);
+
   ASSERT_EQ(root_tasks->item_count(), 2u);
 
   EXPECT_EQ(root_tasks->GetItemAt(0)->id, "parent-task-from-page-2");
@@ -1021,35 +1536,41 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasksPage) {
         }
       }));
 
-  TestFuture<const ui::ListModel<api::Task>*> future;
+  TasksFuture future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
   // Expect an empty list, given that the glanceables bubble got closed before
   // all tasks were fetched, effectively cancelling the fetch.
-  const auto* const root_tasks = future.Get();
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_FALSE(success);
+
   ASSERT_EQ(root_tasks->item_count(), 0u);
 
   client()->set_tasks_request_callback_for_testing(
       TasksClientImpl::TasksRequestCallback());
 
-  TestFuture<const ui::ListModel<api::Task>*> refresh_future;
+  TasksFuture refresh_future;
   client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto* const refreshed_root_tasks = refresh_future.Take();
+  const auto [refresh_success, refreshed_root_tasks] = refresh_future.Take();
+  EXPECT_TRUE(refresh_success);
+
   ASSERT_EQ(refreshed_root_tasks->item_count(), 3u);
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(0)->id, "task-from-page-1-2");
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "task-from-page-2-2");
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(2)->id, "task-from-page-3-2");
 
-  TestFuture<const ui::ListModel<api::Task>*> repeated_refresh_future;
+  TasksFuture repeated_refresh_future;
   client()->GetTasks("test-task-list-id",
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
 
-  const auto* const repeated_refreshed_root_tasks =
+  const auto [repeated_refresh_success, repeated_refreshed_root_tasks] =
       repeated_refresh_future.Take();
+  EXPECT_TRUE(repeated_refresh_success);
+
   ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 3u);
   EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(0)->id,
             "task-from-page-1-2");
@@ -1072,11 +1593,13 @@ TEST_F(TasksClientImplTest, GetTasksSortsByPosition) {
           }
         )"))));
 
-  TestFuture<const ui::ListModel<api::Task>*> future;
+  TasksFuture future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto* const root_tasks = future.Get();
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_TRUE(success);
+
   ASSERT_EQ(root_tasks->item_count(), 3u);
 
   EXPECT_EQ(root_tasks->GetItemAt(0)->title, "1st");
@@ -1121,11 +1644,13 @@ TEST_F(TasksClientImplTest, MarkAsCompleted) {
         )");
       }));
 
-  TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
+  TasksFuture get_tasks_future;
   client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 
-  auto* const tasks = get_tasks_future.Get();
+  const auto [success, tasks] = get_tasks_future.Take();
+  EXPECT_TRUE(success);
+
   EXPECT_EQ(tasks->item_count(), 2u);
 
   TestFuture<bool> mark_as_completed_future;
@@ -1172,11 +1697,13 @@ TEST_F(TasksClientImplTest, MarkAsCompletedOnHttpError) {
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
+  TasksFuture get_tasks_future;
   client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 
-  const auto* const tasks = get_tasks_future.Get();
+  const auto [success, tasks] = get_tasks_future.Take();
+  EXPECT_TRUE(success);
+
   EXPECT_EQ(tasks->item_count(), 2u);
 
   client()->MarkAsCompleted("test-task-list-id", "task-2", true);
@@ -1224,11 +1751,13 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
           }
         )"))));
 
-  TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
+  TasksFuture get_tasks_future;
   client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 
-  auto* const tasks = get_tasks_future.Get();
+  const auto [success, tasks] = get_tasks_future.Take();
+  EXPECT_TRUE(success);
+
   EXPECT_EQ(tasks->item_count(), 1u);
   EXPECT_EQ(tasks->GetItemAt(0)->id, "task-id");
   EXPECT_EQ(tasks->GetItemAt(0)->title, "Task 1");
@@ -1289,10 +1818,12 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
         )"))));
 
   // Get tasks first.
-  TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
+  TasksFuture get_tasks_future;
   client()->GetTasks("task-list-id", get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
-  auto* const tasks = get_tasks_future.Get();
+  const auto [success, tasks] = get_tasks_future.Take();
+  EXPECT_TRUE(success);
+
   ASSERT_EQ(tasks->item_count(), 1u);
   EXPECT_EQ(tasks->GetItemAt(0)->title, "Task 1");
 

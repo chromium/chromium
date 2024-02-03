@@ -35,8 +35,10 @@ const int kPreferredHeight = 250;
 }  // namespace
 
 class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
+  METADATA_HEADER(KioskExternalUpdateNotificationView,
+                  views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(KioskExternalUpdateNotificationView);
   explicit KioskExternalUpdateNotificationView(
       KioskExternalUpdateNotification* owner)
       : owner_(owner), widget_closed_(false) {
@@ -160,7 +162,7 @@ void KioskExternalUpdateNotification::Dismiss() {
   }
 }
 
-BEGIN_METADATA(KioskExternalUpdateNotificationView, views::WidgetDelegateView)
+BEGIN_METADATA(KioskExternalUpdateNotificationView)
 END_METADATA
 
 }  // namespace ash

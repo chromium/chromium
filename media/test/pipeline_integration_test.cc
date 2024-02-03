@@ -398,7 +398,7 @@ class PipelineIntegrationTest : public testing::Test,
   }
 
   void OnSelectedVideoTrackChanged(
-      absl::optional<MediaTrack::Id> selected_track_id) {
+      std::optional<MediaTrack::Id> selected_track_id) {
     base::RunLoop run_loop;
     pipeline_->OnSelectedVideoTrackChanged(selected_track_id,
                                            run_loop.QuitClosure());
@@ -780,7 +780,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240.webm", kHashed | kNoClockless));
 
   // Disable video.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
 
   // Seek to flush the pipeline and ensure there's no prerolled video data.
   ASSERT_TRUE(Seek(base::TimeDelta()));
@@ -817,7 +817,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
 TEST_F(PipelineIntegrationTest, TrackStatusChangesBeforePipelineStarted) {
   std::vector<MediaTrack::Id> empty_track_ids;
   OnEnabledAudioTracksChanged(empty_track_ids);
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
 }
 
 TEST_F(PipelineIntegrationTest, TrackStatusChangesAfterPipelineEnded) {
@@ -831,7 +831,7 @@ TEST_F(PipelineIntegrationTest, TrackStatusChangesAfterPipelineEnded) {
   track_ids.push_back(MediaTrack::Id("2"));
   OnEnabledAudioTracksChanged(track_ids);
   // Disable video track.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   // Re-enable video track.
   OnSelectedVideoTrackChanged(MediaTrack::Id("1"));
 }
@@ -871,7 +871,7 @@ TEST_F(PipelineIntegrationTest, MAYBE_TrackStatusChangesWhileSuspended) {
   ASSERT_TRUE(Suspend());
 
   // Disable video track.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   ASSERT_TRUE(Resume(TimestampMs(300)));
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(TimestampMs(400)));
   ASSERT_TRUE(Suspend());
@@ -918,7 +918,7 @@ TEST_F(PipelineIntegrationTest, ReinitRenderersWhileVideoTrackIsDisabled) {
   EXPECT_CALL(*this, OnVideoOpacityChange(true)).Times(AnyNumber());
 
   // Disable the video track.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   // pipeline.Suspend() releases renderers and pipeline.Resume() recreates and
   // reinitializes renderers while the video track is disabled.
   ASSERT_TRUE(Suspend());
@@ -952,7 +952,7 @@ TEST_F(PipelineIntegrationTest, PipelineStoppedWhileVideoRestartPending) {
 
   // Disable video track first, to re-enable it later and stop the pipeline
   // (which destroys the media renderer) while video restart is pending.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(TimestampMs(200)));
 
   OnSelectedVideoTrackChanged(MediaTrack::Id("1"));
@@ -1631,7 +1631,7 @@ TEST_F(PipelineIntegrationTest, MSE_GCWithDisabledVideoStream) {
 
   // Disable the video track and start playback. Renderer won't read from the
   // disabled video stream, so the video stream read position should be 0.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   Play();
 
   // Wait until audio playback advances past 2 seconds and call MSE GC algorithm

@@ -109,8 +109,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   if ([self isRunningTest:@selector(testCancelAllowChromeSignin)] ||
       [self isRunningTest:@selector
             (testToggleAllowChromeSigninWithSettingsSignin)] ||

@@ -172,11 +172,12 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
       return true;
     } catch (e) {
       assert(e instanceof Error);
+      // File doesn't exist.
       if (e.name === 'NotFoundError') {
         return false;
       }
-      if (e.name === 'TypeMismatchError' || e instanceof TypeError) {
-        // Directory with same name exists.
+      // Directory with same name exists.
+      if (e.name === 'TypeMismatchError') {
         return true;
       }
       throw e;

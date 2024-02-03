@@ -77,6 +77,15 @@ def HostnameFromArg(arg):
   return None
 
 
+def IsExtensionId(arg):
+  """Determines whether a string represents a valid Chromium extension origin.
+
+  Returns True if the argument is valid extension origin, or False otherwise.
+  """
+  extensionIdRegex = re.compile(r"[a-p]{32}")
+  return bool(extensionIdRegex.fullmatch(arg))
+
+
 def OriginFromArg(arg):
   """Constructs the origin for the token from a command line argument.
 
@@ -92,9 +101,15 @@ def OriginFromArg(arg):
   if not origin or not origin.scheme or not origin.netloc:
     raise argparse.ArgumentTypeError("%s is not a hostname or a URL" % arg)
   # HTTPS or HTTP only
-  if origin.scheme not in ('https','http'):
+  if origin.scheme not in ("https", "http", "chrome-extension"):
     raise argparse.ArgumentTypeError("%s does not use a recognized URL scheme" %
                                      arg)
+  # Is it a valid extension origin?
+  if origin.scheme == "chrome-extension":
+    if (IsExtensionId(origin.hostname) and not origin.port
+        and not origin.username and not origin.password):
+      return "chrome-extension://{0}".format(origin.hostname)
+    raise argparse.ArgumentTypeError("%s is not a valid extension origin" % arg)
   # Add default port if it is not specified
   try:
     port = origin.port

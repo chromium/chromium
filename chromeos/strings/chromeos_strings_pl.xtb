@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">pomnóż</translation>
 <translation id="1145018782460575098">Okno aktualizowania oprogramowania układowego urządzeń zewnętrznych jest otwarte. Dostępne są aktualizacje (<ph name="NUM_UPDATES" />).</translation>
 <translation id="1145516343487477149">Znajdź artykuły pomocy i odpowiedzi na najczęstsze pytania dotyczące Chromebooka</translation>
 <translation id="1154390310959620237">Możesz dostosować tylko 5 skrótów. Usuń skrót, aby dodać nowy.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
 <translation id="1367951781824006909">Wybierz plik</translation>
+<translation id="1371650399987522809">Opinia o tapecie wygenerowanej z wykorzystaniem AI od Google</translation>
 <translation id="1387854245479784695">To łączne obciążenie wszystkich rdzeni</translation>
 <translation id="1394661041439318933">Poziom naładowania baterii obudowy urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Brama reaguje na ping</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">kolor podświetlenia</translation>
 <translation id="1565038567006703504">Nie można zaktualizować urządzenia: <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">podziel</translation>
 <translation id="1567064801249837505">Albumy</translation>
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
 <translation id="1578784163189013834">Wybierz tło wygaszacza ekranu</translation>
 <translation id="160633243685262989">Podgląd obrazu</translation>
 <translation id="1611649489706141841">do przodu</translation>
 <translation id="1615335640928990664">Użycie danych od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Generuję obrazy…</translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
 <translation id="1626590945318984973">Brak dostępnego skrótu. Naciśnij nowy skrót bez klawiszy funkcyjnych i klawisza <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
@@ -120,6 +124,7 @@
 <translation id="1745577949879301685">Nie udało się załadować obrazów. Sprawdź połączenie sieciowe lub spróbuj załadować obrazy później.</translation>
 <translation id="1751249301761991853">Osobiste</translation>
 <translation id="1753496554272155572">Ikona zamknięcia podglądu tapety</translation>
+<translation id="1754578112426924640">Przycisk edytowania elementu <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikacja diagnostyczna</translation>
 <translation id="175763766237925754">Dobra (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -265,6 +270,7 @@
 <translation id="2878387241690264070">Rozładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="2880569433548999039">Wygaszacz ekranu Chmury</translation>
 <translation id="2926057806159140518">Wpisz nazwę użytkownika i hasło lub zeskanuj kod QR</translation>
+<translation id="2938573842839598578">Aby uzyskać przybliżony wynik, <ph name="OPERATOR_TEXT" /> wartość <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Nie udało się przetestować urządzenia. Aby uruchomić test, ponownie otwórz pokrywę.</translation>
 <translation id="2941112035454246133">Niski</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
@@ -337,6 +343,7 @@
 <translation id="3517001332549868749">Aktualizacja Chrome OS</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
+<translation id="3547264467365135390">Wzór</translation>
 <translation id="3557205324756024651">Tożsamość lokalna (opcjonalnie)</translation>
 <translation id="3565064564551103223">Dozwolone adresy IP</translation>
 <translation id="3569407787324516067">Wygaszacz ekranu</translation>
@@ -619,6 +626,7 @@
 <translation id="5502931783115429516">Android nie działa</translation>
 <translation id="551689408806449779">Urządzenie zostało odłączone. Aby przeprowadzić test, spróbuj podłączyć je ponownie</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">zablokowany</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatycznie przełączaj na ciemny motyw o zachodzie słońca</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -639,6 +647,7 @@
 <translation id="5701381305118179107">Wyśrodkuj</translation>
 <translation id="5703716265115423771">zmniejsz głośność</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Przycisk edytowania elementu <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Zaktualizuj: <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Średni</translation>
 <translation id="5757187557809630523">następny utwór</translation>
@@ -669,6 +678,7 @@
 <translation id="5916084858004523819">Niedozwolone</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Plik został zeskanowany i zapisany w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Przycisk usuwania elementu <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Nie znaleziono pliku</translation>
 <translation id="593880865674747800">Utwórz więcej w tym stylu</translation>
 <translation id="5939518447894949180">Resetuj</translation>
@@ -796,6 +806,7 @@
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
 <translation id="6791471867139427246">kolor podświetlenia klawiatury</translation>
+<translation id="6796229976413584781">Skrót został usunięty</translation>
 <translation id="6798678288485555829">Nawigacja po tekście</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
@@ -846,9 +857,11 @@
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7180865173735832675">Dostosuj</translation>
 <translation id="7184043045742675738">Aby dostosować przycisk, kliknij dowolny klawisz. Zmień położenie klawisza przy użyciu myszy lub klawiszy strzałek.</translation>
+<translation id="7206979415662233817">Warunki korzystania z usługi</translation>
 <translation id="7212547870105584639">Zarządzaj ustawieniami APN sieci. Punkty APN nawiązują połączenie między siecią komórkową a internetem. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizacje oprogramowania urządzeń zewnętrznych</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
+<translation id="7233782086689993269">Skrót został przywrócony</translation>
 <translation id="725133483556299729">Wybierz adres e-mail</translation>
 <translation id="7271040990581020067">Skaner jest obecnie używany. Spróbuj ponownie później.</translation>
 <translation id="7271932918253517778">Skrót wykorzystujący górny rząd klawiszy na klawiaturze musi zawierać klawisz <ph name="META_KEY" />.</translation>
@@ -864,6 +877,8 @@
 <translation id="7311368985037279727">kolor klawiatury</translation>
 <translation id="7317831949569936035">Rejestracja w szkole</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Aby móc korzystać z tapet AI, musisz mieć ukończone 18 lat i musisz zaakceptować <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Warunki korzystania z usług Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> oraz <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Dodatkowe warunki korzystania z generatywnej AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Tapety za pomocą AI możesz tworzyć tylko na użytek osobisty i niekomercyjny. Gdy otrzymujesz pomoc dotyczącą tapet, na serwery AI od Google jest wysyłany tekst z poleceniem wygenerowania sugestii dotyczących tapet zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Naciśnij Wyszukaj i spację, aby zobaczyć wynik w wyszukiwarce Google.</translation>
 <translation id="7343649194310845056">Urządzenia sieciowe</translation>
 <translation id="7353413232959255829">Wynik wyszukiwania <ph name="LIST_POSITION" /> z <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Aby przejść do skrótu, naciśnij Enter.</translation>
@@ -906,6 +921,7 @@
 <translation id="7648838807254605802">duże opóźnienie HTTPS</translation>
 <translation id="7656388927906093505">Urządzenie to mysz.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Zmień awatara</translation>
 <translation id="7683228889864052081">odcień klawiatury</translation>
 <translation id="7690294790491645610">Potwierdź nowe hasło</translation>
@@ -915,6 +931,7 @@
 <translation id="7718231387947923843">podświetlenie klawiatury</translation>
 <translation id="7730077286107534951">Niektóre informacje o koncie i systemie mogą zostać przesłane do Google. Użyjemy ich do rozwiązywania problemów technicznych i ulepszania naszych usług, zgodnie z naszą <ph name="BEGIN_LINK2" />Polityką prywatności<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Warunkami korzystania z usług<ph name="END_LINK3" />. Aby poprosić o zmianę treści, wejdź na <ph name="BEGIN_LINK1" />stronę pomocy prawnej<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Liczba cykli</translation>
+<translation id="7746357909584236306">do edycji</translation>
 <translation id="7747039790905080783">Klucz wstępny</translation>
 <translation id="7752963721013053477">Od świtu do zmierzchu – na wyłączność</translation>
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>

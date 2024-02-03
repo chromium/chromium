@@ -121,7 +121,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
             AsyncTabCreationParams asyncParams, @TabLaunchType int type, int parentId) {
         assert asyncParams != null;
 
-        // Tabs should't be launched in affiliated mode when a webcontents exists.
+        // Tabs shouldn't be launched in affiliated mode when a webcontents exists.
         assert !(type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
                 && asyncParams.getWebContents() != null);
 

@@ -21,6 +21,8 @@ FakeServiceConnectionImpl::FakeServiceConnectionImpl()
       load_model_result_(mojom::LoadModelResult::OK),
       load_text_classifier_result_(mojom::LoadModelResult::OK),
       load_soda_result_(mojom::LoadModelResult::OK),
+      load_heatmap_palm_rejection_result_(
+          mojom::LoadHeatmapPalmRejectionResult::OK),
       create_graph_executor_result_(mojom::CreateGraphExecutorResult::OK),
       execute_result_(mojom::ExecuteResult::OK),
       create_web_platform_model_loader_result_(
@@ -178,6 +180,16 @@ void FakeServiceConnectionImpl::LoadImageAnnotator(
   ScheduleCall(base::BindOnce(
       &FakeServiceConnectionImpl::HandleLoadImageAnnotatorCall,
       base::Unretained(this), std::move(receiver), std::move(callback)));
+}
+
+void FakeServiceConnectionImpl::LoadHeatmapPalmRejection(
+    mojom::HeatmapPalmRejectionConfigPtr config,
+    mojo::PendingRemote<mojom::HeatmapPalmRejectionClient> client,
+    mojom::MachineLearningService::LoadHeatmapPalmRejectionCallback callback) {
+  ScheduleCall(
+      base::BindOnce(&FakeServiceConnectionImpl::HandleHeatmapPalmRejectionCall,
+                     base::Unretained(this), std::move(config),
+                     std::move(client), std::move(callback)));
 }
 
 void FakeServiceConnectionImpl::Compute(
@@ -707,6 +719,24 @@ void FakeServiceConnectionImpl::HandleLoadImageAnnotatorCall(
   }
 
   std::move(callback).Run(load_model_result_);
+}
+
+void FakeServiceConnectionImpl::HandleHeatmapPalmRejectionCall(
+    mojom::HeatmapPalmRejectionConfigPtr config,
+    mojo::PendingRemote<mojom::HeatmapPalmRejectionClient> client,
+    mojom::MachineLearningService::LoadHeatmapPalmRejectionCallback callback) {
+  if (load_heatmap_palm_rejection_result_ ==
+      mojom::LoadHeatmapPalmRejectionResult::OK) {
+    heatmap_palm_rejection_client_ = mojo::Remote(std::move(client));
+  }
+  std::move(callback).Run(load_heatmap_palm_rejection_result_);
+}
+
+void FakeServiceConnectionImpl::SendHeatmapPalmRejectionEvent(
+    mojom::HeatmapProcessedEventPtr event) {
+  if (heatmap_palm_rejection_client_.is_bound()) {
+    heatmap_palm_rejection_client_->OnHeatmapProcessedEvent(std::move(event));
+  }
 }
 
 void FakeServiceConnectionImpl::HandleAnnotateRawImageCall(

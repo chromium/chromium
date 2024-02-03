@@ -42,14 +42,14 @@ class GraphInfoBuilder final {
   // An `Activation` type should have the following members:
   // struct Activation {
   //  mojom::Activation::Tag kind;
-  //  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
-  //  absl::optional<float> elu_alpha;
-  //  absl::optional<float> hard_sigmoid_alpha;
-  //  absl::optional<float> hard_sigmoid_beta;
-  //  absl::optional<float> leaky_relu_alpha;
-  //  absl::optional<float> linear_alpha;
-  //  absl::optional<float> linear_beta;
-  //  absl::optional<float> softplus_steepness;
+  //  std::optional<ClampTester::ClampAttributes> clamp_attributes;
+  //  std::optional<float> elu_alpha;
+  //  std::optional<float> hard_sigmoid_alpha;
+  //  std::optional<float> hard_sigmoid_beta;
+  //  std::optional<float> leaky_relu_alpha;
+  //  std::optional<float> linear_alpha;
+  //  std::optional<float> linear_beta;
+  //  std::optional<float> softplus_steepness;
   // };
   template <typename ActivationAttributes>
   mojom::ActivationPtr CreateActivation(
@@ -121,11 +121,11 @@ class GraphInfoBuilder final {
 
   // A `BatchNormalizationAttributes` type should have the following members:
   // struct BatchNormalizationAttributes {
-  //  absl::optional<uint64_t> scale_operand_id;
-  //  absl::optional<uint64_t> bias_operand_id;
+  //  std::optional<uint64_t> scale_operand_id;
+  //  std::optional<uint64_t> bias_operand_id;
   //  uint32_t axis = 1;
   //  float epsilon = 1e-5;
-  //  absl::optional<Activation> activation;
+  //  std::optional<Activation> activation;
   // };
   template <typename BatchNormalizationAttributes>
   void BuildBatchNormalization(uint64_t input_operand_id,
@@ -170,8 +170,8 @@ class GraphInfoBuilder final {
   //   std::vector<uint32_t> dilations;
   //   uint32_t groups;
   //   mojom::InputOperandLayout input_layout;
-  //   absl::optional<uint64_t> bias_operand_id,
-  //   absl::optional<Activation> activation;
+  //   std::optional<uint64_t> bias_operand_id,
+  //   std::optional<Activation> activation;
   // };
   template <typename Conv2dAttributes>
   void BuildConv2d(mojom::Conv2d_Type type,
@@ -179,7 +179,7 @@ class GraphInfoBuilder final {
                    uint64_t filter_operand_id,
                    uint64_t output_operand_id,
                    const Conv2dAttributes& attributes,
-                   absl::optional<uint64_t> bias_operand_id) {
+                   std::optional<uint64_t> bias_operand_id) {
     mojom::Conv2dPtr conv2d = mojom::Conv2d::New();
     conv2d->input_operand_id = input_operand_id;
     conv2d->filter_operand_id = filter_operand_id;
@@ -233,7 +233,7 @@ class GraphInfoBuilder final {
 
   // A `GemmAttributes` type should have the following members:
   // struct GemmAttributes {
-  //   absl::optional<uint64_t> c_operand_id,
+  //   std::optional<uint64_t> c_operand_id,
   //   float alpha = 1.0;
   //   float beta = 1.0;
   //   bool a_transpose = false;
@@ -261,13 +261,15 @@ class GraphInfoBuilder final {
 
   void BuildHardSigmoid(uint64_t input_operand_id,
                         uint64_t output_operand_id,
-                        absl::optional<float> alpha,
-                        absl::optional<float> beta);
+                        std::optional<float> alpha,
+                        std::optional<float> beta);
+
+  void BuildHardSwish(uint64_t input_operand_id, uint64_t output_operand_id);
 
   // A `LayerNormalizationAttributes` type should have the following members:
   // struct LayerNormalizationAttributes {
-  //  absl::optional<uint64_t> scale_operand_id;
-  //  absl::optional<uint64_t> bias_operand_id;
+  //  std::optional<uint64_t> scale_operand_id;
+  //  std::optional<uint64_t> bias_operand_id;
   //  std::vector<uint32_t> axes;
   //  float epsilon = 1e-5;
   // };
@@ -291,8 +293,8 @@ class GraphInfoBuilder final {
 
   // A `InstanceNormalizationAttributes` type should have the following members:
   // struct InstanceNormalizationAttributes {
-  //  absl::optional<uint64_t> scale_operand_id;
-  //  absl::optional<uint64_t> bias_operand_id;
+  //  std::optional<uint64_t> scale_operand_id;
+  //  std::optional<uint64_t> bias_operand_id;
   //  float epsilon = 1e-5;
   //  mojom::InputOperandLayout input_layout;
   // };
@@ -392,7 +394,7 @@ class GraphInfoBuilder final {
   // struct Resample2dAttributes {
   //   mojom::Resample2d::InterpolationMode mode =
   //       mojom::Resample2d::InterpolationMode::kNearestNeighbor;
-  //   absl::optional<std::vector<float>> scales;
+  //   std::optional<std::vector<float>> scales;
   //   std::vector<uint32_t> axes = {2, 3};};
   template <typename Resample2dAttributes>
   void BuildResample2d(uint64_t input_operand_id,

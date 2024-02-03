@@ -14,4 +14,4 @@
 #   for f in $(git diff --name-only origin); do ./tools/sort-headers.py $f; done
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
-python $DIR/mass-rename.py "$*"
+python3 $DIR/mass-rename.py "$*"

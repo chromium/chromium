@@ -799,7 +799,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
   // ImageData objects should serialize and deserialize correctly.
   V8TestingScope scope;
   ImageData* image_data = ImageData::ValidateAndCreate(
-      2, 1, absl::nullopt, nullptr, ImageData::ValidateAndCreateParams(),
+      2, 1, std::nullopt, nullptr, ImageData::ValidateAndCreateParams(),
       ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
   pm.writable_addr32(0, 0)[0] = 200u;
@@ -823,7 +823,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDetachedImageData) {
   // deserialized.
   V8TestingScope scope;
   ImageData* image_data = ImageData::ValidateAndCreate(
-      2, 1, absl::nullopt, nullptr, ImageData::ValidateAndCreateParams(),
+      2, 1, std::nullopt, nullptr, ImageData::ValidateAndCreateParams(),
       ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
   pm.writable_addr32(0, 0)[0] = 200u;
@@ -844,7 +844,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   image_data_settings->setColorSpace("display-p3");
   image_data_settings->setStorageFormat("float32");
   ImageData* image_data = ImageData::ValidateAndCreate(
-      2, 1, absl::nullopt, image_data_settings,
+      2, 1, std::nullopt, image_data_settings,
       ImageData::ValidateAndCreateParams(), ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
   EXPECT_EQ(kRGBA_F32_SkColorType, pm.info().colorType());
@@ -2338,7 +2338,7 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerWriteNewVersionDisabled) {
   // Should actually be the old version (decimal 20).
   V8ScriptValueSerializer serializer(scope.GetScriptState());
   auto value = serializer.Serialize(v8::True(isolate), ASSERT_NO_EXCEPTION);
-  EXPECT_THAT(value->GetWireData().first(2), ::testing::ElementsAre(0xff, 20));
+  EXPECT_THAT(value->GetWireData().first(2u), ::testing::ElementsAre(0xff, 20));
 }
 
 // TODO(crbug.com/1341844): Remove this along with the rest of the plumbing for

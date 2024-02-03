@@ -1,11 +1,10 @@
 // Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'chrome://resources/cr_components/app_management/toggle_row.js';
+import './toggle_row.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
-import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -14,6 +13,7 @@ import {AppManagementBrowserProxy} from '../../common/app_management/browser_pro
 import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {getTemplate} from './pin_to_shelf_item.html.js';
+import {AppManagementToggleRowElement} from './toggle_row.js';
 
 export class AppManagementPinToShelfItemElement extends PolymerElement {
   static get is() {

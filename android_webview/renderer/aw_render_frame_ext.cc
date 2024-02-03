@@ -37,13 +37,18 @@ namespace android_webview {
 namespace {
 
 using autofill::AutofillAgent;
+using ExtractAllDatalists = autofill::AutofillAgent::ExtractAllDatalists;
+using FocusRequiresScroll = autofill::AutofillAgent::FocusRequiresScroll;
+using QueryPasswordSuggestions =
+    autofill::AutofillAgent::QueryPasswordSuggestions;
+using SecureContextRequired = autofill::AutofillAgent::SecureContextRequired;
+using UserGestureRequired = autofill::AutofillAgent::UserGestureRequired;
 using UsesKeyboardAccessoryForSuggestions =
     autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions;
-using ExtractAllDatalists = autofill::AutofillAgent::ExtractAllDatalists;
 
-const char kAddressPrefix[] = "geo:0,0?q=";
-const char kEmailPrefix[] = "mailto:";
-const char kPhoneNumberPrefix[] = "tel:";
+constexpr char kAddressPrefix[] = "geo:0,0?q=";
+constexpr char kEmailPrefix[] = "mailto:";
+constexpr char kPhoneNumberPrefix[] = "tel:";
 
 GURL GetAbsoluteUrl(const blink::WebNode& node,
                     const std::u16string& url_fragment) {
@@ -155,7 +160,9 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
                                                         &registry_);
   new AutofillAgent(
       render_frame,
-      {UsesKeyboardAccessoryForSuggestions(false), ExtractAllDatalists(true)},
+      {ExtractAllDatalists(true), FocusRequiresScroll(false),
+       QueryPasswordSuggestions(true), SecureContextRequired(true),
+       UserGestureRequired(false), UsesKeyboardAccessoryForSuggestions(false)},
       std::move(password_autofill_agent), nullptr, &registry_);
   if (content_capture::features::IsContentCaptureEnabled())
     new content_capture::ContentCaptureSender(render_frame, &registry_);

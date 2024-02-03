@@ -15,7 +15,7 @@ InternalCookie* CookieMojomToInternalCookie(
   result->setValue(cookie->cookie.Value().c_str());
   result->setPath(cookie->cookie.Path().c_str());
   result->setDomain(cookie->cookie.Domain().c_str());
-  result->setSecure(cookie->cookie.IsSecure());
+  result->setSecure(cookie->cookie.SecureAttribute());
   result->setHttpOnly(cookie->cookie.IsHttpOnly());
   if (!cookie->cookie.ExpiryDate().is_null()) {
     // Expiry is omitted if unspecified.

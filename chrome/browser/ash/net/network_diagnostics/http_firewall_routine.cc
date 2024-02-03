@@ -58,7 +58,7 @@ class HttpFirewallDelegate : public HttpFirewallRoutine::Delegate {
  public:
   // Delegate:
   std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
-      TlsProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       bool negotiate_tls,
       TlsProber::TlsProbeCompleteCallback callback) override {
@@ -72,8 +72,9 @@ class HttpFirewallDelegate : public HttpFirewallRoutine::Delegate {
 
 const int HttpFirewallRoutine::kTotalNumRetries;
 
-HttpFirewallRoutine::HttpFirewallRoutine()
-    : delegate_(std::make_unique<HttpFirewallDelegate>()),
+HttpFirewallRoutine::HttpFirewallRoutine(mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source),
+      delegate_(std::make_unique<HttpFirewallDelegate>()),
       num_retries_(kTotalNumRetries) {
   std::vector<std::string> url_strings =
       util::GetRandomAndFixedHostsWithSchemeAndPort(

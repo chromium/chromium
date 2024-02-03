@@ -75,6 +75,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(void, DiscardUnsyncedCredentials, (), (override));
   MOCK_METHOD(void, MovePasswordToAccountStore, (), (override));
   MOCK_METHOD(void, BlockMovingPasswordToAccountStore, (), (override));
+  MOCK_METHOD(void, PromptSaveBubbleAfterDefaultStoreChanged, (), (override));
   MOCK_METHOD(void,
               ChooseCredential,
               (const password_manager::PasswordForm&,
@@ -82,6 +83,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (override));
   MOCK_METHOD(void,
               NavigateToPasswordManagerSettingsPage,
+              (password_manager::ManagePasswordsReferrer),
+              (override));
+  MOCK_METHOD(void,
+              NavigateToPasswordManagerSettingsAccountStoreToggle,
               (password_manager::ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(void,
@@ -104,6 +109,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
       (),
       (override));
   MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
+  MOCK_METHOD(void,
+              ShowMovePasswordBubble,
+              (const password_manager::PasswordForm& form),
+              (override));
   MOCK_METHOD(void, OnBiometricAuthBeforeFillingDeclined, (), (override));
   MOCK_METHOD(void,
               OnAddUsernameSaveClicked,

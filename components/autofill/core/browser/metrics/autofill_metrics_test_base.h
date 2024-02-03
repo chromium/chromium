@@ -200,7 +200,7 @@ class AutofillMetricsBaseTest {
   [[nodiscard]] FormData CreateEmptyForm() {
     FormData form;
     form.host_frame = test::MakeLocalFrameToken();
-    form.unique_renderer_id = test::MakeFormRendererId();
+    form.renderer_id = test::MakeFormRendererId();
     form.name = u"TestForm";
     form.url = GURL("https://example.com/form.html");
     form.action = GURL("https://example.com/submit.html");

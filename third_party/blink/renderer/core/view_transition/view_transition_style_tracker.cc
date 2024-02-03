@@ -236,14 +236,14 @@ float ComputeStartForSide(float start,
 // that should be painted. The return value is relative to the element's border
 // box.
 // Returns null if the complete ink overflow rect should be painted.
-absl::optional<gfx::RectF> ComputeCaptureRect(
+std::optional<gfx::RectF> ComputeCaptureRect(
     const int max_capture_size,
     const PhysicalRect& ink_overflow_rect_in_border_box_space,
     const gfx::Transform& element_to_snapshot_root,
     const gfx::Size& snapshot_root_size) {
   if (ink_overflow_rect_in_border_box_space.Width() <= max_capture_size &&
       ink_overflow_rect_in_border_box_space.Height() <= max_capture_size) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Compute the matrix to map the element's ink overflow rectangle to snapshot
@@ -288,7 +288,7 @@ absl::optional<gfx::RectF> ComputeCaptureRect(
 }
 
 int ComputeMaxCaptureSize(Document& document,
-                          absl::optional<int> max_texture_size,
+                          std::optional<int> max_texture_size,
                           const gfx::Size& snapshot_root_size) {
   // If the max texture size is not known yet, use the size of the snapshot
   // root.
@@ -1113,7 +1113,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     ContainerProperties container_properties;
     PhysicalRect visual_overflow_rect_in_layout_space;
-    absl::optional<gfx::RectF> captured_rect_in_layout_space;
+    std::optional<gfx::RectF> captured_rect_in_layout_space;
 
     if (element_data->target_element->IsDocumentElement()) {
       auto layout_view_size = PhysicalSize(GetSnapshotRootSize());
@@ -1215,7 +1215,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     LayoutObject& layout_object,
     ContainerProperties& container_properties,
     PhysicalRect& visual_overflow_rect_in_layout_space,
-    absl::optional<gfx::RectF>& captured_rect_in_layout_space) const {
+    std::optional<gfx::RectF>& captured_rect_in_layout_space) const {
   DCHECK(!layout_object.IsLayoutView());
 
   // TODO(bokan): This doesn't account for the local offset of an inline
@@ -1261,11 +1261,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
                            LayoutUnit(entry_size->inlineSize()));
   } else if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
     border_box_size_in_css_space =
-        RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()
-            ? layout_inline->PhysicalLinesBoundingBox().size
-            : PhysicalSize(
-                  ToEnclosingRect(layout_inline->PhysicalLinesBoundingBox())
-                      .size());
+        layout_inline->PhysicalLinesBoundingBox().size;
     // Convert to CSS pixels instead of layout pixels.
     border_box_size_in_css_space.Scale(1.f / device_pixel_ratio_);
   }
@@ -1618,6 +1614,27 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
   return transition_state;
 }
 
+bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
+  if (!snapshot_root_layout_size_at_capture_.has_value()) {
+    return false;
+  }
+
+  gfx::Size current_size = GetSnapshotRootSize();
+
+  // Allow 1px of diff since the snapshot root can be adjusted by
+  // viewport-resizing UI (e.g. the virtual keyboard insets the viewport but
+  // then outsets the viewport rect to get the snapshot root). These
+  // adjustments can be off by a pixel due to different pixel snapping.
+  if (std::abs(snapshot_root_layout_size_at_capture_->width() -
+               current_size.width()) <= 1 &&
+      std::abs(snapshot_root_layout_size_at_capture_->height() -
+               current_size.height()) <= 1) {
+    return false;
+  }
+
+  return true;
+}
+
 void ViewTransitionStyleTracker::InvalidateStyle() {
   ua_style_sheet_ = nullptr;
 
@@ -1939,27 +1956,6 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     }
   }
   return result;
-}
-
-bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
-  if (!snapshot_root_layout_size_at_capture_.has_value()) {
-    return false;
-  }
-
-  gfx::Size current_size = GetSnapshotRootSize();
-
-  // Allow 1px of diff since the snapshot root can be adjusted by
-  // viewport-resizing UI (e.g. the virtual keyboard insets the viewport but
-  // then outsets the viewport rect to get the snapshot root). These
-  // adjustments can be off by a pixel due to different pixel snapping.
-  if (std::abs(snapshot_root_layout_size_at_capture_->width() -
-               current_size.width()) <= 1 &&
-      std::abs(snapshot_root_layout_size_at_capture_->height() -
-               current_size.height()) <= 1) {
-    return false;
-  }
-
-  return true;
 }
 
 const char* ViewTransitionStyleTracker::StateToString(State state) {

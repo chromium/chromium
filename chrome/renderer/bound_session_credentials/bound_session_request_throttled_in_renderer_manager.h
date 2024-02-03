@@ -74,9 +74,13 @@ class BoundSessionRequestThrottledInRendererManager
   void CallRemoteHandleRequestBlockedOnCookie();
 
   void OnRemoteDisconnected();
-  void CancelAllDeferredRequests();
-  void ResumeAllDeferredRequests();
-  void RunAllCallbacks(UnblockAction action);
+  void CancelAllDeferredRequests(
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger);
+  void ResumeAllDeferredRequests(
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger);
+  void RunAllCallbacks(
+      UnblockAction action,
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger);
 
   std::vector<ResumeOrCancelThrottledRequestCallback>
       resume_or_cancel_deferred_request_callbacks_;

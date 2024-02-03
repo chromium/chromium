@@ -2042,7 +2042,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
   const ShelfID first_app_id = AddAppShortcut();
   const ShelfID second_app_id = AddAppShortcut();
   const int last_index = model_->items().size() - 1;
-  ASSERT_TRUE(last_index >= 0);
+  ASSERT_GE(last_index, 0);
 
   ShelfAppButton* button = GetButtonByID(first_app_id);
   ASSERT_TRUE(button);
@@ -3866,9 +3866,9 @@ TEST_F(ShelfViewDeskButtonTest, OverviewVisibility) {
   // The button should disappear in overview mode and reappear after.
   ToggleOverview();
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
-  // Since the desk button is hidden, the hotseat should expand to use the space
-  // the desk button was occupying.
-  EXPECT_GT(GetPrimaryShelf()
+  // To avoid unnecessary re-layout before/after overview, keep hotseat the same
+  // width.
+  EXPECT_EQ(GetPrimaryShelf()
                 ->shelf_widget()
                 ->hotseat_widget()
                 ->GetWindowBoundsInScreen()
@@ -3900,23 +3900,22 @@ TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 }
 
-// Verify that the desk button is 136px wide if the screen width is greater than
-// 1280px, 96px if the screen width is less than or equal to 1280px, and 36px if
-// the screen width is small enough to cause shelf overflow. We also test that
-// the button is 36x36 in vertical alignment.
+// Verify that the desk button is 218px wide if the screen width is greater than
+// or equal to 1280px, 118px if the screen width is less than 1280px. We also
+// test that the button is 48x50 in vertical alignment.
 TEST_F(ShelfViewDeskButtonTest, Position) {
   SetShowDeskButtonInShelfPref(prefs_, true);
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
   UpdateDisplay("1281x400");
-  EXPECT_EQ(136, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(218, desk_button_widget()->GetTargetBounds().width());
   UpdateDisplay("200x1281");
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(118, desk_button_widget()->GetTargetBounds().width());
   UpdateDisplay("1280x400");
-  EXPECT_EQ(96, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(218, desk_button_widget()->GetTargetBounds().width());
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().width());
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().height());
+  EXPECT_EQ(48, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(50, desk_button_widget()->GetTargetBounds().height());
 }
 
 // Verify that the desk button does not appear by default, appears when the user

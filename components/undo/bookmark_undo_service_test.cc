@@ -544,6 +544,10 @@ TEST_F(BookmarkUndoServiceTest, TestUpperLimit) {
 }
 
 TEST_F(BookmarkUndoServiceTest, UndoMoveToOtherModel) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      syncer::kEnableBookmarkFoldersForAccountStorage);
+
   std::unique_ptr<BookmarkModel> second_model =
       bookmarks::TestBookmarkClient::CreateModel();
   GetUndoService()->StartObservingBookmarkModel(second_model.get());

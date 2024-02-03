@@ -189,8 +189,7 @@ void AddToStoreWithEKURestriction(
     const std::shared_ptr<const bssl::ParsedCertificate>& cert,
     LPCSTR usage_identifier) {
   crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
-      X509_ASN_ENCODING, cert->der_cert().UnsafeData(),
-      cert->der_cert().Length()));
+      X509_ASN_ENCODING, cert->der_cert().data(), cert->der_cert().size()));
 
   CERT_ENHKEY_USAGE usage;
   memset(&usage, 0, sizeof(usage));

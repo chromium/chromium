@@ -38,7 +38,7 @@ class MLGraphTfLiteConverter final {
   // in the `tflite::Tensor` array if it's successful.
   int32_t SerializeTensor(
       const MLOperand* operand,
-      absl::optional<String> graph_output_name = absl::nullopt);
+      std::optional<String> graph_output_name = std::nullopt);
 
   // The following steps implement the `SerializeOperation` function:
   // 1. Create `tflite::OperatorCode` with the kind of operator.

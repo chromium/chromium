@@ -82,7 +82,7 @@ public class BrowsingDataRemoverIntegrationTest {
         // Clear cookies and site data excluding the registrable domain "google.com".
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingDataExcludingDomains(
                                     new OnClearBrowsingDataListener() {
                                         @Override
@@ -108,7 +108,7 @@ public class BrowsingDataRemoverIntegrationTest {
         // Clear cookies and site data with no url filter.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingData(
                                     new OnClearBrowsingDataListener() {
                                         @Override
@@ -143,7 +143,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingData(
                                     callbackHelper::notifyCalled,
                                     new int[] {BrowsingDataType.HISTORY},

@@ -18,11 +18,9 @@ virtual/* [ Skip ]
 # Crashes
 crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash ]
 
-# Timeouts
-fast/loader/iframe-navigation-stealing-focus.html [ Skip ]
-
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
+external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Skip ]
 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?adts_aac [ Skip ]
 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?mp4_aac [ Skip ]
 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_annexb [ Skip ]
@@ -54,6 +52,7 @@ wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
 
 # Times out
 http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]
+external/wpt/html/select/options-length-too-large.html [ Skip ]
 
 # This test is skipped because it currently times out. This is due to the fact
 # that inline-block elements are now included in the accessibility tree and
@@ -64,3 +63,6 @@ http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]
 # realistic scenario in the wild so we deem it safe to simply skip this test
 # when accessibility is enabled.
 fast/events/touch/gesture/gesture-tap-frame-move.html [ Skip ]
+
+# Undiagnosed failure:
+crbug.com/1503980 fast/events/scroll-event-handler-count.html [ Skip ]

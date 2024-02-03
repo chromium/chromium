@@ -667,25 +667,6 @@ class PageLoadMetricsBrowserTestAnimatedLCP
   }
 };
 
-class PageLoadMetricsBrowserTestWithAnimatedLCPFlag
-    : public PageLoadMetricsBrowserTestAnimatedLCP {
- public:
-  PageLoadMetricsBrowserTestWithAnimatedLCPFlag() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kLCPAnimatedImagesReporting}, {});
-  }
-};
-
-class PageLoadMetricsBrowserTestWithRuntimeAnimatedLCPFlag
-    : public PageLoadMetricsBrowserTestAnimatedLCP {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "LCPAnimatedImagesWebExposed");
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NoPageLoadMetricsRecorded())
@@ -3652,7 +3633,7 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
 // Tests that an animated image's reported LCP values are smaller than its load
 // times, when the feature flag for animated image reporting is enabled.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestAnimatedLCP,
                        MAYBE_PageLCPAnimatedImage) {
   test_animated_image_lcp(/*smaller=*/true, /*animated=*/true);
 }
@@ -3665,7 +3646,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
 #else
 #define MAYBE_PageLCPNonAnimatedImage PageLCPNonAnimatedImage
 #endif
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestAnimatedLCP,
                        MAYBE_PageLCPNonAnimatedImage) {
   test_animated_image_lcp(/*smaller=*/false, /*animated=*/false);
 }

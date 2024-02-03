@@ -95,7 +95,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForward) {
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      true /* is_browser_initiated */, absl::nullopt);
+      true /* is_browser_initiated */, std::nullopt);
   EXPECT_EQ(result1, mojom::blink::CommitResult::Ok);
 
   // Now that there's been a user activation, the onnavigate handler should be
@@ -108,7 +108,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForward) {
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      true /* is_browser_initiated */, absl::nullopt);
+      true /* is_browser_initiated */, std::nullopt);
   EXPECT_EQ(result2, mojom::blink::CommitResult::Aborted);
 
   // Having consumed the user activation, the onnavigate handler should not be
@@ -119,7 +119,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForward) {
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      true /* is_browser_initiated */, absl::nullopt);
+      true /* is_browser_initiated */, std::nullopt);
   EXPECT_EQ(result3, mojom::blink::CommitResult::Ok);
 }
 
@@ -146,7 +146,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardWindowStop) {
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      true /* is_browser_initiated */, absl::nullopt);
+      true /* is_browser_initiated */, std::nullopt);
   EXPECT_EQ(result1, mojom::blink::CommitResult::Ok);
 
   // Now that there's been a user activation, the onnavigate handler should be
@@ -159,7 +159,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardWindowStop) {
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      true /* is_browser_initiated */, absl::nullopt);
+      true /* is_browser_initiated */, std::nullopt);
   EXPECT_EQ(result2, mojom::blink::CommitResult::Aborted);
 
   // Having consumed the user activation, the onnavigate handler should not be
@@ -170,7 +170,7 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardWindowStop) {
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      true /* is_browser_initiated */, absl::nullopt);
+      true /* is_browser_initiated */, std::nullopt);
   EXPECT_EQ(result3, mojom::blink::CommitResult::Ok);
 }
 

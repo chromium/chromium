@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_PUBLIC_KEY_CREDENTIAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_PUBLIC_KEY_CREDENTIAL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_response.h"
@@ -41,7 +42,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
 
   DOMArrayBuffer* rawId() const { return raw_id_.Get(); }
   AuthenticatorResponse* response() const { return response_.Get(); }
-  absl::optional<String> authenticatorAttachment() const {
+  std::optional<String> authenticatorAttachment() const {
     return authenticator_attachment_;
   }
   static ScriptPromise isUserVerifyingPlatformAuthenticatorAvailable(
@@ -62,7 +63,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
  private:
   const Member<DOMArrayBuffer> raw_id_;
   const Member<AuthenticatorResponse> response_;
-  const absl::optional<String> authenticator_attachment_;
+  const std::optional<String> authenticator_attachment_;
   Member<const AuthenticationExtensionsClientOutputs> extension_outputs_;
 };
 

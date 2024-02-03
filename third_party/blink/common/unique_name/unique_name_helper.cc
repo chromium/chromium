@@ -165,7 +165,7 @@ std::string CalculateFrameHash(base::StringPiece name) {
   uint8_t result[crypto::kSHA256Length];
   crypto::SHA256HashString(name, result, std::size(result));
   hashed_name += "<!--frameHash";
-  hashed_name += base::HexEncode(result, std::size(result));
+  hashed_name += base::HexEncode(result);
   hashed_name += "-->";
   return hashed_name;
 }

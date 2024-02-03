@@ -104,7 +104,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     if (should_compute_occlusion)
       geometry_flags |= IntersectionGeometry::kShouldComputeVisibility;
 
-    absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
+    std::optional<IntersectionGeometry::RootGeometry> root_geometry;
     IntersectionGeometry geometry(
         /* root */ nullptr,
         /* target */ *owner_element,

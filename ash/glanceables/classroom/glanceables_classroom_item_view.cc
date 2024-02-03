@@ -242,8 +242,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   const gfx::RoundedCornersF corner_radii =
       GetRoundedCorners(item_index, last_item_index);
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, corner_radii,
-      /*for_border_thickness=*/0));
+      cros_tokens::kCrosSysSystemOnBase, corner_radii));
 
   std::vector<std::u16string> a11y_description_parts{
       base::UTF8ToUTF16(assignment->course_title)};
@@ -295,9 +294,9 @@ void GlanceablesClassroomItemView::GetAccessibleNodeData(
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
 }
 
-void GlanceablesClassroomItemView::Layout() {
-  views::Button::Layout();
-  views::FocusRing::Get(this)->Layout();
+void GlanceablesClassroomItemView::Layout(PassKey) {
+  LayoutSuperclass<views::Button>(this);
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }
 
 BEGIN_METADATA(GlanceablesClassroomItemView, views::View)

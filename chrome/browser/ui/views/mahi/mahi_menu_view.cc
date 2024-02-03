@@ -104,7 +104,7 @@ void MahiMenuView::OnSummaryButtonPressed() {
   chromeos::MahiManager::Get()->OpenMahiPanel(display.id());
 }
 
-BEGIN_METADATA(MahiMenuView, views::View)
+BEGIN_METADATA(MahiMenuView)
 END_METADATA
 
 }  // namespace chromeos::mahi

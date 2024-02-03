@@ -28,7 +28,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
  public:
   struct PhaseAndTime {
     TimelinePhase phase;
-    absl::optional<base::TimeDelta> time;
+    std::optional<base::TimeDelta> time;
     bool operator==(const PhaseAndTime& other) const {
       return phase == other.phase && time == other.time;
     }
@@ -45,9 +45,9 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
     return nullptr;
   }
 
-  absl::optional<AnimationTimeDelta> CurrentTime();
-  absl::optional<double> CurrentTimeMilliseconds();
-  absl::optional<double> CurrentTimeSeconds();
+  std::optional<AnimationTimeDelta> CurrentTime();
+  std::optional<double> CurrentTimeMilliseconds();
+  std::optional<double> CurrentTimeSeconds();
 
   virtual V8CSSNumberish* duration();
 
@@ -79,7 +79,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   //
   // Changing scroll-linked animation start_time initialization is under
   // consideration here: https://github.com/w3c/csswg-drafts/issues/2075.
-  virtual absl::optional<base::TimeDelta> InitialStartTimeForAnimations() = 0;
+  virtual std::optional<base::TimeDelta> InitialStartTimeForAnimations() = 0;
 
   AnimationTimeDelta CalculateIntrinsicIterationDuration(
       const Animation* animation,
@@ -90,8 +90,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   }
 
   AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const absl::optional<TimelineOffset>& range_start,
-      const absl::optional<TimelineOffset>& range_end,
+      const std::optional<TimelineOffset>& range_start,
+      const std::optional<TimelineOffset>& range_end,
       const Timing& timing) {
     return CalculateIntrinsicIterationDuration(GetTimelineRange(), range_start,
                                                range_end, timing);
@@ -147,8 +147,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
 
   void Trace(Visitor*) const override;
 
-  virtual absl::optional<AnimationTimeDelta> GetDuration() const {
-    return absl::nullopt;
+  virtual std::optional<AnimationTimeDelta> GetDuration() const {
+    return std::nullopt;
   }
 
  protected:
@@ -156,8 +156,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
 
   virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
       const TimelineRange&,
-      const absl::optional<TimelineOffset>& range_start,
-      const absl::optional<TimelineOffset>& range_end,
+      const std::optional<TimelineOffset>& range_start,
+      const std::optional<TimelineOffset>& range_end,
       const Timing&) {
     return AnimationTimeDelta();
   }
@@ -172,7 +172,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
 
   scoped_refptr<cc::AnimationTimeline> compositor_timeline_;
 
-  absl::optional<PhaseAndTime> last_current_phase_and_time_;
+  std::optional<PhaseAndTime> last_current_phase_and_time_;
 };
 
 }  // namespace blink

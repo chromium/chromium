@@ -467,7 +467,7 @@ bool MediaRecorderHandler::Start(int timeslice,
 
   std::unique_ptr<media::Muxer> muxer;
   media::AudioCodec audio_codec = CodecIdToMediaAudioCodec(audio_codec_id_);
-  absl::optional<base::TimeDelta> optional_timeslice;
+  std::optional<base::TimeDelta> optional_timeslice;
   if (timeslice > 0) {
     optional_timeslice = timeslice_;
   }
@@ -759,7 +759,7 @@ void MediaRecorderHandler::OnEncodedVideo(
     const media::Muxer::VideoParameters& params,
     std::string encoded_data,
     std::string encoded_alpha,
-    absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+    std::optional<media::VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp,
     bool is_key_frame) {
   DCHECK(IsMainThread());
@@ -834,14 +834,14 @@ void MediaRecorderHandler::OnPassthroughVideo(
   // Update |video_codec_profile_| so that ActualMimeType() works.
   video_codec_profile_.codec_id = CodecIdFromMediaVideoCodec(params.codec);
   HandleEncodedVideo(params, std::move(encoded_data), std::move(encoded_alpha),
-                     absl::nullopt, timestamp, is_key_frame);
+                     std::nullopt, timestamp, is_key_frame);
 }
 
 void MediaRecorderHandler::HandleEncodedVideo(
     const media::Muxer::VideoParameters& params,
     std::string encoded_data,
     std::string encoded_alpha,
-    absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+    std::optional<media::VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp,
     bool is_key_frame) {
   DCHECK(IsMainThread());
@@ -870,7 +870,7 @@ void MediaRecorderHandler::HandleEncodedVideo(
 void MediaRecorderHandler::OnEncodedAudio(
     const media::AudioParameters& params,
     std::string encoded_data,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+    std::optional<media::AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
   DCHECK(IsMainThread());
 

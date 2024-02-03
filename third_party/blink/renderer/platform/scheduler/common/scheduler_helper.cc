@@ -116,7 +116,7 @@ void SchedulerHelper::ReclaimMemory() {
   sequence_manager_->ReclaimMemory();
 }
 
-absl::optional<base::sequence_manager::WakeUp> SchedulerHelper::GetNextWakeUp()
+std::optional<base::sequence_manager::WakeUp> SchedulerHelper::GetNextWakeUp()
     const {
   CheckOnValidThread();
   DCHECK(sequence_manager_);

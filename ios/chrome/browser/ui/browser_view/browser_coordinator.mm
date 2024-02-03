@@ -60,7 +60,7 @@
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
-#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
@@ -127,6 +127,7 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
@@ -361,6 +362,9 @@ enum class ToolbarKind {
 
 @property(nonatomic, strong)
     PlusAddressBottomSheetCoordinator* plusAddressBottomSheetCoordinator;
+
+@property(nonatomic, strong) VirtualCardEnrollmentBottomSheetCoordinator*
+    virtualCardEnrollmentBottomSheetCoordinator;
 
 // Coordinator for the choice screen.
 @property(nonatomic, strong) ChromeCoordinator* choiceCoordinator;
@@ -707,6 +711,9 @@ enum class ToolbarKind {
 
   [self.plusAddressBottomSheetCoordinator stop];
   self.plusAddressBottomSheetCoordinator = nil;
+
+  [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
@@ -1226,6 +1233,9 @@ enum class ToolbarKind {
   /* paymentsSuggestionBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
+  /* virtualCardEnrollmentBottomSheetCoordinator is created and started by a
+   * BrowserCommand */
+
   /* PriceNotificationsViewCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1357,6 +1367,9 @@ enum class ToolbarKind {
 
   [self.plusAddressBottomSheetCoordinator stop];
   self.plusAddressBottomSheetCoordinator = nil;
+
+  [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 
   [self.printCoordinator stop];
   self.printCoordinator = nil;
@@ -1613,14 +1626,6 @@ enum class ToolbarKind {
   [self.passwordSuggestionBottomSheetCoordinator start];
 }
 
-- (void)showPlusAddressesBottomSheet {
-  self.plusAddressBottomSheetCoordinator =
-      [[PlusAddressBottomSheetCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser];
-  [self.plusAddressBottomSheetCoordinator start];
-}
-
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
   if (self.paymentsSuggestionBottomSheetCoordinator) {
     return;
@@ -1637,6 +1642,27 @@ enum class ToolbarKind {
       .browserCoordinatorCommandsHandler =
       HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
   [self.paymentsSuggestionBottomSheetCoordinator start];
+}
+
+- (void)showPlusAddressesBottomSheet {
+  self.plusAddressBottomSheetCoordinator =
+      [[PlusAddressBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [self.plusAddressBottomSheetCoordinator start];
+}
+
+- (void)showVirtualCardEnrollmentBottomSheet:
+    (const autofill::VirtualCardEnrollUiModel&)model {
+  if (self.virtualCardEnrollmentBottomSheetCoordinator) {
+    [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  }
+  self.virtualCardEnrollmentBottomSheetCoordinator =
+      [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
+             initWithUIModel:model
+          baseViewController:self.viewController
+                     browser:self.browser];
+  [self.virtualCardEnrollmentBottomSheetCoordinator start];
 }
 
 #pragma mark - BrowserCoordinatorCommands
@@ -1859,6 +1885,11 @@ enum class ToolbarKind {
 - (void)dismissPlusAddressBottomSheet {
   [self.plusAddressBottomSheetCoordinator stop];
   self.plusAddressBottomSheetCoordinator = nil;
+}
+
+- (void)dismissVirtualCardEnrollmentBottomSheet {
+  [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 }
 
 - (void)showPlusAddressManagementPage {

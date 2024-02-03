@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -99,6 +100,13 @@ public final class FeedFeatures {
             return currentTime < parsedTime || currentTime - parsedTime > ONE_DAY_DELTA_MILLIS;
         }
         return false;
+    }
+
+    public static boolean isFeedFollowUiUpdateEnabled() {
+        if (LocaleUtils.getDefaultCountryCode().equals("US")) {
+            return true;
+        }
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE);
     }
 
     /** Updates the timestamp for the last time the new indicator was seen to now. */

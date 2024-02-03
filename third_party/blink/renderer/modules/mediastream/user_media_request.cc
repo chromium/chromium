@@ -313,7 +313,7 @@ void CountVideoConstraintUses(ExecutionContext* context,
 }
 
 void RecordGetDisplayMediaIncludeExcludeConstraintUma(
-    absl::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude,
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude,
     const std::string& histogram_name) {
   const GetDisplayMediaIncludeExcludeConstraint value =
       (!include_or_exclude.has_value()
@@ -344,7 +344,7 @@ void RecordPreferredDisplaySurfaceConstraintUma(
 }
 
 void RecordSuppressLocalAudioPlaybackConstraintUma(
-    absl::optional<bool> suppress_local_audio_playback) {
+    std::optional<bool> suppress_local_audio_playback) {
   const GetDisplayMediaBooleanConstraint value =
       (!suppress_local_audio_playback.has_value()
            ? GetDisplayMediaBooleanConstraint::kNotSpecified
@@ -405,7 +405,7 @@ UserMediaRequest* UserMediaRequest::Create(
   }
 
   std::string display_surface_constraint;
-  absl::optional<bool> suppress_local_audio_playback;
+  std::optional<bool> suppress_local_audio_playback;
 
   if (media_type == UserMediaRequestType::kUserMedia) {
     if (audio.IsNull() && video.IsNull()) {
@@ -519,7 +519,7 @@ UserMediaRequest* UserMediaRequest::Create(
       options->systemAudio().AsEnum() ==
           V8DisplayMediaIncludeOrExclude::Enum::kExclude);
   if (media_type == UserMediaRequestType::kDisplayMedia) {
-    absl::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
     if (options->hasSystemAudio()) {
       include_or_exclude = options->systemAudio().AsEnum();
     }
@@ -540,7 +540,7 @@ UserMediaRequest* UserMediaRequest::Create(
   }
   result->set_exclude_self_browser_surface(exclude_self_browser_surface);
   if (media_type == UserMediaRequestType::kDisplayMedia) {
-    absl::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
     if (options->hasSelfBrowserSurface()) {
       include_or_exclude = options->selfBrowserSurface().AsEnum();
     }
@@ -568,7 +568,7 @@ UserMediaRequest* UserMediaRequest::Create(
       options->surfaceSwitching().AsEnum() ==
           V8DisplayMediaIncludeOrExclude::Enum::kInclude);
   if (media_type == UserMediaRequestType::kDisplayMedia) {
-    absl::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
     if (options->hasSurfaceSwitching()) {
       include_or_exclude = options->surfaceSwitching().AsEnum();
     }
@@ -591,7 +591,7 @@ UserMediaRequest* UserMediaRequest::Create(
   }
   result->set_exclude_monitor_type_surfaces(exclude_monitor_type_surfaces);
   if (media_type == UserMediaRequestType::kDisplayMedia) {
-    absl::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
+    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
     if (options->hasMonitorTypeSurfaces()) {
       include_or_exclude = options->monitorTypeSurfaces().AsEnum();
     }

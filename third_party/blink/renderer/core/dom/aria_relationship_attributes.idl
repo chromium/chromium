@@ -7,14 +7,14 @@
 [
     RuntimeEnabled=AOMAriaRelationshipProperties
 ] interface mixin AriaRelationshipAttributes {
-    [CEReactions, Reflect=aria_activedescendant] attribute Element? ariaActiveDescendantElement;
-    [CEReactions, CallWith=ScriptState] attribute object? ariaControlsElements;
-    [CEReactions, CallWith=ScriptState] attribute object? ariaDescribedByElements;
-    [CEReactions, CallWith=ScriptState] attribute object? ariaDetailsElements;
-    [CEReactions, CallWith=ScriptState] attribute object? ariaErrorMessageElements;
-    [CEReactions, CallWith=ScriptState] attribute object? ariaFlowToElements;
-    [CEReactions, CallWith=ScriptState] attribute object? ariaLabelledByElements;
-    [CEReactions, CallWith=ScriptState] attribute object? ariaOwnsElements;
+    [CEReactions, Reflect=aria_activedescendant, Measure] attribute Element? ariaActiveDescendantElement;
+    [CEReactions, Measure] attribute FrozenArray<Element>? ariaControlsElements;
+    [CEReactions, Measure] attribute FrozenArray<Element>? ariaDescribedByElements;
+    [CEReactions, Measure] attribute FrozenArray<Element>? ariaDetailsElements;
+    [CEReactions, Measure] attribute FrozenArray<Element>? ariaErrorMessageElements;
+    [CEReactions, Measure] attribute FrozenArray<Element>? ariaFlowToElements;
+    [CEReactions, Measure] attribute FrozenArray<Element>? ariaLabelledByElements;
+    [CEReactions, Measure] attribute FrozenArray<Element>? ariaOwnsElements;
 };
 
 Element includes AriaRelationshipAttributes;

@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -37,6 +38,9 @@
 @property(nonatomic, readonly, getter=isFormAccessoryVisible)
     BOOL formAccessoryVisible;
 
+// The custom view that should be shown in the input accessory view.
+@property(nonatomic, strong) FormInputAccessoryView* formInputAccessoryView;
+
 // The view with the suggestions in FormInputAccessoryView.
 @property(nonatomic, strong) FormSuggestionView* formSuggestionView;
 
@@ -53,11 +57,17 @@
 // The ID of the field that was last announced by VoiceOver.
 @property(nonatomic, assign) autofill::FieldRendererId lastAnnouncedFieldId;
 
+// Whether to show the scroll hint.
+@property(nonatomic, assign) BOOL showScrollHint;
+
 @end
 
 @implementation FormInputAccessoryViewController {
   // Is the preferred omnibox position at the bottom.
   BOOL _isBottomOmnibox;
+
+  // Whether the keyboard was closed before the keyboard accessory appeared.
+  BOOL _keyboardWasClosed;
 }
 
 @synthesize addressButtonHidden = _addressButtonHidden;
@@ -66,7 +76,7 @@
 @synthesize formInputPreviousButtonEnabled = _formInputPreviousButtonEnabled;
 @synthesize navigationDelegate = _navigationDelegate;
 @synthesize passwordButtonHidden = _passwordButtonHidden;
-@synthesize suggestionType = _suggestionType;
+@synthesize mainFillingProduct = _mainFillingProduct;
 @synthesize currentFieldId = _currentFieldId;
 
 #pragma mark - Life Cycle
@@ -81,60 +91,20 @@
     _manualFillAccessoryViewController =
         [[ManualFillAccessoryViewController alloc] initWithDelegate:self];
     [self addChildViewController:_manualFillAccessoryViewController];
+    _keyboardWasClosed = YES;
   }
   return self;
 }
 
 - (void)loadView {
-  [self createFormSuggestionViewIfNeeded];
+  [self createFormInputAccessoryViewIfNeeded];
 
-  FormInputAccessoryView* formInputAccessoryView =
-      [[FormInputAccessoryView alloc] init];
-
-  // Sets up leading view.
-  self.leadingView = [[UIStackView alloc] init];
-  self.leadingView.axis = UILayoutConstraintAxisHorizontal;
-
-  [self addChildViewController:self.brandingViewController];
-  [self.leadingView addArrangedSubview:self.brandingViewController.view];
-  [self.brandingViewController didMoveToParentViewController:self];
-  self.brandingViewController.keyboardAccessoryVisible =
-      self.formAccessoryVisible;
-
-  [self.leadingView addArrangedSubview:self.formSuggestionView];
-
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [formInputAccessoryView
-        setUpWithLeadingView:self.leadingView
-          customTrailingView:self.manualFillAccessoryViewController.view];
-  } else {
-    formInputAccessoryView.accessibilityViewIsModal = YES;
-    self.formSuggestionView.trailingView =
-        self.manualFillAccessoryViewController.view;
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      [formInputAccessoryView
-          setUpWithLeadingView:self.leadingView
-            navigationDelegate:self.navigationDelegate
-              manualFillSymbol:DefaultSymbolWithPointSize(
-                                   kExpandSymbol, kSymbolActionPointSize)
-             closeButtonSymbol:DefaultSymbolWithPointSize(
-                                   kKeyboardDownSymbol,
-                                   kSymbolActionPointSize)];
-    } else {
-      [formInputAccessoryView setUpWithLeadingView:self.leadingView
-                                navigationDelegate:self.navigationDelegate];
-    }
-    formInputAccessoryView.nextButton.enabled = self.formInputNextButtonEnabled;
-    formInputAccessoryView.previousButton.enabled =
-        self.formInputPreviousButtonEnabled;
-  }
-  self.view = formInputAccessoryView;
+  self.view = self.formInputAccessoryView;
   [self showManualFillView:NO];
-}
 
-// The custom view that should be shown in the input accessory view.
-- (FormInputAccessoryView*)formInputAccessoryView {
-  return base::apple::ObjCCastStrict<FormInputAccessoryView>(self.view);
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    [self updateOmniboxTypingShieldVisibility];
+  }
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -145,6 +115,18 @@
 }
 
 #pragma mark - UIViewController
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // `showScrollHint` will be set to YES only when `viewDidAppear` is called
+  // from a state where the keyboard was previously closed, otherwise it will be
+  // set to NO. `viewDidAppear` is called when they keyboard accessory remains
+  // open after a user switches between fields on a form, but `viewDidDisappear`
+  // is not, so `showScrollHint` will not be set to YES in that scenario.
+  self.showScrollHint = _keyboardWasClosed;
+  _keyboardWasClosed = NO;
+}
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
@@ -162,6 +144,9 @@
     // Reset the manual fill view controller.
     [self.manualFillAccessoryViewController resetAnimated:NO];
   }
+
+  // Whether the keyboard was closed the next time the keyboard accessory opens.
+  _keyboardWasClosed = YES;
 }
 
 #pragma mark - Public
@@ -178,7 +163,16 @@
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
   [self createFormSuggestionViewIfNeeded];
-  [self.formSuggestionView updateSuggestions:suggestions];
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^(BOOL finished) {
+    // Disable the scroll hint once it's been shown once.
+    if (finished) {
+      weakSelf.showScrollHint = NO;
+    }
+  };
+  [self.formSuggestionView updateSuggestions:suggestions
+                              showScrollHint:self.showScrollHint
+                                  completion:completion];
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
   [self announceVoiceOverMessageIfNeeded:[suggestions count]];
@@ -187,17 +181,20 @@
 - (void)manualFillButtonPressed:(UIButton*)button {
   DCHECK(IsKeyboardAccessoryUpgradeEnabled());
 
-  switch (_suggestionType) {
-    case autofill::PopupType::kAddresses:
+  switch (_mainFillingProduct) {
+    case autofill::FillingProduct::kAddress:
+    case autofill::FillingProduct::kPlusAddresses:
       [self.manualFillAccessoryViewController accountButtonPressed:button];
       break;
-    case autofill::PopupType::kCreditCards:
-    case autofill::PopupType::kIbans:
+    case autofill::FillingProduct::kCreditCard:
+    case autofill::FillingProduct::kIban:
       [self.manualFillAccessoryViewController cardButtonPressed:button];
       break;
-    case autofill::PopupType::kPasswords:
-    case autofill::PopupType::kAutocomplete:
-    case autofill::PopupType::kUnspecified:
+    case autofill::FillingProduct::kCompose:
+    case autofill::FillingProduct::kMerchantPromoCode:
+    case autofill::FillingProduct::kPassword:
+    case autofill::FillingProduct::kAutocomplete:
+    case autofill::FillingProduct::kNone:
       [self.manualFillAccessoryViewController passwordButtonPressed:button];
       break;
   }
@@ -270,6 +267,62 @@
       self.formAccessoryVisible;
 }
 
+// Creates formInputAccessoryView if not done yet.
+- (void)createFormInputAccessoryViewIfNeeded {
+  if (self.formInputAccessoryView) {
+    return;
+  }
+
+  [self createFormSuggestionViewIfNeeded];
+
+  FormInputAccessoryView* formInputAccessoryView =
+      [[FormInputAccessoryView alloc] init];
+
+  // Sets up leading view.
+  self.leadingView = [[UIStackView alloc] init];
+  self.leadingView.axis = UILayoutConstraintAxisHorizontal;
+
+  [self addChildViewController:self.brandingViewController];
+  [self.leadingView addArrangedSubview:self.brandingViewController.view];
+  [self.brandingViewController didMoveToParentViewController:self];
+
+  [self.leadingView addArrangedSubview:self.formSuggestionView];
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [formInputAccessoryView
+        setUpWithLeadingView:self.leadingView
+          customTrailingView:self.manualFillAccessoryViewController.view];
+  } else {
+    formInputAccessoryView.accessibilityViewIsModal = YES;
+    self.formSuggestionView.trailingView =
+        self.manualFillAccessoryViewController.view;
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      [formInputAccessoryView
+          setUpWithLeadingView:self.leadingView
+            navigationDelegate:self.navigationDelegate
+              manualFillSymbol:DefaultSymbolWithPointSize(
+                                   kExpandSymbol, kSymbolActionPointSize)
+             closeButtonSymbol:DefaultSymbolWithPointSize(
+                                   kKeyboardDownSymbol,
+                                   kSymbolActionPointSize)];
+    } else {
+      [formInputAccessoryView setUpWithLeadingView:self.leadingView
+                                navigationDelegate:self.navigationDelegate];
+    }
+    formInputAccessoryView.nextButton.enabled = self.formInputNextButtonEnabled;
+    formInputAccessoryView.previousButton.enabled =
+        self.formInputPreviousButtonEnabled;
+  }
+
+  // Update branding view keyboard accessory visibility after
+  // `self.manualFillAccessoryViewController` loaded its view, as
+  // `self.formAccessoryVisible` depends on the visible state of its view.
+  self.brandingViewController.keyboardAccessoryVisible =
+      self.formAccessoryVisible;
+
+  self.formInputAccessoryView = formInputAccessoryView;
+}
+
 // Creates formSuggestionView if not done yet.
 - (void)createFormSuggestionViewIfNeeded {
   if (!self.formSuggestionView) {
@@ -286,30 +339,33 @@
 - (void)announceVoiceOverMessageIfNeeded:(int)suggestionCount {
   if (UIAccessibilityIsVoiceOverRunning() && suggestionCount > 0 &&
       self.lastAnnouncedFieldId != _currentFieldId) {
-    std::u16string suggestionTypeString;
-    switch (_suggestionType) {
-      case autofill::PopupType::kAddresses:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+    std::u16string mainFillingProductString;
+    switch (_mainFillingProduct) {
+      case autofill::FillingProduct::kAddress:
+      case autofill::FillingProduct::kPlusAddresses:
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kPasswords:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+      case autofill::FillingProduct::kPassword:
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PASSWORD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kCreditCards:
-      case autofill::PopupType::kIbans:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+      case autofill::FillingProduct::kCreditCard:
+      case autofill::FillingProduct::kIban:
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kAutocomplete:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+      case autofill::FillingProduct::kAutocomplete:
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_AUTOCOMPLETE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kUnspecified:
+      case autofill::FillingProduct::kMerchantPromoCode:
+      case autofill::FillingProduct::kCompose:
+      case autofill::FillingProduct::kNone:
         return;
     }
 
@@ -321,7 +377,7 @@
                    forKey:UIAccessibilitySpeechAttributeQueueAnnouncement];
     NSMutableAttributedString* suggestionsVoiceOverMessage =
         [[NSMutableAttributedString alloc]
-            initWithString:base::SysUTF16ToNSString(suggestionTypeString)
+            initWithString:base::SysUTF16ToNSString(mainFillingProductString)
                 attributes:attributes];
 
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
@@ -332,6 +388,9 @@
 
 - (void)updateOmniboxTypingShieldVisibility {
   CHECK(IsBottomOmniboxSteadyStateEnabled());
+  if (!self.formInputAccessoryView) {
+    return;
+  }
   const BOOL shouldShowTypingShield =
       _isBottomOmnibox && IsSplitToolbarMode(self.traitCollection);
   const CGFloat typingShieldHeight =
@@ -339,8 +398,7 @@
           ? ToolbarCollapsedHeight(
                 self.traitCollection.preferredContentSizeCategory)
           : 0.0;
-  [[self formInputAccessoryView]
-      setOmniboxTypingShieldHeight:typingShieldHeight];
+  [self.formInputAccessoryView setOmniboxTypingShieldHeight:typingShieldHeight];
 }
 
 - (BOOL)isManualFillViewVisible {

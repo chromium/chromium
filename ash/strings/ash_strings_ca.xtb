@@ -607,9 +607,11 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3526440770046466733">Obre l'enllaç en una pestanya nova i continua a la pestanya actual</translation>
 <translation id="353086728817903341">Connectat a <ph name="NUM_DEVICES" /> dispositius</translation>
 <translation id="3533126039236445965">Aplicacions del prestatge</translation>
+<translation id="3537350467437346467">L'has vist</translation>
 <translation id="3539957339480430241">Punt d'accés Wi‑Fi de <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Ignora la configuració de visualització dels fitxers multimèdia i de les fotos recents del telèfon</translation>
 <translation id="3542066395059568317">Veuràs recomanacions per poder continuar des d'on ho vas deixar. Pots fer clic amb el botó dret en qualsevol recomanació per suprimir-la.</translation>
+<translation id="3547318469722231257">L'has modificat</translation>
 <translation id="3552189655002856821">La Wi-Fi està desactivada</translation>
 <translation id="3554215588514239132">Mostra o amaga el tauler d'eines per a desenvolupadors</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> s'ha fixat</translation>
@@ -701,6 +703,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="385300504083504382">Principi</translation>
 <translation id="3859364108019690">No es poden reproduir aplicacions en continu</translation>
 <translation id="3861651314799684201">Prem Retorn per gravar la pantalla completa</translation>
+<translation id="3882323608730650973">Modificat</translation>
 <translation id="3886872229787704059">Obert avui</translation>
 <translation id="3891340733213178823">Premeu Ctrl+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
@@ -894,6 +897,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4582666543382004902">El punt d'accés Wi‐Fi s'ha desactivat per utilitzar la Wi‐Fi. Desactiva la Wi‐Fi per fer servir el punt d'accés Wi‐Fi.</translation>
 <translation id="4585337515783392668">Deixa d'emetre en un receptor desconegut</translation>
 <translation id="4596144739579517758">El tema fosc està desactivat</translation>
+<translation id="4596442969149038771"><ph name="USER" /> l'ha compartit</translation>
 <translation id="4611292653554630842">Inicia la sessió</translation>
 <translation id="462160925400706389">S'ha connectat: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Verifica el compte</translation>
@@ -1337,6 +1341,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="6298183524022479114">Personalitza aquest dispositiu a l'aplicació</translation>
 <translation id="6309219492973062892">Toca les icones 1-8 del prestatge o fes-hi clic</translation>
 <translation id="6315170314923504164">Veu</translation>
+<translation id="6319058840130157106">Retrocedeix entre l'extrem inferior dret, el menú d'aplicacions, la barra d'adreces, la barra d'adreces d'interès, el lloc web que està obert i les baixades</translation>
 <translation id="6324916366299863871">Edita la drecera</translation>
 <translation id="6330012934079202188">S'estan mostrant les finestres de tots els escriptoris. Prem la tecla de fletxa amunt per mostrar les finestres de l'escriptori actual.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> és una sessió gestionada per <ph name="MANAGER" /></translation>
@@ -1500,6 +1505,7 @@ Instal·lació nova</translation>
 <translation id="6981291220124935078">Activa l'accés</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="698231206551913481">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Per conservar els canvis, fes clic a Confirma. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Aprèn a navegar pel Chromebook amb una visita guiada ràpida. Posa't en marxa en 6 passos.</translation>
 <translation id="7004910047186208204">Cal connectar-se a dades mòbils</translation>
 <translation id="7005239792648594238">Obre una aplicació per començar</translation>
@@ -1814,6 +1820,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8314772463905284467">Bloq Maj està activat</translation>
 <translation id="8315514906653279104">S'està activant...</translation>
 <translation id="8331351032546853669">Baixada pendent</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">S'ha seleccionat <ph name="WINDOW_TITLE" /> finestra</translation>
 <translation id="8349826889576450703">menú d'aplicacions</translation>
@@ -1920,6 +1927,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="878215960996152260"><ph name="APP_NAME" />, aplicació instal·lada, bloquejada</translation>
 <translation id="8785070478575117577">Connecta't a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Avança entre l'extrem inferior dret, el menú d'aplicacions, la barra d'adreces, la barra d'adreces d'interès, el lloc web que està obert i les baixades</translation>
 <translation id="8792626944327216835">micròfon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Carpeta <ph name="FOLDER_NAME" /></translation>
@@ -2033,6 +2041,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="953431725143473984">Vols apagar el dispositiu?</translation>
 <translation id="954052413789300507">No hi ha prou espai per a <ph name="FILENAME" />. Allibera espai.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145"><ph name="USER" /> l'ha modificat</translation>
 <translation id="974545358917229949">S'estan mostrant <ph name="RESULT_COUNT" /> resultats per a "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Sense data de venciment</translation>
 <translation id="98120814841227350">Ves al final del document</translation>

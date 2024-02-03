@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 export interface ExtensionsHatsBrowserProxy {
-  triggerSurvey(): void;
+  panelShown(panelShown: boolean): void;
   extensionKeptAction(): void;
   extensionRemovedAction(): void;
   nonTriggerExtensionRemovedAction(): void;
@@ -12,8 +12,8 @@ export interface ExtensionsHatsBrowserProxy {
 
 export class ExtensionsHatsBrowserProxyImpl implements
     ExtensionsHatsBrowserProxy {
-  triggerSurvey() {
-    chrome.send('extensionsSafetyHubTriggerSurvey');
+  panelShown(panelShown: boolean) {
+    chrome.send('extensionsSafetyHubPanelShown', [panelShown]);
   }
 
   extensionKeptAction() {

@@ -354,10 +354,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // (https://crbug.com/1431792).
   bool pause_initializing_global_scope_ = false;
 
-  // If true, warms up service worker after service worker is stopped.
-  // (https://crbug.com/1431792).
-  bool warm_up_on_stopped_ = false;
-
   // Current running information.
   std::unique_ptr<EmbeddedWorkerInstance::WorkerProcessHandle> process_handle_;
   int thread_id_;

@@ -45,11 +45,11 @@ void RTCEncodedVideoFrameDelegate::SetRtpTimestamp(
   }
 }
 
-absl::optional<webrtc::Timestamp>
+std::optional<webrtc::Timestamp>
 RTCEncodedVideoFrameDelegate::PresentationTimestamp() const {
   base::AutoLock lock(lock_);
   return webrtc_frame_ ? webrtc_frame_->GetCaptureTimeIdentifier()
-                       : absl::nullopt;
+                       : std::nullopt;
 }
 
 DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateDataBuffer() const {
@@ -78,24 +78,24 @@ void RTCEncodedVideoFrameDelegate::SetData(const DOMArrayBuffer* data) {
   }
 }
 
-absl::optional<uint8_t> RTCEncodedVideoFrameDelegate::PayloadType() const {
+std::optional<uint8_t> RTCEncodedVideoFrameDelegate::PayloadType() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetPayloadType())
-                       : absl::nullopt;
+  return webrtc_frame_ ? std::make_optional(webrtc_frame_->GetPayloadType())
+                       : std::nullopt;
 }
 
-absl::optional<std::string> RTCEncodedVideoFrameDelegate::MimeType() const {
+std::optional<std::string> RTCEncodedVideoFrameDelegate::MimeType() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetMimeType())
-                       : absl::nullopt;
+  return webrtc_frame_ ? std::make_optional(webrtc_frame_->GetMimeType())
+                       : std::nullopt;
 }
 
-absl::optional<webrtc::VideoFrameMetadata>
+std::optional<webrtc::VideoFrameMetadata>
 RTCEncodedVideoFrameDelegate::GetMetadata() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ ? absl::optional<webrtc::VideoFrameMetadata>(
+  return webrtc_frame_ ? std::optional<webrtc::VideoFrameMetadata>(
                              webrtc_frame_->Metadata())
-                       : absl::nullopt;
+                       : std::nullopt;
 }
 
 void RTCEncodedVideoFrameDelegate::SetMetadata(

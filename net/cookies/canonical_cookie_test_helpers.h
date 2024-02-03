@@ -103,6 +103,13 @@ MATCHER_P(HasExclusionReason, reason, "") {
                                      result_listener);
 }
 
+// Helper for checking that status.exemption_reason() == reason.
+MATCHER_P(HasExactlyExemptionReason, reason, "") {
+  CookieInclusionStatus status = arg;
+  return testing::ExplainMatchResult(true, status.exemption_reason() == reason,
+                                     result_listener);
+}
+
 // Helper for checking that status.HasExactlyExclusionReasonsForTesting(reasons)
 // == true.
 MATCHER_P(HasExactlyExclusionReasonsForTesting, reasons, "") {

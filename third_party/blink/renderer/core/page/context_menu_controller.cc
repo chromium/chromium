@@ -816,7 +816,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
                 selected_frame->GetAttributionSrcLoader();
             attribution_src_loader->CanRegister(result.AbsoluteLinkURL(),
                                                 /*element=*/anchor,
-                                                /*request_id=*/absl::nullopt)) {
+                                                /*request_id=*/std::nullopt)) {
           data.impression = blink::Impression{
               .runtime_features = attribution_src_loader->GetRuntimeFeatures(),
           };
@@ -842,7 +842,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (!selected_web_frame || !selected_web_frame->Client())
     return false;
 
-  absl::optional<gfx::Point> host_context_menu_location;
+  std::optional<gfx::Point> host_context_menu_location;
   if (selected_web_frame->FrameWidgetImpl()) {
     host_context_menu_location =
         selected_web_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();

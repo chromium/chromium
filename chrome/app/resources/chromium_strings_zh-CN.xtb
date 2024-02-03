@@ -280,6 +280,7 @@
 <translation id="6144416395842701622">登录即可充分利用 Chromium 的各项功能</translation>
 <translation id="6145820983052037069">您可在此处切换 Chromium 个人资料</translation>
 <translation id="615103374448673771">如果您允许使用 Cookie，Chromium 便可能会使用 Cookie 进行预加载</translation>
+<translation id="6174920971222007286">这可能是个危险文件<ph name="LINE_BREAK" />如果您提供了密码，Chromium 可为您检查此下载内容。系统会将该文件的相关信息发送给 Google 安全浏览功能，但文件内容和密码会保留在您的设备上。</translation>
 <translation id="6175304430031192654">Chromium 可能还会发送 Cookie 和当前网址，具体取决于您的设置</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6183079672144801177">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chromium，然后再次尝试发送。</translation>

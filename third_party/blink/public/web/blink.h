@@ -83,10 +83,6 @@ BLINK_EXPORT void InitializeWithoutIsolateForTesting(
 // must be called before this.
 BLINK_EXPORT v8::Isolate* CreateMainThreadIsolate();
 
-// Get the V8 Isolate for the main thread.
-// initialize must have been called first.
-BLINK_EXPORT v8::Isolate* MainThreadIsolate();
-
 // Alters the rendering of content to conform to a fixed set of rules.
 BLINK_EXPORT void SetWebTestMode(bool);
 BLINK_EXPORT bool WebTestMode();

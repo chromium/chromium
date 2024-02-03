@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -979,6 +980,28 @@ TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
   EXPECT_EQ("go ", previous->GetNode()->textContent());
 }
 
+TEST_F(AccessibilityTest, NextOnLineAriaHidden) {
+  // Note the spans must be in the same line or we could get other unwanted
+  // behavior. See https://crbug.com/1511390 for details.
+  SetBodyInnerHTML(R"HTML(
+    <div contenteditable="true" style="outline: 1px solid;">
+        <div>first line</div>
+        <span id="this">this line </span><span aria-hidden="true">is</span><span> broken.</span>
+        <div>last line</div>
+    </div>
+  )HTML");
+  const AXObject* this_object = GetAXObjectByElementId("this");
+  ASSERT_NE(nullptr, this_object);
+
+  const AXObject* next = this_object->NextOnLine();
+  ASSERT_NE(nullptr, next);
+  EXPECT_EQ(" broken.", next->GetNode()->textContent());
+
+  const AXObject* prev = next->PreviousOnLine();
+  ASSERT_NE(nullptr, prev);
+  EXPECT_EQ("this line ", prev->GetNode()->textContent());
+}
+
 TEST_F(AccessibilityTest, TableRowAndCellIsLineBreakingObject) {
   SetBodyInnerHTML(R"HTML(
       <table id="table">
@@ -1003,6 +1026,45 @@ TEST_F(AccessibilityTest, TableRowAndCellIsLineBreakingObject) {
   ASSERT_NE(nullptr, cell);
   ASSERT_EQ(ax::mojom::Role::kCell, cell->RoleValue());
   EXPECT_TRUE(cell->IsLineBreakingObject());
+}
+
+TEST_F(AccessibilityTest, TestSetRangeValueVideoControlSlider) {
+  SetBodyInnerHTML(R"HTML(
+      <body>
+        <video id="vid" src="bear.webm"></video>
+      </body>
+      )HTML");
+
+  AXObject* video = GetAXObjectByElementId("vid");
+
+  Node* video_node = video->GetNode();
+  ASSERT_NE(nullptr, video_node);
+  auto* video_element = DynamicTo<HTMLMediaElement>(video_node);
+  ASSERT_NE(nullptr, video_node);
+  Node* timeline_node =
+      video_element->GetMediaControls()->TimelineLayoutObject()->GetNode();
+  ASSERT_NE(nullptr, timeline_node);
+  AXObjectCache* cache = timeline_node->GetDocument().ExistingAXObjectCache();
+  ASSERT_NE(nullptr, cache);
+  AXObject* video_slider = cache->ObjectFromAXID(cache->GetAXID(timeline_node));
+
+  ASSERT_NE(nullptr, video_slider);
+  ASSERT_EQ(video_slider->RoleValue(), ax::mojom::blink::Role::kSlider);
+
+  float value = 0.0f;
+  EXPECT_TRUE(video_slider->ValueForRange(&value));
+  EXPECT_EQ(0.0f, value);
+
+  std::string value_to_set("1.0");
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kSetValue;
+  action_data.value = value_to_set;
+  action_data.target_node_id = video_slider->AXObjectID();
+
+  EXPECT_TRUE(video_slider->PerformAction(action_data));
+
+  EXPECT_TRUE(video_slider->ValueForRange(&value));
+  EXPECT_EQ(1.0f, value);
 }
 
 TEST_F(AccessibilityTest,

@@ -90,7 +90,7 @@ class MockMediaDevicesDispatcherHost final
                media::CameraAvailability::kAvailable},
               {"fake_video_input_2", "Fake Video Input 2", "video_input_group",
                media::VideoCaptureControlSupport(),
-               blink::mojom::FacingMode::kUser, absl::nullopt},
+               blink::mojom::FacingMode::kUser, std::nullopt},
               {"fake_video_input_3", "Fake Video Input 3", "video_input_group 2",
                media::VideoCaptureControlSupport(),
                blink::mojom::FacingMode::kUser,
@@ -529,7 +529,8 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
       GetMediaDevices(scope.GetWindow())
           ->getUserMedia(scope.GetScriptState(), constraints,
                          scope.GetExceptionState());
-  ASSERT_TRUE(promise.IsEmpty());
+  // We return the created promise before it was resolved/rejected.
+  ASSERT_FALSE(promise.IsEmpty());
   // We expect a type error because the given constraints are empty.
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(ESErrorType::kTypeError));

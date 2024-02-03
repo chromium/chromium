@@ -184,8 +184,6 @@ async function requestMountNotInMenuInternal(manifest) {
   const submenu = await remoteCall.waitForElement(appId, selector);
 
   // Check the sub-menu do not contain the |manifest| provider.
-  // @ts-ignore: error TS2339: Property 'innerText' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('SMB file share', submenu.innerText);
 }
 

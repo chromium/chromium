@@ -22,87 +22,73 @@ using base::Value;
 constexpr double kPreferredRatioRange = 100;
 constexpr int kMaxAlternativeUnitsNumber = 4;
 
-std::vector<UnitConversionInfo> ParseAlternativeUnits(
+std::optional<ConversionRule> CreateConversionRule(
+    const Value::Dict& unit,
+    const std::string& category) {
+  const std::string* unit_name = unit.FindStringByDottedPath(kNamePath);
+  if (!unit_name) {
+    return std::nullopt;
+  }
+
+  return ConversionRule::Create(category, *unit_name,
+                                unit.FindDouble(kConversionToSiAPath),
+                                unit.FindDouble(kConversionToSiBPath),
+                                unit.FindDouble(kConversionToSiCPath));
+}
+
+std::vector<UnitConversion> ParseAlternativeUnitConversions(
     const Value::Dict& result,
-    const std::string& category,
-    const base::Value::Dict& src_unit,
-    const base::Value::Dict& dst_unit) {
-  std::vector<UnitConversionInfo> alternative_units_list;
+    const UnitConversion& unit_conversion) {
+  std::vector<UnitConversion> alternative_unit_conversions;
 
-  const std::string* src_name = src_unit.FindStringByDottedPath(kNamePath);
-  const std::string* dst_name = dst_unit.FindStringByDottedPath(kNamePath);
-  if (!src_name || !dst_name) {
-    return alternative_units_list;
-  }
-
-  const std::optional<double> src_to_standard_conversion_rate =
-      src_unit.FindDouble(kConversionToSiAPath);
-  if (!src_to_standard_conversion_rate ||
-      src_to_standard_conversion_rate.value() == kInvalidRateValue) {
-    return alternative_units_list;
-  }
-
-  const base::Value::List* rule = result.FindListByDottedPath(kRuleSetPath);
+  const Value::List* rule = result.FindListByDottedPath(kRuleSetPath);
   if (!rule) {
-    return alternative_units_list;
+    return alternative_unit_conversions;
   }
 
   UnitConverter converter(*rule);
   const Value::List* possible_units =
-      converter.GetPossibleUnitsForCategory(category);
+      converter.GetPossibleUnitsForCategory(unit_conversion.category());
   if (!possible_units) {
-    return alternative_units_list;
+    return alternative_unit_conversions;
   }
 
-  std::vector<base::Value::Dict> possible_units_vector;
-  for (const Value& unit_value : *possible_units) {
-    possible_units_vector.push_back(unit_value.GetDict().Clone());
-  }
-
-  auto increasing_conversion_rate_comparator =
-      [&src_unit](const base::Value::Dict& unit_a,
-                  const base::Value::Dict& unit_b) -> bool {
-    const std::optional<double> conversion_rate_a =
-        GetUnitConversionRate(unit_a, src_unit);
-    if (!conversion_rate_a) {
-      return false;
-    }
-
-    const std::optional<double> conversion_rate_b =
-        GetUnitConversionRate(unit_b, src_unit);
-    if (!conversion_rate_b) {
-      return true;
-    }
-
-    return conversion_rate_a.value() < conversion_rate_b.value();
-  };
-  base::ranges::sort(possible_units_vector,
-                     increasing_conversion_rate_comparator);
-
-  for (const base::Value::Dict& unit : possible_units_vector) {
-    if (alternative_units_list.size() == kMaxAlternativeUnitsNumber) {
-      break;
-    }
-
-    const std::string* name = unit.FindStringByDottedPath(kNamePath);
-    if (!name || *name == *src_name || *name == *dst_name) {
+  for (const Value& unit : *possible_units) {
+    const Value::Dict& unit_dict = unit.GetDict();
+    const std::string* unit_name = unit_dict.FindStringByDottedPath(kNamePath);
+    // Filter out the source and destination units.
+    if (!unit_name || *unit_name == unit_conversion.source_rule().unit_name() ||
+        *unit_name == unit_conversion.dest_rule().unit_name()) {
       continue;
     }
 
-    const std::optional<double> unit_to_standard_conversion_rate =
-        unit.FindDouble(kConversionToSiAPath);
-    if (!unit_to_standard_conversion_rate ||
-        unit_to_standard_conversion_rate.value() == kInvalidRateValue) {
+    std::optional<ConversionRule> alternative_dest_rule =
+        CreateConversionRule(unit_dict, unit_conversion.category());
+    if (!alternative_dest_rule) {
       continue;
     }
 
-    StandardUnitConversionRates standard_unit_conversion_rates(
-        src_to_standard_conversion_rate.value(),
-        unit_to_standard_conversion_rate.value());
-    alternative_units_list.emplace_back(*name, standard_unit_conversion_rates);
+    std::optional<UnitConversion> alternative_unit_conversion =
+        UnitConversion::Create(unit_conversion.source_rule(),
+                               alternative_dest_rule.value());
+    if (!alternative_unit_conversion) {
+      continue;
+    }
+
+    alternative_unit_conversions.push_back(alternative_unit_conversion.value());
   }
 
-  return alternative_units_list;
+  // Sort |alternative_unit_conversions| from lowest to highest linear
+  // conversion rates, then limit the vector size to
+  // |kMaxAlternativeUnitsNumber| results.
+  base::ranges::sort(alternative_unit_conversions);
+  if (alternative_unit_conversions.size() > kMaxAlternativeUnitsNumber) {
+    alternative_unit_conversions.erase(
+        alternative_unit_conversions.begin() + kMaxAlternativeUnitsNumber,
+        alternative_unit_conversions.end());
+  }
+
+  return alternative_unit_conversions;
 }
 
 }  // namespace
@@ -120,8 +106,7 @@ bool UnitConversionResultParser::Parse(const Value::Dict& result,
 }
 
 std::unique_ptr<StructuredResult>
-UnitConversionResultParser::ParseInStructuredResult(
-    const base::Value::Dict& result) {
+UnitConversionResultParser::ParseInStructuredResult(const Value::Dict& result) {
   std::unique_ptr<UnitConversionResult> unit_conversion_result =
       std::make_unique<UnitConversionResult>();
 
@@ -149,28 +134,16 @@ UnitConversionResultParser::ParseInStructuredResult(
   }
   unit_conversion_result->source_amount = source_amount.value();
 
-  double source_to_standard_conversion_rate = kInvalidRateValue;
-  const base::Value::Dict* source_unit =
-      result.FindDictByDottedPath(kSourceUnitPath);
+  std::optional<ConversionRule> source_rule;
+  const Value::Dict* source_unit = result.FindDictByDottedPath(kSourceUnitPath);
   if (source_unit) {
-    std::optional<double> conversion_to_standard_unit_rate =
-        source_unit->FindDouble(kConversionToSiAPath);
-    if (conversion_to_standard_unit_rate) {
-      source_to_standard_conversion_rate =
-          conversion_to_standard_unit_rate.value();
-    }
+    source_rule = CreateConversionRule(*source_unit, *category);
   }
 
-  double dest_to_standard_conversion_rate = kInvalidRateValue;
-  const base::Value::Dict* dest_unit =
-      result.FindDictByDottedPath(kDestUnitPath);
+  std::optional<ConversionRule> dest_rule;
+  const Value::Dict* dest_unit = result.FindDictByDottedPath(kDestUnitPath);
   if (dest_unit) {
-    std::optional<double> conversion_to_standard_unit_rate =
-        dest_unit->FindDouble(kConversionToSiAPath);
-    if (conversion_to_standard_unit_rate) {
-      dest_to_standard_conversion_rate =
-          conversion_to_standard_unit_rate.value();
-    }
+    dest_rule = CreateConversionRule(*dest_unit, *category);
   }
 
   std::string result_string;
@@ -184,7 +157,7 @@ UnitConversionResultParser::ParseInStructuredResult(
     const std::optional<double> ratio = GetRatio(source_amount, dest_amount);
 
     if (ratio && ratio.value() > kPreferredRatioRange) {
-      const base::Value::List* rule = result.FindListByDottedPath(kRuleSetPath);
+      const Value::List* rule = result.FindListByDottedPath(kRuleSetPath);
       if (rule) {
         UnitConverter converter(*rule);
         dest_unit =
@@ -192,14 +165,10 @@ UnitConversionResultParser::ParseInStructuredResult(
         if (dest_unit) {
           result_string = converter.Convert(source_amount.value(), *source_unit,
                                             *dest_unit);
-          // If a valid result is found, update the
-          // `dest_to_standard_conversion_rate` value accordingly to get the
-          // conversion rate for the new `dest_unit`.
+          // If a valid result is found, update the `dest_rule` value
+          // accordingly to get the ConversionRule for the new `dest_unit`.
           if (!result_string.empty()) {
-            std::optional<double> conversion_to_standard_unit_rate =
-                dest_unit->FindDouble(kConversionToSiAPath);
-            dest_to_standard_conversion_rate =
-                conversion_to_standard_unit_rate.value_or(kInvalidRateValue);
+            dest_rule = CreateConversionRule(*dest_unit, *category);
           }
         }
       }
@@ -217,20 +186,18 @@ UnitConversionResultParser::ParseInStructuredResult(
   }
   unit_conversion_result->result_text = result_string;
 
-  // Both conversion-to-SI-unit rates must be valid (non-zero) for there to be a
-  // valid conversion rate between the source and destination units.
-  if (source_to_standard_conversion_rate != kInvalidRateValue &&
-      dest_to_standard_conversion_rate != kInvalidRateValue) {
-    unit_conversion_result->standard_unit_conversion_rates =
-        StandardUnitConversionRates(source_to_standard_conversion_rate,
-                                    dest_to_standard_conversion_rate);
-  }
+  // Both source and destination unit ConversionRules must be valid for there to
+  // be valid unit conversions.
+  if (source_rule && dest_rule) {
+    std::optional<UnitConversion> unit_conversion =
+        UnitConversion::Create(source_rule.value(), dest_rule.value());
+    unit_conversion_result->source_to_dest_unit_conversion = unit_conversion;
 
-  if (source_unit) {
-    std::vector<UnitConversionInfo> alternative_units =
-        ParseAlternativeUnits(result, *category, *source_unit, *dest_unit);
-    if (!alternative_units.empty()) {
-      unit_conversion_result->alternative_units_list = alternative_units;
+    if (unit_conversion) {
+      std::vector<UnitConversion> alternative_unit_conversions_list =
+          ParseAlternativeUnitConversions(result, unit_conversion.value());
+      unit_conversion_result->alternative_unit_conversions_list =
+          alternative_unit_conversions_list;
     }
   }
 

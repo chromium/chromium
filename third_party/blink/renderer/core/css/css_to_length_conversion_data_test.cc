@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include <optional>
+
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -29,8 +31,8 @@ class CSSToLengthConversionDataTest : public PageTestBase {
   // css_zoom - The zoom to apply to :root.
   // data_zoom - The zoom to pass to the CSSToLengthConversionData constructor.
   CSSToLengthConversionData ConversionData(
-      absl::optional<float> css_zoom,
-      absl::optional<float> data_zoom,
+      std::optional<float> css_zoom,
+      std::optional<float> data_zoom,
       CSSToLengthConversionData::Flags& flags) {
     Element* root = GetDocument().documentElement();
     DCHECK(root);
@@ -58,14 +60,14 @@ class CSSToLengthConversionDataTest : public PageTestBase {
   }
 
   CSSToLengthConversionData ConversionData(
-      absl::optional<float> css_zoom = absl::nullopt,
-      absl::optional<float> data_zoom = absl::nullopt) {
+      std::optional<float> css_zoom = std::nullopt,
+      std::optional<float> data_zoom = std::nullopt) {
     return ConversionData(css_zoom, data_zoom, ignored_flags_);
   }
 
   CSSToLengthConversionData ConversionData(
       CSSToLengthConversionData::Flags& flags) {
-    return ConversionData(absl::nullopt, absl::nullopt, flags);
+    return ConversionData(std::nullopt, std::nullopt, flags);
   }
 
   float Convert(const CSSToLengthConversionData& data, String value) {

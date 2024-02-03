@@ -69,6 +69,22 @@ void LCPCriticalPathPredictorHost::SetLcpInfluencerScriptUrls(
   }
 }
 
+void LCPCriticalPathPredictorHost::SetPreconnectOrigins(
+    const std::vector<GURL>& origins) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kLCPPAutoPreconnectLcpOrigin)) {
+    return;
+  }
+  if (auto* page_data =
+          LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
+              render_frame_host().GetPage())) {
+    if (auto* plmo =
+            page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+      plmo->SetPreconnectOrigins(origins);
+    }
+  }
+}
+
 void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url) {
   if (!base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
     ReportBadMessageAndDeleteThis(

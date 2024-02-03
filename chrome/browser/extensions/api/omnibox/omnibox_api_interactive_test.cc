@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -215,7 +216,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SendSuggestions) {
   // should be to invoke with suggestions from the extension, and the last
   // should be to search for what we typed.
   const AutocompleteResult& result = autocomplete_controller->result();
-  ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
+  if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+          .limit_dse_suggestions) {
+    // When LimitKeywordModeSuggestions is enabled, DSE and
+    // search-what-you-typed suggestions are not provided.
+    ASSERT_EQ(4U, result.size()) << AutocompleteResultAsString(result);
+  } else {
+    ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
+  }
 
   // Invoke the keyword with what we typed.
   EXPECT_EQ(u"alpha", result.match_at(0).keyword);
@@ -268,12 +276,17 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SendSuggestions) {
     VerifyMatchComponents(expected_components, result.match_at(3));
   }
 
-  // Final option, search what you typed.
-  AutocompleteMatch match = result.match_at(4);
-  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
-  EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
-            result.match_at(4).provider->type());
-  EXPECT_FALSE(match.deletable);
+  if (!omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+           .limit_dse_suggestions) {
+    // When LimitKeywordModeSuggestions is enabled, DSE and
+    // search-what-you-typed suggestions are not provided.
+    // Final option, search what you typed.
+    AutocompleteMatch match = result.match_at(4);
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+    EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+              result.match_at(4).provider->type());
+    EXPECT_FALSE(match.deletable);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
@@ -394,7 +407,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
   // second should be the provided suggestion from the extension, and the
   // final should be to search for what we typed.
   const AutocompleteResult& result = incognito_controller->result();
-  ASSERT_EQ(3u, result.size());
+  if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+          .limit_dse_suggestions) {
+    // When LimitKeywordModeSuggestions is enabled, DSE and
+    // search-what-you-typed suggestions are not provided.
+    ASSERT_EQ(2u, result.size());
+  } else {
+    ASSERT_EQ(3u, result.size());
+  }
 
   // First result.
   EXPECT_EQ(u"alpha", result.match_at(0).keyword);
@@ -408,9 +428,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
   EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
             result.match_at(1).provider->type());
 
-  // Third result: search what you typed.
-  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-            result.match_at(2).type);
+  if (!omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+           .limit_dse_suggestions) {
+    // When LimitKeywordModeSuggestions is enabled, DSE and
+    // search-what-you-typed suggestions are not provided.
+    // Third result: search what you typed.
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+              result.match_at(2).type);
+  }
 
   // Split-mode test: Send different input to the on-the-record and off-the-
   // record profiles, and wait for a message from each. Verify that the
@@ -543,7 +568,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 
   // Peek into the controller to see if it has the results we expect.
   const AutocompleteResult& result = autocomplete_controller->result();
-  ASSERT_EQ(5u, result.size()) << AutocompleteResultAsString(result);
+  if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+          .limit_dse_suggestions) {
+    // When LimitKeywordModeSuggestions is enabled, DSE and
+    // search-what-you-typed suggestions are not provided.
+    ASSERT_EQ(4u, result.size()) << AutocompleteResultAsString(result);
+  } else {
+    ASSERT_EQ(5u, result.size()) << AutocompleteResultAsString(result);
+  }
 
   EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
   EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
@@ -565,10 +597,15 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
             result.match_at(3).provider->type());
   EXPECT_FALSE(result.match_at(3).deletable);
 
-  EXPECT_EQ(u"alpha input", result.match_at(4).fill_into_edit);
-  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-            result.match_at(4).type);
-  EXPECT_FALSE(result.match_at(3).deletable);
+  if (!omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+           .limit_dse_suggestions) {
+    // When LimitKeywordModeSuggestions is enabled, DSE and
+    // search-what-you-typed suggestions are not provided.
+    EXPECT_EQ(u"alpha input", result.match_at(4).fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+              result.match_at(4).type);
+    EXPECT_FALSE(result.match_at(3).deletable);
+  }
 
   // This test portion is excluded from Mac because the Mac key combination
   // FN+SHIFT+DEL used to delete an omnibox suggestion cannot be reproduced.
@@ -602,11 +639,22 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   // Verify that the second suggestion result was deleted. There should be one
   // less suggestion result, 4 now instead of 5 (accept current input, two
   // extension-provided suggestions, and "search what you typed").
-  ASSERT_EQ(4u, result.size());
+  if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+          .limit_dse_suggestions) {
+    // When LimitKeywordModeSuggestions is enabled, DSE and
+    // search-what-you-typed suggestions are not provided.
+    ASSERT_EQ(3u, result.size());
+  } else {
+    ASSERT_EQ(4u, result.size());
+  }
   EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
   EXPECT_EQ(u"alpha input first", result.match_at(1).fill_into_edit);
   EXPECT_EQ(u"alpha input third", result.match_at(2).fill_into_edit);
-  EXPECT_EQ(u"alpha input", result.match_at(3).fill_into_edit);
+  if (!omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+           .limit_dse_suggestions) {
+    // Search-what-you-typed suggestion.
+    EXPECT_EQ(u"alpha input", result.match_at(3).fill_into_edit);
+  }
 #endif
 }
 
@@ -809,7 +857,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
   EXPECT_TRUE(autocomplete_controller->done());
 
   const AutocompleteResult& result = autocomplete_controller->result();
-  ASSERT_EQ(2u, result.size()) << AutocompleteResultAsString(result);
+  if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+          .limit_dse_suggestions) {
+    // When LimitKeywordModeSuggestions is enabled, DSE and
+    // search-what-you-typed suggestions are not provided.
+    ASSERT_EQ(1u, result.size()) << AutocompleteResultAsString(result);
+  } else {
+    ASSERT_EQ(2u, result.size()) << AutocompleteResultAsString(result);
+  }
 
   {
     const AutocompleteMatch& match = result.match_at(0);
@@ -830,7 +885,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
     VerifyMatchComponents(expected_components, match);
   }
 
-  {
+  if (!omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+           .limit_dse_suggestions) {
     const AutocompleteMatch& match = result.match_at(1);
     EXPECT_EQ(u"word d", match.fill_into_edit);
     EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
@@ -880,7 +936,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, PassEmptySuggestions) {
     // the single extension suggestion ("foo"), and to search what the user
     // typed.
     const AutocompleteResult& result = autocomplete_controller->result();
-    ASSERT_EQ(3u, result.size()) << AutocompleteResultAsString(result);
+    if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+            .limit_dse_suggestions) {
+      // When LimitKeywordModeSuggestions is enabled, DSE and
+      // search-what-you-typed suggestions are not provided.
+      ASSERT_EQ(2u, result.size()) << AutocompleteResultAsString(result);
+    } else {
+      ASSERT_EQ(3u, result.size()) << AutocompleteResultAsString(result);
+    }
 
     EXPECT_EQ(u"alpha d", result.match_at(0).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
@@ -890,10 +953,15 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, PassEmptySuggestions) {
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(1).provider->type());
 
-    AutocompleteMatch match = result.match_at(2);
-    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
-    EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
-              result.match_at(2).provider->type());
+    if (!omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+             .limit_dse_suggestions) {
+      // When LimitKeywordModeSuggestions is enabled, DSE and
+      // search-what-you-typed suggestions are not provided.
+      AutocompleteMatch match = result.match_at(2);
+      EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+      EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+                result.match_at(2).provider->type());
+    }
   }
 
   // Now, hit the backspace key, so that the only text is "alpha ". The

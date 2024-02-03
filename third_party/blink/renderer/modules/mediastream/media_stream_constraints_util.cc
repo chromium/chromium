@@ -111,11 +111,11 @@ VideoCaptureSettings::VideoCaptureSettings(const char* failed_constraint_name)
 VideoCaptureSettings::VideoCaptureSettings(
     std::string device_id,
     media::VideoCaptureParams capture_params,
-    absl::optional<bool> noise_reduction,
+    std::optional<bool> noise_reduction,
     const VideoTrackAdapterSettings& track_adapter_settings,
-    absl::optional<double> min_frame_rate,
-    absl::optional<double> max_frame_rate,
-    absl::optional<ImageCaptureDeviceSettings> image_capture_device_settings)
+    std::optional<double> min_frame_rate,
+    std::optional<double> max_frame_rate,
+    std::optional<ImageCaptureDeviceSettings> image_capture_device_settings)
     : failed_constraint_name_(nullptr),
       device_id_(std::move(device_id)),
       capture_params_(capture_params),
@@ -153,7 +153,7 @@ AudioCaptureSettings::AudioCaptureSettings(const char* failed_constraint_name)
 
 AudioCaptureSettings::AudioCaptureSettings(
     std::string device_id,
-    const absl::optional<int>& requested_buffer_size,
+    const std::optional<int>& requested_buffer_size,
     bool disable_local_echo,
     bool enable_automatic_output_device_selection,
     ProcessingType processing_type,
@@ -218,7 +218,7 @@ VideoTrackAdapterSettings SelectVideoTrackAdapterSettings(
     const media_constraints::NumericRangeSet<double>& frame_rate_set,
     const media::VideoCaptureFormat& source_format,
     bool enable_rescale) {
-  absl::optional<gfx::Size> target_resolution;
+  std::optional<gfx::Size> target_resolution;
   if (enable_rescale) {
     media_constraints::ResolutionSet::Point resolution =
         resolution_set.SelectClosestPointToIdeal(
@@ -238,7 +238,7 @@ VideoTrackAdapterSettings SelectVideoTrackAdapterSettings(
                    static_cast<double>(resolution_set.min_height()));
   // VideoTrackAdapter uses an unset frame rate to disable frame-rate
   // adjustment.
-  absl::optional<double> track_max_frame_rate = frame_rate_set.Max();
+  std::optional<double> track_max_frame_rate = frame_rate_set.Max();
   if (basic_constraint_set.frame_rate.HasIdeal()) {
     track_max_frame_rate = std::max(basic_constraint_set.frame_rate.Ideal(),
                                     kMinDeviceCaptureFrameRate);
@@ -283,7 +283,7 @@ MediaStreamSource::Capabilities ComputeCapabilitiesForVideoSource(
     const media::VideoCaptureFormats& formats,
     mojom::blink::FacingMode facing_mode,
     bool is_device_capture,
-    const absl::optional<std::string>& group_id) {
+    const std::optional<std::string>& group_id) {
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = std::move(device_id);
   if (is_device_capture) {

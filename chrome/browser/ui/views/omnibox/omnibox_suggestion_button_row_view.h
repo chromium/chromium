@@ -33,7 +33,7 @@ class OmniboxSuggestionButtonRowView : public views::View {
   ~OmniboxSuggestionButtonRowView() override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Called when the theme state may have changed.
   void SetThemeState(OmniboxPartState theme_state);

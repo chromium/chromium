@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1384959399684842514">بارگیری موقتاً متوقف شد</translation>
 <translation id="1415402041810619267">نشانی وب کوتاه‌شده</translation>
-<translation id="1426410128494586442">بله</translation>
 <translation id="1434873037477293673">کارت کاهش قیمت</translation>
 <translation id="1448064542941920355">کاهش بزرگ‌نمایی</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سایت}one{<ph name="SITE_COUNT" /> سایت}other{<ph name="SITE_COUNT" /> سایت}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به دوربین دسترسی پیدا کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="2235344399760031203">کوکی‌های شخص ثالث مسدود شده‌اند</translation>
 <translation id="2238944249568001759">جستجوهای پیشنهادی براساس آخرین برگه شما</translation>
+<translation id="2241587408274973373">کارت‌های صفحه برگه جدید</translation>
 <translation id="2241634353105152135">فقط یک بار</translation>
 <translation id="2253414712144136228">برداشتن <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{یک سایت مسدود است}one{# سایت مسدود است}other{# سایت مسدود هستند}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">سایت‌ها می‌توانند پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت را نشان دهند.</translation>
 <translation id="2790501146643349491">هرگاه روشن باشد، سایت‌های اخیراً بسته‌شده می‌توانند ارسال و دریافت داده را تکمیل کنند. هرگاه خاموش باشد، سایت‌های اخیراً بسته‌شده نمی‌توانند ارسال یا دریافت داده را تکمیل کنند.</translation>
 <translation id="2822354292072154809">مطمئن‌اید می‌خواهید همه مجوزهای سایت مربوط به <ph name="CHOSEN_OBJECT_NAME" /> را بازنشانی کنید؟</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">درخواست نمای تلفن همراه</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2874939134665556319">آهنگ قبلی</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">بیننده گواهی</translation>
 <translation id="2979365474350987274">کوکی‌های شخص ثالث محدود شده است</translation>
 <translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
-<translation id="3013291976881901233">‏دستگاه‌های MIDI</translation>
 <translation id="301521992641321250">به‌طور خودکار مسدود‌شده</translation>
 <translation id="3069226013421428034">ورود به سیستم شخص ثالث برای سایت خاصی مجاز می‌شود.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">‏به دستگاه USB متصل است</translation>
 <translation id="4194328954146351878">‏قبل‌از اینکه به سایت‌ها اجازه داده شود اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند سؤال شود (توصیه می‌شود)</translation>
 <translation id="4200726100658658164">باز کردن «تنظیمات مکان»</translation>
-<translation id="4212246570487010370">ادامه مرور</translation>
 <translation id="4226663524361240545">اعلان‌ها ممکن است دستگاه را بلرزانند</translation>
 <translation id="4259722352634471385">پیمایش مسدود شده است: <ph name="URL" /></translation>
 <translation id="4278390842282768270">مجاز است</translation>
@@ -235,7 +232,7 @@
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5048398596102334565">مجاز بودن دسترسی سایت‌ها به حسگرهای حرکتی (توصیه می‌شود)</translation>
 <translation id="5050380848339752099">این سایت می‌خواهد خارج از «حالت ناشناس»، اطلاعاتی را با برنامه‌ای هم‌رسانی کند.</translation>
-<translation id="5063480226653192405">کاربر </translation>
+<translation id="5063480226653192405">مصرف</translation>
 <translation id="5091013926750941408">سایت ویژه تلفن همراه</translation>
 <translation id="509133520954049755">درخواست نمای رایانه</translation>
 <translation id="5091663350197390230">هرگاه روشن باشد، سایت‌ها می‌توانند از جاوا اسکریپت استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از جاوا اسکریپت استفاده کنند.</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">انتقال به پایین</translation>
 <translation id="6749077623962119521">اجازه‌ها بازنشانی شوند؟</translation>
 <translation id="6766622839693428701">برای بستن، تند به‌پایین بکشید.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> از <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">گزینه‌ای برای <ph name="SITE_NAME" /> انتخاب کنید</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
@@ -398,7 +394,7 @@
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="757524316907819857">مسدود کردن سایت‌ها برای پخش محتوای محافظت‌شده</translation>
 <translation id="7594634374516752650">به دستگاه بلوتوث متصل است</translation>
-<translation id="7641339528570811325">پاک کردن داده‌های محصول مرور…</translation>
+<translation id="7641339528570811325">پاک کردن داده‌های مرور…</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7667547420449112975">جادوگر شهر اُز</translation>

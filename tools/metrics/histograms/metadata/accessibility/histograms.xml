@@ -629,7 +629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosAutoclick.TrayMenu.ChangeAction"
-    enum="AutoclickActionType" expires_after="2024-05-26">
+    enum="AutoclickActionType" expires_after="2024-07-28">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -891,7 +891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BackgroundShading"
-    enum="BooleanEnabled" expires_after="2024-05-26">
+    enum="BooleanEnabled" expires_after="2024-07-28">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1072,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.AutoScan" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1084,7 +1084,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.AutoScan.KeyboardSpeedMs"
-    units="ms" expires_after="2024-02-04">
+    units="ms" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1096,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.AutoScan.SpeedMs" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1108,7 +1108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.Error"
-    enum="CrosSwitchAccessError" expires_after="2024-02-04">
+    enum="CrosSwitchAccessError" expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1119,7 +1119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.NextKeyCode" enum="KeyCode"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1130,7 +1130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.PreviousKeyCode" enum="KeyCode"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1141,7 +1141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.SelectKeyCode" enum="KeyCode"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1152,7 +1152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosVirtualKeyboard" enum="BooleanEnabled"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1160,6 +1160,27 @@ chromium-metrics-reviews@google.com.
     Whether the Chrome OS Virtual Keyboard feature is on (logged once 45 secs
     after startup).
   </summary>
+</histogram>
+
+<histogram name="Accessibility.EventProcessingTime{Variation}"
+    units="microseconds" expires_after="2024-07-25">
+  <owner>grt@chromium.org</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <summary>
+    The round-trip time to send a set of accessibility mode flags from the
+    browser process to a renderer and receive and process the first set of
+    updates and events. Recorded once each time the browser process receives the
+    first set of updates and events from a renderer following {Variation} call
+    to RenderAccessibility::SetMode.
+
+    Drops reports on clients with low-resolution clocks, biasing to a portion of
+    the population on Windows. See Windows.HasHighResolutionTimeTicks for the
+    affected sample.
+  </summary>
+  <token key="Variation">
+    <variant name=".First" summary="the very first"/>
+    <variant name=".NotFirst" summary="all but the first"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.ExperimentalModeFlag.FormControls"

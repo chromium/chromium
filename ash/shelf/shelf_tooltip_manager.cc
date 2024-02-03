@@ -7,12 +7,13 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_tooltip_bubble.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desk_button/desk_button_container.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
@@ -78,8 +79,7 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
   // above the respective view.
   std::optional<views::BubbleBorder::Arrow> forced_arrow_position;
   if (DeskButtonWidget* desk_button_widget = shelf_->desk_button_widget()) {
-    DeskButton* desk_button = desk_button_widget->GetDeskButton();
-    if (view == desk_button || view->parent() == desk_button) {
+    if (view->parent() == desk_button_widget->GetDeskButtonContainer()) {
       forced_arrow_position = views::BubbleBorder::Arrow::BOTTOM_CENTER;
     }
   }
@@ -137,12 +137,12 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
   const bool should_show = ShouldShowTooltipForView(view);
 
   timer_.Stop();
-  if (IsVisible() && should_show && bubble_->GetAnchorView() != view)
+  if (IsVisible() && should_show && bubble_->GetAnchorView() != view) {
     ShowTooltip(view);
-  else if (!IsVisible() && should_show)
+  } else if (!IsVisible() && should_show) {
     ShowTooltipWithDelay(view);
-  else if (IsVisible() &&
-           shelf_tooltip_delegate_->ShouldHideTooltip(point, delegate_view)) {
+  } else if (IsVisible() &&
+             shelf_tooltip_delegate_->ShouldHideTooltip(point, delegate_view)) {
     Close();
   }
 }

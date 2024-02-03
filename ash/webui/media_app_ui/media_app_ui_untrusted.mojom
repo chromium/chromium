@@ -42,13 +42,24 @@ interface OcrUntrustedPageHandler {
   //                  document, attached to each page's unique identifier.
   PageMetadataUpdated(array<PageMetadata> page_metadata);
 
+  // Called when a page in the document becomes dirty, i.e. it needs to go
+  // through OCR again. This includes when:
+  //   a) A page is rotated. This is called in conjunction with the
+  //      PageMetadataUpdated() API, because rotates also cause location
+  //      changes.
+  //   b) A page is edited. This could be a new annotation (freehand or text),
+  //      or a form field edited.
+  //   dirty_page_id: A string containing the unique identifier of the dirty
+  //                  page.
+  PageContentsUpdated(string dirty_page_id);
+
   // Called whenever the viewport changes, e.g. due to scrolling, zooming,
   // resizing the window, or opening and closing toolbars/panels.
-  //   viewportBox: The new bounding box of the viewport.
-  //   scaleFactor: The ratio between CSS pixels (i.e. ignoring browser and
+  //   viewport_box: The new bounding box of the viewport.
+  //   scale_factor: The ratio between CSS pixels (i.e. ignoring browser and
   //       pinch zoom) and ink units. Larger numbers indicate the document is
   //       more zoomed in.
-  ViewportUpdated(gfx.mojom.RectF viewportBox, float scaleFactor);
+  ViewportUpdated(gfx.mojom.RectF viewport_box, float scale_factor);
 };
 
 // Interface implemented in JavaScript by the chrome-untrusted:// page for Media
@@ -59,6 +70,6 @@ interface OcrUntrustedPage {
   // If a document is currently loaded, scrolls and zooms to the given viewport.
   // This allows certain AXActions to be implemented such as
   // `kScrollToMakeVisible` or `kSetScrollOffset`.
-  //   viewportBox: The bounding box representing the new camera position.
-  SetViewport(gfx.mojom.RectF viewportBox);
+  //   viewport_box: The bounding box representing the new camera position.
+  SetViewport(gfx.mojom.RectF viewport_box);
 };

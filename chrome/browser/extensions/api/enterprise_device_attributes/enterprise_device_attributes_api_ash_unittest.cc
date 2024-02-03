@@ -115,7 +115,7 @@ class EnterpriseDeviceAttributesApiAshTest
   void AddUser(bool is_affiliated = true) {
     AccountId account_id = AccountId::FromUserEmail(kAccountId);
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_manager::USER_TYPE_REGULAR,
+        account_id, is_affiliated, user_manager::UserType::kRegular,
         testing_profile_);
     user_manager_->LoginUser(account_id);
   }

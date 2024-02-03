@@ -563,7 +563,13 @@ void DriveUploadHandler::OnGetDriveMetadata(
   // host.
   if (hosted_url.host() != "docs.google.com") {
     if (timed_out) {
-      LOG(ERROR) << "Unexpected alternate URL - Drive editing unavailable";
+      LOG(ERROR) << "Unexpected alternate URL - Drive editing unavailable: "
+                 << hosted_url.host();
+      // TODO(b/323452926): Remove DumpWithoutCrashing() once root cause
+      // discovered.
+      SCOPED_CRASH_KEY_STRING64("OfficeUpload", "UnexpectedHost",
+                                hosted_url.host());
+      base::debug::DumpWithoutCrashing();
       OnEndCopy(OfficeFilesUploadResult::kUnexpectedAlternateUrlHost);
     } else {
       alternate_url_poll_timer_.Start(

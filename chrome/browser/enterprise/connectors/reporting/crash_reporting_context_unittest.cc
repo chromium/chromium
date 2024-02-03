@@ -31,7 +31,7 @@ using ::testing::Return;
 
 namespace enterprise_connectors {
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -190,6 +190,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

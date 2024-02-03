@@ -77,7 +77,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     // The text must be at least this long to be truncated. Safety measure to prevent accidentally
     // over truncating text for large tablets and external displays. Also, tests can continue to
     // check for text equality, instead of worrying about partial equality with truncated text.
-    static final int MIN_LENGTH_FOR_TRUNCATION = 500;
     static final int MIN_LENGTH_FOR_TRUNCATION_V2 = 100;
 
     /**
@@ -130,11 +129,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     // Remove once the kAndroidVisibleUrlTruncationV2 experiment is complete.
     private boolean mIsTextTruncated;
     private boolean mDidJustTruncate;
-
-    // TODO (https://crbug.com/1480708) Speculating that something is wrong with the url that was
-    // passed to the previous call to scrollToTLD. Remove after crash is fixed.
-    Editable mScrollToTLDPrevUrl;
-    int mScrollToTLDPrevEndIndex;
 
     /** What scrolling action should be taken after the URL bar text changes. * */
     @IntDef({ScrollType.NO_SCROLL, ScrollType.SCROLL_TO_TLD, ScrollType.SCROLL_TO_BEGINNING})
@@ -561,13 +555,9 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     public void setTextWithTruncation(
             CharSequence text, @ScrollType int scrollType, int scrollToIndex) {
-        int min_length =
-                OmniboxFeatures.shouldTruncateVisibleUrlV2()
-                        ? MIN_LENGTH_FOR_TRUNCATION_V2
-                        : MIN_LENGTH_FOR_TRUNCATION;
         if (mFocused
                 || TextUtils.isEmpty(text)
-                || text.length() < min_length
+                || text.length() < MIN_LENGTH_FOR_TRUNCATION_V2
                 || getLayoutParams().width == LayoutParams.WRAP_CONTENT
                 || containsRtl(text)) {
             mIsTextTruncated = false;
@@ -825,34 +815,13 @@ public abstract class UrlBar extends AutocompleteEditText {
         assert getLayout().getLineCount() == 1;
         final int originEndIndex = Math.min(mOriginEndIndex, urlTextLength);
         if (mOriginEndIndex > urlTextLength) {
-            String errorMessage = "Attempting to scroll past the end of the URL.";
-            if (mScrollToTLDPrevUrl != null) {
-                boolean hadBlobScheme = mScrollToTLDPrevUrl.toString().startsWith("blob");
-                int prevLength = mScrollToTLDPrevUrl.length();
-                errorMessage +=
-                        " Previous url was blob: "
-                                + String.valueOf(hadBlobScheme)
-                                + " previous url length: "
-                                + String.valueOf(prevLength)
-                                + " prev end index: "
-                                + String.valueOf(mScrollToTLDPrevEndIndex);
-            } else {
-                boolean isBlobScheme = url.toString().startsWith("blob");
-                errorMessage += " First time. Url is blob: " + String.valueOf(isBlobScheme);
-            }
-
-            errorMessage +=
-                    " url length: "
-                            + String.valueOf(urlTextLength)
-                            + " mOriginEndIndex: "
-                            + String.valueOf(mOriginEndIndex);
-
             // If discovered locally, please update crbug.com/859219 with the steps to reproduce.
-            assert false : errorMessage;
+            assert false
+                    : "Attempting to scroll past the end of the URL: "
+                            + url
+                            + ", end index: "
+                            + mOriginEndIndex;
         }
-
-        mScrollToTLDPrevUrl = url;
-        mScrollToTLDPrevEndIndex = mOriginEndIndex;
 
         float endPointX = textLayout.getPrimaryHorizontal(originEndIndex);
         // Compare the position offset of the last character and the character prior to determine
@@ -893,9 +862,7 @@ public abstract class UrlBar extends AutocompleteEditText {
                     // padding.
                     mVisibleTextPrefixHint = null;
                 } else {
-                    if (OmniboxFeatures.shouldCalculateVisibleHint(getContext())) {
-                        mVisibleTextPrefixHint = calculateVisibleHint();
-                    }
+                    mVisibleTextPrefixHint = calculateVisibleHint();
                 }
             }
         } else {
@@ -995,7 +962,7 @@ public abstract class UrlBar extends AutocompleteEditText {
             mVisibleTextPrefixHint = null;
         }
 
-        if (OmniboxFeatures.shouldTruncateVisibleUrl()) {
+        if (OmniboxFeatures.shouldTruncateVisibleUrlV2()) {
             // Make sure we didn't truncate too much.
             int measuredWidth = getVisibleMeasuredViewportWidth();
             int textLength = text.length();

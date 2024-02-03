@@ -397,7 +397,7 @@ class PeerConnectionStaticDeps {
   rtc::Thread* network_thread_ = nullptr;
   base::Thread chrome_signaling_thread_;
   base::Thread chrome_worker_thread_;
-  absl::optional<base::Thread> chrome_network_thread_;
+  std::optional<base::Thread> chrome_network_thread_;
 
   // Metronome source used for driving decoding and encoding, created from
   // renderer main thread, always used and destroyed on `chrome_worker_thread_`.
@@ -415,7 +415,7 @@ class PeerConnectionStaticDeps {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED};
 
-  absl::optional<VSyncProviderImpl> vsync_provider_;
+  std::optional<VSyncProviderImpl> vsync_provider_;
 
   THREAD_CHECKER(thread_checker_);
 };

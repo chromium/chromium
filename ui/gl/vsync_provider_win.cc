@@ -30,7 +30,18 @@ std::pair<base::TimeTicks, base::TimeDelta> TryGetVSyncParamsFromDwmCompInfo() {
   DWM_TIMING_INFO timing_info;
   timing_info.cbSize = sizeof(timing_info);
   HRESULT result = ::DwmGetCompositionTimingInfo(NULL, &timing_info);
-  if (result == S_OK) {
+  // DwmGetCompositionTimingInfo returns qpcVBlank & qpcRefreshPeriod as type
+  // QPC_TIME, which is defined as ULONGLONG. In Chromium time, such as
+  // base::TimeDelta, is stored as type LONGLONG. In normal operating conditions
+  // we don't expect DwmGetCompositionTimingInfo to return values larger than
+  // LLONG_MAX because it is built upon Windows APIs which also treat time as
+  // type LONGLONG and on a typical system where the QPC interval is 100ns then
+  // a qpcVBlank time of LLONG_MAX would represent ~29K years. There are cases
+  // where we can encounter values greater than LLONG_MAX however (see
+  // https://crbug.com/1499654), so we want to protect against this by falling
+  // back to another interval querying method.
+  if (result == S_OK && timing_info.qpcVBlank <= LLONG_MAX &&
+      timing_info.qpcRefreshPeriod <= LLONG_MAX) {
     // Calculate an interval value using the rateRefresh numerator and
     // denominator.
     base::TimeDelta rate_interval;

@@ -58,8 +58,6 @@ if (is_win) {
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
-# TODO(jam): remove is_fuchsia below
-
 declare_args() {
   # You can set the variable 'use_official_enterprise_connectors_api_keys' to
   # true to use the Google-internal file containing official API keys
@@ -151,6 +149,8 @@ static_library("browser") {
     "accessibility/page_colors.h",
     "accessibility/page_colors_factory.cc",
     "accessibility/page_colors_factory.h",
+    "accessibility/prefers_default_scrollbar_styles_prefs.cc",
+    "accessibility/prefers_default_scrollbar_styles_prefs.h",
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
     "app_mode/app_mode_utils.cc",
@@ -309,6 +309,8 @@ static_library("browser") {
     "component_updater/crowd_deny_component_installer.h",
     "component_updater/desktop_sharing_hub_component_remover.cc",
     "component_updater/desktop_sharing_hub_component_remover.h",
+    "component_updater/file_type_policies_component_installer.cc",
+    "component_updater/file_type_policies_component_installer.h",
     "component_updater/first_party_sets_component_installer.cc",
     "component_updater/first_party_sets_component_installer.h",
     "component_updater/masked_domain_list_component_installer.cc",
@@ -493,6 +495,8 @@ static_library("browser") {
     "enterprise/connectors/interstitials/enterprise_block_controller_client.h",
     "enterprise/connectors/interstitials/enterprise_block_page.cc",
     "enterprise/connectors/interstitials/enterprise_block_page.h",
+    "enterprise/connectors/interstitials/enterprise_interstitial_util.cc",
+    "enterprise/connectors/interstitials/enterprise_interstitial_util.h",
     "enterprise/connectors/interstitials/enterprise_warn_controller_client.cc",
     "enterprise/connectors/interstitials/enterprise_warn_controller_client.h",
     "enterprise/connectors/interstitials/enterprise_warn_page.cc",
@@ -981,8 +985,6 @@ static_library("browser") {
     "page_info/about_this_site_service_factory.h",
     "page_info/about_this_site_tab_helper.cc",
     "page_info/about_this_site_tab_helper.h",
-    "page_info/chrome_about_this_site_service_client.cc",
-    "page_info/chrome_about_this_site_service_client.h",
     "page_info/page_info_features.cc",
     "page_info/page_info_features.h",
     "page_load_metrics/observers/bookmark_bar_page_load_metrics_observer.cc",
@@ -2671,7 +2673,7 @@ static_library("browser") {
     deps += [ "//chrome/browser/ui/webui/app_home:mojo_bindings" ]
   }
 
-  if (is_posix || is_fuchsia) {
+  if (is_posix) {
     sources += [
       "download/trusted_sources_manager_posix.cc",
       "performance_monitor/metric_evaluator_helper_posix.cc",
@@ -2883,6 +2885,8 @@ static_library("browser") {
       "android/ntp/recent_tabs_page_prefs.h",
       "android/omnibox/autocomplete_controller_android.cc",
       "android/omnibox/autocomplete_controller_android.h",
+      "android/omnibox/chrome_omnibox_navigation_observer_android.cc",
+      "android/omnibox/chrome_omnibox_navigation_observer_android.h",
       "android/omnibox/geolocation_header.cc",
       "android/omnibox/geolocation_header.h",
       "android/omnibox/omnibox_prerender.cc",
@@ -3511,7 +3515,6 @@ static_library("browser") {
       "//components/external_intents/android",
       "//components/favicon/android",
       "//components/favicon/core:database",
-      "//components/history_clusters/ui",
       "//components/image_fetcher:android",
       "//components/image_fetcher/core:metrics",
       "//components/infobars/android",
@@ -3606,7 +3609,6 @@ static_library("browser") {
       deps += [
         "//chrome/browser/supervised_user:website_parent_approval_jni_headers",
         "//components/supervised_user/core/browser",
-        "//components/supervised_user/core/browser:supervised_user_preferences",
       ]
     }
 
@@ -3978,8 +3980,6 @@ static_library("browser") {
       "memory/oom_memory_details.h",
       "metrics/browser_activity_watcher.cc",
       "metrics/browser_activity_watcher.h",
-      "metrics/chrome_responsiveness_calculator_delegate.cc",
-      "metrics/chrome_responsiveness_calculator_delegate.h",
       "metrics/desktop_platform_features_metrics_provider.cc",
       "metrics/desktop_platform_features_metrics_provider.h",
       "metrics/desktop_session_duration/audible_contents_tracker.cc",
@@ -4020,6 +4020,8 @@ static_library("browser") {
       "metrics/tab_stats/tab_stats_observer.h",
       "metrics/tab_stats/tab_stats_tracker.cc",
       "metrics/tab_stats/tab_stats_tracker.h",
+      "metrics/usage_scenario/chrome_responsiveness_calculator_delegate.cc",
+      "metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h",
       "metrics/usage_scenario/system_event_provider.cc",
       "metrics/usage_scenario/system_event_provider.h",
       "metrics/usage_scenario/tab_usage_scenario_tracker.cc",
@@ -4638,6 +4640,7 @@ static_library("browser") {
       "//courgette:courgette_lib",
       "//services/device/public/cpp/bluetooth",
       "//services/device/public/cpp/hid",
+      "//third_party/crashpad/crashpad/client:common",
       "//third_party/sqlite",
       "//third_party/zxcvbn-cpp",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
@@ -4681,6 +4684,12 @@ static_library("browser") {
         "external_protocol/auto_launch_protocols_policy_handler.h",
         "net/disk_cache_dir_policy_handler.cc",
         "net/disk_cache_dir_policy_handler.h",
+        "policy/cbcm_invalidations_initializer.cc",
+        "policy/cbcm_invalidations_initializer.h",
+        "policy/chrome_browser_cloud_management_controller_desktop.cc",
+        "policy/chrome_browser_cloud_management_controller_desktop.h",
+        "policy/chrome_browser_cloud_management_register_watcher.cc",
+        "policy/chrome_browser_cloud_management_register_watcher.h",
         "policy/file_selection_dialogs_policy_handler.cc",
         "policy/file_selection_dialogs_policy_handler.h",
         "themes/theme_color_policy_handler.cc",
@@ -4700,12 +4709,6 @@ static_library("browser") {
         "lifetime/switch_utils.cc",
         "lifetime/switch_utils.h",
         "platform_util.cc",
-        "policy/cbcm_invalidations_initializer.cc",
-        "policy/cbcm_invalidations_initializer.h",
-        "policy/chrome_browser_cloud_management_controller_desktop.cc",
-        "policy/chrome_browser_cloud_management_controller_desktop.h",
-        "policy/chrome_browser_cloud_management_register_watcher.cc",
-        "policy/chrome_browser_cloud_management_register_watcher.h",
         "policy/client_data_delegate_desktop.cc",
         "policy/client_data_delegate_desktop.h",
         "policy/cloud/user_policy_signin_service.cc",
@@ -4766,10 +4769,6 @@ static_library("browser") {
       ]
     }
 
-    if (!is_fuchsia) {
-      deps += [ "//third_party/crashpad/crashpad/client:common" ]
-    }
-
     # On Windows, the hashes are embedded in //chrome:chrome_initial rather
     # than here in :chrome_dll.
     if (!is_win) {
@@ -4792,7 +4791,7 @@ static_library("browser") {
       }
     }
 
-    if (is_posix || is_fuchsia) {
+    if (is_posix) {
       sources += [ "task_manager/sampling/shared_sampler_stub.cc" ]
     }
 
@@ -5432,8 +5431,7 @@ static_library("browser") {
     if (!is_official_build) {
       deps += [
         "//ash/webui/sample_system_web_app_ui",
-        "//ash/webui/sample_system_web_app_ui/mojom:shared",
-        "//ash/webui/sample_system_web_app_ui/mojom:trusted",
+        "//ash/webui/sample_system_web_app_ui/mojom:mojo_bindings",
       ]
     }
 
@@ -6272,6 +6270,10 @@ static_library("browser") {
       "SafariServices.framework",
       "SecurityInterface.framework",
       "UserNotifications.framework",
+
+      # Used for the Thumbnail capturer on macOS.
+      "CoreVideo.framework",
+      "VideoToolbox.framework",
     ]
     weak_frameworks = [
       "ScreenCaptureKit.framework",  # Available in macOS 12.3, stable in 13.2.
@@ -6420,18 +6422,22 @@ static_library("browser") {
       "enterprise/signin/enterprise_signin_service.h",
       "enterprise/signin/enterprise_signin_service_factory.cc",
       "enterprise/signin/enterprise_signin_service_factory.h",
+      "enterprise/signin/managed_profile_creator.cc",
+      "enterprise/signin/managed_profile_creator.h",
+      "enterprise/signin/oidc_managed_profile_creation_delegate.cc",
+      "enterprise/signin/oidc_managed_profile_creation_delegate.h",
+      "enterprise/signin/profile_token_web_signin_interceptor.cc",
+      "enterprise/signin/profile_token_web_signin_interceptor.h",
+      "enterprise/signin/profile_token_web_signin_interceptor_factory.cc",
+      "enterprise/signin/profile_token_web_signin_interceptor_factory.h",
+      "enterprise/signin/token_managed_profile_creation_delegate.cc",
+      "enterprise/signin/token_managed_profile_creation_delegate.h",
       "policy/cloud/profile_token_policy_web_signin_service.cc",
       "policy/cloud/profile_token_policy_web_signin_service.h",
       "policy/cloud/profile_token_policy_web_signin_service_factory.cc",
       "policy/cloud/profile_token_policy_web_signin_service_factory.h",
       "policy/local_sync_policy_handler.cc",
       "policy/local_sync_policy_handler.h",
-      "signin/profile_token_web_signin_interceptor.cc",
-      "signin/profile_token_web_signin_interceptor.h",
-      "signin/profile_token_web_signin_interceptor_factory.cc",
-      "signin/profile_token_web_signin_interceptor_factory.h",
-      "signin/token_managed_profile_creator.cc",
-      "signin/token_managed_profile_creator.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
@@ -6550,49 +6556,6 @@ static_library("browser") {
     }
   }
 
-  if (is_fuchsia) {
-    sources += [
-      "download/download_status_updater_fuchsia.cc",
-      "first_run/first_run_internal_fuchsia.cc",
-      "first_run/upgrade_util_fuchsia.cc",
-      "fuchsia/chrome_browser_main_parts_fuchsia.cc",
-      "fuchsia/chrome_browser_main_parts_fuchsia.h",
-      "fuchsia/element_manager_impl.cc",
-      "fuchsia/element_manager_impl.h",
-      "fullscreen_fuchsia.cc",
-      "icon_loader_fuchsia.cc",
-      "importer/firefox_profile_lock_fuchsia.cc",
-      "media/webrtc/window_icon_util_fuchsia.cc",
-      "memory_details_fuchsia.cc",
-      "obsolete_system/obsolete_system_stub.cc",
-      "platform_util_fuchsia.cc",
-      "policy/browser_dm_token_storage_fuchsia.cc",
-      "policy/browser_dm_token_storage_fuchsia.h",
-      "process_singleton_fuchsia.cc",
-      "shell_integration_fuchsia.cc",
-      "upgrade_detector/get_installed_version_fuchsia.cc",
-      "upgrade_detector/installed_version_monitor_fuchsia.cc",
-    ]
-
-    deps += [
-      "//components/fuchsia_component_support",
-      "//components/fuchsia_component_support:annotations_manager",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app:fuchsia.ui.app_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition:fuchsia.ui.composition_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views:fuchsia.ui.views_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-      "//ui/platform_window",
-    ]
-
-    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp" ]
-  } else {
-    #!is_fuchsia
-    sources += [
-      "component_updater/file_type_policies_component_installer.cc",
-      "component_updater/file_type_policies_component_installer.h",
-    ]
-  }
-
   if (is_posix) {
     sources += [
       "shutdown_signal_handlers_posix.cc",
@@ -6619,7 +6582,7 @@ static_library("browser") {
     sources += [ "hang_monitor/hang_crash_dump.cc" ]
   }
 
-  if (is_win || is_linux || is_chromeos || is_fuchsia) {
+  if (is_win || is_linux || is_chromeos) {
     sources += [
       "renderer_context_menu/spelling_options_submenu_observer.cc",
       "renderer_context_menu/spelling_options_submenu_observer.h",
@@ -6717,7 +6680,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "media/cast_mirroring_service_host.cc",
       "media/cast_mirroring_service_host.h",
@@ -6945,9 +6908,6 @@ static_library("browser") {
     }
     if (is_linux) {
       sources += [ "printing/printer_manager_dialog_linux.cc" ]
-    }
-    if (is_fuchsia) {
-      sources += [ "printing/printer_manager_dialog_fuchsia.cc" ]
     }
     if (enable_oop_printing) {
       sources += [
@@ -7207,8 +7167,6 @@ static_library("browser") {
       "renderer_context_menu/context_menu_content_type_extension_popup.h",
       "renderer_context_menu/context_menu_content_type_platform_app.cc",
       "renderer_context_menu/context_menu_content_type_platform_app.h",
-      "renderer_host/chrome_extension_message_filter.cc",
-      "renderer_host/chrome_extension_message_filter.h",
       "speech/extension_api/tts_engine_extension_api.cc",
       "speech/extension_api/tts_engine_extension_api.h",
       "speech/extension_api/tts_extension_api.cc",
@@ -7860,7 +7818,6 @@ static_library("browser") {
       "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher",
       "//components/supervised_user/core/browser:list_family_members_service",
-      "//components/supervised_user/core/browser:supervised_user_preferences",
       "//components/supervised_user/core/common",
     ]
   }
@@ -8177,7 +8134,7 @@ grit("resources") {
     deps += [ "//chrome/browser/resources/conflicts:build_ts" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [ "//services/resource_coordinator/public/mojom:mojom_js" ]
   }
 
@@ -8368,6 +8325,7 @@ static_library("test_support") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/proto:status_proto",
     "//components/reporting/proto:upload_tracker_proto",
+    "//components/reporting/resources:resource_manager",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",

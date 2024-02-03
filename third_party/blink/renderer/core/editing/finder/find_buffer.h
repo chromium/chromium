@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_BUFFER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
@@ -32,7 +33,7 @@ class CORE_EXPORT FindBuffer {
       const EphemeralRangeInFlatTree& range,
       String search_text,
       const FindOptions,
-      absl::optional<base::TimeDelta> timeout_ms = absl::nullopt);
+      std::optional<base::TimeDelta> timeout_ms = std::nullopt);
 
   // Returns the closest ancestor of |start_node| (including the node itself)
   // that is block level.

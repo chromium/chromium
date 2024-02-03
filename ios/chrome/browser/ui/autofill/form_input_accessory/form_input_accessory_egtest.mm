@@ -92,9 +92,6 @@ constexpr char kFormZip[] = "form_zip";
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
   }
-  if ([self isRunningTest:@selector(testFillCreditCardFieldsOnForm)]) {
-    config.features_disabled.push_back(kIOSPaymentsBottomSheet);
-  }
   if ([self isRunningTest:@selector(testFillFieldOnFormWithSingleUsername)] ||
       [self isRunningTest:@selector(testFillFieldOnFormWithSinglePassword)]) {
     config.features_enabled.push_back(
@@ -214,6 +211,12 @@ constexpr char kFormZip[] = "form_zip";
   [self verifyFieldWithIdHasBeenFilled:kFormZip value:zip];
 }
 
+// Matcher for the bottom sheet's "Use Keyboard" button.
+id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
+}
+
 #pragma mark - Tests
 
 // Tests that tapping on a password related field opens the keyboard accessory
@@ -317,8 +320,17 @@ constexpr char kFormZip[] = "form_zip";
 
   [self loadPaymentsPage];
 
+  // Tap a credit card field to open the bottom sheet.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> useKeyboardButton = PaymentsBottomSheetUseKeyboardButton();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:useKeyboardButton];
+
+  // Dismiss the bottom sheet and open the keyboard.
+  [[EarlGrey selectElementWithMatcher:useKeyboardButton]
+      performAction:grey_tap()];
 
   autofill::CreditCard card = autofill::test::GetCreditCard();
 

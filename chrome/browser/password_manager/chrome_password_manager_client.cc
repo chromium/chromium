@@ -1077,12 +1077,19 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
               CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED)) {
     return;
   }
-#if BUILDFLAG(IS_ANDROID)
   password_manager::ContentPasswordManagerDriver* driver =
       GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   CHECK(driver);
+  // This guards against possibility that generation was available on page load
+  // but later became unavailable due to inability to save passwords.
+  if (!driver->GetPasswordGenerationHelper() ||
+      !driver->GetPasswordGenerationHelper()->IsGenerationEnabled(
+          /*log_debug_data*/ false)) {
+    return;
+  }
+#if BUILDFLAG(IS_ANDROID)
   if (!ShouldAcceptFocusEvent(web_contents(), driver,
                               FocusedFieldType::kFillablePasswordField)) {
     return;
@@ -1107,12 +1114,6 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   driver->GetPasswordAutofillManager()->MaybeShowPasswordSuggestions(
       element_bounds_in_screen_space, ui_data.text_direction);
 #else
-  password_manager::ContentPasswordManagerDriver* driver =
-      GetDriverFactory()->GetDriverForFrame(rfh);
-  // This method is called over Mojo via a RenderFrameHostReceiverSet; the
-  // current target frame must be live.
-  CHECK(driver);
-
   // Attempt to show the autofill dropdown UI first.
   gfx::RectF element_bounds_in_top_frame_space =
       TransformToRootCoordinates(driver->render_frame_host(), ui_data.bounds);
@@ -1618,8 +1619,8 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
   gfx::RectF element_bounds_in_screen_space =
       GetBoundsInScreenSpace(element_bounds_in_top_frame_space);
   password_manager_.SetGenerationElementAndTypeForForm(
-      driver, ui_data.form_data.unique_renderer_id,
-      ui_data.generation_element_id, type);
+      driver, ui_data.form_data.renderer_id, ui_data.generation_element_id,
+      type);
 
   popup_controller_ = PasswordGenerationPopupControllerImpl::GetOrCreate(
       popup_controller_, element_bounds_in_screen_space, ui_data,

@@ -25,10 +25,10 @@ CustomLayoutConstraints::CustomLayoutConstraints(
 
 CustomLayoutConstraints::~CustomLayoutConstraints() = default;
 
-absl::optional<double> CustomLayoutConstraints::fixedBlockSize() const {
+std::optional<double> CustomLayoutConstraints::fixedBlockSize() const {
   // Check if we've been passed an indefinite block-size.
   if (fixed_block_size_ < 0.0)
-    return absl::nullopt;
+    return std::nullopt;
   return fixed_block_size_;
 }
 
@@ -37,7 +37,7 @@ ScriptValue CustomLayoutConstraints::data(ScriptState* script_state) const {
   // to return the same deserialized object. We don't need to check which world
   // it is being accessed from.
   DCHECK(ExecutionContext::From(script_state)->IsLayoutWorkletGlobalScope());
-  DCHECK(script_state->World().IsWorkerWorld());
+  DCHECK(script_state->World().IsWorkerOrWorkletWorld());
 
   if (layout_worklet_world_v8_data_.IsEmpty())
     return ScriptValue::CreateNull(script_state->GetIsolate());

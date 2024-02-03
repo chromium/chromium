@@ -286,7 +286,8 @@ class IndexedDBTest
           checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-    context()->BindIndexedDBImpl(std::move(checker_remote), std::move(receiver),
+    context()->BindIndexedDBImpl(std::move(checker_remote),
+                                 base::UnguessableToken(), std::move(receiver),
                                  bucket_info);
   }
 

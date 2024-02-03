@@ -14,12 +14,6 @@ import "url/mojom/url.mojom";
 // There is one instance of this interface per RenderFrameHost in the browser
 // process. All methods are called by renderer on browser.
 interface AutofillDriver {
-  // Pushes a form the user interacted with from the AutofillAgent to the
-  // AutofillDriver, which may consider this form as a probably-submitted form
-  // once the page is navigated away from. If |form| is not set, it resets the
-  // last-interacted form.
-  SetFormToBeProbablySubmitted(FormData? form);
-
   // Notification that forms have been seen that are candidates for
   // filling/submitting by the AutofillManager.
   FormsSeen(array<FormData> updated_forms, array<FormRendererId> removed_forms);
@@ -136,18 +130,14 @@ interface PasswordManagerDriver {
     bool is_likely_otp);
 
   // Instructs the browser to show a popup or accessory with password
-  // suggestions. The popup will use |text_direction| for displaying text.
-  // The accessory uses the |form| and the indices of username and password
-  // elements in the form (|username_field_index| and |password_field_index|
-  // respectively) to calculate submission readiness for the |form|.
-  // If the username field is not found, |username_field_index| is set to
-  // |form.fields.size()|. Similar for the password field.
-  ShowPasswordSuggestions(FieldRendererId element_id, FormData form,
-                          uint64 username_field_index,
-                          uint64 password_field_index,
-                          mojo_base.mojom.TextDirection text_direction,
-                          mojo_base.mojom.String16 typed_username,
-                          int32 options, gfx.mojom.RectF bounds);
+  // suggestions. The popup will use |request.text_direction| for displaying
+  // text. The accessory uses the |request.form| and the indices of username and
+  // password elements in the form (|request.username_field_index| and
+  // |request.password_field_index| respectively) to calculate submission
+  // readiness for the |request.form|. If the username field is not found,
+  // |request.username_field_index| is set to |request.form.fields.size()|.
+  // Similar for the password field.
+  ShowPasswordSuggestions(PasswordSuggestionRequest request);
 
   // Instructs the browser to show a keyboard replacing surface (e.g.
   // TouchToFill) and whether the form is ready for submission after filling. If

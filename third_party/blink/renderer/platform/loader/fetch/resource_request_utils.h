@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_REQUEST_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_REQUEST_UTILS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -43,7 +44,7 @@ using ResourceLoadPriorityCalculator =
 using ResourceRequestTraceCallback =
     base::OnceCallback<void(const ResourceRequest&)>;
 
-// Returns absl::nullopt if loading the ResourceRequest in `params` is not
+// Returns std::nullopt if loading the ResourceRequest in `params` is not
 // blocked. Otherwise, returns a blocked reason.
 // This method may modify the ResourceRequest in `params` according to
 // `context` and `resource_type`.
@@ -59,7 +60,7 @@ using ResourceRequestTraceCallback =
 // `bundle_url_for_uuid_resources` is an optional bundle URL for
 // uuid-in-package: resources for security checks. Should only be set when the
 // request is WebBundle.
-absl::optional<ResourceRequestBlockedReason> BLINK_PLATFORM_EXPORT
+std::optional<ResourceRequestBlockedReason> BLINK_PLATFORM_EXPORT
 PrepareResourceRequest(
     const ResourceType& resource_type,
     const FetchClientSettingsObject& fetch_client_settings_object,

@@ -81,7 +81,7 @@ class ASH_EXPORT SensorProvider
     std::optional<float> scale;
 
     // SamplesObserver of this sensor.
-    std::unique_ptr<ash::AccelGryoSamplesObserver> samples_observer;
+    std::unique_ptr<ash::AccelGyroSamplesObserver> samples_observer;
   };
 
   SensorProvider();

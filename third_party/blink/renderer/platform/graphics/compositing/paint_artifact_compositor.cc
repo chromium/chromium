@@ -461,7 +461,7 @@ bool PaintArtifactCompositor::DecompositeEffect(
   auto is_composited_scroll = [this](const TransformPaintPropertyNode& t) {
     return NeedsCompositedScrolling(t);
   };
-  absl::optional<PropertyTreeState> upcast_state = group_state.CanUpcastWith(
+  std::optional<PropertyTreeState> upcast_state = group_state.CanUpcastWith(
       layer.GetPropertyTreeState(), is_composited_scroll);
   if (!upcast_state)
     return false;

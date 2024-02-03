@@ -47,6 +47,5 @@ suite('CheckmarkVisibleOnSelected', () => {
     assertCheckMarksForDropdown(toolbar.$.lineSpacingMenu);
     assertCheckMarksForDropdown(toolbar.$.letterSpacingMenu);
     assertCheckMarksForDropdown(toolbar.$.colorMenu);
-    assertCheckMarksForDropdown(toolbar.$.voiceSelectionMenu);
   });
 });

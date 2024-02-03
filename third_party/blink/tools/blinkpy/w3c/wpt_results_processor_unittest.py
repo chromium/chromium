@@ -27,6 +27,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.fs = self.host.filesystem
         self.path_finder = PathFinder(self.fs)
         port = self.host.port_factory.get('test-linux-trusty')
+        port.set_option_default('manifest_update', False)
 
         # Create a testing manifest containing any test files that we
         # might interact with.

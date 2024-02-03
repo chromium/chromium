@@ -49,6 +49,7 @@ source_set("autofill") {
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/translate/model:model",
+    "//ios/chrome/browser/ui/autofill/bottom_sheet:virtual_card_enrollment_bottom_sheet_coordinator",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
@@ -83,6 +84,7 @@ source_set("bridges") {
     "//base",
     "//components/autofill/core/browser",
     "//components/strings",
+    "//ios/chrome/browser/autofill/model/credit_card:credit_card",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -90,6 +92,7 @@ source_set("bridges") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
     "//url",
   ]

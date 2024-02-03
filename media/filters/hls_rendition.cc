@@ -11,7 +11,7 @@ namespace media {
 
 namespace {
 
-absl::optional<base::TimeDelta> GetPlaylistDuration(
+std::optional<base::TimeDelta> GetPlaylistDuration(
     hls::MediaPlaylist* playlist) {
   if (!playlist->HasMediaSequenceTag()) {
     // Live playbacks have a media sequence tag, so if that's missing, then this
@@ -30,7 +30,7 @@ absl::optional<base::TimeDelta> GetPlaylistDuration(
   }
 
   // Live content doesn't have a defined duration.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

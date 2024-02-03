@@ -329,6 +329,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.Set(key::kRemoteAccessHostAllowClientPairing, true);
     dict.Set(key::kRemoteAccessHostAllowGnubbyAuth, true);
     dict.Set(key::kRemoteAccessHostAllowFileTransfer, true);
+    dict.Set(key::kRemoteAccessHostAllowUrlForwarding, true);
     dict.Set(key::kRemoteAccessHostEnableUserInterface, true);
     dict.Set(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
     dict.Set(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);

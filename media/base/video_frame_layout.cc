@@ -94,7 +94,7 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
 }
 
 // static
-absl::optional<VideoFrameLayout> VideoFrameLayout::Create(
+std::optional<VideoFrameLayout> VideoFrameLayout::Create(
     VideoPixelFormat format,
     const gfx::Size& coded_size) {
   return CreateWithStrides(format, coded_size,
@@ -102,7 +102,7 @@ absl::optional<VideoFrameLayout> VideoFrameLayout::Create(
 }
 
 // static
-absl::optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
+std::optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     std::vector<int32_t> strides,
@@ -113,32 +113,32 @@ absl::optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
 }
 
 // static
-absl::optional<VideoFrameLayout> VideoFrameLayout::CreateWithPlanes(
+std::optional<VideoFrameLayout> VideoFrameLayout::CreateWithPlanes(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     std::vector<ColorPlaneLayout> planes,
     size_t buffer_addr_align,
     uint64_t modifier) {
   // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
-  // TODO(crbug.com/896135): Return absl::nullopt,
+  // TODO(crbug.com/896135): Return std::nullopt,
   // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
-  // TODO(crbug.com/896135): Return absl::nullopt,
+  // TODO(crbug.com/896135): Return std::nullopt,
   // if (planes.size() != NumPlanes(format))
   return VideoFrameLayout(format, coded_size, std::move(planes),
                           false /*is_multi_planar */, buffer_addr_align,
                           modifier);
 }
 
-absl::optional<VideoFrameLayout> VideoFrameLayout::CreateMultiPlanar(
+std::optional<VideoFrameLayout> VideoFrameLayout::CreateMultiPlanar(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     std::vector<ColorPlaneLayout> planes,
     size_t buffer_addr_align,
     uint64_t modifier) {
   // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
-  // TODO(crbug.com/896135): Return absl::nullopt,
+  // TODO(crbug.com/896135): Return std::nullopt,
   // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
-  // TODO(crbug.com/896135): Return absl::nullopt,
+  // TODO(crbug.com/896135): Return std::nullopt,
   // if (planes.size() != NumPlanes(format))
   return VideoFrameLayout(format, coded_size, std::move(planes),
                           true /*is_multi_planar */, buffer_addr_align,

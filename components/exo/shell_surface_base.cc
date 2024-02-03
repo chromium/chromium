@@ -273,14 +273,24 @@ class CustomClientView : public views::ClientView {
   // ClientView:
   void UpdateWindowRoundedCorners(int corner_radius) override {
     DCHECK(GetWidget());
-    const bool frame_enabled = static_cast<CustomFrameView*>(
-                                   GetWidget()->non_client_view()->frame_view())
-                                   ->GetFrameEnabled();
+    const CustomFrameView* custom_frame_view = static_cast<CustomFrameView*>(
+        GetWidget()->non_client_view()->frame_view());
+
+    // In the typical scenario with frame enabled, we round:
+    //   * Upper corners of the frame.
+    //   * Lower corners of the client view.
+    // But when the frame is overlapped with the client view, for upper corners,
+    // both the top (frame) and the bottom (client view) views need to be
+    // rounded.
+    const bool should_round_client_view_upper_corner =
+        !custom_frame_view->GetFrameEnabled() ||
+        custom_frame_view->GetFrameOverlapped();
 
     const float corner_radius_f = corner_radius;
     const gfx::RoundedCornersF root_surface_radii = {
-        frame_enabled ? 0 : corner_radius_f,
-        frame_enabled ? 0 : corner_radius_f, corner_radius_f, corner_radius_f};
+        should_round_client_view_upper_corner ? corner_radius_f : 0,
+        should_round_client_view_upper_corner ? corner_radius_f : 0,
+        corner_radius_f, corner_radius_f};
 
     const Surface* root_surface = shell_surface_->root_surface();
 
@@ -1161,23 +1171,8 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
     return;
   }
 
-  bool frame_type_changed = frame_type_ != frame_type;
-
-  // aura-shell's set_frame, when used with xdg-shell, works iff the frame type
-  // or frame colors were specified before firsrt buffer commit. If these are
-  // not specified, the widget's layer is set to 'NOT_DRAWN' and the frame can't
-  // be drawn. `ClientControlledShellSurface is not affected.
-  if (frame_type_changed && widget_ &&
-      widget_->GetNativeWindow()->layer()->type() == ui::LAYER_NOT_DRAWN) {
-    if (frame_type != SurfaceFrameType::NONE &&
-        frame_type != SurfaceFrameType::SHADOW) {
-      DLOG(FATAL)
-          << "A shell surface with NOT_DRAWN layer can't support visible frame";
-      return;
-    }
-  }
   bool frame_was_disabled = !frame_enabled();
-
+  bool frame_type_changed = frame_type_ != frame_type;
   frame_type_ = frame_type;
   switch (frame_type) {
     case SurfaceFrameType::NONE:
@@ -1223,7 +1218,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
     }
   }
 
-  widget_->GetRootView()->Layout();
+  widget_->GetRootView()->DeprecatedLayoutImmediately();
   // TODO(oshima): We probably should wait applying these if the
   // window is animating.
   set_bounds_is_dirty(true);
@@ -1366,12 +1361,13 @@ void ShellSurfaceBase::GetWidgetHitTestMask(SkPath* mask) const {
 
   GetHitTestMask(mask);
 
-  gfx::Point origin = host_window()->bounds().origin();
   SkMatrix matrix;
-  float scale = GetScale();
-  matrix.setScaleTranslate(
-      SkFloatToScalar(1.0f / scale), SkFloatToScalar(1.0f / scale),
-      SkIntToScalar(origin.x()), SkIntToScalar(origin.y()));
+  const float scale = GetScale();
+  // `matrix` should be on Widget space, so use `origin_` as an origin instead
+  // of the root surface origin.
+  matrix.setScaleTranslate(SkFloatToScalar(1.0f / scale),
+                           SkFloatToScalar(1.0f / scale), origin_.x(),
+                           origin_.y());
   mask->transform(matrix);
 }
 
@@ -2078,25 +2074,6 @@ void ShellSurfaceBase::UpdateShadow() {
       shadow->SetElevation(wm::kShadowElevationMenuOrTooltip);
 
     UpdateShadowRoundedCorners();
-  }
-
-  if (window->layer()->type() == ui::LAYER_NOT_DRAWN) {
-    DCHECK(!window->GetProperty(chromeos::kWindowManagerManagesOpacityKey));
-
-    // Snapped window should not be opaque because it can be drag-resized, in
-    // which case the widget's window can be exposed while waiting for
-    // configure_ack + commit.
-    bool window_is_opaque = widget_->IsFullscreen() || widget_->IsMaximized();
-    window->SetTransparent(!window_is_opaque);
-    if (root_surface()->FillsBoundsOpaquely()) {
-      // Manually control occlusion, but do not make the window
-      // opaque as the host window may not be at the same size unless the
-      // window state is either in fullscreen or maximized.
-      window->SetOpaqueRegionsForOcclusion(
-          {gfx::Rect(window->bounds().size())});
-    } else {
-      window->SetOpaqueRegionsForOcclusion({});
-    }
   }
 }
 

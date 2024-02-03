@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import '../components/common_styles/oobe_common_styles.css.js';
 import './assistant_common_styles.css.js';
 

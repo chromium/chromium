@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "gin/public/v8_platform.h"
+#include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
@@ -46,7 +47,7 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   // generation garbage collections.
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    bool success = DOMWrapperWorld::ClearWrapperIfEqualTo(
+    bool success = DOMDataStore::ClearWrapperInAnyWorldIfEqualTo(
         ToScriptWrappable(traced), traced);
     // Since V8 found a handle, Blink needs to find it as well when trying to
     // remove it.
@@ -55,7 +56,7 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
 
   bool TryResetRoot(const v8::TracedReference<v8::Value>& handle) final {
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    return DOMWrapperWorld::ClearMainWorldWrapperIfEqualTo(
+    return DOMDataStore::ClearInlineStorageWrapperIfEqualTo(
         ToScriptWrappable(traced), traced);
   }
 };
@@ -217,8 +218,8 @@ class CustomSpaceStatisticsReceiverImpl final
   base::OnceCallback<void(size_t allocated_node_bytes,
                           size_t allocated_css_bytes)>
       callback_;
-  absl::optional<size_t> node_bytes_;
-  absl::optional<size_t> css_bytes_;
+  std::optional<size_t> node_bytes_;
+  std::optional<size_t> css_bytes_;
 };
 
 }  // anonymous namespace

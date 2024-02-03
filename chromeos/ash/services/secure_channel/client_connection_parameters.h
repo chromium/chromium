@@ -10,6 +10,7 @@
 
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,6 +60,10 @@ class ClientConnectionParameters {
       mojo::PendingRemote<mojom::Channel> channel,
       mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver);
 
+  void SetBleDiscoveryState(
+      mojom::DiscoveryResult discovery_state,
+      absl::optional<mojom::DiscoveryErrorCode> potential_error_code);
+
   bool operator==(const ClientConnectionParameters& other) const;
   bool operator<(const ClientConnectionParameters& other) const;
 
@@ -70,6 +75,9 @@ class ClientConnectionParameters {
       mojo::PendingRemote<mojom::Channel> channel,
       mojo::PendingReceiver<mojom::MessageReceiver>
           message_receiver_receiver) = 0;
+  virtual void UpdateBleDiscoveryState(
+      mojom::DiscoveryResult discovery_result,
+      absl::optional<mojom::DiscoveryErrorCode> potential_error_code) = 0;
 
   void NotifyConnectionRequestCanceled();
 

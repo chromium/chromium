@@ -34,7 +34,7 @@
     cursor: pointer;
   }
 
-  th[aria-sort]::after {
+  th[aria-sort='none']::after {
     content: '⬍';
   }
 
@@ -46,6 +46,12 @@
     content: '⬇';
   }
 
+  ul, li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
   .send-error {
     background-color: rgb(250,199,192);
   }
@@ -53,6 +59,11 @@
   .debug-url {
     color: rgb(66,135,245);
     font-weight: bold;
+  }
+
+  .number {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
   }
 </style>
 <table>

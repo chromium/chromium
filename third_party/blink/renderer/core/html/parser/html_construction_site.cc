@@ -125,7 +125,7 @@ static unsigned NextTextBreakPositionForContainer(
     const ContainerNode& node,
     unsigned current_position,
     unsigned string_length,
-    absl::optional<unsigned>& length_limit) {
+    std::optional<unsigned>& length_limit) {
   if (string_length < Text::kDefaultLengthLimit)
     return string_length;
   if (!length_limit) {
@@ -374,7 +374,7 @@ void HTMLConstructionSite::FlushPendingText() {
   // Lazily determine the line limit as it's non-trivial, and in the typical
   // case not necessary. Note that this is faster than using a ternary operator
   // to determine limit.
-  absl::optional<unsigned> length_limit;
+  std::optional<unsigned> length_limit;
 
   unsigned current_position = 0;
   const StringBuilder& string = pending_text_.string_builder;
@@ -395,10 +395,8 @@ void HTMLConstructionSite::FlushPendingText() {
             ? string
             : string.SubstringView(current_position,
                                    break_index - current_position);
-    String substring = canonicalize_whitespace_strings_
-                           ? TryCanonicalizeString(
-                                 substring_view, pending_text_.whitespace_mode)
-                           : substring_view.ToString();
+    String substring =
+        TryCanonicalizeString(substring_view, pending_text_.whitespace_mode);
 
     DCHECK_GT(break_index, current_position);
     DCHECK_EQ(break_index - current_position, substring.length());
@@ -498,9 +496,7 @@ HTMLConstructionSite::HTMLConstructionSite(
           ScriptingContentIsAllowed(parser_content_policy)),
       is_parsing_fragment_(fragment),
       redirect_attach_to_foster_parent_(false),
-      in_quirks_mode_(document.InQuirksMode()),
-      canonicalize_whitespace_strings_(
-          RuntimeEnabledFeatures::CanonicalizeWhitespaceStringsEnabled()) {
+      in_quirks_mode_(document.InQuirksMode()) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument() ||
          is_parsing_fragment_);
 

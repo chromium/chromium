@@ -577,7 +577,7 @@ void TokenizeInto(CSSParserTokenStream& stream,
                   wtf_size_t restart_target,
                   wtf_size_t restart_offset,
                   Vector<CSSParserToken, 32>& tokens) {
-  absl::optional<CSSParserTokenStream::State> saved_state;
+  std::optional<CSSParserTokenStream::State> saved_state;
 
   while (true) {
     stream.EnsureLookAhead();

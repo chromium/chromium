@@ -97,7 +97,6 @@ class MockAutofillPopupController : public AutofillPopupController {
               (override));
   MOCK_METHOD(void, SelectSuggestion, (int), (override));
   MOCK_METHOD(void, UnselectSuggestion, (), (override));
-  MOCK_METHOD(PopupType, GetPopupType, (), (const override));
   MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const override));
   MOCK_METHOD(base::WeakPtr<AutofillPopupController>,
               OpenSubPopup,

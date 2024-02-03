@@ -20,9 +20,9 @@ class WebView;
 // of the recording overlay widget. This view hosts a |views::WebView| which
 // will show the contents of the annotator embedder URL.
 class RecordingOverlayViewImpl : public ash::RecordingOverlayView {
- public:
-  METADATA_HEADER(RecordingOverlayViewImpl);
+  METADATA_HEADER(RecordingOverlayViewImpl, ash::RecordingOverlayView)
 
+ public:
   explicit RecordingOverlayViewImpl(Profile* profile);
   RecordingOverlayViewImpl(const RecordingOverlayViewImpl&) = delete;
   RecordingOverlayViewImpl& operator=(const RecordingOverlayViewImpl&) = delete;

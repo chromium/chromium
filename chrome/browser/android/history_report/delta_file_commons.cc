@@ -97,7 +97,7 @@ std::string DeltaFileEntryWithData::UrlToId(const std::string& url) {
   // 2. SHA-256 of URL.
   uint8_t hash[kSHA256ByteSize];
   crypto::SHA256HashString(url, hash, sizeof(hash));
-  id << base::HexEncode(hash, sizeof(hash));
+  id << base::HexEncode(hash);
 
   // 3. Prefix of URL to fill rest of the space.
   id << url.substr(0, kIdLengthLimit - 2 * kSHA256ByteSize - kUrlLengthWidth);

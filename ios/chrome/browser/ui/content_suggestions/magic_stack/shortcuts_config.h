@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ContentSuggestionsCommands;
+@protocol ShortcutsCommands;
 @class ContentSuggestionsMostVisitedActionItem;
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
@@ -20,7 +20,7 @@
     NSArray<ContentSuggestionsMostVisitedActionItem*>* shortcutItems;
 
 // Command handler for user actions.
-@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
+@property(nonatomic, weak) id<ShortcutsCommands> commandHandler;
 
 @end
 

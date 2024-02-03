@@ -21,6 +21,16 @@ enum DisplaySettingsType {
   kPrimaryDisplay,
 };
 
+// Available option of the display night light schedule. Do not change the
+// order since they are used for metrics. Keep in sync with the
+// DisplaySettingsNightLightScheduleOption enum in
+// tools/metrics/histograms/metadata/chromeos_settings/enums.xml.
+enum DisplaySettingsNightLightScheduleOption {
+  kNever = 0,
+  kSunsetToSunrise,
+  kCustom,
+};
+
 // Available option of the display orientation. Do not change the
 // order since they are used for metrics. Keep in sync with the
 // DisplaySettingsOrientationOption enum in
@@ -50,6 +60,22 @@ struct DisplaySettingsValue {
   // The orientation of the display. This is available only when display
   // orientation is changed.
   DisplaySettingsOrientationOption? orientation;
+
+  // The night light status of the display. This is available only when
+  // display night light status is changed.
+  bool? night_light_status;
+
+  // The night light schedule of the display. This is available only when
+  // display night light schedule is changed.
+  DisplaySettingsNightLightScheduleOption? night_light_schedule;
+
+  // The mirror mode status of the display. This is available only when
+  // display mirror mode status is changed.
+  bool? mirror_mode_status;
+
+  // The unified mode status of the display. This is available only when
+  // display unified mode status is changed.
+  bool? unified_mode_status;
 };
 
 // Implemented by clients that wish to be notified when the tablet mode is

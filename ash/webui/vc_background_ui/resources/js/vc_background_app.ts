@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import './vc_background_breadcrumb_element.js';
 
 import {SeaPenQueryParams} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './vc_background_app.html.js';

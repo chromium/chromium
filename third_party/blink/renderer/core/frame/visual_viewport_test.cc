@@ -1031,7 +1031,7 @@ class VisualViewportMockWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
   MOCK_METHOD2(UpdateContextMenuDataForTesting,
-               void(const ContextMenuData&, const absl::optional<gfx::Point>&));
+               void(const ContextMenuData&, const std::optional<gfx::Point>&));
   MOCK_METHOD0(DidChangeScrollOffset, void());
 };
 
@@ -2435,7 +2435,7 @@ class VisualViewportScrollIntoViewTest : public VisualViewportSimTest {
         mojom::blink::ScrollBehavior::kInstant, is_for_scroll_sequence);
     GetDocument().GetFrame()->CreateNewSmoothScrollSequence();
     WebView().GetPage()->GetVisualViewport().ScrollIntoView(
-        bottom_element->BoundingBox(), PhysicalBoxStrut(), scroll_params);
+        bottom_element->BoundingBox(), scroll_params);
   }
 };
 
@@ -2692,7 +2692,7 @@ TEST_F(VisualViewportSimTest, ScrollbarThumbColorFromRootElement) {
   const VisualViewport& visual_viewport =
       WebView().GetPage()->GetVisualViewport();
 
-  EXPECT_EQ(absl::nullopt, visual_viewport.CSSScrollbarThumbColor());
+  EXPECT_EQ(std::nullopt, visual_viewport.CSSScrollbarThumbColor());
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

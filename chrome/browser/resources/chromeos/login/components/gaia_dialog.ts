@@ -17,9 +17,9 @@
  *   backcancel: User presses back button when there is no history in Gaia page.
  */
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import './buttons/oobe_back_button.js';
 import './buttons/oobe_text_button.js';
 import './common_styles/oobe_common_styles.css.js';

@@ -564,7 +564,7 @@ gfx::RectF GeometryMapper::VisualRectForCompositingOverlap(
   FloatClipRect visual_rect(local_rect);
   GeometryMapper::LocalToAncestorVisualRectInternal<
       ForCompositingOverlap::kYes>(local_state, ancestor_state, visual_rect);
-  if (const absl::optional<gfx::RectF> visibility_limit =
+  if (const std::optional<gfx::RectF> visibility_limit =
           VisibilityLimit(ancestor_state)) {
     visual_rect.Rect().Intersect(*visibility_limit);
   }
@@ -616,10 +616,10 @@ bool GeometryMapper::
       ForCompositingOverlap::kYes>(local_state, ancestor_state, mapping_rect);
 }
 
-absl::optional<gfx::RectF> GeometryMapper::VisibilityLimit(
+std::optional<gfx::RectF> GeometryMapper::VisibilityLimit(
     const PropertyTreeState& state) {
   if (state.Effect().SelfOrAncestorParticipatesInViewTransition()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (&state.Clip().LocalTransformSpace() == &state.Transform()) {
@@ -628,7 +628,7 @@ absl::optional<gfx::RectF> GeometryMapper::VisibilityLimit(
   if (const auto* scroll = state.Transform().ScrollNode()) {
     return gfx::RectF(scroll->ContentsRect());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void GeometryMapper::ClearCache() {

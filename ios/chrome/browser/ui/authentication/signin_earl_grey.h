@@ -39,8 +39,10 @@ enum class ConsentLevel;
                            forIdentity:(FakeSystemIdentity*)fakeIdentity;
 - (void)setCanHaveEmailAddressDisplayed:(BOOL)value
                             forIdentity:(FakeSystemIdentity*)fakeIdentity;
-- (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
-                                forIdentity:(FakeSystemIdentity*)fakeIdentity;
+- (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
+                                                    forIdentity:
+                                                        (FakeSystemIdentity*)
+                                                            fakeIdentity;
 
 // Removes `fakeIdentity` from the fake identity service asynchronously to
 // simulate identity removal from the device.

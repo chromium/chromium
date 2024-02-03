@@ -389,7 +389,7 @@ TEST_F(PasswordFormHelperTest, ExtractPasswordFormData) {
     return call_counter == 1;
   }));
   EXPECT_EQ(1, success_counter);
-  EXPECT_EQ(result.unique_renderer_id, FormRendererId(1));
+  EXPECT_EQ(result.renderer_id, FormRendererId(1));
 
   call_counter = 0;
   success_counter = 0;

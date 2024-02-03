@@ -4,45 +4,80 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.app.Activity;
+import android.widget.FrameLayout;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Tests for the ColorPickerMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ColorPickerMediatorUnitTest {
-    private static final @TabGroupColorId int DEFAULT_SELECTION = TabGroupColorId.GREY;
+    @Mock private ColorPickerContainer mContainerView;
 
+    private Activity mActivity;
     private ColorPickerMediator mMediator;
-    private ModelList mModelList = new ModelList();
+    private List<Integer> mColorIds;
+    private List<PropertyModel> mColorItems = new ArrayList<>();
+
+    @Captor ArgumentCaptor<List<FrameLayout>> mColorViewsCaptor;
 
     @Before
     public void setUp() {
-        mMediator = new ColorPickerMediator(mModelList);
+        MockitoAnnotations.initMocks(this);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mColorIds = ColorPickerUtils.getTabGroupColorIdList();
+        mMediator = new ColorPickerMediator(mColorIds, mColorItems);
     }
 
     @Test
-    public void testAddColorPicker_selectionState() {
-        mMediator.setColorListItems();
+    public void testColorPicker_setColorListItems() {
+        when(mContainerView.getContext()).thenReturn(mActivity);
 
-        Assert.assertEquals(TabGroupColorId.class.getDeclaredFields().length, mModelList.size());
+        mMediator.setColorListItems(mContainerView);
+        verify(mContainerView, times(1)).setColorViews(mColorViewsCaptor.capture());
 
-        for (ListItem item : mModelList) {
-            if (DEFAULT_SELECTION == item.model.get(ColorPickerItemProperties.COLOR_ID)) {
-                Assert.assertTrue(item.model.get(ColorPickerItemProperties.IS_SELECTED));
+        List<FrameLayout> colorViewsValue = mColorViewsCaptor.getValue();
+
+        assertNotNull(colorViewsValue);
+        assertEquals(mColorIds.size(), colorViewsValue.size());
+    }
+
+    @Test
+    public void testColorPicker_setSelectedColor() {
+        int selectedColor = mColorIds.get(1);
+        mMediator.setSelectedColorItem(selectedColor);
+
+        for (PropertyModel model : mColorItems) {
+            if (selectedColor == model.get(ColorPickerItemProperties.COLOR_ID)) {
+                assertTrue(model.get(ColorPickerItemProperties.IS_SELECTED));
             } else {
-                Assert.assertFalse(item.model.get(ColorPickerItemProperties.IS_SELECTED));
+                assertFalse(model.get(ColorPickerItemProperties.IS_SELECTED));
             }
         }
 
-        Assert.assertEquals(DEFAULT_SELECTION, mMediator.getSelectedColor());
+        assertEquals(selectedColor, mMediator.getSelectedColor());
     }
 }

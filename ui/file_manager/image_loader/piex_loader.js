@@ -1,7 +1,6 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 /**
  * Declares the piex-wasm Module interface. The Module has many interfaces
@@ -15,6 +14,8 @@
  *  image: function(number, number):!PiexWasmImageResult
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'PiexWasmModule' implicitly has an 'any'
+// type.
 export let PiexWasmModule;
 
 /**
@@ -38,6 +39,9 @@ let PiexModule;
  */
 const initPiexModule =
     /** @type {function(!ModuleInitParams): !Promise<!PiexWasmModule>} */ (
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type '"createPiexModule"' can't be used to
+        // index type 'typeof globalThis'.
         globalThis['createPiexModule']);
 
 console.log(`[PiexLoader] available [init=${typeof initPiexModule}]`);
@@ -62,12 +66,12 @@ const MODULE_SETTINGS = {
   },
 };
 
-/** @type {?Promise<undefined>} */
+/** @type {?Promise<void>} */
 let initPiexModulePromise = null;
 /**
  * Returns a promise that resolves once initialization is complete. PiexModule
  * may be undefined before this promise resolves.
- * @return {!Promise<undefined>}
+ * @return {!Promise<void>}
  */
 function piexModuleInitialized() {
   if (!initPiexModulePromise) {
@@ -104,7 +108,7 @@ function piexModuleFailed() {
 /**
  * @typedef {{
  *  thumbnail: !ArrayBuffer,
- *  mimeType: (string|undefined),
+ *  mimeType?: (string|undefined),
  *  orientation: number,
  *  colorSpace: string,
  *  ifd: ?string
@@ -540,8 +544,14 @@ class ImageBuffer {
       }
 
       for (let x = 0; x <= w; ++x, input += 3, output += dx) {
+        // @ts-ignore: error TS2345: Argument of type 'number | undefined' is
+        // not assignable to parameter of type 'number'.
         bitmap.setUint8(output + 0, view[input + 2]);  // B
+        // @ts-ignore: error TS2345: Argument of type 'number | undefined' is
+        // not assignable to parameter of type 'number'.
         bitmap.setUint8(output + 1, view[input + 1]);  // G
+        // @ts-ignore: error TS2345: Argument of type 'number | undefined' is
+        // not assignable to parameter of type 'number'.
         bitmap.setUint8(output + 2, view[input + 0]);  // R
       }
     }
@@ -556,13 +566,13 @@ class ImageBuffer {
         switch (rowPad) {
           case 3:
             bitmap.setUint8(output++, 0);
-          // Fall through.
+            // Fallthrough
           case 2:
             bitmap.setUint8(output++, 0);
-          // Fall through.
+            // Fallthrough
           case 1:
             bitmap.setUint8(output++, 0);
-            // Fall through.
+            // Fallthrough
         }
 
         paddingOffset += rowStride;
@@ -624,11 +634,17 @@ class ImageBuffer {
     const entries = Object.entries(details);
     for (const [key, value] of entries) {
       if (typeof value === 'string') {
+        // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+        // type.
         format[key] = value.replace(/\0+$/, '').trim();
       } else if (typeof value === 'number') {
         if (!Number.isInteger(value)) {
+          // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an
+          // index type.
           format[key] = Number(value.toFixed(3).replace(/0+$/, ''));
         } else {
+          // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an
+          // index type.
           format[key] = value;
         }
       }
@@ -671,7 +687,7 @@ export const PiexLoader = {};
  * the caller should initiate failure recovery steps.
  *
  * @param {!ArrayBuffer} buffer
- * @param {!function()} onPiexModuleFailed
+ * @param {VoidCallback} onPiexModuleFailed
  * @return {!Promise<!PiexLoaderResponse>}
  */
 PiexLoader.load = function(buffer, onPiexModuleFailed) {

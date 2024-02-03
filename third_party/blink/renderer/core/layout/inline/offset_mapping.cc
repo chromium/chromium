@@ -415,12 +415,12 @@ OffsetMapping::GetMappingUnitsForTextContentOffsetRange(unsigned start,
   return base::make_span(result_begin, result_end);
 }
 
-absl::optional<unsigned> OffsetMapping::GetTextContentOffset(
+std::optional<unsigned> OffsetMapping::GetTextContentOffset(
     const Position& position) const {
   DCHECK(OffsetMapping::AcceptsPosition(position)) << position;
   const OffsetMappingUnit* unit = GetMappingUnitForPosition(position);
   if (!unit)
-    return absl::nullopt;
+    return std::nullopt;
   return unit->ConvertDOMOffsetToTextContent(ToNodeOffsetPair(position).second);
 }
 
@@ -492,12 +492,12 @@ bool OffsetMapping::IsAfterNonCollapsedContent(const Position& position) const {
          unit->GetType() != OffsetMappingUnitType::kCollapsed;
 }
 
-absl::optional<UChar> OffsetMapping::GetCharacterBefore(
+std::optional<UChar> OffsetMapping::GetCharacterBefore(
     const Position& position) const {
   DCHECK(OffsetMapping::AcceptsPosition(position));
-  absl::optional<unsigned> text_content_offset = GetTextContentOffset(position);
+  std::optional<unsigned> text_content_offset = GetTextContentOffset(position);
   if (!text_content_offset || !*text_content_offset)
-    return absl::nullopt;
+    return std::nullopt;
   return text_[*text_content_offset - 1];
 }
 

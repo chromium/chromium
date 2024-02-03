@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/webid/account_selection_view_interface.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -17,7 +17,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
-using LinkType = content::IdentityRequestDialogController::LinkType;
 using TokenError = content::IdentityCredentialTokenError;
 
 namespace views {
@@ -36,62 +35,26 @@ class IdpImageView;
 // account chooser for the user, and it changes the content of that dialog as
 // user moves through the FedCM flow steps.
 class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
-                                   public AccountSelectionViewInterface {
+                                   public AccountSelectionViewBase {
   METADATA_HEADER(AccountSelectionBubbleView, views::BubbleDialogDelegateView)
 
  public:
-  // Used to observe changes to the account selection bubble.
-  class Observer {
-   public:
-    // Called when a user either selects the account from the multi-account
-    // chooser or clicks the "continue" button.
-    // Takes `account` as well as `idp_display_data` since passing `account_id`
-    // is insufficient in the multiple IDP case. The caller should pass a cref,
-    // as these objects are owned by the observer.
-    virtual void OnAccountSelected(
-        const content::IdentityRequestAccount& account,
-        const IdentityProviderDisplayData& idp_display_data,
-        const ui::Event& event) = 0;
-
-    // Called when the user clicks "privacy policy" or "terms of service" link.
-    virtual void OnLinkClicked(LinkType link_type,
-                               const GURL& url,
-                               const ui::Event& event) = 0;
-
-    // Called when the user clicks "back" button.
-    virtual void OnBackButtonClicked() = 0;
-
-    // Called when the user clicks "close" button.
-    virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
-
-    // Called when the user clicks the "continue" button on the sign-in
-    // failure dialog or wants to sign in to another account.
-    virtual void OnLoginToIdP(const GURL& idp_login_url,
-                              const ui::Event& event) = 0;
-
-    // Called when the user clicks "got it" button.
-    virtual void OnGotIt(const ui::Event& event) = 0;
-
-    // Called when the user clicks the "more details" button on the error
-    // dialog.
-    virtual void OnMoreDetails(const ui::Event& event) = 0;
-
-    // Called when IdentityProvider.close() is called from the renderer.
-    virtual void CloseModalDialog() = 0;
-  };
-
   AccountSelectionBubbleView(
       const std::u16string& top_frame_for_display,
       const std::optional<std::u16string>& iframe_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox,
+      Browser* browser,
       views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      Observer* observer);
+      AccountSelectionViewBase::Observer* observer,
+      views::WidgetObserver* widget_observer);
   ~AccountSelectionBubbleView() override;
 
-  // AccountSelectionViewInterface:
+  // AccountSelectionViewBase:
+  void InitDialogWidget() override;
+
   void ShowMultiAccountPicker(const std::vector<IdentityProviderDisplayData>&
                                   idp_display_data_list) override;
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
@@ -117,11 +80,13 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
 
-  // Populates `idp_images` when an IDP image has been fetched.
-  void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);
+  void CloseDialog() override;
 
   std::string GetDialogTitle() const override;
   std::optional<std::string> GetDialogSubtitle() const override;
+
+  // Populates `idp_images` when an IDP image has been fetched.
+  void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);
 
  private:
   gfx::Rect GetBubbleBounds() override;
@@ -147,15 +112,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::View> CreateIdpHeaderRowForMultiIdp(
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata);
-
-  // Returns a View containing information about an account: the picture for
-  // the account on the left, and information about the account on the right.
-  // |should_hover| determines whether the account row is a HoverButton or
-  // not.
-  std::unique_ptr<views::View> CreateAccountRow(
-      const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_display_data,
-      bool should_hover);
 
   // Returns a view containing a button for the user to login to an IDP for
   // which there was a login status mismatch, to be used in the multiple account
@@ -191,9 +147,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Closes the modal webview dialog, if it is shown.
   void CloseModalDialog();
 
-  // The ImageFetcher used to fetch the account pictures for FedCM.
-  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
-
   // The accessible title.
   std::u16string accessible_title_;
 
@@ -203,6 +156,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // The initial subtitle for the dialog.
   std::u16string subtitle_;
 
+  // The relying party context to show in the title.
   blink::mojom::RpContext rp_context_;
 
   // The images for the IDP icons. Stored so that they can be reused upon
@@ -238,10 +192,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // Whether to show the auto re-authn opt-out checkbox;
   bool show_auto_reauthn_checkbox_{false};
-
-  // Observes events on AccountSelectionBubbleView.
-  // Dangling when running Chromedriver's run_py_tests.py test suite.
-  raw_ptr<Observer, DanglingUntriaged> observer_{nullptr};
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.

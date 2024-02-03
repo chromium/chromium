@@ -277,6 +277,9 @@ inline constexpr char kChromeVersionTooLow[] =
 inline constexpr char kCommandActionIncorrectForManifestActionType[] =
     "The action commands in the manifest do not match the manifest's action "
     "type and were ignored.";
+inline constexpr char kDeclarativeNetRequestPathDuplicates[] =
+    "The same ruleset file appears multiple times with different IDs in the "
+    "manifest 'declarative_net_request.rule_resources' key.";
 inline constexpr char kDeclarativeNetRequestPermissionNeeded[] =
     "The extension requires the 'declarativeNetRequest' or the "
     "'declarativeNetRequestWithHostAccess' permission for the '*' manifest "

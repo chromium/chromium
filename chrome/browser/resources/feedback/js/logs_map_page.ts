@@ -153,11 +153,22 @@ function expandAll() {
   updateGlobalExpandButtonStates();
 }
 
+function sanitizeKeyForId(key: string): string {
+  // Replace any non-alphanumeric characters with a dash.
+  key = key.replace(/[^a-zA-Z0-9\-_]/g, '-');
+
+  // Ensure the ID starts with a letter
+  if (!/^[a-zA-Z]/.test(key)) {
+    key = 'sanitized-' + key;
+  }
+  return key;
+}
+
 function createNameCell(key: string): HTMLElement {
   const nameCell = document.createElement('td');
   nameCell.setAttribute('class', 'name');
   const nameDiv = document.createElement('div');
-  nameDiv.id = key;
+  nameDiv.id = sanitizeKeyForId(key);
   nameDiv.setAttribute('class', 'stat-name');
   nameDiv.appendChild(document.createTextNode(key));
   nameCell.appendChild(nameDiv);
@@ -169,11 +180,12 @@ function createButtonCell(key: string, isMultiLine: boolean): HTMLElement {
   buttonCell.setAttribute('class', 'button-cell');
 
   if (isMultiLine) {
-    const id = `${key}-value-btn`;
+    const sanitizedKey = sanitizeKeyForId(key);
+    const id = `${sanitizedKey}-value-btn`;
     const button = document.createElement('button');
     button.setAttribute('id', id);
-    button.setAttribute('aria-controls', '' + key + '-value');
-    button.setAttribute('aria-labelledby', `${id} ${key}`);
+    button.setAttribute('aria-controls', `${sanitizedKey}-value`);
+    button.setAttribute('aria-labelledby', `${id} ${sanitizedKey}`);
     button.onclick = changeCollapsedStatus;
     button.textContent = loadTimeData.getString('logsMapPageExpandBtn');
     buttonCell.appendChild(button);
@@ -191,14 +203,15 @@ function createValueCell(
   const valueCell = document.createElement('td');
   const valueDiv = document.createElement('div');
   valueDiv.setAttribute('class', 'stat-value');
-  valueDiv.setAttribute('id', '' + key + '-value');
+  valueDiv.setAttribute('id', sanitizeKeyForId(key) + '-value');
   valueDiv.appendChild(document.createTextNode(value));
 
   if (isMultiLine) {
     valueCell.className = 'number-collapsed';
     const loadingContainer =
         getRequiredElement('spinner-container').cloneNode(true) as HTMLElement;
-    loadingContainer.setAttribute('id', '' + key + '-value-loading');
+    loadingContainer.setAttribute(
+        'id', sanitizeKeyForId(key) + '-value-loading');
     loadingContainer.hidden = true;
     valueCell.appendChild(loadingContainer);
     // Don't have screen readers read the empty cell.

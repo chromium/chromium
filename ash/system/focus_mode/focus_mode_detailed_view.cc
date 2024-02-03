@@ -83,6 +83,7 @@ constexpr int kTimerSettingViewTextHeight = 32;
 constexpr int kTimerSettingViewBetweenChildSpacing = 8;
 constexpr auto kTimerAdjustmentButtonSize = gfx::Size(63, 36);
 constexpr auto kTimerCountdownViewInsets = gfx::Insets::TLBR(0, 24, 12, 16);
+constexpr int kTimerTextfieldCornerRadius = 8;
 
 // Task view constants.
 constexpr auto kTaskViewContainerInsets = gfx::Insets::TLBR(4, 24, 22, 24);
@@ -507,7 +508,6 @@ void FocusModeDetailedView::CreateToggleView() {
       toggle_view_->tri_view()->box_layout();
   toggle_view_tri_view_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  toggle_view_tri_view_layout->InvalidateLayout();
 }
 
 void FocusModeDetailedView::UpdateToggleButtonAccessibility(
@@ -593,6 +593,8 @@ void FocusModeDetailedView::CreateTimerView() {
   // b/302038651.
   timer_textfield_ = textfield_container->AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kLarge));
+  timer_textfield_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_CENTER);
   timer_textfield_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(
           TypographyToken::kCrosDisplay6Regular));
@@ -600,6 +602,18 @@ void FocusModeDetailedView::CreateTimerView() {
       std::make_unique<TimerTextfieldController>(timer_textfield_, this);
   timer_textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_TEXTFIELD));
+  timer_textfield_->SetActiveStateChangedCallback(base::BindRepeating(
+      &FocusModeDetailedView::HandleTextfieldActivationChange,
+      weak_factory_.GetWeakPtr()));
+  auto* focus_ring = views::FocusRing::Get(timer_textfield_);
+  DCHECK(focus_ring);
+  // Override the default focus ring gap of `SystemTextfield` to let it not
+  // intersect with `end_time_label_`.
+  focus_ring->SetHaloInset(0);
+  // Override the rounded highlight path set in `SystemTextfield` to keep it the
+  // same as the corner radius for the task textfield.
+  views::InstallRoundRectHighlightPathGenerator(timer_textfield_, gfx::Insets(),
+                                                kTimerTextfieldCornerRadius);
 
   views::Label* minutes_label = textfield_container->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
@@ -666,6 +680,26 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
             base::Time::Now()));
   } else {
     UpdateTimerSettingViewUI();
+  }
+}
+
+void FocusModeDetailedView::HandleTextfieldActivationChange() {
+  if (!timer_textfield_->IsActive() && timer_textfield_->HasFocus()) {
+    auto* focus_manager = timer_textfield_->GetWidget()->GetFocusManager();
+    focus_manager->ClearFocus();
+    focus_manager->SetStoredFocusView(nullptr);
+
+    // TODO(b/322863087): Remove the call of `UpdateBackground` for
+    // timer_textfield_ after the bug resolved. The reason for calling it can be
+    // found from the description of the bug.
+    timer_textfield_->UpdateBackground();
+
+    // Once we clear the focus for the `timer_textfield_`, we need to call the
+    // function below manually to update the UI according to the latest session
+    // duration, since the `OnViewBlurred` for the textfield controller doesn't
+    // automatically call it to avoid the bug b/315358227.
+    SetInactiveSessionDuration(base::Minutes(
+        focus_mode_util::GetTimerTextfieldInputInMinutes(timer_textfield_)));
   }
 }
 
@@ -758,7 +792,6 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
       toggle_row->tri_view()->box_layout();
   toggle_view_tri_view_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  toggle_view_tri_view_layout->InvalidateLayout();
 }
 
 void FocusModeDetailedView::OnDoNotDisturbToggleClicked() {

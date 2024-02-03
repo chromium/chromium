@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_OFFSET_MAPPING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_OFFSET_MAPPING_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -183,7 +184,7 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
 
   // Returns the text content offset corresponding to the given position.
   // Returns nullopt when the position is not laid out in this context.
-  absl::optional<unsigned> GetTextContentOffset(const Position&) const;
+  std::optional<unsigned> GetTextContentOffset(const Position&) const;
 
   // Starting from the given position, searches for non-collapsed content in
   // the anchor node in forward/backward direction and returns the position
@@ -200,7 +201,7 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
 
   // Maps the given position to a text content offset, and then returns the text
   // content character before the offset. Returns nullopt if it does not exist.
-  absl::optional<UChar> GetCharacterBefore(const Position&) const;
+  std::optional<UChar> GetCharacterBefore(const Position&) const;
 
   // ------ Mapping APIs from text content to DOM ------
 

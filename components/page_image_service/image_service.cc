@@ -76,7 +76,8 @@ class ImageService::SuggestEntityImageURLFetcher {
     search_terms_args.search_terms = search_query_;
 
     loader_ = remote_suggestions_service->StartSuggestionsRequest(
-        template_url, search_terms_args, search_terms_data,
+        RemoteRequestType::kImages, template_url, search_terms_args,
+        search_terms_data,
         base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
                        weak_factory_.GetWeakPtr()));
   }

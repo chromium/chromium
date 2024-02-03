@@ -434,7 +434,7 @@ bool IntrinsicSizeWillChange(
     const BlockBreakToken* break_token,
     const LayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
-    absl::optional<FragmentGeometry>* fragment_geometry) {
+    std::optional<FragmentGeometry>* fragment_geometry) {
   const ComputedStyle& style = node.Style();
   if (new_space.IsInlineAutoBehaviorStretch() && !NeedMinMaxSize(style))
     return false;
@@ -462,7 +462,7 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const BlockBreakToken* break_token,
     const LayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
-    absl::optional<FragmentGeometry>* fragment_geometry) {
+    std::optional<FragmentGeometry>* fragment_geometry) {
   DCHECK_EQ(cached_layout_result.Status(), LayoutResult::kSuccess);
 
   const ConstraintSpace& old_space =
@@ -501,7 +501,7 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
 bool MaySkipLayoutWithinBlockFormattingContext(
     const LayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
-    absl::optional<LayoutUnit>* bfc_block_offset,
+    std::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
     MarginStrut* end_margin_strut) {
   DCHECK_EQ(cached_layout_result.Status(), LayoutResult::kSuccess);

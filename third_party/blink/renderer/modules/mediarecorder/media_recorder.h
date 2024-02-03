@@ -106,7 +106,7 @@ class MODULES_EXPORT MediaRecorder
   String mime_type_;
   uint32_t audio_bits_per_second_{0};
   uint32_t video_bits_per_second_{0};
-  absl::optional<uint32_t> overall_bits_per_second_;
+  std::optional<uint32_t> overall_bits_per_second_;
 
   State state_ = State::kInactive;
   bool first_write_received_ = false;

@@ -209,7 +209,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
       current_memory_population_ += data.size();
     } else if (bytes_element->embedded_data) {
       current_memory_population_ -= bytes_element->embedded_data->size();
-      bytes_element->embedded_data = absl::nullopt;
+      bytes_element->embedded_data = std::nullopt;
     }
   } else {
     if (last_bytes_provider_) {
@@ -226,7 +226,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
         bytes_provider_remote.InitWithNewPipeAndPassReceiver();
 
     auto bytes_element = DataElementBytes::New(
-        data.size(), absl::nullopt, std::move(bytes_provider_remote));
+        data.size(), std::nullopt, std::move(bytes_provider_remote));
     if (should_embed_bytes) {
       bytes_element->embedded_data = Vector<uint8_t>();
       bytes_element->embedded_data->Append(
@@ -247,7 +247,7 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
     const String& path,
     int64_t offset,
     int64_t length,
-    const absl::optional<base::Time>& expected_modification_time,
+    const std::optional<base::Time>& expected_modification_time,
     const String& content_type) {
   mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
       WebStringToFilePath(path), offset, length, expected_modification_time);
@@ -264,7 +264,7 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFileSync(
     const String& path,
     int64_t offset,
     int64_t length,
-    const absl::optional<base::Time>& expected_modification_time,
+    const std::optional<base::Time>& expected_modification_time,
     const String& content_type) {
   mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
       WebStringToFilePath(path), offset, length, expected_modification_time);
@@ -423,7 +423,7 @@ void BlobDataHandle::ReadRange(
 
 bool BlobDataHandle::CaptureSnapshot(
     uint64_t* snapshot_size,
-    absl::optional<base::Time>* snapshot_modification_time) {
+    std::optional<base::Time>* snapshot_modification_time) {
   // This method operates on a cloned blob remote; this lets us avoid holding
   // the |blob_remote_lock_| locked during the duration of the (synchronous)
   // CaptureSnapshot call.

@@ -12,6 +12,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webauthn/android/cred_man_support.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace password_manager {
 
 namespace {
@@ -178,6 +183,10 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics_EmptyOptionalFields) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(PasskeyCredentialTest, GetAuthenticatorLabel) {
+#if BUILDFLAG(IS_ANDROID)
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+#endif  // BUILDFLAG(IS_ANDROID)
   PasskeyCredential credential(PasskeyCredential::Source::kAndroidPhone,
                                PasskeyCredential::RpId("rpid.com"),
                                PasskeyCredential::CredentialId({1, 2, 3, 4}),
@@ -188,5 +197,18 @@ TEST_F(PasskeyCredentialTest, GetAuthenticatorLabel) {
   credential.set_authenticator_label(authenticator_label);
   EXPECT_EQ(credential.GetAuthenticatorLabel(), authenticator_label);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasskeyCredentialTest, GetAuthenticatorLabelWhenCredManGpmNotInCredMan) {
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::PARALLEL_WITH_FIDO_2);
+  PasskeyCredential credential(PasskeyCredential::Source::kAndroidPhone,
+                               PasskeyCredential::RpId("rpid.com"),
+                               PasskeyCredential::CredentialId({1, 2, 3, 4}),
+                               PasskeyCredential::UserId({5, 6, 7, 8}));
+  EXPECT_EQ(credential.GetAuthenticatorLabel(),
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSKEY));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

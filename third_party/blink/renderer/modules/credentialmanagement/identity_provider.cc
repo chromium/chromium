@@ -28,7 +28,7 @@ using mojom::blink::RequestUserInfoStatus;
 
 void OnRequestUserInfo(ScriptPromiseResolver* resolver,
                        RequestUserInfoStatus status,
-                       absl::optional<Vector<mojom::blink::IdentityUserInfoPtr>>
+                       std::optional<Vector<mojom::blink::IdentityUserInfoPtr>>
                            all_user_info_ptr) {
   switch (status) {
     case RequestUserInfoStatus::kError: {

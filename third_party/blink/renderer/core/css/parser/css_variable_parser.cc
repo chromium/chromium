@@ -211,11 +211,10 @@ bool CSSVariableParser::IsValidVariableName(const CSSParserToken& token) {
     return false;
   }
 
-  StringView value = token.Value();
-  return value.length() >= 3 && value[0] == '-' && value[1] == '-';
+  return IsValidVariableName(token.Value());
 }
 
-bool CSSVariableParser::IsValidVariableName(const String& string) {
+bool CSSVariableParser::IsValidVariableName(StringView string) {
   return string.length() >= 3 && string[0] == '-' && string[1] == '-';
 }
 

@@ -113,7 +113,7 @@ class SCTAuditingReporterTest : public testing::Test {
     SCTAuditingReporter::SCTHashdanceMetadata metadata =
         *SCTAuditingReporter::SCTHashdanceMetadata::FromValue(
             reporter_metadata_.ToValue());
-    mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
+    mojom::SCTAuditingConfigurationPtr configuration(std::in_place);
     configuration->log_expected_ingestion_delay = kExpectedIngestionDelay;
     configuration->log_max_ingestion_random_delay = kMaxIngestionRandomDelay;
     configuration->report_uri = GURL(kTestReportURL);

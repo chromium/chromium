@@ -88,7 +88,7 @@ inline PhysicalRect PhysicalBoxRect(const InlineCursor& cursor,
 
 inline const InlineCursor& InlineCursorForBlockFlow(
     const InlineCursor& cursor,
-    absl::optional<InlineCursor>* storage) {
+    std::optional<InlineCursor>* storage) {
   if (*storage)
     return **storage;
   *storage = cursor;
@@ -283,7 +283,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   // Determine whether or not we’ll need a writing-mode rotation, but don’t
   // actually rotate until we reach the steps that need it.
-  absl::optional<AffineTransform> rotation;
+  std::optional<AffineTransform> rotation;
   const WritingMode writing_mode = style.GetWritingMode();
   const bool is_horizontal = IsHorizontalWritingMode(writing_mode);
   const LineRelativeRect rotated_box =
@@ -295,7 +295,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   // Determine whether or not we're selected.
   HighlightPainter::SelectionPaintState* selection = nullptr;
-  absl::optional<HighlightPainter::SelectionPaintState>
+  std::optional<HighlightPainter::SelectionPaintState>
       selection_for_bounds_recording;
   if (UNLIKELY(!is_printing && !is_rendering_resource &&
                paint_info.phase != PaintPhase::kTextClip &&
@@ -342,7 +342,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // Ensure the selection bounds are recorded on the paint chunk regardless of
   // whether the display item that contains the actual selection painting is
   // reused.
-  absl::optional<SelectionBoundsRecorder> selection_recorder;
+  std::optional<SelectionBoundsRecorder> selection_recorder;
   if (UNLIKELY(selection_for_bounds_recording &&
                paint_info.phase == PaintPhase::kForeground && !is_printing)) {
     if (SelectionBoundsRecorder::ShouldRecordSelection(
@@ -360,7 +360,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // This is declared after selection_recorder so that this will be destructed
   // before selection_recorder to ensure the selection is painted before
   // selection_recorder records the selection bounds.
-  absl::optional<DrawingRecorder> recorder;
+  std::optional<DrawingRecorder> recorder;
   const auto& display_item_client =
       AsDisplayItemClient(cursor_, selection != nullptr);
   // Text clips are initiated only in BoxPainterBase::PaintFillLayer, which is

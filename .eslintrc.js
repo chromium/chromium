@@ -76,6 +76,11 @@ module.exports = {
       // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
       'selector': 'TSAsExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]',
       'message': 'Don\'t use \'querySelectorAll(...) as Type\'. Use the type parameter, \'querySelectorAll<Type>(...)\' instead',
+    },
+    {
+      // Prevent a common misuse of "!" operator.
+      "selector": "TSNonNullExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]",
+      "message": "Remove unnecessary \"!\" non-null operator after querySelectorAll(). It always returns a non-null result",
     }],
     'no-throw-literal': 'error',
     'no-trailing-spaces': 'error',

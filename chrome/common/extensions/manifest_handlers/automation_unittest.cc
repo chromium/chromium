@@ -64,94 +64,6 @@ TEST_F(AutomationManifestTest, AsBooleanTrue) {
   ASSERT_TRUE(info);
 
   EXPECT_FALSE(info->desktop);
-  EXPECT_TRUE(info->matches.is_empty());
-}
-
-TEST_F(AutomationManifestTest, Matches) {
-  scoped_refptr<Extension> extension = LoadAndExpectWarning(
-      "automation_matches.json",
-      ErrorUtils::FormatErrorMessage(
-          automation_errors::kErrorInvalidMatch, "www.badpattern.com",
-          URLPattern::GetParseResultString(
-              URLPattern::ParseResult::kMissingSchemeSeparator)));
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(VerifyOnePermissionMessage(
-      extension->permissions_data(),
-      "Read your data on www.google.com and www.twitter.com"));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->matches.is_empty());
-
-  EXPECT_TRUE(info->matches.MatchesURL(GURL("http://www.google.com/")));
-  EXPECT_TRUE(info->matches.MatchesURL(GURL("http://www.google.com")));
-  EXPECT_TRUE(info->matches.MatchesURL(GURL("http://www.twitter.com/")));
-  EXPECT_TRUE(info->matches.MatchesURL(GURL("http://www.twitter.com")));
-
-  EXPECT_FALSE(info->matches.MatchesURL(GURL("http://www.bing.com/")));
-  EXPECT_FALSE(info->matches.MatchesURL(GURL("http://www.bing.com")));
-}
-
-TEST_F(AutomationManifestTest, MatchesAndPermissions) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("automation_matches_and_permissions.json");
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(
-      VerifyTwoPermissionMessages(extension->permissions_data(),
-                                  "Read and change your data on www.google.com",
-                                  "Read your data on www.twitter.com", false));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_FALSE(info->desktop);
-  EXPECT_FALSE(info->matches.is_empty());
-
-  EXPECT_TRUE(info->matches.MatchesURL(GURL("http://www.twitter.com/")));
-  EXPECT_TRUE(info->matches.MatchesURL(GURL("http://www.twitter.com")));
-}
-
-TEST_F(AutomationManifestTest, EmptyMatches) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectWarning("automation_empty_matches.json",
-                           automation_errors::kErrorNoMatchesProvided);
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(VerifyNoPermissionMessages(extension->permissions_data()));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_FALSE(info->desktop);
-  EXPECT_TRUE(info->matches.is_empty());
-}
-
-TEST_F(AutomationManifestTest, NoValidMatches) {
-  std::string error;
-  scoped_refptr<Extension> extension =
-      LoadExtension(ManifestData("automation_no_valid_matches.json"), &error);
-  ASSERT_TRUE(extension.get());
-  EXPECT_EQ("", error);
-  EXPECT_EQ(2u, extension->install_warnings().size());
-  EXPECT_EQ(ErrorUtils::FormatErrorMessage(
-                automation_errors::kErrorInvalidMatch, "www.badpattern.com",
-                URLPattern::GetParseResultString(
-                    URLPattern::ParseResult::kMissingSchemeSeparator)),
-            extension->install_warnings()[0].message);
-  EXPECT_EQ(automation_errors::kErrorNoMatchesProvided,
-            extension->install_warnings()[1].message);
-
-  EXPECT_TRUE(VerifyNoPermissionMessages(extension->permissions_data()));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_FALSE(info->desktop);
-  EXPECT_TRUE(info->matches.is_empty());
 }
 
 TEST_F(AutomationManifestTest, DesktopFalse) {
@@ -167,7 +79,6 @@ TEST_F(AutomationManifestTest, DesktopFalse) {
   ASSERT_TRUE(info);
 
   EXPECT_FALSE(info->desktop);
-  EXPECT_TRUE(info->matches.is_empty());
 }
 
 TEST_F(AutomationManifestTest, DesktopTrue) {
@@ -183,24 +94,6 @@ TEST_F(AutomationManifestTest, DesktopTrue) {
   ASSERT_TRUE(info);
 
   EXPECT_TRUE(info->desktop);
-  EXPECT_TRUE(info->matches.is_empty());
 }
 
-
-TEST_F(AutomationManifestTest, Desktop_MatchesSpecified) {
-  scoped_refptr<Extension> extension = LoadAndExpectWarning(
-      "automation_desktop_matches_specified.json",
-      automation_errors::kErrorDesktopTrueMatchesSpecified);
-  ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(VerifyOnePermissionMessage(
-      extension->permissions_data(),
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS)));
-
-  const AutomationInfo* info = AutomationInfo::Get(extension.get());
-  ASSERT_TRUE(info);
-
-  EXPECT_TRUE(info->desktop);
-  EXPECT_TRUE(info->matches.is_empty());
-}
 }  // namespace extensions

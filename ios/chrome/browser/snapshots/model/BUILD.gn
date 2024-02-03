@@ -7,9 +7,9 @@ import("//build/config/ios/swift_source_set.gni")
 source_set("model") {
   public = [
     "legacy_image_file_manager.h",
+    "legacy_snapshot_generator.h",
     "legacy_snapshot_lru_cache.h",
     "snapshot_browser_agent.h",
-    "snapshot_generator.h",
     "snapshot_storage+Testing.h",
     "snapshot_storage.h",
     "snapshot_storage_observer.h",
@@ -17,9 +17,9 @@ source_set("model") {
   ]
   sources = [
     "legacy_image_file_manager.mm",
+    "legacy_snapshot_generator.mm",
     "legacy_snapshot_lru_cache.mm",
     "snapshot_browser_agent.mm",
-    "snapshot_generator.mm",
     "snapshot_manager.h",
     "snapshot_manager.mm",
     "snapshot_storage.mm",
@@ -59,6 +59,7 @@ source_set("model_common") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/web/public",
     "//ui/base",
   ]
@@ -68,6 +69,7 @@ swift_source_set("model_swift") {
   bridge_header = "snapshot_swift_bridge.h"
   sources = [
     "image_file_manager.swift",
+    "snapshot_generator.swift",
     "snapshot_generator_delegate.swift",
     "snapshot_lru_cache.swift",
   ]

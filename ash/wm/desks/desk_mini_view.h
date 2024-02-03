@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +26,7 @@ class DeskActionView;
 class DeskBarViewBase;
 class DeskNameView;
 class DeskPreviewView;
+class DeskProfilesButton;
 
 // A view that acts as a mini representation (a.k.a. desk thumbnail) of a
 // virtual desk in the desk bar view when overview mode is active. This view
@@ -66,6 +66,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   const DeskActionView* desk_action_view() const { return desk_action_view_; }
   DeskActionView* desk_action_view() { return desk_action_view_; }
+
+  DeskProfilesButton* desk_profiles_button() { return desk_profile_button_; }
 
   DeskBarViewBase* owner_bar() { return owner_bar_; }
   const DeskBarViewBase* owner_bar() const { return owner_bar_; }
@@ -134,13 +136,13 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // Invoked when the user has clicked a desk close button.
   void OnRemovingDesk(DeskCloseType close_type);
 
-  // Notifies the mini-view that the preview is about to request focus from a
-  // reverse tab traversal so that it can show and focus the desk action view
-  // first if it was not already focused.
-  void OnPreviewAboutToBeFocusedByReverseTab();
+  // Notifies the mini-view that the preview or profile button is about to
+  // request focus from a reverse tab traversal so that it can show and focus
+  // the desk action view first if it was not already focused.
+  void OnPreviewOrProfileAboutToBeFocusedByReverseTab();
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
@@ -149,7 +151,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnContentChanged() override;
   void OnDeskDestroyed(const Desk* desk) override;
   void OnDeskNameChanged(const std::u16string& new_name) override;
-  void OnDeskProfileChanged(uint64_t new_lacros_profile_id) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -174,8 +175,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnSetLacrosProfileId(uint64_t lacros_profile_id);
 
   void OnDeskPreviewPressed();
-
-  void OnDeskProfilesButtonPressed();
 
   // Layout |desk_name_view_| given the current bounds of the desk preview.
   void LayoutDeskNameView(const gfx::Rect& preview_bounds);

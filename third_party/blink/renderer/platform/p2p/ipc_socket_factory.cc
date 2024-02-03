@@ -707,7 +707,7 @@ void AsyncDnsAddressResolverImpl::Start(const rtc::SocketAddress& addr,
   callback_ = std::move(callback);
 
   resolver_->Start(
-      addr, /*address_family=*/absl::nullopt,
+      addr, /*address_family=*/std::nullopt,
       WTF::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
                     weak_factory_.GetWeakPtr()));
 }
@@ -723,7 +723,7 @@ void AsyncDnsAddressResolverImpl::Start(const rtc::SocketAddress& addr,
   addr_ = addr;
   callback_ = std::move(callback);
   resolver_->Start(
-      addr, absl::make_optional(address_family),
+      addr, std::make_optional(address_family),
       WTF::BindOnce(&AsyncDnsAddressResolverImpl::OnAddressResolved,
                     weak_factory_.GetWeakPtr()));
 }

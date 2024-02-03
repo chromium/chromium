@@ -77,8 +77,9 @@ void CaptureModeTypeView::OnCaptureTypeChanged(CaptureModeType new_type) {
 
   video_toggle_button_->SetSelected(is_video);
 
-  if (image_toggle_button_)
+  if (image_toggle_button_) {
     image_toggle_button_->SetSelected(!is_video);
+  }
 }
 
 void CaptureModeTypeView::OnImageToggle() {
@@ -93,7 +94,7 @@ void CaptureModeTypeView::OnVideoToggle() {
   controller->SetType(CaptureModeType::kVideo);
 }
 
-BEGIN_METADATA(CaptureModeTypeView, views::View)
+BEGIN_METADATA(CaptureModeTypeView)
 END_METADATA
 
 }  // namespace ash

@@ -31,7 +31,7 @@ ScopedWebFrame::ScopedWebFrame()
           /*opener=*/nullptr,
           mojo::NullAssociatedReceiver(),
           *agent_group_scheduler_,
-          /*session_storage_namespace_id=*/base::EmptyString(),
+          /*session_storage_namespace_id=*/std::string(),
           /*page_base_background_color=*/std::nullopt,
           blink::BrowsingContextGroupInfo::CreateUnique())),
       frame_(blink::WebLocalFrame::CreateMainFrame(view_,

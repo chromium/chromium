@@ -6,8 +6,8 @@
 
 namespace blink {
 
-DOMDataStore::DOMDataStore(v8::Isolate* isolate, bool is_main_world)
-    : is_main_world_(is_main_world) {}
+DOMDataStore::DOMDataStore(v8::Isolate* isolate, bool can_use_inline_storage)
+    : can_use_inline_storage_(can_use_inline_storage) {}
 
 void DOMDataStore::Dispose() {
   for (auto& it : wrapper_map_) {

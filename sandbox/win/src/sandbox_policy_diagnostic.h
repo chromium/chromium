@@ -55,7 +55,7 @@ class PolicyDiagnostic final : public PolicyInfo {
   std::unique_ptr<PolicyGlobal> policy_rules_;
   bool is_csrss_connected_ = false;
   bool zero_appshim_ = false;
-  HandleMap handles_to_close_;
+  HandleCloserConfig handles_to_close_;
   std::string tag_;
 };
 

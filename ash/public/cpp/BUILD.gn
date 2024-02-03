@@ -105,6 +105,7 @@ component("cpp") {
     "bluetooth_config_service.cc",
     "bluetooth_config_service.h",
     "capture_mode/capture_mode_delegate.h",
+    "capture_mode/recording_overlay_view.cc",
     "capture_mode/recording_overlay_view.h",
     "cast_config_controller.cc",
     "cast_config_controller.h",

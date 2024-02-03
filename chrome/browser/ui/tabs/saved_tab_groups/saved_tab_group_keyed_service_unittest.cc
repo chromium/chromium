@@ -853,7 +853,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Expect moving an entire group to the right, still keeps the saved tabs in
   // the correct order.
   AddTabToBrowser(browser, 2);
-  browser->tab_strip_model()->MoveGroupTo(group_id, 2);
+  browser->tab_strip_model()->MoveGroupTo(group_id, 1);
 
   EXPECT_EQ(second_tab_token, group->saved_tabs()[0].local_tab_id().value());
   EXPECT_EQ(first_tab_token, group->saved_tabs()[1].local_tab_id().value());

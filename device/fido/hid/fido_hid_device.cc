@@ -198,8 +198,7 @@ void FidoHidDevice::OnConnect(
   connection_ = base::MakeRefCounted<RefCountedHidConnection>(
       mojo::Remote<mojom::HidConnection>(std::move(connection)));
   // Send random nonce to device to verify received message.
-  std::vector<uint8_t> nonce(8);
-  crypto::RandBytes(nonce.data(), nonce.size());
+  std::vector<uint8_t> nonce = crypto::RandBytesAsVector(8);
 
   DCHECK_EQ(State::kConnecting, state_);
   ArmTimeout();

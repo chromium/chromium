@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_TRACK_PLATFORM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_TRACK_PLATFORM_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
@@ -44,10 +45,10 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     String group_id;
     FacingMode facing_mode = FacingMode::kNone;
     String resize_mode;
-    absl::optional<bool> echo_cancellation;
-    absl::optional<bool> auto_gain_control;
-    absl::optional<bool> noise_supression;
-    absl::optional<bool> voice_isolation;
+    std::optional<bool> echo_cancellation;
+    std::optional<bool> auto_gain_control;
+    std::optional<bool> noise_supression;
+    std::optional<bool> voice_isolation;
     String echo_cancellation_type;
     int32_t sample_rate = -1;
     int32_t sample_size = -1;
@@ -55,10 +56,10 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     double latency = -1.0;
 
     // Screen Capture extensions
-    absl::optional<media::mojom::DisplayCaptureSurfaceType> display_surface;
-    absl::optional<bool> logical_surface;
-    absl::optional<media::mojom::CursorCaptureType> cursor;
-    absl::optional<bool> suppress_local_audio_playback;
+    std::optional<media::mojom::DisplayCaptureSurfaceType> display_surface;
+    std::optional<bool> logical_surface;
+    std::optional<media::mojom::CursorCaptureType> cursor;
+    std::optional<bool> suppress_local_audio_playback;
   };
 
   struct VideoFrameStats {

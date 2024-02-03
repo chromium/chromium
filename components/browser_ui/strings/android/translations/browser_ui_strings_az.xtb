@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1384959399684842514">Endirmə durduruldu</translation>
 <translation id="1415402041810619267">URL tam deyil</translation>
-<translation id="1426410128494586442">Bəli</translation>
 <translation id="1434873037477293673">qiymətin düşməsi kartı</translation>
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sayt}other{<ph name="SITE_COUNT" /> sayt}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> tətbiqinə kameranıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
 <translation id="2235344399760031203">Üçüncü tərəf kukiləri bloklanıb</translation>
 <translation id="2238944249568001759">Son tabınıza əsasən təklif olunan axtarışlar</translation>
+<translation id="2241587408274973373">Yeni tab səhifə kartları</translation>
 <translation id="2241634353105152135">Sadəcə bir dəfə</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Silin</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sayt bloklanıb}other{# sayt bloklanıb}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər.</translation>
 <translation id="2790501146643349491">Aktiv ediləndə son qapadılan saytlar data göndərilməsi və qəbulunu tamamlaya bilər. Deaktiv ediləndə son qapadılan saytlar data göndərilməsi və ya qəbulunu tamamlaya bilməz.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> üçün bütün sayt icazələrini sıfırlamaq istədiyinizə əminsiniz?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobil görünüş tələb edin</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Sertifikat izləyici</translation>
 <translation id="2979365474350987274">Üçüncü tərəf kukiləri məhdudlaşdırılıb</translation>
 <translation id="3008272652534848354">İcazələri sıfırlayın</translation>
-<translation id="3013291976881901233">MIDI (Musiqi Alətləri Rəqəmsal İnterfeysi) cihazları</translation>
 <translation id="301521992641321250">Avtomatik olaraq blok edildi</translation>
 <translation id="3069226013421428034">Müəyyən bir sayt üçün üçüncü tərəfin girişinə icazə verin.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB cihazına qoşulub</translation>
 <translation id="4194328954146351878">Saytların NFC cihazlarındakı məlumatları görməsi və dəyişməsinə icazə verməzdən əvvəl soruşun (tövsiyə edilir)</translation>
 <translation id="4200726100658658164">Məkan Ayarlarını açın</translation>
-<translation id="4212246570487010370">Axtarmağa davam edin</translation>
 <translation id="4226663524361240545">Bildirişlər cihazı titrədə bilər</translation>
 <translation id="4259722352634471385">Naviqasiya bloklandı: <ph name="URL" /></translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Aşağı köçürün</translation>
 <translation id="6749077623962119521">İcazələr sıfırlansın?</translation>
 <translation id="6766622839693428701">Bağlamaq üçün aşağı sürüşdürün.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" />, mənbə: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> üçün seçim edin</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6818926723028410516">Element seçin</translation>

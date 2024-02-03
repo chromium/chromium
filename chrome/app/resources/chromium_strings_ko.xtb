@@ -282,6 +282,7 @@
 <translation id="6144416395842701622">로그인하여 Chromium의 모든 기능을 이용하세요</translation>
 <translation id="6145820983052037069">여기에서 Chromium 프로필 간에 전환할 수 있습니다.</translation>
 <translation id="615103374448673771">사용자가 쿠키를 허용하면 Chromium에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
+<translation id="6174920971222007286">위험한 파일일 수도 있습니다.<ph name="LINE_BREAK" />비밀번호를 제공하면 Chromium에서 이 다운로드 항목을 확인할 수 있습니다. 파일에 관한 정보는 Google 세이프 브라우징으로 전송되지만 파일 콘텐츠와 비밀번호는 기기에 보관됩니다.</translation>
 <translation id="6175304430031192654">설정에 따라 Chromium에서 쿠키와 현재 URL을 전송할 수도 있습니다.</translation>
 <translation id="6182736845697986886">업데이트 서버 내부 오류로 인해 설치할 수 없습니다.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" />에서 Chromium에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>

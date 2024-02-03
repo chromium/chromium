@@ -16,6 +16,7 @@ bool StructTraits<crosapi::mojom::BrowserWindowInstanceUpdateDataView,
     update.browser_session_id = input.browser_session_id();
     update.restored_browser_session_id = input.restored_browser_session_id();
     update.is_incognito = input.is_incognito();
+    update.lacros_profile_id = input.lacros_profile_id();
     *output = std::move(update);
     return true;
   }

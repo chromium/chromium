@@ -99,16 +99,16 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
       user_manager::UserManager::Get()->GetPrimaryUser();
   DCHECK(user);
   switch (user->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       return DlpPolicyEvent_UserType_REGULAR;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return DlpPolicyEvent_UserType_MANAGED_GUEST;
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return DlpPolicyEvent_UserType_KIOSK;
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kChild:
       return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

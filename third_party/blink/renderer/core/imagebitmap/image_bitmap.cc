@@ -67,7 +67,7 @@ constexpr const char* kImageBitmapOptionResizeQualityPixelated = "pixelated";
 namespace {
 
 ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
-                                        absl::optional<gfx::Rect> crop_rect,
+                                        std::optional<gfx::Rect> crop_rect,
                                         gfx::Size source_size) {
   ImageBitmap::ParsedOptions parsed_options;
   if (options->imageOrientation() == kImageOrientationFlipY) {
@@ -550,7 +550,7 @@ sk_sp<SkImage> ImageBitmap::GetSkImageFromDecoder(
 }
 
 ImageBitmap::ImageBitmap(ImageElementBase* image,
-                         absl::optional<gfx::Rect> crop_rect,
+                         std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   scoped_refptr<Image> input = image->CachedImage()->GetImage();
   DCHECK(!input->IsTextureBacked());
@@ -622,7 +622,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
 }
 
 ImageBitmap::ImageBitmap(HTMLVideoElement* video,
-                         absl::optional<gfx::Rect> crop_rect,
+                         std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   ParsedOptions parsed_options =
       ParseOptions(options, crop_rect, video->BitmapSourceSize());
@@ -648,7 +648,7 @@ ImageBitmap::ImageBitmap(HTMLVideoElement* video,
 }
 
 ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
-                         absl::optional<gfx::Rect> crop_rect,
+                         std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
   scoped_refptr<Image> image_input = canvas->GetSourceImageForCanvas(
@@ -674,7 +674,7 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
 }
 
 ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
-                         absl::optional<gfx::Rect> crop_rect,
+                         std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
   scoped_refptr<Image> raw_input = offscreen_canvas->GetSourceImageForCanvas(
@@ -716,7 +716,7 @@ ImageBitmap::ImageBitmap(const SkPixmap& pixmap,
 }
 
 ImageBitmap::ImageBitmap(ImageData* data,
-                         absl::optional<gfx::Rect> crop_rect,
+                         std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   ParsedOptions parsed_options =
       ParseOptions(options, crop_rect, data->BitmapSourceSize());
@@ -799,7 +799,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
 }
 
 ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
-                         absl::optional<gfx::Rect> crop_rect,
+                         std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   scoped_refptr<StaticBitmapImage> input = bitmap->BitmapImage();
   if (!input)
@@ -822,7 +822,7 @@ ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
 }
 
 ImageBitmap::ImageBitmap(scoped_refptr<StaticBitmapImage> image,
-                         absl::optional<gfx::Rect> crop_rect,
+                         std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   bool origin_clean = image->OriginClean();
   ParsedOptions parsed_options =
@@ -980,7 +980,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
 
 ScriptPromise ImageBitmap::CreateAsync(
     ImageElementBase* image,
-    absl::optional<gfx::Rect> crop_rect,
+    std::optional<gfx::Rect> crop_rect,
     ScriptState* script_state,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojom::blink::PreferredColorScheme preferred_color_scheme,
@@ -1116,11 +1116,10 @@ gfx::Size ImageBitmap::Size() const {
   return image_->PreferredDisplaySize();
 }
 
-ScriptPromise ImageBitmap::CreateImageBitmap(
-    ScriptState* script_state,
-    absl::optional<gfx::Rect> crop_rect,
-    const ImageBitmapOptions* options,
-    ExceptionState& exception_state) {
+ScriptPromise ImageBitmap::CreateImageBitmap(ScriptState* script_state,
+                                             std::optional<gfx::Rect> crop_rect,
+                                             const ImageBitmapOptions* options,
+                                             ExceptionState& exception_state) {
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),
       options, exception_state);

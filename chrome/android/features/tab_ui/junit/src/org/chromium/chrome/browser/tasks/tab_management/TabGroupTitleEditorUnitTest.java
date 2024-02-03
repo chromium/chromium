@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class TabGroupTitleEditorUnitTest {
     @Mock TabModel mIncognitoTabModel;
     @Mock TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor ArgumentCaptor<TabGroupModelFilter.Observer> mTabGroupModelFilterObserverCaptor;
+    @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mTabModelFilterSupplier =
             new ObservableSupplierImpl<>();

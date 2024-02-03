@@ -82,8 +82,7 @@ OncParsedCertificatesForPkcs12File(
   if (!base::ReadFileToString(client_cert_pkcs12_file, &pkcs12_raw))
     return nullptr;
 
-  std::string pkcs12_base64_encoded;
-  base::Base64Encode(pkcs12_raw, &pkcs12_base64_encoded);
+  std::string pkcs12_base64_encoded = base::Base64Encode(pkcs12_raw);
 
   auto onc_certificates =
       base::Value::List().Append(base::Value::Dict()

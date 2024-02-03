@@ -109,9 +109,6 @@ void BrowserWithTestWindowTest::SetUp() {
 #endif
   profile_ = CreateProfile(profile_name);
 
-  // Subclasses can provide their own test BrowserWindow. If they return NULL
-  // then Browser will create a production BrowserWindow and the subclass is
-  // responsible for cleaning it up (usually by NativeWidget destruction).
   window_ = CreateBrowserWindow();
 
   browser_ =
@@ -124,9 +121,10 @@ void BrowserWithTestWindowTest::TearDown() {
   base::RunLoop().RunUntilIdle();
 
   // Close the browser tabs and destroy the browser and window instances.
-  if (browser_)
+  if (browser_) {
     browser_->tab_strip_model()->CloseAllTabs();
-  browser_.reset();
+    browser_.reset();
+  }
   window_.reset();
 
 #if defined(TOOLKIT_VIEWS)
@@ -189,9 +187,10 @@ void BrowserWithTestWindowTest::AddTab(Browser* browser, const GURL& url) {
 }
 
 void BrowserWithTestWindowTest::CommitPendingLoad(
-  NavigationController* controller) {
-  if (!controller->GetPendingEntry())
+    NavigationController* controller) {
+  if (!controller->GetPendingEntry()) {
     return;  // Nothing to commit.
+  }
 
   RenderFrameHostTester::CommitPendingLoad(controller);
 }
@@ -221,9 +220,21 @@ std::string BrowserWithTestWindowTest::GetDefaultProfileName() {
 }
 
 TestingProfile* BrowserWithTestWindowTest::CreateProfile(
-    const std::string& email) {
+    const std::string& profile_name) {
   return profile_manager_->CreateTestingProfile(
-      email, nullptr, std::u16string(), 0, GetTestingFactories());
+      profile_name, /*prefs=*/nullptr, /*user_name=*/std::u16string(),
+      /*avatar_id=*/0, GetTestingFactories());
+}
+
+void BrowserWithTestWindowTest::DeleteProfile(const std::string& profile_name) {
+  if (profile_name == GetDefaultProfileName()) {
+    if (browser_) {
+      browser_->tab_strip_model()->CloseAllTabs();
+      browser_.reset();
+    }
+    profile_ = nullptr;
+  }
+  profile_manager_->DeleteTestingProfile(profile_name);
 }
 
 TestingProfile::TestingFactories
@@ -244,7 +255,8 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
   Browser::CreateParams params(profile, true);
   if (hosted_app) {
     params = Browser::CreateParams::CreateForApp(
-        "Test", true /* trusted_source */, gfx::Rect(), profile, true);
+        "Test", /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), profile,
+        /*user_gesture=*/true);
   } else if (browser_type == Browser::TYPE_DEVTOOLS) {
     params = Browser::CreateParams::CreateForDevTools(profile);
   } else {

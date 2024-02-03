@@ -7,10 +7,13 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/website_settings_info.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "privacy_sandbox_internals_handler.h"
 
 namespace privacy_sandbox_internals {
+using ::content_settings::WebsiteSettingsRegistry;
 
 PrivacySandboxInternalsHandler::PrivacySandboxInternalsHandler(
     Profile* profile,
@@ -35,11 +38,25 @@ void PrivacySandboxInternalsHandler::ReadPref(const std::string& pref_name,
   std::move(callback).Run(base::Value());
 }
 
-void PrivacySandboxInternalsHandler::GetCookieSettings(
-    GetCookieSettingsCallback callback) {
-  content_settings::CookieSettings* cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile_).get();
-  std::move(callback).Run(cookie_settings->GetCookieSettings());
+void PrivacySandboxInternalsHandler::ReadContentSettings(
+    const ContentSettingsType type,
+    ReadContentSettingsCallback callback) {
+  if (!IsKnownEnumValue(type) || type == ContentSettingsType::NUM_TYPES) {
+    mojo::ReportBadMessage(
+        "ReadContentSettings received invalid ContentSettingsType");
+    return;
+  }
+
+  // HostContentSettingsMap will assert if we attempt to read unregistered
+  // content types, so for these types we simply return an empty list.
+  if (WebsiteSettingsRegistry::GetInstance()->Get(type) == nullptr) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  std::move(callback).Run(map->GetSettingsForOneType(type));
 }
 
 void PrivacySandboxInternalsHandler::GetTpcdMetadataGrants(
@@ -47,30 +64,6 @@ void PrivacySandboxInternalsHandler::GetTpcdMetadataGrants(
   content_settings::CookieSettings* cookie_settings =
       CookieSettingsFactory::GetForProfile(profile_).get();
   std::move(callback).Run(cookie_settings->GetTpcdMetadataGrants());
-}
-
-void PrivacySandboxInternalsHandler::GetTpcdHeuristicsGrants(
-    GetTpcdMetadataGrantsCallback callback) {
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  std::move(callback).Run(
-      map->GetSettingsForOneType(ContentSettingsType::TPCD_HEURISTICS_GRANTS));
-}
-
-void PrivacySandboxInternalsHandler::GetTpcdTrial(
-    GetTpcdMetadataGrantsCallback callback) {
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  std::move(callback).Run(
-      map->GetSettingsForOneType(ContentSettingsType::TPCD_TRIAL));
-}
-
-void PrivacySandboxInternalsHandler::GetTopLevelTpcdTrial(
-    GetTpcdMetadataGrantsCallback callback) {
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  std::move(callback).Run(
-      map->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_TPCD_TRIAL));
 }
 
 void PrivacySandboxInternalsHandler::ContentSettingsPatternToString(

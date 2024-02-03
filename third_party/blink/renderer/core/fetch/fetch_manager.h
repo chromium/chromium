@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
@@ -78,7 +78,7 @@ class CORE_EXPORT FetchLaterManager final
   FetchLaterResult* FetchLater(ScriptState*,
                                FetchRequestData*,
                                AbortSignal*,
-                               absl::optional<DOMHighResTimeStamp>,
+                               std::optional<DOMHighResTimeStamp>,
                                ExceptionState&);
 
   // ExecutionContextLifecycleObserver overrides:

@@ -208,7 +208,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     observed_form_.url = origin;
     observed_form_.action = action;
     observed_form_.name = u"sign-in";
-    observed_form_.unique_renderer_id = autofill::FormRendererId(1);
+    observed_form_.renderer_id = autofill::FormRendererId(1);
     observed_form_.is_form_tag = true;
 
     observed_form_only_password_fields_ = observed_form_;
@@ -218,21 +218,21 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = autofill::FormControlType::kInputText;
-    field.unique_renderer_id = autofill::FieldRendererId(1);
+    field.renderer_id = autofill::FieldRendererId(1);
     observed_form_.fields.push_back(field);
 
     field.name = u"username";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = autofill::FormControlType::kInputText;
-    field.unique_renderer_id = autofill::FieldRendererId(2);
+    field.renderer_id = autofill::FieldRendererId(2);
     observed_form_.fields.push_back(field);
 
     field.name = u"password";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = autofill::FormControlType::kInputPassword;
-    field.unique_renderer_id = autofill::FieldRendererId(3);
+    field.renderer_id = autofill::FieldRendererId(3);
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
 
@@ -240,7 +240,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = autofill::FormControlType::kInputPassword;
-    field.unique_renderer_id = autofill::FieldRendererId(5);
+    field.renderer_id = autofill::FieldRendererId(5);
     observed_form_only_password_fields_.fields.push_back(field);
 
     submitted_form_ = observed_form_;
@@ -978,8 +978,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
 
   PasswordForm expected = password_save_manager_impl()->GetPendingCredentials();
   expected.password_value = password;
-  expected.password_element_renderer_id =
-      submitted_form.fields[0].unique_renderer_id;
+  expected.password_element_renderer_id = submitted_form.fields[0].renderer_id;
   expected.password_element = submitted_form.fields[0].name;
 
   // Simulate that the user updates value to save for the first password field

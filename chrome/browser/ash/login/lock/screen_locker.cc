@@ -514,12 +514,11 @@ void ScreenLocker::OnStartLockCallback(bool locked) {
 user_manager::UserList ScreenLocker::GetUsersToShow() const {
   user_manager::UserList users_to_show;
   // Filter out Managed Guest Session users as they should not appear on the UI.
-  base::ranges::copy_if(
-      users_, std::back_inserter(users_to_show),
-      [](const user_manager::User* user) {
-        return user->GetType() !=
-               user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT;
-      });
+  base::ranges::copy_if(users_, std::back_inserter(users_to_show),
+                        [](const user_manager::User* user) {
+                          return user->GetType() !=
+                                 user_manager::UserType::kPublicAccount;
+                        });
   return users_to_show;
 }
 

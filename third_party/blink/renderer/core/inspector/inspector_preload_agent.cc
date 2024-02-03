@@ -16,11 +16,11 @@ namespace blink {
 
 namespace {
 
-absl::optional<protocol::Preload::RuleSetErrorType> GetProtocolRuleSetErrorType(
+std::optional<protocol::Preload::RuleSetErrorType> GetProtocolRuleSetErrorType(
     SpeculationRuleSetErrorType error_type) {
   switch (error_type) {
     case SpeculationRuleSetErrorType::kNoError:
-      return absl::nullopt;
+      return std::nullopt;
     case SpeculationRuleSetErrorType::kSourceIsNotJsonObject:
       return protocol::Preload::RuleSetErrorTypeEnum::SourceIsNotJsonObject;
     case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
@@ -95,12 +95,12 @@ protocol::Preload::SpeculationAction GetProtocolSpeculationAction(
   }
 }
 
-absl::optional<protocol::Preload::SpeculationTargetHint>
+std::optional<protocol::Preload::SpeculationTargetHint>
 GetProtocolSpeculationTargetHint(
     mojom::blink::SpeculationTargetHint target_hint) {
   switch (target_hint) {
     case mojom::blink::SpeculationTargetHint::kNoHint:
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::blink::SpeculationTargetHint::kSelf:
       return protocol::Preload::SpeculationTargetHintEnum::Self;
     case mojom::blink::SpeculationTargetHint::kBlank:
@@ -117,7 +117,7 @@ BuildProtocolPreloadingAttemptKey(const PreloadingAttemptKey& key,
           .setAction(GetProtocolSpeculationAction(key.action))
           .setUrl(key.url)
           .build();
-  absl::optional<String> target_hint_str =
+  std::optional<String> target_hint_str =
       GetProtocolSpeculationTargetHint(key.target_hint);
   if (target_hint_str) {
     preloading_attempt_key->setTargetHint(target_hint_str.value());

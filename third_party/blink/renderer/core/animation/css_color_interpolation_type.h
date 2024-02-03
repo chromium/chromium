@@ -72,8 +72,8 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
   static InterpolationValue ConvertStyleColorPair(
-      const absl::optional<StyleColor>&,
-      const absl::optional<StyleColor>&);
+      const std::optional<StyleColor>&,
+      const std::optional<StyleColor>&);
   static InterpolationValue ConvertStyleColorPair(
       const StyleColor& unvisited_color,
       const StyleColor& visited_color);

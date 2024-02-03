@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HI
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_DURATION_MS;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_TYPE;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_SEGMENTATION_FETCH_RANKING_DURATION_MS;
 
 import androidx.test.filters.SmallTest;
@@ -171,6 +172,20 @@ public class HomeModulesMetricsUtilsUnitTest {
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
         HomeModulesMetricsUtils.recordFirstModuleShownDuration(hostSurface, duration);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordProfileReadyDelay() {
+        @HostSurface int hostSurface = HostSurface.START_SURFACE;
+        int duration = 100;
+        String histogramName =
+                "MagicStack.Clank.StartSurface" + HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS;
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
+        HomeModulesMetricsUtils.recordProfileReadyDelay(hostSurface, duration);
         histogramWatcher.assertExpected();
     }
 

@@ -6,10 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_H_
 
 #include <memory>
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 
@@ -38,7 +39,7 @@ class URLLoaderMock : public URLLoader {
   void ServeAsynchronousRequest(URLLoaderTestDelegate* delegate,
                                 const WebURLResponse& response,
                                 const scoped_refptr<SharedBuffer>& data,
-                                const absl::optional<WebURLError>& error);
+                                const std::optional<WebURLError>& error);
 
   // Simulates the redirect being served.
   WebURL ServeRedirect(const WebString& method,
@@ -52,7 +53,7 @@ class URLLoaderMock : public URLLoader {
                          base::TimeDelta timeout_interval,
                          URLLoaderClient* client,
                          WebURLResponse&,
-                         absl::optional<WebURLError>&,
+                         std::optional<WebURLError>&,
                          scoped_refptr<SharedBuffer>&,
                          int64_t& encoded_data_length,
                          uint64_t& encoded_body_length,

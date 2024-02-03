@@ -397,11 +397,10 @@ class SignedWebBundleReaderTest : public testing::Test {
     return response_result.Take();
   }
 
-  void SimulateAndWaitForParserDisconnect(SignedWebBundleReader& reader) {
+  void SimulateAndWaitForParserDisconnect() {
     base::RunLoop run_loop;
-    reader.SetParserDisconnectCallbackForTesting(run_loop.QuitClosure());
     parser_factory_->SimulateParserDisconnect();
-    run_loop.Run();
+    run_loop.RunUntilIdle();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -750,7 +749,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
-  SimulateAndWaitForParserDisconnect(*reader.get());
+  SimulateAndWaitForParserDisconnect();
   {
     ASSERT_OK_AND_ASSIGN(auto response, ReadAndFulfillResponse(
                                             *reader.get(), resource_request,
@@ -765,7 +764,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
 
   // Simulate another disconnect to verify that the reader can recover from
   // multiple disconnects over the course of its lifetime.
-  SimulateAndWaitForParserDisconnect(*reader.get());
+  SimulateAndWaitForParserDisconnect();
   {
     ASSERT_OK_AND_ASSIGN(auto response, ReadAndFulfillResponse(
                                             *reader.get(), resource_request,
@@ -779,41 +778,6 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
   EXPECT_EQ(parser_factory_->GetParserCreationCount(), 3);
 }
 
-TEST_F(SignedWebBundleReaderTest,
-       SimulateParserDisconnectWithFileErrorWhenReconnecting) {
-  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
-      parse_status_future;
-  auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
-
-  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
-  parser_factory_->RunMetadataCallback(integrity_block_->size,
-                                       metadata_->Clone());
-
-  auto parse_status = parse_status_future.Take();
-  EXPECT_THAT(parse_status, HasValue());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
-
-  SimulateAndWaitForParserDisconnect(*reader.get());
-  reader->SetReconnectionFileErrorForTesting(
-      base::File::Error::FILE_ERROR_ACCESS_DENIED);
-
-  network::ResourceRequest resource_request;
-  resource_request.url = kUrl;
-
-  base::test::TestFuture<
-      base::expected<web_package::mojom::BundleResponsePtr,
-                     SignedWebBundleReader::ReadResponseError>>
-      response_result;
-  reader->ReadResponse(resource_request, response_result.GetCallback());
-  auto response = response_result.Take();
-  ASSERT_FALSE(response.has_value());
-  EXPECT_EQ(
-      response.error().type,
-      SignedWebBundleReader::ReadResponseError::Type::kParserInternalError);
-  EXPECT_EQ(response.error().message,
-            "Unable to open file: FILE_ERROR_ACCESS_DENIED");
-  EXPECT_EQ(parser_factory_->GetParserCreationCount(), 1);
-}
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
   parser_factory_->SimulateParseResponseCrash();
@@ -982,7 +946,7 @@ TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
   EXPECT_EQ(on_create_parser_future.Take(), base_url_);
   EXPECT_TRUE(on_create_parser_future.IsEmpty());
 
-  SimulateAndWaitForParserDisconnect(*reader.get());
+  SimulateAndWaitForParserDisconnect();
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
   auto response = ReadAndFulfillResponse(*reader.get(), resource_request,

@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace media_session {
 namespace mojom {
@@ -21,7 +22,8 @@ namespace content {
 
 // AudioFocusDelegateAndroid handles the audio focus at a system level on
 // Android. It is also proxying the JNI calls.
-class AudioFocusDelegateAndroid : public AudioFocusDelegate {
+class AudioFocusDelegateAndroid : public AudioFocusDelegate,
+                                  public WebContentsObserver {
  public:
   explicit AudioFocusDelegateAndroid(MediaSessionImpl* media_session);
 
@@ -66,10 +68,15 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
   void MediaSessionInfoChanged(
       const media_session::mojom::MediaSessionInfoPtr&) override {}
 
+ protected:
+  // WebContentsObserver
+  void OnAudioStateChanged(bool is_audible) override;
+
  private:
   // Weak pointer because |this| is owned by |media_session_|.
   raw_ptr<MediaSessionImpl> media_session_;
   base::android::ScopedJavaGlobalRef<jobject> j_media_session_delegate_;
+  bool is_deferred_gain_pending_ = false;
 };
 
 }  // namespace content

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] [["formatblock","div"]] "<div><div contenteditable=false><p contenteditable>[foo]</p></div></div>": execCommand("formatblock", false, "div") return value
+  assert_equals: expected false but got true
+[FAIL] [["formatblock","div"]] "<div><div contenteditable=false><p contenteditable>[foo]</p></div></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><div contenteditable=\\"false\\"><p contenteditable=\\"\\">foo</p></div></div>" but got "<div><div contenteditable=\\"false\\"><p contenteditable=\\"\\"><div>foo</div></p></div></div>"
+[FAIL] [["formatblock","div"]] "<div><div contenteditable=false><p contenteditable>[foo]</p></div></div>" queryCommandValue("formatblock") after
+  assert_equals: Wrong result returned expected "" but got "div"
+Harness: the test ran to completion.
+

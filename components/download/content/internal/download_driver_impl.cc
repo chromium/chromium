@@ -110,8 +110,9 @@ DriverEntry DownloadDriverImpl::CreateDriverEntry(
 
   if (item->GetState() == DownloadItem::DownloadState::COMPLETE) {
     std::string hash = item->GetHash();
-    if (!hash.empty())
-      entry.hash256 = base::HexEncode(hash.data(), hash.size());
+    if (!hash.empty()) {
+      entry.hash256 = base::HexEncode(hash);
+    }
   }
 
   return entry;

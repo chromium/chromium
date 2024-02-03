@@ -192,9 +192,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
       ((desk_profile_delegate &&
         desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
     desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
-        base::BindRepeating(&DeskMiniView::OnDeskProfilesButtonPressed,
-                            base::Unretained(this)),
-        desk));
+        desk, this, owner_bar_->type() == DeskBarViewBase::Type::kOverview));
   }
 
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
@@ -462,10 +460,6 @@ void DeskMiniView::MaybeCloseContextMenu() {
     context_menu_->MaybeCloseMenu();
 }
 
-void DeskMiniView::OnDeskProfilesButtonPressed() {
-  desk_profile_button_->RequestFocus();
-}
-
 void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
   if (!desk_)
     return;
@@ -508,14 +502,15 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
       close_type);
 }
 
-void DeskMiniView::OnPreviewAboutToBeFocusedByReverseTab() {
-  if (!desk_action_view_->ChildHasFocus()) {
+void DeskMiniView::OnPreviewOrProfileAboutToBeFocusedByReverseTab() {
+  if (!desk_action_view_->ChildHasFocus() &&
+      (desk_profile_button_ == nullptr || !desk_profile_button_->HasFocus())) {
     desk_action_view_->SetVisible(true);
     desk_action_view_->close_all_button()->RequestFocus();
   }
 }
 
-void DeskMiniView::Layout() {
+void DeskMiniView::Layout(PassKey) {
   const gfx::Rect preview_bounds = GetDeskPreviewBounds(root_window_);
   desk_preview_->SetBoundsRect(preview_bounds);
 
@@ -610,7 +605,7 @@ void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
   desk_name_view_->SetText(new_name);
   desk_preview_->SetAccessibleName(new_name);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void DeskMiniView::ContentsChanged(views::Textfield* sender,
@@ -629,17 +624,7 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
     desk_name_view_->SetText(trimmed_new_contents);
   }
 
-  Layout();
-}
-
-void DeskMiniView::OnDeskProfileChanged(uint64_t new_lacros_profile_id) {
-  if (!desk_) {
-    return;
-  }
-  if (desk_profile_button_) {
-    desk_profile_button_->UpdateIcon();
-    Layout();
-  }
+  DeprecatedLayoutImmediately();
 }
 
 bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,

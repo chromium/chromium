@@ -45,9 +45,12 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::IsNull;
+using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::SizeIs;
@@ -69,9 +72,25 @@ auto IsFormId(absl::variant<FormRendererId, size_t> expectation) {
   return Eq(id);
 }
 
-// Matches a FormData with a specific FormData::unique_renderer_id.
+// Matches a `FormData` whose `FormData::fields`' `FormFieldData::id_attribute`
+// match `id_attributes`.
+auto HasFieldsWithIdAttributes(std::vector<std::u16string> id_attributes) {
+  std::vector<Matcher<FormFieldData>> field_matchers;
+  for (std::u16string& id_attribute : id_attributes) {
+    field_matchers.push_back(
+        Field(&FormFieldData::id_attribute, std::move(id_attribute)));
+  }
+  return Field(&FormData::fields, ElementsAreArray(field_matchers));
+}
+
+// Matches a `FormData` with a specific `FormData::renderer_id`.
 auto HasFormId(absl::variant<FormRendererId, size_t> expectation) {
-  return Field(&FormData::unique_renderer_id, IsFormId(expectation));
+  return Field(&FormData::renderer_id, IsFormId(expectation));
+}
+
+// Matches a `FormData` with a specific `FormData::id_attribute`.
+auto HasFormIdAttribute(std::u16string id_attribute) {
+  return Field(&FormData::id_attribute, std::move(id_attribute));
 }
 
 // Matches a FormData with |num| FormData::fields.
@@ -100,8 +119,8 @@ class AutofillAgentTest : public test::AutofillRendererTest {
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
     test_api(autofill_agent())
-        .set_form_tracker(
-            std::make_unique<MockFormTracker>(GetMainRenderFrame()));
+        .set_form_tracker(std::make_unique<MockFormTracker>(
+            GetMainRenderFrame(), FormTracker::UserGestureRequired(true)));
   }
 
   MockFormTracker& form_tracker() {
@@ -208,6 +227,83 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
 }
 
+class AutofillAgentShadowDomTest : public AutofillAgentTestWithFeatures {
+ private:
+  base::test::ScopedFeatureList scoped_features_{
+      blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements};
+};
+
+// Tests that unassociated form control elements in a Shadow DOM tree that do
+// not have a form ancestor are extracted correctly.
+TEST_F(AutofillAgentShadowDomTest, UnownedUnassociatedElements) {
+  EXPECT_CALL(autofill_driver(),
+              FormsSeen(HasSingleElementWhich(
+                            HasFieldsWithIdAttributes({u"t1", u"t2"})),
+                        IsEmpty()));
+  LoadHTML(R"(<body>
+    <div>
+      <template shadowrootmode="open">
+        <input type="text" id="t1">
+      </template>
+    </div>
+    <input type="text" id="t2">
+    </body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that unassociated form control elements whose closest shadow-tree
+// including form ancestor is not in a shadow tree are extracted correctly.
+TEST_F(AutofillAgentShadowDomTest, UnassociatedElementsOwnedByNonShadowForm) {
+  EXPECT_CALL(
+      autofill_driver(),
+      FormsSeen(HasSingleElementWhich(
+                    HasFormIdAttribute(u"f1"),
+                    HasFieldsWithIdAttributes({u"t1", u"t2", u"t3", u"t4"})),
+                IsEmpty()));
+  LoadHTML(
+      R"(<body><form id="f1">
+          <div>
+            <template shadowrootmode="open">
+              <input type="text" id="t1">
+              <input type="text" id="t2">
+            </template>
+          </div>
+          <div>
+            <template shadowrootmode="open">
+              <input type="text" id="t3">
+            </template>
+          </div>
+          <input type="text" id="t4">
+       </form></body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that form control elements that are placed into a slot that is a child
+// of a form inside a shadow DOM are not considered to be owned by the form
+// inside the shadow DOM, but are considered to be unowned. This is consistent
+// with how the DOM handles these form control elements - the "elements" of the
+// form "ft" are considered to be empty.
+TEST_F(AutofillAgentShadowDomTest, FormControlInsideSlotWithinFormInShadowDom) {
+  EXPECT_CALL(autofill_driver(),
+              FormsSeen(HasSingleElementWhich(
+                            HasFormIdAttribute(u""),
+                            HasFieldsWithIdAttributes({u"t1", u"t2"})),
+                        IsEmpty()));
+  LoadHTML(
+      R"(<body>
+        <div>
+          <template shadowrootmode=open>
+            <form id=ft>
+              <slot></slot>
+            </form>
+          </template>
+          <input id=t1>
+          <input id=t2>
+        </div>
+      </body>)");
+  WaitForFormsSeen();
+}
+
 class AutofillAgentTestExtractForms : public AutofillAgentTestWithFeatures {
  public:
   using Callback = base::MockCallback<
@@ -239,13 +335,12 @@ TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForForm) {
   const auto is_text_input = HasType(FormControlType::kInputText);
   LoadHTML("<body><form id=f><input><input></form>");
   Callback callback;
-  EXPECT_CALL(
-      callback,
-      Run(Optional(AllOf(
-          Field(&FormData::unique_renderer_id, GetFormRendererIdById("f")),
-          Field(&FormData::name, u"f"),
-          Field(&FormData::fields,
-                ElementsAre(is_text_input, is_text_input))))));
+  EXPECT_CALL(callback,
+              Run(Optional(AllOf(
+                  Field(&FormData::renderer_id, GetFormRendererIdById("f")),
+                  Field(&FormData::name, u"f"),
+                  Field(&FormData::fields,
+                        ElementsAre(is_text_input, is_text_input))))));
   autofill_agent().ExtractForm(GetFormRendererIdById("f"), callback.Get());
 }
 
@@ -265,9 +360,9 @@ TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForContentEditable) {
       callback;
   EXPECT_CALL(
       callback,
-      Run(Optional(AllOf(
-          Field(&FormData::unique_renderer_id, GetFormRendererIdById("ce")),
-          Field(&FormData::fields, ElementsAre(is_content_editable))))));
+      Run(Optional(
+          AllOf(Field(&FormData::renderer_id, GetFormRendererIdById("ce")),
+                Field(&FormData::fields, ElementsAre(is_content_editable))))));
   autofill_agent().ExtractForm(GetFormRendererIdById("ce"), callback.Get());
 }
 
@@ -361,6 +456,86 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kPreviewed);
   autofill_agent().ClearPreviewedForm();
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
+}
+
+// Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
+// updates the last interacted saved state when the <input>s have no containing
+// <form>.
+TEST_F(AutofillAgentTest,
+       FormlessApplyFormActionUpdatesLastInteractedSavedState) {
+  LoadHTML(R"(
+    <input id="text_id">
+  )");
+
+  blink::WebFormControlElement field =
+      GetMainFrame()
+          ->GetDocument()
+          .GetElementById("text_id")
+          .DynamicTo<blink::WebFormControlElement>();
+  ASSERT_FALSE(field.IsNull());
+
+  FormFieldData form_field;
+  form_util::WebFormControlElementToFormField(
+      blink::WebFormElement(), field, &autofill_agent().field_data_manager(),
+      {form_util::ExtractOption::kValue}, &form_field);
+
+  form_field.value = u"autofilled";
+  form_field.is_autofilled = true;
+
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
+  FormData form;
+  form.fields = {form_field};
+  autofill_agent().ApplyFormAction(mojom::ActionType::kFill,
+                                   mojom::ActionPersistence::kFill,
+                                   FormData::FillData(form));
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
+
+  std::optional<FormData> last_interacted_saved_state =
+      AutofillAgentTestApi(&autofill_agent()).last_interacted_saved_state();
+  ASSERT_TRUE(last_interacted_saved_state.has_value());
+  ASSERT_EQ(1u, last_interacted_saved_state->fields.size());
+  EXPECT_EQ(u"autofilled", last_interacted_saved_state->fields[0].value);
+}
+
+// Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
+// updates the last interacted saved state when the <input>s have a containing
+// <form>.
+TEST_F(AutofillAgentTest, FormApplyFormActionUpdatesLastInteractedSavedState) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="text_id">
+    </form>
+  )");
+
+  blink::WebFormElement form = GetMainFrame()
+                                   ->GetDocument()
+                                   .GetElementById("form_id")
+                                   .DynamicTo<blink::WebFormElement>();
+  ASSERT_EQ(1u, form.GetFormControlElements().size());
+  blink::WebFormControlElement field = form.GetFormControlElements()[0];
+  ASSERT_FALSE(field.IsNull());
+  ASSERT_EQ("text_id", field.GetIdAttribute().Ascii());
+
+  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
+      form, blink::WebFormControlElement(),
+      *base::MakeRefCounted<FieldDataManager>(),
+      {form_util::ExtractOption::kValue}, nullptr);
+
+  ASSERT_EQ(1u, form_data.fields.size());
+  form_data.fields[0].value = u"autofilled";
+  form_data.fields[0].is_autofilled = true;
+
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
+  autofill_agent().ApplyFormAction(mojom::ActionType::kFill,
+                                   mojom::ActionPersistence::kFill,
+                                   FormData::FillData(form_data));
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
+
+  std::optional<FormData> last_interacted_saved_state =
+      AutofillAgentTestApi(&autofill_agent()).last_interacted_saved_state();
+  ASSERT_TRUE(last_interacted_saved_state.has_value());
+  ASSERT_EQ(1u, last_interacted_saved_state->fields.size());
+  EXPECT_EQ(u"autofilled", last_interacted_saved_state->fields[0].value);
 }
 
 TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_DisplayNone) {

@@ -24,6 +24,7 @@
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -47,9 +48,9 @@
 #endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
 namespace views {
-class FlexLayoutView;
 class FrameBackground;
 class Label;
+class View;
 }  // namespace views
 
 namespace {
@@ -97,7 +98,7 @@ class PictureInPictureBrowserFrameView
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 #if BUILDFLAG(IS_LINUX)
@@ -178,9 +179,6 @@ class PictureInPictureBrowserFrameView
   // Returns the insets of the window frame borders.
   gfx::Insets FrameBorderInsets() const;
 
-  // Returns the insets of the window frame borders for resizing.
-  gfx::Insets ResizeBorderInsets() const;
-
   // Returns the height of the top bar area, including the window top border.
   int GetTopAreaHeight() const;
 
@@ -233,6 +231,12 @@ class PictureInPictureBrowserFrameView
   AutoPipSettingOverlayView* get_auto_pip_setting_overlay_view_for_testing() {
     return auto_pip_setting_overlay_;
   }
+
+ protected:
+  views::View* top_bar_container_view() { return top_bar_container_view_; }
+
+  // Returns the insets of the window frame borders for resizing.
+  virtual gfx::Insets ResizeBorderInsets() const;
 
  private:
   CloseReason close_reason_ = CloseReason::kOther;

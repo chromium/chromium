@@ -146,7 +146,7 @@ scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
   std::vector<uint32_t> spatial_layer_frame_size;
   spatial_layer_frame_size.reserve(max_sl_index);
   for (int i = 0; i <= max_sl_index; i++) {
-    const absl::optional<size_t>& frame_size =
+    const std::optional<size_t>& frame_size =
         input_image.SpatialLayerFrameSize(i);
     if (!frame_size)
       continue;
@@ -161,7 +161,7 @@ scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
   return buffer;
 }
 
-absl::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
+std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
     const media::VideoCodec codec,
     const media::DecoderBuffer& buffer,
     const media::VideoDecoderType decoder_type) {
@@ -174,7 +174,7 @@ absl::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
     return RTCVideoDecoderFallbackReason::kSpatialLayers;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
@@ -206,7 +206,7 @@ class RTCVideoDecoderAdapter::Impl {
                   media::VideoDecoderType* decoder_type);
   void Decode(scoped_refptr<media::DecoderBuffer> buffer,
               base::WaitableEvent* waiter,
-              absl::optional<RTCVideoDecoderAdapter::DecodeResult>* result);
+              std::optional<RTCVideoDecoderAdapter::DecodeResult>* result);
   absl::variant<DecodeResult, RTCVideoDecoderFallbackReason> EnqueueBuffer(
       scoped_refptr<media::DecoderBuffer> buffer);
   void Flush(WTF::CrossThreadOnceClosure flush_success_cb,
@@ -214,7 +214,7 @@ class RTCVideoDecoderAdapter::Impl {
   void RegisterDecodeCompleteCallback(webrtc::DecodedImageCallback* callback);
 
  private:
-  absl::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
+  std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
       media::VideoCodec codec,
       const media::DecoderBuffer& buffer) const;
   void DecodePendingBuffers();
@@ -230,7 +230,7 @@ class RTCVideoDecoderAdapter::Impl {
   media::VideoCodec video_codec_;
 
   int32_t outstanding_decode_requests_ = 0;
-  absl::optional<base::TimeTicks> start_time_;
+  std::optional<base::TimeTicks> start_time_;
   raw_ptr<webrtc::DecodedImageCallback, ExperimentalRenderer>
       decode_complete_callback_ = nullptr;
   int32_t consecutive_error_count_ = 0;
@@ -296,7 +296,7 @@ void RTCVideoDecoderAdapter::Impl::Initialize(
 void RTCVideoDecoderAdapter::Impl::Decode(
     scoped_refptr<media::DecoderBuffer> buffer,
     base::WaitableEvent* waiter,
-    absl::optional<RTCVideoDecoderAdapter::DecodeResult>* result) {
+    std::optional<RTCVideoDecoderAdapter::DecodeResult>* result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   TRACE_EVENT1("webrtc", "RTCVideoDecoderAdapter::Impl::Decode", "buffer",
                buffer->AsHumanReadableString());
@@ -306,7 +306,7 @@ void RTCVideoDecoderAdapter::Impl::Decode(
           absl::get_if<RTCVideoDecoderFallbackReason>(&enque_result)) {
     RecordRTCVideoDecoderFallbackReason(video_codec_, *fallback_reason);
     if (waiter) {
-      *result = absl::nullopt;
+      *result = std::nullopt;
       waiter->Signal();
     } else {
       change_status_callback_.Run(Status::kError);
@@ -658,7 +658,7 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
                                       : WEBRTC_VIDEO_CODEC_ERROR;
 }
 
-absl::optional<RTCVideoDecoderAdapter::DecodeResult>
+std::optional<RTCVideoDecoderAdapter::DecodeResult>
 RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
                                        bool missing_frames,
                                        int64_t render_time_ms) {
@@ -666,7 +666,7 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
   if (status_ == Status::kError)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (missing_frames) {
     DVLOG(2) << "Missing frames";
@@ -694,7 +694,7 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
       RecordRTCVideoDecoderFallbackReason(
           config_.codec(),
           RTCVideoDecoderFallbackReason::kReinitializationFailed);
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (input_image._frameType != webrtc::VideoFrameType::kVideoFrameKey)
       return DecodeResult::kErrorRequestKeyFrame;
@@ -704,15 +704,15 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
   CHECK(buffer);
   if (HasSoftwareFallback(config_.codec()) &&
       !CheckResolutionAndNumInstances(*buffer)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (auto fallback_reason =
           NeedSoftwareFallback(config_.codec(), *buffer, decoder_type_)) {
     RecordRTCVideoDecoderFallbackReason(config_.codec(), *fallback_reason);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<RTCVideoDecoderAdapter::DecodeResult>* null_result = nullptr;
+  std::optional<RTCVideoDecoderAdapter::DecodeResult>* null_result = nullptr;
   base::WaitableEvent* null_waiter = nullptr;
   if (!PostCrossThreadTask(
           *media_task_runner_.get(), FROM_HERE,
@@ -722,7 +722,7 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
                               CrossThreadUnretained(null_result)))) {
     // TODO(b/246460597): Add rtc video decoder fallback reason about
     // PostCrossThreadTask failure.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return DecodeResult::kOk;
 }
@@ -737,7 +737,7 @@ bool RTCVideoDecoderAdapter::CheckResolutionAndNumInstances(
     g_num_decoders_ += 1;
   }
 
-  absl::optional<gfx::Size> resolution =
+  std::optional<gfx::Size> resolution =
       resolution_monitor_->GetResolution(buffer);
   if (!resolution) {
     DVLOG(1) << "Stream parse error";

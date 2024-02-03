@@ -95,7 +95,7 @@ class TestBufferCollection {
   fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
   fuchsia::sysmem::BufferCollectionSyncPtr buffers_collection_;
 
-  absl::optional<fuchsia::sysmem::BufferCollectionInfo_2>
+  std::optional<fuchsia::sysmem::BufferCollectionInfo_2>
       buffer_collection_info_;
 };
 
@@ -113,7 +113,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       base::StringPiece debug_label,
       gpu::SurfaceHandle surface_handle) override {
     ADD_FAILURE();
-    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
+    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox(),
+                                                        holder_);
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
@@ -126,7 +127,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       base::StringPiece debug_label,
       base::span<const uint8_t> pixel_data) override {
     ADD_FAILURE();
-    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
+    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox(),
+                                                        holder_);
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
@@ -141,7 +143,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       gfx::BufferUsage buffer_usage,
       gfx::GpuMemoryBufferHandle buffer_handle) override {
     ADD_FAILURE();
-    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
+    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox(),
+                                                        holder_);
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
@@ -155,7 +158,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       gfx::GpuMemoryBufferHandle buffer_handle) override {
     auto result = GenerateMailboxForGMBHandle(std::move(buffer_handle));
     mailboxes_.insert(result);
-    return base::MakeRefCounted<gpu::ClientSharedImage>(result);
+    return base::MakeRefCounted<gpu::ClientSharedImage>(result, holder_);
   }
 
   SharedImageInterface::SharedImageMapping CreateSharedImage(
@@ -166,8 +169,9 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       SkAlphaType alpha_type,
       uint32_t usage,
       base::StringPiece debug_label) override {
-    return {base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox()),
-            base::WritableSharedMemoryMapping()};
+    return {
+        base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox(), holder_),
+        base::WritableSharedMemoryMapping()};
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
@@ -181,7 +185,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       base::StringPiece debug_label) override {
     auto result = GenerateMailboxForGMBHandle(gpu_memory_buffer->CloneHandle());
     mailboxes_.insert(result);
-    return base::MakeRefCounted<gpu::ClientSharedImage>(result);
+    return base::MakeRefCounted<gpu::ClientSharedImage>(result, holder_);
   }
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,

@@ -126,7 +126,7 @@ void OffscreenCanvasPlaceholder::SetOffscreenCanvasDispatcher(
   // the corresponding offscreen canvas.
   if (filter_quality_) {
     cc::PaintFlags::FilterQuality quality = filter_quality_.value();
-    filter_quality_ = absl::nullopt;
+    filter_quality_ = std::nullopt;
     UpdateOffscreenCanvasFilterQuality(quality);
   }
 }

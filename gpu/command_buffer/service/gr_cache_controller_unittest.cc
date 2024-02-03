@@ -131,7 +131,6 @@ TEST_F(GrCacheControllerTest, ResetPurgeGrCacheOnReuse) {
 
 TEST_F(GrCacheControllerTest, NoTaskRunner) {
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(features::kAggressiveSkiaGpuResourcePurge);
   CreateControllerWithoutTaskRunner();
 
   EXPECT_FALSE(context_state_->need_context_state_reset());

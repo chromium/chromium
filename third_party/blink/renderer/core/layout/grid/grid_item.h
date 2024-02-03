@@ -227,8 +227,8 @@ struct CORE_EXPORT GridItemData {
   AxisEdge column_alignment;
   AxisEdge row_alignment;
 
-  absl::optional<AxisEdge> column_fallback_alignment;
-  absl::optional<AxisEdge> row_fallback_alignment;
+  std::optional<AxisEdge> column_fallback_alignment;
+  std::optional<AxisEdge> row_fallback_alignment;
 
   AutoSizeBehavior column_auto_behavior;
   AutoSizeBehavior row_auto_behavior;

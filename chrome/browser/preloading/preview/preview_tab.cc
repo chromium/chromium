@@ -34,12 +34,10 @@
 namespace {
 
 content::WebContents::CreateParams CreateWebContentsCreateParams(
-    content::BrowserContext* context,
-    content::WebContentsDelegate* delegate) {
+    content::BrowserContext* context) {
   CHECK(context);
-  CHECK(delegate);
   content::WebContents::CreateParams params(context);
-  params.delegate = delegate;
+  params.preview_mode = true;
   return params;
 }
 
@@ -90,12 +88,12 @@ PreviewTab::PreviewTab(PreviewManager* preview_manager,
                        content::WebContents& initiator_web_contents,
                        const GURL& url)
     : web_contents_(content::WebContents::Create(CreateWebContentsCreateParams(
-          initiator_web_contents.GetBrowserContext(),
-          this))),
+          initiator_web_contents.GetBrowserContext()))),
       widget_(std::make_unique<PreviewWidget>(preview_manager)),
       view_(std::make_unique<views::WebView>(nullptr)),
       url_(url) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kLinkPreview));
+  web_contents_->SetDelegate(this);
 
   // WebView setup.
   view_->SetWebContents(web_contents_.get());
@@ -162,10 +160,6 @@ content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
   return content::PreloadingEligibility::kPreloadingDisabled;
 }
 
-bool PreviewTab::IsInPreviewMode() const {
-  return true;
-}
-
 void PreviewTab::CancelPreview(content::PreviewCancelReason reason) {
   // TODO(b:299240273): Show an error page when final status is
   // kBlockedByMojoBinderPolicy.
@@ -194,6 +188,12 @@ void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
   preview_zoom_controller_->ResetZoomForActivation();
 
   TabHelpers::AttachTabHelpers(web_contents_.get());
+
+  // TODO(b:314242439): Should be called before the AttachTabHelpers() above.
+  // We should update the preview mode status so that the AttachTabHelpers() can
+  // know the helpers should be initialized for normal mode rather than preview
+  // mode.
+  web_contents_->WillActivatePreviewPage();
 
   // Detach WebContentsDelegate before passing WebContents to another
   // WebContentsDelegate. It would be not necessary, but it's natural because

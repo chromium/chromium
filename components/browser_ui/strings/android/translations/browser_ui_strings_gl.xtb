@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Pausouse a descarga</translation>
 <translation id="1415402041810619267">URL truncado</translation>
-<translation id="1426410128494586442">Si</translation>
 <translation id="1434873037477293673">tarxeta de baixada de prezo</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Para permitir que <ph name="APP_NAME" /> acceda á cámara, actívaa tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Bloqueáronse as cookies de terceiros</translation>
 <translation id="2238944249568001759">Buscas suxeridas baseadas na última pestana</translation>
+<translation id="2241587408274973373">Tarxetas da páxina Nova pestana</translation>
 <translation id="2241634353105152135">Só unha vez</translation>
 <translation id="2253414712144136228">Eliminar <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Os sitios poden mostrar solicitudes de inicio de sesión dos servizos de identidade.</translation>
 <translation id="2790501146643349491">Cando esta opción está activada, os sitios pechados recentemente poden terminar de enviar e recibir datos. Cando esta opción está desactivada, os sitios pechados recentemente non poden terminar de enviar nin de recibir datos.</translation>
 <translation id="2822354292072154809">Seguro que queres restablecer todos os permisos do sitio <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Solicita unha vista para dispositivos móbiles</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Visor de certificados</translation>
 <translation id="2979365474350987274">As cookies de terceiros están limitadas</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
-<translation id="3013291976881901233">Dispositivos MIDI</translation>
 <translation id="301521992641321250">Bloqueado automaticamente</translation>
 <translation id="3069226013421428034">Permite o inicio de sesión de terceiros para un sitio específico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Caduca mañá}other{Caduca dentro de # días}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Conectouse un dispositivo USB</translation>
 <translation id="4194328954146351878">Pregunta antes de permitir que os sitios consulten e cambien información en dispositivos con NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir Configuración de localización</translation>
-<translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="4226663524361240545">O dispositivo pode vibrar ao recibir notificacións</translation>
 <translation id="4259722352634471385">A navegación está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitida</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Mover cara abaixo</translation>
 <translation id="6749077623962119521">Queres restablecer os permisos?</translation>
 <translation id="6766622839693428701">Pasa o dedo cara abaixo para pechar o panel inferior.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Desde <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecciona unha opción para <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6818926723028410516">Selecciona elementos</translation>

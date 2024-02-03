@@ -4,6 +4,7 @@
 
 #include "services/network/socket_data_pump.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -17,7 +18,6 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "services/network/tls_client_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 

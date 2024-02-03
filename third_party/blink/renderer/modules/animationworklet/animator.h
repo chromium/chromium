@@ -30,7 +30,7 @@ class Animator final : public GarbageCollected<Animator>, public NameClient {
            v8::Local<v8::Value> instance,
            const String& name,
            WorkletAnimationOptions options,
-           const Vector<absl::optional<base::TimeDelta>>& local_times,
+           const Vector<std::optional<base::TimeDelta>>& local_times,
            const Vector<Timing>& timings,
            const Vector<Timing::NormalizedTiming>& normalized_timings);
   ~Animator() final;

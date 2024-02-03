@@ -16,7 +16,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -49,23 +51,29 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
     blink::mojom::blink::StreamDevicesSet stream_devices_set;
     stream_devices_set.stream_devices.push_back(
         blink::mojom::blink::StreamDevices::New(
-            absl::nullopt,
+            std::nullopt,
             MediaStreamDevice(
                 blink::mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
                 "device_0_id", "device_0_name")));
     stream_devices_set.stream_devices.push_back(
         blink::mojom::blink::StreamDevices::New(
-            absl::nullopt,
+            std::nullopt,
             MediaStreamDevice(
                 blink::mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
                 "device_1_id", "device_1_name")));
 
     observer_->AddStreams(
-        streams_label, stream_devices_set, device_stopped_callback,
-        /*on_device_changed_cb=*/base::DoNothing(),
-        request_state_change_callback,
-        /*on_device_capture_configuration_change_cb=*/base::DoNothing(),
-        /*on_device_capture_handle_change_cb=*/base::DoNothing());
+        streams_label, stream_devices_set,
+        {
+            .on_device_stopped_cb = device_stopped_callback,
+            .on_device_changed_cb = base::DoNothing(),
+            .on_device_request_state_change_cb = request_state_change_callback,
+            .on_device_capture_configuration_change_cb = base::DoNothing(),
+            .on_device_capture_handle_change_cb = base::DoNothing(),
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+            .on_zoom_level_change_cb = base::DoNothing(),
+#endif
+        });
     EXPECT_EQ(observer_->label_stream_map_.size(), previous_stream_size + 1);
   }
 
@@ -392,5 +400,39 @@ TEST_F(MediaStreamDeviceObserverTest, MultiCaptureRemoveStreamDevice) {
   observer_->RemoveStreamDevice(device_1);
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(MediaStreamDeviceObserverTest, OnZoomLevelChange) {
+  const String kStreamLabel = "stream_label";
+  blink::MediaStreamDevice device(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, "device_id",
+      "device_name");
+
+  blink::mojom::blink::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.push_back(
+      blink::mojom::blink::StreamDevices::New(std::nullopt, device));
+  observer_->AddStreams(
+      kStreamLabel, stream_devices_set,
+      {
+          .on_device_stopped_cb = base::DoNothing(),
+          .on_device_changed_cb = base::DoNothing(),
+          .on_device_request_state_change_cb = base::DoNothing(),
+          .on_device_capture_configuration_change_cb = base::DoNothing(),
+          .on_device_capture_handle_change_cb = base::DoNothing(),
+          .on_zoom_level_change_cb = base::BindRepeating(
+              [](const MediaStreamDevice& device, int zoom_level) {
+                EXPECT_EQ(device.type,
+                          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+                EXPECT_EQ(device.id, "device_id");
+                EXPECT_EQ(device.name, "device_name");
+                EXPECT_EQ(zoom_level,
+                          CaptureController::getSupportedZoomLevels()[0]);
+              }),
+      });
+  static_cast<mojom::blink::MediaStreamDeviceObserver*>(observer_.get())
+      ->OnZoomLevelChange(kStreamLabel, device,
+                          CaptureController::getSupportedZoomLevels()[0]);
+}
+#endif
 
 }  // namespace blink

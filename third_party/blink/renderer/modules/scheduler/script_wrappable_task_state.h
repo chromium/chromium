@@ -6,13 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCRIPT_WRAPPABLE_TASK_STATE_H_
 
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
+
+namespace v8 {
+class Isolate;
+}  // namespace v8
 
 namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
+class ScriptState;
 
 // The scheduler uses `ScriptWrappableTaskState` objects to store continuation
 // preserved embedder data, which is data stored on V8 promise reactions at
@@ -23,7 +27,7 @@ class MODULES_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
  public:
   // Get the `ScriptWrappableTaskState` currently stored as continuation
   // preserved embedder data.
-  static ScriptWrappableTaskState* GetCurrent(ScriptState*);
+  static ScriptWrappableTaskState* GetCurrent(v8::Isolate*);
 
   // Set the given `ScriptWrappableTaskState` as the current continuation
   // preserved embedder data.

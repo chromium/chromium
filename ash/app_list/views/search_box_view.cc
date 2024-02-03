@@ -108,10 +108,6 @@ constexpr int kMinimumLengthToAutocomplete = 2;
 // Border insets for SearchBoxView in bubble launcher.
 constexpr auto kBorderInsetsForAppListBubble = gfx::Insets::TLBR(4, 4, 4, 0);
 
-// Margins for the search box text field in bubble launcher.
-constexpr auto kTextFieldMarginsForAppListBubble =
-    gfx::Insets::TLBR(8, 0, 0, 0);
-
 // The default PlaceholderTextTypes used for productivity launcher. Randomly
 // selected when placeholder text would be shown.
 constexpr SearchBoxView::PlaceholderTextType kDefaultPlaceholders[] = {
@@ -574,9 +570,6 @@ void SearchBoxView::InitializeForBubbleLauncher() {
   params.create_background = false;
   params.animate_changing_search_icon = false;
   params.increase_child_view_padding = true;
-  // Add margins to the text field because the BoxLayout vertical centering
-  // does not properly align the text baseline with the icons.
-  params.textfield_margins = kTextFieldMarginsForAppListBubble;
 
   SearchBoxViewBase::Init(params);
 
@@ -1704,8 +1697,7 @@ void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {
     auto radii = base::i18n::IsRTL() ? kAssistantButtonBackgroundRadiiRTL
                                      : kAssistantButtonBackgroundRadiiLTR;
     assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshControlBackgroundColorInactive, radii,
-        /*for_border_thickness=*/0));
+        kColorAshControlBackgroundColorInactive, radii));
 
     auto highlight_path_generator =
         std::make_unique<RoundRectPathGenerator>(radii);

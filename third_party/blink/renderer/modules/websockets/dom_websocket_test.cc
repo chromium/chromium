@@ -390,7 +390,7 @@ TEST(DOMWebSocketTest, reasonSizeExceeding) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kSyntaxError,
             scope.GetExceptionState().CodeAs<DOMExceptionCode>());
-  EXPECT_EQ("The message must not be greater than 123 bytes.",
+  EXPECT_EQ("The close reason must not be greater than 123 UTF-8 bytes.",
             scope.GetExceptionState().Message());
   EXPECT_EQ(DOMWebSocket::kConnecting, websocket_scope.Socket().readyState());
 }
@@ -931,8 +931,8 @@ TEST_P(DOMWebSocketInvalidClosingCodeTest, test) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kInvalidAccessError,
             scope.GetExceptionState().CodeAs<DOMExceptionCode>());
-  EXPECT_EQ(String::Format("The code must be either 1000, or between 3000 and "
-                           "4999. %d is neither.",
+  EXPECT_EQ(String::Format("The close code must be either 1000, or between "
+                           "3000 and 4999. %d is neither.",
                            GetParam()),
             scope.GetExceptionState().Message());
   EXPECT_EQ(DOMWebSocket::kConnecting, websocket_scope.Socket().readyState());

@@ -32,11 +32,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_PEER_CONNECTION_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -66,7 +66,6 @@
 namespace blink {
 
 class ExceptionState;
-class GoogMediaConstraints;
 class MediaStreamTrack;
 class RTCAnswerOptions;
 class RTCConfiguration;
@@ -102,16 +101,11 @@ class MODULES_EXPORT RTCPeerConnection final
  public:
   static RTCPeerConnection* Create(ExecutionContext*,
                                    const RTCConfiguration*,
-                                   GoogMediaConstraints*,
-                                   ExceptionState&);
-  static RTCPeerConnection* Create(ExecutionContext*,
-                                   const RTCConfiguration*,
                                    ExceptionState&);
 
   RTCPeerConnection(ExecutionContext*,
                     webrtc::PeerConnectionInterface::RTCConfiguration,
                     bool encoded_insertable_streams,
-                    GoogMediaConstraints*,
                     ExceptionState&);
   ~RTCPeerConnection() override;
 
@@ -184,7 +178,7 @@ class MODULES_EXPORT RTCPeerConnection final
 
   String connectionState() const;
 
-  absl::optional<bool> canTrickleIceCandidates() const;
+  std::optional<bool> canTrickleIceCandidates() const;
 
   void restartIce();
 
@@ -272,7 +266,7 @@ class MODULES_EXPORT RTCPeerConnection final
 
   void DidGenerateICECandidate(RTCIceCandidatePlatform*) override;
   void DidFailICECandidate(const String& address,
-                           absl::optional<uint16_t> port,
+                           std::optional<uint16_t> port,
                            const String& host_candidate,
                            const String& url,
                            int error_code,
@@ -505,7 +499,7 @@ class MODULES_EXPORT RTCPeerConnection final
   HeapVector<Member<RTCRtpTransceiver>> transceivers_;
   // Always has a value if initialization was successful (the constructor did
   // not throw an exception).
-  absl::optional<RtpContributingSourceCache> rtp_contributing_source_cache_;
+  std::optional<RtpContributingSourceCache> rtp_contributing_source_cache_;
 
   // A map of all webrtc::DtlsTransports that have a corresponding
   // RTCDtlsTransport object. Garbage collection will remove map entries

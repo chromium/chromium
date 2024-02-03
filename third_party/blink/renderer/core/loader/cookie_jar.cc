@@ -210,7 +210,7 @@ void CookieJar::RequestRestrictedCookieManagerIfNeeded() {
 void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,
                                            const String& cookie_string,
                                            uint64_t new_version) {
-  absl::optional<unsigned> new_hash =
+  std::optional<unsigned> new_hash =
       WTF::HashInts(WTF::GetHash(cookie_url),
                     cookie_string.IsNull() ? 0 : WTF::GetHash(cookie_string));
 

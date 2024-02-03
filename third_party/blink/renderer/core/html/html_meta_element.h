@@ -23,8 +23,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_META_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_META_ELEMENT_H_
 
+#include <optional>
+
 #include "services/network/public/cpp/client_hints.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
@@ -120,7 +121,7 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
   static mojom::ViewportFit ParseViewportFitValueAsEnum(bool& unknown_value,
                                                         const String& value);
 
-  static absl::optional<ui::mojom::blink::VirtualKeyboardMode>
+  static std::optional<ui::mojom::blink::VirtualKeyboardMode>
   ParseVirtualKeyboardValueAsEnum(const String& value);
 
   static void ReportViewportWarning(Document*,

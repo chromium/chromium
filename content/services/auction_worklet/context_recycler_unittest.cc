@@ -70,7 +70,7 @@ class ContextRecyclerTest : public testing::Test {
     v8::Context::Scope ctx(helper_->scratch_context());
     std::optional<std::string> error_msg;
     EXPECT_TRUE(helper_
-                    ->Compile(code, GURL("https://example.org/script.js"),
+                    ->Compile(code, bidding_logic_url_,
                               /*debug_id=*/nullptr, error_msg)
                     .ToLocal(&script));
     EXPECT_FALSE(error_msg.has_value()) << error_msg.value();
@@ -115,8 +115,128 @@ class ContextRecyclerTest : public testing::Test {
         args, time_limit_.get(), error_msgs);
   }
 
+  // Runs a script twice, using a new ContextRecyclerScope each time, testing
+  // that InterestGroupLazyFiller and BiddingBrowserSignalsLazyFiller are
+  // correctly persisted between them.
+  //
+  // In the first run, creates its own parameters for the two recyclers that
+  // make the fillers set all possible lazy callbacks, and adds both sets of
+  // lazy callbacks to a single objects. Then runs a script that stashes that
+  // object. The lazily populated fields are never accessed.
+  //
+  // In the second run, the passed in values are used to reinitialize the lazy
+  // fillers. If the passed in values are null, they are not reinitialized.
+  // Either way, the script serializes the stashed object to JSON, which is
+  // compared to `expected_result`.
+  //
+  // The same hard-coded `bidding_logic_url`, `bidding_wasm_helper_url`, and
+  // 'trusted_bidding_signals_url` are used for both runs, since that doesn't
+  // change across runs, in production code.
+  void RunBidderLazyFilterReuseTest(
+      mojom::BidderWorkletNonSharedParams* ig_params,
+      mojom::BiddingBrowserSignals* bs_params,
+      base::Time now,
+      std::string_view expected_result) {
+    const GURL kBiddingSignalsWasmHelperUrl("https://example.test/wasm_helper");
+    const GURL kTrustedBiddingSignalsUrl(
+        "https://example.test/trusted_signals");
+
+    const char kScript[] = R"(
+      function test(obj) {
+        if (!globalThis.stash) {
+          // On first run
+          globalThis.stash = obj;
+        } else {
+          return JSON.stringify(globalThis.stash);
+        }
+      }
+    )";
+
+    v8::Local<v8::UnboundScript> script = Compile(kScript);
+    ASSERT_FALSE(script.IsEmpty());
+
+    ContextRecycler context_recycler(helper_.get());
+    {
+      ContextRecyclerScope scope(context_recycler);  // Initialize context
+      context_recycler.AddInterestGroupLazyFiller();
+      context_recycler.AddBiddingBrowserSignalsLazyFiller();
+    }
+
+    {
+      // Create parameters that should make InterestGroupLazyFillter and
+      // BiddingBrowserSignalsLazyFiller consider their respective managed
+      // values to be full populated, so set up all lazy fillers they can.
+      base::Time now2 = base::Time::Now();
+      mojom::BidderWorkletNonSharedParamsPtr ig_params2 =
+          mojom::BidderWorkletNonSharedParams::New();
+      ig_params2->user_bidding_signals.emplace("{\"j\": 1}");
+      ig_params2->update_url = GURL("https://example.test/update.json");
+      ig_params2->trusted_bidding_signals_keys.emplace();
+      ig_params2->trusted_bidding_signals_keys->push_back("a");
+      ig_params2->trusted_bidding_signals_keys->push_back("b");
+      ig_params2->priority_vector.emplace();
+      ig_params2->priority_vector->insert(
+          std::pair<std::string, double>("a", 42.0));
+
+      mojom::BiddingBrowserSignalsPtr bs_params2 =
+          mojom::BiddingBrowserSignals::New();
+      bs_params2->prev_wins.push_back(
+          mojom::PreviousWin::New(now2 - base::Minutes(1), "[\"a\"]"));
+      bs_params2->prev_wins.push_back(
+          mojom::PreviousWin::New(now2 - base::Minutes(2), "[\"b\"]"));
+
+      ContextRecyclerScope scope(context_recycler);
+      context_recycler.interest_group_lazy_filler()->ReInitialize(
+          &bidding_logic_url_, &kBiddingSignalsWasmHelperUrl,
+          &kTrustedBiddingSignalsUrl, ig_params2.get());
+      context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
+          bs_params2.get(), now2);
+
+      v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
+      context_recycler.interest_group_lazy_filler()->FillInObject(arg);
+      context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
+
+      std::vector<std::string> error_msgs;
+      Run(scope, script, "test", error_msgs, arg);
+      EXPECT_THAT(error_msgs, ElementsAre());
+    }
+
+    {
+      ContextRecyclerScope scope(context_recycler);
+      if (ig_params) {
+        context_recycler.interest_group_lazy_filler()->ReInitialize(
+            &bidding_logic_url_, &kBiddingSignalsWasmHelperUrl,
+            &kTrustedBiddingSignalsUrl, ig_params);
+      }
+      if (bs_params) {
+        context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
+            bs_params, now);
+      }
+
+      v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
+      if (ig_params) {
+        context_recycler.interest_group_lazy_filler()->FillInObject(arg);
+      }
+      if (bs_params) {
+        context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(
+            arg);
+      }
+
+      std::vector<std::string> error_msgs;
+      v8::MaybeLocal<v8::Value> maybe_result =
+          Run(scope, script, "test", error_msgs, arg);
+      EXPECT_THAT(error_msgs, ElementsAre());
+      v8::Local<v8::Value> result;
+      ASSERT_TRUE(maybe_result.ToLocal(&result));
+      std::string str_result;
+      ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &str_result));
+      EXPECT_EQ(expected_result, str_result);
+    }
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
+  const GURL bidding_logic_url_{"https://example.test/script.js"};
   scoped_refptr<AuctionV8Helper> helper_;
   std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
   std::unique_ptr<AuctionV8Helper::TimeLimit> time_limit_;
@@ -150,8 +270,8 @@ TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindings) {
 
   const char kScript[] = R"(
     function test(suffix) {
-      forDebuggingOnly.reportAdAuctionLoss('https://example.com/loss' + suffix);
-      forDebuggingOnly.reportAdAuctionWin('https://example.com/win' + suffix);
+      forDebuggingOnly.reportAdAuctionLoss('https://example2.test/loss' + suffix);
+      forDebuggingOnly.reportAdAuctionWin('https://example2.test/win' + suffix);
     }
   )";
 
@@ -171,10 +291,10 @@ TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindings) {
         gin::ConvertToV8(helper_->isolate(), 1));
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_EQ(
-        GURL("https://example.com/loss1"),
+        GURL("https://example2.test/loss1"),
         context_recycler.for_debugging_only_bindings()->TakeLossReportUrl());
     EXPECT_EQ(
-        GURL("https://example.com/win1"),
+        GURL("https://example2.test/win1"),
         context_recycler.for_debugging_only_bindings()->TakeWinReportUrl());
   }
 
@@ -185,10 +305,10 @@ TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindings) {
         gin::ConvertToV8(helper_->isolate(), 3));
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_EQ(
-        GURL("https://example.com/loss3"),
+        GURL("https://example2.test/loss3"),
         context_recycler.for_debugging_only_bindings()->TakeLossReportUrl());
     EXPECT_EQ(
-        GURL("https://example.com/win3"),
+        GURL("https://example2.test/win3"),
         context_recycler.for_debugging_only_bindings()->TakeWinReportUrl());
   }
 }
@@ -199,7 +319,7 @@ TEST_F(ContextRecyclerTest, RegisterAdBeaconBindings) {
     function test(num) {
       let obj = {};
       for (let i = num; i < num * 2; ++i) {
-        obj['f' + i] = 'https://example/com/' + i;
+        obj['f' + i] = 'https://example2.test/' + i;
       }
       registerAdBeacon(obj);
     }
@@ -222,7 +342,7 @@ TEST_F(ContextRecyclerTest, RegisterAdBeaconBindings) {
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_THAT(
         context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
-        ElementsAre(Pair("f1", GURL("https://example/com/1"))));
+        ElementsAre(Pair("f1", GURL("https://example2.test/1"))));
   }
 
   {
@@ -233,8 +353,8 @@ TEST_F(ContextRecyclerTest, RegisterAdBeaconBindings) {
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_THAT(
         context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
-        ElementsAre(Pair("f2", GURL("https://example/com/2")),
-                    Pair("f3", GURL("https://example/com/3"))));
+        ElementsAre(Pair("f2", GURL("https://example2.test/2")),
+                    Pair("f3", GURL("https://example2.test/3"))));
   }
 }
 
@@ -263,7 +383,7 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
         gin::ConvertToV8(helper_->isolate(), std::string("not-a-url")));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
                     "sendReportTo must be passed a valid HTTPS url."));
   }
 
@@ -272,10 +392,10 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
     std::vector<std::string> error_msgs;
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(),
-                         std::string("https://example.com/a")));
+                         std::string("https://example2.test/a")));
     EXPECT_THAT(error_msgs, ElementsAre());
     ASSERT_TRUE(context_recycler.report_bindings()->report_url().has_value());
-    EXPECT_EQ("https://example.com/a",
+    EXPECT_EQ("https://example2.test/a",
               context_recycler.report_bindings()->report_url()->spec());
   }
 
@@ -287,10 +407,10 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
     std::vector<std::string> error_msgs;
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(),
-                         std::string("https://example.org/b")));
+                         std::string("https://example.test/b")));
     EXPECT_THAT(error_msgs, ElementsAre());
     ASSERT_TRUE(context_recycler.report_bindings()->report_url().has_value());
-    EXPECT_EQ("https://example.org/b",
+    EXPECT_EQ("https://example.test/b",
               context_recycler.report_bindings()->report_url()->spec());
   }
 }
@@ -313,7 +433,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
   }
   base::RepeatingCallback<bool(const std::string&)> matches_ad1 =
       base::BindRepeating([](const std::string& url) {
-        return url == "https://example.com/ad1";
+        return url == "https://example2.test/ad1";
       });
   base::RepeatingCallback<bool(const std::string&)> ignore_arg_return_false =
       base::BindRepeating([](const std::string& ignored) { return false; });
@@ -323,7 +443,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad1"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad1"),
                                      std::nullopt);
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
@@ -335,7 +455,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad1"));
+    bid_dict.Set("render", std::string("https://example2.test/ad1"));
     bid_dict.Set("bid", 10.0);
 
     std::vector<std::string> error_msgs;
@@ -346,7 +466,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad1", bid->ad_descriptor.url);
+    EXPECT_EQ("https://example2.test/ad1", bid->ad_descriptor.url);
     EXPECT_EQ(10.0, bid->bid);
     EXPECT_EQ(base::Milliseconds(500), bid->bid_duration);
     EXPECT_EQ(mojom::RejectReason::kNotAvailable,
@@ -359,7 +479,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/notad1"),
+    params->ads.value().emplace_back(GURL("https://example2.test/notad1"),
                                      std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
@@ -372,7 +492,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad1"));
+    bid_dict.Set("render", std::string("https://example2.test/ad1"));
     bid_dict.Set("bid", 10.0);
 
     std::vector<std::string> error_msgs;
@@ -381,8 +501,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
-                    "bid render URL 'https://example.com/ad1' isn't one of "
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
+                    "bid render URL 'https://example2.test/ad1' isn't one of "
                     "the registered creative URLs."));
     EXPECT_FALSE(context_recycler.set_bid_bindings()->has_bid());
     EXPECT_EQ(mojom::RejectReason::kNotAvailable,
@@ -395,13 +515,13 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     // Some components, and in a nested auction, w/o permission.
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad3"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad3"),
                                      std::nullopt);
     params->ad_components.emplace();
     params->ad_components.value().emplace_back(
-        GURL("https://example.com/portion1"), std::nullopt);
+        GURL("https://example2.test/portion1"), std::nullopt);
     params->ad_components.value().emplace_back(
-        GURL("https://example.com/portion2"), std::nullopt);
+        GURL("https://example2.test/portion2"), std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
@@ -413,7 +533,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     task_environment_.FastForwardBy(base::Milliseconds(100));
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad1"));
+    bid_dict.Set("render", std::string("https://example2.test/ad1"));
     bid_dict.Set("bid", 10.0);
     std::vector<std::string> error_msgs;
     Run(scope, script, "test", error_msgs,
@@ -422,7 +542,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:3 Uncaught TypeError: bid does not "
+            "https://example.test/script.js:3 Uncaught TypeError: bid does not "
             "have allowComponentAuction set to true. Bid dropped from "
             "component auction."));
     EXPECT_FALSE(context_recycler.set_bid_bindings()->has_bid());
@@ -434,15 +554,15 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad5"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad5"),
                                      std::nullopt);
     params->ad_components.emplace();
     params->ad_components.value().emplace_back(
-        GURL("https://example.com/portion3"), std::nullopt);
+        GURL("https://example2.test/portion3"), std::nullopt);
     params->ad_components.value().emplace_back(
-        GURL("https://example.com/portion4"), std::nullopt);
+        GURL("https://example2.test/portion4"), std::nullopt);
     params->ad_components.value().emplace_back(
-        GURL("https://example.com/portion5"), std::nullopt);
+        GURL("https://example2.test/portion5"), std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
@@ -454,14 +574,14 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     task_environment_.FastForwardBy(base::Milliseconds(200));
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad5"));
+    bid_dict.Set("render", std::string("https://example2.test/ad5"));
     bid_dict.Set("bid", 15.0);
     bid_dict.Set("allowComponentAuction", true);
     v8::LocalVector<v8::Value> components(helper_->isolate());
     components.push_back(gin::ConvertToV8(
-        helper_->isolate(), std::string("https://example.com/portion3")));
+        helper_->isolate(), std::string("https://example2.test/portion3")));
     components.push_back(gin::ConvertToV8(
-        helper_->isolate(), std::string("https://example.com/portion5")));
+        helper_->isolate(), std::string("https://example2.test/portion5")));
     bid_dict.Set("adComponents", components);
 
     std::vector<std::string> error_msgs;
@@ -472,14 +592,15 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad5", bid->ad_descriptor.url);
+    EXPECT_EQ("https://example2.test/ad5", bid->ad_descriptor.url);
     EXPECT_EQ(15.0, bid->bid);
     EXPECT_EQ(base::Milliseconds(200), bid->bid_duration);
     ASSERT_TRUE(bid->ad_component_descriptors.has_value());
     EXPECT_THAT(
         bid->ad_component_descriptors.value(),
-        ElementsAre(blink::AdDescriptor(GURL("https://example.com/portion3")),
-                    blink::AdDescriptor(GURL("https://example.com/portion5"))));
+        ElementsAre(
+            blink::AdDescriptor(GURL("https://example2.test/portion3")),
+            blink::AdDescriptor(GURL("https://example2.test/portion5"))));
   }
 
   {
@@ -488,15 +609,15 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad5"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad5"),
                                      std::nullopt);
     params->ad_components.emplace();
     params->ad_components.value().emplace_back(
-        GURL("https://example.com/portion6"), std::nullopt);
+        GURL("https://example2.test/portion6"), std::nullopt);
     params->ad_components.value().emplace_back(
-        GURL("https://example.com/portion7"), std::nullopt);
+        GURL("https://example2.test/portion7"), std::nullopt);
     params->ad_components.value().emplace_back(
-        GURL("https://example.com/portion8"), std::nullopt);
+        GURL("https://example2.test/portion8"), std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
@@ -508,13 +629,13 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     task_environment_.FastForwardBy(base::Milliseconds(200));
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad5"));
+    bid_dict.Set("render", std::string("https://example2.test/ad5"));
     bid_dict.Set("bid", 15.0);
     v8::LocalVector<v8::Value> components(helper_->isolate());
     components.push_back(gin::ConvertToV8(
-        helper_->isolate(), std::string("https://example.com/portion3")));
+        helper_->isolate(), std::string("https://example2.test/portion3")));
     components.push_back(gin::ConvertToV8(
-        helper_->isolate(), std::string("https://example.com/portion5")));
+        helper_->isolate(), std::string("https://example2.test/portion5")));
     bid_dict.Set("adComponents", components);
 
     std::vector<std::string> error_msgs;
@@ -524,9 +645,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:3 Uncaught TypeError: bid "
+            "https://example.test/script.js:3 Uncaught TypeError: bid "
             "adComponents "
-            "URL 'https://example.com/portion3' isn't one of the registered "
+            "URL 'https://example2.test/portion3' isn't one of the registered "
             "creative URLs."));
     EXPECT_FALSE(context_recycler.set_bid_bindings()->has_bid());
   }
@@ -537,7 +658,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad1"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad1"),
                                      std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
@@ -550,16 +671,16 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad1"));
+    bid_dict.Set("render", std::string("https://example2.test/ad1"));
     bid_dict.Set("bid", 10.0);
 
     std::vector<std::string> error_msgs;
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), bid_dict));
 
-    EXPECT_THAT(error_msgs, ElementsAre("https://example.org/script.js:3 "
+    EXPECT_THAT(error_msgs, ElementsAre("https://example.test/script.js:3 "
                                         "Uncaught TypeError: bid render URL "
-                                        "'https://example.com/ad1' isn't one "
+                                        "'https://example2.test/ad1' isn't one "
                                         "of the registered creative URLs."));
     EXPECT_FALSE(context_recycler.set_bid_bindings()->has_bid());
   }
@@ -570,7 +691,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad2"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad2"),
                                      std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
@@ -583,7 +704,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     task_environment_.FastForwardBy(base::Milliseconds(500));
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad2"));
+    bid_dict.Set("render", std::string("https://example2.test/ad2"));
     bid_dict.Set("bid", 10.0);
 
     std::vector<std::string> error_msgs;
@@ -594,7 +715,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad2", bid->ad_descriptor.url);
+    EXPECT_EQ("https://example2.test/ad2", bid->ad_descriptor.url);
     EXPECT_EQ(10.0, bid->bid);
     EXPECT_EQ(base::Milliseconds(500), bid->bid_duration);
   }
@@ -605,7 +726,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad2"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad2"),
                                      std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
@@ -616,7 +737,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*is_component_ad_excluded=*/matches_ad1);
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad2"));
+    bid_dict.Set("render", std::string("https://example2.test/ad2"));
     bid_dict.Set("bid", 10.0);
     bid_dict.Set("bidCurrency", std::string("USD"));
 
@@ -628,7 +749,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad2", bid->ad_descriptor.url);
+    EXPECT_EQ("https://example2.test/ad2", bid->ad_descriptor.url);
     EXPECT_EQ(10.0, bid->bid);
     ASSERT_TRUE(bid->bid_currency.has_value());
     EXPECT_EQ("USD", bid->bid_currency->currency_code());
@@ -642,7 +763,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad2"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad2"),
                                      std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
@@ -653,7 +774,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*is_component_ad_excluded=*/matches_ad1);
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad2"));
+    bid_dict.Set("render", std::string("https://example2.test/ad2"));
     bid_dict.Set("bid", 10.0);
     bid_dict.Set("bidCurrency", std::string("USD"));
 
@@ -664,7 +785,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:3 Uncaught TypeError: bidCurrency "
+            "https://example.test/script.js:3 Uncaught TypeError: bidCurrency "
             "mismatch; returned 'USD', expected 'CAD'."));
     EXPECT_FALSE(context_recycler.set_bid_bindings()->has_bid());
     EXPECT_EQ(mojom::RejectReason::kWrongGenerateBidCurrency,
@@ -677,7 +798,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         mojom::BidderWorkletNonSharedParams::New();
     ContextRecyclerScope scope(context_recycler);
     params->ads.emplace();
-    params->ads.value().emplace_back(GURL("https://example.com/ad2"),
+    params->ads.value().emplace_back(GURL("https://example2.test/ad2"),
                                      std::nullopt);
 
     context_recycler.set_bid_bindings()->ReInitialize(
@@ -688,7 +809,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         /*is_component_ad_excluded=*/matches_ad1);
 
     gin::Dictionary bid_dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    bid_dict.Set("render", std::string("https://example.com/ad2"));
+    bid_dict.Set("render", std::string("https://example2.test/ad2"));
     bid_dict.Set("bid", 10.0);
     bid_dict.Set("bidCurrency", std::string("CAD"));
 
@@ -700,7 +821,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad2", bid->ad_descriptor.url);
+    EXPECT_EQ("https://example2.test/ad2", bid->ad_descriptor.url);
     EXPECT_EQ(10.0, bid->bid);
     ASSERT_TRUE(bid->bid_currency.has_value());
     EXPECT_EQ("CAD", bid->bid_currency->currency_code());
@@ -734,7 +855,7 @@ TEST_F(ContextRecyclerTest, SetPriorityBindings) {
         gin::ConvertToV8(helper_->isolate(), std::string("not-a-priority")));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
                     "setPriority(): Converting argument 'priority' to a Number "
                     "did not produce a finite double."));
   }
@@ -768,206 +889,108 @@ TEST_F(ContextRecyclerTest, SetPriorityBindings) {
   }
 }
 
+// Test to make sure lifetime managing/avoiding UaF is done right.
+// Actual argument passing is covered thoroughly in bidder worklet unit tests.
+//
+// This test covers the case that an object with fully populated bidder lazy
+// fillers (InterestGroupLazyFiller, BiddingBrowserSignalsLazyFiller) that are
+// never invoked is accessed when a context is reused, with fully populated
+// bidder lazy fillers with different values.
 TEST_F(ContextRecyclerTest, BidderLazyFiller) {
-  // Test to make sure lifetime managing/avoiding UaF is done right.
-  // Actual argument passing is covered thoroughly in bidder worklet unit tests.
-  const char kScript[] = R"(
-    function test(obj) {
-      if (!globalThis.stash) {
-        // On first run
-        globalThis.stash = obj;
-      } else {
-        return JSON.stringify(globalThis.stash);
-      }
-    }
-  )";
+  base::Time now = base::Time::Now();
+  mojom::BidderWorkletNonSharedParamsPtr ig_params =
+      mojom::BidderWorkletNonSharedParams::New();
+  ig_params->user_bidding_signals.emplace("{\"k\": 2}");
+  ig_params->update_url = GURL("https://example.test/update2.json");
+  ig_params->trusted_bidding_signals_keys.emplace();
+  ig_params->trusted_bidding_signals_keys->push_back("c");
+  ig_params->trusted_bidding_signals_keys->push_back("d");
+  ig_params->priority_vector.emplace();
+  ig_params->priority_vector->insert(std::pair<std::string, double>("e", 12.0));
+  ig_params->enable_bidding_signals_prioritization = true;
 
-  v8::Local<v8::UnboundScript> script = Compile(kScript);
-  ASSERT_FALSE(script.IsEmpty());
+  mojom::BiddingBrowserSignalsPtr bs_params =
+      mojom::BiddingBrowserSignals::New();
+  bs_params->prev_wins.push_back(
+      mojom::PreviousWin::New(now - base::Minutes(3), "[\"c\"]"));
+  bs_params->prev_wins.push_back(
+      mojom::PreviousWin::New(now - base::Minutes(4), "[\"d\"]"));
 
-  ContextRecycler context_recycler(helper_.get());
-  {
-    ContextRecyclerScope scope(context_recycler);  // Initialize context
-    context_recycler.AddInterestGroupLazyFiller();
-    context_recycler.AddBiddingBrowserSignalsLazyFiller();
-  }
-
-  {
-    base::Time now = base::Time::Now();
-    mojom::BidderWorkletNonSharedParamsPtr ig_params =
-        mojom::BidderWorkletNonSharedParams::New();
-    ig_params->user_bidding_signals.emplace("{\"j\": 1}");
-    ig_params->trusted_bidding_signals_keys.emplace();
-    ig_params->trusted_bidding_signals_keys->push_back("a");
-    ig_params->trusted_bidding_signals_keys->push_back("b");
-    ig_params->priority_vector.emplace();
-    ig_params->priority_vector->insert(
-        std::pair<std::string, double>("a", 42.0));
-
-    mojom::BiddingBrowserSignalsPtr bs_params =
-        mojom::BiddingBrowserSignals::New();
-    bs_params->prev_wins.push_back(
-        mojom::PreviousWin::New(now - base::Minutes(1), "[\"a\"]"));
-    bs_params->prev_wins.push_back(
-        mojom::PreviousWin::New(now - base::Minutes(2), "[\"b\"]"));
-
-    ContextRecyclerScope scope(context_recycler);
-    context_recycler.interest_group_lazy_filler()->ReInitialize(
-        ig_params.get());
-    context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
-        bs_params.get(), now);
-
-    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
-    context_recycler.interest_group_lazy_filler()->FillInObject(arg);
-    context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
-
-    std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs, arg);
-    EXPECT_THAT(error_msgs, ElementsAre());
-  }
-
-  {
-    base::Time now = base::Time::Now();
-    mojom::BidderWorkletNonSharedParamsPtr ig_params =
-        mojom::BidderWorkletNonSharedParams::New();
-    ig_params->user_bidding_signals.emplace("{\"k\": 2}");
-    ig_params->trusted_bidding_signals_keys.emplace();
-    ig_params->trusted_bidding_signals_keys->push_back("c");
-    ig_params->trusted_bidding_signals_keys->push_back("d");
-    ig_params->priority_vector.emplace();
-    ig_params->priority_vector->insert(
-        std::pair<std::string, double>("e", 12.0));
-    ig_params->enable_bidding_signals_prioritization = true;
-
-    mojom::BiddingBrowserSignalsPtr bs_params =
-        mojom::BiddingBrowserSignals::New();
-    bs_params->prev_wins.push_back(
-        mojom::PreviousWin::New(now - base::Minutes(3), "[\"c\"]"));
-    bs_params->prev_wins.push_back(
-        mojom::PreviousWin::New(now - base::Minutes(4), "[\"d\"]"));
-
-    ContextRecyclerScope scope(context_recycler);
-    context_recycler.interest_group_lazy_filler()->ReInitialize(
-        ig_params.get());
-    context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
-        bs_params.get(), now);
-
-    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
-    context_recycler.interest_group_lazy_filler()->FillInObject(arg);
-    context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
-
-    std::vector<std::string> error_msgs;
-    v8::MaybeLocal<v8::Value> maybe_result =
-        Run(scope, script, "test", error_msgs, arg);
-    EXPECT_THAT(error_msgs, ElementsAre());
-    v8::Local<v8::Value> result;
-    ASSERT_TRUE(maybe_result.ToLocal(&result));
-    std::string str_result;
-    ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &str_result));
-    EXPECT_EQ(
-        "{\"userBiddingSignals\":{\"k\":2},"
-        "\"trustedBiddingSignalsKeys\":[\"c\",\"d\"],"
-        "\"priorityVector\":{\"e\":12},"
-        "\"useBiddingSignalsPrioritization\":true,"
-        "\"prevWins\":[[240,[\"d\"]],[180,[\"c\"]]],"
-        "\"prevWinsMs\":[[240000,[\"d\"]],[180000,[\"c\"]]]}",
-        str_result);
-  }
+  RunBidderLazyFilterReuseTest(
+      ig_params.get(), bs_params.get(), now,
+      "{\"userBiddingSignals\":{\"k\":2},"
+      "\"biddingLogicURL\":\"https://example.test/script.js\","
+      "\"biddingLogicUrl\":\"https://example.test/script.js\","
+      "\"biddingWasmHelperURL\":\"https://example.test/wasm_helper\","
+      "\"biddingWasmHelperUrl\":\"https://example.test/wasm_helper\","
+      "\"updateURL\":\"https://example.test/update2.json\","
+      "\"updateUrl\":\"https://example.test/update2.json\","
+      "\"dailyUpdateUrl\":\"https://example.test/update2.json\","
+      "\"trustedBiddingSignalsURL\":\"https://example.test/trusted_signals\","
+      "\"trustedBiddingSignalsUrl\":\"https://example.test/trusted_signals\","
+      "\"trustedBiddingSignalsKeys\":[\"c\",\"d\"],"
+      "\"priorityVector\":{\"e\":12},"
+      "\"useBiddingSignalsPrioritization\":true,"
+      "\"prevWins\":[[240,[\"d\"]],[180,[\"c\"]]],"
+      "\"prevWinsMs\":[[240000,[\"d\"]],[180000,[\"c\"]]]}");
 }
 
+// Test to make sure lifetime managing/avoiding UaF is done right.
+// Actual argument passing is covered thoroughly in bidder worklet unit tests.
+//
+// This test covers the case that an object with fully populated bidder lazy
+// fillers (InterestGroupLazyFiller, BiddingBrowserSignalsLazyFiller) that are
+// never invoked is accessed when a context is reused, with minimally populated
+// bidder lazy fillers.
 TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
-  // Test to make sure that stale objects with fields added that are no longer
-  // there handle it gracefully.
-  const char kScript[] = R"(
-    function test(obj) {
-      if (!globalThis.stash) {
-        // On first run
-        globalThis.stash = obj;
-      } else {
-        return JSON.stringify(globalThis.stash);
-      }
-    }
-  )";
+  base::Time now = base::Time::Now();
+  mojom::BidderWorkletNonSharedParamsPtr ig_params =
+      mojom::BidderWorkletNonSharedParams::New();
+  mojom::BiddingBrowserSignalsPtr bs_params =
+      mojom::BiddingBrowserSignals::New();
+  RunBidderLazyFilterReuseTest(
+      ig_params.get(), bs_params.get(), now,
+      "{\"userBiddingSignals\":null,"
+      "\"biddingLogicURL\":\"https://example.test/script.js\","
+      "\"biddingLogicUrl\":\"https://example.test/script.js\","
+      "\"biddingWasmHelperURL\":\"https://example.test/wasm_helper\","
+      "\"biddingWasmHelperUrl\":\"https://example.test/wasm_helper\","
+      "\"updateURL\":null,"
+      "\"updateUrl\":null,"
+      "\"dailyUpdateUrl\":null,"
+      "\"trustedBiddingSignalsURL\":\"https://example.test/trusted_signals\","
+      "\"trustedBiddingSignalsUrl\":\"https://example.test/trusted_signals\","
+      "\"trustedBiddingSignalsKeys\":null,"
+      "\"priorityVector\":null,"
+      "\"useBiddingSignalsPrioritization\":false,"
+      "\"prevWins\":[],"
+      "\"prevWinsMs\":[]}");
+}
 
-  v8::Local<v8::UnboundScript> script = Compile(kScript);
-  ASSERT_FALSE(script.IsEmpty());
-
-  ContextRecycler context_recycler(helper_.get());
-  {
-    ContextRecyclerScope scope(context_recycler);  // Initialize context
-    context_recycler.AddInterestGroupLazyFiller();
-    context_recycler.AddBiddingBrowserSignalsLazyFiller();
-  }
-
-  {
-    base::Time now = base::Time::Now();
-    mojom::BidderWorkletNonSharedParamsPtr ig_params =
-        mojom::BidderWorkletNonSharedParams::New();
-    ig_params->user_bidding_signals.emplace("{\"j\": 1}");
-    ig_params->trusted_bidding_signals_keys.emplace();
-    ig_params->trusted_bidding_signals_keys->push_back("a");
-    ig_params->trusted_bidding_signals_keys->push_back("b");
-    ig_params->priority_vector.emplace();
-    ig_params->priority_vector->insert(
-        std::pair<std::string, double>("a", 42.0));
-
-    mojom::BiddingBrowserSignalsPtr bs_params =
-        mojom::BiddingBrowserSignals::New();
-    bs_params->prev_wins.push_back(
-        mojom::PreviousWin::New(now - base::Minutes(1), "[\"a\"]"));
-    bs_params->prev_wins.push_back(
-        mojom::PreviousWin::New(now - base::Minutes(2), "[\"b\"]"));
-
-    ContextRecyclerScope scope(context_recycler);
-    context_recycler.interest_group_lazy_filler()->ReInitialize(
-        ig_params.get());
-    context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
-        bs_params.get(), now);
-
-    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
-    context_recycler.interest_group_lazy_filler()->FillInObject(arg);
-    context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
-
-    std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs, arg);
-    EXPECT_THAT(error_msgs, ElementsAre());
-  }
-
-  {
-    // Now cover the data for the fields not actually being there.
-    base::Time now = base::Time::Now();
-    mojom::BidderWorkletNonSharedParamsPtr ig_params =
-        mojom::BidderWorkletNonSharedParams::New();
-    mojom::BiddingBrowserSignalsPtr bs_params =
-        mojom::BiddingBrowserSignals::New();
-
-    ContextRecyclerScope scope(context_recycler);
-    context_recycler.interest_group_lazy_filler()->ReInitialize(
-        ig_params.get());
-    context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
-        bs_params.get(), now);
-
-    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
-    context_recycler.interest_group_lazy_filler()->FillInObject(arg);
-    context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
-
-    std::vector<std::string> error_msgs;
-    v8::MaybeLocal<v8::Value> maybe_result =
-        Run(scope, script, "test", error_msgs, arg);
-    EXPECT_THAT(error_msgs, ElementsAre());
-    v8::Local<v8::Value> result;
-    ASSERT_TRUE(maybe_result.ToLocal(&result));
-    std::string str_result;
-    ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &str_result));
-    EXPECT_EQ(
-        "{\"userBiddingSignals\":null,"
-        "\"trustedBiddingSignalsKeys\":null,"
-        "\"priorityVector\":null,"
-        "\"useBiddingSignalsPrioritization\":false,"
-        "\"prevWins\":[],"
-        "\"prevWinsMs\":[]}",
-        str_result);
-  }
+// Test to make sure lifetime managing/avoiding UaF is done right.
+// Actual argument passing is covered thoroughly in bidder worklet unit tests.
+//
+// This test covers the case that an object with fully populated bidder lazy
+// fillers (InterestGroupLazyFiller, BiddingBrowserSignalsLazyFiller) that are
+// never invoked is accessed when a context is reused, without populating bidder
+// lazy fillers.
+TEST_F(ContextRecyclerTest, BidderLazyFiller3) {
+  RunBidderLazyFilterReuseTest(nullptr, nullptr, base::Time(),
+                               "{\"userBiddingSignals\":null,"
+                               "\"biddingLogicURL\":null,"
+                               "\"biddingLogicUrl\":null,"
+                               "\"biddingWasmHelperURL\":null,"
+                               "\"biddingWasmHelperUrl\":null,"
+                               "\"updateURL\":null,"
+                               "\"updateUrl\":null,"
+                               "\"dailyUpdateUrl\":null,"
+                               "\"trustedBiddingSignalsURL\":null,"
+                               "\"trustedBiddingSignalsUrl\":null,"
+                               "\"trustedBiddingSignalsKeys\":null,"
+                               "\"priorityVector\":null,"
+                               "\"useBiddingSignalsPrioritization\":null,"
+                               "\"prevWins\":null,"
+                               "\"prevWinsMs\":null}");
 }
 
 TEST_F(ContextRecyclerTest, SharedStorageMethods) {
@@ -1129,7 +1152,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:3 Uncaught TypeError: "
+            "https://example.test/script.js:3 Uncaught TypeError: "
             "sharedStorage.set(): at least 2 argument(s) are required."));
   }
 
@@ -1144,7 +1167,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:3 Uncaught TypeError: "
+            "https://example.test/script.js:3 Uncaught TypeError: "
             "sharedStorage.set(): at least 2 argument(s) are required."));
   }
 
@@ -1160,7 +1183,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
              gin::ConvertToV8(helper_->isolate(), true)}));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
                     "sharedStorage.set 'options' argument "
                     "Value passed as dictionary is neither object, null, nor "
                     "undefined."));
@@ -1177,7 +1200,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
              gin::ConvertToV8(helper_->isolate(), std::string("b"))}));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
                     "Invalid 'key' argument in sharedStorage.set()."));
   }
 
@@ -1192,7 +1215,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
              gin::ConvertToV8(helper_->isolate(), kInvalidValue)}));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
                     "Invalid 'value' argument in sharedStorage.set()."));
   }
 
@@ -1210,7 +1233,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
              gin::ConvertToV8(helper_->isolate(), true)}));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:3 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
                     "sharedStorage.set 'options' argument "
                     "Value passed as dictionary is neither object, null, nor "
                     "undefined."));
@@ -1225,7 +1248,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:7 Uncaught TypeError: "
+            "https://example.test/script.js:7 Uncaught TypeError: "
             "sharedStorage.append(): at least 2 argument(s) are required."));
   }
 
@@ -1240,7 +1263,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:7 Uncaught TypeError: "
+            "https://example.test/script.js:7 Uncaught TypeError: "
             "sharedStorage.append(): at least 2 argument(s) are required."));
   }
 
@@ -1255,7 +1278,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
              gin::ConvertToV8(helper_->isolate(), std::string("b"))}));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:7 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:7 Uncaught TypeError: "
                     "Invalid 'key' argument in sharedStorage.append()."));
   }
 
@@ -1270,7 +1293,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
              gin::ConvertToV8(helper_->isolate(), kInvalidValue)}));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:7 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:7 Uncaught TypeError: "
                     "Invalid 'value' argument in sharedStorage.append()."));
   }
 
@@ -1283,7 +1306,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:11 Uncaught TypeError: "
+            "https://example.test/script.js:11 Uncaught TypeError: "
             "sharedStorage.delete(): at least 1 argument(s) are required."));
   }
 
@@ -1297,7 +1320,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
             {gin::ConvertToV8(helper_->isolate(), std::string(""))}));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:11 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:11 Uncaught TypeError: "
                     "Invalid 'key' argument in sharedStorage.delete()."));
   }
 }
@@ -1339,7 +1362,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
     Run(scope, script, "testSet", error_msgs,
         /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:3 Uncaught "
+                ElementsAre("https://example.test/script.js:3 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
                             "Policy denied the method on sharedStorage."));
   }
@@ -1351,7 +1374,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
     Run(scope, script, "testAppend", error_msgs,
         /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:7 Uncaught "
+                ElementsAre("https://example.test/script.js:7 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
                             "Policy denied the method on sharedStorage."));
   }
@@ -1363,7 +1386,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
     Run(scope, script, "testDelete", error_msgs,
         /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:11 Uncaught "
+                ElementsAre("https://example.test/script.js:11 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
                             "Policy denied the method on sharedStorage."));
   }
@@ -1375,7 +1398,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
     Run(scope, script, "testClear", error_msgs,
         /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:15 Uncaught "
+                ElementsAre("https://example.test/script.js:15 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
                             "Policy denied the method on sharedStorage."));
   }
@@ -1637,7 +1660,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
                     "BigInt is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -1657,7 +1680,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:8 Uncaught "
+                ElementsAre("https://example.test/script.js:8 Uncaught "
                             "TypeError: Cannot convert 123 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -1678,7 +1701,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
                     "BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -1699,7 +1722,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
                     "Value must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -1719,7 +1742,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogram() 'contribution' "
                     "argument: Required field 'bucket' is undefined."));
 
@@ -1740,7 +1763,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogram() 'contribution' "
                     "argument: Required field 'value' is undefined."));
 
@@ -1886,7 +1909,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         WrapDebugKey(std::string("-1")));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:21 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:21 Uncaught TypeError: "
                     "BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -1902,7 +1925,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     Run(scope, script, "enableDebugMode", error_msgs,
         WrapDebugKey(std::string("18446744073709551616")));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:21 Uncaught "
+                ElementsAre("https://example.test/script.js:21 Uncaught "
                             "TypeError: BigInt is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -1917,7 +1940,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(1234));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:21 Uncaught "
+                ElementsAre("https://example.test/script.js:21 Uncaught "
                             "TypeError: Cannot convert 1234 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -1936,7 +1959,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:21 Uncaught TypeError: "
+            "https://example.test/script.js:21 Uncaught TypeError: "
             "privateAggregation.enableDebugMode() 'options' argument: Value "
             "passed as dictionary is neither object, null, nor undefined."));
 
@@ -1957,7 +1980,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     Run(scope, script, "enableDebugMode", error_msgs);
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "enableDebugMode may be called at most once."));
     error_msgs.clear();
 
@@ -2233,7 +2256,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:37 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:37 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent(): at "
                     "least 2 argument(s) are required."));
 
@@ -2254,7 +2277,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:41 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:41 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent(): at "
                     "least 2 argument(s) are required."));
 
@@ -2276,7 +2299,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:48 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:48 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent() "
                     "'contribution' argument: Value passed as dictionary is "
                     "neither object, null, nor undefined."));
@@ -2463,7 +2486,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "BigInt is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2592,7 +2615,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:12 Uncaught TypeError: "
+            "https://example.test/script.js:12 Uncaught TypeError: "
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: Required field 'baseValue' is undefined."));
 
@@ -2617,7 +2640,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
+                ElementsAre("https://example.test/script.js:12 Uncaught "
                             "TypeError: Bucket's 'baseValue' is invalid."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2669,7 +2692,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "Cannot convert a BigInt value to a number."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2695,7 +2718,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent() "
                     "'contribution' argument: Converting field 'scale' to a "
                     "Number did not produce a finite double."));
@@ -2723,7 +2746,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent() "
                     "'contribution' argument: Converting field 'scale' to a "
                     "Number did not produce a finite double."));
@@ -2750,7 +2773,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
+                ElementsAre("https://example.test/script.js:12 Uncaught "
                             "TypeError: Bucket's 'offset' must be BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2815,7 +2838,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:12 Uncaught TypeError: "
+            "https://example.test/script.js:12 Uncaught TypeError: "
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: Required field 'baseValue' is undefined."));
 
@@ -2844,7 +2867,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "Value's 'offset' must be a 32-bit signed integer."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2868,7 +2891,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
+                ElementsAre("https://example.test/script.js:12 Uncaught "
                             "TypeError: Value's 'baseValue' is invalid."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2889,7 +2912,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "Cannot convert 12.3 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2930,7 +2953,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "Cannot convert a BigInt value to a number."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2951,7 +2974,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2972,7 +2995,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
                     "Value must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -2993,7 +3016,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:12 Uncaught TypeError: "
+            "https://example.test/script.js:12 Uncaught TypeError: "
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: Required field 'bucket' is undefined."));
 
@@ -3013,7 +3036,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs,
-                ElementsAre("https://example.org/script.js:12 Uncaught "
+                ElementsAre("https://example.test/script.js:12 Uncaught "
                             "TypeError: Cannot convert 123 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
@@ -3034,7 +3057,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:12 Uncaught TypeError: "
+            "https://example.test/script.js:12 Uncaught TypeError: "
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: Required field 'value' is undefined."));
 
@@ -3108,7 +3131,7 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught ReferenceError: "
+        ElementsAre("https://example.test/script.js:8 Uncaught ReferenceError: "
                     "privateAggregation is not defined."));
 
     ASSERT_TRUE(context_recycler.private_aggregation_bindings()
@@ -3166,7 +3189,7 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught ReferenceError: "
+        ElementsAre("https://example.test/script.js:8 Uncaught ReferenceError: "
                     "privateAggregation is not defined."));
 
     ASSERT_TRUE(context_recycler.private_aggregation_bindings()
@@ -3229,7 +3252,7 @@ TEST_F(ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:9 Uncaught TypeError: "
+        ElementsAre("https://example.test/script.js:9 Uncaught TypeError: "
                     "privateAggregation.contributeToHistogramOnEvent is not a "
                     "function."));
 

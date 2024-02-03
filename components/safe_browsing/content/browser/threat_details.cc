@@ -780,6 +780,9 @@ void ThreatDetails::OnCacheCollectionReady() {
       client_report_utils::GetUrlApiTypeForThreatSource(
           resource_.threat_source));
 
+  report_->mutable_client_properties()->set_is_async_check(
+      resource_.is_async_check);
+
   // Fill the referrer chain if applicable.
   if (ShouldFillReferrerChain()) {
     FillReferrerChain(report_->mutable_referrer_chain());

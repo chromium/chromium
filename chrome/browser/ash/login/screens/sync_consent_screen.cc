@@ -112,7 +112,8 @@ bool IsMinorMode(Profile* profile, const user_manager::User* user) {
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   auto capability =
-      account_info.capabilities.can_offer_extended_chrome_sync_promos();
+      account_info.capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.IsCapabilityKnown",
                             capability != signin::Tribool::kUnknown);
   return capability != signin::Tribool::kTrue;
@@ -327,8 +328,9 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior(
     return SyncScreenBehavior::kSkipNonGaiaAccount;
 
   // Skip for public user.
-  if (user_->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (user_->GetType() == user_manager::UserType::kPublicAccount) {
     return SyncScreenBehavior::kSkipPublicAccount;
+  }
 
   // Skip for non-branded (e.g. developer) builds. Check this after the account
   // type checks so we don't try to enable sync in browser_tests for those
@@ -340,7 +342,7 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior(
       user_manager::UserManager::Get();
   // Skip for non-regular ephemeral users.
   if (user_manager->IsUserNonCryptohomeDataEphemeral(user_->GetAccountId()) &&
-      (user_->GetType() != user_manager::USER_TYPE_REGULAR)) {
+      (user_->GetType() != user_manager::UserType::kRegular)) {
     return SyncScreenBehavior::kSkipAndEnableEmphemeralUser;
   }
 

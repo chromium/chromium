@@ -23,7 +23,7 @@ class VideoFrameHandlerProxyLacros;
 class DeviceProxyLacros : public video_capture::Device {
  public:
   DeviceProxyLacros(
-      absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
+      std::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
       mojo::PendingRemote<crosapi::mojom::VideoCaptureDevice> proxy_remote,
       base::OnceClosure cleanup_callback);
   DeviceProxyLacros(const DeviceProxyLacros&) = delete;

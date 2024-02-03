@@ -2165,9 +2165,9 @@ suite('WallpaperSearchTest', () => {
           $$<IronCollapseElement>(wallpaperSearchElement, 'iron-collapse')!;
       assertFalse(ironCollapse.opened);
       assertEquals(
-          'expand-carets',
+          'cr-icon expand-carets',
           wallpaperSearchElement.shadowRoot!
-              .querySelector('#inspirationToggle')!.className);
+              .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'false',
           $$<IronCollapseElement>(
@@ -2178,22 +2178,22 @@ suite('WallpaperSearchTest', () => {
 
       assertTrue(ironCollapse.opened);
       assertEquals(
-          'collapse-carets',
+          'cr-icon collapse-carets',
           wallpaperSearchElement.shadowRoot!
-              .querySelector('#inspirationToggle')!.className);
+              .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'true',
           $$<IronCollapseElement>(
               wallpaperSearchElement, '#inspirationToggle')!.ariaExpanded);
 
-      $$<CrIconButtonElement>(
-          wallpaperSearchElement, '#inspirationToggle')!.click();
+      $$<CrIconButtonElement>(wallpaperSearchElement, '#inspirationToggle')!
+          .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
 
       assertFalse(ironCollapse.opened);
       assertEquals(
-          'expand-carets',
+          'cr-icon expand-carets',
           wallpaperSearchElement.shadowRoot!
-              .querySelector('#inspirationToggle')!.className);
+              .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'false',
           $$<IronCollapseElement>(

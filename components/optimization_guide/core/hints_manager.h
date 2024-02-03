@@ -25,6 +25,7 @@
 #include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_hints_component_observer.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -567,6 +568,9 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // first. This will prevent use-after-free issues where the background thread
   // would access other member variables after they have been destroyed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // Requests contexts for which personalized metadata should be enabled.
+  const features::RequestContextSet allowed_contexts_for_personalized_metadata_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

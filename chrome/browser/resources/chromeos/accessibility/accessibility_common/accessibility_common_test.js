@@ -14,22 +14,6 @@ AccessibilityCommonE2ETest = class extends CommonE2ETestBase {
           name, enabled => resolve(enabled));
     });
   }
-
-  async getPref(name) {
-    return new Promise(resolve => {
-      chrome.settingsPrivate.getPref(name, ret => {
-        resolve(ret);
-      });
-    });
-  }
-
-  async setPref(name, value) {
-    return new Promise(resolve => {
-      chrome.settingsPrivate.setPref(name, value, undefined, () => {
-        resolve();
-      });
-    });
-  }
 };
 
 TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {

@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "media/base/media_export.h"
 #include "media/base/media_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -21,29 +21,29 @@ namespace media {
 // https://storage.googleapis.com/downloads.webmproject.org/docs/vp9/vp-codec-iso-media-file-format-binding-20160516-draft.pdf
 // ParseLegacyVp9CodecID handles parsing of legacy VP9 codec strings defined
 // for WebM.
-MEDIA_EXPORT absl::optional<VideoType> ParseNewStyleVp9CodecID(
+MEDIA_EXPORT std::optional<VideoType> ParseNewStyleVp9CodecID(
     std::string_view codec_id);
 
-MEDIA_EXPORT absl::optional<VideoType> ParseLegacyVp9CodecID(
+MEDIA_EXPORT std::optional<VideoType> ParseLegacyVp9CodecID(
     std::string_view codec_id);
 
-MEDIA_EXPORT absl::optional<VideoType> ParseAv1CodecId(
+MEDIA_EXPORT std::optional<VideoType> ParseAv1CodecId(
     std::string_view codec_id);
 
 // Handle parsing AVC/H.264 codec ids as outlined in RFC 6381 and ISO-14496-10.
-MEDIA_EXPORT absl::optional<VideoType> ParseAVCCodecId(
+MEDIA_EXPORT std::optional<VideoType> ParseAVCCodecId(
     std::string_view codec_id);
 
-MEDIA_EXPORT absl::optional<VideoType> ParseHEVCCodecId(
+MEDIA_EXPORT std::optional<VideoType> ParseHEVCCodecId(
     std::string_view codec_id);
 
-MEDIA_EXPORT absl::optional<VideoType> ParseVVCCodecId(
+MEDIA_EXPORT std::optional<VideoType> ParseVVCCodecId(
     std::string_view codec_id);
 
-MEDIA_EXPORT absl::optional<VideoType> ParseDolbyVisionCodecId(
+MEDIA_EXPORT std::optional<VideoType> ParseDolbyVisionCodecId(
     std::string_view codec_id);
 
-MEDIA_EXPORT absl::optional<VideoType> ParseCodec(std::string_view codec_id);
+MEDIA_EXPORT std::optional<VideoType> ParseCodec(std::string_view codec_id);
 
 MEDIA_EXPORT VideoCodec StringToVideoCodec(std::string_view codec_id);
 

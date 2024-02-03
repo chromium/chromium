@@ -1228,46 +1228,21 @@ bool MaybeCreateProxyForInterception(
   bool had_interceptors = false;
   const auto& handlers = HandlerType::ForAgentHost(agent_host);
   for (const auto& handler : base::Reversed(handlers)) {
-    had_interceptors = handler->MaybeCreateProxyForInterception(
-                           process_id, storage_partition, frame_token,
-                           is_navigation, is_download, agent_override) ||
-                       had_interceptors;
+    had_interceptors |= handler->MaybeCreateProxyForInterception(
+        process_id, storage_partition, frame_token, is_navigation, is_download,
+        agent_override);
   }
   return had_interceptors;
 }
 
 }  // namespace
 
-bool WillCreateURLLoaderFactory(
-    RenderFrameHostImpl* rfh,
+bool WillCreateURLLoaderFactoryParams::Run(
     bool is_navigation,
     bool is_download,
     network::URLLoaderFactoryBuilder& factory_builder,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
-  DCHECK(!is_download || is_navigation);
-
-  RenderProcessHost* rph = rfh->GetProcess();
-  DCHECK(rph);
-
-  DevToolsAgentHostImpl* frame_agent_host =
-      RenderFrameDevToolsAgentHost::GetFor(rfh);
-
-  return WillCreateURLLoaderFactoryInternal(
-      frame_agent_host, rfh->GetDevToolsFrameToken(), rph->GetID(),
-      rph->GetStoragePartition(), is_navigation, is_download, &factory_builder,
-      factory_override);
-}
-
-bool WillCreateURLLoaderFactoryInternal(
-    DevToolsAgentHostImpl* agent_host,
-    const base::UnguessableToken& devtools_token,
-    int process_id,
-    StoragePartition* storage_partition,
-    bool is_navigation,
-    bool is_download,
-    network::URLLoaderFactoryBuilder* factory_builder,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
-  DCHECK(!is_download || is_navigation);
+  CHECK(!is_download || is_navigation);
 
   network::mojom::URLLoaderFactoryOverride devtools_override;
   // If caller passed some existing overrides, use those.
@@ -1283,31 +1258,27 @@ bool WillCreateURLLoaderFactoryInternal(
   // Within the target, the agents added earlier are closer to network.
   bool had_interceptors =
       MaybeCreateProxyForInterception<protocol::NetworkHandler>(
-          agent_host, process_id, storage_partition, devtools_token,
+          agent_host_, process_id_, storage_partition_, devtools_token_,
           is_navigation, is_download, handler_override);
 
-  had_interceptors =
-      MaybeCreateProxyForInterception<protocol::FetchHandler>(
-          agent_host, process_id, storage_partition, devtools_token,
-          is_navigation, is_download, handler_override) ||
-      had_interceptors;
+  had_interceptors |= MaybeCreateProxyForInterception<protocol::FetchHandler>(
+      agent_host_, process_id_, storage_partition_, devtools_token_,
+      is_navigation, is_download, handler_override);
 
   // TODO(caseq): assure deterministic order of browser agents (or sessions).
   for (auto* browser_agent_host : BrowserDevToolsAgentHost::Instances()) {
-    had_interceptors =
-        MaybeCreateProxyForInterception<protocol::FetchHandler>(
-            browser_agent_host, process_id, storage_partition, devtools_token,
-            is_navigation, is_download, handler_override) ||
-        had_interceptors;
+    had_interceptors |= MaybeCreateProxyForInterception<protocol::FetchHandler>(
+        browser_agent_host, process_id_, storage_partition_, devtools_token_,
+        is_navigation, is_download, handler_override);
   }
   if (!had_interceptors) {
     return false;
   }
-  DCHECK(handler_override->overriding_factory);
-  DCHECK(handler_override->overridden_factory_receiver);
+  CHECK(handler_override->overriding_factory);
+  CHECK(handler_override->overridden_factory_receiver);
   if (!factory_override) {
     // Not a subresource navigation, so just override the target receiver.
-    auto [receiver, remote] = factory_builder->Append();
+    auto [receiver, remote] = factory_builder.Append();
     mojo::FusePipes(std::move(receiver),
                     std::move(devtools_override.overriding_factory));
     mojo::FusePipes(std::move(devtools_override.overridden_factory_receiver),
@@ -1316,82 +1287,88 @@ bool WillCreateURLLoaderFactoryInternal(
     // No other overrides, so just returns ours as is.
     *factory_override = network::mojom::URLLoaderFactoryOverride::New(
         std::move(devtools_override.overriding_factory),
-        std::move(devtools_override.overridden_factory_receiver), false);
+        std::move(devtools_override.overridden_factory_receiver),
+        /*skip_cors_enabled_scheme_check=*/false);
   }
   // ... else things are already taken care of, as handler_override was pointing
   // to factory override and we've done all magic in-place.
-  DCHECK(!devtools_override.overriding_factory);
-  DCHECK(!devtools_override.overridden_factory_receiver);
+  CHECK(!devtools_override.overriding_factory);
+  CHECK(!devtools_override.overridden_factory_receiver);
 
   return true;
 }
 
-bool WillCreateURLLoaderFactoryForServiceWorker(
-    RenderProcessHost* rph,
-    int routing_id,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
-  DCHECK(rph);
-  DCHECK(factory_override);
+WillCreateURLLoaderFactoryParams::WillCreateURLLoaderFactoryParams(
+    DevToolsAgentHostImpl* agent_host,
+    const base::UnguessableToken& devtools_token,
+    int process_id,
+    StoragePartition* storage_partition)
+    : agent_host_(agent_host),
+      devtools_token_(devtools_token),
+      process_id_(process_id),
+      storage_partition_(storage_partition) {}
 
-  ServiceWorkerDevToolsAgentHost* worker_agent_host =
-      ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForWorker(rph->GetID(), routing_id);
-  DCHECK(worker_agent_host);
-
-  return WillCreateURLLoaderFactoryInternal(
-      worker_agent_host, worker_agent_host->devtools_worker_token(),
-      rph->GetID(), rph->GetStoragePartition(),
-      /*is_navigation=*/false, /*is_download=*/false,
-      /*factory_builder=*/nullptr, factory_override);
+WillCreateURLLoaderFactoryParams WillCreateURLLoaderFactoryParams::ForFrame(
+    RenderFrameHostImpl* rfh) {
+  return WillCreateURLLoaderFactoryParams(
+      RenderFrameDevToolsAgentHost::GetFor(rfh), rfh->GetDevToolsFrameToken(),
+      rfh->GetProcess()->GetID(), rfh->GetProcess()->GetStoragePartition());
 }
 
-bool WillCreateURLLoaderFactoryForServiceWorkerMainScript(
+WillCreateURLLoaderFactoryParams
+WillCreateURLLoaderFactoryParams::ForServiceWorker(RenderProcessHost& rph,
+                                                   int routing_id) {
+  ServiceWorkerDevToolsAgentHost* agent_host =
+      ServiceWorkerDevToolsManager::GetInstance()
+          ->GetDevToolsAgentHostForWorker(rph.GetID(), routing_id);
+  CHECK(agent_host);
+  return WillCreateURLLoaderFactoryParams(
+      agent_host, agent_host->devtools_worker_token(), rph.GetID(),
+      rph.GetStoragePartition());
+}
+
+std::optional<WillCreateURLLoaderFactoryParams>
+WillCreateURLLoaderFactoryParams::ForServiceWorkerMainScript(
     const ServiceWorkerContextWrapper* context_wrapper,
-    int64_t version_id,
-    network::URLLoaderFactoryBuilder& factory_builder) {
-  ServiceWorkerDevToolsAgentHost* worker_agent_host =
-      ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForNewInstallingWorker(context_wrapper,
-                                                       version_id);
-  DCHECK(worker_agent_host);
-
-  return WillCreateURLLoaderFactoryInternal(
-      worker_agent_host, worker_agent_host->devtools_worker_token(),
-      ChildProcessHost::kInvalidUniqueID, context_wrapper->storage_partition(),
-      /*is_navigation=*/true,
-      /*is_download=*/false, &factory_builder,
-      /*factory_override=*/nullptr);
-}
-
-bool WillCreateURLLoaderFactoryForSharedWorker(
-    SharedWorkerHost* host,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
-  auto* worker_agent_host = SharedWorkerDevToolsAgentHost::GetFor(host);
-  if (!worker_agent_host) {
-    return false;
+    std::optional<int64_t> version_id) {
+  if (!version_id.has_value()) {
+    return std::nullopt;
   }
 
-  RenderProcessHost* rph = worker_agent_host->GetProcessHost();
-  DCHECK(rph);
-
-  return WillCreateURLLoaderFactoryInternal(
-      worker_agent_host, worker_agent_host->devtools_worker_token(),
-      rph->GetID(), rph->GetStoragePartition(),
-      /*is_navigation=*/false, /*is_download=*/false,
-      /*factory_builder=*/nullptr, factory_override);
+  // If we have a version_id, we are fetching a worker main script. We have a
+  // DevtoolsAgentHost ready for the worker and we can add the devtools override
+  // before instantiating the URLFactoryLoader.
+  ServiceWorkerDevToolsAgentHost* agent_host =
+      ServiceWorkerDevToolsManager::GetInstance()
+          ->GetDevToolsAgentHostForNewInstallingWorker(context_wrapper,
+                                                       *version_id);
+  CHECK(agent_host);
+  return WillCreateURLLoaderFactoryParams(
+      agent_host, agent_host->devtools_worker_token(),
+      ChildProcessHost::kInvalidUniqueID, context_wrapper->storage_partition());
 }
 
-bool WillCreateURLLoaderFactoryForWorkerMainScript(
-    DevToolsAgentHostImpl* host,
-    const base::UnguessableToken& worker_token,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
-  RenderProcessHost* rph = host->GetProcessHost();
-  DCHECK(rph);
+std::optional<WillCreateURLLoaderFactoryParams>
+WillCreateURLLoaderFactoryParams::ForSharedWorker(SharedWorkerHost* host) {
+  auto* agent_host = SharedWorkerDevToolsAgentHost::GetFor(host);
+  if (!agent_host) {
+    return std::nullopt;
+  }
+  RenderProcessHost* rph = agent_host->GetProcessHost();
+  CHECK(rph);
+  return WillCreateURLLoaderFactoryParams(
+      agent_host, agent_host->devtools_worker_token(), rph->GetID(),
+      rph->GetStoragePartition());
+}
 
-  return WillCreateURLLoaderFactoryInternal(
-      host, worker_token, rph->GetID(), rph->GetStoragePartition(),
-      /*is_navigation=*/false, /*is_download=*/false,
-      /*factory_builder=*/nullptr, factory_override);
+WillCreateURLLoaderFactoryParams
+WillCreateURLLoaderFactoryParams::ForWorkerMainScript(
+    DevToolsAgentHostImpl* agent_host,
+    const base::UnguessableToken& worker_token) {
+  RenderProcessHost* rph = agent_host->GetProcessHost();
+  CHECK(rph);
+  return WillCreateURLLoaderFactoryParams(
+      agent_host, worker_token, rph->GetID(), rph->GetStoragePartition());
 }
 
 void OnPrefetchRequestWillBeSent(

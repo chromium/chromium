@@ -3,7 +3,7 @@ Start Tracking
 Logged IG events:
 interestGroupAuctionEventOccurred {
     auctionConfig : {
-        decisionLogicUrl : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+        decisionLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
         interestGroupBuyers : [
             [0] : https://a.test:8443
         ]
@@ -211,7 +211,7 @@ Stop Tracking IG Events
 Logged IG events:
 interestGroupAuctionEventOccurred {
     auctionConfig : {
-        decisionLogicUrl : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+        decisionLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
         interestGroupBuyers : [
             [0] : https://a.test:8443
         ]

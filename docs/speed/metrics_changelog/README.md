@@ -7,6 +7,7 @@ This directory contains changelogs for [Web Vitals](https://web.dev/vitals/) ava
  * [Cumulative Layout Shift](cls.md)
  * [First Contentful Paint](fcp.md)
  * [Interaction to Next Paint](inp.md)
+ * [Soft Navigation Heuristics](soft_navigations.md)
 
 See also:
 

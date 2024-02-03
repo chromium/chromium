@@ -114,7 +114,7 @@ const float kMaxModuleEngagementIndex = 50;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListContentNotification:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kPlaceholder:
@@ -159,7 +159,7 @@ const float kMaxModuleEngagementIndex = 50;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListContentNotification:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
       UMA_HISTOGRAM_EXACT_LINEAR(
@@ -220,8 +220,7 @@ const float kMaxModuleEngagementIndex = 50;
 }
 
 - (void)recordMostVisitedTileOpened:(ContentSuggestionsMostVisitedItem*)item
-                            atIndex:(NSInteger)index
-                           webState:(web::WebState*)webState {
+                            atIndex:(NSInteger)index {
   base::RecordAction(base::UserMetricsAction(kMostVisitedAction));
 
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
@@ -229,8 +228,8 @@ const float kMaxModuleEngagementIndex = 50;
       [self getVisualTypeFromAttributes:item.attributes],
       [self getIconTypeFromAttributes:item.attributes], item.URL));
 
-  new_tab_page_uma::RecordAction(
-      false, webState, new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY);
+  new_tab_page_uma::RecordNTPAction(
+      false, true, new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY);
 }
 
 - (void)recordMostVisitedTileRemoved {

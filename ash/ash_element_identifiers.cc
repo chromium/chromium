@@ -10,6 +10,7 @@ namespace ash {
 
 // Please keep this list alphabetized.
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppListBubbleViewElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kAssistantDialogPlateElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBluetoothFeatureTileToggleElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kCalendarViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kEnterpriseManagedView);
@@ -19,6 +20,9 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kHomeButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kLoginUserViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kOverviewDeskBarElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kOverviewDeskBarNewDeskButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(
+    kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kQuickSettingsAudioDetailedViewButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kQuickSettingsSettingsButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kQuickSettingsViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSearchBoxViewElementId);

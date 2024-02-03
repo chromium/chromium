@@ -70,7 +70,7 @@ suite('SettingsPdfOcrToggleTest', () => {
     assertEquals(testElement.i18n('pdfOcrSubtitle'), toggle.subLabel);
 
     webUIListenerCallback(
-        'pdf-ocr-state-changed', ScreenAiInstallStatus.FAILED);
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOAD_FAILED);
     assertEquals(testElement.i18n('pdfOcrDownloadErrorLabel'), toggle.subLabel);
 
     webUIListenerCallback(
@@ -85,8 +85,5 @@ suite('SettingsPdfOcrToggleTest', () => {
         'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
     assertEquals(
         testElement.i18n('pdfOcrDownloadCompleteLabel'), toggle.subLabel);
-
-    webUIListenerCallback('pdf-ocr-state-changed', ScreenAiInstallStatus.READY);
-    assertEquals(testElement.i18n('pdfOcrSubtitle'), toggle.subLabel);
   });
 });

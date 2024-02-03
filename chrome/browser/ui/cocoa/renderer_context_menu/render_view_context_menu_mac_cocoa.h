@@ -50,11 +50,4 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
   NSView* __weak parent_view_;
 };
 
-// The ChromeSwizzleServicesMenuUpdater filters Services menu items in the
-// contextual menus and elsewhere using swizzling.
-@interface ChromeSwizzleServicesMenuUpdater : NSObject
-// Return filtered entries, for testing.
-+ (void)storeFilteredEntriesForTestingInArray:(NSMutableArray*)array;
-@end
-
 #endif  // CHROME_BROWSER_UI_COCOA_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_MAC_COCOA_H_

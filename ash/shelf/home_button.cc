@@ -359,8 +359,8 @@ gfx::Size HomeButton::CalculatePreferredSize() const {
   return control_button_size;
 }
 
-void HomeButton::Layout() {
-  ShelfControlButton::Layout();
+void HomeButton::Layout(PassKey) {
+  LayoutSuperclass<ShelfControlButton>(this);
 
   button_image_view_->SetBoundsRect(
       gfx::Rect(ShelfControlButton::CalculatePreferredSize()));
@@ -679,7 +679,7 @@ void HomeButton::CreateNudgeLabel() {
                                           *nudge_label_);
   }
   expandable_container_->SetVisible(false);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void HomeButton::CreateQuickAppButton() {

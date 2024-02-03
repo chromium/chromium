@@ -548,7 +548,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     return;
   }
 
-  absl::optional<PaintPropertyTreeBuilder> property_tree_builder;
+  std::optional<PaintPropertyTreeBuilder> property_tree_builder;
   if (context.tree_builder_context) {
     property_tree_builder.emplace(object, pre_paint_info,
                                   *context.tree_builder_context);
@@ -800,7 +800,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
 
   DCHECK(fragment.IsFragmentationContextRoot());
 
-  absl::optional<wtf_size_t> inner_fragmentainer_idx;
+  std::optional<wtf_size_t> inner_fragmentainer_idx;
 
   for (PhysicalFragmentLink child : fragment.Children()) {
     const auto* box_fragment = To<PhysicalBoxFragment>(child.fragment.Get());
@@ -902,7 +902,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
     const LayoutObject& parent_object,
     const PhysicalBoxFragment* parent_fragment,
     const PrePaintTreeWalkContext& context) {
-  absl::optional<InlineCursor> inline_cursor;
+  std::optional<InlineCursor> inline_cursor;
   for (const LayoutObject* child = parent_object.SlowFirstChild(); child;
        // Stay on the |child| while iterating fragments of |child|.
        child = inline_cursor ? child : child->NextSibling()) {

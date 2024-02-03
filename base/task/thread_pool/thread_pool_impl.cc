@@ -27,6 +27,7 @@
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
 #include "base/task/thread_pool/thread_group_impl.h"
+#include "base/task/thread_pool/thread_group_semaphore.h"
 #include "base/task/thread_pool/worker_thread.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -75,6 +76,7 @@ ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label,
                                bool use_background_threads)
     : histogram_label_(histogram_label),
       task_tracker_(std::move(task_tracker)),
+      use_background_threads_(use_background_threads),
       single_thread_task_runner_manager_(task_tracker_->GetTrackedRef(),
                                          &delayed_task_manager_),
       has_disable_best_effort_switch_(HasDisableBestEffortTasksSwitch()),
@@ -139,20 +141,72 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   if (g_synchronous_thread_start_for_testing)
     service_thread_.WaitUntilThreadStarted();
 
-  if (FeatureList::IsEnabled(kUseUtilityThreadGroup) &&
-      CanUseUtilityThreadTypeForWorkerThread()) {
-    utility_thread_group_ = std::make_unique<ThreadGroupImpl>(
+  if (FeatureList::IsEnabled(kThreadGroupSemaphore)) {
+    auto old_foreground_group = std::move(foreground_thread_group_);
+
+    foreground_thread_group_ = std::make_unique<ThreadGroupSemaphore>(
         histogram_label_.empty()
             ? std::string()
-            : JoinString(
-                  {histogram_label_, kUtilityPoolEnvironmentParams.name_suffix},
-                  "."),
-        kUtilityPoolEnvironmentParams.name_suffix,
-        kUtilityPoolEnvironmentParams.thread_type_hint,
+            : JoinString({histogram_label_,
+                          kForegroundPoolEnvironmentParams.name_suffix},
+                         "."),
+        kForegroundPoolEnvironmentParams.name_suffix,
+        kForegroundPoolEnvironmentParams.thread_type_hint,
         task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
-    foreground_thread_group_
-        ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
-            utility_thread_group_.get());
+
+    old_foreground_group->HandoffAllTaskSourcesToOtherThreadGroup(
+        foreground_thread_group_.get());
+
+    if (background_thread_group_) {
+      auto old_background_group = std::move(background_thread_group_);
+
+      background_thread_group_ = std::make_unique<ThreadGroupSemaphore>(
+          histogram_label_.empty()
+              ? std::string()
+              : JoinString({histogram_label_,
+                            kBackgroundPoolEnvironmentParams.name_suffix},
+                           "."),
+          kBackgroundPoolEnvironmentParams.name_suffix,
+          use_background_threads_
+              ? kBackgroundPoolEnvironmentParams.thread_type_hint
+              : kForegroundPoolEnvironmentParams.thread_type_hint,
+          task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+
+      old_background_group->HandoffAllTaskSourcesToOtherThreadGroup(
+          background_thread_group_.get());
+    }
+
+    if (FeatureList::IsEnabled(kUseUtilityThreadGroup) &&
+        CanUseUtilityThreadTypeForWorkerThread()) {
+      utility_thread_group_ = std::make_unique<ThreadGroupSemaphore>(
+          histogram_label_.empty()
+              ? std::string()
+              : JoinString({histogram_label_,
+                            kUtilityPoolEnvironmentParams.name_suffix},
+                           "."),
+          kUtilityPoolEnvironmentParams.name_suffix,
+          kUtilityPoolEnvironmentParams.thread_type_hint,
+          task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+      foreground_thread_group_
+          ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
+              utility_thread_group_.get());
+    }
+  } else {
+    if (FeatureList::IsEnabled(kUseUtilityThreadGroup) &&
+        CanUseUtilityThreadTypeForWorkerThread()) {
+      utility_thread_group_ = std::make_unique<ThreadGroupImpl>(
+          histogram_label_.empty()
+              ? std::string()
+              : JoinString({histogram_label_,
+                            kUtilityPoolEnvironmentParams.name_suffix},
+                           "."),
+          kUtilityPoolEnvironmentParams.name_suffix,
+          kUtilityPoolEnvironmentParams.thread_type_hint,
+          task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+      foreground_thread_group_
+          ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
+              utility_thread_group_.get());
+    }
   }
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
@@ -185,26 +239,26 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   // tasks that can run in foreground pools to ensure that there is always
   // room for incoming foreground tasks and to minimize the performance impact
   // of best-effort tasks.
-  static_cast<ThreadGroupImpl*>(foreground_thread_group_.get())
-      ->Start(foreground_threads, max_best_effort_tasks,
-              init_params.suggested_reclaim_time, service_thread_task_runner,
-              worker_thread_observer, worker_environment,
-              g_synchronous_thread_start_for_testing);
+  foreground_thread_group_.get()->Start(
+      foreground_threads, max_best_effort_tasks,
+      init_params.suggested_reclaim_time, service_thread_task_runner,
+      worker_thread_observer, worker_environment,
+      g_synchronous_thread_start_for_testing);
 
   if (utility_thread_group_) {
-    static_cast<ThreadGroupImpl*>(utility_thread_group_.get())
-        ->Start(utility_threads, max_best_effort_tasks,
-                init_params.suggested_reclaim_time, service_thread_task_runner,
-                worker_thread_observer, worker_environment,
-                g_synchronous_thread_start_for_testing);
+    utility_thread_group_.get()->Start(
+        utility_threads, max_best_effort_tasks,
+        init_params.suggested_reclaim_time, service_thread_task_runner,
+        worker_thread_observer, worker_environment,
+        g_synchronous_thread_start_for_testing);
   }
 
   if (background_thread_group_) {
-    static_cast<ThreadGroupImpl*>(background_thread_group_.get())
-        ->Start(max_best_effort_tasks, max_best_effort_tasks,
-                init_params.suggested_reclaim_time, service_thread_task_runner,
-                worker_thread_observer, worker_environment,
-                g_synchronous_thread_start_for_testing);
+    background_thread_group_.get()->Start(
+        max_best_effort_tasks, max_best_effort_tasks,
+        init_params.suggested_reclaim_time, service_thread_task_runner,
+        worker_thread_observer, worker_environment,
+        g_synchronous_thread_start_for_testing);
   }
 
   started_ = true;

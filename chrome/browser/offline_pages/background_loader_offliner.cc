@@ -16,12 +16,15 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 #include "chrome/browser/offline_pages/offliner_helper.h"
 #include "chrome/browser/offline_pages/offliner_user_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -459,6 +462,15 @@ void BackgroundLoaderOffliner::ResetLoader() {
   loader_ = std::make_unique<background_loader::BackgroundLoaderContents>(
       browser_context_);
   loader_->SetDelegate(this);
+
+  // Initialize web contents settings.
+  renderer_preferences_util::UpdateFromSystemSettings(
+      loader_->web_contents()->GetMutableRendererPrefs(),
+      Profile::FromBrowserContext(browser_context_));
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      loader_->web_contents(),
+      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+          loader_->web_contents()));
 }
 
 void BackgroundLoaderOffliner::AttachObservers() {

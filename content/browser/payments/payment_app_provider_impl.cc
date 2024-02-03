@@ -78,16 +78,13 @@ void AddModifiersToMap(const std::vector<PaymentDetailsModifierPtr>& modifiers,
 }
 
 std::string EncodeIcon(const SkBitmap& app_icon) {
-  std::string string_encoded_icon;
   if (app_icon.empty())
-    return string_encoded_icon;
+    return "";
 
   gfx::Image decoded_image = gfx::Image::CreateFrom1xBitmap(app_icon);
   scoped_refptr<base::RefCountedMemory> raw_data = decoded_image.As1xPNGBytes();
-  base::Base64Encode(
-      base::StringPiece(raw_data->front_as<char>(), raw_data->size()),
-      &string_encoded_icon);
-  return string_encoded_icon;
+  return base::Base64Encode(
+      base::StringPiece(raw_data->front_as<char>(), raw_data->size()));
 }
 
 void CheckRegistrationSuccess(base::OnceCallback<void(bool success)> callback,

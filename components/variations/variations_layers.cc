@@ -151,6 +151,21 @@ bool ValidSlotBounds(const Layer& layer_proto) {
   return true;
 }
 
+// Selects the entropy provider based on the entropy mode of the layer. Note
+// that the caller bears the responsibility of checking with a limited entropy
+// provider exists before calling this function.
+const base::FieldTrial::EntropyProvider& SelectEntropyProvider(
+    const EntropyProviders& entropy_providers,
+    const Layer::EntropyMode& entropy_mode) {
+  if (entropy_mode == Layer::LIMITED) {
+    return entropy_providers.limited_entropy();
+  } else if (entropy_mode == Layer::LOW) {
+    return entropy_providers.low_entropy();
+  } else {
+    return entropy_providers.default_entropy();
+  }
+}
+
 }  // namespace
 
 VariationsLayers::VariationsLayers(const VariationsSeed& seed,
@@ -208,8 +223,21 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
   }
 
   if (layer_proto.entropy_mode() != Layer::LOW &&
-      layer_proto.entropy_mode() != Layer::DEFAULT) {
+      layer_proto.entropy_mode() != Layer::DEFAULT &&
+      layer_proto.entropy_mode() != Layer::LIMITED) {
     LogInvalidLayerReason(InvalidLayerReason::kInvalidEntropyMode);
+    return;
+  }
+
+  // There must be a limited entropy provider when processing a limited layer. A
+  // limited entropy provider does not exist for an ineligible platform (e.g.
+  // WebView), or if the client is not in the enabled group of the limited
+  // entropy synthetic trial.
+  // TODO(crbug.com/1508150): clean up the synthetic trial after it has
+  // completed.
+  if (layer_proto.entropy_mode() == Layer::LIMITED &&
+      !entropy_providers.has_limited_entropy()) {
+    LogInvalidLayerReason(InvalidLayerReason::kLimitedLayerDropped);
     return;
   }
 
@@ -229,9 +257,8 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
     return;
   }
 
-  const auto& entropy_provider = (layer_proto.entropy_mode() != Layer::LOW)
-                                     ? entropy_providers.default_entropy()
-                                     : entropy_providers.low_entropy();
+  const auto& entropy_provider =
+      SelectEntropyProvider(entropy_providers, layer_proto.entropy_mode());
   uint32_t salt = layer_proto.salt() ? layer_proto.salt() : layer_proto.id();
   ValueInRange pseudorandom = {
       .value = entropy_provider.GetPseudorandomValue(salt, range),

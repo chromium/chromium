@@ -20,7 +20,8 @@ class AccountCapabilitiesTestMutator {
   // Exposes setters for the supported capabilities.
   // Please keep this list alphabetically sorted.
   void set_can_have_email_address_displayed(bool value);
-  void set_can_offer_extended_chrome_sync_promos(bool value);
+  void set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      bool value);
   void set_can_run_chrome_privacy_sandbox_trials(bool value);
   void set_is_opted_in_to_parental_supervision(bool value);
   void set_can_toggle_auto_updates(bool value);

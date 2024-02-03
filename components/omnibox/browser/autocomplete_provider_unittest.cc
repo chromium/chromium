@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -804,11 +805,40 @@ TEST_F(AutocompleteProviderTest, ExtraQueryParams) {
       switches::kExtraSearchQueryParams, "a=b");
   RunExactKeymatchTest(true);
   CopyResults();
-  ASSERT_EQ(2U, result_.size());
+
+  // When LimitKeywordModeSuggestions is enabled, DSE suggestions are curbed in
+  // keyword mode, so this test is only relevant when disabled.
+  if (!omnibox_feature_configs::LimitKeywordModeSuggestions::Get().enabled) {
+    ASSERT_EQ(2U, result_.size());
+    EXPECT_EQ("http://keyword/test",
+              result_.match_at(0)->destination_url.possibly_invalid_spec());
+    EXPECT_EQ("http://defaultturl/k%20test?a=b",
+              result_.match_at(1)->destination_url.possibly_invalid_spec());
+  }
+}
+
+// Ensures matches from (only) the default search provider are curbed when in
+// keyword mode and LimitKeywordModeSuggestions is enabled.
+TEST_F(AutocompleteProviderTest, CurbDefaultSuggestions) {
+  // Enable LimitKeywordModeSuggestions flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      omnibox_feature_configs::LimitKeywordModeSuggestions::
+          kLimitKeywordModeSuggestions,
+      true);
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::LimitKeywordModeSuggestions>
+      scoped_config;
+
+  ResetControllerWithKeywordAndSearchProviders();
+  RunExactKeymatchTest(true);
+  CopyResults();
+
+  // When LimitKeywordModeSuggestions is enabled, DSE suggestions are curbed, so
+  // the default turl suggestion should not be present in the results.
+  ASSERT_EQ(1U, result_.size());
   EXPECT_EQ("http://keyword/test",
             result_.match_at(0)->destination_url.possibly_invalid_spec());
-  EXPECT_EQ("http://defaultturl/k%20test?a=b",
-            result_.match_at(1)->destination_url.possibly_invalid_spec());
 }
 
 // Test that redundant associated keywords are removed.

@@ -100,7 +100,7 @@ std::u16string GetNotificationTitleFor(const std::u16string& app_name,
           IDS_APP_TIME_LIMIT_APP_TIME_LIMIT_SET_SYSTEM_NOTIFICATION_TITLE);
     default:
       NOTREACHED();
-      return base::EmptyString16();
+      return std::u16string();
   }
 }
 
@@ -135,7 +135,7 @@ std::u16string GetNotificationMessageFor(
           IDS_APP_TIME_LIMIT_APP_AVAILABLE_NOTIFICATION_MESSAGE, app_name);
     default:
       NOTREACHED();
-      return base::EmptyString16();
+      return std::u16string();
   }
 }
 

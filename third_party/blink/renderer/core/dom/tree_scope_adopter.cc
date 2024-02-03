@@ -197,6 +197,8 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
   if (auto* element = DynamicTo<Element>(node)) {
     old_document.MoveElementExplicitlySetAttrElementsMapToNewDocument(
         element, new_document);
+    old_document.MoveElementCachedAttrAssociatedElementsMapToNewDocument(
+        element, new_document);
   }
 
   if (node.GetCustomElementState() == CustomElementState::kCustom) {

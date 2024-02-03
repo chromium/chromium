@@ -44,7 +44,9 @@ class MockSharedWorkerHelper : public SharedWorkerHelper {
   void StartFetching(FetchCallback callback) override;
   void DeleteSharedWorker(const GURL& worker,
                           const std::string& name,
-                          const blink::StorageKey& storage_key) override;
+                          const blink::StorageKey& storage_key,
+                          const blink::mojom::SharedWorkerSameSiteCookies
+                              same_site_cookies) override;
 
  private:
   ~MockSharedWorkerHelper() override;

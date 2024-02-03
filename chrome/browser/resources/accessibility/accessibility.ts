@@ -47,6 +47,7 @@ type PageData = Data&{
   metadata: boolean,
   native: boolean,
   pdf: boolean,
+  screenreader: boolean,
   web: boolean,
 
   tree?: string,
@@ -78,7 +79,7 @@ interface InitData {
 
 type RequestType = 'showOrRefreshTree';
 
-type GlobalStateName = 'native'|'web'|'metadata'|'pdf';
+type GlobalStateName = 'native'|'web'|'metadata'|'pdf'|'screenreader';
 
 class BrowserProxy {
   toggleAccessibility(
@@ -364,6 +365,9 @@ function formatRow(
     row.appendChild(
         createModeElement(AxMode.HTML_METADATA, pageData, 'metadata'));
     row.appendChild(createModeElement(AxMode.PDF, pageData, 'pdf'));
+    row.appendChild(createModeElement(
+        AxMode.LABEL_IMAGES, pageData, 'screenreader',
+        /*readonly=*/ true));
   } else {
     const siteInfo = document.createElement('span');
     siteInfo.appendChild(formatValue(data, 'name'));
@@ -473,28 +477,36 @@ function getNameForAccessibilityMode(mode: AxMode): string {
 }
 
 function createModeElement(
-    mode: AxMode, data: PageData, globalStateName: GlobalStateName) {
+    mode: AxMode, data: PageData, globalStateName: GlobalStateName,
+    readOnly = false) {
   const currentMode = data.a11yMode;
-  const link = document.createElement('a', {is: 'action-link'});
-  link.setAttribute('is', 'action-link');
-  link.setAttribute('role', 'button');
+  const element = readOnly ? document.createElement('span') :
+                             document.createElement('a', {is: 'action-link'});
+  if (readOnly) {
+    element.classList.add('readOnlyMode');
+  } else {
+    element.setAttribute('is', 'action-link');
+    element.setAttribute('role', 'button');
+  }
 
   const stateText = ((currentMode & mode) !== 0) ? 'true' : 'false';
   const isEnabled =
       (data as unknown as {[k: string]: boolean})[globalStateName];
   const accessibilityModeName = getNameForAccessibilityMode(mode);
   if (isEnabled) {
-    link.textContent = accessibilityModeName + ': ' + stateText;
+    element.textContent = accessibilityModeName + ': ' + stateText;
   } else {
-    link.textContent = accessibilityModeName + ': disabled';
-    link.classList.add('disabled');
+    element.textContent = accessibilityModeName + ': disabled';
+    element.classList.add('disabled');
   }
-  link.setAttribute(
+  element.setAttribute(
       'aria-label', `${accessibilityModeName} for ${data.name}: ${stateText}`);
-  link.setAttribute('aria-pressed', stateText);
-  link.addEventListener(
-      'click', toggleAccessibility.bind(null, data, mode, globalStateName));
-  return link;
+  if (!readOnly) {
+    element.setAttribute('aria-pressed', stateText);
+    element.addEventListener(
+        'click', toggleAccessibility.bind(null, data, mode, globalStateName));
+  }
+  return element;
 }
 
 function createShowAccessibilityTreeElement(

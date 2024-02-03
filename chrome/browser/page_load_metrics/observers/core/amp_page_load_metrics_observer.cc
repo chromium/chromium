@@ -95,7 +95,7 @@ GURL GetViewerUrlFromCacheUrl(const GURL& url) {
     if (it.GetKey() == "viewerUrl")
       return GURL(it.GetUnescapedValue());
   }
-  return GURL::EmptyGURL();
+  return GURL();
 }
 
 base::TimeDelta ClampToZero(base::TimeDelta t) {

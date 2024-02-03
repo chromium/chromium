@@ -19,7 +19,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -684,9 +683,7 @@ class SigninManagerSupervisedUserTest : public SigninManagerTest {
 
 TEST_F(SigninManagerSupervisedUserTest, SignoutOnCookiesDeletedNotAllowed) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
-      {kPreventSignoutIfAccountValid});
+  scoped_feature_list.InitWithFeatures({}, {kPreventSignoutIfAccountValid});
   AddSupervisedAccount(ConsentLevel::kSignin);
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   ASSERT_EQ(1U, observer().events().size());
@@ -696,22 +693,6 @@ TEST_F(SigninManagerSupervisedUserTest, SignoutOnCookiesDeletedNotAllowed) {
   identity_test_env()->SetCookieAccounts({});
   EXPECT_EQ(0U, observer().events().size());
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-}
-
-TEST_F(SigninManagerSupervisedUserTest, SignoutOnCookiesDeletedAllowed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn,
-           kPreventSignoutIfAccountValid});
-  AddSupervisedAccount(ConsentLevel::kSignin);
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  ASSERT_EQ(1U, observer().events().size());
-  observer().Reset();
-
-  // Remove the cookie, the account should be cleared.
-  identity_test_env()->SetCookieAccounts({});
-  EXPECT_EQ(1U, observer().events().size());
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
 

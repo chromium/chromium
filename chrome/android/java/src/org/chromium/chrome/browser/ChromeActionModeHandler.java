@@ -25,6 +25,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -56,16 +57,17 @@ public class ChromeActionModeHandler {
 
     /**
      * @param activityTabProvider {@link ActivityTabProvider} instance.
-     * @param actionBarObserver observer called when the contextual action bar's visibility
-     *        has changed.
+     * @param actionBarObserver observer called when the contextual action bar's visibility has
+     *     changed.
      * @param searchCallback Callback to run when search action is selected in the action mode.
      * @param shareDelegateSupplier The {@link Supplier} of the {@link ShareDelegate} that will be
-     *        notified when a share action is performed.
+     *     notified when a share action is performed.
      */
     public ChromeActionModeHandler(
             ActivityTabProvider activityTabProvider,
             Callback<String> searchCallback,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<ReadAloudController> readAloudControllerSupplier) {
         mInitWebContentsObserver =
                 (webContents) -> {
                     SelectionPopupController spc =
@@ -75,7 +77,8 @@ public class ChromeActionModeHandler {
                                     mActiveTab,
                                     webContents,
                                     searchCallback,
-                                    shareDelegateSupplier));
+                                    shareDelegateSupplier,
+                                    readAloudControllerSupplier));
                     spc.setDropdownMenuDelegate(new ChromeSelectionDropdownMenuDelegate());
                 };
 
@@ -112,6 +115,7 @@ public class ChromeActionModeHandler {
         private final ActionModeCallbackHelper mHelper;
         private final Callback<String> mSearchCallback;
         private final Supplier<ShareDelegate> mShareDelegateSupplier;
+        private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
 
         // Used for recording UMA histograms.
         private long mContextMenuStartTime;
@@ -120,11 +124,13 @@ public class ChromeActionModeHandler {
                 Tab tab,
                 WebContents webContents,
                 Callback<String> searchCallback,
-                Supplier<ShareDelegate> shareDelegateSupplier) {
+                Supplier<ShareDelegate> shareDelegateSupplier,
+                Supplier<ReadAloudController> readAloudControllerSupplier) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);
             mSearchCallback = searchCallback;
             mShareDelegateSupplier = shareDelegateSupplier;
+            mReadAloudControllerSupplier = readAloudControllerSupplier;
         }
 
         @VisibleForTesting
@@ -200,6 +206,12 @@ public class ChromeActionModeHandler {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             if (!mHelper.isActionModeValid()) return true;
+
+            ReadAloudController readAloud = mReadAloudControllerSupplier.get();
+            if (readAloud != null) {
+                readAloud.maybePauseForOutgoingIntent(item.getIntent());
+            }
+
             return handleItemClick(item.getItemId()) || mHelper.onActionItemClicked(mode, item);
         }
 

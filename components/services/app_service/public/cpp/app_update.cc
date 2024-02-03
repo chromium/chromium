@@ -591,7 +591,7 @@ bool AppUpdate::SupportedLocalesChanged() const {
 }
 
 std::optional<std::string> AppUpdate::SelectedLocale() const {
-  GET_VALUE_WITH_FALLBACK(selected_locale, base::EmptyString())
+  GET_VALUE_WITH_FALLBACK(selected_locale, std::string())
 }
 
 bool AppUpdate::SelectedLocaleChanged() const {

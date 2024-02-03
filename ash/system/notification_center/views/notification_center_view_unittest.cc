@@ -190,8 +190,8 @@ class NotificationCenterViewTest
     // Outside of tests, any changes to bubble's size as well as scrolling
     // through notification list will trigger TrayBubbleView's BoxLayout to
     // relayout, and then this view will relayout. In test, we don't have
-    // TrayBubbleView as the parent, so we need to ensure Layout() is executed
-    // in some circumstances.
+    // TrayBubbleView as the parent, so we need to ensure layout is executed in
+    // some circumstances.
     views::test::RunScheduledLayout(test_api()->GetNotificationCenterView());
   }
 
@@ -555,7 +555,7 @@ TEST_P(NotificationCenterViewTest, NotificationPartialSwipe) {
   optional_fields.settings_button_handler =
       message_center::SettingsButtonHandler::INLINE;
   auto id2 = test_api()->AddCustomNotification(
-      u"title", u"message", ui::ImageModel(), base::EmptyString16(), GURL(),
+      u"title", u"message", ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), optional_fields);
 
   view = test_api()->GetNotificationViewForId(id2);

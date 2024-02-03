@@ -87,7 +87,7 @@ class ASH_EXPORT AccelerometerProviderMojo
     mojo::Remote<chromeos::sensors::mojom::SensorDevice> remote;
     std::optional<AccelerometerSource> location;
     std::optional<float> scale;
-    std::unique_ptr<AccelGryoSamplesObserver> samples_observer;
+    std::unique_ptr<AccelGyroSamplesObserver> samples_observer;
   };
 
   ~AccelerometerProviderMojo() override;
@@ -154,7 +154,7 @@ class ASH_EXPORT AccelerometerProviderMojo
 
   // Creates the Mojo channel for the accelerometer, and requests the
   // accelerometer's required attributes before creating the
-  // AccelGryoSamplesObserver of it.
+  // AccelGyroSamplesObserver of it.
   void RegisterAccelerometerWithId(int32_t id);
   void OnAccelerometerRemoteDisconnect(int32_t id,
                                        uint32_t custom_reason_code,
@@ -166,7 +166,7 @@ class ASH_EXPORT AccelerometerProviderMojo
   // Ignores the accelerometer as the attributes are not expected.
   void IgnoreAccelerometer(int32_t id);
 
-  // Creates the AccelGryoSamplesObserver for the accelerometer with |id|.
+  // Creates the AccelGyroSamplesObserver for the accelerometer with |id|.
   void CreateAccelerometerSamplesObserver(int32_t id);
 
   // Controls accelerometer reading.

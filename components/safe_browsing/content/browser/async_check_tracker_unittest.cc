@@ -124,7 +124,8 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
         /*url_lookup_service=*/nullptr,
         /*hash_realtime_service=*/nullptr,
         /*hash_realtime_selection=*/
-        hash_realtime_utils::HashRealTimeSelection::kNone);
+        hash_realtime_utils::HashRealTimeSelection::kNone,
+        /*is_async_check=*/true);
     checker->AddUrlInRedirectChainForTesting(url_);
     tracker_->TransferUrlChecker(std::move(checker));
   }
@@ -164,6 +165,7 @@ TEST_P(AsyncCheckTrackerTest,
 
 TEST_P(AsyncCheckTrackerTest,
        DisplayBlockingPageNotCalled_PendingCheckProceed) {
+  base::HistogramTester histograms;
   content::MockNavigationHandle handle(url_, main_rfh());
   CallTransferUrlChecker(handle.GetNavigationId());
   CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/true,
@@ -171,10 +173,15 @@ TEST_P(AsyncCheckTrackerTest,
                               /*all_checks_completed=*/true);
   CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
+
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.AsyncCheck.HasPostCommitInterstitialSkipped",
+      /*expected_count=*/0);
 }
 
 TEST_P(AsyncCheckTrackerTest,
        DisplayBlockingPageNotCalled_PostCommitInterstitialNotSkipped) {
+  base::HistogramTester histograms;
   content::MockNavigationHandle handle(url_, main_rfh());
   CallTransferUrlChecker(handle.GetNavigationId());
   CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
@@ -182,6 +189,11 @@ TEST_P(AsyncCheckTrackerTest,
                               /*all_checks_completed=*/true);
   CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.AsyncCheck.HasPostCommitInterstitialSkipped",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(AsyncCheckTrackerTest,
@@ -196,6 +208,7 @@ TEST_P(AsyncCheckTrackerTest,
 }
 
 TEST_P(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
+  base::HistogramTester histograms;
   content::MockNavigationHandle handle(url_, main_rfh());
   CallTransferUrlChecker(handle.GetNavigationId());
   CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
@@ -208,6 +221,12 @@ TEST_P(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.render_process_id, main_rfh()->GetGlobalId().child_id);
   EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
+  EXPECT_FALSE(resource.should_send_reports);
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.AsyncCheck.HasPostCommitInterstitialSkipped",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(AsyncCheckTrackerTest,
@@ -228,6 +247,7 @@ TEST_P(AsyncCheckTrackerTest,
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.render_process_id, main_rfh()->GetGlobalId().child_id);
   EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
+  EXPECT_FALSE(resource.should_send_reports);
 }
 
 TEST_P(AsyncCheckTrackerTest, IsMainPageLoadPending) {

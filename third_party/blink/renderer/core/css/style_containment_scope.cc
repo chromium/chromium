@@ -180,6 +180,21 @@ void StyleContainmentScope::UpdateCounters() const {
   }
 }
 
+void StyleContainmentScope::InvalidateAnchorNameReferences() const {
+  const Element* root = GetElement();
+  for (const Node* node = root; node;
+       node = LayoutTreeBuilderTraversal::Next(*node, root)) {
+    if (const Element* element = DynamicTo<Element>(node)) {
+      if (LayoutObject* layout_object = element->GetLayoutObject()) {
+        if (layout_object->StyleRef().AnchorName()) {
+          layout_object->SetNeedsLayout(
+              layout_invalidation_reason::kStyleChange);
+        }
+      }
+    }
+  }
+}
+
 #if DCHECK_IS_ON()
 String StyleContainmentScope::ScopesTreeToString(wtf_size_t depth) const {
   return counters_tree_->ToString(depth);

@@ -481,6 +481,32 @@ class EventGenerator {
                           int flags = EF_NONE,
                           int source_device_id = ED_UNKNOWN_DEVICE);
 
+  // Emulates pressing modidifer keys from given flags.
+  void PressModifierKeys(int flags, int source_device_id = ED_UNKNOWN_DEVICE);
+
+  // Emulates releasing modifier keys from given flags.
+  void ReleaseModifierKeys(int flags, int source_device_id = ED_UNKNOWN_DEVICE);
+
+  // Emulates press key with modifiers. If modifier key `flags` are specified,
+  // corresponding key press events are first sent, then key press event for
+  // the given `key` will be sent.
+  void PressKeyAndModifierKeys(KeyboardCode key,
+                               int flags,
+                               int source_device_id = ED_UNKNOWN_DEVICE);
+  // Emulates release key with modifiers. If modifier key `flags` are specified,
+  // corresponding key release events are sent after the key release event for
+  // the given `key`.
+  void ReleaseKeyAndModifierKeys(KeyboardCode key,
+                                 int flags,
+                                 int source_device_id = ED_UNKNOWN_DEVICE);
+
+  // Convenient alias to call PressKeyAndModifierKeys() followed by
+  // ReleaseKeyAndModifierKeys() to emulate user key event sequence.
+  void PressAndReleaseKeyAndModifierKeys(
+      KeyboardCode key,
+      int flags,
+      int source_device_id = ED_UNKNOWN_DEVICE);
+
   // Dispatch the event to the WindowEventDispatcher.
   void Dispatch(Event* event);
 

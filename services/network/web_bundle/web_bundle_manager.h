@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_MANAGER_H_
 
 #include <map>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +17,6 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
       const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      absl::optional<std::string> devtools_request_id,
+      std::optional<std::string> devtools_request_id,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojom::CrossOriginEmbedderPolicyReporter* coep_reporter);
 

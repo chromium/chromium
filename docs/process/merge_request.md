@@ -12,8 +12,8 @@
   branch
 * Ensure your change is [safe to merge](#verifying-eligibility-and-safety)
   before initiating the merge review process unless it's time-sensitive
-* Use Monorail's [project queries](#monitoring-merge-requests) to track your
-  approved merges as well as your pending requests
+* Use Chromium Issue Tracker's [project queries](#monitoring-merge-requests) to
+  track your approved merges as well as your pending requests
 * Use Gerrit or git to land your merge only after it's been approved
 
 ## Introduction
@@ -36,19 +36,19 @@ approved or rejected.
 
 Generally, merges follow these high-level steps:
 
-* Developers update bug with relevant details and request a merge using the
-  *Merge-Request-##* label, then wait for review
+* Developers update bug with relevant details and request a merge by updating
+  the *Merge* field with *Request-##* label, then wait for review.
 * Release managers and automation review and approve, reject, or ask
-  questions about the merge within two business days
-* Developers wait for review and, if approved, land the merge ASAP
+  questions about the merge within two business days.
+* Developers wait for review and, if approved, land the merge ASAP.
 
 For details on each step, see below.
 
-**NOTE:** Because security issues (identified with *Type=Bug-Security*) follow
-a more complex flow, you may simply mark security issues as *Fixed* in Monorail
-and [automation](#security-merge-triage) will handle the remainder of the merge
-request process flow for you; simply process the merge if it is requested and
-approved.
+**NOTE:** Because security issues (identified with *Type=Vulnerability*) follow
+a more complex flow, you may simply mark security issues as *Fixed* in the
+issue tracker and [automation](#security-merge-triage) will handle the
+remainder of the merge request process flow for you; simply process the merge
+if it is requested and approved.
 
 ## Requesting a merge
 
@@ -71,13 +71,13 @@ Before requesting a merge, first ensure your change is a good merge candidate:
   * You may skip this step if a release manager or security team member has
     told you that the merge is urgent, e.g. is actively blocking a release
 
-### Updating crbug/
+### Updating Chromium Issue Tracker
 
 Next, ensure you have a crbug/ (generally the bug being fixed by the merge)
 with the following information present and accurate:
 
 * Title and description clearly describing the bug being fixed
-* Priority (*Pri-#*), OS (*OS-OS*) and target milestone(s) (*Target-##*)
+* Priority (*P#*), OS (*OS-OS*) and target milestone(s) (*Target-##*)
 * Owner, generally the person requesting / performing the merge
 * [Release block label](./release_blockers.md) if applicable
   (*ReleaseBlock=Channel*)
@@ -91,11 +91,11 @@ with the following information present and accurate:
 
 ### Applying merge request label
 
-Once you've verified all the above, you're ready to request a merge! Simply add
-the label *Merge-Request-##* to the issue (where ## indicates the milestone
-you'd like to merge to), and use multiple labels for multiple milestones, e.g.
-*Merge-Request-91 Merge-Request-92* for M91 and M92. Please also copy the
-following questions and answer them in a comment on the issue:
+Once you've verified all the above, you're ready to request a merge! Simply
+update the *Merge* field with *Request-##* on the issue (where ## indicates the
+milestone you'd like to merge to), and use multiple tags for multiple
+milestones, e.g.*Request-121*, *Request-122* for M121 and M122. Please also copy
+the following questions and answer them in a comment on the issue:
 
 1. Why does your merge fit within the merge criteria for these milestones
   ([Chrome Browser](https://chromiumdash.appspot.com/branches),
@@ -112,16 +112,18 @@ following questions and answer them in a comment on the issue:
 
 ## Monitoring merge requests
 
-After you've applied the *Merge-Request-##* label, automation will evaluate
-your request and may either approve it, reject it, or pass it along to a
-release manager for manual evaluation; see [here](#merge-request-triage) to
-learn more about this automation. If manual review is required, release
+After you've updated the *Merge* field with *Request-##*, automation will
+evaluate your request and may either approve it, reject it, or pass it along
+to a release manager for manual evaluation; see [here](#merge-request-triage)
+to learn more about this automation. If manual review is required, release
 managers strive to answer all merge requests within two business days, but
 extenuating circumstances may cause delays.
 
 At this point, following along via bug comments sent by email will always keep
 you in the loop, but you can also use the following saved project queries in
-Monorail (dropdown to the left of the search bar) to track your merges:
+Chromium Issue Tracker (The following queries reflect the legacy issue tracker,
+Monorail - bugs.chromium.org, and will be updated once the migration to the new
+[Chromium Issue Tracker](https://issues.chromium.org) is complete.):
 
 * [Approved and TBD merges](https://bugs.chromium.org/p/chromium/issues/list?q=owner%3Ame&can=41025836):
   Merges that require your follow-up, either by landing the relevant
@@ -146,8 +148,8 @@ appendix [below](#merge-states-and-labels).
 ## Landing an approved merge
 
 Once your merge has been approved for a given milestone (via the release
-manager or automation applying the *Merge-Approved-##* label), you have two
-options to land the merge:
+manager or automation updating the *Merge* field with *Approved-##*), you have
+two options to land the merge:
 
 * Gerrit UI, easiest for clean cherry-picks or those requiring only minor
   changes
@@ -159,10 +161,11 @@ ASAP so that it can be included in the next release built from the branch; if
 you don't merge your cherry-pick soon after approval, it will eventually be
 rejected for merge.
 
-Once the cherry-pick has landed a bot will apply the *merge-merged-##* label if
-the commit references the issue. If for some reason the commit did not
-reference the issue, add the *Merge-Merged-##* label to the issue. After the
-merge is completed the *Merge-Approved-##* label should be manually removed.
+Once the cherry-pick has landed a bot will update the *Merge* field with
+*merged-##* if the commit references the issue. If for some reason the commit
+did not reference the issue, update the *Merge* field to *Merged-##* on the
+issue. After the merge is completed the *Approved-##* should be manually
+removed from the *Merge* field.
 
 ### Using Gerrit UI
 
@@ -217,10 +220,10 @@ Other tips & tricks when merging with git via release branches:
 
 ## Merge automation
 
-The release team has built automation via
-[Sheriffbot](https://www.chromium.org/issue-tracking/autotriage) to assist in
-several merge flows: security merge triage, general merge request triage, and
-preventing missed merges.
+The Chrome team has built automation via
+[Blintz](https://www.chromium.org/issue-tracking/autotriage), formerly known as
+Sheriffbot, to assist in several merge flows: security merge triage, general
+merge request triage, and preventing missed merges.
 
 ### Security merge triage
 
@@ -235,7 +238,7 @@ To reduce release manager toil, Sheriffbot performs the first pass review of
 all merge requests; it may auto-approve the issue if it can detect the issue
 meets the right criteria for the current merge phase (e.g. a ReleaseBlock-Dev
 issue requesting a merge before beta promotion), and it may auto-reject the
-issue similarly (e.g. a Pri-3 issue requesting a merge post-stable). If it
+issue similarly (e.g. a P3 issue requesting a merge post-stable). If it
 cannot decide, it will pass the issue to a release manager for manual review.
 
 Generally, Sheriffbot takes action on merge requests only after one of the two
@@ -254,13 +257,13 @@ regression onto our release branch.
 
 To avoid the situation where a critical issue is present on a release branch
 but the fix isn't merged, Sheriffbot evaluates all release-blocking issues
-targeting a milestone that has already branched and adds a *Merge-TBD-##* label
-if the issue was marked as fixed after branch day but hasn't been merged.
-When this occurs, developers should evaluate the issue and either request a
-merge if required (e.g. the fix did miss the release branch point) by adding
-the *Merge-Request-##* label, or add the *Merge-NA-##* label if not (e.g. the
-fix is present in the release branch already or the merge is unnecessary for
-other reasons).
+targeting a milestone that has already branched and updates the *Merge* field
+with *TBD-##* if the issue was marked as fixed after branch day but hasn't been
+merged. When this occurs, developers should evaluate the issue and either
+request a merge if required (e.g. the fix did miss the release branch point) by
+updating the *Merge* field with *Request-##*, or update the *Merge* field with
+*NA-##* (e.g. the fix is present in the release branch already or the merge is
+unnecessary for other reasons).
 
 ## Appendix
 
@@ -282,10 +285,11 @@ Chromium Dash [front-end](https://chromiumdash.appspot.com/branches) and
 ### Merge states and labels
 
 The table below describes the different merge states and labels used to track
-them. All labels follow the form *Merge-[State]-##*, where ## corresponds to
-the applicable milestone. If multiple merges are required, these labels may
-appear multiple times on the same bug in different states (e.g. a merge request
-could have both *Merge-Approved-92* and *Merge-Rejected-91* at the same time).
+them. All *Merge* field labels follow the form *[State]-##*, where ##
+corresponds to the applicable milestone. If multiple merges are required, these
+labels may appear multiple times on the same bug in different states (e.g. the
+*Merge* field could contain both *Approved-122* and *Rejected-121* at the same
+time.
 
 | Label / State | Step Owner       | Next Steps                                                                                                                                                                    |
 |---------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -293,6 +297,6 @@ could have both *Merge-Approved-92* and *Merge-Rejected-91* at the same time).
 | Review        | Release manager  | Release manager will evaluate and either approve, reject, or request additional information within two business days                                                          |
 | Approved      | Issue owner      | Issue owner should cherry-pick the fix to the appropriate release branch ASAP                                                                                                 |
 | Merged        | None             | N/A; merge has already been landed, no further work required for given milestone                                                                                              |
-| Rejected      | Issue owner      | Issue owner should re-add *Merge-Request-##* to escalate if they feel the merge was erroneously rejected and should be re-evaluated                                           |
-| TBD           | Issue owner      | Issue owner should evaluate if a merge is required, then remove *Merge-TBD-##* and replace it with *Merge-NA-##* (if no merge needed) or *Merge-Request-##* (if merge needed) |
+| Rejected      | Issue owner      | Issue owner should re-update *Merge* field with *Request-##* to escalate if they feel the merge was erroneously rejected and should be re-evaluated                           |
+| TBD           | Issue owner      | Issue owner should evaluate if a merge is required, then remove *TBD-##* from the *Merge* and replace it with *NA-##* (if no merge needed) or *Request-##* (if merge needed)  |
 | NA            | None             | N/A; merge is not required to the relevant milestone, no further work required for given milestone                                                                            |

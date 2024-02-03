@@ -359,8 +359,6 @@ export async function fileListMouseSelectionA11yImpl(isGridView) {
 
   // Ctrl+Click second item.
   await remoteCall.waitAndClickElement(
-      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="Beautiful Song.ogg"]', {ctrl: true});
 
   // Check: Announced "Beautiful Song.add" added to selection.
@@ -369,8 +367,6 @@ export async function fileListMouseSelectionA11yImpl(isGridView) {
 
   // Shift+Click last item.
   await remoteCall.waitAndClickElement(
-      // @ts-ignore: error TS2345: Argument of type '{ shift: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
 
   // Check: Announced range selection from "Beautiful Song.add" to hello.txt.
@@ -380,8 +376,6 @@ export async function fileListMouseSelectionA11yImpl(isGridView) {
 
   // Ctrl+Click to de-select the last item.
   await remoteCall.waitAndClickElement(
-      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {ctrl: true});
 
   // Check: Announced de-selecting hello.txt
@@ -419,8 +413,6 @@ testcase.fileListDeleteMultipleFiles = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="world.ogv"]');
   await remoteCall.waitAndClickElement(
-      // @ts-ignore: error TS2345: Argument of type '{ shift: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
 
   // Press move to trash button.
@@ -479,14 +471,10 @@ testcase.fileListRenameSelectedItem = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
   await remoteCall.waitAndClickElement(
-      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="world.ogv"]', {ctrl: true});
 
   // Deselect first item.
   await remoteCall.waitAndClickElement(
-      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {ctrl: true});
 
   // Check: the first item should have the lead state.

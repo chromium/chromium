@@ -278,6 +278,7 @@
 <translation id="6144416395842701622">‏כדי להפיק את המרב מ-Chromium, עליך להיכנס לחשבון</translation>
 <translation id="6145820983052037069">‏כאן ניתן לעבור בין פרופילים של Chromium</translation>
 <translation id="615103374448673771">‏אם מאפשרים שימוש בקובצי cookie, יכול להיות שמערכת Chromium תשתמש בהם במהלך טעינה מראש.</translation>
+<translation id="6174920971222007286">‏הקובץ הזה עלול להיות מסוכן<ph name="LINE_BREAK" />דפדפן Chromium יכול לבדוק את ההורדה הזו אם מזינים את הסיסמה. מידע על הקובץ נשלח אל התכונה 'גלישה בטוחה של Google', אבל הסיסמה והתוכן של הקובץ נשארים במכשיר.</translation>
 <translation id="6175304430031192654">‏בהתאם להגדרות שלך, Chromium יכול גם לשלוח קובצי cookie ואת כתובת ה-URL הנוכחית שלך</translation>
 <translation id="6182736845697986886">ההתקנה נכשלה עקב שגיאה פנימית בשרת העדכון.</translation>
 <translation id="6183079672144801177">‏יש לוודא שנכנסת ל-Chromium ב-<ph name="TARGET_DEVICE_NAME" /> שלך ולשלוח שוב.</translation>

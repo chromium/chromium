@@ -10,8 +10,8 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
-#include "ios/web/public/download/download_task_observer.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol DownloadManagerTabHelperDelegate;
@@ -40,11 +40,17 @@ class DownloadManagerTabHelper
   // cancelled.
   bool has_download_task() const { return task_.get(); }
 
+  // Returns the currently active download task.
+  web::DownloadTask* GetActiveDownloadTask();
+
   // Sets the delegate. The tab helper will no-op if the delegate is nil.
   void SetDelegate(id<DownloadManagerTabHelperDelegate> delegate);
 
   // Starts the current download task. Asserts that `task == task_`.
   virtual void StartDownload(web::DownloadTask* task);
+
+  // Sets whether the Download toolbar should adapt to the fullscreen state.
+  virtual void AdaptToFullscreen(bool adapt_to_fullscreen);
 
  protected:
   // Allow subclassing from DownloadManagerTabHelper for testing purposes.

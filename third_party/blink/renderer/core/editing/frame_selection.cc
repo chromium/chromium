@@ -27,8 +27,9 @@
 
 #include <stdio.h>
 
+#include <optional>
+
 #include "base/auto_reset.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
@@ -171,7 +172,7 @@ VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
   // to caller. See http://crbug.com/590369 for more details.
   Position base = GetSelectionInDOMTree().Base();
   Position extent = GetSelectionInDOMTree().Extent();
-  absl::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
+  std::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
   if (base != extent && base.ComputeContainerNode() &&
       extent.ComputeContainerNode()) {
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(
@@ -291,7 +292,7 @@ void FrameSelection::DidSetSelectionDeprecated(
   // If the selection is currently being modified via the "Modify" method, we
   // should already have more detailed information on the stack than can be
   // deduced in this method.
-  absl::optional<ScopedBlinkAXEventIntent> scoped_blink_ax_event_intent;
+  std::optional<ScopedBlinkAXEventIntent> scoped_blink_ax_event_intent;
   if (current_document.ExistingAXObjectCache()) {
     scoped_blink_ax_event_intent.emplace(
         is_being_modified_ ? BlinkAXEventIntent()
@@ -449,7 +450,7 @@ bool FrameSelection::Modify(SelectionModifyAlteration alter,
           ? PlatformWordBehavior::kWordSkipSpaces
           : PlatformWordBehavior::kWordDontSkipSpaces;
   Document& document = GetDocument();
-  absl::optional<ScopedBlinkAXEventIntent> scoped_blink_ax_event_intent;
+  std::optional<ScopedBlinkAXEventIntent> scoped_blink_ax_event_intent;
   if (document.ExistingAXObjectCache()) {
     scoped_blink_ax_event_intent.emplace(
         BlinkAXEventIntent::FromModifiedSelection(

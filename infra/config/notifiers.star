@@ -72,6 +72,14 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "codeql-infra",
+    on_status_change = True,
+    notify_emails = [
+        "flowerhack@google.com",
+    ],
+)
+
+luci.notifier(
     name = "cr-fuchsia",
     on_status_change = True,
     notify_emails = [

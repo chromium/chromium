@@ -13,6 +13,8 @@ def __filegroups(ctx):
             "includes": [
                 "bin/rustc",
                 "lib/*.so",
+                "lib/rustlib/src/rust/library/std/src/lib.rs",
+                "lib/rustlib/x86_64-unknown-linux-gnu/lib/*",
             ],
         },
         "build/linux/debian_bullseye_amd64-sysroot:rustlink": {
@@ -49,12 +51,29 @@ def __filegroups(ctx):
 
 def __rust_bin_handler(ctx, cmd):
     inputs = []
+    use_android_toolchain = None
+    target = None
     for i, arg in enumerate(cmd.args):
         if arg.startswith("--sysroot=../../third_party/fuchsia-sdk/sdk/arch/x64/sysroot"):
             inputs.extend([
                 "third_party/fuchsia-sdk/sdk/arch/x64/lib:rustlink",
                 "third_party/fuchsia-sdk/sdk/arch/x64/sysroot:rustlink",
             ])
+        elif arg.startswith("--sysroot=../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot"):
+            use_android_toolchain = True
+        if arg.startswith("--target="):
+            target = arg.removeprefix("--target=")
+    if use_android_toolchain and target:
+        # e.g. target=aarch64-linux-android26
+        android_ver = ""
+        i = target.find("android")
+        if i >= 0:
+            android_ver = target[i:].removeprefix("android").removeprefix("eabi")
+        if android_ver:
+            android_arch = target.removesuffix(android_ver)
+            filegroup = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%s:link" % (android_arch, android_ver)
+            inputs.append(filegroup)
+
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 __handlers = {

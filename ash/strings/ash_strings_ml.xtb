@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">പുതിയ ടാബിൽ ലിങ്ക് തുറന്ന് നിലവിലെ ടാബിൽ തുടരുക</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3533126039236445965">ഷെൽഫിലെ ആപ്പുകൾ</translation>
+<translation id="3537350467437346467">നിങ്ങൾ കണ്ടു</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ട്</translation>
 <translation id="3540893133818942399">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="3542066395059568317">നിർത്തിയ ഇടത്ത് നിന്ന് തുടരാനാകുന്ന തരത്തിൽ നിങ്ങൾക്ക് നിർദ്ദേശങ്ങൾ കാണാം. നിർദ്ദേശങ്ങൾ നീക്കം ചെയ്യാൻ വലത്-ക്ലിക്ക് ചെയ്യുക.</translation>
+<translation id="3547318469722231257">നിങ്ങൾ പരിഷ്‌കരിച്ചു</translation>
 <translation id="3552189655002856821">വൈഫൈ ഓഫാണ്</translation>
 <translation id="3554215588514239132">ഡെവലപ്പർ ടൂളുകളുടെ പാനൽ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> പിൻ ചെയ്‌തു</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">ആരംഭം</translation>
 <translation id="3859364108019690">ആപ്പുകൾ സ്ട്രീം ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="3861651314799684201">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ Enter അമർത്തുക</translation>
+<translation id="3882323608730650973">പരിഷ്‌കരിച്ചു</translation>
 <translation id="3886872229787704059">ഇന്ന് തുറന്നത്</translation>
 <translation id="3891340733213178823">സൈൻ ഔട്ട് ചെയ്യുന്നതിന് രണ്ടു‌തവണ Ctrl+Shift+Q അമർത്തുക.</translation>
 <translation id="3893630138897523026">ChromeVox (സ്‌പോക്കൺ ഫീഡ്‌ബാക്ക്)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">വൈഫൈ ഉപയോഗിക്കാൻ ഹോട്ട്സ്പോട്ട് ഓഫാക്കി. ഹോട്ട്സ്പോട്ട് ഉപയോഗിക്കാൻ, വൈഫൈ ഓഫാക്കുക.</translation>
 <translation id="4585337515783392668">അജ്ഞാത റിസീവറിൽ കാസ്‌റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="4596144739579517758">ഡാർക്ക് തീം ഓഫാണ്</translation>
+<translation id="4596442969149038771"><ph name="USER" /> പങ്കിട്ടു</translation>
 <translation id="4611292653554630842">ലോഗ് ഇന്‍ ചെയ്യുക</translation>
 <translation id="462160925400706389"><ph name="NAME" /> കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="4623167406982293031">അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -1337,6 +1341,7 @@
 <translation id="6298183524022479114">ആപ്പിൽ ഈ ഉപകരണം ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
 <translation id="6309219492973062892">ഷെൽഫിലെ 1 മുതൽ 8 വരെയുള്ള ഐക്കണുകൾ ക്ലിക്ക് ചെയ്യുക അല്ലെങ്കിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="6315170314923504164">വോയ്സ്</translation>
+<translation id="6319058840130157106">താഴെ വലത് മൂല, ലോഞ്ചർ, വിലാസ ബാർ, ബുക്ക്‌മാർക്ക് ബാർ, തുറന്നിരിക്കുന്ന വെബ്സൈറ്റ്, ഡൗൺലോഡുകൾ എന്നിവയ്ക്കിടയിൽ പിന്നിലേക്ക് നീങ്ങുക</translation>
 <translation id="6324916366299863871">കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6330012934079202188">എല്ലാ ഡെസ്‌ക്കിലും നിന്നുള്ള വിൻഡോകൾ കാണിക്കുന്നു, നിലവിലെ ഡെസ്ക്കിൽ നിന്നുള്ള വിൻഡോകൾ കാണിക്കാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്ന ഒരു മാനേജ് ചെയ്യപ്പെടുന്ന സെഷനാണ് <ph name="DISPLAY_NAME" /></translation>
@@ -1816,6 +1821,7 @@
 <translation id="8314772463905284467">Caps Lock ഓൺ ആണ്</translation>
 <translation id="8315514906653279104">ഓണാക്കുന്നു...</translation>
 <translation id="8331351032546853669">ഡൗൺലോഡ് ശേഷിക്കുന്നു</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> വിന്‍ഡോ തിരഞ്ഞടുത്തു</translation>
 <translation id="8349826889576450703">ലോഞ്ചർ</translation>
@@ -1922,6 +1928,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പ്, ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> എന്നതിലേക്ക് കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">താഴെ വലത് മൂല, ലോഞ്ചർ, വിലാസ ബാർ, ബുക്ക്‌മാർക്ക് ബാർ, തുറന്നിരിക്കുന്ന വെബ്സൈറ്റ്, ഡൗൺലോഡുകൾ എന്നിവയ്ക്കിടയിൽ മുന്നിലേക്ക് നീങ്ങുക</translation>
 <translation id="8792626944327216835">മൈക്രോഫോൺ</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">ഫോൾഡർ <ph name="FOLDER_NAME" /></translation>
@@ -2035,6 +2042,7 @@
 <translation id="953431725143473984">ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യണോ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> എന്നതിനാവശ്യമായ ഇടം ലഭ്യമല്ല. ഇടം സൃഷ്ടിക്കുക.</translation>
 <translation id="954520015070501466">30 മിനിറ്റ്</translation>
+<translation id="954786879461589145"><ph name="USER" /> പരിഷ്‌കരിച്ചു</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> എന്നതിനുള്ള <ph name="RESULT_COUNT" /> ഫലങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="981011780479609956">അവസാന തീയതിയില്ലാത്തവ</translation>
 <translation id="98120814841227350">ഡോക്യുമെന്റിന്റെ താഴേക്ക് പോവുക</translation>

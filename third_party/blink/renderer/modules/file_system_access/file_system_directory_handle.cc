@@ -234,26 +234,29 @@ ScriptPromise FileSystemDirectoryHandle::removeEntry(
   return result;
 }
 
-ScriptPromise FileSystemDirectoryHandle::resolve(
-    ScriptState* script_state,
-    FileSystemHandle* possible_child,
-    ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLNullable<IDLSequence<IDLUSVString>>>
+FileSystemDirectoryHandle::resolve(ScriptState* script_state,
+                                   FileSystemHandle* possible_child,
+                                   ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLNullable<IDLSequence<IDLUSVString>>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<IDLSequence<IDLUSVString>>>>(
       script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto result = resolver->Promise();
 
   mojo_ptr_->Resolve(
       possible_child->Transfer(),
       WTF::BindOnce(
-          [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
+          [](FileSystemDirectoryHandle*,
+             ScriptPromiseResolverTyped<IDLNullable<IDLSequence<IDLUSVString>>>*
+                 resolver,
              FileSystemAccessErrorPtr result,
-             const absl::optional<Vector<String>>& path) {
+             const std::optional<Vector<String>>& path) {
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
@@ -261,10 +264,10 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
               return;
             }
             if (!path.has_value()) {
-              resolver->Resolve(static_cast<ScriptWrappable*>(nullptr));
+              resolver->Resolve(std::nullopt);
               return;
             }
-            resolver->Resolve<IDLSequence<IDLNullable<IDLUSVString>>>(*path);
+            resolver->Resolve(*path);
           },
           WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -361,7 +364,7 @@ void FileSystemDirectoryHandle::IsSameEntryImpl(
           [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                                      bool)> callback,
              FileSystemAccessErrorPtr result,
-             const absl::optional<Vector<String>>& path) {
+             const std::optional<Vector<String>>& path) {
             std::move(callback).Run(std::move(result),
                                     path.has_value() && path->empty());
           },

@@ -152,8 +152,7 @@ bool StoreDMTokenInRegistry(const std::string& token) {
   if (!app_command)
     return false;
 
-  std::string token_base64;
-  base::Base64Encode(token, &token_base64);
+  std::string token_base64 = base::Base64Encode(token);
   VARIANT var;
   VariantInit(&var);
   _variant_t token_var = token_base64.c_str();

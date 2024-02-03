@@ -12,7 +12,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/common/supervised_user_utils.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // The implementation for the chrome://family-link-user-internals page.

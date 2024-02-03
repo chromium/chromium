@@ -35,12 +35,12 @@ namespace media {
 
 namespace {
 
-absl::optional<gfx::GpuMemoryBufferHandle> CreateHandle(
+std::optional<gfx::GpuMemoryBufferHandle> CreateHandle(
     const VideoFrame* frame) {
   gfx::GpuMemoryBufferHandle handle = CreateGpuMemoryBufferHandle(frame);
 
   if (handle.is_null() || handle.type != gfx::NATIVE_PIXMAP)
-    return absl::nullopt;
+    return std::nullopt;
   return handle;
 }
 
@@ -566,7 +566,7 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     }
 
     // We need one input and one output buffer to schedule the job
-    absl::optional<V4L2WritableBufferRef> input_buffer;
+    std::optional<V4L2WritableBufferRef> input_buffer;
     // If we are using DMABUF frames, try to always obtain the same V4L2 buffer.
     if (input_memory_type_ == V4L2_MEMORY_DMABUF) {
       const VideoFrame& input_frame =
@@ -577,7 +577,7 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     if (!input_buffer)
       input_buffer = input_queue_->GetFreeBuffer();
 
-    absl::optional<V4L2WritableBufferRef> output_buffer;
+    std::optional<V4L2WritableBufferRef> output_buffer;
     // If we are using DMABUF frames, try to always obtain the same V4L2 buffer.
     if (output_memory_type_ == V4L2_MEMORY_DMABUF) {
       const VideoFrame& output_frame =
@@ -762,7 +762,7 @@ void V4L2ImageProcessorBackend::EnqueueOutput(JobRecord* job_record,
 // static
 void V4L2ImageProcessorBackend::V4L2VFRecycleThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<base::WeakPtr<V4L2ImageProcessorBackend>> image_processor,
+    std::optional<base::WeakPtr<V4L2ImageProcessorBackend>> image_processor,
     V4L2ReadableBufferRef buf) {
   DVLOGF(4);
   DCHECK(image_processor);

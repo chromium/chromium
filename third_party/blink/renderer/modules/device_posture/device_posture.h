@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_POSTURE_DEVICE_POSTURE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_POSTURE_DEVICE_POSTURE_H_
 
-#include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -18,10 +18,9 @@ namespace blink {
 
 class LocalDOMWindow;
 
-class MODULES_EXPORT DevicePosture
-    : public EventTarget,
-      public ExecutionContextClient,
-      public device::mojom::blink::DevicePostureClient {
+class MODULES_EXPORT DevicePosture : public EventTarget,
+                                     public ExecutionContextClient,
+                                     public mojom::blink::DevicePostureClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -40,17 +39,15 @@ class MODULES_EXPORT DevicePosture
 
  private:
   // DevicePostureClient
-  void OnPostureChanged(
-      device::mojom::blink::DevicePostureType posture) override;
+  void OnPostureChanged(mojom::blink::DevicePostureType posture) override;
   void AddedEventListener(const AtomicString& event_type,
                           RegisteredEventListener&) override;
   void OnServiceConnectionError();
   void EnsureServiceConnection();
 
-  device::mojom::blink::DevicePostureType posture_ =
-      device::mojom::blink::DevicePostureType::kContinuous;
-  HeapMojoReceiver<device::mojom::blink::DevicePostureClient, DevicePosture>
-      receiver_;
+  mojom::blink::DevicePostureType posture_ =
+      mojom::blink::DevicePostureType::kContinuous;
+  HeapMojoReceiver<mojom::blink::DevicePostureClient, DevicePosture> receiver_;
 };
 
 }  // namespace blink

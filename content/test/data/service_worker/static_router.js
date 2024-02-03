@@ -17,7 +17,7 @@ const composeCustomResponse = () => {
 };
 
 self.addEventListener('install', e => {
-  e.registerRouter([{
+  e.addRoutes([{
     condition: {
       urlPattern: "/service_worker/direct",
       requestMethod: "GET",

@@ -62,13 +62,7 @@ bool IsDeviceBlocked(const char* field, const std::string& block_list) {
 // Used to limit GL version to 2.0 for skia raster and compositing.
 BASE_FEATURE(kUseGles2ForOopR,
              "UseGles2ForOopR",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Use android SurfaceControl API for managing display compositor's buffer queue
@@ -130,12 +124,6 @@ const base::FeatureParam<std::string>
         "DisableIncreaseBufferCountForHighFrameRate", ""};
 #endif
 
-// Use shorter timeout when performDeferredCleanup, and enable
-// performDeferredCleanup for Android WebView.
-BASE_FEATURE(kAggressiveSkiaGpuResourcePurge,
-             "AggressiveSkiaGpuResourcePurge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable GPU Rasterization by default. This can still be overridden by
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
 // DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS,
@@ -181,12 +169,6 @@ BASE_FEATURE(kCanvasOopWithoutGpuTileRaster,
 // unnecessary construction/destruction of GLTextures.
 BASE_FEATURE(kEnablePerContextGLTextureCache,
              "EnablePerContextGLTextureCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Detect front buffering condition and set buffer usage as such.
-// This is a killswitch to be removed once launched.
-BASE_FEATURE(kOzoneFrontBufferUsage,
-             "OzoneFrontBufferUsage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
@@ -281,10 +263,6 @@ BASE_FEATURE(kEnableDrDc,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-BASE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc,
-             "ForceGpuMainThreadToNormalPriorityDrDc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable WebGPU on gpu service side only. This is used with origin trial and
 // enabled by default on supported platforms.
@@ -487,6 +465,12 @@ BASE_FEATURE(kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// On platforms with delegated compositing, try to release overlays later, when
+// no new frames are swapped.
+BASE_FEATURE(kDeferredOverlaysRelease,
+             "DeferredOverlayRelease",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
   // GLES3 is not supported on emulators with passthrough. crbug.com/1423712
@@ -600,14 +584,6 @@ bool IsDrDcEnabled() {
 #else
   return false;
 #endif
-}
-
-bool IsGpuMainThreadForcedToNormalPriorityDrDc() {
-  // GPU main thread priority is forced to NORMAL only when DrDc is enabled. In
-  // that case DrDc thread continues to use DISPLAY thread priority and hence
-  // have higher thread priority than GPU main.
-  return IsDrDcEnabled() &&
-         base::FeatureList::IsEnabled(kForceGpuMainThreadToNormalPriorityDrDc);
 }
 
 bool IsUsingThreadSafeMediaForWebView() {

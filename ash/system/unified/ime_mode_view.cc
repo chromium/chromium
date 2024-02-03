@@ -114,7 +114,7 @@ void ImeModeView::Update() {
   label()->SetCustomAccessibleName(description);
   label()->SetElideBehavior(gfx::NO_ELIDE);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 BEGIN_METADATA(ImeModeView)

@@ -20,6 +20,7 @@ class MockSourceObserver : public GarbageCollected<MockSourceObserver>,
   MOCK_METHOD0(SourceChangedState, void());
   MOCK_METHOD0(SourceChangedCaptureConfiguration, void());
   MOCK_METHOD0(SourceChangedCaptureHandle, void());
+  MOCK_METHOD1(SourceChangedZoomLevel, void(int));
 };
 
 // TODO(crbug.com/1288839): Move this mock out into a share place.

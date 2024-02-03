@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "components/cast_receiver/browser/public/application_state_observer.h"
 #include "components/cast_receiver/browser/public/streaming_resolution_observer.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 namespace blink {
 class URLLoaderThrottle;
@@ -34,10 +35,6 @@ struct VideoTransformation;
 namespace media_control {
 class MediaBlocker;
 }  // namespace media_control
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace url_rewrite {
 class UrlRequestRewriteRulesManager;
@@ -70,17 +67,15 @@ class ApplicationClient : public StreamingResolutionObserver,
     virtual url_rewrite::UrlRequestRewriteRulesManager&
     GetUrlRequestRewriteRulesManager() = 0;
   };
-
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
-  explicit ApplicationClient(NetworkContextGetter network_context_getter);
+  explicit ApplicationClient(
+      network::NetworkContextGetter network_context_getter);
   ~ApplicationClient() override;
 
   // Returns the NetworkContext to use with the cast_streaming component for
   // network access to implement the Cast Streaming receiver.  (This
   // NetworkContext is eventually passed to the Open Screen library platform
   // implementation.)
-  NetworkContextGetter network_context_getter() const {
+  network::NetworkContextGetter network_context_getter() const {
     return network_context_getter_;
   }
 
@@ -112,7 +107,7 @@ class ApplicationClient : public StreamingResolutionObserver,
   void OnForegroundApplicationChanged(RuntimeApplication* app) final;
 
  private:
-  NetworkContextGetter network_context_getter_;
+  network::NetworkContextGetter network_context_getter_;
 
   base::ObserverList<StreamingResolutionObserver>
       streaming_resolution_observer_list_;

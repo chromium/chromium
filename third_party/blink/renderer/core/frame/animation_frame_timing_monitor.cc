@@ -168,7 +168,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     }
   }
   entry_point_depth_ = 0;
-  pending_script_info_ = absl::nullopt;
+  pending_script_info_ = std::nullopt;
 
   // If we already need an update and a new task is processed, count its
   // duration towards blockingTime.
@@ -373,7 +373,7 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
     return nullptr;
   }
 
-  absl::optional<PendingScriptInfo> script_info;
+  std::optional<PendingScriptInfo> script_info;
   std::swap(script_info, pending_script_info_);
 
   if (!enabled_ || !context || !context->IsWindow() ||

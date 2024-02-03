@@ -130,7 +130,7 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
   void StartLocalAuthenticationRequest() {
     // Configure the user context.
     std::unique_ptr<UserContext> user_context = std::make_unique<UserContext>(
-        user_manager::USER_TYPE_REGULAR, test_account_id_);
+        user_manager::UserType::kRegular, test_account_id_);
 
     user_context->SetAuthSessionIds(session_ids_.first, session_ids_.second);
 

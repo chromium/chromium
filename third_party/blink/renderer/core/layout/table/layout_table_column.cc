@@ -69,10 +69,10 @@ void LayoutTableColumn::StyleDidChange(StyleDifference diff,
         table->SetIntrinsicLogicalWidthsDirty();
         if (old_style &&
             TableTypes::CreateColumn(*old_style,
-                                     /* default_inline_size */ absl::nullopt,
+                                     /* default_inline_size */ std::nullopt,
                                      table->StyleRef().IsFixedTableLayout()) !=
                 TableTypes::CreateColumn(
-                    StyleRef(), /* default_inline_size */ absl::nullopt,
+                    StyleRef(), /* default_inline_size */ std::nullopt,
                     table->StyleRef().IsFixedTableLayout())) {
           table->GridBordersChanged();
         }

@@ -25,6 +25,7 @@ class CheckTraceVisitor : public clang::RecursiveASTVisitor<CheckTraceVisitor> {
 
   bool VisitMemberExpr(clang::MemberExpr* member);
   bool VisitCallExpr(clang::CallExpr* call);
+  bool VisitStmt(clang::Stmt* stmt);
 
  private:
   bool IsTraceCallName(const std::string& name);

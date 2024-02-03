@@ -17,6 +17,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -31,40 +32,53 @@ using mojom::blink::MediaStreamRequestResult;
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-String CscResultToString(CapturedSurfaceControlResult result) {
+inline DOMException* MakeDOMException(DOMExceptionCode code, String message) {
+  return MakeGarbageCollected<DOMException>(code, std::move(message));
+}
+
+DOMException* CscResultToDOMException(CapturedSurfaceControlResult result) {
   switch (result) {
     case CapturedSurfaceControlResult::kSuccess:
-      return String();
+      return nullptr;
     case CapturedSurfaceControlResult::kUnknownError:
-      return "Unknown error.";
+      return MakeDOMException(DOMExceptionCode::kUnknownError,
+                              "Unknown error.");
     case CapturedSurfaceControlResult::kNoPermissionError:
-      return "No permission.";
+      return MakeDOMException(DOMExceptionCode::kNotAllowedError,
+                              "No permission.");
     case CapturedSurfaceControlResult::kCapturerNotFoundError:
-      return "Capturer not found (likely stopped asynchronously).";
+      return MakeDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "Capturer not found (likely stopped asynchronously).");
     case CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError:
-      return "Captured surface not found (likely stopped asynchronously).";
+      return MakeDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "Captured surface not found (likely stopped asynchronously).");
     case CapturedSurfaceControlResult::kDisallowedForSelfCaptureError:
-      return "API not supported for self-capture.";
+      return MakeDOMException(DOMExceptionCode::kInvalidStateError,
+                              "API not supported for self-capture.");
     case CapturedSurfaceControlResult::kCapturerNotFocusedError:
-      return "Capturing application not focused.";
+      return MakeDOMException(DOMExceptionCode::kInvalidStateError,
+                              "Capturing application not focused.");
   }
   NOTREACHED_NORETURN();
 }
 
 void OnCapturedSurfaceControlResult(
-    base::OnceCallback<void(bool, const String&)> callback,
+    base::OnceCallback<void(DOMException*)> callback,
     CapturedSurfaceControlResult result) {
-  const String error_string = CscResultToString(result);
-  std::move(callback).Run(/*success=*/error_string.empty(),
-                          /*error=*/error_string);
+  std::move(callback).Run(CscResultToDOMException(result));
 }
 
 void OnGetZoomLevelResult(
-    base::OnceCallback<void(absl::optional<int>, const String&)> callback,
-    absl::optional<int> zoom_level,
+    base::OnceCallback<void(std::optional<int>, const String&)> callback,
+    std::optional<int> zoom_level,
     CapturedSurfaceControlResult result) {
-  const String error_string = CscResultToString(result);
-  std::move(callback).Run(/*zoom_level=*/zoom_level, /*error=*/error_string);
+  // Note that OnGetZoomLevelResult() will shortly be removed (by m123),
+  // so this translation back to String is temporary.
+  const DOMException* const exception = CscResultToDOMException(result);
+  std::move(callback).Run(zoom_level,
+                          /*error=*/exception ? exception->message() : "");
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -203,7 +217,7 @@ void MediaStreamVideoCapturerSource::RestartSourceImpl(
                          weak_factory_.GetWeakPtr(), new_capture_params));
 }
 
-absl::optional<media::VideoCaptureFormat>
+std::optional<media::VideoCaptureFormat>
 MediaStreamVideoCapturerSource::GetCurrentFormat() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return capture_params_.requested_format;
@@ -246,14 +260,14 @@ void MediaStreamVideoCapturerSource::SendWheel(
     double relative_y,
     int wheel_delta_x,
     int wheel_delta_y,
-    base::OnceCallback<void(bool, const String&)> callback) {
+    base::OnceCallback<void(DOMException*)> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const absl::optional<base::UnguessableToken>& session_id =
+  const std::optional<base::UnguessableToken>& session_id =
       device().serializable_session_id();
   if (!session_id.has_value()) {
-    std::move(callback).Run(false, "Missing session ID.");
-    return;
+    std::move(callback).Run(MakeDOMException(DOMExceptionCode::kUnknownError,
+                                             "Missing session ID."));
   }
 
   GetMediaStreamDispatcherHost()->SendWheel(
@@ -264,13 +278,13 @@ void MediaStreamVideoCapturerSource::SendWheel(
 }
 
 void MediaStreamVideoCapturerSource::GetZoomLevel(
-    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const absl::optional<base::UnguessableToken>& session_id =
+  const std::optional<base::UnguessableToken>& session_id =
       device().serializable_session_id();
   if (!session_id.has_value()) {
-    std::move(callback).Run(false, "Missing session ID.");
+    std::move(callback).Run(std::nullopt, "Missing session ID.");
     return;
   }
 
@@ -281,14 +295,14 @@ void MediaStreamVideoCapturerSource::GetZoomLevel(
 
 void MediaStreamVideoCapturerSource::SetZoomLevel(
     int zoom_level,
-    base::OnceCallback<void(bool, const String&)> callback) {
+    base::OnceCallback<void(DOMException*)> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const absl::optional<base::UnguessableToken>& session_id =
+  const std::optional<base::UnguessableToken>& session_id =
       device().serializable_session_id();
   if (!session_id.has_value()) {
-    std::move(callback).Run(false, "Missing session ID.");
-    return;
+    std::move(callback).Run(MakeDOMException(DOMExceptionCode::kUnknownError,
+                                             "Missing session ID."));
   }
 
   GetMediaStreamDispatcherHost()->SetZoomLevel(
@@ -303,7 +317,7 @@ void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  const absl::optional<base::UnguessableToken>& session_id =
+  const std::optional<base::UnguessableToken>& session_id =
       device().serializable_session_id();
   if (!session_id.has_value()) {
     std::move(callback).Run(
@@ -315,10 +329,10 @@ void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
       std::move(callback));
 }
 
-absl::optional<uint32_t>
+std::optional<uint32_t>
 MediaStreamVideoCapturerSource::GetNextSubCaptureTargetVersion() {
   if (NumTracks() != 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ++current_sub_capture_target_version_;
 }

@@ -12,15 +12,15 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from './sea_pen.mojom-webui.js';
+import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
@@ -41,6 +41,8 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
       textValue_: String,
 
+      thumbnails_: Object,
+
       thumbnailsLoading_: Boolean,
 
       maxTextLength_: {
@@ -51,12 +53,15 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   }
 
   private textValue_: string;
+  private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
   path: string;
 
   override connectedCallback() {
     assert(isSeaPenTextInputEnabled(), 'sea pen text input must be enabled');
     super.connectedCallback();
+    this.watch<SeaPenInputQueryElement['thumbnails_']>(
+        'thumbnails_', state => state.thumbnails);
     this.watch<SeaPenInputQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_', state => state.loading.thumbnails);
     this.updateFromStore();
@@ -72,7 +77,13 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         SeaPenPaths.RESULTS, {seaPenTemplateId: 'Query'});
   }
 
-  private getSearchButtonText_(path: string|null): string {
+  private getSearchButtonText_(
+      path: string|null, thumbnails: SeaPenThumbnail[]|null): string {
+    if (!thumbnails) {
+      // The thumbnails are not loaded yet.
+      return this.i18n('seaPenCreateButton');
+    }
+
     switch (path) {
       case SeaPenPaths.RESULTS:
         return this.i18n('seaPenRecreateButton');
@@ -82,7 +93,13 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     }
   }
 
-  private getSearchButtonIcon_(path: string|null): string {
+  private getSearchButtonIcon_(
+      path: string|null, thumbnails: SeaPenThumbnail[]|null): string {
+    if (!thumbnails) {
+      // The thumbnails are not loaded yet.
+      return 'sea-pen:photo-spark';
+    }
+
     switch (path) {
       case SeaPenPaths.RESULTS:
         return 'personalization-shared:refresh';

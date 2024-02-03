@@ -6,7 +6,10 @@ import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("browser") {
-  friend = [ "//components/bookmarks/test" ]
+  friend = [
+    ":unit_tests",
+    "//components/bookmarks/test",
+  ]
 
   public = [
     "base_bookmark_model_observer.h",
@@ -119,7 +122,10 @@ bundle_data("unit_tests_bundle_data") {
   testonly = true
   sources = [
     "//components/test/data/bookmarks/meta_info_as_string.json",
-    "//components/test/data/bookmarks/model_without_sync.json",
+    "//components/test/data/bookmarks/model_with_duplicate_ids.json",
+    "//components/test/data/bookmarks/model_with_sync_metadata_1.json",
+    "//components/test/data/bookmarks/model_with_sync_metadata_2.json",
+    "//components/test/data/bookmarks/model_without_mobile_bookmarks.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
@@ -129,9 +135,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_codec_unittest.cc",
+    "bookmark_load_details_unittest.cc",
     "bookmark_model_unittest.cc",
     "bookmark_storage_unittest.cc",
     "bookmark_utils_unittest.cc",
+    "model_loader_unittest.cc",
     "titled_url_index_unittest.cc",
     "titled_url_match_unittest.cc",
   ]

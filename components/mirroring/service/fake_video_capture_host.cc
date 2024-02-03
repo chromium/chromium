@@ -64,6 +64,9 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
     return;
 
   auto shmem = base::ReadOnlySharedMemoryRegion::Create(5000);
+  if (!shmem.IsValid()) {
+    return;
+  }
   memset(shmem.mapping.memory(), 125, 5000);
   observer_->OnNewBuffer(
       0, media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(

@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountFetcher.AccountAvatarFetchTime" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -542,6 +542,24 @@ prefs when the profile is loaded.  -->
     <variant name="" summary="Includes all requests."/>
     <variant name="Navigation"
         summary="Includes only main frame navigation requests."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger.{Result}"
+    enum="ResumeBlockedRequestsTrigger" expires_after="2024-07-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    In a bound session, requests are throttled when required bound cookies are
+    stale and cookie refresh hasn't completed. This histogram records what
+    triggered resuming a throttled request. Recorded for every throttled request
+    that eventually completed {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="with an error"/>
+    <variant name="Success" summary="successfully"/>
   </token>
 </histogram>
 
@@ -1837,7 +1855,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncErrorMessage{SyncErrorReason}"
-    enum="SyncErrorPromptUIAction" expires_after="2024-05-26">
+    enum="SyncErrorPromptUIAction" expires_after="2024-07-28">
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
@@ -1861,7 +1879,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncFirstSetupCompleteSource"
-    enum="SyncFirstSetupCompleteSource" expires_after="2024-05-26">
+    enum="SyncFirstSetupCompleteSource" expires_after="2024-07-28">
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>Tracks where FirstSetupComplete bit is set from.</summary>
@@ -1893,7 +1911,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncOptIn.PreSyncConfirmationLatency" units="ms"
-    expires_after="2024-05-01">
+    expires_after="2024-07-28">
   <owner>ljjlee@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1922,7 +1940,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncPromo.{Action}.Count.{AccessPoint}"
-    units="bookmarks" expires_after="2024-05-26">
+    units="bookmarks" expires_after="2024-07-28">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

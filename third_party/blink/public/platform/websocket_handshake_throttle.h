@@ -15,8 +15,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEBSOCKET_HANDSHAKE_THROTTLE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEBSOCKET_HANDSHAKE_THROTTLE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 
@@ -38,7 +39,7 @@ class WebSocketHandshakeThrottle {
   // the callback. Callback must not be called after this object has been
   // destroyed.
   using OnCompletion =
-      base::OnceCallback<void(const absl::optional<WebString>& error)>;
+      base::OnceCallback<void(const std::optional<WebString>& error)>;
   // |creator_origin| is the origin of the execution context that created
   // this WebSocket.
   // |isolated_world_origin| indicates the origin of the isolated world if the

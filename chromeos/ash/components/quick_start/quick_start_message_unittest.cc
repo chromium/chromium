@@ -86,8 +86,7 @@ TEST_F(QuickStartMessageTest, ReadMessageFailsIfBase64WhenNotExpected) {
   payload.Set("key", "value");
   std::string json_payload;
   ASSERT_TRUE(base::JSONWriter::Write(payload, &json_payload));
-  std::string base64_payload;
-  base::Base64Encode(json_payload, &base64_payload);
+  std::string base64_payload = base::Base64Encode(json_payload);
 
   base::Value::Dict message;
   message.Set(kBootstrapConfigurationsPayloadKey, base64_payload);
@@ -107,8 +106,7 @@ TEST_F(QuickStartMessageTest, ReadMessageDecodesBase64Message) {
   payload.Set("key", "value");
   std::string json_payload;
   ASSERT_TRUE(base::JSONWriter::Write(payload, &json_payload));
-  std::string base64_payload;
-  base::Base64Encode(json_payload, &base64_payload);
+  std::string base64_payload = base::Base64Encode(json_payload);
 
   base::Value::Dict message;
   message.Set(kQuickStartPayloadKey, base64_payload);

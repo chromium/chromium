@@ -93,8 +93,9 @@ const Extension* GetExtensionOverridingNewTabPage(
   content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
       &ntp_url, browser_context);
   if (ntp_url.SchemeIs(kExtensionScheme)) {
-    return ExtensionRegistry::Get(browser_context)->GetExtensionById(
-        ntp_url.host(), ExtensionRegistry::ENABLED);
+    return ExtensionRegistry::Get(browser_context)
+        ->enabled_extensions()
+        .GetByID(ntp_url.host());
   }
   return nullptr;
 }
@@ -120,8 +121,9 @@ const Extension* GetExtensionOverridingProxy(
           proxy_config::prefs::kProxy);
   if (extension_id.empty())
     return nullptr;
-  return ExtensionRegistry::Get(browser_context)->GetExtensionById(
-      extension_id, ExtensionRegistry::ENABLED);
+  return ExtensionRegistry::Get(browser_context)
+      ->enabled_extensions()
+      .GetByID(extension_id);
 }
 
 }  // namespace extensions

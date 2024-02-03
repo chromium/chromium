@@ -296,7 +296,7 @@ void PlatformSensorReaderWinrtBase<
                   << logging::SystemErrorCodeToString(hr);
     }
 
-    reading_callback_token_ = absl::nullopt;
+    reading_callback_token_ = std::nullopt;
   }
 }
 

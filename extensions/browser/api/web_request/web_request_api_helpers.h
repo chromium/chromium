@@ -305,7 +305,7 @@ using ResponseCookieModifications = std::vector<ResponseCookieModification>;
 
 // Contains the modification an extension wants to perform on an event.
 struct EventResponseDelta {
-  EventResponseDelta(const std::string& extension_id,
+  EventResponseDelta(const extensions::ExtensionId& extension_id,
                      const base::Time& extension_install_time);
   EventResponseDelta(const EventResponseDelta&) = delete;
   EventResponseDelta(EventResponseDelta&& other);
@@ -314,7 +314,7 @@ struct EventResponseDelta {
   ~EventResponseDelta();
 
   // ID of the extension that sent this response.
-  std::string extension_id;
+  extensions::ExtensionId extension_id;
 
   // The time that the extension was installed. Used for deciding order of
   // precedence in case multiple extensions respond with conflicting
@@ -374,20 +374,20 @@ bool CharListToString(const base::Value::List& list, std::string* out);
 // the signal handler.
 
 EventResponseDelta CalculateOnBeforeRequestDelta(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
     const GURL& new_url);
 EventResponseDelta CalculateOnBeforeSendHeadersDelta(
     content::BrowserContext* browser_context,
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
     net::HttpRequestHeaders* old_headers,
     net::HttpRequestHeaders* new_headers,
     int extra_info_spec);
 EventResponseDelta CalculateOnHeadersReceivedDelta(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
     const GURL& old_url,
@@ -396,7 +396,7 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
     ResponseHeaders* new_response_headers,
     int extra_info_spec);
 EventResponseDelta CalculateOnAuthRequiredDelta(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
     std::optional<net::AuthCredentials> auth_credentials);

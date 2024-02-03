@@ -91,7 +91,7 @@ FormData GetFormData(const FormDescription& d) {
   f.action = GURL(d.action);
   f.name = d.name;
   f.host_frame = d.host_frame.value_or(MakeLocalFrameToken());
-  f.unique_renderer_id = d.unique_renderer_id.value_or(MakeFormRendererId());
+  f.renderer_id = d.renderer_id.value_or(MakeFormRendererId());
   if (d.main_frame_origin)
     f.main_frame_origin = *d.main_frame_origin;
   f.is_form_tag = d.is_form_tag;
@@ -103,9 +103,8 @@ FormData GetFormData(const FormDescription& d) {
       ff.options = dd.select_options;
     }
     ff.host_frame = dd.host_frame.value_or(f.host_frame);
-    ff.unique_renderer_id =
-        dd.unique_renderer_id.value_or(MakeFieldRendererId());
-    ff.host_form_id = f.unique_renderer_id;
+    ff.renderer_id = dd.renderer_id.value_or(MakeFieldRendererId());
+    ff.host_form_id = f.renderer_id;
     ff.is_focusable = dd.is_focusable;
     ff.is_visible = dd.is_visible;
     if (!dd.autocomplete_attribute.empty()) {
@@ -121,6 +120,9 @@ FormData GetFormData(const FormDescription& d) {
       ff.value = *dd.value;
     if (dd.placeholder)
       ff.placeholder = *dd.placeholder;
+    if (dd.max_length) {
+      ff.max_length = *dd.max_length;
+    }
     ff.is_autofilled = dd.is_autofilled.value_or(false);
     ff.origin = dd.origin.value_or(f.main_frame_origin);
     ff.should_autocomplete = dd.should_autocomplete;

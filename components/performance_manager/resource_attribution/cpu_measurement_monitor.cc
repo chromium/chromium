@@ -571,21 +571,27 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   }
   CHECK_LT(measurement_interval_start, measurement_interval_end);
 
-  base::TimeDelta current_cpu_usage = delegate_->GetCumulativeCPUUsage();
-  if (!current_cpu_usage.is_positive()) {
+  std::optional<base::TimeDelta> current_cpu_usage =
+      delegate_->GetCumulativeCPUUsage();
+  if (!current_cpu_usage.has_value()) {
     // GetCumulativeCPUUsage() failed. Don't update the measurement state.
-    // Most platforms return a zero TimeDelta on error, Linux returns a
-    // negative.
     return;
   }
+  if (!most_recent_measurement_.has_value()) {
+    // This is the first successful reading. Just record it.
+    most_recent_measurement_ = current_cpu_usage;
+    last_measurement_time_ = measurement_interval_end;
+    return;
+  }
+
   // When measured in quick succession, GetCumulativeCPUUsage() can go
   // backwards.
-  if (current_cpu_usage < most_recent_measurement_) {
+  if (current_cpu_usage.value() < most_recent_measurement_.value()) {
     current_cpu_usage = most_recent_measurement_;
   }
 
   const base::TimeDelta cumulative_cpu_delta =
-      current_cpu_usage - most_recent_measurement_;
+      current_cpu_usage.value() - most_recent_measurement_.value();
   most_recent_measurement_ = current_cpu_usage;
   last_measurement_time_ = measurement_interval_end;
 

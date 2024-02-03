@@ -65,7 +65,7 @@ struct SwVideoTestParams {
   VideoCodec codec;
   VideoCodecProfile profile;
   VideoPixelFormat pixel_format;
-  absl::optional<SVCScalabilityMode> scalability_mode;
+  std::optional<SVCScalabilityMode> scalability_mode;
 };
 
 class SoftwareVideoEncoderTest
@@ -126,7 +126,7 @@ class SoftwareVideoEncoderTest
       gfx::Size size,
       VideoPixelFormat format,
       base::TimeDelta timestamp,
-      absl::optional<uint32_t> xor_mask = absl::nullopt) {
+      std::optional<uint32_t> xor_mask = std::nullopt) {
     if (xor_mask) {
       auto frame = frame_pool_.CreateFrame(format, size, gfx::Rect(size), size,
                                            timestamp);
@@ -284,6 +284,7 @@ class SoftwareVideoEncoderTest
   VideoPixelFormat GetExpectedOutputPixelFormat(VideoCodecProfile profile) {
     switch (profile) {
       case VP9PROFILE_PROFILE1:
+      case AV1PROFILE_PROFILE_HIGH:
         return PIXEL_FORMAT_I444;
       case VP9PROFILE_PROFILE2:
         return PIXEL_FORMAT_YUV420P10;
@@ -306,7 +307,8 @@ class SoftwareVideoEncoderTest
 
   VideoEncoder::Options CreateDefaultOptions() {
     VideoEncoder::Options default_options;
-    if (profile_ == VP9PROFILE_PROFILE1 || profile_ == VP9PROFILE_PROFILE3) {
+    if (profile_ == VP9PROFILE_PROFILE1 || profile_ == VP9PROFILE_PROFILE3 ||
+        profile_ == AV1PROFILE_PROFILE_HIGH) {
       default_options.subsampling = VideoChromaSampling::k444;
     }
     return default_options;
@@ -354,7 +356,7 @@ TEST_P(SoftwareVideoEncoderTest, InitializeAndFlush) {
   options.frame_size = gfx::Size(640, 480);
   bool output_called = false;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, std::optional<VideoEncoder::CodecDescription>) {
         output_called = true;
       });
 
@@ -375,7 +377,7 @@ TEST_P(SoftwareVideoEncoderTest, ForceAllKeyFrames) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_TRUE(output.key_frame);
         outputs_count++;
       });
@@ -405,7 +407,7 @@ TEST_P(SoftwareVideoEncoderTest, ResizeFrames) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         outputs_count++;
       });
 
@@ -442,7 +444,7 @@ TEST_P(SoftwareVideoEncoderTest, OutputCountEqualsFrameCount) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_NE(output.data, nullptr);
         EXPECT_EQ(output.timestamp, frame_duration * outputs_count);
         outputs_count++;
@@ -480,7 +482,7 @@ TEST_P(SoftwareVideoEncoderTest, PerFrameQpEncoding) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_NE(output.data, nullptr);
         outputs_count++;
       });
@@ -522,7 +524,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&, this](VideoEncoderOutput output,
-                absl::optional<VideoEncoder::CodecDescription> desc) {
+                std::optional<VideoEncoder::CodecDescription> desc) {
         auto buffer =
             DecoderBuffer::FromArray(std::move(output.data), output.size);
         buffer->set_timestamp(output.timestamp);
@@ -590,7 +592,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         chunks.push_back(std::move(output));
       });
 
@@ -680,7 +682,7 @@ TEST_P(SVCVideoEncoderTest, ChangeLayers) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         chunks.push_back(std::move(output));
       });
 
@@ -724,7 +726,7 @@ TEST_P(SoftwareVideoEncoderTest, ReconfigureWithResizingNumberOfThreads) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         outputs_count++;
       });
 
@@ -798,7 +800,7 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         auto buffer =
             DecoderBuffer::FromArray(std::move(output.data), output.size);
         buffer->set_timestamp(output.timestamp);
@@ -867,7 +869,7 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         switch (outputs_count) {
           case 0: {
             // First frame should have extra_data
@@ -929,7 +931,7 @@ TEST_P(H264VideoEncoderTest, AnnexB) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_FALSE(desc.has_value());
         EXPECT_NE(output.data, nullptr);
 
@@ -977,7 +979,7 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
   options.avc.produce_annexb = false;
   struct ChunkWithConfig {
     VideoEncoderOutput output;
-    absl::optional<VideoEncoder::CodecDescription> desc;
+    std::optional<VideoEncoder::CodecDescription> desc;
   };
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
   std::vector<scoped_refptr<VideoFrame>> decoded_frames;
@@ -987,7 +989,7 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription> desc) {
+          std::optional<VideoEncoder::CodecDescription> desc) {
         chunks.push_back({std::move(output), std::move(desc)});
       });
 
@@ -1069,7 +1071,7 @@ INSTANTIATE_TEST_SUITE_P(H264Generic,
                          PrintTestParams);
 
 SwVideoTestParams kH264SVCParams[] = {
-    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, absl::nullopt},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, std::nullopt},
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420,
      SVCScalabilityMode::kL1T1},
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420,
@@ -1110,14 +1112,14 @@ INSTANTIATE_TEST_SUITE_P(VpxGeneric,
                          PrintTestParams);
 
 SwVideoTestParams kVpxSVCParams[] = {
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, absl::nullopt},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, std::nullopt},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420,
      SVCScalabilityMode::kL1T1},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420,
      SVCScalabilityMode::kL1T2},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420,
      SVCScalabilityMode::kL1T3},
-    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, absl::nullopt},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, std::nullopt},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420,
      SVCScalabilityMode::kL1T1},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420,
@@ -1139,7 +1141,10 @@ INSTANTIATE_TEST_SUITE_P(VpxTemporalSvc,
 SwVideoTestParams kAv1Params[] = {
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
-    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_XRGB}};
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_I444},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_NV12},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_XRGB}};
 
 INSTANTIATE_TEST_SUITE_P(Av1Generic,
                          SoftwareVideoEncoderTest,
@@ -1148,7 +1153,7 @@ INSTANTIATE_TEST_SUITE_P(Av1Generic,
 
 SwVideoTestParams kAv1SVCParams[] = {
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420,
-     absl::nullopt},
+     std::nullopt},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420,
      SVCScalabilityMode::kL1T1},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420,

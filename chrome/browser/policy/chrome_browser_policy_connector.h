@@ -35,8 +35,11 @@ class ConfigurationPolicyProvider;
 class LocalTestPolicyProvider;
 class ProxyPolicyProvider;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class ChromeBrowserCloudManagementController;
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 class MachineLevelUserCloudPolicyManager;
 #endif
 
@@ -85,11 +88,25 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // at the right time.
   void MaybeApplyLocalTestPolicies(PrefService* local_state);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   ChromeBrowserCloudManagementController*
   chrome_browser_cloud_management_controller() {
     return chrome_browser_cloud_management_controller_.get();
   }
+
+  // On non-Android platforms, starts controller initialization right away.
+  // On Android, delays controller initialization until platform policies have
+  // been initialized, or starts controller initialization right away otherwise.
+  void InitCloudManagementController(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(chromium:1502062): MachineLevelUserCloudPolicyManager is CBCM's policy
+  // provider. Since CBCM doesn't exist in Lacros,
+  // MachineLevelUserCloudPolicyManager shouldn't have to exist there either.
+  // Refactor the code accordingly.
   MachineLevelUserCloudPolicyManager*
   machine_level_user_cloud_policy_manager() {
     return machine_level_user_cloud_policy_manager_;
@@ -104,13 +121,6 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   ConfigurationPolicyProvider* command_line_policy_provider() {
     return command_line_provider_;
   }
-
-  // On non-Android platforms, starts controller initialization right away.
-  // On Android, delays controller initialization until platform policies have
-  // been initialized, or starts controller initialization right away otherwise.
-  void InitCloudManagementController(
-      PrefService* local_state,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Set ProxyPolicyProvider for testing, caller needs to init and shutdown the
   // provider.
@@ -157,7 +167,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // Returns the policy provider that supplies platform policies.
   std::unique_ptr<ConfigurationPolicyProvider> CreatePlatformProvider();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ChromeBrowserCloudManagementController>
+      chrome_browser_cloud_management_controller_;
+
   // Creates the MachineLevelUserCloudPolicyManager if the browser should be
   // enrolled in CBCM. On Android, the decision may be postponed until platform
   // policies have been loaded and it can be decided if an enrollment token is
@@ -165,16 +178,15 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   void MaybeCreateCloudPolicyManager(
       std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>*
           providers);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Invoked once it can be decided if cloud management is enabled. If enabled,
   // invoked with a MachineLevelUserCloudPolicyManager instance. Otherwise,
   // nullptr is passed on instead.
   void OnMachineLevelCloudPolicyManagerCreated(
       std::unique_ptr<MachineLevelUserCloudPolicyManager>
           machine_level_user_cloud_policy_manager);
-
-  std::unique_ptr<ChromeBrowserCloudManagementController>
-      chrome_browser_cloud_management_controller_;
 
   // If CBCM enrollment is needed, then this proxy points to a
   // MachineLevelUserCloudPolicyManager object. Otherwise, this is innocuous.

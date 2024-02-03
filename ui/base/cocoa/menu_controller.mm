@@ -94,13 +94,11 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 // Associates a submenu if the MenuModel::ItemType is TYPE_SUBMENU.
 - (void)addItemToMenu:(NSMenu*)menu
               atIndex:(size_t)index
-            fromModel:(ui::MenuModel*)model
-    withColorProvider:(const ui::ColorProvider*)colorProvider;
+            fromModel:(ui::MenuModel*)model;
 
 // Creates a NSMenu from the given model. If the model has submenus, this can
 // be invoked recursively.
-- (NSMenu*)menuFromModel:(ui::MenuModel*)model
-       withColorProvider:(const ui::ColorProvider*)colorProvider;
+- (NSMenu*)menuFromModel:(ui::MenuModel*)model;
 
 // Adds a separator item at the given index. As the separator doesn't need
 // anything from the model, this method doesn't need the model index as the
@@ -137,23 +135,12 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
 - (instancetype)initWithModel:(ui::MenuModel*)model
                      delegate:(id<MenuControllerCocoaDelegate>)delegate
-                colorProvider:(const ui::ColorProvider*)colorProvider
-       useWithPopUpButtonCell:(BOOL)useWithCell {
-  if ((self = [self initWithModel:model
-                         delegate:delegate
-           useWithPopUpButtonCell:useWithCell])) {
-    [self maybeBuildWithColorProvider:colorProvider];
-  }
-  return self;
-}
-
-- (instancetype)initWithModel:(ui::MenuModel*)model
-                     delegate:(id<MenuControllerCocoaDelegate>)delegate
        useWithPopUpButtonCell:(BOOL)useWithCell {
   if ((self = [super init])) {
     _model = model->AsWeakPtr();
     _delegate = delegate;
     _useWithPopUpButtonCell = useWithCell;
+    [self maybeBuild];
   }
   return self;
 }
@@ -167,10 +154,6 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   _model = nullptr;
 }
 
-- (void)setDelegate:(id<MenuControllerCocoaDelegate>)delegate {
-  _delegate = delegate;
-}
-
 - (void)cancel {
   if (_isMenuOpen) {
     [_menu cancelTracking];
@@ -180,8 +163,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   }
 }
 
-- (NSMenu*)menuFromModel:(ui::MenuModel*)model
-       withColorProvider:(const ui::ColorProvider*)colorProvider {
+- (NSMenu*)menuFromModel:(ui::MenuModel*)model {
   NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
 
   const size_t count = model->GetItemCount();
@@ -189,10 +171,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     if (model->GetTypeAt(index) == ui::MenuModel::TYPE_SEPARATOR) {
       [self addSeparatorToMenu:menu atIndex:index];
     } else {
-      [self addItemToMenu:menu
-                    atIndex:index
-                  fromModel:model
-          withColorProvider:colorProvider];
+      [self addItemToMenu:menu atIndex:index fromModel:model];
     }
   }
 
@@ -206,8 +185,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
 - (void)addItemToMenu:(NSMenu*)menu
               atIndex:(size_t)index
-            fromModel:(ui::MenuModel*)model
-    withColorProvider:(const ui::ColorProvider*)colorProvider {
+            fromModel:(ui::MenuModel*)model {
   auto rawLabel = model->GetLabelAt(index);
   NSString* label = model->MayHaveMnemonicsAt(index)
                         ? l10n_util::FixUpWindowsStyleLabel(rawLabel)
@@ -228,8 +206,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
     // If there are visible items, recursively build the submenu.
     NSMenu* submenu = MenuHasVisibleItems(submenuModel)
-                          ? [self menuFromModel:submenuModel
-                                withColorProvider:colorProvider]
+                          ? [self menuFromModel:submenuModel]
                           : MakeEmptySubmenu();
 
     item.target = nil;
@@ -266,10 +243,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   }
 
   if (_delegate) {
-    [_delegate controllerWillAddItem:item
-                           fromModel:model
-                             atIndex:index
-                   withColorProvider:colorProvider];
+    [_delegate controllerWillAddItem:item fromModel:model atIndex:index];
   }
 
   [menu insertItem:item atIndex:modelIndex];
@@ -332,11 +306,11 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   // Note: |self| may be destroyed by the call to ActivatedAt().
 }
 
-- (void)maybeBuildWithColorProvider:(const ui::ColorProvider*)colorProvider {
+- (void)maybeBuild {
   if (_menu || !_model)
     return;
 
-  _menu = [self menuFromModel:_model.get() withColorProvider:colorProvider];
+  _menu = [self menuFromModel:_model.get()];
   _menu.delegate = self;
 
   // TODO(dfried): Ideally we'd do this after each submenu is created.
@@ -359,7 +333,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 }
 
 - (NSMenu*)menu {
-  [self maybeBuildWithColorProvider:nullptr];
+  [self maybeBuild];
   return _menu;
 }
 

@@ -6,6 +6,8 @@
 #define CHROMECAST_BINDINGS_SHARED_PROTO_SERIALIZER_H_
 
 #include <optional>
+#include <string_view>
+
 #include "base/base64.h"
 
 namespace chromecast {
@@ -32,7 +34,7 @@ class ProtoSerializer {
   // Deserializes |base64| to its proto representation, parsed into |result|.
   // Returns a value if parsing is successful; otherwise, returns false. Used
   // by bindings frontends and backends for consistent serialization logic.
-  static std::optional<T> Deserialize(base::StringPiece base64_proto) {
+  static std::optional<T> Deserialize(std::string_view base64_proto) {
     std::string decoded;
     if (!base::Base64Decode(base64_proto, &decoded)) {
       return std::nullopt;

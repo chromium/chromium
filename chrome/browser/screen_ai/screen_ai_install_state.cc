@@ -24,8 +24,11 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/cpu.h"
-#include "base/files/file_util.h"
 #endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#include "base/files/file_util.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/native_library.h"
@@ -184,7 +187,7 @@ void ScreenAIInstallState::RecordComponentInstallationResult(bool install,
 
 void ScreenAIInstallState::AddObserver(
     ScreenAIInstallState::Observer* observer) {
-  observers_.push_back(observer);
+  observers_.AddObserver(observer);
   observer->StateChanged(state_);
 
   // Adding an observer indicates that we need the component.
@@ -206,10 +209,7 @@ void ScreenAIInstallState::DownloadComponent() {
 
 void ScreenAIInstallState::RemoveObserver(
     ScreenAIInstallState::Observer* observer) {
-  auto pos = base::ranges::find(observers_, observer);
-  if (pos != observers_.end()) {
-    observers_.erase(pos);
-  }
+  observers_.RemoveObserver(observer);
 }
 
 void ScreenAIInstallState::SetComponentFolder(
@@ -223,42 +223,35 @@ void ScreenAIInstallState::SetComponentFolder(
   // session will continue using that and the new one will be used after next
   // Chrome restart. Otherwise the new component will be used when a service
   // request arrives as its path is stored in |component_binary_path_|.
-  if (state_ != State::kReady && state_ != State::kDownloaded) {
+  if (state_ != State::kDownloaded) {
     SetState(State::kDownloaded);
   }
 }
 
 void ScreenAIInstallState::SetState(State state) {
   if (state == state_) {
-    // Failed and ready state can be repeated as they come from different
-    // profiles. Downloading can be repeated in ChromeOS tests that call
+    // `kDownloadFailed` state can be repeated as download can be retriggered.
+    // `kDownloading` can be repeated in ChromeOS tests that call
     // LoginManagerTest::AddUser() and reset UserSessionInitializer.
-    // TODO(crbug.com/1443341): While the case is highly unexpected, add more
-    // control logic if state is changed from failed to ready or vice versa.
-    DCHECK(state == State::kReady || state == State::kDownloadFailed ||
-           state == State::kDownloading);
+    DCHECK(state == State::kDownloadFailed || state == State::kDownloading);
     return;
   }
 
   state_ = state;
-  for (ScreenAIInstallState::Observer* observer : observers_) {
-    observer->StateChanged(state_);
+  for (ScreenAIInstallState::Observer& observer : observers_) {
+    observer.StateChanged(state_);
   }
 }
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {
   DCHECK_EQ(state_, State::kDownloading);
-  for (ScreenAIInstallState::Observer* observer : observers_) {
-    observer->DownloadProgressChanged(progress);
+  for (ScreenAIInstallState::Observer& observer : observers_) {
+    observer.DownloadProgressChanged(progress);
   }
 }
 
 bool ScreenAIInstallState::IsComponentAvailable() {
   return !get_component_binary_path().empty();
-}
-
-void ScreenAIInstallState::SetComponentReadyForTesting() {
-  state_ = State::kReady;
 }
 
 bool ScreenAIInstallState::MayTryDownload() {
@@ -269,7 +262,6 @@ bool ScreenAIInstallState::MayTryDownload() {
 
     case State::kDownloading:
     case State::kDownloaded:
-    case State::kReady:
       return false;
   }
 }
@@ -281,20 +273,20 @@ void ScreenAIInstallState::ResetForTesting() {
 
 void ScreenAIInstallState::SetComponentFolderForTesting() {
   CHECK_IS_TEST();
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   // Set the path to the ScreenAI test files. For more details, see the
   // `screen_ai_test_files` rule in the accessibility_common BUILD file.
   base::FilePath screenai_library_path =
       screen_ai::GetLatestComponentBinaryPath();
   CHECK(base::PathExists(screenai_library_path));
   SetComponentFolder(screenai_library_path.DirName());
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void ScreenAIInstallState::SetStateForTesting(State state) {
   state_ = state;
-  for (ScreenAIInstallState::Observer* observer : observers_) {
-    observer->StateChanged(state_);
+  for (ScreenAIInstallState::Observer& observer : observers_) {
+    observer.StateChanged(state_);
   }
 }
 

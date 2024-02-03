@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventEnqueueResult"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-05-26">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-07-28">
   <owner>lbaraz@chromium.org</owner>
   <owner>xuhong@chromium.org</owner>
   <owner>src/components/reporting/OWNERS</owner>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventUploadSizeAdjustment.{Param}" units="bytes"
-    expires_after="2024-05-23">
+    expires_after="2024-07-28">
   <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -275,20 +275,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The size of ERP's request payload as a JSON string when upload is
     successful. Updated every time when an upload succeeds.
-  </summary>
-</histogram>
-
-<histogram name="Browser.ERP.StorageQueueGenerationIdReset" enum="Boolean"
-    expires_after="2024-01-31">
-  <owner>vshenvi@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
-  <summary>
-    Would only be true. Recorded whenever the generation id is reset in the
-    storage queue. The generation id is set up once during storage queue
-    initialization using the metadata file that matches the last sequencing id
-    used to track, deduplicate and confirm delivery by the server. The
-    generation id is reset when this file is missing or corrupted and the
-    sequencing is irreparably broken.
   </summary>
 </histogram>
 
@@ -520,7 +506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.CompositorProcessStartedCorrectly"
-    enum="BooleanSuccess" expires_after="2024-05-27">
+    enum="BooleanSuccess" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -530,7 +516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.CompositorProcessStartupTime"
-    units="ms" expires_after="2024-05-27">
+    units="ms" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -548,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.TimeToFirstBitmap" units="ms"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -559,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.CompositorFailureReason"
-    enum="TabbedPaintPreviewCompositorFailureReason" expires_after="2024-05-27">
+    enum="TabbedPaintPreviewCompositorFailureReason" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -571,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.ExitCause"
-    enum="TabbedPaintPreviewExitCause" expires_after="2024-05-27">
+    enum="TabbedPaintPreviewExitCause" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -582,7 +568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.FirstPaintBeforeTabLoad"
-    enum="Boolean" expires_after="2024-05-27">
+    enum="Boolean" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -593,7 +579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.HadCapture" enum="Boolean"
-    expires_after="2024-05-27">
+    expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -616,7 +602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap"
-    units="ms" expires_after="2024-05-27">
+    units="ms" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -628,7 +614,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Browser.PaintPreview.TabbedPlayer.UpTime{TabbedPaintPreviewPlayerUptime}"
-    units="ms" expires_after="2024-05-27">
+    units="ms" expires_after="2024-07-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -978,6 +964,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.SpareProcessDelayTime" units="ms"
+    expires_after="2024-06-30">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    Records the time elapsed from the initiation of the spare process warm-up to
+    the actual creation of the process.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SpareProcessMaybeTakeAction"
     enum="SpareProcessMaybeTakeAction" expires_after="2024-06-30">
   <owner>alexmos@chromium.org</owner>
@@ -985,6 +983,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records what happens when an attempt is made to use a spare
     RenderProcessHost - logs that either the attempt succeeded or why it failed.
+  </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.SpareProcessStartupTime" units="ms"
+    expires_after="2024-06-30">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    Records the time elapsed from the creation of the spare process to the point
+    when the process becomes ready. This does not include the scheduled delay
+    time (see SpareProcessDelayTime).
   </summary>
 </histogram>
 

@@ -18,7 +18,8 @@ namespace network_diagnostics {
 // Tests the Network Interface Controller (NIC) signal strength.
 class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
  public:
-  SignalStrengthRoutine();
+  explicit SignalStrengthRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   SignalStrengthRoutine(const SignalStrengthRoutine&) = delete;
   SignalStrengthRoutine& operator=(const SignalStrengthRoutine&) = delete;
   ~SignalStrengthRoutine() override;

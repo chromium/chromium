@@ -68,7 +68,7 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
 
 void RemoteFrameClientImpl::CreateRemoteChild(
     const RemoteFrameToken& token,
-    const absl::optional<FrameToken>& opener_frame_token,
+    const std::optional<FrameToken>& opener_frame_token,
     mojom::blink::TreeScopeType tree_scope_type,
     mojom::blink::FrameReplicationStatePtr replication_state,
     mojom::blink::FrameOwnerPropertiesPtr owner_properties,
@@ -100,7 +100,7 @@ void RemoteFrameClientImpl::CreateRemoteChildren(
 
 WebRemoteFrameImpl* RemoteFrameClientImpl::CreateRemoteChildImpl(
     const RemoteFrameToken& token,
-    const absl::optional<FrameToken>& opener_frame_token,
+    const std::optional<FrameToken>& opener_frame_token,
     mojom::blink::TreeScopeType tree_scope_type,
     mojom::blink::FrameReplicationStatePtr replication_state,
     mojom::blink::FrameOwnerPropertiesPtr owner_properties,

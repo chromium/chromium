@@ -719,6 +719,7 @@ class TestDialogController
             FROM_HERE,
             base::BindOnce(
                 std::move(on_add_account),
+                identity_provider_data.data()->idp_metadata.config_url,
                 identity_provider_data.data()->idp_metadata.idp_login_url));
         break;
       case AccountsDialogAction::kNone:
@@ -906,10 +907,9 @@ class TestIdentityRegistry : public NiceMock<MockIdentityRegistry> {
   explicit TestIdentityRegistry(
       content::WebContents* web_contents,
       base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-      const url::Origin& registry_origin)
-      : NiceMock<MockIdentityRegistry>(web_contents,
-                                       delegate,
-                                       registry_origin) {}
+      const GURL& idp_config_url)
+      : NiceMock<MockIdentityRegistry>(web_contents, delegate, idp_config_url) {
+  }
 
   void NotifyClose(const url::Origin& notifier_origin) override {
     notified_ = true;
@@ -934,8 +934,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     test_auto_reauthn_permission_delegate_ =
         std::make_unique<TestAutoReauthnPermissionDelegate>();
     test_identity_registry_ = std::make_unique<TestIdentityRegistry>(
-        web_contents(), /*delegate=*/nullptr,
-        url::Origin::Create(GURL(kIdpUrl)));
+        web_contents(), /*delegate=*/nullptr, GURL(kIdpUrl));
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(rp_url_), ui::PAGE_TRANSITION_LINK);
@@ -1433,7 +1432,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   void SimulateLoginToIdP(std::string login_url = kIdpLoginUrl) {
     federated_auth_request_impl_->LoginToIdP(/*can_append_hints=*/true,
-                                             GURL(login_url));
+                                             GURL(kIdpUrl), GURL(login_url));
   }
 
   void ExpectSuccessfulButtonFlow() {
@@ -5237,16 +5236,11 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
   auto impl = federated_auth_request_impl_;
   EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _))
       .WillOnce(::testing::WithArg<0>([&modal, &impl](const GURL& url) {
-        impl->NotifyResolve("an-access-token");
+        impl->OnResolve(GURL(kProviderUrlFull), "an-access-token");
         return modal.get();
       }));
 
-  RequestExpectations success = {RequestTokenStatus::kSuccess,
-                                 FederatedAuthRequestResult::kSuccess,
-                                 /*standalone_console_message=*/std::nullopt,
-                                 /*selected_idp_config_url=*/std::nullopt};
-
-  RunAuthTest(parameters, success, config);
+  RunAuthTest(parameters, kExpectationSuccess, config);
 
   // When the authorization is delegated and the feature is enabled
   // we don't fetch the client metadata endpoint (which is used to
@@ -5379,8 +5373,7 @@ class FederatedAuthRequestImplNewTabTest : public FederatedAuthRequestImplTest {
     test_auto_reauthn_permission_delegate_ =
         std::make_unique<TestAutoReauthnPermissionDelegate>();
     test_identity_registry_ = std::make_unique<TestIdentityRegistry>(
-        web_contents(), /*delegate=*/nullptr,
-        url::Origin::Create(GURL(kIdpUrl)));
+        web_contents(), /*delegate=*/nullptr, GURL(kIdpUrl));
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL("chrome://newtab/"), ui::PAGE_TRANSITION_LINK);

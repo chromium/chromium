@@ -168,7 +168,7 @@ bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
       DCHECK_EQ(service_type_, MetricsServiceType::UMA);
       log_dict.Set("type", LogTypeToString(log->type.value()));
     }
-    log_dict.Set("hash", base::HexEncode(log->hash.data(), log->hash.length()));
+    log_dict.Set("hash", base::HexEncode(log->hash));
     log_dict.Set("timestamp", log->timestamp);
 
     if (include_log_proto_data) {

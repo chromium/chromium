@@ -816,12 +816,8 @@ bool AutocompleteMatch::IsSearchType(Type type) {
          type == AutocompleteMatchType::SEARCH_OTHER_ENGINE ||
          type == AutocompleteMatchType::CALCULATOR ||
          type == AutocompleteMatchType::VOICE_SUGGEST ||
-#if BUILDFLAG(IS_ANDROID)
-         // TODO(crbug.com/1470185): iOS tests fail if Clipboard searches are
-         //   annotated as searches.
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||
          type == AutocompleteMatchType::CLIPBOARD_IMAGE ||
-#endif
          IsSpecializedSearchType(type);
 }
 

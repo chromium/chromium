@@ -1,0 +1,272 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_
+#define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_
+
+#include <string>
+#include <vector>
+
+#include "base/i18n/case_conversion.h"
+#include "chrome/browser/ui/monogram_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/events/event.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/widget/widget_observer.h"
+
+using TokenError = content::IdentityCredentialTokenError;
+
+namespace content {
+struct IdentityRequestAccount;
+}  // namespace content
+
+// The radius used for the corner of the "Continue as" button.
+inline constexpr int kButtonRadius = 16;
+// The fixed, total width of the bubble.
+inline constexpr int kBubbleWidth = 375;
+// The desired size of the avatars of user accounts.
+inline constexpr int kDesiredAvatarSize = 30;
+// The desired size of the icon of the identity provider.
+inline constexpr int kDesiredIdpIconSize = 20;
+// The desired size of the icon for the "Use another account" button.
+inline constexpr int kDesiredUseOtherAccountIconSize = 20;
+// The size of the padding used at the top and bottom of the bubble.
+inline constexpr int kTopBottomPadding = 4;
+// The size of the horizontal padding between the bubble content and the edge of
+// the bubble, as well as the horizontal padding between icons and text.
+inline constexpr int kLeftRightPadding = 12;
+// The size of the vertical padding for most elements in the bubble.
+inline constexpr int kVerticalSpacing = 8;
+// The height of the progress bar shown when showing "Verifying...".
+inline constexpr int kProgressBarHeight = 2;
+// The size of the space between the right boundary of the WebContents and the
+// right boundary of the bubble.
+inline constexpr int kRightMargin = 40;
+// The size of the space between the top boundary of the WebContents and the top
+// boundary of the bubble.
+inline constexpr int kTopMargin = 16;
+
+inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
+
+class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
+ public:
+  LetterCircleCroppedImageSkiaSource(const std::u16string& letter, int size)
+      : gfx::CanvasImageSource(gfx::Size(size, size)), letter_(letter) {}
+
+  LetterCircleCroppedImageSkiaSource(
+      const LetterCircleCroppedImageSkiaSource&) = delete;
+  LetterCircleCroppedImageSkiaSource& operator=(
+      const LetterCircleCroppedImageSkiaSource&) = delete;
+  ~LetterCircleCroppedImageSkiaSource() override = default;
+
+  void Draw(gfx::Canvas* canvas) override;
+
+ private:
+  const std::u16string letter_;
+};
+
+// A CanvasImageSource that:
+// 1) Applies an optional square center-crop.
+// 2) Resizes the cropped image (while maintaining the image's aspect ratio) to
+//    fit into the target canvas. If no center-crop was applied and the source
+//    image is rectangular, the image is resized so that
+//    `avatar` small edge size == `canvas_edge_size`.
+// 3) Circle center-crops the resized image.
+class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
+ public:
+  CircleCroppedImageSkiaSource(gfx::ImageSkia avatar,
+                               std::optional<int> pre_resize_avatar_crop_size,
+                               int canvas_edge_size)
+      : gfx::CanvasImageSource(gfx::Size(canvas_edge_size, canvas_edge_size)) {
+    int scaled_width = canvas_edge_size;
+    int scaled_height = canvas_edge_size;
+    if (pre_resize_avatar_crop_size) {
+      const float avatar_scale =
+          (canvas_edge_size / (float)*pre_resize_avatar_crop_size);
+      scaled_width = floor(avatar.width() * avatar_scale);
+      scaled_height = floor(avatar.height() * avatar_scale);
+    } else {
+      // Resize `avatar` so that it completely fills the canvas.
+      const float height_ratio =
+          ((float)avatar.height() / (float)avatar.width());
+      if (height_ratio >= 1.0f) {
+        scaled_height = floor(canvas_edge_size * height_ratio);
+      } else {
+        scaled_width = floor(canvas_edge_size / height_ratio);
+      }
+    }
+    avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
+        avatar, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(scaled_width, scaled_height));
+  }
+
+  CircleCroppedImageSkiaSource(const CircleCroppedImageSkiaSource&) = delete;
+  CircleCroppedImageSkiaSource& operator=(const CircleCroppedImageSkiaSource&) =
+      delete;
+  ~CircleCroppedImageSkiaSource() override = default;
+
+  // CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override;
+
+ private:
+  gfx::ImageSkia avatar_;
+};
+
+// Base class for interacting with FedCM account selection dialog.
+class AccountSelectionViewBase {
+ public:
+  // Used to observe changes to the account selection dialog.
+  class Observer {
+   public:
+    // Called when a user either selects the account from the multi-account
+    // chooser or clicks the "continue" button.
+    // Takes `account` as well as `idp_display_data` since passing `account_id`
+    // is insufficient in the multiple IDP case. The caller should pass a cref,
+    // as these objects are owned by the observer.
+    virtual void OnAccountSelected(
+        const content::IdentityRequestAccount& account,
+        const IdentityProviderDisplayData& idp_display_data,
+        const ui::Event& event) = 0;
+
+    // Called when the user clicks "privacy policy" or "terms of service" link.
+    virtual void OnLinkClicked(
+        content::IdentityRequestDialogController::LinkType link_type,
+        const GURL& url,
+        const ui::Event& event) = 0;
+
+    // Called when the user clicks "back" button.
+    virtual void OnBackButtonClicked() = 0;
+
+    // Called when the user clicks "close" button.
+    virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
+
+    // Called when the user clicks the "continue" button on the sign-in
+    // failure dialog or wants to sign in to another account.
+    virtual void OnLoginToIdP(const GURL& idp_config_url,
+                              const GURL& idp_login_url,
+                              const ui::Event& event) = 0;
+
+    // Called when the user clicks "got it" button.
+    virtual void OnGotIt(const ui::Event& event) = 0;
+
+    // Called when the user clicks the "more details" button on the error
+    // dialog.
+    virtual void OnMoreDetails(const ui::Event& event) = 0;
+
+    // Called when IdentityProvider.close() is called from the renderer.
+    virtual void CloseModalDialog() = 0;
+  };
+
+  AccountSelectionViewBase(
+      Browser* browser,
+      AccountSelectionViewBase::Observer* observer,
+      views::WidgetObserver* widget_observer,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  AccountSelectionViewBase();
+  virtual ~AccountSelectionViewBase();
+
+  // Creates and sets the appropriate dialog widget, depending on whether the
+  // dialog is bubble or modal.
+  virtual void InitDialogWidget() = 0;
+
+  // Updates the FedCM dialog to show the "account picker" sheet.
+  virtual void ShowMultiAccountPicker(
+      const std::vector<IdentityProviderDisplayData>& idp_data_list) = 0;
+
+  // Updates the FedCM dialog to show the "verifying" sheet.
+  virtual void ShowVerifyingSheet(
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_data,
+      const std::u16string& title) = 0;
+
+  // Updates to show single account plus a confirm dialog. Used when showing the
+  // account confirmation dialog after the user picks one of multiple accounts.
+  virtual void ShowSingleAccountConfirmDialog(
+      const std::u16string& top_frame_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_data,
+      bool show_back_button) = 0;
+
+  // Updates the FedCM dialog to show the "failure" sheet.
+  virtual void ShowFailureDialog(
+      const std::u16string& top_frame_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
+      const std::u16string& idp_for_display,
+      const content::IdentityProviderMetadata& idp_metadata) = 0;
+
+  // Updates the FedCM dialog to show the "error" sheet.
+  virtual void ShowErrorDialog(
+      const std::u16string& top_frame_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
+      const std::u16string& idp_for_display,
+      const content::IdentityProviderMetadata& idp_metadata,
+      const std::optional<TokenError>& error) = 0;
+
+  // Closes the dialog, without dismissing the FedCM API.
+  virtual void CloseDialog() = 0;
+
+  // Gets the title of the dialog.
+  virtual std::string GetDialogTitle() const = 0;
+
+  // Gets the subtitle of the dialog, if available.
+  virtual std::optional<std::string> GetDialogSubtitle() const = 0;
+
+  // Retrieves the dialog widget used to control the dialog, if available. This
+  // method is virtual for testing purposes.
+  virtual base::WeakPtr<views::Widget> GetDialogWidget();
+
+  static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
+
+ protected:
+  int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context);
+  std::u16string GetTitle(
+      const std::u16string& top_frame_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
+      const std::optional<std::u16string>& idp_title,
+      blink::mojom::RpContext rp_context);
+  std::u16string GetSubtitle(const std::u16string& top_frame_for_display);
+  std::u16string GetAccessibleTitle(
+      const std::u16string& top_frame_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
+      const std::optional<std::u16string>& idp_title,
+      blink::mojom::RpContext rp_context);
+  void SetLabelProperties(views::Label* label);
+
+  // Returns a View containing information about an account: the picture for
+  // the account on the left, and information about the account on the right.
+  // |should_hover| determines whether the account row is a HoverButton or
+  // not.
+  std::unique_ptr<views::View> CreateAccountRow(
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_display_data,
+      bool should_hover);
+
+  // The ImageFetcher used to fetch the account pictures for FedCM.
+  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
+
+  // Browser which the dialog is rendered on.
+  raw_ptr<Browser> browser_;
+
+  // Widget to control the dialog i.e. hide, show, add observer etc.
+  base::WeakPtr<views::Widget> dialog_widget_;
+
+  // Observes events on `dialog_widget_`.
+  // Dangling when running Chromedriver's run_py_tests.py test suite.
+  raw_ptr<views::WidgetObserver, DanglingUntriaged> widget_observer_{nullptr};
+
+  // Observes events on AccountSelectionBubbleView.
+  // Dangling when running Chromedriver's run_py_tests.py test suite.
+  raw_ptr<Observer, DanglingUntriaged> observer_{nullptr};
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_

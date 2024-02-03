@@ -131,7 +131,7 @@ GlanceableInfoView* AmbientInfoView::GetGlanceableInfoViewForTesting() const {
   return glanceable_info_view_;
 }
 
-BEGIN_METADATA(AmbientInfoView, views::View)
+BEGIN_METADATA(AmbientInfoView)
 END_METADATA
 
 }  // namespace ash

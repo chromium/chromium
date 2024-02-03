@@ -6,6 +6,8 @@
 #define DEVICE_FIDO_ENCLAVE_TYPES_H_
 
 #include <array>
+#include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -71,10 +73,13 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   // access_token contains an OAuth2 token to authenticate access to the enclave
   // at the account level.
   std::string access_token;
-  // wrapped_keys contains one or more security domain secrets, wrapped by the
-  // enclave. These wrapped secrets are sent to the enclave so that it can
+  // wrapped_secrets contains one or more security domain secrets, wrapped by
+  // the enclave. These wrapped secrets are sent to the enclave so that it can
   // unwrap them and perform the requested operation.
-  std::vector<std::vector<uint8_t>> wrapped_keys;
+  std::vector<std::vector<uint8_t>> wrapped_secrets;
+  // Required for create() requests: the version/epoch of the single wrapped
+  // secret in `wrapped_secrets`.
+  std::optional<int32_t> wrapped_secret_version;
   // entity optionally contains a passkey Sync entity. This may be omitted for
   // create() requests.
   std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;

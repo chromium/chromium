@@ -22,8 +22,7 @@ constexpr char kKeyLabelPrefix[] = "challenge-response-";
 // label built this way is, practically, unique (short of a SHA-256 collision).
 std::string GenerateLabelSpkiPart(const std::string& public_key_spki_der) {
   DCHECK(!public_key_spki_der.empty());
-  const std::string hash = crypto::SHA256HashString(public_key_spki_der);
-  return base::HexEncode(hash.data(), hash.size());
+  return base::HexEncode(crypto::SHA256HashString(public_key_spki_der));
 }
 
 }  // namespace

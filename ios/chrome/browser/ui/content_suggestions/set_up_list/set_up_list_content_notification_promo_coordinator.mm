@@ -82,8 +82,8 @@ using base::UserMetricsAction;
   if (_markItemComplete) {
     PrefService* localState = GetApplicationContext()->GetLocalState();
     completion = ^{
-      set_up_list_prefs::MarkItemComplete(
-          localState, SetUpListItemType::kContentNotification);
+      set_up_list_prefs::MarkItemComplete(localState,
+                                          SetUpListItemType::kNotifications);
     };
   }
   [_viewController dismissViewControllerAnimated:YES completion:completion];

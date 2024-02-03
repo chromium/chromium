@@ -33,9 +33,19 @@ void RecordAboutThisSiteInteraction(AboutThisSiteInteraction interaction) {
 }  // namespace
 
 AboutThisSiteService::AboutThisSiteService(
-    std::unique_ptr<Client> client,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+    bool is_off_the_record,
+    PrefService* prefs,
     TemplateURLService* template_url_service)
-    : client_(std::move(client)), template_url_service_(template_url_service) {}
+    : optimization_guide_decider_(optimization_guide_decider),
+      is_off_the_record_(is_off_the_record),
+      prefs_(prefs),
+      template_url_service_(template_url_service) {
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::ABOUT_THIS_SITE});
+  }
+}
 
 std::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     const GURL& url,
@@ -54,7 +64,7 @@ std::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     return std::nullopt;
   }
 
-  if (!client_->IsOptimizationGuideAllowed()) {
+  if (!IsOptimizationGuideAllowed()) {
     RecordAboutThisSiteInteraction(
         AboutThisSiteInteraction::kNotShownOptimizationGuideNotAllowed);
     return std::nullopt;
@@ -66,7 +76,7 @@ std::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
         tab_helper->GetAboutThisSiteMetadata();
   } else {
     optimization_guide::OptimizationMetadata metadata;
-    decision = client_->CanApplyOptimization(url, &metadata);
+    decision = CanApplyOptimization(url, &metadata);
     about_this_site_metadata =
         metadata.ParsedMetadata<proto::AboutThisSiteMetadata>();
   }
@@ -169,5 +179,21 @@ base::WeakPtr<AboutThisSiteService> AboutThisSiteService::GetWeakPtr() {
 }
 
 AboutThisSiteService::~AboutThisSiteService() = default;
+
+bool AboutThisSiteService::IsOptimizationGuideAllowed() const {
+  return optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+      is_off_the_record_, prefs_);
+}
+
+optimization_guide::OptimizationGuideDecision
+AboutThisSiteService::CanApplyOptimization(
+    const GURL& url,
+    optimization_guide::OptimizationMetadata* optimization_metadata) const {
+  if (!IsOptimizationGuideAllowed()) {
+    return optimization_guide::OptimizationGuideDecision::kUnknown;
+  }
+  return optimization_guide_decider_->CanApplyOptimization(
+      url, optimization_guide::proto::ABOUT_THIS_SITE, optimization_metadata);
+}
 
 }  // namespace page_info

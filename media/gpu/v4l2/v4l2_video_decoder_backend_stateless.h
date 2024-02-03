@@ -115,7 +115,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   // Callback which is called when the output buffer is not used anymore.
   static void ReuseOutputBufferThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      absl::optional<base::WeakPtr<V4L2StatelessVideoDecoderBackend>> weak_this,
+      std::optional<base::WeakPtr<V4L2StatelessVideoDecoderBackend>> weak_this,
       V4L2ReadableBufferRef buffer);
   void ReuseOutputBuffer(V4L2ReadableBufferRef buffer);
 
@@ -154,7 +154,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
 
   // The decode request which is currently processed.
-  absl::optional<DecodeRequest> current_decode_request_;
+  std::optional<DecodeRequest> current_decode_request_;
   // Surfaces enqueued to V4L2 device. Since we are stateless, they are
   // guaranteed to be proceeded in FIFO order.
   base::queue<scoped_refptr<V4L2DecodeSurface>> surfaces_at_device_;

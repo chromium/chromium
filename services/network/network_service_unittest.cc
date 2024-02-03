@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -81,7 +82,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(USE_KERBEROS)
@@ -1402,7 +1402,7 @@ TEST_F(NetworkServiceTestWithService, RawRequestHeadersAbsent) {
   StartLoadingURL(request, 0);
   client()->RunUntilRedirectReceived();
   EXPECT_TRUE(client()->has_received_redirect());
-  loader()->FollowRedirect({}, {}, {}, absl::nullopt);
+  loader()->FollowRedirect({}, {}, {}, std::nullopt);
   client()->RunUntilComplete();
 }
 
@@ -1510,8 +1510,8 @@ TEST_F(NetworkServiceTestWithService, GetNetworkList) {
   network_service_->GetNetworkList(
       net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
       base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<net::NetworkInterface>>& list) {
-            EXPECT_NE(absl::nullopt, list);
+          [&](const std::optional<std::vector<net::NetworkInterface>>& list) {
+            EXPECT_NE(std::nullopt, list);
             for (auto it = list->begin(); it != list->end(); ++it) {
               // Verify that names are not empty.
               EXPECT_FALSE(it->name.empty());
@@ -1756,7 +1756,7 @@ class ClearSiteDataAuthCertObserver : public TestURLLoaderNetworkObserver {
       const GURL& url,
       const std::string& header_value,
       int load_flags,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      const std::optional<net::CookiePartitionKey>& cookie_partition_key,
       bool partitioned_state_allowed_only,
       OnClearSiteDataCallback callback) override {
     ++on_clear_site_data_counter_;
@@ -1986,8 +1986,8 @@ class StubHostResolverClient : public mojom::ResolveHostClient {
   }
   void OnComplete(int result,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override {
     std::move(resolve_host_callback_)
         .Run(resolved_addresses.value_or(net::AddressList()));

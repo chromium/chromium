@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">在新分頁中開啟連結並停留在目前的分頁中</translation>
 <translation id="353086728817903341">已連線至 <ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="3533126039236445965">檔案櫃中的應用程式</translation>
+<translation id="3537350467437346467">你查看過這個項目</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 無線基地台</translation>
 <translation id="3540893133818942399">取消以下設定：查看手機上最近的相片和媒體</translation>
 <translation id="3542066395059568317">系統會顯示建議項目，以便你繼續使用上次開啟的內容。只要在建議項目上按一下滑鼠右鍵即可移除。</translation>
+<translation id="3547318469722231257">你修改過這個項目</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554215588514239132">顯示或隱藏開發人員工具面板</translation>
 <translation id="3554637740840164787">已固定「<ph name="ITEM_TITLE" />」</translation>
@@ -699,6 +701,7 @@
 <translation id="385300504083504382">開頭</translation>
 <translation id="3859364108019690">無法以串流方式使用應用程式</translation>
 <translation id="3861651314799684201">按下 Enter 鍵以錄製全螢幕畫面</translation>
+<translation id="3882323608730650973">修改過</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -891,6 +894,7 @@
 <translation id="4582666543382004902">為了使用 Wi-Fi，系統已關閉無線基地台，如要使用無線基地台，請關閉 Wi-Fi。</translation>
 <translation id="4585337515783392668">停止透過不明接收器投放</translation>
 <translation id="4596144739579517758">深色主題已關閉</translation>
+<translation id="4596442969149038771"><ph name="USER" /> 分享了這個項目</translation>
 <translation id="4611292653554630842">登入</translation>
 <translation id="462160925400706389">已連結「<ph name="NAME" />」</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
@@ -1334,6 +1338,7 @@
 <translation id="6298183524022479114">在應用程式中自訂這部裝置</translation>
 <translation id="6309219492973062892">點選或輕觸檔案櫃圖示 1-8</translation>
 <translation id="6315170314923504164">語音</translation>
+<translation id="6319058840130157106">在以下位置間以反方向移動：右下角、啟動器、網址列、書籤列、開啟的網站和下載內容</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6330012934079202188">現在是以所有桌面模式查看視窗，按下向上鍵即可改以目前的桌面模式查看視窗</translation>
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
@@ -1496,6 +1501,7 @@
 <translation id="6981291220124935078">開啟存取權</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="698231206551913481">將這位使用者移除後，與這位使用者相關聯的所有檔案和本機資料都會遭到永久刪除。</translation>
+<translation id="6984028004251196682">「<ph name="DISPLAY_NAME" />」不支援 <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)。解析度已變更為 <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)。如要保留變更，請按一下「確認」。系統會在 <ph name="TIMEOUT_SECONDS" />後還原到先前的設定。</translation>
 <translation id="6989752354829085073">請觀看快速導覽，瞭解如何操作 Chromebook。只要 6 個步驟就能開始運作。</translation>
 <translation id="7004910047186208204">連線至行動數據網路</translation>
 <translation id="7005239792648594238">開啟應用程式即可開始</translation>
@@ -1810,6 +1816,7 @@
 <translation id="8314772463905284467">大寫鍵已啟用</translation>
 <translation id="8315514906653279104">啟用中...</translation>
 <translation id="8331351032546853669">等候下載</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8349826889576450703">啟動器</translation>
@@ -1915,6 +1922,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />，已安裝的應用程式，已封鎖</translation>
 <translation id="8785070478575117577">連線至「<ph name="NETWORK_NAME" />」</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">在以下位置間以反方向移動：右下角、啟動器、網址列、書籤列、開啟的網站和下載內容</translation>
 <translation id="8792626944327216835">麥克風</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" />資料夾</translation>
@@ -2028,6 +2036,7 @@
 <translation id="953431725143473984">確定要關閉裝置嗎？</translation>
 <translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請釋出空間。</translation>
 <translation id="954520015070501466">30 分鐘</translation>
+<translation id="954786879461589145"><ph name="USER" />修改過這個項目</translation>
 <translation id="974545358917229949">目前正顯示 <ph name="RESULT_COUNT" /> 項與「<ph name="QUERY" />」相符的搜尋結果</translation>
 <translation id="981011780479609956">無截止日期</translation>
 <translation id="98120814841227350">前往文件結尾</translation>

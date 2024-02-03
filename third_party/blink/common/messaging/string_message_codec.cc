@@ -41,7 +41,7 @@ class VectorArrayBuffer : public WebMessageArrayBufferPayload {
 
   size_t GetMaxByteLength() const override { return length_; }
 
-  absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
+  std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
     return base::make_span(data_).subspan(position_, length_);
   }
@@ -61,7 +61,7 @@ class VectorArrayBuffer : public WebMessageArrayBufferPayload {
 class BigBufferArrayBuffer : public WebMessageArrayBufferPayload {
  public:
   explicit BigBufferArrayBuffer(mojo_base::BigBuffer data,
-                                absl::optional<size_t> max_byte_length)
+                                std::optional<size_t> max_byte_length)
       : data_(std::move(data)), max_byte_length_(max_byte_length) {
     DCHECK(!max_byte_length || *max_byte_length >= GetLength());
   }
@@ -76,7 +76,7 @@ class BigBufferArrayBuffer : public WebMessageArrayBufferPayload {
     return max_byte_length_.value_or(GetLength());
   }
 
-  absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
+  std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
     return base::make_span(data_);
   }
@@ -88,7 +88,7 @@ class BigBufferArrayBuffer : public WebMessageArrayBufferPayload {
 
  private:
   mojo_base::BigBuffer data_;
-  absl::optional<size_t> max_byte_length_;
+  std::optional<size_t> max_byte_length_;
 };
 
 const uint32_t kVarIntShift = 7;
@@ -170,7 +170,7 @@ bool ContainsOnlyLatin1(const std::u16string& data) {
 std::unique_ptr<WebMessageArrayBufferPayload>
 WebMessageArrayBufferPayload::CreateFromBigBuffer(
     mojo_base::BigBuffer buffer,
-    absl::optional<size_t> max_byte_length) {
+    std::optional<size_t> max_byte_length) {
   return std::make_unique<BigBufferArrayBuffer>(std::move(buffer),
                                                 max_byte_length);
 }
@@ -227,18 +227,18 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
   return message;
 }
 
-absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
+std::optional<WebMessagePayload> DecodeToWebMessagePayload(
     TransferableMessage message) {
   base::BufferIterator<const uint8_t> iter(message.encoded_message);
   uint8_t tag;
 
   // Discard the outer envelope, including trailer info if applicable.
   if (!ReadUint8(iter, &tag))
-    return absl::nullopt;
+    return std::nullopt;
   if (tag == kVersionTag) {
     uint32_t version = 0;
     if (!ReadUint32(iter, &version))
-      return absl::nullopt;
+      return std::nullopt;
     static constexpr uint32_t kMinWireFormatVersionWithTrailer = 21;
     if (version >= kMinWireFormatVersionWithTrailer) {
       // In these versions, we expect kTrailerOffsetTag (0xFE) followed by an
@@ -246,19 +246,19 @@ absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
       // third_party/blink/renderer/core/v8/serialization/serialization_tag.h.
       auto span = iter.Span<uint8_t>(1 + sizeof(uint64_t) + sizeof(uint32_t));
       if (span.empty() || span[0] != 0xFE)
-        return absl::nullopt;
+        return std::nullopt;
     }
     if (!ReadUint8(iter, &tag))
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   // Discard any leading version and padding tags.
   while (tag == kVersionTag || tag == kPaddingTag) {
     uint32_t version;
     if (tag == kVersionTag && !ReadUint32(iter, &version))
-      return absl::nullopt;
+      return std::nullopt;
     if (!ReadUint8(iter, &tag))
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   switch (tag) {
@@ -267,57 +267,57 @@ absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
       // characters are zero-extended rather than sign-extended
       uint32_t num_bytes;
       if (!ReadUint32(iter, &num_bytes))
-        return absl::nullopt;
+        return std::nullopt;
       auto span = iter.Span<unsigned char>(num_bytes / sizeof(unsigned char));
       std::u16string str(span.begin(), span.end());
       return span.size_bytes() == num_bytes
-                 ? absl::make_optional(WebMessagePayload(std::move(str)))
-                 : absl::nullopt;
+                 ? std::make_optional(WebMessagePayload(std::move(str)))
+                 : std::nullopt;
     }
     case kTwoByteStringTag: {
       uint32_t num_bytes;
       if (!ReadUint32(iter, &num_bytes))
-        return absl::nullopt;
+        return std::nullopt;
       auto span = iter.Span<char16_t>(num_bytes / sizeof(char16_t));
       std::u16string str(span.begin(), span.end());
       return span.size_bytes() == num_bytes
-                 ? absl::make_optional(WebMessagePayload(std::move(str)))
-                 : absl::nullopt;
+                 ? std::make_optional(WebMessagePayload(std::move(str)))
+                 : std::nullopt;
     }
     case kArrayBuffer: {
       uint32_t num_bytes;
       if (!ReadUint32(iter, &num_bytes))
-        return absl::nullopt;
+        return std::nullopt;
       size_t position = iter.position();
       return position + num_bytes == iter.total_size()
-                 ? absl::make_optional(
+                 ? std::make_optional(
                        WebMessagePayload(std::make_unique<VectorArrayBuffer>(
                            std::move(message.owned_encoded_message), position,
                            num_bytes)))
-                 : absl::nullopt;
+                 : std::nullopt;
     }
     case kArrayBufferTransferTag: {
       uint32_t array_buffer_index;
       if (!ReadUint32(iter, &array_buffer_index))
-        return absl::nullopt;
+        return std::nullopt;
       // We only support transfer ArrayBuffer at the first index.
       if (array_buffer_index != 0)
-        return absl::nullopt;
+        return std::nullopt;
       if (message.array_buffer_contents_array.size() != 1)
-        return absl::nullopt;
+        return std::nullopt;
       auto& array_buffer_contents = message.array_buffer_contents_array[0];
-      absl::optional<size_t> max_byte_length;
+      std::optional<size_t> max_byte_length;
       if (array_buffer_contents->is_resizable_by_user_javascript) {
         max_byte_length.emplace(array_buffer_contents->max_byte_length);
       }
-      return absl::make_optional(
+      return std::make_optional(
           WebMessagePayload(std::make_unique<BigBufferArrayBuffer>(
               std::move(array_buffer_contents->contents), max_byte_length)));
     }
   }
 
   DLOG(WARNING) << "Unexpected tag: " << tag;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace blink

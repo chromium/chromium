@@ -30,6 +30,8 @@ class DebugInterfaceRegistererAsh : public mojom::DebugInterfaceRegisterer,
 
   // ash::DebugDelegate:
   void PrintLayerHierarchy() override;
+  void PrintWindowHierarchy() override;
+  void PrintViewHierarchy() override;
 
  private:
   mojo::ReceiverSet<mojom::DebugInterfaceRegisterer> receivers_;

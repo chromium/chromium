@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1577,14 +1578,11 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
   // Verify that the view is offset inside root view as expected.
   content::RenderWidgetHostView* guest_rwhv =
       GetGuestRenderFrameHost()->GetView();
-  while (guest_rwhv->TransformPointToRootCoordSpace(gfx::Point())
-             .OffsetFromOrigin()
-             .Length() < distance_from_root_view_origin) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return guest_rwhv->TransformPointToRootCoordSpace(gfx::Point())
+               .OffsetFromOrigin()
+               .Length() >= distance_from_root_view_origin;
+  }));
 
   // Now trigger the popup and wait until it is displayed. The popup will get
   // dismissed after being shown.
@@ -1635,6 +1633,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
 
   // Wait for guest's document to consider itself focused. This avoids
   // flakiness on some platforms.
+  // TODO(crbug.com/1519130): `base::test::RunUntil` times out on mac.
   while (!content::EvalJs(guest_rfh, "document.hasFocus()").ExtractBool()) {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

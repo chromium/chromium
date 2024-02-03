@@ -16,6 +16,7 @@
 #import "base/test/test_timeouts.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/mock_autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -48,9 +49,9 @@
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
+using autofill::FillingProduct;
 using autofill::FormRendererId;
 using autofill::PopupItemId;
-using autofill::PopupType;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 @interface AutofillAgent (Testing)
@@ -146,7 +147,7 @@ TEST_F(AutofillAgentTests,
   form.url = GURL("https://myform.com");
   form.action = GURL("https://myform.com/submit");
   form.name = u"CC form";
-  form.unique_renderer_id = FormRendererId(1);
+  form.renderer_id = FormRendererId(1);
 
   autofill::FormFieldData field;
   field.form_control_type = autofill::FormControlType::kInputText;
@@ -156,7 +157,7 @@ TEST_F(AutofillAgentTests,
   field.id_attribute = u"number";
   field.value = u"number_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.renderer_id = FieldRendererId(2);
   form.fields.push_back(field);
   field.label = u"Name on Card";
   field.name = u"name";
@@ -164,7 +165,7 @@ TEST_F(AutofillAgentTests,
   field.id_attribute = u"name";
   field.value = u"name_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(3);
+  field.renderer_id = FieldRendererId(3);
   form.fields.push_back(field);
   field.label = u"Expiry Month";
   field.name = u"expiry_month";
@@ -172,7 +173,7 @@ TEST_F(AutofillAgentTests,
   field.id_attribute = u"expiry_month";
   field.value = u"01";
   field.is_autofilled = false;
-  field.unique_renderer_id = FieldRendererId(4);
+  field.renderer_id = FieldRendererId(4);
   form.fields.push_back(field);
   field.label = u"Unknown field";
   field.name = u"unknown";
@@ -180,7 +181,7 @@ TEST_F(AutofillAgentTests,
   field.id_attribute = u"unknown";
   field.value = u"";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(5);
+  field.renderer_id = FieldRendererId(5);
   form.fields.push_back(field);
   [autofill_agent_ fillFormData:form
                         inFrame:fake_web_frames_manager_->GetMainWebFrame()];
@@ -207,14 +208,14 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
   field.id_attribute = u"number";
   field.value = u"number_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.renderer_id = FieldRendererId(2);
 
   [autofill_agent_
-      fillSpecificFormField:field.unique_renderer_id
+      fillSpecificFormField:field.renderer_id
                   withValue:u"mattwashere"
                     inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
-  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"unique_renderer_id\":"
+  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"renderer_id\":"
             u"2,\"value\":\"mattwashere\"});",
             fake_main_frame_->GetLastJavaScriptCall());
 }
@@ -234,7 +235,7 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
   field.id_attribute = u"number";
   field.value = u"number_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.renderer_id = FieldRendererId(2);
 
   autofill::AutofillDriverIOS* main_frame_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
@@ -245,7 +246,7 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
       u"mattwashere");
 
   fake_web_state_.WasShown();
-  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"unique_renderer_id\":"
+  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"renderer_id\":"
             u"2,\"value\":\"mattwashere\"});",
             fake_main_frame_->GetLastJavaScriptCall());
 }
@@ -265,7 +266,7 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
   field.id_attribute = u"number";
   field.value = u"number_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.renderer_id = FieldRendererId(2);
 
   autofill::AutofillDriverIOS* main_frame_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
@@ -382,9 +383,9 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
       autofill::test::NextMonth() + "/" + autofill::test::NextYear().substr(2));
   // Mock different popup types.
   testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, GetPopupType)
-      .WillOnce(testing::Return(PopupType::kCreditCards))
-      .WillOnce(testing::Return(PopupType::kCreditCards));
+  EXPECT_CALL(mock_delegate, GetMainFillingProduct)
+      .WillOnce(testing::Return(FillingProduct::kCreditCard))
+      .WillOnce(testing::Return(FillingProduct::kCreditCard));
 
   const std::string expiration_date_label = base::StrCat(
       {autofill::test::NextMonth(), "/", autofill::test::NextYear().substr(2)});
@@ -470,10 +471,10 @@ TEST_F(AutofillAgentTests,
 
   // Mock different popup types.
   testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, GetPopupType)
-      .WillOnce(testing::Return(PopupType::kCreditCards))
-      .WillOnce(testing::Return(PopupType::kAddresses))
-      .WillOnce(testing::Return(PopupType::kUnspecified));
+  EXPECT_CALL(mock_delegate, GetMainFillingProduct)
+      .WillOnce(testing::Return(FillingProduct::kCreditCard))
+      .WillOnce(testing::Return(FillingProduct::kAddress))
+      .WillOnce(testing::Return(FillingProduct::kNone));
   // Initialize suggestion.
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kCardVisa,
@@ -524,8 +525,8 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
   ASSERT_NE(nil, completion_handler_icon);
 
   testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, GetPopupType)
-      .WillRepeatedly(testing::Return(PopupType::kCreditCards));
+  EXPECT_CALL(mock_delegate, GetMainFillingProduct)
+      .WillRepeatedly(testing::Return(FillingProduct::kCreditCard));
 
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
@@ -611,8 +612,8 @@ TEST_F(AutofillAgentTests,
   gfx::Image custom_icon = gfx::test::CreateImage(5, 5);
 
   testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, GetPopupType)
-      .WillRepeatedly(testing::Return(PopupType::kCreditCards));
+  EXPECT_CALL(mock_delegate, GetMainFillingProduct)
+      .WillRepeatedly(testing::Return(FillingProduct::kCreditCard));
 
   // Completion handler to retrieve suggestions.
   __block UIImage* completion_handler_icon = nil;

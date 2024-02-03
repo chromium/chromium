@@ -98,7 +98,7 @@ class ResourceLoadSchedulerTest : public testing::Test {
         mojom::ConsoleMessageLevel,
         const String&,
         bool discard_duplicates,
-        absl::optional<mojom::ConsoleMessageCategory> category) override {
+        std::optional<mojom::ConsoleMessageCategory> category) override {
       has_message_ = true;
     }
     void AddConsoleMessageImpl(ConsoleMessage*,

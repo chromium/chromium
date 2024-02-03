@@ -733,8 +733,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
 
   // Even though we can already get the Extension from the CrxInstaller,
   // ensure it's also in the list of enabled extensions.
-  return registry->GetExtensionById(installer->extension()->id(),
-                                    ExtensionRegistry::ENABLED);
+  return registry->enabled_extensions().GetByID(installer->extension()->id());
 }
 
 void ExtensionBrowserTest::ReloadExtension(const std::string& extension_id) {

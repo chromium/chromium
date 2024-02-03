@@ -233,19 +233,19 @@ std::tuple<int, int, int> GetWindowAndTabCount(
       restore_data.app_id_to_launch_list();
   for (const auto& [app_id, launch_list] : launch_list_map) {
     for (const auto& [window_id, app_restore_data] : launch_list) {
-      const std::optional<std::vector<GURL>>& urls = app_restore_data->urls;
+      const std::vector<GURL>& urls = app_restore_data->browser_extra_info.urls;
       // Url field could be empty if the app is not the browser, or if from full
       // restore. We check the app type also in case the url field is not set up
       // correctly.
-      if (!urls || urls->empty() || app_id != app_constants::kChromeAppId) {
+      if (urls.empty() || app_id != app_constants::kChromeAppId) {
         ++window_count;
         ++total_count;
         continue;
       }
 
       ++window_count;
-      tab_count += urls->size();
-      total_count += urls->size();
+      tab_count += urls.size();
+      total_count += urls.size();
     }
   }
 

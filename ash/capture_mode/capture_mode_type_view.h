@@ -20,9 +20,9 @@ class TabSliderButton;
 // A view that is part of the CaptureBarView, from which the user can toggle
 // between the two available capture types (image, and video).
 class ASH_EXPORT CaptureModeTypeView : public views::View {
- public:
-  METADATA_HEADER(CaptureModeTypeView);
+  METADATA_HEADER(CaptureModeTypeView, views::View)
 
+ public:
   // The `active_behavior` decides the supported capture types.
   explicit CaptureModeTypeView(CaptureModeBehavior* active_behavior);
   CaptureModeTypeView(const CaptureModeTypeView&) = delete;

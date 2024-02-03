@@ -167,38 +167,6 @@ aura::Window* FindTopMostChild(aura::Window* parent,
   return nullptr;
 }
 
-// Returns true if there is another window snapped to the opposite side of
-// `window` and we can't start partial overview.
-bool IsAnotherWindowSnappedOppositeOf(aura::Window* window) {
-  const auto windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  const auto snap_type = WindowState::Get(window)->GetStateType();
-  const auto opposite_snap_type = GetOppositeSnapType(window);
-  for (aura::Window* top_window : base::Reversed(windows)) {
-    if (top_window == window) {
-      // Skip `window` itself.
-      continue;
-    }
-    auto* top_window_state = WindowState::Get(top_window);
-    if (top_window_state->IsFloated()) {
-      // Skip any floated windows that are on top of the snapped windows.
-      continue;
-    }
-    if (!top_window_state->IsSnapped()) {
-      // Otherwise if `top_window` is not snapped, return false.
-      return false;
-    }
-    if (top_window_state->GetStateType() == snap_type) {
-      // Skip any windows that are snapped to the *same* side as `window`.
-      continue;
-    }
-    // Else `top_window` is snapped to the opposite side of `window`.
-    CHECK_EQ(top_window_state->GetStateType(), opposite_snap_type);
-    return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 aura::Window* GetActiveWindow() {
@@ -772,79 +740,6 @@ bool IsInFasterSplitScreenSetupSession(aura::Window* window) {
   return !Shell::Get()->IsInTabletMode() && split_view_overview_session &&
          split_view_overview_session->setup_type() ==
              SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
-}
-
-chromeos::WindowStateType GetOppositeSnapType(aura::Window* window) {
-  CHECK(window);
-  WindowState* window_state = WindowState::Get(window);
-  CHECK(window_state->IsSnapped());
-  return window_state->GetStateType() ==
-                 chromeos::WindowStateType::kPrimarySnapped
-             ? chromeos::WindowStateType::kSecondarySnapped
-             : chromeos::WindowStateType::kPrimarySnapped;
-}
-
-void MaybeStartSplitViewOverview(aura::Window* window,
-                                 WindowSnapActionSource snap_action_source) {
-  if (!IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
-    return;
-  }
-
-  if (PrefService* pref =
-          Shell::Get()->session_controller()->GetActivePrefService();
-      pref && !pref->GetBoolean(prefs::kSnapWindowSuggestions)) {
-    return;
-  }
-
-  switch (snap_action_source) {
-    case WindowSnapActionSource::kDragWindowToEdgeToSnap:
-    case WindowSnapActionSource::kSnapByWindowLayoutMenu:
-    case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
-    case WindowSnapActionSource::kTest:
-      // We only start partial overview for the above snap sources.
-      break;
-    default:
-      return;
-  }
-
-  auto* snap_group_controller = SnapGroupController::Get();
-  if (snap_group_controller &&
-      snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-    // `SnapGroupController` needs to check if the window belongs to a snap
-    // group first.
-    return;
-  }
-
-  auto* root_window_controller = RootWindowController::ForWindow(window);
-  if (auto* split_view_overview_session =
-          root_window_controller->split_view_overview_session();
-      split_view_overview_session) {
-    // If split view overview is already active, which may be the case if this
-    // was the selected window from overview, return.
-    return;
-  }
-
-  // If `SnapGroups` is not enabled and the topmost window (excluding
-  // `window` itself) is snapped on the opposite side, don't start partial
-  // overview.
-  // TODO(b/319295505): We still need to define the behavior when there is
-  // another snapped window for `SnapGroups`.
-  if (!snap_group_controller && IsAnotherWindowSnappedOppositeOf(window)) {
-    return;
-  }
-
-  if (!IsInOverviewSession()) {
-    root_window_controller->StartSplitViewOverviewSession(
-        window, OverviewStartAction::kFasterSplitScreenSetup,
-        OverviewEnterExitType::kNormal, snap_action_source);
-  } else {
-    // If overview has already started, we may need to update the bounds. This
-    // may happen if a snapped window swaps positions or ratios during split
-    // view overview.
-    GetOverviewSession()
-        ->GetGridWithRootWindow(window->GetRootWindow())
-        ->RefreshGridBounds(/*animate=*/false);
-  }
 }
 
 }  // namespace ash::window_util

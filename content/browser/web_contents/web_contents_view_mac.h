@@ -91,6 +91,8 @@ class WebContentsViewMac : public WebContentsView,
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
+  BackForwardTransitionAnimationManager*
+  GetBackForwardTransitionAnimationManager() override;
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,

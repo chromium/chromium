@@ -9,6 +9,10 @@
 
 namespace session::features {
 
+// Feature flag to enable the Check to make sure the restore session ID are
+// lower than the next SessionID.
+BASE_DECLARE_FEATURE(kSessionRestorationSessionIDCheck);
+
 // Feature flag to enable the session serialization optimizations.
 BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
 

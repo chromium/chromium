@@ -1,0 +1,85 @@
+[
+    {
+      "os": [
+        "chromeos_ash"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "note": "Default value (no policies set).",
+          "prefs": {
+            "device_weekly_scheduled_suspend": {
+              "location": "local_state",
+              "default_value": []
+            }
+          }
+        },
+        // TODO(b/322341636): Add tests to verify that invalid values are not mapped
+        {
+            "note": "Empty policy.",
+            "policies": {
+              "DeviceWeeklyScheduledSuspend": []
+            },
+            "prefs": {
+              "device_weekly_scheduled_suspend": {
+                "location": "local_state",
+                "value": []
+              }
+            }
+          },
+        {
+          "note": "Policy set with values.",
+          "policies": {
+            "DeviceWeeklyScheduledSuspend": [
+              {
+                "start": {
+                    "day_of_week": "MONDAY",
+                    "time": 12840000
+                },
+                "end": {
+                    "day_of_week": "MONDAY",
+                    "time": 21720000
+                }
+              },
+              {
+                "start": {
+                    "day_of_week": "FRIDAY",
+                    "time": 38640000
+                },
+                "end": {
+                    "day_of_week": "FRIDAY",
+                    "time": 57600000
+                }
+              }
+            ]
+          },
+          "prefs": {
+            "device_weekly_scheduled_suspend": {
+              "location": "local_state",
+              "value": [
+                {
+                  "start": {
+                      "day_of_week": "MONDAY",
+                      "time": 12840000
+                  },
+                  "end": {
+                      "day_of_week": "MONDAY",
+                      "time": 21720000
+                  }
+                },
+                {
+                  "start": {
+                      "day_of_week": "FRIDAY",
+                      "time": 38640000
+                  },
+                  "end": {
+                      "day_of_week": "FRIDAY",
+                      "time": 57600000
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]

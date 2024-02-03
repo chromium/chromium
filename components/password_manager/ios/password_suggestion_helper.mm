@@ -7,6 +7,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
@@ -58,7 +59,7 @@ enum class FormExtractionStatus {
 - (instancetype)initWithQuery:(FormSuggestionProviderQuery*)query
                    completion:(SuggestionsAvailableCompletion)completion
              fillDataProvider:(id<FillDataProvider>)fillDataProvider
-                      frameId:(NSString*)frameId;
+              isPasswordField:(BOOL)isPasswordField;
 
 // Runs the completion callback with the available fill data. This can only be
 // done once in the lifetime of the query object.
@@ -70,18 +71,20 @@ enum class FormExtractionStatus {
   FormSuggestionProviderQuery* _query;
   SuggestionsAvailableCompletion _completion;
   id<FillDataProvider> _fillDataProvider;
+  BOOL _isPasswordField;
 }
 
 - (instancetype)initWithQuery:(FormSuggestionProviderQuery*)query
                    completion:(SuggestionsAvailableCompletion)completion
              fillDataProvider:(id<FillDataProvider>)fillDataProvider
-                      frameId:(NSString*)frameId {
+              isPasswordField:(BOOL)isPasswordField {
   self = [super init];
   if (self) {
     _query = query;
     _completion = completion;
     _fillDataProvider = fillDataProvider;
-    _frameId = frameId;
+    _frameId = query.frameID;
+    _isPasswordField = isPasswordField;
   }
   return self;
 }
@@ -95,7 +98,7 @@ enum class FormExtractionStatus {
       areSuggestionsAvailableForFrameId:self.frameId
                          formRendererId:_query.uniqueFormID
                         fieldRendererId:_query.uniqueFieldID
-                        isPasswordField:[_query isOnPasswordField]]);
+                        isPasswordField:_isPasswordField]);
   _completion = nil;
 }
 
@@ -195,11 +198,13 @@ enum class FormExtractionStatus {
   const std::string frame_id = SysNSStringToUTF8(formQuery.frameID);
   web::WebFrame* frame = [self frameWithId:frame_id];
   DCHECK(frame);
+
+  BOOL isPasswordField = [self isPasswordFieldOnForm:formQuery webFrame:frame];
   PendingFormQuery* query =
       [[PendingFormQuery alloc] initWithQuery:formQuery
                                    completion:completion
                              fillDataProvider:self
-                                      frameId:formQuery.frameID];
+                              isPasswordField:isPasswordField];
 
   AccountSelectFillData* fillData = [self fillDataForFrameId:frame_id];
 
@@ -276,6 +281,48 @@ enum class FormExtractionStatus {
 
 - (void)processWithNoSavedCredentialsWithFrameId:(const std::string&)frameId {
   [self completePendingFormQueriesForFrameId:frameId];
+}
+
+- (BOOL)isPasswordFieldOnForm:(FormSuggestionProviderQuery*)formQuery
+                     webFrame:(web::WebFrame*)webFrame {
+  if (![formQuery isOnPasswordField]) {
+    return NO;
+  }
+
+  if (!_webState.get() || !webFrame) {
+    return YES;
+  }
+
+  auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+      _webState.get(), webFrame);
+  if (!driver) {
+    return YES;
+  }
+
+  autofill::FormStructure* form_structure =
+      driver->GetAutofillManager().FindCachedFormById(
+          {driver->GetFrameToken(), formQuery.uniqueFormID});
+  if (!form_structure) {
+    return YES;
+  }
+
+  const auto& fields = form_structure->fields();
+  auto itEnd = fields.end();
+  auto it = std::find_if(fields.begin(), itEnd, [&](auto& field) {
+    return formQuery.uniqueFieldID == field->renderer_id;
+  });
+  if (it == itEnd) {
+    return YES;
+  }
+
+  autofill::FieldType fieldType = (*it)->Type().GetStorableType();
+  switch (GroupTypeOfFieldType(fieldType)) {
+    case autofill::FieldTypeGroup::kPasswordField:
+    case autofill::FieldTypeGroup::kNoGroup:
+      return YES;  // May be a password field.
+    default:
+      return NO;  // Not a password field.
+  }
 }
 
 #pragma mark - FillDataProvider

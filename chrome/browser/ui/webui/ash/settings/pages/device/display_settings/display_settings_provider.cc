@@ -109,6 +109,11 @@ void DisplaySettingsProvider::OnDidProcessDisplayChanges(
 
 void DisplaySettingsProvider::OnDisplayAdded(
     const display::Display& new_display) {
+  // Do not count new display connected when turning on unified desk mode.
+  if (new_display.id() == display::kUnifiedDisplayId) {
+    return;
+  }
+
   // Check with prefs service to see if this display is firstly seen or was
   // saved to prefs before.
   if (Shell::HasInstance() && Shell::Get()->display_prefs() &&
@@ -137,11 +142,33 @@ void DisplaySettingsProvider::RecordChangingDisplaySettings(
   }
   base::UmaHistogramEnumeration(histogram_name, type);
 
-  // Record detailed orientation settings change.
+  // Record settings change in details.
   if (type == mojom::DisplaySettingsType::kOrientation) {
     CHECK(value->orientation.has_value());
     histogram_name.append(".Orientation");
     base::UmaHistogramEnumeration(histogram_name, value->orientation.value());
+  } else if (type == mojom::DisplaySettingsType::kNightLight) {
+    CHECK(value->night_light_status.has_value());
+    histogram_name.append(".NightLightStatus");
+    base::UmaHistogramBoolean(histogram_name,
+                              value->night_light_status.value());
+  } else if (type == mojom::DisplaySettingsType::kNightLightSchedule) {
+    CHECK(value->night_light_schedule.has_value());
+    histogram_name.append(".NightLightSchedule");
+    base::UmaHistogramEnumeration(histogram_name,
+                                  value->night_light_schedule.value());
+  } else if (type == mojom::DisplaySettingsType::kMirrorMode) {
+    CHECK(value->mirror_mode_status.has_value());
+    CHECK(!value->is_internal_display.has_value());
+    histogram_name.append(".MirrorModeStatus");
+    base::UmaHistogramBoolean(histogram_name,
+                              value->mirror_mode_status.value());
+  } else if (type == mojom::DisplaySettingsType::kUnifiedMode) {
+    CHECK(value->unified_mode_status.has_value());
+    CHECK(!value->is_internal_display.has_value());
+    histogram_name.append(".UnifiedModeStatus");
+    base::UmaHistogramBoolean(histogram_name,
+                              value->unified_mode_status.value());
   }
 
   // Record default display settings performance metrics.

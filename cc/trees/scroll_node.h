@@ -8,10 +8,12 @@
 #include <optional>
 #include "cc/base/region.h"
 #include "cc/cc_export.h"
+#include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/trees/property_ids.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -28,11 +30,12 @@ struct CC_EXPORT ScrollNode {
   ~ScrollNode();
 
   // The node index of this node in the scroll tree node vector.
-  int id;
+  int id = kInvalidPropertyNodeId;
   // The node index of the parent node in the scroll tree node vector.
-  int parent_id;
+  int parent_id = kInvalidPropertyNodeId;
 
-  uint32_t main_thread_scrolling_reasons;
+  uint32_t main_thread_scrolling_reasons =
+      MainThreadScrollingReason::kNotScrollingOnMain;
 
   // Size of the container area that the contents scrolls in, not including
   // non-overlay scrollbars. Overlay scrollbars do not affect these bounds.
@@ -47,27 +50,26 @@ struct CC_EXPORT ScrollNode {
   // This is used for subtrees that should not be scrolled independently. For
   // example, when there is a layer that is not scrollable itself but is inside
   // a scrolling layer.
-  bool scrollable : 1;
-  bool max_scroll_offset_affected_by_page_scale : 1;
-  bool scrolls_inner_viewport : 1;
-  bool scrolls_outer_viewport : 1;
-  bool prevent_viewport_scrolling_from_inner : 1;
-  bool should_flatten : 1;
-  bool user_scrollable_horizontal : 1;
-  bool user_scrollable_vertical : 1;
+  bool scrollable : 1 = false;
+  bool max_scroll_offset_affected_by_page_scale : 1 = false;
+  bool scrolls_inner_viewport : 1 = false;
+  bool scrolls_outer_viewport : 1 = false;
+  bool prevent_viewport_scrolling_from_inner : 1 = false;
+  bool should_flatten : 1 = false;
+  bool user_scrollable_horizontal : 1 = false;
+  bool user_scrollable_vertical : 1 = false;
+  bool is_composited : 1 = false;
 
   // This offset is used when |scrollable| is false and there isn't a transform
   // node already present that covers this offset. For layer tree mode only.
   gfx::Vector2dF offset_to_transform_parent;
 
   ElementId element_id;
-  int transform_id;
+  int transform_id = kRootPropertyNodeId;
 
-  OverscrollBehavior overscroll_behavior;
+  OverscrollBehavior overscroll_behavior{OverscrollBehavior::Type::kAuto};
 
   std::optional<SnapContainerData> snap_container_data;
-
-  bool is_composited : 1;
 
 #if DCHECK_IS_ON()
   bool operator==(const ScrollNode& other) const;

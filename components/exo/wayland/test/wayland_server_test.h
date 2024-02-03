@@ -22,24 +22,16 @@ namespace exo::wayland::test {
 // on a dedicated thread.
 class WaylandServerTest : public WaylandServerTestBase {
  public:
+  WaylandServerTest();
   WaylandServerTest(const WaylandServerTest&) = delete;
   WaylandServerTest& operator=(const WaylandServerTest&) = delete;
-
- protected:
-  WaylandServerTest();
-
-  // Constructs a WaylandServerTest with |traits| being forwarded to its
-  // TaskEnvironment. See the corresponding |WaylandServerTestBase| constructor.
-  template <typename... TaskEnvironmentTraits>
-  explicit WaylandServerTest(TaskEnvironmentTraits&&... traits)
-      : WaylandServerTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
-
   ~WaylandServerTest() override;
 
   // WaylandServerTestBase:
   void SetUp() override;
   void TearDown() override;
 
+ protected:
   // Posts `callback` or `closure` to run on the client thread; blocks till the
   // callable is run and all pending Wayland requests and events are delivered.
   void PostToClientAndWait(

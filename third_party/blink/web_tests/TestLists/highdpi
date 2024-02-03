@@ -1232,6 +1232,7 @@ fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html
 fast/forms/suggestion-picker/week-suggestion-picker-mouse-operations.html
 fast/forms/text/input-baseline.html
 fast/forms/text/text-appearance-datalist.html
+fast/forms/text/text-field-sizing-caret.html
 fast/forms/textarea/basic-textareas-quirks.html
 fast/forms/textarea/textarea-align.html
 fast/forms/textarea/textarea-scrolled-type.html

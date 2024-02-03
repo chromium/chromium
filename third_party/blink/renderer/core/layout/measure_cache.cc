@@ -13,7 +13,7 @@ namespace blink {
 const LayoutResult* MeasureCache::Find(
     const BlockNode& node,
     const ConstraintSpace& new_space,
-    absl::optional<FragmentGeometry>* fragment_geometry) {
+    std::optional<FragmentGeometry>* fragment_geometry) {
   for (auto it = cache_.rbegin(); it != cache_.rend(); ++it) {
     const auto* result = it->Get();
     if (CalculateSizeBasedLayoutCacheStatus(node, nullptr, *result, new_space,

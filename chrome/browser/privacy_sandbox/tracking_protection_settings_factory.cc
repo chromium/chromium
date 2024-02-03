@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 
@@ -53,6 +54,11 @@ TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
           profile->GetPrefs()->GetBoolean(prefs::kBlockAll3pcToggleEnabled));
     } else {
       base::UmaHistogramBoolean("Settings.TrackingProtection.Enabled", false);
+    }
+    if (base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionV1)) {
+      base::UmaHistogramBoolean(
+          "Settings.IpProtection.Enabled",
+          profile->GetPrefs()->GetBoolean(prefs::kIpProtectionEnabled));
     }
   }
 

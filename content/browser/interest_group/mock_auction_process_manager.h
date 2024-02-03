@@ -292,8 +292,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
           browser_signal_highest_scoring_other_bid_currency,
       auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
           browser_signals_component_auction_report_result_params,
-      uint32_t browser_signal_data_version,
-      bool browser_signal_has_data_version,
+      std::optional<uint32_t> browser_signal_data_version,
       uint64_t trace_id,
       ReportResultCallback report_result_callback) override;
   void ConnectDevToolsAgent(
@@ -397,8 +396,7 @@ class MockAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      bool has_experiment_group_id,
-      uint16_t experiment_group_id) override;
+      std::optional<uint16_t> experiment_group_id) override;
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet_receiver,
@@ -414,8 +412,7 @@ class MockAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      bool has_experiment_group_id,
-      uint16_t experiment_group_id) override;
+      std::optional<uint16_t> experiment_group_id) override;
 
   // Set the expected timeout for an interest group with the specified name,
   // when it's received by a bidder worklet's FinishGenerateBid() method. Must

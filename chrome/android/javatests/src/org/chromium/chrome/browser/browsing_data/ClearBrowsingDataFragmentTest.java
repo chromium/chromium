@@ -65,6 +65,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -127,16 +128,17 @@ public class ClearBrowsingDataFragmentTest {
         doAnswer(
                         (Answer<Void>)
                                 invocation -> {
-                                    ((BrowsingDataBridge) invocation.getArgument(0))
-                                            .browsingDataCleared();
+                                    ((OnClearBrowsingDataListener) invocation.getArgument(2))
+                                            .onBrowsingDataCleared();
                                     mCallbackHelper.notifyCalled();
                                     return null;
                                 })
                 .when(mBrowsingDataBridgeMock)
-                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(
+                        any(), any(), any(), any(), anyInt(), any(), any(), any(), any());
 
         // Default to delete all history.
-        when(mBrowsingDataBridgeMock.getBrowsingDataDeletionTimePeriod(any(), anyInt()))
+        when(mBrowsingDataBridgeMock.getBrowsingDataDeletionTimePeriod(any(), any(), anyInt()))
                 .thenReturn(DEFAULT_TIME_PERIOD);
 
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -176,7 +178,10 @@ public class ClearBrowsingDataFragmentTest {
         SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
         ClearBrowsingDataFragment fragment = mSettingsActivityTestRule.getFragment();
         TestThreadUtils.runOnUiThreadBlocking(
-                fragment.getClearBrowsingDataFetcher()::fetchImportantSites);
+                () -> {
+                    fragment.getClearBrowsingDataFetcher()
+                            .fetchImportantSites(fragment.getProfile());
+                });
         return settingsActivity;
     }
 
@@ -222,14 +227,14 @@ public class ClearBrowsingDataFragmentTest {
     public void testTabsSwitcher() {
         setDataTypesToClear(ClearBrowsingDataFragment.getAllOptions().toArray(new Integer[0]));
         // Set "Advanced" as the user's cached preference.
-        when(mBrowsingDataBridgeMock.getLastClearBrowsingDataTab(any())).thenReturn(1);
+        when(mBrowsingDataBridgeMock.getLastClearBrowsingDataTab(any(), any())).thenReturn(1);
 
         mSettingsActivityTabFragmentTestRule.startSettingsActivity();
         final ClearBrowsingDataTabsFragment preferences =
                 mSettingsActivityTabFragmentTestRule.getFragment();
 
         // Verify tab preference is loaded.
-        verify(mBrowsingDataBridgeMock).getLastClearBrowsingDataTab(any());
+        verify(mBrowsingDataBridgeMock).getLastClearBrowsingDataTab(any(), any());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -254,7 +259,7 @@ public class ClearBrowsingDataFragmentTest {
                     viewPager.setCurrentItem(0);
                 });
         // Verify the tab preference is saved.
-        verify(mBrowsingDataBridgeMock).setLastClearBrowsingDataTab(any(), eq(0));
+        verify(mBrowsingDataBridgeMock).setLastClearBrowsingDataTab(any(), any(), eq(0));
     }
 
     /**
@@ -268,6 +273,7 @@ public class ClearBrowsingDataFragmentTest {
 
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        final Profile expectedProfile = preferences.getProfile();
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -299,6 +305,7 @@ public class ClearBrowsingDataFragmentTest {
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
                         any(),
+                        eq(expectedProfile),
                         any(),
                         eq(getAllDataTypes()),
                         eq(DEFAULT_TIME_PERIOD),
@@ -326,6 +333,7 @@ public class ClearBrowsingDataFragmentTest {
 
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        final Profile expectedProfile = preferences.getProfile();
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -340,6 +348,7 @@ public class ClearBrowsingDataFragmentTest {
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
                         any(),
+                        eq(expectedProfile),
                         any(),
                         eq(new int[] {BrowsingDataType.CACHE}),
                         eq(TimePeriod.LAST_HOUR),
@@ -405,7 +414,6 @@ public class ClearBrowsingDataFragmentTest {
         public void run() {
             ClearBrowsingDataFragment fragment =
                     (ClearBrowsingDataFragment) mSettingsActivity.getMainFragment();
-            PreferenceScreen screen = fragment.getPreferenceScreen();
 
             // Enable the dialog and click the "Clear" button.
             ((ClearBrowsingDataFragment) mSettingsActivity.getMainFragment())
@@ -502,6 +510,7 @@ public class ClearBrowsingDataFragmentTest {
         // Reopen Clear Browsing Data preferences and clear history once again.
         setDataTypesToClear(DialogOption.CLEAR_HISTORY);
         final SettingsActivity settingsActivity3 = startPreferences();
+        final Profile expectedProfile = mSettingsActivityTestRule.getFragment().getProfile();
         TestThreadUtils.runOnUiThreadBlocking(
                 new OpenPreferencesEnableDialogAndClickClearRunnable(settingsActivity3));
 
@@ -514,7 +523,15 @@ public class ClearBrowsingDataFragmentTest {
         // Should be cleared again.
         verify(mBrowsingDataBridgeMock, times(2))
                 .clearBrowsingData(
-                        any(), any(), eq(expectedTypes), anyInt(), any(), any(), any(), any());
+                        any(),
+                        eq(expectedProfile),
+                        any(),
+                        eq(expectedTypes),
+                        anyInt(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
     }
 
     /**
@@ -526,6 +543,7 @@ public class ClearBrowsingDataFragmentTest {
         // TODO(yfriedman): Add testing for time period.
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
+                        any(),
                         any(),
                         any(),
                         eq(types),
@@ -651,6 +669,7 @@ public class ClearBrowsingDataFragmentTest {
         SettingsActivity settingsActivity = startPreferences();
         ClearBrowsingDataFragment fragment =
                 (ClearBrowsingDataFragment) settingsActivity.getMainFragment();
+        Profile expectedProfile = fragment.getProfile();
         TestThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
         // Check that the important sites dialog is shown, and the list is visible.
         waitForImportantDialogToShow(fragment, 2);
@@ -661,7 +680,16 @@ public class ClearBrowsingDataFragmentTest {
 
         // Nothing was cleared.
         verify(mBrowsingDataBridgeMock, never())
-                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(
+                        any(),
+                        eq(expectedProfile),
+                        any(),
+                        any(),
+                        anyInt(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
     }
 
     /**
@@ -688,6 +716,7 @@ public class ClearBrowsingDataFragmentTest {
         final SettingsActivity settingsActivity = startPreferences();
         final ClearBrowsingDataFragment fragment =
                 (ClearBrowsingDataFragment) settingsActivity.getMainFragment();
+        final Profile expectedProfile = fragment.getProfile();
 
         // Uncheck the first item (our internal web server).
         TestThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
@@ -722,6 +751,7 @@ public class ClearBrowsingDataFragmentTest {
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
                         any(),
+                        eq(expectedProfile),
                         any(),
                         eq(expectedTypes),
                         eq(DEFAULT_TIME_PERIOD),
@@ -738,6 +768,7 @@ public class ClearBrowsingDataFragmentTest {
                     for (@DialogOption Integer option : ClearBrowsingDataFragment.getAllOptions()) {
                         boolean enabled = typesToClearSet.contains(option);
                         when(mBrowsingDataBridgeMock.getBrowsingDataDeletionPreference(
+                                        any(),
                                         any(),
                                         eq(ClearBrowsingDataFragment.getDataType(option)),
                                         anyInt()))

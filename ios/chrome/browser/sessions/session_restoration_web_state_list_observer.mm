@@ -11,16 +11,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-namespace {
-
-// Returns whether `web_state` can be serialized or not.
-bool CanSerializeWebState(const web::WebState* web_state) {
-  return web_state->IsRealized() &&
-         !web_state->GetNavigationManager()->IsRestoreSessionInProgress();
-}
-
-}  // namespace
-
 SessionRestorationWebStateListObserver::SessionRestorationWebStateListObserver(
     WebStateList* web_state_list,
     WebStateListDirtyCallback callback)
@@ -162,7 +152,7 @@ void SessionRestorationWebStateListObserver::AttachWebState(
   // If the newly attached `WebState` can be serialized, then mark it as dirty
   // to force its serialization, otherwise adopt it (this will allow re-using
   // the existing data on disk).
-  if (CanSerializeWebState(attached_web_state)) {
+  if (attached_web_state->IsRealized()) {
     MarkWebStateDirty(attached_web_state);
   } else {
     inserted_web_states_.insert(attached_web_state->GetUniqueIdentifier());
@@ -175,7 +165,7 @@ void SessionRestorationWebStateListObserver::MarkWebStateDirty(
   // when a WebState transition to the realized state but has not completed
   // the restoration of the navigation history. Clear the dirty state of the
   // observer to be notified of the next event.
-  if (!CanSerializeWebState(web_state)) {
+  if (!web_state->IsRealized()) {
     SessionRestorationWebStateObserver::FromWebState(web_state)->clear_dirty();
     return;
   }

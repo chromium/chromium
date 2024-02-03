@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -31,7 +32,7 @@ void StateStoreTestObserver::WaitForExtensionAndKey(
 }
 
 void StateStoreTestObserver::WillSetExtensionValue(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

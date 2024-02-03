@@ -286,9 +286,9 @@ bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
 }
 
 // static
-absl::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
+std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
     std::string_view name,
-    absl::optional<int> host_sdk_int) {
+    std::optional<int> host_sdk_int) {
   // Below we build a map of codec names to coded size alignments. We do this on
   // a best effort basis to avoid glitches during a coded size change.
   //
@@ -359,7 +359,7 @@ absl::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static

@@ -230,7 +230,7 @@ BreakAppeal CalculateBreakAppealBefore(
 BreakAppeal CalculateBreakAppealInside(
     const ConstraintSpace& space,
     const LayoutResult& layout_result,
-    absl::optional<BreakAppeal> hypothetical_appeal) {
+    std::optional<BreakAppeal> hypothetical_appeal) {
   if (layout_result.HasForcedBreak())
     return kBreakAppealPerfect;
   const auto& physical_fragment = layout_result.GetPhysicalFragment();
@@ -853,9 +853,10 @@ BreakStatus BreakBeforeChildIfNeeded(
   // before an earlier sibling, if there's a more appealing breakpoint there.
   if (!AttemptSoftBreak(space, child, &layout_result,
                         fragmentainer_block_offset, appeal_before, builder,
-                        /* block_size_override */ absl::nullopt,
-                        flex_column_break_info))
+                        /* block_size_override */ std::nullopt,
+                        flex_column_break_info)) {
     return BreakStatus::kNeedsEarlierBreak;
+  }
 
   return BreakStatus::kBrokeBefore;
 }
@@ -864,10 +865,10 @@ void BreakBeforeChild(const ConstraintSpace& space,
                       LayoutInputNode child,
                       const LayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
-                      absl::optional<BreakAppeal> appeal,
+                      std::optional<BreakAppeal> appeal,
                       bool is_forced_break,
                       BoxFragmentBuilder* builder,
-                      absl::optional<LayoutUnit> block_size_override) {
+                      std::optional<LayoutUnit> block_size_override) {
 #if DCHECK_IS_ON()
   DCHECK(layout_result || block_size_override);
   if (layout_result && layout_result->Status() == LayoutResult::kSuccess) {
@@ -897,7 +898,7 @@ void PropagateSpaceShortage(const ConstraintSpace& space,
                             const LayoutResult* layout_result,
                             LayoutUnit fragmentainer_block_offset,
                             FragmentBuilder* builder,
-                            absl::optional<LayoutUnit> block_size_override) {
+                            std::optional<LayoutUnit> block_size_override) {
   // Only multicol cares about space shortage.
   if (space.BlockFragmentationType() != kFragmentColumn)
     return;
@@ -916,7 +917,7 @@ LayoutUnit CalculateSpaceShortage(
     const ConstraintSpace& space,
     const LayoutResult* layout_result,
     LayoutUnit fragmentainer_block_offset,
-    absl::optional<LayoutUnit> block_size_override) {
+    std::optional<LayoutUnit> block_size_override) {
   // Space shortage is only reported for soft breaks, and they can only exist if
   // we know the fragmentainer block-size.
   DCHECK(space.HasKnownFragmentainerBlockSize());
@@ -949,7 +950,7 @@ LayoutUnit CalculateSpaceShortage(
   return space_shortage;
 }
 
-void UpdateMinimalSpaceShortage(absl::optional<LayoutUnit> new_space_shortage,
+void UpdateMinimalSpaceShortage(std::optional<LayoutUnit> new_space_shortage,
                                 LayoutUnit* minimal_space_shortage) {
   DCHECK(minimal_space_shortage);
   if (!new_space_shortage || *new_space_shortage <= LayoutUnit())
@@ -1215,7 +1216,7 @@ bool AttemptSoftBreak(const ConstraintSpace& space,
                       LayoutUnit fragmentainer_block_offset,
                       BreakAppeal appeal_before,
                       BoxFragmentBuilder* builder,
-                      absl::optional<LayoutUnit> block_size_override,
+                      std::optional<LayoutUnit> block_size_override,
                       FlexColumnBreakInfo* flex_column_break_info) {
   DCHECK(layout_result || block_size_override);
   // If there's a breakpoint with higher appeal among earlier siblings, we need

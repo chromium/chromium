@@ -18,6 +18,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
+import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
@@ -32,6 +33,7 @@ export interface SettingsPrivacySandboxFledgeSubpageElement {
   $: {
     fledgeToggle: SettingsToggleButtonElement,
     footer: HTMLElement,
+    footerV2: HTMLElement,
   };
 }
 
@@ -125,6 +127,12 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         value: false,
         observer: 'onBlockedSitesExpanded_',
       },
+
+      shouldShowV2_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
+      },
     };
   }
 
@@ -144,6 +152,7 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
       PrivacySandboxBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private shouldShowV2_: boolean;
 
   override ready() {
     super.ready();
@@ -152,6 +161,10 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         state => this.onFledgeStateChanged_(state));
 
     this.$.footer.querySelectorAll('a').forEach(
+        link =>
+            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
+
+    this.$.footerV2.querySelectorAll('a').forEach(
         link =>
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
   }
@@ -187,7 +200,6 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     this.mainSitesList_ = this.sitesList_.slice(0, maxFledgeSitesCount);
     this.remainingSitesList_ = this.sitesList_.slice(maxFledgeSitesCount);
   }
-
 
   private isFledgeEnabledAndLoaded_(): boolean {
     return this.getPref('privacy_sandbox.m1.fledge_enabled').value &&

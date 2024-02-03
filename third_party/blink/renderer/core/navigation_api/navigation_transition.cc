@@ -22,7 +22,8 @@ NavigationTransition::NavigationTransition(ExecutionContext* context,
   finished_->MarkAsHandled();
 }
 
-ScriptPromise NavigationTransition::finished(ScriptState* script_state) {
+ScriptPromiseTyped<IDLUndefined> NavigationTransition::finished(
+    ScriptState* script_state) {
   return finished_->Promise(script_state->World());
 }
 

@@ -6,7 +6,7 @@
  * @fileoverview Elements not used in the first painting of the app.
  */
 
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import '../elements/files_format_dialog.js';
 import '../elements/files_spinner.js';
 import '../elements/files_toast.js';

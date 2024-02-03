@@ -135,10 +135,80 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void FinalizeGarbageCollectedObject();
 
+  // See CSSSelector::IsInvisible.
+  bool IsInvisible() const;
   // See CSSSelector::Signal.
   bool IsSignaling() const;
 
   bool HasSignalingChildRule() const { return has_signaling_child_rule_; }
+
+  // This class mimics the API of HeapVector<Member<StyleRuleBase>>,
+  // except that any invisible rule added to the vector isn't visible
+  // through any member function except `RawChildRules`.
+  //
+  // TODO(crbug.com/1517290): Remove this when we're done use-counting.
+  class CORE_EXPORT ChildRuleVector : public GarbageCollected<ChildRuleVector> {
+   public:
+    ChildRuleVector() = default;
+
+    // An iterator which skips invisible rules.
+    class CORE_EXPORT Iterator {
+      STACK_ALLOCATED();
+
+     public:
+      Iterator(const Member<StyleRuleBase>* position,
+               const Member<StyleRuleBase>* end)
+          : position_(position), end_(end) {
+        CHECK_LE(position, end);
+      }
+
+      void operator++();
+      Member<StyleRuleBase> operator*() const { return *position_; }
+      bool operator==(const Iterator& o) const {
+        return position_ == o.position_ && end_ == o.end_;
+      }
+      bool operator!=(const Iterator& o) const { return !(*this == o); }
+
+     private:
+      const Member<StyleRuleBase>* position_;
+      const Member<StyleRuleBase>* end_;
+    };
+
+    ChildRuleVector* Copy() const;
+
+    Iterator begin() const {
+      // The AdjustedIndex call ensures that we skip leading invisible rules.
+      return Iterator(rules_.begin() + AdjustedIndex(0), rules_.end());
+    }
+    Iterator end() const { return Iterator(rules_.end(), rules_.end()); }
+
+    const Member<StyleRuleBase>& operator[](wtf_size_t i) const {
+      return rules_.at(AdjustedIndex(i));
+    }
+    Member<StyleRuleBase>& operator[](wtf_size_t i) {
+      return rules_.at(AdjustedIndex(i));
+    }
+
+    wtf_size_t size() const { return rules_.size() - num_invisible_rules_; }
+
+    void AddChildRule(StyleRuleBase* rule);
+    void WrapperInsertRule(unsigned index, StyleRuleBase*);
+    void WrapperRemoveRule(unsigned index);
+
+    const HeapVector<Member<StyleRuleBase>>& RawChildRules() const {
+      return rules_;
+    }
+
+    void Trace(blink::Visitor* visitor) const { visitor->Trace(rules_); }
+
+   private:
+    // Finds the real index of the Nth non-invisible child rule.
+    // The provided `index` must be in the range [0, size()].
+    wtf_size_t AdjustedIndex(wtf_size_t index) const;
+
+    HeapVector<Member<StyleRuleBase>> rules_;
+    wtf_size_t num_invisible_rules_ = 0;
+  };
 
  protected:
   explicit StyleRuleBase(RuleType type)
@@ -284,28 +354,32 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
-  const HeapVector<Member<StyleRuleBase>>* ChildRules() const {
-    return child_rules_.Get();
-  }
+  const ChildRuleVector* ChildRules() const { return child_rule_vector_.Get(); }
+
   void EnsureChildRules() {
     // Allocate the child rule vector only when we need it,
     // since most rules won't have children (almost by definition).
-    if (child_rules_ == nullptr) {
-      child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRuleBase>>>();
+    if (child_rule_vector_ == nullptr) {
+      child_rule_vector_ = MakeGarbageCollected<ChildRuleVector>();
     }
   }
+
+  // Note that if `child` is invisible (see CSSSelector::IsInvisible),
+  // then the added child rule won't be visible through `ChildRules`.
   void AddChildRule(StyleRuleBase*);
+
   void WrapperInsertRule(unsigned index, StyleRuleBase* rule) {
     EnsureChildRules();
-    child_rules_->insert(index, rule);
+    child_rule_vector_->WrapperInsertRule(index, rule);
   }
   void WrapperRemoveRule(unsigned index) {
-    child_rules_->erase(child_rules_->begin() + index);
+    child_rule_vector_->WrapperRemoveRule(index);
   }
 
  private:
   friend class StyleRuleBase;
   friend class CSSLazyParsingTest;
+
   bool HasParsedProperties() const;
 
   CSSSelector* SelectorArray() {
@@ -318,7 +392,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   mutable Member<CSSPropertyValueSet> properties_;
   mutable Member<CSSLazyPropertyParser> lazy_property_parser_;
-  Member<HeapVector<Member<StyleRuleBase>>> child_rules_;
+  Member<ChildRuleVector> child_rule_vector_;
 };
 
 class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {
@@ -436,10 +510,8 @@ class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {
 
 class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {
  public:
-  const HeapVector<Member<StyleRuleBase>>& ChildRules() const {
-    return child_rules_;
-  }
-  HeapVector<Member<StyleRuleBase>>& ChildRules() { return child_rules_; }
+  const ChildRuleVector& ChildRules() const { return *child_rule_vector_; }
+  ChildRuleVector& ChildRules() { return *child_rule_vector_; }
 
   void WrapperInsertRule(CSSStyleSheet*, unsigned, StyleRuleBase*);
   void WrapperRemoveRule(CSSStyleSheet*, unsigned);
@@ -451,7 +523,7 @@ class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {
   StyleRuleGroup(const StyleRuleGroup&);
 
  private:
-  HeapVector<Member<StyleRuleBase>> child_rules_;
+  Member<ChildRuleVector> child_rule_vector_;
 };
 
 class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {

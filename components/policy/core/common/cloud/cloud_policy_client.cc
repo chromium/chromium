@@ -265,16 +265,24 @@ CloudPolicyClient::CloudPolicyClient(
       machine_model_(machine_model),
       brand_code_(brand_code),
       attested_device_id_(attested_device_id),
-      ethernet_mac_address_(ethernet_mac_address.has_value()
-                                ? FormatMacAddress(ethernet_mac_address.value())
+      ethernet_mac_address_(ethernet_mac_address
+                                ? FormatMacAddress(*ethernet_mac_address)
                                 : std::string()),
-      dock_mac_address_(dock_mac_address.has_value()
-                            ? FormatMacAddress(dock_mac_address.value())
-                            : std::string()),
+      dock_mac_address_(dock_mac_address ? FormatMacAddress(*dock_mac_address)
+                                         : std::string()),
       manufacture_date_(manufacture_date),
       service_(service),  // Can be null for unit tests.
       device_dm_token_callback_(device_dm_token_callback),
       url_loader_factory_(url_loader_factory) {}
+
+CloudPolicyClient::CloudPolicyClient(
+    const std::string& profile_id,
+    DeviceManagementService* service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    DeviceDMTokenCallback device_dm_token_callback)
+    : CloudPolicyClient(service, url_loader_factory, device_dm_token_callback) {
+  profile_id_ = profile_id;
+}
 
 CloudPolicyClient::CloudPolicyClient(
     DeviceManagementService* service,
@@ -283,6 +291,13 @@ CloudPolicyClient::CloudPolicyClient(
     : service_(service),  // Can be null for unit tests.
       device_dm_token_callback_(device_dm_token_callback),
       url_loader_factory_(url_loader_factory) {}
+
+CloudPolicyClient::CloudPolicyClient(
+    DeviceManagementService* service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : CloudPolicyClient(service,
+                        url_loader_factory,
+                        CloudPolicyClient::DeviceDMTokenCallback()) {}
 
 CloudPolicyClient::~CloudPolicyClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -425,17 +440,15 @@ void CloudPolicyClient::RegisterWithOidcResponse(
     const RegistrationParameters& parameters,
     const std::string& oauth_token,
     const std::string& oidc_id_token,
-    const std::string& profile_id,
     const std::string& client_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!oidc_id_token.empty());
   CHECK(!oauth_token.empty());
-  CHECK(!profile_id.empty());
 
   SetClientId(client_id);
   auto params = DMServerJobConfiguration::CreateParams::WithClient(
       DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION, this);
-  params.profile_id = profile_id;
+  params.profile_id = profile_id_;
   params.oauth_token = oauth_token;
   params.auth_data = DMAuth::FromOidcResponse(oidc_id_token);
   params.callback = base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,

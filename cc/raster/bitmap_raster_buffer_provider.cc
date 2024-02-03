@@ -29,9 +29,9 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
   ~BitmapSoftwareBacking() override {
     if (shared_image) {
-      if (frame_sink->shared_image_interface()) {
-        frame_sink->shared_image_interface()->DestroySharedImage(
-            mailbox_sync_token, std::move(shared_image));
+      auto sii = frame_sink->shared_image_interface();
+      if (sii) {
+        sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
       }
     } else {
       frame_sink->DidDeleteSharedBitmap(shared_bitmap_id);
@@ -92,7 +92,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         raster_full_rect, playback_rect, transform, color_space_,
         /*gpu_compositing=*/false, playback_settings);
 
-    auto* shared_image_interface =
+    auto shared_image_interface =
         backing_->frame_sink->shared_image_interface();
     if (backing_->shared_image && shared_image_interface) {
       backing_->mailbox_sync_token =
@@ -139,13 +139,12 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
   if (!resource.software_backing()) {
     auto backing = std::make_unique<BitmapSoftwareBacking>();
     backing->frame_sink = frame_sink_;
-
-    if (frame_sink_->shared_image_interface()) {
-      auto shared_image_mapping =
-          frame_sink_->shared_image_interface()->CreateSharedImage(
-              viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-              gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "BitmapRasterBufferProvider");
+    auto sii = frame_sink_->shared_image_interface();
+    if (sii) {
+      auto shared_image_mapping = sii->CreateSharedImage(
+          viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "BitmapRasterBufferProvider");
       backing->shared_image = std::move(shared_image_mapping.shared_image);
       backing->mapping = std::move(shared_image_mapping.mapping);
       CHECK(backing->shared_image);

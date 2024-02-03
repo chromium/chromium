@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -23,7 +24,6 @@ class BackgroundFetchIconLoader;
 class BackgroundFetchOptions;
 class BackgroundFetchRegistration;
 class ExceptionState;
-class ScriptPromiseResolver;
 class ScriptState;
 class ServiceWorkerRegistration;
 
@@ -48,8 +48,7 @@ class MODULES_EXPORT BackgroundFetchManager final
   ScriptPromise get(ScriptState* script_state,
                     const String& id,
                     ExceptionState& exception_state);
-  ScriptPromise getIds(ScriptState* script_state,
-                       ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLArray<IDLString>> getIds(ScriptState*, ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
 
@@ -79,9 +78,10 @@ class MODULES_EXPORT BackgroundFetchManager final
   void DidGetRegistration(ScriptPromiseResolver* resolver,
                           mojom::blink::BackgroundFetchError error,
                           BackgroundFetchRegistration* registration);
-  void DidGetDeveloperIds(ScriptPromiseResolver* resolver,
-                          mojom::blink::BackgroundFetchError error,
-                          const Vector<String>& developer_ids);
+  void DidGetDeveloperIds(
+      ScriptPromiseResolverTyped<IDLArray<IDLString>>* resolver,
+      mojom::blink::BackgroundFetchError error,
+      const Vector<String>& developer_ids);
 
   Member<ServiceWorkerRegistration> registration_;
   Member<BackgroundFetchBridge> bridge_;

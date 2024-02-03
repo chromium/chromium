@@ -161,9 +161,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
         FIDO_LOG(ERROR) << "-> (CBOR parse error '"
                         << cbor::Reader::ErrorCodeToString(error)
                         << "' from raw message "
-                        << base::HexEncode(device_response->data(),
-                                           device_response->size())
-                        << ")";
+                        << base::HexEncode(device_response.value()) << ")";
         std::move(this->callback())
             .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, absl::nullopt);
         return;
@@ -174,9 +172,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
         if (!cbor) {
           FIDO_LOG(ERROR)
               << "-> (CBOR with unfixable UTF-8 errors from raw message "
-              << base::HexEncode(device_response->data(),
-                                 device_response->size())
-              << ")";
+              << base::HexEncode(device_response.value()) << ")";
           std::move(this->callback())
               .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, absl::nullopt);
           return;

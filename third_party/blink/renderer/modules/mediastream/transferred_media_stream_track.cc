@@ -321,19 +321,19 @@ void TransferredMediaStreamTrack::SendWheel(
     double relative_y,
     int wheel_delta_x,
     int wheel_delta_y,
-    base::OnceCallback<void(bool, const String&)> callback) {
+    base::OnceCallback<void(DOMException*)> callback) {
   NOTREACHED_NORETURN();
 }
 
 void TransferredMediaStreamTrack::GetZoomLevel(
-    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
   NOTREACHED_NORETURN();
 }
 
 void TransferredMediaStreamTrack::SetZoomLevel(
     int zoom_level,
-    base::OnceCallback<void(bool, const String&)> callback) {
-  std::move(callback).Run(false, "Unsupported.");
+    base::OnceCallback<void(DOMException*)> callback) {
+  NOTREACHED_NORETURN();
 }
 #endif
 
@@ -384,13 +384,13 @@ ImageCapture* TransferredMediaStreamTrack::GetImageCapture() {
   return nullptr;
 }
 
-absl::optional<const MediaStreamDevice> TransferredMediaStreamTrack::device()
+std::optional<const MediaStreamDevice> TransferredMediaStreamTrack::device()
     const {
   if (track_) {
     return track_->device();
   }
   // TODO(https://crbug.com/1288839): Return transferred data
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TransferredMediaStreamTrack::BeingTransferred(

@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CONSTRAINT_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CONSTRAINT_SPACE_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/break_appeal.h"
@@ -101,9 +102,6 @@ class CORE_EXPORT ConstraintSpace final {
     kIndefinite,
     kRareDataPercentage
   };
-
-  ConstraintSpace()
-      : ConstraintSpace({WritingMode::kHorizontalTb, TextDirection::kLtr}) {}
 
   ConstraintSpace(const ConstraintSpace& other)
       : available_size_(other.available_size_),
@@ -271,9 +269,9 @@ class CORE_EXPORT ConstraintSpace final {
     return LayoutUnit();
   }
 
-  absl::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
+  std::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
     return HasRareData() ? rare_data_->OverrideMinMaxBlockSizes()
-                         : absl::nullopt;
+                         : std::nullopt;
   }
 
   // True if we're using the "fallback" available inline-size. This typically
@@ -299,9 +297,8 @@ class CORE_EXPORT ConstraintSpace final {
     LayoutUnit descent;
   };
 
-  absl::optional<MathTargetStretchBlockSizes> TargetStretchBlockSizes() const {
-    return HasRareData() ? rare_data_->TargetStretchBlockSizes()
-                         : absl::nullopt;
+  std::optional<MathTargetStretchBlockSizes> TargetStretchBlockSizes() const {
+    return HasRareData() ? rare_data_->TargetStretchBlockSizes() : std::nullopt;
   }
 
   // Return the borders which should be used for a table-cell.
@@ -315,9 +312,9 @@ class CORE_EXPORT ConstraintSpace final {
 
   // Return the baseline offset which the table-cell children should align
   // their baseline to.
-  absl::optional<LayoutUnit> TableCellAlignmentBaseline() const {
+  std::optional<LayoutUnit> TableCellAlignmentBaseline() const {
     return HasRareData() ? rare_data_->TableCellAlignmentBaseline()
-                         : absl::nullopt;
+                         : std::nullopt;
   }
 
   bool IsTableCellHiddenForPaint() const {
@@ -677,16 +674,16 @@ class CORE_EXPORT ConstraintSpace final {
   //
   // This value should be propagated to child layouts if the current layout
   // hasn't resolved its BFC offset yet.
-  absl::optional<LayoutUnit> ForcedBfcBlockOffset() const {
-    return HasRareData() ? rare_data_->ForcedBfcBlockOffset() : absl::nullopt;
+  std::optional<LayoutUnit> ForcedBfcBlockOffset() const {
+    return HasRareData() ? rare_data_->ForcedBfcBlockOffset() : std::nullopt;
   }
 
   // If present, this is a hint as to where place any adjoining objects. This
   // isn't necessarily the final position, just where they ended up in a
   // previous layout pass.
-  absl::optional<LayoutUnit> OptimisticBfcBlockOffset() const {
+  std::optional<LayoutUnit> OptimisticBfcBlockOffset() const {
     return HasRareData() ? rare_data_->OptimisticBfcBlockOffset()
-                         : absl::nullopt;
+                         : std::nullopt;
   }
 
   // The "expected" BFC block-offset is:
@@ -749,8 +746,8 @@ class CORE_EXPORT ConstraintSpace final {
     return HasRareData() && rare_data_->is_line_clamp_context;
   }
 
-  absl::optional<int> LinesUntilClamp() const {
-    return HasRareData() ? rare_data_->LinesUntilClamp() : absl::nullopt;
+  std::optional<int> LinesUntilClamp() const {
+    return HasRareData() ? rare_data_->LinesUntilClamp() : std::nullopt;
   }
 
   const GridLayoutSubtree* GetGridLayoutSubtree() const {
@@ -1094,10 +1091,10 @@ class CORE_EXPORT ConstraintSpace final {
       EnsureBlockData()->margin_strut = margin_strut;
     }
 
-    absl::optional<LayoutUnit> OptimisticBfcBlockOffset() const {
+    std::optional<LayoutUnit> OptimisticBfcBlockOffset() const {
       return GetDataUnionType() == DataUnionType::kBlockData
                  ? block_data_.optimistic_bfc_block_offset
-                 : absl::nullopt;
+                 : std::nullopt;
     }
 
     void SetOptimisticBfcBlockOffset(LayoutUnit optimistic_bfc_block_offset) {
@@ -1105,10 +1102,10 @@ class CORE_EXPORT ConstraintSpace final {
           optimistic_bfc_block_offset;
     }
 
-    absl::optional<LayoutUnit> ForcedBfcBlockOffset() const {
+    std::optional<LayoutUnit> ForcedBfcBlockOffset() const {
       return GetDataUnionType() == DataUnionType::kBlockData
                  ? block_data_.forced_bfc_block_offset
-                 : absl::nullopt;
+                 : std::nullopt;
     }
 
     void SetForcedBfcBlockOffset(LayoutUnit forced_bfc_block_offset) {
@@ -1121,10 +1118,10 @@ class CORE_EXPORT ConstraintSpace final {
                  : LayoutUnit::Min();
     }
 
-    absl::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
+    std::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
       if (has_override_min_max_block_sizes)
         return override_min_max_block_sizes;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     void SetOverrideMinMaxBlockSizes(const MinMaxSizes& min_max_sizes) {
@@ -1141,10 +1138,10 @@ class CORE_EXPORT ConstraintSpace final {
       EnsureBlockData()->clearance_offset = clearance_offset;
     }
 
-    absl::optional<int> LinesUntilClamp() const {
+    std::optional<int> LinesUntilClamp() const {
       return GetDataUnionType() == DataUnionType::kBlockData
                  ? block_data_.lines_until_clamp
-                 : absl::nullopt;
+                 : std::nullopt;
     }
 
     void SetLinesUntilClamp(int value) {
@@ -1173,10 +1170,10 @@ class CORE_EXPORT ConstraintSpace final {
       EnsureTableCellData()->table_cell_column_index = table_cell_column_index;
     }
 
-    absl::optional<LayoutUnit> TableCellAlignmentBaseline() const {
+    std::optional<LayoutUnit> TableCellAlignmentBaseline() const {
       return GetDataUnionType() == DataUnionType::kTableCellData
                  ? table_cell_data_.table_cell_alignment_baseline
-                 : absl::nullopt;
+                 : std::nullopt;
     }
 
     void SetTableCellAlignmentBaseline(
@@ -1270,11 +1267,10 @@ class CORE_EXPORT ConstraintSpace final {
           target_stretch_inline_size;
     }
 
-    absl::optional<MathTargetStretchBlockSizes> TargetStretchBlockSizes()
-        const {
+    std::optional<MathTargetStretchBlockSizes> TargetStretchBlockSizes() const {
       return GetDataUnionType() == DataUnionType::kStretchData
                  ? stretch_data_.target_stretch_block_sizes
-                 : absl::nullopt;
+                 : std::nullopt;
     }
 
     void SetTargetStretchBlockSizes(
@@ -1342,10 +1338,10 @@ class CORE_EXPORT ConstraintSpace final {
       }
 
       MarginStrut margin_strut;
-      absl::optional<LayoutUnit> optimistic_bfc_block_offset;
-      absl::optional<LayoutUnit> forced_bfc_block_offset;
+      std::optional<LayoutUnit> optimistic_bfc_block_offset;
+      std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
-      absl::optional<int> lines_until_clamp;
+      std::optional<int> lines_until_clamp;
     };
 
     struct TableCellData {
@@ -1366,7 +1362,7 @@ class CORE_EXPORT ConstraintSpace final {
 
       BoxStrut table_cell_borders;
       wtf_size_t table_cell_column_index = kNotFound;
-      absl::optional<LayoutUnit> table_cell_alignment_baseline;
+      std::optional<LayoutUnit> table_cell_alignment_baseline;
       bool is_hidden_for_paint = false;
       bool has_collapsed_borders = false;
     };
@@ -1427,7 +1423,7 @@ class CORE_EXPORT ConstraintSpace final {
       }
 
       LayoutUnit target_stretch_inline_size = kIndefiniteSize;
-      absl::optional<MathTargetStretchBlockSizes> target_stretch_block_sizes;
+      std::optional<MathTargetStretchBlockSizes> target_stretch_block_sizes;
     };
 
     struct SubgridData {

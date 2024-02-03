@@ -3118,8 +3118,8 @@ TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
       /*render_process_id=*/0, /*render_frame_id=*/0, /*page_request_id=*/0,
       /*url_origin=*/url::Origin::Create(GURL("")), /*user_gesture=*/false,
       blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
-      /*requested_audio_device_id=*/"",
-      /*requested_video_device_id=*/"",
+      /*requested_audio_device_ids=*/{},
+      /*requested_video_device_ids=*/{},
       blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);

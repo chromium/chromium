@@ -7,12 +7,19 @@
 namespace variations {
 
 namespace {
-bool g_is_limited_entropy_mode_enabled_for_testing = false;
+
+enum class ForcedState {
+  ENABLED,
+  DISABLED,
+  UNSET,
+};
+
+ForcedState g_forced_state_for_testing = ForcedState::UNSET;
 }
 
 bool IsLimitedEntropyModeEnabled(version_info::Channel channel) {
-  if (g_is_limited_entropy_mode_enabled_for_testing) {
-    return true;
+  if (g_forced_state_for_testing != ForcedState::UNSET) {
+    return g_forced_state_for_testing == ForcedState::ENABLED;
   }
   // TODO(crbug.com/1511779): Enable limited entropy mode in more channels.
   return channel == version_info::Channel::CANARY ||
@@ -20,7 +27,11 @@ bool IsLimitedEntropyModeEnabled(version_info::Channel channel) {
 }
 
 void EnableLimitedEntropyModeForTesting() {
-  g_is_limited_entropy_mode_enabled_for_testing = true;
+  g_forced_state_for_testing = ForcedState::ENABLED;
+}
+
+void DisableLimitedEntropyModeForTesting() {
+  g_forced_state_for_testing = ForcedState::DISABLED;
 }
 
 }  // namespace variations

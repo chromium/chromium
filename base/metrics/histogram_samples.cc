@@ -5,6 +5,7 @@
 #include "base/metrics/histogram_samples.h"
 
 #include <limits>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -13,6 +14,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {
@@ -356,9 +359,8 @@ base::Value::Dict HistogramSamples::ToGraphDict(StringPiece histogram_name,
 std::string HistogramSamples::GetAsciiHeader(StringPiece histogram_name,
                                              int32_t flags) const {
   std::string output;
-  StringAppendF(&output, "Histogram: %.*s recorded %d samples",
-                static_cast<int>(histogram_name.size()), histogram_name.data(),
-                TotalCount());
+  StrAppend(&output, {"Histogram: ", histogram_name, " recorded ",
+                      NumberToString(TotalCount()), " samples"});
   if (flags)
     StringAppendF(&output, " (flags = 0x%x)", flags);
   return output;
@@ -406,12 +408,13 @@ std::string HistogramSamples::GetAsciiBody() const {
     // value is min, so display it
     std::string range = GetSimpleAsciiBucketRange(min);
     output.append(range);
-    for (size_t j = 0; range.size() + j < print_width + 1; ++j)
-      output.push_back(' ');
+    if (const auto range_size = range.size(); print_width >= range_size) {
+      output.append(print_width + 1 - range_size, ' ');
+    }
     HistogramBase::Count current_size = round(count * scaling_factor);
     WriteAsciiBucketGraph(current_size, kLineLength, &output);
     WriteAsciiBucketValue(count, scaled_total_count, &output);
-    StringAppendF(&output, "\n");
+    output.append(1, '\n');
     it->Next();
   }
   return output;
@@ -420,13 +423,12 @@ std::string HistogramSamples::GetAsciiBody() const {
 void HistogramSamples::WriteAsciiBucketGraph(double x_count,
                                              int line_length,
                                              std::string* output) const {
-  int x_remainder = line_length - x_count;
+  int x_remainder = std::max(line_length - x_count, 0.0);
 
-  while (0 < x_count--)
-    output->append("-");
-  output->append("O");
-  while (0 < x_remainder--)
-    output->append(" ");
+  output->reserve(output->size() + x_count + 1 + x_remainder);
+  output->append(x_count, '-');
+  output->append(1, 'O');
+  output->append(saturated_cast<size_t>(x_remainder), ' ');
 }
 
 void HistogramSamples::WriteAsciiBucketValue(HistogramBase::Count current,

@@ -10,12 +10,12 @@
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/test_timeouts.h"
@@ -2033,12 +2033,9 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
 
   // Wait until all (main- and sub-resource) SXGs are prefetched.
-  while (GetCachedExchanges(shell()).size() < std::size(kTestCases) + 1) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCachedExchanges(shell()).size() >= std::size(kTestCases) + 1;
+  }));
 
   NavigateToURLAndWaitTitle(target_sxg_url, "done");
 

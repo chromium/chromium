@@ -43,7 +43,7 @@ class DocumentMarkerPainter {
       const ComputedStyle& style,
       DocumentMarker::MarkerType marker_type,
       const LineRelativeRect& local_rect,
-      absl::optional<Color> custom_marker_color = absl::nullopt);
+      std::optional<Color> custom_marker_color = std::nullopt);
   static TextPaintStyle ComputeTextPaintStyleFrom(const Document& document,
                                                   Node* node,
                                                   const ComputedStyle& style,

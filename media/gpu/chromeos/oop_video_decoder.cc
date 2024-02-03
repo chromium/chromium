@@ -101,7 +101,7 @@ scoped_refptr<VideoFrame> MojoVideoFrameToMediaVideoFrame(
     return nullptr;
   }
 
-  absl::optional<gfx::BufferFormat> buffer_format =
+  std::optional<gfx::BufferFormat> buffer_format =
       VideoPixelFormatToGfxBufferFormat(mojo_frame->format);
   if (!buffer_format) {
     VLOGF(2) << "Could not convert the incoming frame's format to a "
@@ -152,7 +152,7 @@ class OOPVideoDecoderSupportedConfigsManager {
     return *instance;
   }
 
-  absl::optional<SupportedVideoDecoderConfigs> Get() {
+  std::optional<SupportedVideoDecoderConfigs> Get() {
     base::AutoLock lock(lock_);
     return configs_;
   }
@@ -250,8 +250,8 @@ class OOPVideoDecoderSupportedConfigsManager {
   void OnDecoderDisconnected() {
     base::AutoLock lock(lock_);
     configs_.emplace();
-    decoder_type_ = absl::nullopt;
-    interface_version_ = absl::nullopt;
+    decoder_type_ = std::nullopt;
+    interface_version_ = std::nullopt;
     disconnected_ = true;
     MaybeNotifyWaitingCallbacks();
   }
@@ -333,9 +333,9 @@ class OOPVideoDecoderSupportedConfigsManager {
 
   // The cached supported video decoder configurations, decoder type, and
   // interface version.
-  absl::optional<SupportedVideoDecoderConfigs> configs_ GUARDED_BY(lock_);
-  absl::optional<VideoDecoderType> decoder_type_ GUARDED_BY(lock_);
-  absl::optional<uint32_t> interface_version_ GUARDED_BY(lock_);
+  std::optional<SupportedVideoDecoderConfigs> configs_ GUARDED_BY(lock_);
+  std::optional<VideoDecoderType> decoder_type_ GUARDED_BY(lock_);
+  std::optional<uint32_t> interface_version_ GUARDED_BY(lock_);
 
   // This tracks everything that's needed to call a callback passed to
   // NotifySupportKnown() that had to be queued because there was a query in
@@ -386,7 +386,7 @@ void OOPVideoDecoder::NotifySupportKnown(
 }
 
 // static
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 OOPVideoDecoder::GetSupportedConfigs() {
   return OOPVideoDecoderSupportedConfigsManager::Instance().Get();
 }
@@ -954,7 +954,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   const gfx::Rect visible_rect = frame->visible_rect;
   const gfx::Size natural_size = frame->natural_size;
   const gfx::ColorSpace color_space = frame->color_space;
-  const absl::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata;
+  const std::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata;
   const VideoFrameMetadata metadata = frame->metadata;
   const gfx::GpuMemoryBufferId received_gmb_id =
       frame->gpu_memory_buffer_handle.id;

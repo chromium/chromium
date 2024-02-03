@@ -68,9 +68,11 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
  private:
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   void OnDeferRequestForBoundSessionCompleted(
-      BoundSessionRequestThrottledHandler::UnblockAction resume);
+      BoundSessionRequestThrottledHandler::UnblockAction resume,
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger);
   void ResumeOrCancelRequest(
-      BoundSessionRequestThrottledHandler::UnblockAction resume);
+      BoundSessionRequestThrottledHandler::UnblockAction resume,
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger);
 
   std::unique_ptr<BoundSessionRequestThrottledHandler>
       bound_session_request_throttled_handler_;
@@ -79,6 +81,8 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
   // `true` if at least one URL in the redirect chain was affected.
   bool is_covered_by_bound_session_ = false;
   bool is_deferred_for_bound_session_ = false;
+  std::optional<chrome::mojom::ResumeBlockedRequestsTrigger>
+      deferred_request_resume_trigger_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

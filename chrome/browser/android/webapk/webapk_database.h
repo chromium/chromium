@@ -49,6 +49,9 @@ class WebApkDatabase {
              std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
              CompletionCallback callback);
 
+  void DeleteAllDataAndMetadata(
+      syncer::ModelTypeStore::CallbackWithResult callback);
+
   bool is_opened() const { return opened_; }
 
  private:

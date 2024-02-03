@@ -27,7 +27,7 @@ class CPUMeasurementDelegateImpl final : public CPUMeasurementDelegate {
   explicit CPUMeasurementDelegateImpl(const ProcessNode* process_node);
   ~CPUMeasurementDelegateImpl() final = default;
 
-  base::TimeDelta GetCumulativeCPUUsage() final;
+  std::optional<base::TimeDelta> GetCumulativeCPUUsage() final;
 
  private:
   std::unique_ptr<base::ProcessMetrics> process_metrics_;
@@ -44,12 +44,19 @@ CPUMeasurementDelegateImpl::CPUMeasurementDelegateImpl(
 #endif
 }
 
-base::TimeDelta CPUMeasurementDelegateImpl::GetCumulativeCPUUsage() {
+std::optional<base::TimeDelta>
+CPUMeasurementDelegateImpl::GetCumulativeCPUUsage() {
+  base::TimeDelta cpu_usage;
 #if BUILDFLAG(IS_WIN)
-  return process_metrics_->GetPreciseCumulativeCPUUsage();
+  cpu_usage = process_metrics_->GetPreciseCumulativeCPUUsage();
 #else
-  return process_metrics_->GetCumulativeCPUUsage();
+  cpu_usage = process_metrics_->GetCumulativeCPUUsage();
 #endif
+  // Most platforms return a zero TimeDelta on error, Linux returns a negative.
+  if (!cpu_usage.is_positive()) {
+    return std::nullopt;
+  }
+  return cpu_usage;
 }
 
 // The default production factory for CPUMeasurementDelegateImpl objects.

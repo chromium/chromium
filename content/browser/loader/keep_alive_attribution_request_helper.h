@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -47,8 +47,8 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
   static std::unique_ptr<KeepAliveAttributionRequestHelper> CreateIfNeeded(
       network::mojom::AttributionReportingEligibility,
       const GURL& request_url,
-      const absl::optional<base::UnguessableToken>& attribution_src_token,
-      const absl::optional<std::string>& devtools_request_id,
+      const std::optional<base::UnguessableToken>& attribution_src_token,
+      const std::optional<std::string>& devtools_request_id,
       network::AttributionReportingRuntimeFeatures,
       const AttributionSuitableContext&);
 

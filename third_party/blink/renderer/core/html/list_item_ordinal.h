@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LIST_ITEM_ORDINAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LIST_ITEM_ORDINAL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -34,7 +35,7 @@ class CORE_EXPORT ListItemOrdinal {
 
   // Get/set/clear the explicit value; i.e., the 'value' attribute of an <li>
   // element.
-  absl::optional<int> ExplicitValue() const;
+  std::optional<int> ExplicitValue() const;
   void SetExplicitValue(int, const Node&);
   void ClearExplicitValue(const Node&);
 

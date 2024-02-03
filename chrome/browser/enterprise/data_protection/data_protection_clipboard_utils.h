@@ -35,12 +35,13 @@ void PasteIfAllowedByPolicy(
 // - CopyPreventionSettings
 // - DataControlsRules
 //
-// If the copy is not allowed, `replacement_data` is populated with a string
+// If the copy is not allowed, `callback` is called with a replacement string
 // that should instead be put into the OS clipboard.
-bool IsClipboardCopyAllowedByPolicy(content::BrowserContext* browser_context,
-                                    const GURL& url,
-                                    size_t data_size_in_bytes,
-                                    std::u16string& replacement_data);
+void IsClipboardCopyAllowedByPolicy(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    size_t data_size_in_bytes,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
 
 }  // namespace enterprise_data_protection
 

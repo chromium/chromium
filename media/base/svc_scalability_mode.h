@@ -52,8 +52,11 @@ enum class SVCScalabilityMode : int {
   kL3T2KeyShift = 31,
   kL3T3Key = 32,
   kL3T3KeyShift = 33,
+  kL3T1h = 34,
+  kL3T2h = 35,
+  kL3T3h = 36,
 
-  kMaxValue = kL3T3KeyShift,
+  kMaxValue = kL3T3h,
 };
 
 enum class SVCInterLayerPredMode : int {

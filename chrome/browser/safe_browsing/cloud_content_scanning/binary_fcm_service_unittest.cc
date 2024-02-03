@@ -157,7 +157,7 @@ TEST_F(BinaryFCMServiceTest, RoutesMessages) {
   // Test that a message with token1 is routed only to the first callback.
   message.set_request_token("token1");
   ASSERT_TRUE(message.SerializeToString(&serialized_message));
-  base::Base64Encode(serialized_message, &serialized_message);
+  serialized_message = base::Base64Encode(serialized_message);
   incoming_message.data["proto"] = serialized_message;
   binary_fcm_service_->OnMessage("app_id", incoming_message);
   EXPECT_EQ(response1.request_token(), "token1");
@@ -166,7 +166,7 @@ TEST_F(BinaryFCMServiceTest, RoutesMessages) {
   // Test that a message with token2 is routed only to the second callback.
   message.set_request_token("token2");
   ASSERT_TRUE(message.SerializeToString(&serialized_message));
-  base::Base64Encode(serialized_message, &serialized_message);
+  serialized_message = base::Base64Encode(serialized_message);
   incoming_message.data["proto"] = serialized_message;
   binary_fcm_service_->OnMessage("app_id", incoming_message);
   EXPECT_EQ(response1.request_token(), "token1");

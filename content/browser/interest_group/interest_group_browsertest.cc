@@ -7080,6 +7080,31 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidAdditionalBidsMalformattedNonce) {
+  GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL decision_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      additionalBids: Promise.resolve([1, 2, 3]),
+      auctionNonce: "invalid",
+      interestGroupBuyers: [$1]
+  })";
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "auctionNonce for AuctionAdConfig with seller '%s' must be a "
+                "valid UUIDv4, but got, 'invalid'.",
+                test_origin.Serialize().c_str()),
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidAdditionalBidsNoInterestGroupBuyers) {
   GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
@@ -7463,7 +7488,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
       int bucket,
       int value,
       AggregatableReportSharedInfo::DebugMode debug_mode,
-      absl::optional<uint64_t> debug_key = absl::nullopt) {
+      std::optional<uint64_t> debug_key = absl::nullopt) {
     ASSERT_FALSE(run_loop_);
     run_loop_ = std::make_unique<base::RunLoop>();
 
@@ -14546,6 +14571,66 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForUrl(embedded_https_test_server().GetURL(
       "/interest_group/trusted_scoring_signals.json?hostname=a.test"
       "&renderUrls=https%3A%2F%2Fexample.com%2Frender&experimentGroupId=8349"));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithLargeExperimentGroupId) {
+  // https://crbug.com/1523625 --- make sure all 16 bits go through.
+  const char kPublisher[] = "a.test";
+  const char kBidder[] = "b.test";
+  const char kSeller[] = "c.test";
+
+  // Navigate to bidder site, and add an interest group.
+  GURL bidder_url = embedded_https_test_server().GetURL(kBidder, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/bidder_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  kBidder, "/interest_group/bidding_logic.js"))
+              .SetTrustedBiddingSignalsUrl(embedded_https_test_server().GetURL(
+                  kBidder, "/interest_group/trusted_bidding_signals.json"))
+              .SetTrustedBiddingSignalsKeys({{"key1"}})
+              .SetAds({{{GURL("https://example.com/render"),
+                         R"({"ad":"metadata","here":[1,2]})"}}})
+              .Build()));
+
+  // Navigate to publisher.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_https_test_server().GetURL(kPublisher, "/echo")));
+  GURL seller_logic_url = embedded_https_test_server().GetURL(
+      kSeller, "/interest_group/decision_logic.js");
+
+  const char kAuctionConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsURL: $3,
+    interestGroupBuyers: [$4],
+    sellerExperimentGroupId: 50000,
+    perBuyerExperimentGroupIds: {'*': 40000},
+  })";
+
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWaitForUrl(JsReplace(
+                kAuctionConfigTemplate, url::Origin::Create(seller_logic_url),
+                seller_logic_url,
+                embedded_https_test_server().GetURL(
+                    kSeller, "/interest_group/trusted_scoring_signals.json"),
+                bidder_origin)));
+
+  // Make sure that the right trusted signals URLs got fetched, incorporating
+  // the experiment group ID.
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1"
+      "&interestGroupNames=cars&experimentGroupId=40000"));
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "/interest_group/trusted_scoring_signals.json?hostname=a.test"
+      "&renderUrls=https%3A%2F%2Fexample.com%2Frender&experimentGroupId="
+      "50000"));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

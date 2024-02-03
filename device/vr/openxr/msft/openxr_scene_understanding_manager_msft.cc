@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/numerics/math_constants.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
@@ -48,7 +49,7 @@ OpenXRSceneUnderstandingManagerMSFT::OpenXRSceneUnderstandingManagerMSFT(
   scene_bounds_.sphere_bounds_.push_back({{}, kScanRadius});
 }
 
-void OpenXRSceneUnderstandingManagerMSFT::OnNewHitTestSubscription() {
+bool OpenXRSceneUnderstandingManagerMSFT::OnNewHitTestSubscription() {
   if (scene_compute_state_ == SceneComputeState::Off) {
     if (!scene_observer_) {
       scene_observer_ = std::make_unique<OpenXrSceneObserverMsft>(
@@ -56,6 +57,8 @@ void OpenXRSceneUnderstandingManagerMSFT::OnNewHitTestSubscription() {
       scene_compute_state_ = SceneComputeState::Idle;
     }
   }
+
+  return true;
 }
 
 void OpenXRSceneUnderstandingManagerMSFT::OnAllHitTestSubscriptionsRemoved() {

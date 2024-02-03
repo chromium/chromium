@@ -27,9 +27,9 @@ const double kDefaultScreenCastAspectRatio =
 
 void CheckNonResolutionDefaults(const VideoCaptureSettings& result) {
   EXPECT_EQ(kDefaultScreenCastFrameRate, result.FrameRate());
-  EXPECT_EQ(absl::optional<double>(), result.min_frame_rate());
-  EXPECT_EQ(absl::optional<double>(), result.max_frame_rate());
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<double>(), result.min_frame_rate());
+  EXPECT_EQ(std::optional<double>(), result.max_frame_rate());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
   EXPECT_EQ(std::string(), result.device_id());
   EXPECT_FALSE(result.min_frame_rate().has_value());
 }
@@ -37,13 +37,13 @@ void CheckNonResolutionDefaults(const VideoCaptureSettings& result) {
 void CheckNonFrameRateDefaults(const VideoCaptureSettings& result) {
   EXPECT_EQ(kDefaultScreenCastHeight, result.Height());
   EXPECT_EQ(kDefaultScreenCastWidth, result.Width());
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
   EXPECT_EQ(std::string(), result.device_id());
 }
 
 void CheckTrackAdapterSettingsEqualsFormat(
     const VideoCaptureSettings& result,
-    absl::optional<double> frame_rate = absl::nullopt) {
+    std::optional<double> frame_rate = std::nullopt) {
   // For content capture, resolution and frame rate should always be the same
   // for source and track.
   EXPECT_TRUE(result.track_adapter_settings().target_size().has_value());
@@ -54,7 +54,7 @@ void CheckTrackAdapterSettingsEqualsFormat(
 
 void CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(
     const VideoCaptureSettings& result,
-    absl::optional<double> frame_rate = absl::nullopt) {
+    std::optional<double> frame_rate = std::nullopt) {
   EXPECT_EQ(
       static_cast<double>(kMinScreenCastDimension) / kMaxScreenCastDimension,
       result.track_adapter_settings().min_aspect_ratio());
@@ -223,7 +223,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, MandatoryDeviceID) {
   EXPECT_EQ(kDefaultScreenCastHeight, result.Height());
   EXPECT_EQ(kDefaultScreenCastWidth, result.Width());
   EXPECT_EQ(kDefaultScreenCastFrameRate, result.FrameRate());
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
   CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result);
 }
 
@@ -247,7 +247,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, IdealDeviceID) {
   EXPECT_EQ(kDefaultScreenCastHeight, result.Height());
   EXPECT_EQ(kDefaultScreenCastWidth, result.Width());
   EXPECT_EQ(kDefaultScreenCastFrameRate, result.FrameRate());
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
   CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result);
 }
 
@@ -1377,7 +1377,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, MandatoryMaxFrameRate) {
     EXPECT_TRUE(result.HasValue());
     // If max frame rate is provided, it is used as default.
     EXPECT_EQ(kMaxFrameRate, result.FrameRate());
-    EXPECT_EQ(absl::optional<double>(), result.min_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.min_frame_rate());
     EXPECT_EQ(kMaxFrameRate, result.max_frame_rate());
     CheckNonFrameRateDefaults(result);
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
@@ -1392,7 +1392,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, MandatoryMaxFrameRate) {
     EXPECT_TRUE(result.HasValue());
     // If max frame rate is provided, it is used as default.
     EXPECT_EQ(kMaxFrameRate, result.FrameRate());
-    EXPECT_EQ(absl::optional<double>(), result.min_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.min_frame_rate());
     EXPECT_EQ(kMaxFrameRate, result.max_frame_rate());
     CheckNonFrameRateDefaults(result);
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
@@ -1407,8 +1407,8 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, MandatoryMaxFrameRate) {
     EXPECT_TRUE(result.HasValue());
     // Expect the default, since the given maximum is invalid.
     EXPECT_EQ(kDefaultScreenCastFrameRate, result.FrameRate());
-    EXPECT_EQ(absl::optional<double>(), result.min_frame_rate());
-    EXPECT_EQ(absl::optional<double>(), result.max_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.min_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.max_frame_rate());
     CheckNonFrameRateDefaults(result);
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result);
   }
@@ -1421,7 +1421,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, MandatoryMaxFrameRate) {
     EXPECT_TRUE(result.HasValue());
     // If max frame rate is provided, it is used as default.
     EXPECT_EQ(kMaxFrameRate, result.FrameRate());
-    EXPECT_EQ(absl::optional<double>(), result.min_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.min_frame_rate());
     EXPECT_EQ(kMaxFrameRate, result.max_frame_rate());
     CheckNonFrameRateDefaults(result);
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
@@ -1489,8 +1489,8 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, IdealFrameRate) {
     auto result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(kIdealFrameRate, result.FrameRate());
-    EXPECT_EQ(absl::optional<double>(), result.min_frame_rate());
-    EXPECT_EQ(absl::optional<double>(), result.max_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.min_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.max_frame_rate());
     CheckNonFrameRateDefaults(result);
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
                                                             kIdealFrameRate);
@@ -1506,7 +1506,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, IdealFrameRate) {
     auto result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(kMaxFrameRate, result.FrameRate());
-    EXPECT_EQ(absl::optional<double>(), result.min_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.min_frame_rate());
     EXPECT_EQ(kMaxFrameRate, result.max_frame_rate());
     CheckNonFrameRateDefaults(result);
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
@@ -1523,7 +1523,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, IdealFrameRate) {
     auto result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(kMinFrameRate, result.FrameRate());
-    EXPECT_EQ(absl::optional<double>(), result.max_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.max_frame_rate());
     CheckNonFrameRateDefaults(result);
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
                                                             kMinFrameRate);
@@ -1615,7 +1615,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest,
   EXPECT_EQ(400, result.Height());
   EXPECT_EQ(500, result.Width());
   EXPECT_EQ(10.0, result.FrameRate());
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
   EXPECT_EQ(std::string(), result.device_id());
   EXPECT_EQ(5.0 / 4.0, result.track_adapter_settings().min_aspect_ratio());
   EXPECT_EQ(5.0 / 4.0, result.track_adapter_settings().max_aspect_ratio());
@@ -1632,7 +1632,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest,
   EXPECT_EQ(400, result.Height());
   EXPECT_EQ(500, result.Width());
   EXPECT_EQ(10.0, result.FrameRate());
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
   EXPECT_EQ(std::string(), result.device_id());
   EXPECT_EQ(5.0 / 4.0, result.track_adapter_settings().min_aspect_ratio());
   EXPECT_EQ(5.0 / 4.0, result.track_adapter_settings().max_aspect_ratio());
@@ -1649,7 +1649,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest,
   EXPECT_EQ(std::round(4.0 * 900.0 / 41.0), result.Height());
   EXPECT_EQ(std::round(5.0 * 900.0 / 41.0), result.Width());
   EXPECT_EQ(10.0, result.FrameRate());
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
   EXPECT_EQ(std::string(), result.device_id());
   EXPECT_EQ(5.0 / 4.0, result.track_adapter_settings().min_aspect_ratio());
   EXPECT_EQ(5.0 / 4.0, result.track_adapter_settings().max_aspect_ratio());
@@ -1665,7 +1665,7 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest,
   EXPECT_EQ(400, result.Height());
   EXPECT_EQ(500, result.Width());
   EXPECT_EQ(10.0, result.FrameRate());
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
   EXPECT_EQ(std::string(), result.device_id());
   EXPECT_EQ(5.0 / 4.0, result.track_adapter_settings().min_aspect_ratio());
   EXPECT_EQ(5.0 / 4.0, result.track_adapter_settings().max_aspect_ratio());

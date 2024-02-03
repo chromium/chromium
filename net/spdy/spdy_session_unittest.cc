@@ -178,8 +178,8 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
         test_url_(kDefaultUrl),
         test_server_(test_url_),
         key_(HostPortPair::FromURL(test_url_),
-             ProxyChain::Direct(),
              PRIVACY_MODE_DISABLED,
+             ProxyChain::Direct(),
              SessionUsage::kDestination,
              SocketTag(),
              NetworkAnonymizationKey(),
@@ -3395,17 +3395,17 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
       HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
 
   // Create an idle SPDY session.
-  SpdySessionKey key1(HostPortPair("www.example.org", 80), ProxyChain::Direct(),
-                      PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
-                      SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+  SpdySessionKey key1(HostPortPair("www.example.org", 80),
+                      PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                      SessionUsage::kDestination, SocketTag(),
+                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> session1 =
       ::net::CreateSpdySession(http_session_.get(), key1, NetLogWithSource());
   EXPECT_FALSE(pool->IsStalled());
 
   // Set up an alias for the idle SPDY session, increasing its ref count to 2.
   SpdySessionKey key2(HostPortPair("mail.example.org", 80),
-                      ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
+                      PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                       SessionUsage::kDestination, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> request;
@@ -3557,11 +3557,11 @@ TEST_F(SpdySessionTest, SpdySessionKeyPrivacyMode) {
 
   HostPortPair host_port_pair("www.example.org", 443);
   SpdySessionKey key_privacy_enabled(
-      host_port_pair, ProxyChain::Direct(), PRIVACY_MODE_ENABLED,
+      host_port_pair, PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
       SecureDnsPolicy::kAllow);
   SpdySessionKey key_privacy_disabled(
-      host_port_pair, ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
+      host_port_pair, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
       SecureDnsPolicy::kAllow);
 
@@ -5881,8 +5881,8 @@ TEST_F(AltSvcFrameTest,
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
-  key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), ProxyChain::Direct(),
-                        PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+  key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), PRIVACY_MODE_DISABLED,
+                        ProxyChain::Direct(), SessionUsage::kDestination,
                         SocketTag(), kNetworkAnonymizationKey1,
                         SecureDnsPolicy::kAllow);
 

@@ -16,5 +16,6 @@ h1 { (user agent stylesheet)
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     font-weight: bold;
+    unicode-bidi: isolate;
 
 

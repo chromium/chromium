@@ -2479,7 +2479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.DatabaseOpenError"
-    enum="CdmStorageOpenError" expires_after="2024-04-11">
+    enum="CdmStorageOpenError" expires_after="2024-07-28">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2610,6 +2610,98 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.EME.CdmStorageManager.GetSizeForFileError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForFile function. Recorded
+    after every call of GetSizeForFile on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForFileError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForFile function. Recorded
+    after every call of GetSizeForFile on {ProfileType} profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForStorageKeyError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForStorageKey function.
+    Recorded after every call of GetSizeForStorageKey on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForStorageKeyError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForStorageKey function.
+    Recorded after every call of GetSizeForStorageKey on {ProfileType} profile
+    when 'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForTimeFrameError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForTimeFrame function.
+    Recorded after every call of GetSizeForTimeFrame on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.GetSizeForTimeFrameError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the GetSizeForTimeFrame function.
+    Recorded after every call of GetSizeForTimeFrame on {ProfileType} profile
+    when 'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageManager.ReadFileError.{ProfileType}"
     enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2641,7 +2733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.WriteFileError.{ProfileType}"
-    enum="BooleanError" expires_after="2024-04-11">
+    enum="BooleanError" expires_after="2024-07-28">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3390,7 +3482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.FrameReadBackCount.{RendererType}" units="frames"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>dalecurtis@chromium.org</owner>
   <owner>frankli@microsoft.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -3464,7 +3556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.RequiresUserActivationResult"
-    enum="GetDisplayMediaTransientActivation" expires_after="2024-03-14">
+    enum="GetDisplayMediaTransientActivation" expires_after="2025-03-14">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <owner>hendrich@chromium.org</owner>
@@ -3489,7 +3581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.DeviceSelectorOpened" enum="Boolean"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3985,28 +4077,6 @@ chromium-metrics-reviews@google.com.
     Count of MediaDevicesManager starting enumerating video devices (ie cameras)
     with the camera capture service, including enumerations which never
     finished.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaFoundation.VideoColorSpace.PrimaryID"
-    enum="VideoColorSpace.PrimaryID" expires_after="2023-08-27">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>macrabil@microsoft.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the VideoColorSpace VideoPrimaries value is passed to
-    MediaFoundation for HDR content.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaFoundation.VideoColorSpace.TransferID"
-    enum="VideoColorSpace.TransferID" expires_after="2023-08-02">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>wicarr@microsoft.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the VideoColorSpace TransferFunction value is passed to
-    MediaFoundation for HDR content.
   </summary>
 </histogram>
 
@@ -5262,7 +5332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.V4l2VideoDecoder.MediaIoctlError"
-    enum="MediaIoctlRequests" expires_after="2024-05-19">
+    enum="MediaIoctlRequests" expires_after="2024-07-28">
   <owner>stevecho@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -5335,15 +5405,6 @@ chromium-metrics-reviews@google.com.
     The response given to the client by VaapiJpegDecodeAccelerator for a decode
     request. This is recorded when the decode succeeds or fails. The recorded
     value corresponds to a MjpegDecodeAccelerator::Error.
-  </summary>
-</histogram>
-
-<histogram name="Media.VAJEA.EncoderResult" enum="VAJEAEncoderResult"
-    expires_after="M95">
-  <owner>wtlee@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
-  <summary>
-    Result codes reported by jpeg encode using VA-API hardware jpeg encoder.
   </summary>
 </histogram>
 
@@ -5537,8 +5598,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Device.Effect.{VideoEffect}"
+    enum="BooleanSupported" expires_after="2025-01-23">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records {VideoEffect} support for each video capture device opened. Recorded
+    in DeviceMediaToMojoAdapter::StartInternal in the video capture service.
+  </summary>
+  <token key="VideoEffect">
+    <variant name="BackgroundBlur" summary="Background Blur"/>
+    <variant name="EyeGazeCorrection" summary="Eye Gaze Correction"/>
+    <variant name="FaceFraming" summary="Face Framing"/>
+  </token>
+</histogram>
+
 <histogram name="Media.VideoCapture.Device.Opened.ByModelId" units="usb_id"
-    expires_after="2024-05-23">
+    expires_after="2024-07-28">
   <owner>atadres@chromium.org</owner>
   <summary>
     This metric records an unsigned interger value that corresponds to the USB
@@ -5604,7 +5680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.TotalAvailable" units="count"
-    expires_after="2024-05-23">
+    expires_after="2024-07-28">
   <owner>atadres@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5741,7 +5817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StartErrorCode" enum="VideoCaptureError"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>

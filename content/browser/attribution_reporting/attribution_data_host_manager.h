@@ -42,8 +42,7 @@ struct GlobalRenderFrameHostId;
 
 // Interface responsible for coordinating `AttributionDataHost`s received from
 // the renderer.
-class AttributionDataHostManager
-    : public base::SupportsWeakPtr<AttributionDataHostManager> {
+class AttributionDataHostManager {
  public:
   virtual ~AttributionDataHostManager() = default;
 
@@ -182,6 +181,9 @@ class AttributionDataHostManager
       GURL reporting_url,
       const net::HttpResponseHeaders* headers,
       bool is_final_response) = 0;
+
+  // Get a WeakPtr to the implementation instance.
+  virtual base::WeakPtr<AttributionDataHostManager> AsWeakPtr() = 0;
 };
 
 }  // namespace content

@@ -280,7 +280,7 @@ RenditionManager::UpdatedSelections RenditionManager::GetUpdatedSelectionIds() {
 
 std::optional<RenditionManager::VariantID>
 RenditionManager::SelectBestVariant() {
-  std::optional<VariantID> best = absl::nullopt;
+  std::optional<VariantID> best = std::nullopt;
   if (selectable_variants_.size()) {
     // If there is at least one thing in the list, then consider the lowest
     // quality entry to be selectable, even if poor performance would otherwise
@@ -357,7 +357,7 @@ RenditionManager::SelectRenditionBasedOnLanguage(
     return id;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::optional<RenditionManager::RenditionID>
@@ -368,7 +368,7 @@ RenditionManager::SelectBestRendition(
 
   // If there are no renditions attached to this variant, then select nothing.
   if (!variant.audio_renditions.size() || !variant.audio_rendition_group) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!maybe_rendition.has_value()) {
@@ -384,7 +384,7 @@ RenditionManager::SelectBestRendition(
     // Because there is no selected rendition, there is no language default
     // to consider. This should change if we can get a system default language.
     // Also, we should only be considering auto-selectable renditions.
-    return SelectRenditionBasedOnLanguage(variant, absl::nullopt, true);
+    return SelectRenditionBasedOnLanguage(variant, std::nullopt, true);
   }
 
   // The user did select a rendition, but it's possible that a user could, say
@@ -413,7 +413,7 @@ std::optional<RenditionManager::RenditionID> RenditionManager::LookupRendition(
       return id;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace media::hls

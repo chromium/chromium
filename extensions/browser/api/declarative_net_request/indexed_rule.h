@@ -15,8 +15,7 @@
 
 class GURL;
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 enum class ParseResult;
 
@@ -101,7 +100,6 @@ uint64_t ComputeIndexedRulePriority(
     int parsed_rule_priority,
     api::declarative_net_request::RuleActionType action_type);
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INDEXED_RULE_H_

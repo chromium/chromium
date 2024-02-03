@@ -1440,6 +1440,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method subscribe
+[Worker]     method takeUntil
 [Worker]     method toArray
 [Worker] interface OffscreenCanvas : EventTarget
 [Worker]     attribute @@toStringTag
@@ -3687,6 +3688,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onerror
 [Worker]     setter onmessage
 [Worker]     setter onopen
+[Worker] interface WebSocketError : DOMException
+[Worker]     attribute @@toStringTag
+[Worker]     getter closeCode
+[Worker]     getter reason
+[Worker]     method constructor
 [Worker] interface WebSocketStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter closed

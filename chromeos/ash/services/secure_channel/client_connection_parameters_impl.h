@@ -63,6 +63,9 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
       mojo::PendingRemote<mojom::Channel> channel,
       mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver)
       override;
+  void UpdateBleDiscoveryState(
+      mojom::DiscoveryResult discovery_state,
+      absl::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
 
   void OnConnectionDelegateRemoteDisconnected();
 

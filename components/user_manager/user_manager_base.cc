@@ -96,14 +96,14 @@ UserType GetStoredUserType(const base::Value::Dict& prefs_user_types,
       account_id.HasAccountIdKey() ? account_id.GetAccountIdKey()
                                    : account_id.GetUserEmail());
   if (!stored_user_type || !stored_user_type->is_int())
-    return USER_TYPE_REGULAR;
+    return UserType::kRegular;
 
   int int_user_type = stored_user_type->GetInt();
   if (int_user_type < 0 ||
       int_user_type > static_cast<int>(UserType::kMaxValue) ||
       int_user_type == 2) {
     LOG(ERROR) << "Bad user type " << int_user_type;
-    return USER_TYPE_REGULAR;
+    return UserType::kRegular;
   }
   return static_cast<UserType>(int_user_type);
 }
@@ -214,9 +214,9 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
   }
 
   switch (user_type) {
-    case USER_TYPE_REGULAR:
+    case UserType::kRegular:
       [[fallthrough]];
-    case USER_TYPE_CHILD:
+    case UserType::kChild:
       if (account_id != GetOwnerAccountId() && !user &&
           (IsEphemeralAccountId(account_id) || browser_restart)) {
         RegularUserLoggedInAsEphemeral(account_id, user_type);
@@ -225,11 +225,11 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
       }
       break;
 
-    case USER_TYPE_GUEST:
+    case UserType::kGuest:
       GuestUserLoggedIn();
       break;
 
-    case USER_TYPE_PUBLIC_ACCOUNT:
+    case UserType::kPublicAccount:
       if (!user) {
         user = User::CreatePublicAccountUser(account_id);
         user_storage_.emplace_back(user);
@@ -237,9 +237,9 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
       PublicAccountUserLoggedIn(user);
       break;
 
-    case USER_TYPE_KIOSK_APP:
-    case USER_TYPE_ARC_KIOSK_APP:
-    case USER_TYPE_WEB_KIOSK_APP:
+    case UserType::kKioskApp:
+    case UserType::kArcKioskApp:
+    case UserType::kWebKioskApp:
       KioskAppLoggedIn(user);
       break;
 
@@ -696,33 +696,33 @@ bool UserManagerBase::IsLoggedInAsUserWithGaiaAccount() const {
 
 bool UserManagerBase::IsLoggedInAsChildUser() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_CHILD;
+  return IsUserLoggedIn() && active_user_->GetType() == UserType::kChild;
 }
 
 bool UserManagerBase::IsLoggedInAsManagedGuestSession() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   return IsUserLoggedIn() &&
-         active_user_->GetType() == USER_TYPE_PUBLIC_ACCOUNT;
+         active_user_->GetType() == UserType::kPublicAccount;
 }
 
 bool UserManagerBase::IsLoggedInAsGuest() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_GUEST;
+  return IsUserLoggedIn() && active_user_->GetType() == UserType::kGuest;
 }
 
 bool UserManagerBase::IsLoggedInAsKioskApp() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_KIOSK_APP;
+  return IsUserLoggedIn() && active_user_->GetType() == UserType::kKioskApp;
 }
 
 bool UserManagerBase::IsLoggedInAsArcKioskApp() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_ARC_KIOSK_APP;
+  return IsUserLoggedIn() && active_user_->GetType() == UserType::kArcKioskApp;
 }
 
 bool UserManagerBase::IsLoggedInAsWebKioskApp() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_WEB_KIOSK_APP;
+  return IsUserLoggedIn() && active_user_->GetType() == UserType::kWebKioskApp;
 }
 
 bool UserManagerBase::IsLoggedInAsAnyKioskApp() const {
@@ -799,7 +799,7 @@ bool UserManagerBase::IsEphemeralAccountId(const AccountId& account_id) const {
   // Data belonging to the public accounts (e.g. managed guest sessions) is
   // always ephemeral.
   if (const User* user = FindUser(account_id);
-      user && user->GetType() == USER_TYPE_PUBLIC_ACCOUNT) {
+      user && user->GetType() == UserType::kPublicAccount) {
     return true;
   }
 
@@ -1162,7 +1162,7 @@ bool UserManagerBase::OnUserProfileCreated(const AccountId& account_id,
 
   // Managed Guest Sessions can be lockable if launched via the chrome.login
   // extension API.
-  if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT && prefs &&
+  if (user->GetType() == user_manager::UserType::kPublicAccount && prefs &&
       prefs->GetBoolean(
           ash::prefs::kLoginExtensionApiCanLockManagedGuestSession)) {
     user->set_can_lock(true);

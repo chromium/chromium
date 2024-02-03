@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BASE_FETCH_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BASE_FETCH_CONTEXT_H_
 
+#include <optional>
+
 #include "base/types/optional_ref.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -35,23 +36,23 @@ class WebSocketHandshakeThrottle;
 // frame
 struct ClientHintImageInfo {
   float dpr;
-  absl::optional<float> resource_width;
-  absl::optional<int> viewport_width;
-  absl::optional<int> viewport_height;
+  std::optional<float> resource_width;
+  std::optional<int> viewport_width;
+  std::optional<int> viewport_height;
 };
 
 // A core-level implementation of FetchContext that does not depend on
 // Frame. This class provides basic default implementation for some methods.
 class CORE_EXPORT BaseFetchContext : public FetchContext {
  public:
-  absl::optional<ResourceRequestBlockedReason> CanRequest(
+  std::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
       base::optional_ref<const ResourceRequest::RedirectInfo>) const override;
-  absl::optional<ResourceRequestBlockedReason>
+  std::optional<ResourceRequestBlockedReason>
   CanRequestBasedOnSubresourceFilterOnly(
       ResourceType,
       const ResourceRequest&,
@@ -59,7 +60,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const ResourceLoaderOptions&,
       ReportingDisposition,
       base::optional_ref<const ResourceRequest::RedirectInfo>) const override;
-  absl::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
+  std::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL&,
@@ -101,7 +102,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const ClientHintsPreferences& hints_preferences,
       const url::Origin& resource_origin,
       bool is_1p_origin,
-      absl::optional<UserAgentMetadata> ua,
+      std::optional<UserAgentMetadata> ua,
       const PermissionsPolicy* policy,
       base::optional_ref<const ClientHintImageInfo> image_info,
       base::optional_ref<const WTF::AtomicString> prefers_color_scheme,
@@ -152,7 +153,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
 
   // Utility methods that are used in default implement for CanRequest,
   // CanFollowRedirect and AllowResponse.
-  absl::optional<ResourceRequestBlockedReason> CanRequestInternal(
+  std::optional<ResourceRequestBlockedReason> CanRequestInternal(
       ResourceType,
       const ResourceRequest&,
       const KURL&,
@@ -161,7 +162,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
       const;
 
-  absl::optional<ResourceRequestBlockedReason> CheckCSPForRequestInternal(
+  std::optional<ResourceRequestBlockedReason> CheckCSPForRequestInternal(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL&,

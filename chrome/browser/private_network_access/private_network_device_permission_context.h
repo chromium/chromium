@@ -30,7 +30,7 @@ enum class PrivateNetworkDeviceValidity {
   kExistingDevice = 0,
   kNewValidDevice = 1,
   kDeviceIDMissing = 2,
-  kDeviceIDInvalid = 3,
+  kDeviceIDInvalid = 3, // kDeviceIDInvalid is deprecated.
   kDeviceNameMissing = 4,
   kDeviceNameInvalid = 5,
   kMaxValue = kDeviceNameInvalid,

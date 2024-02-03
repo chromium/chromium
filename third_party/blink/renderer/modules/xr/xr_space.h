@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SPACE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -41,12 +41,12 @@ class XRSpace : public EventTarget {
   // Unless noted otherwise, all data returned over vr_service.mojom interfaces
   // is expressed in mojo space coordinates.
   // Returns nullopt if computing a transform is not possible.
-  virtual absl::optional<gfx::Transform> MojoFromNative() const = 0;
+  virtual std::optional<gfx::Transform> MojoFromNative() const = 0;
 
   // Convenience method to try to get the inverse of the above. This will return
   // the pose of the mojo origin in this space's native origin.
   // Returns nullopt if computing a transform is not possible.
-  absl::optional<gfx::Transform> NativeFromMojo() const;
+  std::optional<gfx::Transform> NativeFromMojo() const;
 
   // Gets the viewer pose in the native coordinates of this space, corresponding
   // to a transform from viewer coordinates to this space's native coordinates.
@@ -56,14 +56,14 @@ class XRSpace : public EventTarget {
   // on the calling side, as this allows the viewer space to return identity
   // instead of something near to, but not quite, identity.
   // Returns nullopt if computing a transform is not possible.
-  virtual absl::optional<gfx::Transform> NativeFromViewer(
-      const absl::optional<gfx::Transform>& mojo_from_viewer) const;
+  virtual std::optional<gfx::Transform> NativeFromViewer(
+      const std::optional<gfx::Transform>& mojo_from_viewer) const;
 
   // Convenience method for calling NativeFromViewer with the current
   // MojoFromViewer of the session associated with this space. This also handles
   // the multiplication of OffsetFromNative onto the result of NativeFromViewer.
   // Returns nullopt if computing a transform is not possible.
-  absl::optional<gfx::Transform> OffsetFromViewer() const;
+  std::optional<gfx::Transform> OffsetFromViewer() const;
 
   // Return origin offset matrix, aka native_origin_from_offset_space.
   virtual gfx::Transform NativeFromOffsetMatrix() const;
@@ -72,7 +72,7 @@ class XRSpace : public EventTarget {
   // Returns transformation from offset space to mojo space. Convenience method,
   // returns MojoFromNative() * NativeFromOffsetMatrix() or nullopt if computing
   // a transform is not possible.
-  absl::optional<gfx::Transform> MojoFromOffsetMatrix() const;
+  std::optional<gfx::Transform> MojoFromOffsetMatrix() const;
 
   // Returns true when invoked on a space that is deemed stationary, false
   // otherwise (this means that the space is considered dynamic). Stationary

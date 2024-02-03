@@ -132,7 +132,7 @@ DIPSBounceDetector::DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
           base::BindRepeating(
               &DIPSBounceDetectorDelegate::ReportRedirectorsWithoutInteraction,
               base::Unretained(delegate)),
-          /*initial_url=*/GURL::EmptyGURL(),
+          /*initial_url=*/GURL(),
           /*redirect_prefix_count=*/0u),
       client_bounce_detection_timer_(
           FROM_HERE,

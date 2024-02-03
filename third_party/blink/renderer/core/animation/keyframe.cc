@@ -87,9 +87,9 @@ bool Keyframe::ResolveTimelineOffset(const TimelineRange& timeline_range,
 
 /* static */
 bool Keyframe::LessThan(const Member<Keyframe>& a, const Member<Keyframe>& b) {
-  absl::optional first =
+  std::optional first =
       a->ComputedOffset().has_value() ? a->ComputedOffset() : a->Offset();
-  absl::optional second =
+  std::optional second =
       b->ComputedOffset().has_value() ? b->ComputedOffset() : b->Offset();
 
   if (first < second) {

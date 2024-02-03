@@ -150,7 +150,7 @@ void LocaleDetailedView::CreateItems() {
     id_to_locale_[id] = entry.iso_code;
     ++id;
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void LocaleDetailedView::HandleViewClicked(views::View* view) {

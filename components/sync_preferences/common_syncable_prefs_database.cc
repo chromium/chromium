@@ -105,6 +105,8 @@ enum {
   kAutofillPaymentCvcStorage = 64,
   kDeleteTimePeriodV2 = 65,
   kDeleteTimePeriodV2Basic = 66,
+  kSyncableMergeableListPrefForTesting = 67,         // For tests.
+  kSyncableHistorySensitiveListPrefForTesting = 68,  // For tests.
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -315,6 +317,14 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {autofill::prefs::kAutofillPaymentCvcStorage,
          {syncable_prefs_ids::kAutofillPaymentCvcStorage, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {kSyncableMergeableListPrefForTesting,
+         {syncable_prefs_ids::kSyncableMergeableListPrefForTesting,
+          syncer::PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+        {kSyncableHistorySensitiveListPrefForTesting,
+         {syncable_prefs_ids::kSyncableHistorySensitiveListPrefForTesting,
+          syncer::PREFERENCES, PrefSensitivity::kSensitiveRequiresHistory,
+          MergeBehavior::kNone}},
     });
 
 }  // namespace

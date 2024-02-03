@@ -25,7 +25,7 @@
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +39,7 @@ namespace {
 class AlarmDelegate : public AlarmManager::Delegate {
  public:
   ~AlarmDelegate() override {}
-  void OnAlarm(const std::string& extension_id, const Alarm& alarm) override {
+  void OnAlarm(const ExtensionId& extension_id, const Alarm& alarm) override {
     alarms_seen.push_back(alarm.js_alarm->name);
     if (!quit_closure_.is_null()) {
       std::move(quit_closure_).Run();

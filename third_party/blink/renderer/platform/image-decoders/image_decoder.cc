@@ -507,8 +507,8 @@ uint8_t ImageDecoder::GetYUVBitDepth() const {
   return 8;
 }
 
-absl::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
-  return absl::nullopt;
+std::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
+  return std::nullopt;
 }
 
 gfx::Size ImageDecoder::FrameSizeAtIndex(wtf_size_t) const {
@@ -592,9 +592,9 @@ bool ImageDecoder::FrameIsDecodedAtIndex(wtf_size_t index) const {
          frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete;
 }
 
-absl::optional<base::TimeDelta> ImageDecoder::FrameTimestampAtIndex(
+std::optional<base::TimeDelta> ImageDecoder::FrameTimestampAtIndex(
     wtf_size_t) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::TimeDelta ImageDecoder::FrameDurationAtIndex(wtf_size_t) const {

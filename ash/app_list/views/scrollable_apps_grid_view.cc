@@ -66,7 +66,7 @@ void ScrollableAppsGridView::SetMaxColumns(int max_cols) {
   SetMaxColumnsInternal(max_cols);
 }
 
-void ScrollableAppsGridView::Layout() {
+void ScrollableAppsGridView::Layout(PassKey) {
   if (ignore_layout())
     return;
 
@@ -376,7 +376,7 @@ const gfx::Vector2d ScrollableAppsGridView::CalculateTransitionOffset(
   return gfx::Vector2d();
 }
 
-BEGIN_METADATA(ScrollableAppsGridView, AppsGridView)
+BEGIN_METADATA(ScrollableAppsGridView)
 END_METADATA
 
 }  // namespace ash

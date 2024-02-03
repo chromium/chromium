@@ -125,7 +125,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   void PlaceListMarker(const InlineItem&, InlineItemResult*, const LineInfo&);
 
   LayoutUnit ApplyTextAlign(LineInfo*);
-  absl::optional<LayoutUnit> ApplyJustify(LayoutUnit space, LineInfo*);
+  std::optional<LayoutUnit> ApplyJustify(LayoutUnit space, LineInfo*);
 
   // Add any trailing clearance requested by a BR 'clear' attribute on the line.
   // Return true if this was successful (this also includes cases where there is
@@ -143,7 +143,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   const ColumnSpannerPath* column_spanner_path_;
 
   MarginStrut end_margin_strut_;
-  absl::optional<int> lines_until_clamp_;
+  std::optional<int> lines_until_clamp_;
 
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
 

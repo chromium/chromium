@@ -16,6 +16,9 @@ import "url/mojom/url.mojom";
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#12-interest-group-attributes
 struct InterestGroupAd {
   // Must use https.
+  // string is used instead of url.mojom.Url to improve performance, since the
+  // browser process only needs to pass this value as-is to worklet processes.
+  // Vaildated by InterestGroup::IsValid(), which is called by typemapping.
   string render_url;
   // Optional size groups assigned to this Ad.
   string? size_group;
@@ -532,11 +535,8 @@ struct AuctionAdConfig {
 
   // Optional identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).
-  // TODO(https://crbug.com/657632): Update when optional integers supported.
-  bool has_seller_experiment_group_id = false;
-  uint16 seller_experiment_group_id;
-  bool has_all_buyer_experiment_group_id = false;
-  int16 all_buyer_experiment_group_id;
+  uint16? seller_experiment_group_id;
+  uint16? all_buyer_experiment_group_id;
   map<url.mojom.Origin, uint16> per_buyer_experiment_group_ids;
 
   // Optionally specifies that some bids will be provided as signed exchanges,

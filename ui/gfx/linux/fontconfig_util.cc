@@ -9,6 +9,8 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/font_render_params.h"
 
@@ -145,20 +147,34 @@ int GetFontConfigPropertyAsInt(FcPattern* pattern,
                                const char* property,
                                int default_value) {
   int value = -1;
-  if (FcPatternGetInteger(pattern, property, 0, &value) != FcResultMatch)
+  if (FcPatternGetInteger(pattern, property, 0, &value) != FcResultMatch) {
     return default_value;
+  }
   return value;
 }
 
 // Extracts an boolean property from a font-config pattern (e.g. FcPattern).
 bool GetFontConfigPropertyAsBool(FcPattern* pattern, const char* property) {
   FcBool value = FcFalse;
-  if (FcPatternGetBool(pattern, property, 0, &value) != FcResultMatch)
+  if (FcPatternGetBool(pattern, property, 0, &value) != FcResultMatch) {
     return false;
+  }
   return value != FcFalse;
 }
 
 }  // namespace
+
+void InitializeGlobalFontConfigAsync() {
+  if (base::ThreadPoolInstance::Get()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce([]() { GlobalFontConfig::GetInstance(); }));
+  } else {
+    GlobalFontConfig::GetInstance();
+  }
+}
 
 FcConfig* GetGlobalFontConfig() {
   return GlobalFontConfig::GetInstance()->Get();
@@ -184,16 +200,19 @@ base::FilePath GetFontPath(FcPattern* pattern) {
   // relative to this system root directory.
   const char* sysroot =
       reinterpret_cast<const char*>(FcConfigGetSysRoot(nullptr));
-  if (!sysroot)
+  if (!sysroot) {
     return base::FilePath(filename);
+  }
 
   // Paths may be specified with a heading slash (e.g.
   // /test_fonts/DejaVuSans.ttf).
-  if (!filename.empty() && base::FilePath::IsSeparator(filename[0]))
+  if (!filename.empty() && base::FilePath::IsSeparator(filename[0])) {
     filename = filename.substr(1);
+  }
 
-  if (filename.empty())
+  if (filename.empty()) {
     return base::FilePath();
+  }
 
   return base::FilePath(sysroot).Append(filename);
 }
@@ -250,8 +269,9 @@ void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
   }
 
   int fc_rgba = FC_RGBA_NONE;
-  if (FcPatternGetInteger(pattern, FC_RGBA, 0, &fc_rgba) == FcResultMatch)
+  if (FcPatternGetInteger(pattern, FC_RGBA, 0, &fc_rgba) == FcResultMatch) {
     param_out->subpixel_rendering = ConvertFontconfigRgba(fc_rgba);
+  }
 }
 
 }  // namespace gfx

@@ -169,7 +169,7 @@ void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }
 
-BEGIN_METADATA(SharesheetTargetButton, views::Button)
+BEGIN_METADATA(SharesheetTargetButton)
 END_METADATA
 
 }  // namespace sharesheet

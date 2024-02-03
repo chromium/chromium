@@ -113,7 +113,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
                          std::unique_ptr<ResolutionMonitor> resolution_monitor);
 
   bool InitializeSync(const media::VideoDecoderConfig& config);
-  absl::optional<DecodeResult> DecodeInternal(
+  std::optional<DecodeResult> DecodeInternal(
       const webrtc::EncodedImage& input_image,
       bool missing_frames,
       int64_t render_time_ms);

@@ -141,12 +141,19 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
 
     @Override
     public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
+        int lastIndex = mIndex;
         mIndex = i;
         mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(this));
         if (mIndex == TabModel.INVALID_TAB_INDEX) return;
 
+        int lastId = Tab.INVALID_TAB_ID;
+        if (lastIndex >= 0 && lastIndex < mTabs.size()) {
+            Tab lastTab = getTabAt(lastIndex);
+            assert lastTab != null;
+            lastId = lastTab.getId();
+        }
         for (TabModelObserver observer : mObservers) {
-            observer.didSelectTab(mTabs.get(mIndex), type, mIndex);
+            observer.didSelectTab(mTabs.get(mIndex), type, lastId);
         }
     }
 

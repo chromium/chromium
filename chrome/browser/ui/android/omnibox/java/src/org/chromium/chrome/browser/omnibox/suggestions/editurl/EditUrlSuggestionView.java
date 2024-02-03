@@ -14,16 +14,18 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 
 /** Container view for Search-Ready Omnibox suggestions. Decorates the suggestion with a divider. */
 public class EditUrlSuggestionView extends FrameLayout {
-    private BaseSuggestionView<View> mContent;
-    private View mDivider;
+    private final BaseSuggestionView<View> mContent;
+    private final View mDivider;
 
     public EditUrlSuggestionView(Context context) {
         super(context, null);
-        mContent = new BaseSuggestionView<View>(context, R.layout.omnibox_basic_suggestion);
+        mContent = new BaseSuggestionView<>(context, R.layout.omnibox_basic_suggestion);
         LayoutParams contentLayoutParams = generateDefaultLayoutParams();
         contentLayoutParams.width = LayoutParams.MATCH_PARENT;
         contentLayoutParams.height = LayoutParams.WRAP_CONTENT;
         addView(mContent, contentLayoutParams);
+
+        setFocusable(true);
 
         mDivider = new View(context, null, 0, R.style.HorizontalDivider);
         LayoutParams dividerLayoutParams = generateDefaultLayoutParams();

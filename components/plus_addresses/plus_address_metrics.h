@@ -6,6 +6,7 @@
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_METRICS_H_
 
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/plus_addresses/plus_address_types.h"
 
 class GoogleServiceAuthError;
@@ -24,14 +25,6 @@ class PlusAddressMetrics {
     kMaxValue = kModalConfirmed,
     // TODO(b/320541525) Expand record of user events once user flow becomes
     // more complex.
-  };
-
-  enum class PlusAddressAutofillSuggestionEvent {
-    kExistingPlusAddressSuggested = 0,
-    kCreateNewPlusAddressSuggested = 1,
-    kExistingPlusAddressChosen = 2,
-    kCreateNewPlusAddressChosen = 3,
-    kMaxValue = kCreateNewPlusAddressChosen,
   };
 
   // `PlusAddressModalCompletionStatus` indicates the reason modal/bottom sheet
@@ -65,7 +58,7 @@ class PlusAddressMetrics {
                                        base::TimeDelta modal_shown_duration);
   // Log plus address autofill suggestion events.
   static void RecordAutofillSuggestionEvent(
-      PlusAddressAutofillSuggestionEvent
+      autofill::AutofillPlusAddressDelegate::SuggestionEvent
           plus_address_autofill_suggestion_event);
   // Log latency of a `type` of network request.
   static void RecordNetworkRequestLatency(PlusAddressNetworkRequestType type,

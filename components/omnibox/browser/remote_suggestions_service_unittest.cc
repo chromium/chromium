@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -89,7 +90,7 @@ class RemoteSuggestionsServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies) {
+TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_ZeroPrefixSuggest) {
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -102,7 +103,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies) {
       /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
-  service.StartZeroPrefixSuggestionsRequest(
+  auto loader = service.StartZeroPrefixSuggestionsRequest(
+      RemoteRequestType::kZeroSuggest,
       template_url_service.GetDefaultSearchProvider(), search_terms_args,
       template_url_service.search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
@@ -112,10 +114,62 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies) {
 
   EXPECT_EQ(net::LOAD_DO_NOT_SAVE_COOKIES, resource_request.load_flags);
   EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
-      net::SiteForCookies::FromUrl(resource_request.url)));
+      net::SiteForCookies::FromUrl(resource_request.url)))
+      << resource_request.site_for_cookies.ToDebugString();
   const std::string kRequestUrl = "https://www.google.com/complete/search";
   EXPECT_EQ(kRequestUrl,
             resource_request.url.spec().substr(0, kRequestUrl.size()));
+}
+
+TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_Suggest) {
+  network::ResourceRequest resource_request;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        resource_request = request;
+      }));
+
+  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
+                                   GetUrlLoaderFactory());
+  TemplateURLService template_url_service(
+      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  search_terms_args.current_page_url = "https://www.google.com/";
+  auto loader = service.StartSuggestionsRequest(
+      RemoteRequestType::kSearch,
+      template_url_service.GetDefaultSearchProvider(), search_terms_args,
+      template_url_service.search_terms_data(),
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
+                     base::Unretained(this)));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(resource_request.url)))
+      << resource_request.site_for_cookies.ToDebugString();
+  const std::string kRequestUrl = "https://www.google.com/complete/search";
+  EXPECT_EQ(kRequestUrl,
+            resource_request.url.spec().substr(0, kRequestUrl.size()));
+}
+
+TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_DeleteSuggest) {
+  network::ResourceRequest resource_request;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        resource_request = request;
+      }));
+
+  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
+                                   GetUrlLoaderFactory());
+  auto loader = service.StartDeletionRequest(
+      "https://google.com/complete/delete",
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
+                     base::Unretained(this)));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(resource_request.url)))
+      << resource_request.site_for_cookies.ToDebugString();
 }
 
 TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
@@ -132,7 +186,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   search_terms_args.bypass_cache = true;
-  service.StartZeroPrefixSuggestionsRequest(
+  auto loader = service.StartZeroPrefixSuggestionsRequest(
+      RemoteRequestType::kZeroSuggest,
       template_url_service.GetDefaultSearchProvider(), search_terms_args,
       template_url_service.search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
@@ -143,13 +198,16 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
   EXPECT_EQ(net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_BYPASS_CACHE,
             resource_request.load_flags);
   EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
-      net::SiteForCookies::FromUrl(resource_request.url)));
+      net::SiteForCookies::FromUrl(resource_request.url)))
+      << resource_request.site_for_cookies.ToDebugString();
   const std::string kRequestUrl = "https://www.google.com/complete/search";
   EXPECT_EQ(kRequestUrl,
             resource_request.url.spec().substr(0, kRequestUrl.size()));
 }
 
 TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
+  base::HistogramTester histogram_tester;
+
   TemplateURLService template_url_service(
       /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLData template_url_data;
@@ -160,10 +218,9 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-
   TestObserver observer(&service);
-
   auto loader = service.StartZeroPrefixSuggestionsRequest(
+      RemoteRequestType::kZeroSuggest,
       template_url_service.GetDefaultSearchProvider(),
       TemplateURLRef::SearchTermsArgs(),
       template_url_service.search_terms_data(),
@@ -183,6 +240,10 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
   test_url_loader_factory_.AddResponse(kRequestUrl, kResponseBody);
 
   base::RunLoop().RunUntilIdle();
+
+  // Verify histogram was recorded.
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 1);
+  histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 1);
 
   // Verify the observer got notified of request completion.
   ASSERT_EQ(observer.url().spec(), kRequestUrl);

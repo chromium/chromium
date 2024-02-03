@@ -265,6 +265,13 @@ def AddCommonOptions(parser):
       dest='run_disabled', action='store_true',
       help='Also run disabled tests if applicable.')
 
+  # This is currently only implemented for gtests tests.
+  parser.add_argument('--gtest_also_run_pre_tests',
+                      '--gtest-also-run-pre-tests',
+                      dest='run_pre_tests',
+                      action='store_true',
+                      help='Also run PRE_ tests if applicable.')
+
   # These are currently only implemented for gtests.
   parser.add_argument('--isolated-script-test-output',
                       help='If present, store test results on this path.')

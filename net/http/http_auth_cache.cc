@@ -87,7 +87,7 @@ void HttpAuthCache::SetKeyServerEntriesByNetworkAnonymizationKey(
 
   key_server_entries_by_network_anonymization_key_ =
       key_server_entries_by_network_anonymization_key;
-  std::erase_if(entries_, [](EntryMap::value_type& entry_map_pair) {
+  std::erase_if(entries_, [](const EntryMap::value_type& entry_map_pair) {
     return entry_map_pair.first.target == HttpAuth::AUTH_SERVER;
   });
 }
@@ -311,9 +311,9 @@ void HttpAuthCache::ClearEntriesAddedBetween(
     ClearAllEntries();
     return;
   }
-  std::erase_if(entries_, [begin_time, end_time,
-                           url_matcher](EntryMap::value_type& entry_map_pair) {
-    Entry& entry = entry_map_pair.second;
+  std::erase_if(entries_, [begin_time, end_time, url_matcher](
+                              const EntryMap::value_type& entry_map_pair) {
+    const Entry& entry = entry_map_pair.second;
     return entry.creation_time_ >= begin_time &&
            entry.creation_time_ < end_time &&
            (url_matcher ? url_matcher.Run(entry.scheme_host_port().GetURL())

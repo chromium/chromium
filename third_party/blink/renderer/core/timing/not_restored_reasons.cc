@@ -41,21 +41,21 @@ NotRestoredReasons::NotRestoredReasons(const NotRestoredReasons& other)
       reasons_(other.reasons_),
       children_(other.children_) {}
 
-const absl::optional<HeapVector<Member<NotRestoredReasonDetails>>>
+const std::optional<HeapVector<Member<NotRestoredReasonDetails>>>
 NotRestoredReasons::reasons() const {
   if (!url_) {
     // If `url_` is null, this is for cross-origin and reasons should be masked.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return reasons_;
 }
 
-const absl::optional<HeapVector<Member<NotRestoredReasons>>>
+const std::optional<HeapVector<Member<NotRestoredReasons>>>
 NotRestoredReasons::children() const {
   if (!url_) {
     // If `url_` is null, this is for cross-origin and children should be
     // masked.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return children_;
 }

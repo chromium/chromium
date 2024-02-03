@@ -15,9 +15,9 @@
 namespace {
 
 class GradientView : public views::View {
- public:
-  METADATA_HEADER(GradientView);
+  METADATA_HEADER(GradientView, views::View)
 
+ public:
   void OnPaintBackground(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     SkColor left = SkColorSetARGB(0xff, 0xff, 0xff, 0xff);
@@ -29,7 +29,7 @@ class GradientView : public views::View {
   }
 };
 
-BEGIN_METADATA(GradientView, views::View)
+BEGIN_METADATA(GradientView)
 END_METADATA
 
 }  // namespace

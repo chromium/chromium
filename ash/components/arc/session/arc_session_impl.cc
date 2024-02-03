@@ -60,9 +60,9 @@ constexpr int kClassify8GbDeviceInKb = 7500000;
 constexpr int kClassify16GbDeviceInKb = 15500000;
 
 std::string GenerateRandomToken() {
-  char random_bytes[16];
-  base::RandBytes(random_bytes, 16);
-  return base::HexEncode(random_bytes, 16);
+  uint8_t random_bytes[16];
+  base::RandBytes(random_bytes);
+  return base::HexEncode(random_bytes);
 }
 
 // Waits until |raw_socket_fd| is readable.

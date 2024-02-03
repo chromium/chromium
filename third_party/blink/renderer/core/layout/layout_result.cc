@@ -145,7 +145,7 @@ LayoutResult::LayoutResult(const LayoutResult& other,
                            const ConstraintSpace& new_space,
                            const MarginStrut& new_end_margin_strut,
                            LayoutUnit bfc_line_offset,
-                           absl::optional<LayoutUnit> bfc_block_offset,
+                           std::optional<LayoutUnit> bfc_block_offset,
                            LayoutUnit block_offset_delta)
     : space_(new_space),
       physical_fragment_(other.physical_fragment_),

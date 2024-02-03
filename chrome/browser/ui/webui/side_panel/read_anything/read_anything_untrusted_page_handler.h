@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -17,12 +18,15 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace content {
+class ScopedAccessibilityMode;
+}
 
 class ReadAnythingUntrustedPageHandler;
 
@@ -36,7 +40,8 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
  public:
   ReadAnythingWebContentsObserver(
       base::SafeRef<ReadAnythingUntrustedPageHandler> page_handler,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      ui::AXMode accessibility_mode);
   ReadAnythingWebContentsObserver(const ReadAnythingWebContentsObserver&) =
       delete;
   ReadAnythingWebContentsObserver& operator=(
@@ -52,6 +57,11 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
   // completely contained by page_handler_. See
   // ReadAnythingUntrustedPageHandler's destructor.
   base::SafeRef<ReadAnythingUntrustedPageHandler> page_handler_;
+
+ private:
+  // Enables the kReadAnythingAXMode accessibility mode flags for the
+  // WebContents.
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -196,9 +206,7 @@ class ReadAnythingUntrustedPageHandler
                           ui::AXActionHandlerObserver>
       ax_action_handler_observer_{this};
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnScreenAIServiceInitialized(bool successful);
-#endif
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
 };

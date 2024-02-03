@@ -269,7 +269,7 @@ class ResourceRequestSender::CodeCacheFetcher
 
   void SetCurrentUrl(const GURL& new_url) { current_url_ = KURL(new_url); }
   void DidReceiveCachedMetadataFromUrlLoader();
-  absl::optional<mojo_base::BigBuffer> TakeCodeCacheForResponse(
+  std::optional<mojo_base::BigBuffer> TakeCodeCacheForResponse(
       const network::mojom::URLResponseHead& response_head);
 
  private:
@@ -291,7 +291,7 @@ class ResourceRequestSender::CodeCacheFetcher
 
   bool is_waiting_ = true;
   bool did_receive_cached_metadata_from_url_loader_ = false;
-  absl::optional<mojo_base::BigBuffer> code_cache_data_;
+  std::optional<mojo_base::BigBuffer> code_cache_data_;
   base::Time code_cache_response_time_;
 };
 
@@ -338,14 +338,14 @@ void ResourceRequestSender::CodeCacheFetcher::
   }
 }
 
-absl::optional<mojo_base::BigBuffer>
+std::optional<mojo_base::BigBuffer>
 ResourceRequestSender::CodeCacheFetcher::TakeCodeCacheForResponse(
     const network::mojom::URLResponseHead& response_head) {
   CHECK(!is_waiting_);
   if (!ShouldUseIsolatedCodeCache(response_head, initial_url_, current_url_,
                                   code_cache_response_time_)) {
     ClearCodeCacheEntryIfPresent();
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(code_cache_data_);
 }
@@ -433,11 +433,11 @@ void ResourceRequestSender::SendSync(
     DCHECK(response->redirect_info);
 
     using RefCountedOptionalStringVector =
-        base::RefCountedData<absl::optional<std::vector<std::string>>>;
+        base::RefCountedData<std::optional<std::vector<std::string>>>;
     const scoped_refptr<RefCountedOptionalStringVector> removed_headers =
         base::MakeRefCounted<RefCountedOptionalStringVector>();
     using RefCountedOptionalHttpRequestHeaders =
-        base::RefCountedData<absl::optional<net::HttpRequestHeaders>>;
+        base::RefCountedData<std::optional<net::HttpRequestHeaders>>;
     const scoped_refptr<RefCountedOptionalHttpRequestHeaders> modified_headers =
         base::MakeRefCounted<RefCountedOptionalHttpRequestHeaders>();
     client->OnReceivedRedirect(
@@ -541,7 +541,7 @@ int ResourceRequestSender::SendAsync(
           std::move(url_loader_factory), throttles.ReleaseVector(), request_id,
           loader_options, request.get(), url_loader_client.get(),
           traffic_annotation, std::move(loading_task_runner),
-          absl::make_optional(std_cors_exempt_header_list));
+          std::make_optional(std_cors_exempt_header_list));
 
   // The request may be canceled by `ThrottlingURLLoader::CreateAndStart()`, in
   // which case `DeletePendingRequest()` has reset the `request_info_` to
@@ -698,7 +698,7 @@ void ResourceRequestSender::OnUploadProgress(int64_t position, int64_t size) {
 void ResourceRequestSender::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata,
+    std::optional<mojo_base::BigBuffer> cached_metadata,
     base::TimeTicks response_ipc_arrival_time) {
   if (code_cache_fetcher_ && cached_metadata) {
     code_cache_fetcher_->DidReceiveCachedMetadataFromUrlLoader();

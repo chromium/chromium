@@ -96,8 +96,9 @@ HoldingSpaceKeyedServiceFactory::BuildServiceInstanceForInternal(
   if (!user)
     return nullptr;
 
-  if (user->GetType() == user_manager::USER_TYPE_KIOSK_APP)
+  if (user->GetType() == user_manager::UserType::kKioskApp) {
     return nullptr;
+  }
 
   return std::make_unique<HoldingSpaceKeyedService>(profile,
                                                     user->GetAccountId());

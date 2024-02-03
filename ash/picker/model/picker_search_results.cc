@@ -9,6 +9,15 @@ namespace ash {
 bool PickerSearchResult::TextData::operator==(
     const PickerSearchResult::TextData&) const = default;
 
+bool PickerSearchResult::EmojiData::operator==(
+    const PickerSearchResult::EmojiData&) const = default;
+
+bool PickerSearchResult::SymbolData::operator==(
+    const PickerSearchResult::SymbolData&) const = default;
+
+bool PickerSearchResult::EmoticonData::operator==(
+    const PickerSearchResult::EmoticonData&) const = default;
+
 bool PickerSearchResult::GifData::operator==(
     const PickerSearchResult::GifData&) const = default;
 
@@ -26,8 +35,21 @@ PickerSearchResult PickerSearchResult::Text(std::u16string_view text) {
   return PickerSearchResult(TextData{.text = std::u16string(text)});
 }
 
-PickerSearchResult PickerSearchResult::Gif(const GURL& url) {
-  return PickerSearchResult(GifData{.url = url});
+PickerSearchResult PickerSearchResult::Emoji(std::u16string_view emoji) {
+  return PickerSearchResult(EmojiData{.emoji = std::u16string(emoji)});
+}
+
+PickerSearchResult PickerSearchResult::Symbol(std::u16string_view symbol) {
+  return PickerSearchResult(SymbolData{.symbol = std::u16string(symbol)});
+}
+
+PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon) {
+  return PickerSearchResult(EmoticonData{.emoticon = std::u16string(emoticon)});
+}
+
+PickerSearchResult PickerSearchResult::Gif(const GURL& url,
+                                           const gfx::Size& dimensions) {
+  return PickerSearchResult(GifData{.url = url, .dimensions = dimensions});
 }
 
 PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,

@@ -128,6 +128,16 @@ CalendarClientTestImpl::CalendarClientTestImpl() = default;
 
 CalendarClientTestImpl::~CalendarClientTestImpl() = default;
 
+base::OnceClosure CalendarClientTestImpl::GetCalendarList(
+    google_apis::calendar::CalendarListCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), error_, std::move(calendars_)),
+      task_delay_);
+
+  return base::DoNothing();
+}
+
 base::OnceClosure CalendarClientTestImpl::GetEventList(
     google_apis::calendar::CalendarEventListCallback callback,
     const base::Time& start_time,
@@ -142,6 +152,11 @@ base::OnceClosure CalendarClientTestImpl::GetEventList(
       task_delay_);
 
   return base::DoNothing();
+}
+
+void CalendarClientTestImpl::SetCalendarList(
+    std::unique_ptr<google_apis::calendar::CalendarList> calendars) {
+  calendars_ = std::move(calendars);
 }
 
 void CalendarClientTestImpl::SetEventList(

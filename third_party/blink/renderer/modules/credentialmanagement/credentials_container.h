@@ -17,6 +17,7 @@ namespace blink {
 class Credential;
 class CredentialCreationOptions;
 class CredentialRequestOptions;
+class IdentityCredentialRequestOptions;
 class ExceptionState;
 class Navigator;
 class ScriptPromise;
@@ -48,6 +49,14 @@ class MODULES_EXPORT CredentialsContainer final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
+  // get() implementation for FedCM and WebIdentityDigitalCredential.
+  ScriptPromise GetForIdentity(ScriptState*,
+                               ScriptPromiseResolver* resolver,
+                               const ScriptPromise& promise,
+                               const CredentialRequestOptions*,
+                               const IdentityCredentialRequestOptions&,
+                               ExceptionState&);
+
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;
 

@@ -64,9 +64,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
                                    public views::ContextMenuController,
                                    public AppListItemObserver,
                                    public ui::ImplicitAnimationObserver {
- public:
-  METADATA_HEADER(AppListItemView);
+  METADATA_HEADER(AppListItemView, views::Button)
 
+ public:
   // The types of context where the app list item view is shown.
   enum class Context {
     // The item is shown in an AppsGridView.
@@ -412,7 +412,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool ShouldEnterPushedState(const ui::Event& event) override;
 
   // views::View overrides:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

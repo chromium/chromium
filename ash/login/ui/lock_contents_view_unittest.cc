@@ -1787,7 +1787,7 @@ TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryBigUser) {
 
   auto is_public_account = [](const LoginUserView* view) -> bool {
     return view->current_user().basic_user_info.type ==
-           user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+           user_manager::UserType::kPublicAccount;
   };
 
   // Case 1: Swap user_view0 (public account user) with primary big user (public

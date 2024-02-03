@@ -44,6 +44,11 @@ constexpr base::TimeDelta k2Years = base::Days(2 * 365);
 // About 5 years.
 constexpr base::TimeDelta k5Years = base::Days(5 * 365);
 
+// TODO(crbug.com/1523056): We should reuse the ones from utils directly to
+// avoid manual errors. Test key for recording the last time a http link
+// was opened via Chrome, which indicates that it's set as default browser.
+NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
+
 // Test key for a generic timestamp in NSUserDefaults.
 NSString* const kTestTimestampKey = @"testTimestampKeyDefaultBrowserUtils";
 
@@ -792,5 +797,126 @@ TEST_F(DefaultBrowserUtilsTest,
     PromoStatistics* promo_stats = CalculatePromoStatistics();
     EXPECT_EQ(3, promo_stats.specialTabsUseCount);
   }
+}
+
+// Test IsChromeLikelyDefaultBrowser in multiple senarios.
+TEST_F(DefaultBrowserUtilsTest, IsChromeLikelyDefaultBrowser) {
+  // Initial test with no value kLastHTTPURLOpenTime value recorded.
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowser());  // 21 days.
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowser7Days());
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowserXDays(60));
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowserXDays(120));
+
+  NSDate* just_less_than_sixty_days_ago =
+      (base::Time::Now() - base::Days(60) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
+                             just_less_than_sixty_days_ago);
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowser());  // 21 days.
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowser7Days());
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowserXDays(60));
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowserXDays(59));
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowserXDays(80));
+
+  NSDate* just_less_than_twenty_one_days_ago =
+      (base::Time::Now() - base::Days(21) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
+                             just_less_than_twenty_one_days_ago);
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowser());  // 21 days.
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowser7Days());
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowserXDays(21));
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowserXDays(20));
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowserXDays(40));
+
+  NSDate* just_less_than_seven_days_ago =
+      (base::Time::Now() - base::Days(7) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
+                             just_less_than_seven_days_ago);
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowser());  // 21 days.
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowser7Days());
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowserXDays(7));
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowserXDays(6));
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowserXDays(15));
+
+  NSDate* just_less_than_two_days_ago =
+      (base::Time::Now() - base::Days(2) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, just_less_than_two_days_ago);
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowser());  // 21 days.
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowser7Days());
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowserXDays(2));
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowserXDays(1));
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowserXDays(8));
+}
+
+// Test IsChromePotentiallyNoLongerDefaultBrowser* in multiple senarios.
+TEST_F(DefaultBrowserUtilsTest, IsChromePotentiallyNoLongerDefaultBrowser) {
+  // Initial test with no kLastHTTPURLOpenTime value recorded.
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
+
+  NSDate* two_days_ago =
+      (base::Time::Now() - base::Days(2) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, two_days_ago);
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
+
+  NSDate* six_days_ago =
+      (base::Time::Now() - base::Days(6) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, six_days_ago);
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
+
+  NSDate* eight_days_ago =
+      (base::Time::Now() - base::Days(8) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, eight_days_ago);
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
+
+  NSDate* twelve_days_ago =
+      (base::Time::Now() - base::Days(12) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, twelve_days_ago);
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
+
+  NSDate* sixteen_days_ago =
+      (base::Time::Now() - base::Days(16) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, sixteen_days_ago);
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
+
+  NSDate* twenty_five_days_ago =
+      (base::Time::Now() - base::Days(25) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, twenty_five_days_ago);
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
+
+  NSDate* thirty_days_ago =
+      (base::Time::Now() - base::Days(30) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, thirty_days_ago);
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_TRUE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
+
+  NSDate* fifty_days_ago =
+      (base::Time::Now() - base::Days(50) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, fifty_days_ago);
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(10, 4));
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser35To14());
 }
 }  // namespace

@@ -42,7 +42,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, SupportsUnsupportedSystemAec) {
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kNotSupported,
                                         /*enable_system_aec*/ false);
-  absl::optional<AudioProcessingProperties> properties =
+  std::optional<AudioProcessingProperties> properties =
       source->GetAudioProcessingProperties();
   ASSERT_TRUE(properties.has_value());
 
@@ -58,7 +58,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanDisableSystemAec) {
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kSupported,
                                         /*enable_system_aec*/ false);
-  absl::optional<AudioProcessingProperties> properties =
+  std::optional<AudioProcessingProperties> properties =
       source->GetAudioProcessingProperties();
   ASSERT_TRUE(properties.has_value());
 
@@ -74,7 +74,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanDisableExperimentalSystemAec) {
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kExperimentallySupported,
                                         /*enable_system_aec*/ false);
-  absl::optional<AudioProcessingProperties> properties =
+  std::optional<AudioProcessingProperties> properties =
       source->GetAudioProcessingProperties();
   ASSERT_TRUE(properties.has_value());
 
@@ -90,7 +90,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanEnableSystemAec) {
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kSupported,
                                         /*enable_system_aec*/ true);
-  absl::optional<AudioProcessingProperties> properties =
+  std::optional<AudioProcessingProperties> properties =
       source->GetAudioProcessingProperties();
   ASSERT_TRUE(properties.has_value());
 
@@ -106,7 +106,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanEnableExperimentalSystemAec) {
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kExperimentallySupported,
                                         /*enable_system_aec*/ true);
-  absl::optional<AudioProcessingProperties> properties =
+  std::optional<AudioProcessingProperties> properties =
       source->GetAudioProcessingProperties();
   ASSERT_TRUE(properties.has_value());
 

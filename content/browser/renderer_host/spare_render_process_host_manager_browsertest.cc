@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -16,8 +17,8 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_service.mojom.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -36,6 +37,14 @@ class SpareRenderProcessHostManagerTest : public ContentBrowserTest,
   void SetUpOnMainThread() override {
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+
+    // Platforms that don't isolate sites won't create spare processes and
+    // the test will fail. Therefore, enforce the site isolation here.
+    IsolateAllSitesForTesting(command_line);
   }
 
   void SetProcessExitCallback(RenderProcessHost* rph,
@@ -67,50 +76,66 @@ class SpareRenderProcessHostManagerTest : public ContentBrowserTest,
   base::OnceClosure process_exit_callback_;
 };
 
-// Verify that a deferred spare renderer is eventually not created if the
-// browser context was destroyed.
+// This test verifies the creation of a deferred spare renderer. It checks two
+// conditions:
+//  1. A spare renderer is created successfully under standard conditions.
+//  2. No spare renderer is created if the browser context is destroyed.
 IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
-                       BrowserContextDestroyEarly) {
+                       DeferredSpareProcess) {
+  constexpr base::TimeDelta kDelay = base::Seconds(1);
+
+  base::HistogramTester histogram_tester;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       new base::TestMockTimeTaskRunner();
   auto& manager = SpareRenderProcessHostManager::GetInstance();
-  // TestBrowserContext needs to create a temporary folder synchronously.
+
   base::ScopedAllowBlockingForTesting allow_blocking;
-  auto browser_context = std::make_unique<TestBrowserContext>();
+  auto browser_context = std::make_unique<ShellBrowserContext>(true);
 
-  {
-    bool renderer_created = false;
-    base::RunLoop run_loop;
-    base::CallbackListSubscription subscription =
-        manager.RegisterSpareRenderProcessHostChangedCallback(
-            base::BindRepeating(
-                [](base::RunLoop* run_loop, bool* renderer_created,
-                   RenderProcessHost*) {
-                  *renderer_created = true;
-                  run_loop->Quit();
-                },
-                &run_loop, &renderer_created));
+  // Check that a spare renderer is created successfully under standard
+  // conditions.
+  bool renderer_created = false;
+  base::RunLoop run_loop;
+  base::CallbackListSubscription subscription =
+      manager.RegisterSpareRenderProcessHostChangedCallback(base::BindRepeating(
+          [](base::RunLoop* run_loop, bool* renderer_created,
+             RenderProcessHost* render_process_host) {
+            if (render_process_host) {
+              *renderer_created = true;
+              run_loop->Quit();
+            }
+          },
+          &run_loop, &renderer_created));
 
-    manager.PrepareForFutureRequests(browser_context.get(), base::Seconds(1));
-    EXPECT_EQ(manager.spare_render_process_host(), nullptr);
+  manager.PrepareForFutureRequests(browser_context.get(), kDelay);
+  EXPECT_EQ(manager.spare_render_process_host(), nullptr);
 
-    // Wait until the renderer process is successfully started.
-    run_loop.Run();
-    // The spare renderer should be created.
-    EXPECT_TRUE(renderer_created);
-  }
+  // Wait until the renderer process is successfully started.
+  run_loop.Run();
+  // The spare renderer should be created.
+  EXPECT_NE(manager.spare_render_process_host(), nullptr);
+  EXPECT_TRUE(renderer_created);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessStartupTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessDelayTime", 1);
 
+  // Reset the spare renderer manager.
   manager.CleanupSpareRenderProcessHost();
   EXPECT_EQ(manager.spare_render_process_host(), nullptr);
 
-  {
-    manager.PrepareForFutureRequests(browser_context.get(), base::Seconds(1));
-    // Destroy the browser context.
-    browser_context.reset();
-    task_runner->RunUntilIdle();
-    // The spare renderer shouldn't be created.
-    EXPECT_EQ(manager.spare_render_process_host(), nullptr);
-  }
+  // Check that no spare renderer is created if the browser context is
+  // destroyed.
+  manager.PrepareForFutureRequests(browser_context.get(), kDelay);
+  browser_context.reset();
+  RunAllTasksUntilIdle();
+
+  // The spare renderer shouldn't be created.
+  EXPECT_EQ(manager.spare_render_process_host(), nullptr);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessStartupTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessDelayTime", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,

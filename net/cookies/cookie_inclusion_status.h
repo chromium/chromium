@@ -266,6 +266,32 @@ class NET_EXPORT CookieInclusionStatus {
     kMaxValue = kLaxCrossLaxSecure
   };
 
+  // Types of reasons why a cookie should-have-been-blocked by 3pcd got
+  // exempted and included.
+  enum class ExemptionReason {
+    // The default exemption reason. The cookie with this reason could either be
+    // included, or blocked due to 3pcd-unrelated reasons.
+    kNone = 0,
+    // For user explicit settings, including User bypass.
+    kUserSetting = 1,
+    // For 3PCD metadata .
+    k3PCDMetadata = 2,
+    // For 3PCD 1P and 3P deprecation trial.
+    k3PCDDeprecationTrial = 3,
+    // For 3PCD heuristics.
+    k3PCDHeuristics = 4,
+    // For Enterprise Policy : CookieAllowedForUrls and BlockThirdPartyCookies.
+    kEnterprisePolicy = 5,
+    kStorageAccess = 7,
+    kTopLevelStorageAccess = 8,
+    // For CorsException in the ABA contexts, which the inner iframe is
+    // same-site with the top-level site but has cross-site ancestor(s).
+    kCorsOptIn = 9,
+
+    // Keep last.
+    kMaxValue = kCorsOptIn
+  };
+
   using ExclusionReasonBitset =
       std::bitset<ExclusionReason::NUM_EXCLUSION_REASONS>;
   using WarningReasonBitset = std::bitset<WarningReason::NUM_WARNING_REASONS>;
@@ -307,6 +333,12 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Remove multiple exclusion reasons.
   void RemoveExclusionReasons(const std::vector<ExclusionReason>& reasons);
+
+  // Only updates exemption reason if the cookie was not already excluded and
+  // doesn't already have an exemption reason.
+  void MaybeSetExemptionReason(ExemptionReason reason);
+
+  ExemptionReason exemption_reason() const { return exemption_reason_; }
 
   // If the cookie would have been excluded for reasons other than
   // SameSite-related reasons, don't bother warning about it (clear the
@@ -402,6 +434,9 @@ class NET_EXPORT CookieInclusionStatus {
 
   // A bit vector of the applicable warning reasons.
   WarningReasonBitset warning_reasons_;
+
+  // A cookie can only have at most one exemption reason.
+  ExemptionReason exemption_reason_ = ExemptionReason::kNone;
 };
 
 NET_EXPORT inline std::ostream& operator<<(std::ostream& os,

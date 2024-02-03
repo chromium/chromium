@@ -1373,6 +1373,8 @@ void Component::StateUpdated::DoHandle() {
 
   component.update_context_->persisted_data->SetProductVersion(
       component.id(), component.crx_component_->version);
+  component.update_context_->persisted_data->SetMaxPreviousProductVersion(
+      component.id(), component.previous_version_);
   component.update_context_->persisted_data->SetFingerprint(
       component.id(), component.crx_component_->fingerprint);
 

@@ -97,6 +97,20 @@ void PersistedData::SetProductVersion(const std::string& id,
 #endif
 }
 
+base::Version PersistedData::GetMaxPreviousProductVersion(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetMaxPreviousProductVersion(id);
+}
+
+void PersistedData::SetMaxPreviousProductVersion(
+    const std::string& id,
+    const base::Version& max_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(max_version.IsValid());
+  delegate_->SetMaxPreviousProductVersion(id, max_version);
+}
+
 base::FilePath PersistedData::GetProductVersionPath(
     const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -584,11 +598,9 @@ void PersistedData::SetLastOSVersion() {
   }
 
   // The os version is internally stored as a base-64-encoded string.
-  std::string encoded_os_version;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(&os_version.value()),
-                        sizeof(OSVERSIONINFOEX)),
-      &encoded_os_version);
+  std::string encoded_os_version =
+      base::Base64Encode(base::byte_span_from_ref(os_version.value()));
+
   return pref_service_->SetString(kLastOSVersion, encoded_os_version);
 }
 #endif

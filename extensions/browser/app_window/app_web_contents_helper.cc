@@ -12,6 +12,7 @@
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/suggest_permission_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -20,14 +21,13 @@ namespace extensions {
 
 AppWebContentsHelper::AppWebContentsHelper(
     content::BrowserContext* browser_context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::WebContents* web_contents,
     AppDelegate* app_delegate)
     : browser_context_(browser_context),
       extension_id_(extension_id),
       web_contents_(web_contents),
-      app_delegate_(app_delegate) {
-}
+      app_delegate_(app_delegate) {}
 
 // static
 bool AppWebContentsHelper::ShouldSuppressGestureEvent(

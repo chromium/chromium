@@ -13,12 +13,13 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 
 import {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
-import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
+import {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
+import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
@@ -77,6 +78,8 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         type: Array,
       },
 
+      thumbnails_: Object,
+
       thumbnailsLoading_: Boolean,
     };
   }
@@ -89,10 +92,13 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private templateTokens_: TemplateToken[];
   private options_: SeaPenOption[]|null;
   private selectedChip_: ChipToken|null;
+  private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
+    this.watch<SeaPenTemplateQueryElement['thumbnails_']>(
+        'thumbnails_', state => state.thumbnails);
     this.watch<SeaPenTemplateQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_', state => state.loading.thumbnails);
     this.updateFromStore();
@@ -233,7 +239,13 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         SeaPenPaths.RESULTS, {seaPenTemplateId: this.templateId!.toString()});
   }
 
-  private getSearchButtonText_(path: string|null): string {
+  private getSearchButtonText_(
+      path: string|null, thumbnails: SeaPenThumbnail[]|null): string {
+    if (!thumbnails) {
+      // The thumbnails are not loaded yet.
+      return this.i18n('seaPenCreateButton');
+    }
+
     switch (path) {
       case SeaPenPaths.RESULTS:
         return this.i18n('seaPenRecreateButton');
@@ -243,7 +255,13 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     }
   }
 
-  private getSearchButtonIcon_(path: string|null): string {
+  private getSearchButtonIcon_(
+      path: string|null, thumbnails: SeaPenThumbnail[]|null): string {
+    if (!thumbnails) {
+      // The thumbnails are not loaded yet.
+      return 'sea-pen:photo-spark';
+    }
+
     switch (path) {
       case SeaPenPaths.RESULTS:
         return 'personalization-shared:refresh';

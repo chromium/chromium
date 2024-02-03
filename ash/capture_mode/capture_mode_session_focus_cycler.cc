@@ -297,7 +297,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
     needs_highlight_path_ = false;
   }
 
-  focus_ring_->Layout();
+  focus_ring_->DeprecatedLayoutImmediately();
   focus_ring_->SchedulePaint();
 
   view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
@@ -312,7 +312,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoBlur() {
   if (!focus_ring_)
     return;
 
-  focus_ring_->Layout();
+  focus_ring_->DeprecatedLayoutImmediately();
   focus_ring_->SchedulePaint();
 }
 

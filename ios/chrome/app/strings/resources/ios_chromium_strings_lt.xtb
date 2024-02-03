@@ -25,6 +25,7 @@
 <translation id="1617663976202781617">„Chromium“ sinchronizavimo duomenys</translation>
 <translation id="1647558790457890304">„Chromium“ nustatymai</translation>
 <translation id="164952285225495380">Šis siuntinys jau buvo stebimas naršyklėje „Chromium“.</translation>
+<translation id="1707458603865303524">Naudokite „Chromium“ bet kada palietę nuorodas pranešimuose ar kitose programose.</translation>
 <translation id="1722370509450468186">Slaptažodis bus išsaugotas „Google“ paskyroje (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Išvalyti „Chromium“ duomenys</translation>
 <translation id="1791845338122684020">Atidaromas „Chromium“ istorijos puslapis.</translation>
@@ -40,9 +41,11 @@
 <translation id="2054703085270098503">Saugos užtikrinimas naudojant „Chromium“</translation>
 <translation id="2098023844024447022">Atidarykite savo naujausią skirtuką naršyklėje „Chromium“.</translation>
 <translation id="2109439615198500433">„Chromium“ patarimas</translation>
+<translation id="2147210759439165826">Nepraleiskite turinio ir naudingų „Chromium“ patarimų.</translation>
 <translation id="2168108852149185974">Naudojant kai kuriuos priedus „Chromium“ užstringa. Pašalinkite:</translation>
 <translation id="2178608107313874732">„Chromium“ šiuo metu negali naudoti fotoaparato</translation>
 <translation id="2195025571279539885">Ar norėtumėte, kad kitą kartą „Chromium“ būtų siūloma išversti šios svetainės puslapius <ph name="LANGUAGE_NAME" /> k.?</translation>
+<translation id="2216344354848599203">Paspauskite ir palaikykite „Chromium“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="2218146227246548550">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chromium“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Šis adresas šiuo metu išsaugotas naršyklėje „Chromium“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Tai reiškia, kad kiekvieną kartą „Chromium“ teiks staliniams kompiuteriams skirtos svetainės užklausą.</translation>
@@ -95,6 +98,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ f
 <translation id="3805899903892079518">„Chromium“ nepasiekia nuotraukų ar vaizdo įr. Įgalinkite prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
 <translation id="3827545470516145620">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
 <translation id="3833326979834193417">„Chromium“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
+<translation id="3855938650519180865">„Chromium“ naujienos</translation>
 <translation id="3886689467633467988">Prisijunkite prie šios svetainės ir „Chromium“, kad gautumėte žymes ir kt. visuose savo įrenginiuose.</translation>
 <translation id="394413318816989199">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų.
 
@@ -107,6 +111,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4106512142782407609">Prisijungta kaip <ph name="EMAIL" />.
 
 Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje.</translation>
+<translation id="4118287192800900567">„Chromium“ patarimas: prisijunkite prie „Chromium“</translation>
 <translation id="4195557071150719219">Žr. „Chromium“ naujausius skirtukus</translation>
 <translation id="4200712796753248893">„Chromium“ veiksmų naudojimas sistemoje „iOS“</translation>
 <translation id="420541179527342563">Jei norite išjungti užrakinimo režimą naršyklėje „Chromium“, išjunkite jį „iPad“ įrenginyje.</translation>
@@ -158,6 +163,7 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 <translation id="5688047395118852662">Šioje kortelėje pateikiami pasiūlymai, kaip išnaudoti visas „Chromium“ galimybes.</translation>
 <translation id="5700709190537129682">„Chromium“ negali patikrinti jūsų slaptažodžių</translation>
 <translation id="5777187867430702742">„Chromium“ puslapis</translation>
+<translation id="584239279770005676">„Chromium“ patarimas: naudokite „Chromium“ pagal numatytuosius nustatymus</translation>
 <translation id="584550191241316896">Prisijungta prie „Chromium“</translation>
 <translation id="5889847953983052353">Kai įjungta
 <ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chromium“ žmonėms, naudojantiems ją kaip jūs.<ph name="END_INDENT" />
@@ -172,6 +178,7 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 <translation id="5951593919357934226">Išnaudokite visas „Chromium“ galimybes.</translation>
 <translation id="5983312940147103417">„Chromium“ tobulinimas</translation>
 <translation id="5985102273857091344">Pasirinkite „Chromium“.</translation>
+<translation id="5985254578475526217">Jei norite gauti „Chromium“ pranešimus, įjunkite pranešimus „iOS“ nustatymuose.</translation>
 <translation id="6062449165341879460">Organizacija „<ph name="DOMAIN" />“ galės pasiekti „Chromium“ duomenis, žymes, istoriją, slaptažodžius ir kitus nustatymus, kuriuos saugote šioje paskyroje. Kai atsijungsite, šio įrenginio duomenys bus išvalyti.  Tačiau duomenys bus toliau saugomi jūsų valdomoje „Google“ paskyroje ir bus pasiekiami jūsų organizacijai. Jūsų organizacija taip pat gali nustatyti tos paskyros naudotojo politiką, pagal kurią galima keisti „Chromium“ veikimą.</translation>
 <translation id="6093744543579359059">Slaptažodžių tvarkymas naršyklėje „Chromium“</translation>
 <translation id="6104024151682120539">Atidaryti naudojant „Chromium“</translation>
@@ -180,6 +187,7 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 1. Atidarykite skiltį „Nustatymai“.
 2. Palieskite „Numatytoji naršyklės programa“.
 3. Pasirinkite „Chromium“.</translation>
+<translation id="6132149203299792222">Prisijunkite naudodami „Google“ paskyrą, kad sinchronizuotumėte slaptažodžius, žymes ir kt.</translation>
 <translation id="6154098560469640583">Naudokite „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="6170619162539716595">Leiskite „Chromium“ naudoti „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>
 <translation id="6175967839221456271">Bendrinti „Chromium“</translation>
@@ -191,6 +199,7 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 <translation id="632825460376924298">Leisti „Chromium“ prisijungimą</translation>
 <translation id="6337530241089703714">Pasirinkite, ar norite išvalyti „Chromium“ duomenis iš šio įrenginio ar juos palikti</translation>
 <translation id="6348483005826990855">3. Pasirinkite „Chromium“</translation>
+<translation id="6383607155624074112">Greičiau pasiekite „Chromium“ naudodami pagrindinio ekrano doką</translation>
 <translation id="6407399265324739055">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chromium“ nebus sinchronizuojama.
 
 Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
@@ -257,6 +266,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="8234150821523419638">Atidarykite „Chromium“ meniu</translation>
 <translation id="8235427517854598594">Nustatyti „Chromium“ kaip numatytąją naršyklę?</translation>
 <translation id="8240981428553046115">„Chromium“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
+<translation id="8254729934443216898">Peržiūrėkite naujas funkcijas, kurios padės išnaudoti visas „Chromium“ galimybes.</translation>
 <translation id="8303579360494576778">Mokėjimo metodų tvarkymas naršyklėje „Chromium“</translation>
 <translation id="830951810931292870">Atidaromi įvesti URL naršyklėje „Chromium“ inkognito režimu.</translation>
 <translation id="8386869251364507178">„Chromium“ veiksmai</translation>

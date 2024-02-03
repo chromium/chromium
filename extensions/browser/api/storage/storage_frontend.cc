@@ -31,6 +31,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/storage.h"
+#include "extensions/common/extension_id.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -139,7 +140,7 @@ void StorageFrontend::RunWithStorage(
                      base::Unretained(cache), std::move(callback), extension));
 }
 
-void StorageFrontend::DeleteStorageSoon(const std::string& extension_id,
+void StorageFrontend::DeleteStorageSoon(const ExtensionId& extension_id,
                                         base::OnceClosure done_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto subtask_done_callback =
@@ -174,7 +175,7 @@ void StorageFrontend::DisableStorageForTesting(
 // Forwards changes on to the extension processes for |browser_context_| and its
 // incognito partner if it exists.
 void StorageFrontend::OnSettingsChanged(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     StorageAreaNamespace storage_area,
     absl::optional<api::storage::AccessLevel> session_access_level,
     base::Value changes) {

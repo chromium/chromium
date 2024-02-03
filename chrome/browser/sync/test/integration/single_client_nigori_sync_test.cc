@@ -2244,40 +2244,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
 // ChromeOS doesn't have unconsented primary accounts.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-class SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest
-    : public SingleClientNigoriWithWebApiTest {
- public:
-  SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest() {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::
-                                  kEnablePasswordsAccountStorage},
-        /*disabled_features=*/{switches::kUnoDesktop});
-  }
-
-  ~SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest() override =
-      default;
-
-  // SetupClients() must have been already called.
-  void SetupSyncTransport() {
-    secondary_account_helper::SignInUnconsentedAccount(
-        GetProfile(0), &test_url_loader_factory_, SyncTest::kDefaultUserEmail);
-    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-    ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  }
-
- private:
-  base::test::ScopedFeatureList override_features_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest,
-    ShouldAcceptEncryptionKeysFromTheWeb) {
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
+                       ShouldAcceptEncryptionKeysFromTheWebInTransportMode) {
   // Mimic the account using a trusted vault passphrase.
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
                         GetFakeServer());
 
   ASSERT_TRUE(SetupClients());
-  SetupSyncTransport();
+  secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(0), &test_url_loader_factory_, SyncTest::kDefaultUserEmail);
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // Chrome isn't trying to sync passwords, because the user hasn't opted in to
   // passwords account storage. So the error shouldn't be surfaced yet.
@@ -2317,8 +2294,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SingleClientNigoriWithWebApiAndPasswordsAccountStorageTest,
-    ShouldReportDegradedTrustedVaultRecoverability) {
+    SingleClientNigoriWithWebApiTest,
+    ShouldReportDegradedTrustedVaultRecoverabilityInTransportMode) {
   base::HistogramTester histogram_tester;
 
   // Mimic the key being available upon startup but recoverability degraded.
@@ -2337,7 +2314,10 @@ IN_PROC_BROWSER_TEST_F(
       GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
 
-  SetupSyncTransport();
+  secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(0), &test_url_loader_factory_, SyncTest::kDefaultUserEmail);
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // Chrome isn't trying to sync passwords, because the user hasn't opted in to
   // passwords account storage. So the error shouldn't be surfaced yet.

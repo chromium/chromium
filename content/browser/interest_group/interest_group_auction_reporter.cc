@@ -211,7 +211,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           url_loader_factory_,
           browser_context,
           /*direct_seller_is_seller=*/
-          !component_seller_winning_bid_info.has_value(),
+          !component_seller_winning_bid_info_.has_value(),
           private_aggregation_manager_,
           main_frame_origin_,
           winning_bid_info_.storage_interest_group->interest_group.owner,
@@ -380,6 +380,16 @@ double InterestGroupAuctionReporter::RoundStochasticallyToKBits(double value,
   return std::ldexp(noised_truncated_scaled_value, value_exp - k);
 }
 
+/* static */
+std::optional<double> InterestGroupAuctionReporter::RoundStochasticallyToKBits(
+    std::optional<double> maybe_value,
+    unsigned k) {
+  if (!maybe_value.has_value()) {
+    return std::nullopt;
+  }
+  return RoundStochasticallyToKBits(*maybe_value, k);
+}
+
 void InterestGroupAuctionReporter::RequestSellerWorklet(
     const SellerWinningBidInfo* seller_info,
     const std::optional<std::string>& top_seller_signals) {
@@ -466,9 +476,7 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
             /*modified_bid=*/
             RoundStochasticallyToKBits(
                 seller_info->component_auction_modified_bid_params->bid,
-                kFledgeBidReportingBits.Get()),
-            /*has_modified_bid=*/
-            seller_info->component_auction_modified_bid_params->has_bid);
+                kFledgeBidReportingBits.Get()));
   }
 
   double bid = seller_info->bid;
@@ -531,9 +539,7 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
                                  kFledgeBidReportingBits.Get()),
       highest_scoring_other_bid_currency,
       std::move(browser_signals_component_auction_report_result_params),
-      seller_info->scoring_signals_data_version.value_or(0),
-      seller_info->scoring_signals_data_version.has_value(),
-      seller_info->trace_id,
+      seller_info->scoring_signals_data_version, seller_info->trace_id,
       base::BindOnce(
           &InterestGroupAuctionReporter::OnSellerReportResultComplete,
           weak_ptr_factory_.GetWeakPtr(), base::Unretained(seller_info),

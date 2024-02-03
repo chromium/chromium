@@ -7,8 +7,8 @@
  * properties.
  */
 
-import '//resources/cr_elements/policy/cr_tooltip_icon.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
+import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 
 import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from '//resources/ash/common/cr_policy_indicator_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -757,6 +757,10 @@ Called by update_protocol_commands_enum.py.-->
   <int value="123" label="Self-XSS warning dialog shown"/>
   <int value="124" label="Self-XSS pasting allowed in console"/>
   <int value="125" label="Self-XSS pasting allowed in dialog"/>
+  <int value="126" label="Toggle Emulate Focused Page from Styles tab on"/>
+  <int value="127" label="Toggle Emulate Focused Page from Styles tab off"/>
+  <int value="128" label="Toggle Emulate Focused Page from Rendering tab"/>
+  <int value="129" label="Toggle Emulate Focused Page from Command Menu"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
@@ -965,6 +969,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="82" label="autofillView"/>
   <int value="83" label="sourcesFrameIndentationMarkersTemporarilyDisable"/>
   <int value="84" label="heapSnapshotTreatBackingStoreAsContainingObject"/>
+  <int value="85" label="cssTypeComponentLengthDeprecate"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
@@ -1109,11 +1114,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="5" label="HeavyAd Element opened"/>
   <int value="6" label="ContentSecurityPolicy Directive opened"/>
   <int value="7" label="ContentSecurityPolicy Element opened"/>
-  <int value="8" label="CrossOriginEmbedderPolicy LearnMore opened"/>
-  <int value="9" label="MixedContent LearnMore opened"/>
-  <int value="10" label="SameSiteCookie LearnMore opened"/>
-  <int value="11" label="HeavyAd LearnMore opened"/>
-  <int value="12" label="ContentSecurityPolicy LearnMore opened"/>
 </enum>
 
 <enum name="DevToolsKeybindSets">

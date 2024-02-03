@@ -80,8 +80,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
   std::string encrypted_token;
   OSCrypt::EncryptString(token, &encrypted_token);
 
-  std::string encoded;
-  base::Base64Encode(encrypted_token, &encoded);
+  std::string encoded = base::Base64Encode(encrypted_token);
 
   scoped_testing_local_state()->Get()->SetString(
       kCBCMServiceAccountRefreshToken, encoded);
@@ -109,8 +108,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
   std::string encrypted_token;
   OSCrypt::EncryptString(token, &encrypted_token);
 
-  std::string encoded;
-  base::Base64Encode(encrypted_token, &encoded);
+  std::string encoded = base::Base64Encode(encrypted_token);
 
   scoped_testing_local_state()->Get()->SetString(
       kCBCMServiceAccountRefreshToken, encoded);

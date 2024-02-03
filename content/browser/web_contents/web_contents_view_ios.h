@@ -72,6 +72,8 @@ class WebContentsViewIOS : public WebContentsView,
   bool ShouldAnimateBrowserControlsHeightChanges() const override;
   bool DoBrowserControlsShrinkRendererSize() const override;
   bool OnlyExpandTopControlsAtPageTop() const override;
+  BackForwardTransitionAnimationManager*
+  GetBackForwardTransitionAnimationManager() override;
 
   // RenderViewHostDelegateView:
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;

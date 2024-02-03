@@ -139,7 +139,7 @@ FormFieldData CreateTestFormField(std::string_view label,
                                   FormControlType type) {
   FormFieldData field;
   field.host_frame = MakeLocalFrameToken();
-  field.unique_renderer_id = MakeFieldRendererId();
+  field.renderer_id = MakeFieldRendererId();
   field.label = base::UTF8ToUTF16(label);
   field.name = base::UTF8ToUTF16(name);
   field.value = base::UTF8ToUTF16(value);
@@ -244,7 +244,7 @@ FormFieldData CreateTestDatalistField(std::string_view label,
 
 FormData CreateTestPersonalInformationFormData() {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
+  form.renderer_id = MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
@@ -265,7 +265,7 @@ FormData CreateTestCreditCardFormData(bool is_https,
                                       bool use_month_type,
                                       bool split_names) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
+  form.renderer_id = MakeFormRendererId();
   form.name = u"MyForm";
   if (is_https) {
     form.url = GURL("https://myform.com/form.html");

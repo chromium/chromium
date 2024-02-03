@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CONSTRAINT_SPACE_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CONSTRAINT_SPACE_BUILDER_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/floats_utils.h"
@@ -391,7 +392,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetTableCellAlignmentBaseline(
-      const absl::optional<LayoutUnit>& table_cell_alignment_baseline) {
+      const std::optional<LayoutUnit>& table_cell_alignment_baseline) {
 #if DCHECK_IS_ON()
     DCHECK(!is_table_cell_alignment_baseline_set_);
     is_table_cell_alignment_baseline_set_ = true;
@@ -487,7 +488,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       space_.EnsureRareData()->is_line_clamp_context = true;
   }
 
-  void SetLinesUntilClamp(const absl::optional<int>& clamp) {
+  void SetLinesUntilClamp(const std::optional<int>& clamp) {
 #if DCHECK_IS_ON()
     DCHECK(!is_lines_until_clamp_set_);
     is_lines_until_clamp_set_ = true;

@@ -72,21 +72,6 @@ static constexpr char kSqliteOpenInMemoryPath[] = ":memory:";
 // TODO(shess): Better story on this.  http://crbug.com/56559
 const int kBusyTimeoutSeconds = 1;
 
-class ScopedBusyTimeout {
- public:
-  explicit ScopedBusyTimeout(sqlite3* db) : db_(db) {}
-  ~ScopedBusyTimeout() { sqlite3_busy_timeout(db_, 0); }
-
-  int SetTimeout(base::TimeDelta timeout) {
-    DCHECK_LT(timeout.InMilliseconds(), INT_MAX);
-    return sqlite3_busy_timeout(db_,
-                                static_cast<int>(timeout.InMilliseconds()));
-  }
-
- private:
-  raw_ptr<sqlite3> db_;
-};
-
 // Helper to "safely" enable writable_schema.  No error checking
 // because it is reasonable to just forge ahead in case of an error.
 // If turning it on fails, then most likely nothing will work, whereas
@@ -299,9 +284,7 @@ void DatabaseDiagnostics::WriteIntoTrace(
   context->set_error_message(error_message);
 }
 
-// DatabaseOptions::explicit_locking needs to be set to false for historical
-// reasons.
-Database::Database() : Database({.exclusive_locking = false}) {}
+Database::Database() : Database(DatabaseOptions{}) {}
 
 Database::Database(DatabaseOptions options)
     : options_(options), mmap_disabled_(!enable_mmap_by_default_) {
@@ -410,16 +393,15 @@ void Database::CloseInternal(bool forced) {
               std::move(memory_dump_provider_));
     }
 
-    auto sqlite_result_code = ToSqliteResultCode(sqlite3_close(db_));
+    sqlite3* raw_db = db_;
+    db_ = nullptr;
+    auto sqlite_result_code = ToSqliteResultCode(sqlite3_close(raw_db));
 
     DCHECK_NE(sqlite_result_code, SqliteResultCode::kBusy)
         << "sqlite3_close() called while prepared statements are still alive";
     DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
-        << "sqlite3_close() failed in an unexpected way: " << GetErrorMessage();
-
-    // The reset must happen after the DCHECKs above. GetErrorMessage() needs a
-    // valid `db_` value.
-    db_ = nullptr;
+        << "sqlite3_close() failed in an unexpected way: "
+        << sqlite3_errmsg(raw_db);
   }
 }
 
@@ -1407,22 +1389,14 @@ SqliteResultCode Database::ExecuteAndReturnResultCode(const char* sql) {
 }
 
 bool Database::Execute(const char* sql) {
-  TRACE_EVENT1("sql", "Database::Execute", "query", TRACE_STR_COPY(sql));
+  TRACE_EVENT0("sql", "Database::Execute");
 
-  if (!db_) {
-    DCHECK(poisoned_) << "Illegal use of Database without a db";
-    return false;
-  }
-
-  SqliteResultCode sqlite_result_code = ExecuteAndReturnResultCode(sql);
-  if (sqlite_result_code != SqliteResultCode::kOk)
-    OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr, sql);
-
-  return sqlite_result_code == SqliteResultCode::kOk;
+  return ExecuteWithTimeout(sql, base::TimeDelta());
 }
 
 bool Database::ExecuteWithTimeout(const char* sql, base::TimeDelta timeout) {
-  TRACE_EVENT0("sql", "Database::ExecuteWithTimeout");
+  TRACE_EVENT1("sql", "Database::ExecuteWithTimeout", "query",
+               TRACE_STR_COPY(sql));
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
@@ -1430,9 +1404,20 @@ bool Database::ExecuteWithTimeout(const char* sql, base::TimeDelta timeout) {
     return false;
   }
 
-  ScopedBusyTimeout busy_timeout(db_);
-  busy_timeout.SetTimeout(timeout);
-  return Execute(sql);
+  // Passing zero or a negative value to sqlite3_busy_timeout() would clear any
+  // busy handlers defined prior to this point.
+  if (timeout.is_positive()) {
+    DCHECK_LT(timeout.InMilliseconds(), INT_MAX);
+    sqlite3_busy_timeout(db_, static_cast<int>(timeout.InMilliseconds()));
+  }
+  SqliteResultCode sqlite_result_code = ExecuteAndReturnResultCode(sql);
+  sqlite3_busy_timeout(db_, 0);
+  if (sqlite_result_code != SqliteResultCode::kOk) {
+    OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr, sql);
+    // At this point, `this` may have been modified or even deleted as a result
+    // of the caller-provided error callback.
+  }
+  return sqlite_result_code == SqliteResultCode::kOk;
 }
 
 bool Database::ExecuteScriptForTesting(const char* sql_script) {
@@ -1847,18 +1832,18 @@ bool Database::OpenInternal(const std::string& db_file_path,
 #endif  // BUILDFLAG(IS_WIN)
   }
 
+  sqlite3* db = nullptr;
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_open_v2(
-      uri_file_path.c_str(), &db_, open_flags, /*zVfs=*/nullptr));
-  if (sqlite_result_code != SqliteResultCode::kOk) {
+      uri_file_path.c_str(), &db, open_flags, /*zVfs=*/nullptr));
+  if (sqlite_result_code == SqliteResultCode::kOk) {
+    db_ = db;
+  } else {
     // sqlite3_open_v2() will usually create a database connection handle, even
     // if an error occurs (see https://www.sqlite.org/c3ref/open.html).
-    // Therefore, we'll clear `db_` immediately - particularly before triggering
-    // an error callback which may check whether a database connection exists.
-    if (db_) {
+    if (db) {
       // Deallocate resources allocated during the failed open.
       // See https://www.sqlite.org/c3ref/close.html.
-      sqlite3_close(db_);
-      db_ = nullptr;
+      sqlite3_close(db);
     }
 
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,

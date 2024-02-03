@@ -21,6 +21,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -68,7 +69,7 @@ public abstract class FirstRunFlowSequencer {
             }
             assert mProfileSupplier.get() != null;
             Profile profile = mProfileSupplier.get().getOriginalProfile();
-
+            // TODO(crbug.com/1520791): Review this logic for history sync for UNO.
             final IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(profile);
             if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
@@ -195,13 +196,20 @@ public abstract class FirstRunFlowSequencer {
     }
 
     /**
-     * Will be called either when policies are initialized, or when native is initialized if we have
-     * no on-device policies.
+     * Will be called when native is initialized and on-device policies are initialized (if any).
+     *
      * @param freProperties Resulting FRE properties bundle.
      */
     public void updateFirstRunProperties(Bundle freProperties) {
+        boolean isHistorySyncEnabled =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
         freProperties.putBoolean(
-                FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
+                FirstRunActivity.SHOW_SYNC_CONSENT_PAGE,
+                !isHistorySyncEnabled && shouldShowSyncConsentPage());
+        freProperties.putBoolean(
+                FirstRunActivity.SHOW_HISTORY_SYNC_PAGE,
+                isHistorySyncEnabled && shouldShowSyncConsentPage());
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());
     }

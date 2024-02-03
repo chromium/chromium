@@ -515,7 +515,7 @@ class CORE_EXPORT DisplayLockContext final
   // computed style).
   bool set_requested_state_scope_ = false;
 
-  absl::optional<ScrollOffset> stashed_scroll_offset_;
+  std::optional<ScrollOffset> stashed_scroll_offset_;
 
   // When we use content-visibility:hidden for the <details> element's content
   // slot or the hidden=until-found attribute, then this lock must activate
@@ -541,7 +541,7 @@ class CORE_EXPORT DisplayLockContext final
 
   // This is set to the last value for which ContentVisibilityAutoStateChange
   // event has been dispatched (if any).
-  absl::optional<bool> last_notified_skipped_state_;
+  std::optional<bool> last_notified_skipped_state_;
 
   // If true, there is a pending task that will dispatch a state change event if
   // needed.

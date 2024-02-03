@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PARSING_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PARSING_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -131,11 +132,11 @@ CSSPrimitiveValue* ConsumeSVGGeometryPropertyLength(
 CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenRange&,
     const CSSParserContext&,
-    absl::optional<WebFeature> unitless_zero_feature);
+    std::optional<WebFeature> unitless_zero_feature);
 CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenRange&,
     const CSSParserContext&,
-    absl::optional<WebFeature> unitless_zero_feature,
+    std::optional<WebFeature> unitless_zero_feature,
     double minimum_value,
     double maximum_value);
 CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange&,
@@ -177,11 +178,11 @@ CSSValue* ConsumeLineWidth(CSSParserTokenRange&,
 CSSValuePair* ConsumePosition(CSSParserTokenRange&,
                               const CSSParserContext&,
                               UnitlessQuirk,
-                              absl::optional<WebFeature> three_value_position);
+                              std::optional<WebFeature> three_value_position);
 bool ConsumePosition(CSSParserTokenRange&,
                      const CSSParserContext&,
                      UnitlessQuirk,
-                     absl::optional<WebFeature> three_value_position,
+                     std::optional<WebFeature> three_value_position,
                      CSSValue*& result_x,
                      CSSValue*& result_y);
 bool ConsumeOneOrTwoValuedPosition(CSSParserTokenRange&,
@@ -359,7 +360,7 @@ CSSValue* ConsumeMaskMode(CSSParserTokenRange&);
 bool ConsumeBackgroundPosition(CSSParserTokenRange&,
                                const CSSParserContext&,
                                UnitlessQuirk,
-                               absl::optional<WebFeature> three_value_position,
+                               std::optional<WebFeature> three_value_position,
                                const CSSValue*& result_x,
                                const CSSValue*& result_y);
 CSSValue* ConsumePrefixedBackgroundBox(CSSParserTokenRange&, AllowTextValue);
@@ -369,11 +370,11 @@ CSSValue* ParseBackgroundBox(CSSParserTokenRange&,
 CSSValue* ParseBackgroundSize(CSSParserTokenRange&,
                               const CSSParserContext&,
                               const CSSParserLocalContext&,
-                              absl::optional<WebFeature> negative_size);
+                              std::optional<WebFeature> negative_size);
 CSSValue* ParseMaskSize(CSSParserTokenRange&,
                         const CSSParserContext&,
                         const CSSParserLocalContext&,
-                        absl::optional<WebFeature> negative_size);
+                        std::optional<WebFeature> negative_size);
 bool ParseBackgroundOrMask(bool,
                            CSSParserTokenRange&,
                            const CSSParserContext&,

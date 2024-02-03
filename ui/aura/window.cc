@@ -1414,8 +1414,7 @@ void Window::SetOpaqueRegionsForOcclusion(
   // Opaque regions for occlusion do not apply to opaque windows, so only
   // allow opaque regions for occlusion to be set for them if they are the
   // same as the window bounds size.
-  DCHECK(GetTransparent() || layer()->type() == ui::LAYER_NOT_DRAWN ||
-         opaque_regions_for_occlusion.empty() ||
+  DCHECK(GetTransparent() || opaque_regions_for_occlusion.empty() ||
          (opaque_regions_for_occlusion.size() == 1 &&
           opaque_regions_for_occlusion[0] == gfx::Rect(bounds().size())));
   if (opaque_regions_for_occlusion == opaque_regions_for_occlusion_)
@@ -1490,11 +1489,8 @@ void Window::OnLayerFillsBoundsOpaquelyChanged(
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
   // Non-transparent windows should not have opaque regions for occlusion set.
-#if DCHECK_IS_ON()
-  if (!GetTransparent() && layer()->type() != ui::LAYER_NOT_DRAWN) {
+  if (!GetTransparent())
     DCHECK(opaque_regions_for_occlusion_.empty());
-  }
-#endif
 
   for (WindowObserver& observer : observers_)
     observer.OnWindowTransparentChanged(this, reason);

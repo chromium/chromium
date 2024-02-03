@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -83,6 +84,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      */
     private long mNativeSigninManagerAndroid;
 
+    private final Profile mProfile;
     private final AccountTrackerService mAccountTrackerService;
     private final AccountManagerFacade mAccountManagerFacade;
     private final IdentityManager mIdentityManager;
@@ -110,23 +112,27 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
     /**
      * Called by native to create an instance of SigninManager.
+     *
      * @param nativeSigninManagerAndroid A pointer to native's SigninManagerAndroid.
      */
     @CalledByNative
     @VisibleForTesting
     static SigninManager create(
             long nativeSigninManagerAndroid,
+            Profile profile,
             AccountTrackerService accountTrackerService,
             IdentityManager identityManager,
             IdentityMutator identityMutator,
             SyncService syncService) {
         assert nativeSigninManagerAndroid != 0;
+        assert profile != null;
         assert accountTrackerService != null;
         assert identityManager != null;
         assert identityMutator != null;
         final SigninManagerImpl signinManager =
                 new SigninManagerImpl(
                         nativeSigninManagerAndroid,
+                        profile,
                         accountTrackerService,
                         identityManager,
                         identityMutator,
@@ -146,12 +152,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
     private SigninManagerImpl(
             long nativeSigninManagerAndroid,
+            Profile profile,
             AccountTrackerService accountTrackerService,
             IdentityManager identityManager,
             IdentityMutator identityMutator,
             SyncService syncService) {
         ThreadUtils.assertOnUiThread();
         mNativeSigninManagerAndroid = nativeSigninManagerAndroid;
+        mProfile = profile;
         mAccountTrackerService = accountTrackerService;
         mIdentityManager = identityManager;
         mIdentityMutator = identityMutator;
@@ -353,6 +361,26 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         // started until this one completes (see {@link isOperationInProgress()}).
         mSignInState = signInState;
 
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+                && !getUserAcceptedAccountManagement()) {
+            String email = mSignInState.mCoreAccountInfo.getEmail();
+            isAccountManaged(
+                    email,
+                    (Boolean isAccountManaged) -> {
+                        if (isAccountManaged) {
+                            throw new IllegalStateException(
+                                    "User must accept Account Management before "
+                                            + "signing into a Managed account.");
+                        } else {
+                            signinInternalAfterCheckingManagedState();
+                        }
+                    });
+        } else {
+            signinInternalAfterCheckingManagedState();
+        }
+    }
+
+    private void signinInternalAfterCheckingManagedState() {
         if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
             // Retrieve the primary account and use it to seed and reload all accounts.
             if (!mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
@@ -366,7 +394,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             seedThenReloadAllAccountsFromSystem(mSignInState.mCoreAccountInfo.getId());
             notifySignInAllowedChanged();
 
-            if (mSignInState.shouldTurnSyncOn()) {
+            if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+                    || mSignInState.shouldTurnSyncOn()) {
                 Log.d(TAG, "Checking if account has policy management enabled");
                 fetchAndApplyCloudPolicy(
                         mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
@@ -384,7 +413,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                                 mSignInState.mCoreAccountInfo = accountInfo;
                                 notifySignInAllowedChanged();
 
-                                if (mSignInState.shouldTurnSyncOn()) {
+                                if (SigninFeatureMap.isEnabled(
+                                                SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+                                        || mSignInState.shouldTurnSyncOn()) {
                                     Log.d(TAG, "Checking if account has policy management enabled");
                                     fetchAndApplyCloudPolicy(
                                             mSignInState.mCoreAccountInfo,
@@ -402,8 +433,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      * Finishes the sign-in flow. If the user is managed, the policy should be fetched and enforced
      * before calling this method.
      */
-    @VisibleForTesting
-    void finishSignInAfterPolicyEnforced() {
+    private void finishSignInAfterPolicyEnforced() {
         assert mSignInState != null : "SigninState shouldn't be null!";
         assert !mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)
                 : "The user should not be already signed in";
@@ -679,6 +709,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     public void isAccountManaged(String email, final Callback<Boolean> callback) {
         assert email != null;
         CoreAccountInfo account = mIdentityManager.findExtendedAccountInfoByEmailAddress(email);
+        isAccountManaged(account, callback);
+    }
+
+    @Override
+    public void isAccountManaged(
+            @NonNull CoreAccountInfo account, final Callback<Boolean> callback) {
         assert account != null;
         SigninManagerImplJni.get().isAccountManaged(mNativeSigninManagerAndroid, account, callback);
     }
@@ -739,14 +775,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     // TODO(crbug.com/1272911): add test coverage for this function (including its effect on
     // notifyCallbacksWaitingForOperation()), after resolving the TODO above.
     private void wipeSyncUserDataOnly(Runnable wipeDataCallback) {
-        final BookmarkModel model =
-                BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+        final BookmarkModel model = BookmarkModel.getForProfile(mProfile);
         model.finishLoadingBookmarkModel(
                 new Runnable() {
                     @Override
                     public void run() {
                         model.removeAllUserBookmarks();
-                        BrowsingDataBridge.getInstance()
+                        BrowsingDataBridge.getForProfile(mProfile)
                                 .clearBrowsingData(
                                         new BrowsingDataBridge.OnClearBrowsingDataListener() {
                                             @Override
@@ -761,6 +796,19 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                                         TimePeriod.ALL_TIME);
                     }
                 });
+    }
+
+    @Override
+    public void setUserAcceptedAccountManagement(boolean acceptedAccountManagement) {
+        SigninManagerImplJni.get()
+                .setUserAcceptedAccountManagement(
+                        mNativeSigninManagerAndroid, acceptedAccountManagement);
+    }
+
+    @Override
+    public boolean getUserAcceptedAccountManagement() {
+        return SigninManagerImplJni.get()
+                .getUserAcceptedAccountManagement(mNativeSigninManagerAndroid);
     }
 
     private boolean isGooglePlayServicesPresent() {
@@ -934,5 +982,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         void wipeProfileData(long nativeSigninManagerAndroid, Runnable callback);
 
         void wipeGoogleServiceWorkerCaches(long nativeSigninManagerAndroid, Runnable callback);
+
+        void setUserAcceptedAccountManagement(
+                long nativeSigninManagerAndroid, boolean acceptedAccountManagement);
+
+        boolean getUserAcceptedAccountManagement(long nativeSigninManagerAndroid);
     }
 }

@@ -516,7 +516,7 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());
   GetWidget()->SetBounds(popup_bounds);
 
-  Layout();
+  DeprecatedLayoutImmediately();
   UpdateClipPath();
   SchedulePaint();
   return true;

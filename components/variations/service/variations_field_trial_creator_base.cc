@@ -238,6 +238,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
   DCHECK(metrics_state_manager);
   DCHECK(platform_field_trials);
   DCHECK(safe_seed_manager);
+  CHECK(client_);
 
   MaybeExtendVariationsSafeMode(metrics_state_manager);
 
@@ -310,7 +311,10 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
         command_line->GetSwitchValuePath(switches::kVariationsTestSeedJsonPath));
   }
 
-  auto entropy_providers = metrics_state_manager->CreateEntropyProviders();
+  auto entropy_providers = metrics_state_manager->CreateEntropyProviders(
+      IsLimitedEntropyRandomizationSourceEnabled(
+          client_->GetChannelForVariations(),
+          limited_entropy_synthetic_trial_));
 
   bool used_seed = false;
   if (!used_testing_config) {
@@ -608,6 +612,7 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!create_trials_from_seed_called_);
+  CHECK(client_);
   create_trials_from_seed_called_ = true;
 
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -750,6 +755,21 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
 
 VariationsSeedStore* VariationsFieldTrialCreatorBase::GetSeedStore() {
   return seed_store_.get();
+}
+
+// static
+bool VariationsFieldTrialCreatorBase::
+    IsLimitedEntropyRandomizationSourceEnabled(
+        version_info::Channel channel,
+        LimitedEntropySyntheticTrial* trial) {
+  // Channel gated clients should not generate a limited entropy randomization
+  // source.
+  if (!IsLimitedEntropyModeEnabled(channel)) {
+    return false;
+  }
+  // Only clients in the enabled group of the limited entropy synthetic trial
+  // should have a limited entropy randomization source.
+  return trial && trial->IsEnabled();
 }
 
 }  // namespace variations

@@ -68,8 +68,8 @@ void RunRemotePlaybackTask(
 
 KURL GetAvailabilityUrl(const WebURL& source,
                         bool is_source_supported,
-                        absl::optional<media::VideoCodec> video_codec,
-                        absl::optional<media::AudioCodec> audio_codec) {
+                        std::optional<media::VideoCodec> video_codec,
+                        std::optional<media::AudioCodec> audio_codec) {
   if (source.IsEmpty() || !source.IsValid() || !is_source_supported) {
     return KURL();
   }
@@ -497,8 +497,8 @@ WebString RemotePlayback::GetPresentationId() {
 }
 
 void RemotePlayback::MediaMetadataChanged(
-    absl::optional<media::VideoCodec> video_codec,
-    absl::optional<media::AudioCodec> audio_codec) {
+    std::optional<media::VideoCodec> video_codec,
+    std::optional<media::AudioCodec> audio_codec) {
   video_codec_ = video_codec;
   audio_codec_ = audio_codec;
 

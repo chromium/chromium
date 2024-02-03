@@ -8,7 +8,6 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
@@ -60,6 +59,7 @@ class CORE_EXPORT TextPainterBase {
                                     const TextPaintStyle&,
                                     GraphicsContextStateSaver&,
                                     ShadowMode);
+
   static sk_sp<SkDrawLooper> CreateDrawLooper(
       const ShadowList* shadow_list,
       DrawLooperBuilder::ShadowAlphaMode,
@@ -90,23 +90,6 @@ class CORE_EXPORT TextPainterBase {
       float dilation,
       const Vector<Font::TextIntercept>& text_intercepts);
 
-  void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
-                                       const TextPaintStyle&,
-                                       const cc::PaintFlags* flags = nullptr);
-
-  // We have two functions to paint text decorations, because we should paint
-  // text and decorations in following order:
-  //   1. Paint underline or overline text decorations
-  //   2. Paint text
-  //   3. Paint line through text decoration
-  void PaintUnderOrOverLineDecorations(
-      const TextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffset& decoration_offset,
-      TextDecorationInfo& decoration_info,
-      TextDecorationLine lines_to_paint,
-      const TextPaintStyle& text_style,
-      const cc::PaintFlags* flags = nullptr);
-
   virtual void ClipDecorationsStripe(const TextFragmentPaintInfo&,
                                      float upper,
                                      float stripe_width,
@@ -120,28 +103,6 @@ class CORE_EXPORT TextPainterBase {
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_ = 0;
   const bool horizontal_;
-
- private:
-  void PaintDecorationUnderOrOverLine(
-      const TextFragmentPaintInfo& fragment_paint_info,
-      TextDecorationInfo& decoration_info,
-      TextDecorationLine line,
-      const cc::PaintFlags* flags = nullptr);
-
-  void PaintUnderOrOverLineDecorationShadows(
-      const TextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffset& decoration_offset,
-      TextDecorationInfo& decoration_info,
-      TextDecorationLine lines_to_paint,
-      const cc::PaintFlags* flags,
-      const TextPaintStyle& text_style);
-
-  void PaintUnderOrOverLineDecorations(
-      const TextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffset& decoration_offset,
-      TextDecorationInfo& decoration_info,
-      TextDecorationLine lines_to_paint,
-      const cc::PaintFlags* flags);
 };
 
 }  // namespace blink

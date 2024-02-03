@@ -12,9 +12,11 @@
 namespace ui {
 
 DataTransferEndpoint::DataTransferEndpoint(const GURL& url,
+                                           bool off_the_record,
                                            bool notify_if_restricted)
     : type_(EndpointType::kUrl),
       url_(url),
+      off_the_record_(off_the_record),
       notify_if_restricted_(notify_if_restricted) {}
 
 DataTransferEndpoint::DataTransferEndpoint(EndpointType type,

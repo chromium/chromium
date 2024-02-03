@@ -32,10 +32,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedControllerCocoa
   // UpdateToolbarVisibility(). Remove this comment once the bug has been
   // resolved.
   void Init() override;
-  void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style) override;
+  void UpdateToolbarVisibility(
+      std::optional<mojom::ToolbarVisibilityStyle> style) override;
   void OnTopViewBoundsChanged(const gfx::Rect& bounds) override;
-  void RevealLock() override;
-  void RevealUnlock() override;
+  void RevealLocked() override;
+  void RevealUnlocked() override;
   void Reanchor() override;
   void OnChildWindowAdded(NSWindow* child) override;
   void OnChildWindowRemoved(NSWindow* child) override;

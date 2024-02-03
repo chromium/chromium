@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
+#include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
@@ -46,6 +47,35 @@ void MaybeUpdateDndNotification() {
   if (auto* notification_controller =
           DoNotDisturbNotificationController::Get()) {
     notification_controller->MaybeUpdateNotification();
+  }
+}
+
+void RecordInitialDurationHistogram(base::TimeDelta session_duration) {
+  base::UmaHistogramCustomTimes(
+      /*name=*/focus_mode_histogram_names::
+          kInitialDurationOnSessionStartsHistogramName,
+      /*sample=*/session_duration,
+      /*min=*/focus_mode_util::kMinimumDuration,
+      /*max=*/focus_mode_util::kMaximumDuration, /*buckets=*/50);
+}
+
+void RecordStartSessionSourceHistogram(
+    focus_mode_histogram_names::ToggleSource source) {
+  switch (source) {
+    case focus_mode_histogram_names::ToggleSource::kFocusPanel:
+      base::UmaHistogramEnumeration(
+          /*name=*/focus_mode_histogram_names::kStartSessionSourceHistogramName,
+          /*sample=*/focus_mode_histogram_names::StartSessionSource::
+              kFocusPanel);
+      break;
+    case focus_mode_histogram_names::ToggleSource::kFeaturePod:
+      base::UmaHistogramEnumeration(
+          /*name=*/focus_mode_histogram_names::kStartSessionSourceHistogramName,
+          /*sample=*/focus_mode_histogram_names::StartSessionSource::
+              kFeaturePod);
+      break;
+    default:
+      break;
   }
 }
 
@@ -109,7 +139,7 @@ void FocusModeController::ToggleFocusMode(
     ResetFocusSession();
     return;
   }
-  StartFocusSession();
+  StartFocusSession(source);
 }
 
 void FocusModeController::OnActiveUserSessionChanged(
@@ -261,7 +291,14 @@ void FocusModeController::TriggerEndingMomentImmediately() {
   OnTimerTick();
 }
 
-void FocusModeController::StartFocusSession() {
+void FocusModeController::StartFocusSession(
+    focus_mode_histogram_names::ToggleSource source) {
+  RecordInitialDurationHistogram(/*session_duration=*/session_duration_);
+  RecordStartSessionSourceHistogram(source);
+  base::UmaHistogramBoolean(/*name=*/focus_mode_histogram_names::
+                                kHasSelectedTaskOnSessionStartHistogramName,
+                            /*sample=*/HasSelectedTask());
+
   current_session_ = FocusModeSession(session_duration_,
                                       session_duration_ + base::Time::Now());
 

@@ -93,19 +93,20 @@ HeapVector<Member<MLTensorInfo>> MLModel::outputs(ScriptState* script_state) {
 
 MLModel::~MLModel() = default;
 
-ScriptPromise MLModel::compute(
+ScriptPromiseTyped<IDLRecord<IDLString, MLTensor>> MLModel::compute(
     ScriptState* script_state,
     const HeapVector<std::pair<String, Member<MLTensor>>>& inputs,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLRecord<IDLString, MLTensor>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLRecord<IDLString, MLTensor>>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   // First verifies the sizes of inputs.
   if (input_tensor_name_to_info_.size() != inputs.size()) {
@@ -156,9 +157,9 @@ void MLModel::Trace(Visitor* visitor) const {
 
 void MLModel::OnComputeResult(
     ScriptState* script_state,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLRecord<IDLString, MLTensor>>* resolver,
     ComputeResult result,
-    const absl::optional<HashMap<String, Vector<uint8_t>>>& outputs) {
+    const std::optional<HashMap<String, Vector<uint8_t>>>& outputs) {
   if (result != ComputeResult::kOk || !outputs.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError,
@@ -261,7 +262,7 @@ void MLModel::OnComputeResult(
 #undef WEBML_SET_TYPED_OUTPUTS_BLINK
   }
 
-  resolver->Resolve<IDLRecord<IDLString, MLTensor>>(std::move(outputs_blink));
+  resolver->Resolve(std::move(outputs_blink));
 }
 
 }  // namespace blink

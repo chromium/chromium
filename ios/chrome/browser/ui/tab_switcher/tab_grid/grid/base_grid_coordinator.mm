@@ -89,18 +89,21 @@
   _tabGroupCoordinator = nil;
 }
 
-- (void)showTabGroupCreationForTabs:(std::set<web::WebStateID>&)identifiers {
+- (void)showTabGroupCreationForTabs:
+    (const std::set<web::WebStateID>&)identifiers {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   CHECK(!_tabGroupCreator) << "There is an atemps to create a tab group when a "
                               "creation process is still running.";
+
   // TODO(crbug.com/1501837): Replace base view controller by view controller
   // when the base grid coordinator will have access to the grid view
   // controller.
   _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
+                         browser:self.browser
+                    selectedTabs:identifiers];
   [_tabGroupCreator start];
 }
 

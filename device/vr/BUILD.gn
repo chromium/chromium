@@ -156,6 +156,8 @@ if (enable_vr) {
         "openxr/exit_xr_present_reason.h",
         "openxr/fb/openxr_hand_tracker_fb.cc",
         "openxr/fb/openxr_hand_tracker_fb.h",
+        "openxr/msft/openxr_anchor_manager_msft.cc",
+        "openxr/msft/openxr_anchor_manager_msft.h",
         "openxr/msft/openxr_scene_bounds_msft.cc",
         "openxr/msft/openxr_scene_bounds_msft.h",
         "openxr/msft/openxr_scene_msft.cc",
@@ -242,13 +244,19 @@ if (enable_vr) {
 
       if (is_android) {
         sources += [
+          "openxr/android/openxr_anchor_manager_android.cc",
+          "openxr/android/openxr_anchor_manager_android.h",
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
           "openxr/android/openxr_hand_tracker_android.cc",
           "openxr/android/openxr_hand_tracker_android.h",
           "openxr/android/openxr_platform_helper_android_statics.cc",
+          "openxr/android/openxr_scene_understanding_manager_android.cc",
+          "openxr/android/openxr_scene_understanding_manager_android.h",
           "openxr/android/openxr_stage_bounds_provider_android.cc",
           "openxr/android/openxr_stage_bounds_provider_android.h",
+          "openxr/android/openxr_unbounded_space_provider_android.cc",
+          "openxr/android/openxr_unbounded_space_provider_android.h",
         ]
 
         configs += [ "//third_party/khronos:khronos_headers" ]
@@ -260,6 +268,7 @@ if (enable_vr) {
         ":openxr_data",
         "//components/version_info",
         "//device/base",
+        "//device/vr/public/mojom:vr_public_typemaps",
         "//gpu/command_buffer/service:gles2",
         "//third_party/openxr",
         "//ui/gl/init",
@@ -366,6 +375,7 @@ if (enable_openxr) {
         "//components/version_info",
         "//device/gamepad/public/cpp:shared_with_blink",
         "//device/vr/public/mojom:test_mojom",
+        "//device/vr/public/mojom:vr_public_typemaps",
         "//third_party/openxr:openxr_headers",
       ]
 

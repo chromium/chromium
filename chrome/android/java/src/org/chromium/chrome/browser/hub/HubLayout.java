@@ -35,7 +35,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.Layout.ViewportMode;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -56,6 +55,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.Collections;
+import java.util.function.DoubleConsumer;
 
 /**
  * A {@link Layout} for Hub that has an empty or single tab {@link SceneLayer}. Android UI for a
@@ -74,6 +74,7 @@ public class HubLayout extends Layout implements HubLayoutController {
     private final @NonNull HubController mHubController;
     private final @NonNull PaneManager mPaneManager;
     private final @NonNull HubLayoutScrimController mScrimController;
+    private final @NonNull DoubleConsumer mOnToolbarAlphaChange;
 
     /**
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and {@link
@@ -126,6 +127,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         mPaneManager = hubManager.getPaneManager();
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocused);
         mScrimController = dependencyHolder.getScrimController();
+        mOnToolbarAlphaChange = dependencyHolder.getOnToolbarAlphaChange();
     }
 
     /** Returns the current {@link HubLayoutAnimationType}. */
@@ -263,10 +265,12 @@ public class HubLayout extends Layout implements HubLayoutController {
 
             mRootView.setVisibility(View.VISIBLE);
             containerView.setVisibility(View.INVISIBLE);
-            mRootView.addView(
-                    containerView,
-                    /* index= */ 0,
-                    new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            LayoutParams params = (LayoutParams) containerView.getLayoutParams();
+            // TODO(crbug/1523037): Change this to an assert and fix any broken tests.
+            if (params == null) {
+                params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            }
+            mRootView.addView(containerView, /* index= */ 0, params);
 
             // For start surface transitions the behavior prior to Hub is to instantly switch
             // between layouts. Ideally, there should be a coordinated fade between the layouts, but
@@ -379,7 +383,6 @@ public class HubLayout extends Layout implements HubLayoutController {
     @Override
     public void doneHiding() {
         try (TraceEvent e = TraceEvent.scoped("HubLayout.doneHiding")) {
-            super.doneHiding();
             HubContainerView containerView = mHubController.getContainerView();
             containerView.setVisibility(View.INVISIBLE);
             mRootView.removeView(containerView);
@@ -394,6 +397,9 @@ public class HubLayout extends Layout implements HubLayoutController {
             // This is a legacy value from the stack tab switcher, we are using at a proxy for Hub
             // hidden.
             RecordUserAction.record("MobileExitStackView");
+
+            // Do this last so the Hub is ready to show again.
+            super.doneHiding();
         }
     }
 
@@ -463,7 +469,8 @@ public class HubLayout extends Layout implements HubLayoutController {
                         mHubController.getContainerView(),
                         animationDataSupplier,
                         backgroundColor,
-                        EXPAND_NEW_TAB_DURATION_MS);
+                        EXPAND_NEW_TAB_DURATION_MS,
+                        mOnToolbarAlphaChange);
 
         HubContainerView containerView = mHubController.getContainerView();
         assert containerView.isLaidOut();
@@ -582,7 +589,7 @@ public class HubLayout extends Layout implements HubLayoutController {
                     containerView, mScrimController, TRANSLATE_DURATION_MS);
         } else if (mPreviousLayoutTypeSupplier.get() == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
-                    containerView, FADE_DURATION_MS);
+                    containerView, FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
         return pane.createShowHubLayoutAnimatorProvider(containerView);
     }
@@ -597,7 +604,7 @@ public class HubLayout extends Layout implements HubLayoutController {
                     containerView, mScrimController, TRANSLATE_DURATION_MS);
         } else if (nextLayoutType == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
-                    containerView, FADE_DURATION_MS);
+                    containerView, FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
         return pane.createHideHubLayoutAnimatorProvider(containerView);
     }

@@ -176,5 +176,5 @@ void PageInfoSecurityContentView::SecurityDetailsClicked(
   }
 }
 
-BEGIN_METADATA(PageInfoSecurityContentView, views::View)
+BEGIN_METADATA(PageInfoSecurityContentView)
 END_METADATA

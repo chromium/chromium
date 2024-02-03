@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1213425325105380833">Bu hesaba qoşulmuş cihazlarda bu yaxınlarda istifadə etdiyiniz veb-səhifələri bərpa edin</translation>
+<translation id="1786044937610313874">Qısayollar Chrome-da açılır</translation>
+<translation id="204914487372604757">Qısayol yaradın</translation>
 <translation id="2065911435109240297">Veb-tətbiqləri bərpa edin</translation>
 <translation id="2111649875343992405">Bərpa ediləcək veb-tətbiqləri nəzərdən keçirin</translation>
 <translation id="2139186145475833000">Əsas ekrana əlavə edin</translation>
@@ -10,8 +12,10 @@
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="3910402514791813257">Quraşdırmaq alınmadı</translation>
 <translation id="4250229828105606438">Skrinşot</translation>
+<translation id="4338600611020922010">Əsas ekrana əlavə edin</translation>
 <translation id="4665282149850138822"><ph name="NAME" /> əsas ekranınıza əlavə edildi</translation>
 <translation id="5250483651202458397">Skrinşot. Bağlamaq üçün toxunun.</translation>
+<translation id="5684726956335420505">Tətbiqi əsas ekrana əlavə etmək qaydasını seçin</translation>
 <translation id="5972844218283131174">Bütün seçimləri silin</translation>
 <translation id="6838423508083736333">Son ay istifadə edilən veb-tətbiqlər</translation>
 <translation id="6990079615885386641">Google Play Dükanından tətbiq əldə edin: <ph name="APP_ACTION" /></translation>

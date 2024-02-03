@@ -72,6 +72,7 @@ export class BluetoothBrailleDisplayManager {
     'Braillino BL',
     'B2G',
     'Conny',
+    'DotPad',
     'Easy Braille EBR',
     'EL12-',
     'Esys-',

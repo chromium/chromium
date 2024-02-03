@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink::test {
@@ -57,7 +58,7 @@ v8::Isolate* TaskEnvironment::isolate() {
   if (impl_) {
     return impl_->isolate();
   }
-  return blink::MainThreadIsolate();
+  return Thread::MainThread()->Scheduler()->ToMainThreadScheduler()->Isolate();
 }
 
 }  // namespace blink::test

@@ -253,6 +253,7 @@ export class HelpBubbleController {
     this.bubble_.progress = params.progress || null;
     this.bubble_.buttons = params.buttons;
     this.bubble_.padding = this.options_.padding;
+    this.bubble_.focusAnchor = params.focusOnShowHint === false;
 
     if (params.timeout) {
       this.bubble_.timeoutMs = Number(params.timeout!.microseconds / 1000n);

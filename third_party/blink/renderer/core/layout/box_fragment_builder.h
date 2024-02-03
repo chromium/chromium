@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_FRAGMENT_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_FRAGMENT_BUILDER_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
@@ -146,7 +147,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   LayoutUnit IntrinsicBlockSize() const { return intrinsic_block_size_; }
   const BoxStrut& Borders() const {
     DCHECK(initial_fragment_geometry_);
-    DCHECK_NE(BoxType(), PhysicalFragment::kInlineBox);
+    DCHECK_NE(GetBoxType(), PhysicalFragment::kInlineBox);
     return initial_fragment_geometry_->border;
   }
   const BoxStrut& Scrollbar() const {
@@ -198,7 +199,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // children it may be omitted, if the break shouldn't affect the appeal of
   // breaking inside this container.
   void AddBreakBeforeChild(LayoutInputNode child,
-                           absl::optional<BreakAppeal> appeal,
+                           std::optional<BreakAppeal> appeal,
                            bool is_forced_break);
 
   // Add a layout result and propagate info from it. This involves appending the
@@ -212,8 +213,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void AddResult(
       const LayoutResult&,
       const LogicalOffset,
-      absl::optional<const BoxStrut> margins,
-      absl::optional<LogicalOffset> relative_offset = absl::nullopt,
+      std::optional<const BoxStrut> margins,
+      std::optional<LogicalOffset> relative_offset = std::nullopt,
       const OofInlineContainer<LogicalOffset>* inline_container = nullptr);
   // AddResult() with the default margin computation.
   void AddResult(const LayoutResult& child_layout_result,
@@ -227,7 +228,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
       const LogicalOffset&,
       const MarginStrut* margin_strut = nullptr,
       bool is_self_collapsing = false,
-      absl::optional<LogicalOffset> relative_offset = absl::nullopt,
+      std::optional<LogicalOffset> relative_offset = std::nullopt,
       const OofInlineContainer<LogicalOffset>* inline_container = nullptr);
 
   // Manually add a break token to the builder. Note that we're assuming that
@@ -433,14 +434,14 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // Creates the fragment. Can only be called once.
   const LayoutResult* ToBoxFragment() {
-    DCHECK_NE(BoxType(), PhysicalFragment::kInlineBox);
+    DCHECK_NE(GetBoxType(), PhysicalFragment::kInlineBox);
     return ToBoxFragment(GetWritingMode());
   }
   const LayoutResult* ToInlineBoxFragment() {
     // The logical coordinate for inline box uses line-relative writing-mode,
     // not
     // flow-relative.
-    DCHECK_EQ(BoxType(), PhysicalFragment::kInlineBox);
+    DCHECK_EQ(GetBoxType(), PhysicalFragment::kInlineBox);
     return ToBoxFragment(ToLineWritingMode(GetWritingMode()));
   }
 
@@ -468,11 +469,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // Sets the first baseline for this fragment.
   void SetFirstBaseline(LayoutUnit baseline) { first_baseline_ = baseline; }
-  absl::optional<LayoutUnit> FirstBaseline() const { return first_baseline_; }
+  std::optional<LayoutUnit> FirstBaseline() const { return first_baseline_; }
 
   // Sets the last baseline for this fragment.
   void SetLastBaseline(LayoutUnit baseline) { last_baseline_ = baseline; }
-  absl::optional<LayoutUnit> LastBaseline() const { return last_baseline_; }
+  std::optional<LayoutUnit> LastBaseline() const { return last_baseline_; }
 
   // Sets both the first and last baseline to the same value.
   void SetBaselines(LayoutUnit baseline) {
@@ -552,10 +553,6 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     break_token_data_ = break_token_data;
   }
 
-  // Returns offset for given child. DCHECK if child not found.
-  // Warning: Do not call unless necessary.
-  LogicalOffset GetChildOffset(const LayoutObject* child) const;
-
 #if DCHECK_IS_ON()
   // If we don't participate in a fragmentation context, this method can check
   // that all block fragmentation related fields have their initial value.
@@ -608,7 +605,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   LayoutUnit original_border_scrollbar_padding_block_start_;
   LogicalSize child_available_size_;
   LayoutUnit intrinsic_block_size_;
-  absl::optional<LogicalRect> inflow_bounds_;
+  std::optional<LogicalRect> inflow_bounds_;
 
   bool is_fieldset_container_ = false;
   bool is_table_part_ = false;
@@ -634,27 +631,27 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // The break-before value on the initial child we cannot honor. There's no
   // valid class A break point before a first child, only *between* siblings.
-  absl::optional<EBreakBetween> initial_break_before_;
+  std::optional<EBreakBetween> initial_break_before_;
 
   // The break-after value of the previous in-flow sibling.
   EBreakBetween previous_break_after_ = EBreakBetween::kAuto;
 
   AtomicString page_name_ = g_null_atom;
 
-  absl::optional<LayoutUnit> first_baseline_;
-  absl::optional<LayoutUnit> last_baseline_;
+  std::optional<LayoutUnit> first_baseline_;
+  std::optional<LayoutUnit> last_baseline_;
   LayoutUnit math_italic_correction_;
 
   // Table specific types.
-  absl::optional<LogicalRect> table_grid_rect_;
+  std::optional<LogicalRect> table_grid_rect_;
   TableFragmentData::ColumnGeometries table_column_geometries_;
   const TableBorders* table_collapsed_borders_ = nullptr;
   std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
       table_collapsed_borders_geometry_;
-  absl::optional<wtf_size_t> table_column_count_;
+  std::optional<wtf_size_t> table_column_count_;
 
   // Table cell specific types.
-  absl::optional<wtf_size_t> table_cell_column_index_;
+  std::optional<wtf_size_t> table_cell_column_index_;
   wtf_size_t table_section_start_row_index_;
   Vector<LayoutUnit> table_section_row_offsets_;
 

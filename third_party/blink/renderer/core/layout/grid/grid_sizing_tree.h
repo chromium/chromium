@@ -45,8 +45,7 @@ class SubgriddedItemData {
   }
 
   const GridLayoutTrackCollection& Columns(
-      absl::optional<WritingMode> container_writing_mode =
-          absl::nullopt) const {
+      std::optional<WritingMode> container_writing_mode = std::nullopt) const {
     return (!container_writing_mode ||
             IsParallelWritingMode(*container_writing_mode,
                                   parent_writing_mode_))
@@ -55,8 +54,7 @@ class SubgriddedItemData {
   }
 
   const GridLayoutTrackCollection& Rows(
-      absl::optional<WritingMode> container_writing_mode =
-          absl::nullopt) const {
+      std::optional<WritingMode> container_writing_mode = std::nullopt) const {
     return (!container_writing_mode ||
             IsParallelWritingMode(*container_writing_mode,
                                   parent_writing_mode_))
@@ -194,7 +192,7 @@ class GridSizingSubtree
            grid_tree_->LookupSubgridIndex(grid_node) == subtree_root_;
   }
 
-  GridItems& GridItems() const {
+  GridItems& GetGridItems() const {
     DCHECK(grid_tree_);
     return grid_tree_->At(subtree_root_).grid_items;
   }

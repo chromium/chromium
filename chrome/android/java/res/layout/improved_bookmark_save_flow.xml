@@ -31,8 +31,7 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:paddingVertical="18dp"
-        android:paddingHorizontal="16dp"
+        style="@style/BookmarkSaveFlowContainer"
         android:contentDescription="@string/edit_folder"
         android:foreground="@drawable/bookmark_touch_ripple"
         android:focusable="true"
@@ -56,10 +55,11 @@ found in the LICENSE file.
 
       <LinearLayout
           app:layout_constraintStart_toEndOf="@id/bookmark_image"
+          app:layout_constraintEnd_toStartOf="@id/edit_chev"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintBottom_toBottomOf="parent"
           android:layout_gravity="center"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_marginStart="12dp"
           android:orientation="vertical"
@@ -68,8 +68,10 @@ found in the LICENSE file.
           android:clickable="false" >
         <TextView
             android:id="@+id/bookmark_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:text="@string/bookmark_save_flow_title"
             android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
             android:importantForAccessibility="no"
@@ -77,18 +79,21 @@ found in the LICENSE file.
         <!-- Spans are used to mutate the color of part of this text at runtime. -->
         <TextView
             android:id="@+id/bookmark_subtitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:importantForAccessibility="no"
             android:focusable="false" />
 
       </LinearLayout>
       <ImageView
+          android:id="@+id/edit_chev"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
-          android:layout_width="@dimen/min_touch_target_size"
+          android:layout_width="24dp"
           android:layout_height="match_parent"
           android:scaleType="center"
           android:src="@drawable/chevron_right"
@@ -104,8 +109,7 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:paddingVertical="16dp"
-        android:paddingHorizontal="16dp"
+        style="@style/BookmarkSaveFlowContainer"
         android:layout_marginTop="2dp" >
 
       <ImageView

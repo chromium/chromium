@@ -293,7 +293,7 @@ v8::Local<v8::Value> PipeToEngine::HandleNextEvent(v8::Local<v8::Value>) {
     return Undefined();
   }
 
-  absl::optional<double> desired_size = writer_->GetDesiredSizeInternal();
+  std::optional<double> desired_size = writer_->GetDesiredSizeInternal();
   if (!desired_size.has_value()) {
     // This can happen if abort() is queued but not yet started when
     // pipeTo() is called. In that case [[storedError]] is not set yet, and

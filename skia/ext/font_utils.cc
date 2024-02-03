@@ -118,11 +118,3 @@ SkFont DefaultFont() {
 }
 
 }  // namespace skia
-
-// TODO(b/305780908) Remove this after all dependencies on the default fontmgr
-// have been removed.
-#if !defined(SK_DISABLE_LEGACY_FONTMGR_FACTORY)
-SK_API sk_sp<SkFontMgr> SkFontMgr::Factory() {
-  return skia::DefaultFontMgr();
-}
-#endif

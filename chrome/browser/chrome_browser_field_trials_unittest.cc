@@ -31,8 +31,12 @@ TEST(ChromeBrowserFieldTrialsTest, SamplingTrials) {
   EXPECT_FALSE(base::FieldTrialList::TrialExists(kUkmSamplingTrialName));
 
   // Call SetUpClientSideFieldTrials(), which should create fallback
-  // sampling trials since they do not exist yet.
-  variations::EntropyProviders entropy_providers("client_id", {0, 8000});
+  // sampling trials since they do not exist yet. Using an empty string for
+  // limited_entropy_randomization_source since it's not relevant to the
+  // sampling trials that are being tested here.
+  variations::EntropyProviders entropy_providers(
+      "client_id", {0, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view());
   auto feature_list = std::make_unique<base::FeatureList>();
   chrome_browser_field_trials.SetUpClientSideFieldTrials(
       /*has_seed=*/false, entropy_providers, feature_list.get());

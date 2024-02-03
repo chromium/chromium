@@ -170,6 +170,13 @@
       ],
     },
   },
+  'amd_radeon_rx_5500_xt': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:7340',
+      },
+    },
+  },
   'android': {
     'swarming': {
       'dimensions': {
@@ -255,19 +262,6 @@
   'chrome-tester-service-account': {
     'swarming': {
       'service_account': 'chrome-tester@chops-service-accounts.iam.gserviceaccount.com',
-    },
-  },
-  'chrome-win-arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Windows-11',
-        'pool': 'chrome.tests',
-        'gpu': 'qcom:043a',
-        'zone': 'us-sfo',
-      },
-      'expiration': 64800,
-      'hard_timeout': 43200,
     },
   },
   'chromeos-amd64-generic': {
@@ -373,7 +367,7 @@
         'cpu': 'x86-64',
         'kvm': '1',
         'gce': '1',
-        'os': 'Ubuntu-18.04',
+        'os': 'Ubuntu-22.04',
         'pool': 'chrome.tests',
       },
       'optional_dimensions': {
@@ -516,6 +510,13 @@
       },
     },
   },
+  'intel_uhd_630': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '8086:9bc5',
+      },
+    },
+  },
   'ios_custom_webkit': {
     'args': [
       '--args-json',
@@ -558,22 +559,22 @@
       ],
     },
   },
-  'ios_runtime_cache_17_0': {
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'runtime_ios_17_0',
-          'path': 'Runtime-ios-17.0',
-        },
-      ],
-    },
-  },
   'ios_runtime_cache_17_2': {
     'swarming': {
       'named_caches': [
         {
           'name': 'runtime_ios_17_2',
           'path': 'Runtime-ios-17.2',
+        },
+      ],
+    },
+  },
+  'ios_runtime_cache_17_4': {
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'runtime_ios_17_4',
+          'path': 'Runtime-ios-17.4',
         },
       ],
     },
@@ -612,13 +613,6 @@
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-22.04',
-      },
-    },
-  },
-  'linux-jammy-or-bionic': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04|Ubuntu-18.04',
       },
     },
   },
@@ -1214,7 +1208,7 @@
         {
           'cipd_package': 'chromium/android_webview/tools/cts_archive',
           'location': 'android_webview/tools/cts_archive',
-          'revision': 'dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C',
+          'revision': 'Tonx5t-WDQ4lYRaMNn3IEzzOeyaIgtQ0d1ZAv0lRlwEC',
         },
       ],
     },
@@ -1265,7 +1259,7 @@
     'swarming': {
       'dimensions': {
         'display_attached': '1',
-        'gpu': '8086:9bc5-31.0.101.2111',
+        'gpu': '8086:9bc5-31.0.101.2114',
         'os': 'Windows-10',
         'pool': 'chromium.tests.gpu',
       },
@@ -1329,12 +1323,12 @@
   'xcode_15_beta': {
     'args': [
       '--xcode-build-version',
-      '15c500b',
+      '15e5178i',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_15c500b',
+          'name': 'xcode_ios_15e5178i',
           'path': 'Xcode.app',
         },
       ],
@@ -1343,12 +1337,12 @@
   'xcode_15_main': {
     'args': [
       '--xcode-build-version',
-      '15a507',
+      '15c500b',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_15a507',
+          'name': 'xcode_ios_15c500b',
           'path': 'Xcode.app',
         },
       ],

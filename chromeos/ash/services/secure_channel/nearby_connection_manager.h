@@ -13,8 +13,10 @@
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/nearby_initiator_failure_type.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -32,6 +34,9 @@ class NearbyConnectionManager {
       mojo::PendingRemote<mojom::NearbyConnector> nearby_connector);
   bool IsNearbyConnectorSet() const;
 
+  using BleDiscoveryStateChangeCallback =
+      base::RepeatingCallback<void(mojom::DiscoveryResult,
+                                   absl::optional<mojom::DiscoveryErrorCode>)>;
   using ConnectionSuccessCallback =
       base::OnceCallback<void(std::unique_ptr<AuthenticatedChannel>)>;
   using FailureCallback =
@@ -41,6 +46,8 @@ class NearbyConnectionManager {
   // attempt has finished.
   void AttemptNearbyInitiatorConnection(
       const DeviceIdPair& device_id_pair,
+      const BleDiscoveryStateChangeCallback&
+          ble_discovery_state_change_callback,
       ConnectionSuccessCallback success_callback,
       const FailureCallback& failure_callback);
 
@@ -69,13 +76,21 @@ class NearbyConnectionManager {
       const DeviceIdPair& device_id_pair,
       std::unique_ptr<AuthenticatedChannel> authenticated_channel);
 
+  void NotifyBleDiscoveryStateChanged(
+      const DeviceIdPair& device_id_pair,
+      mojom::DiscoveryResult discovery_result,
+      absl::optional<mojom::DiscoveryErrorCode> potential_error_code);
+
  private:
   struct InitiatorConnectionAttemptMetadata {
     InitiatorConnectionAttemptMetadata(
+        const BleDiscoveryStateChangeCallback&
+            ble_discovery_state_change_callback,
         ConnectionSuccessCallback success_callback,
         const FailureCallback& failure_callback);
     ~InitiatorConnectionAttemptMetadata();
 
+    BleDiscoveryStateChangeCallback ble_discovery_state_change_callback;
     ConnectionSuccessCallback success_callback;
     FailureCallback failure_callback;
   };

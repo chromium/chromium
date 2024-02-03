@@ -87,9 +87,8 @@ void ImageContentAnnotator::AnnotateEncodedImage(
   }
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(data.length());
+  CHECK(mapped_region.IsValid());
   memcpy(mapped_region.mapping.memory(), data.data(), data.length());
-  DCHECK(mapped_region.IsValid());
-  DCHECK(mapped_region.region.IsValid());
 
   EnsureAnnotatorIsConnected();
   image_content_annotator_->AnnotateEncodedImage(

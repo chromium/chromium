@@ -79,7 +79,7 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
                    const ComputedStyle& style,
                    LayoutUnit flex_base_content_size,
                    MinMaxSizes min_max_main_sizes,
-                   absl::optional<MinMaxSizes> min_max_cross_sizes,
+                   std::optional<MinMaxSizes> min_max_cross_sizes,
                    LayoutUnit main_axis_border_padding,
                    LayoutUnit cross_axis_border_padding,
                    PhysicalBoxStrut physical_margins,
@@ -611,14 +611,14 @@ LayoutUnit FlexibleBoxAlgorithm::GapBetweenItems(
     const ComputedStyle& style,
     LogicalSize percent_resolution_sizes) {
   if (IsColumnFlow(style)) {
-    if (const absl::optional<Length>& row_gap = style.RowGap()) {
+    if (const std::optional<Length>& row_gap = style.RowGap()) {
       return MinimumValueForLength(
           *row_gap,
           percent_resolution_sizes.block_size.ClampIndefiniteToZero());
     }
     return LayoutUnit();
   }
-  if (const absl::optional<Length>& column_gap = style.ColumnGap()) {
+  if (const std::optional<Length>& column_gap = style.ColumnGap()) {
     return MinimumValueForLength(
         *column_gap,
         percent_resolution_sizes.inline_size.ClampIndefiniteToZero());
@@ -631,14 +631,14 @@ LayoutUnit FlexibleBoxAlgorithm::GapBetweenLines(
     const ComputedStyle& style,
     LogicalSize percent_resolution_sizes) {
   if (!IsColumnFlow(style)) {
-    if (const absl::optional<Length>& row_gap = style.RowGap()) {
+    if (const std::optional<Length>& row_gap = style.RowGap()) {
       return MinimumValueForLength(
           *row_gap,
           percent_resolution_sizes.block_size.ClampIndefiniteToZero());
     }
     return LayoutUnit();
   }
-  if (const absl::optional<Length>& column_gap = style.ColumnGap()) {
+  if (const std::optional<Length>& column_gap = style.ColumnGap()) {
     return MinimumValueForLength(
         *column_gap,
         percent_resolution_sizes.inline_size.ClampIndefiniteToZero());
@@ -1153,13 +1153,14 @@ LayoutUnit FlexibleBoxAlgorithm::InitialContentPositionOffset(
     if (available_free_space > 0 && number_of_items)
       return available_free_space / (2 * number_of_items);
 
-    return available_free_space / 2;
+    // Fallback to 'safe center'
+    return (available_free_space / 2).ClampNegativeToZero();
   }
   if (data.Distribution() == ContentDistributionType::kSpaceEvenly) {
     if (available_free_space > 0 && number_of_items)
       return available_free_space / (number_of_items + 1);
-    // Fallback to 'center'
-    return available_free_space / 2;
+    // Fallback to 'safe center'
+    return (available_free_space / 2).ClampNegativeToZero();
   }
   return LayoutUnit();
 }

@@ -607,9 +607,11 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3526440770046466733">Lingi avamine uuel vahelehel ja praegusele vahelehele jäämine</translation>
 <translation id="353086728817903341">Ühendatud <ph name="NUM_DEVICES" /> seadmega</translation>
 <translation id="3533126039236445965">Riiulil olevad rakendused</translation>
+<translation id="3537350467437346467">Vaatasite faili</translation>
 <translation id="3539957339480430241">Teenuse <ph name="DEVICE_NAME" /> kuumkoht</translation>
 <translation id="3540893133818942399">Teie telefoni hiljutiste fotode ja meediafailide kuvamise seadistamisest loobumine</translation>
 <translation id="3542066395059568317">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite paremklõpsata.</translation>
+<translation id="3547318469722231257">Muutsite faili</translation>
 <translation id="3552189655002856821">WiFi on välja lülitatud</translation>
 <translation id="3554215588514239132">Arendajatööriistade paneeli kuvamine või peitmine</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kinnitati</translation>
@@ -702,6 +704,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="385300504083504382">Algus</translation>
 <translation id="3859364108019690">Rakendusi ei saa voogesitada</translation>
 <translation id="3861651314799684201">Vajutage täisekraani salvestamiseks sisestusklahvi</translation>
+<translation id="3882323608730650973">Muudetud</translation>
 <translation id="3886872229787704059">Täna avatud</translation>
 <translation id="3891340733213178823">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (kõnena esitatud tagasiside)</translation>
@@ -895,6 +898,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4582666543382004902">Kuumkoht on WiFi kasutamiseks välja lülitatud. Kuumkoha kasutamiseks lülitage WiFi välja.</translation>
 <translation id="4585337515783392668">Katkesta ülekandmine tundmatus vastuvõtjas</translation>
 <translation id="4596144739579517758">Tume teema on väljas</translation>
+<translation id="4596442969149038771">Kasutaja <ph name="USER" /> poolt jagatud</translation>
 <translation id="4611292653554630842">Logi sisse</translation>
 <translation id="462160925400706389"><ph name="NAME" /> on ühendatud</translation>
 <translation id="4623167406982293031">Kinnitage konto</translation>
@@ -1338,6 +1342,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6298183524022479114">Kohandage seda seadet rakenduses</translation>
 <translation id="6309219492973062892">Klõps või puudutus riiuli ikoonil 1–8</translation>
 <translation id="6315170314923504164">Hääl</translation>
+<translation id="6319058840130157106">Fookuse teisaldamine vastupidises järjestuses: parem allnurk, käivitaja, aadressiriba, järjehoidjariba, avatud veebisait, allalaadimised</translation>
 <translation id="6324916366299863871">Otsetee muutmine</translation>
 <translation id="6330012934079202188">Kuvatud on kõigi töölaudade aknad. Praeguse töölaua akende kuvamiseks vajutage ülesnooleklahvi.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on hallatud seanss, mida haldab <ph name="MANAGER" /></translation>
@@ -1501,6 +1506,7 @@ Uus installimine</translation>
 <translation id="6981291220124935078">Lülita juurdepääs sisse</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="698231206551913481">Kõik selle kasutajaga seotud failid ja kohalikud andmed kustutatakse jäädavalt kohe, kui see kasutaja eemaldatakse.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
 <translation id="6989752354829085073">Vaadake kiiret tutvustust Chromebookis navigeerimise kohta. Kuue toiminguga saate tööd alustada.</translation>
 <translation id="7004910047186208204">Looge ühendus mobiilse andmesidega</translation>
 <translation id="7005239792648594238">Alustamiseks avage rakendus</translation>
@@ -1815,6 +1821,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8314772463905284467">Suurtähelukk on sisse lülitatud</translation>
 <translation id="8315514906653279104">Sisselülitamine …</translation>
 <translation id="8331351032546853669">Allalaadimine on ootel</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Valitud on aken <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">käivitaja</translation>
@@ -1921,6 +1928,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="878215960996152260"><ph name="APP_NAME" />, installitud rakendus, blokeeritud</translation>
 <translation id="8785070478575117577">Loo ühendus võrguga <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
+<translation id="8790632710469941716">Fookuse teisaldamine järgmises järjestuses: parem allnurk, käivitaja, aadressiriba, järjehoidjariba, avatud veebisait, allalaadimised</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Kaust <ph name="FOLDER_NAME" /></translation>
@@ -2034,6 +2042,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="953431725143473984">Kas lülitada seade välja?</translation>
 <translation id="954052413789300507">Faili <ph name="FILENAME" /> jaoks pole piisavalt ruumi. Vabastage ruumi.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Kasutaja <ph name="USER" /> poolt muudetud</translation>
 <translation id="974545358917229949">Kuvatud on <ph name="RESULT_COUNT" /> tulemust päringule <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Tähtaega pole</translation>
 <translation id="98120814841227350">Dokumendi lõppu liikumine</translation>

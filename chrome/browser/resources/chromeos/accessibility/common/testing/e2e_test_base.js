@@ -400,6 +400,36 @@ E2ETestBase = class extends AccessibilityTestBase {
         treeWalker.next().node, 'Found more than one ' + nodeDescription + '.');
     return node;
   }
+
+  /**
+   * Async function to get a preference value from Settings.
+   * @param {string} name
+   * @return {!Promise<*>}
+   */
+  async getPref(name) {
+    return new Promise(resolve => {
+      chrome.settingsPrivate.getPref(name, ret => {
+        resolve(ret);
+      });
+    });
+  }
+
+  /**
+   * Async function to set a preference value in Settings.
+   * @param {string} name
+   * @return {!Promise}
+   */
+  async setPref(name, value) {
+    return new Promise(resolve => {
+      chrome.settingsPrivate.setPref(name, value, undefined, async () => {
+        // Wait for changes to fully propagate.
+        const result = await (this.getPref(name));
+        assertEquals(result.key, name);
+        assertEquals(result.value, value);
+        resolve();
+      });
+    });
+  }
 };
 
 /** @override */

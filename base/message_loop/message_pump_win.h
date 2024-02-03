@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -76,10 +75,7 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   //     this is simpler than MessagePumpForUI.
   std::atomic_bool work_scheduled_{false};
 
-  // State for the current invocation of Run(). null if not running.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
+  raw_ptr<RunState> run_state_ = nullptr;
 
   THREAD_CHECKER(bound_thread_);
 };

@@ -70,6 +70,13 @@ class WebGpuTestResult():
   log_pieces: List[str] = ct.EmptyList()
 
 
+@dataclasses.dataclass
+class WebGpuTestArgs():
+  """Struct-like object for holding arguments for a single test."""
+  query: str
+  run_in_worker: bool
+  additional_browser_args: Optional[List[str]] = None
+
 class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   # Whether the test page has already been loaded. Caching this state here is
   # faster than checking the URL every time, and given how fast these tests are,
@@ -82,7 +89,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   _use_webgpu_adapter: Optional[str] = None  # use the default
   _original_environ: Optional[collections.abc.Mapping] = None
   _use_webgpu_power_preference: Optional[str] = None
-  _use_dxc = False
+  _use_fxc = False
   _os_name: Optional[str] = None
 
   _build_dir: Optional[str] = None
@@ -153,11 +160,11 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         default=None,
         help=('Runs the browser with a particular WebGPU power preference'))
     parser.add_option(
-        '--use-dxc',
+        '--use-fxc',
         action='store_true',
         default=False,
         help=(
-            'On Windows, pass --enable-dawn-features=use_dxc to the browser.'))
+            'On Windows, pass --disable-dawn-features=use_dxc to the browser.'))
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -180,10 +187,10 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     disable_dawn_features = []
 
     if sys.platform == 'win32':
-      if cls._use_dxc:
-        enable_dawn_features.append('use_dxc')
-      else:
+      if cls._use_fxc:
         disable_dawn_features.append('use_dxc')
+      else:
+        enable_dawn_features.append('use_dxc')
 
     if enable_dawn_features:
       browser_args.append('--enable-dawn-features=%s' %
@@ -236,7 +243,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
     cls._use_webgpu_adapter = options.use_webgpu_adapter
     cls._use_webgpu_power_preference = options.use_webgpu_power_preference
-    cls._use_dxc = options.use_dxc
+    cls._use_fxc = options.use_fxc
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
@@ -257,6 +264,14 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     super()._RestoreBrowserEnvironment()
 
   @classmethod
+  def _GetAdditionalBrowserArgsForQuery(cls, query: str) -> Optional[List[str]]:
+    """Returns additional browser args for a given query.
+
+    Should be overridden by child class to actually return args when necessary.
+    """
+    del query
+
+  @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     cls._SetClassVariablesFromOptions(options)
     if cls._test_list is None:
@@ -267,15 +282,19 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         contents = f.read()
       cls._worker_test_globs = [l for l in contents.splitlines() if l]
     for line in cls._test_list:  # pylint:disable=not-an-iterable
-      test_inputs = [line, False]
+      additional_browser_args = cls._GetAdditionalBrowserArgsForQuery(line)
+      test_args = WebGpuTestArgs(
+          query=line,
+          run_in_worker=False,
+          additional_browser_args=additional_browser_args)
+      yield (TestNameFromInputs(test_args.query, test_args.run_in_worker),
+             HTML_FILENAME, [test_args])
       for wg in cls._worker_test_globs:  # pylint:disable=not-an-iterable
         if fnmatch.fnmatch(line, wg):
-          yield (TestNameFromInputs(*test_inputs), HTML_FILENAME, test_inputs)
-          test_inputs = [line, True]
-          yield (TestNameFromInputs(*test_inputs), HTML_FILENAME, test_inputs)
+          test_args.run_in_worker = True
+          yield (TestNameFromInputs(test_args.query, test_args.run_in_worker),
+                 HTML_FILENAME, [test_args])
           break
-      else:
-        yield (TestNameFromInputs(*test_inputs), HTML_FILENAME, test_inputs)
 
   def GetExpectationsForTest(self):
     if self._os_name == 'android':
@@ -317,7 +336,13 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     cls = self.__class__
-    self._query, self._run_in_worker = args
+    test_args = args[0]
+    self._query = test_args.query
+    self._run_in_worker = test_args.run_in_worker
+    additional_browser_args = test_args.additional_browser_args
+    # Some CTS tests require non-standard browser arguments so we need to
+    # verify before running each case.
+    self.RestartBrowserIfNecessaryWithArgs(additional_browser_args)
     # Only a single instance is used to run tests despite a number of instances
     # (~2x the number of total tests) being initialized, so make sure to clear
     # this state so we don't accidentally keep it around from a previous test.
@@ -563,10 +588,10 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-not-compat')
 
     if sys.platform == 'win32':
-      if cls._use_dxc:
-        tags.append('webgpu-dxc-enabled')
-      else:
+      if cls._use_fxc:
         tags.append('webgpu-dxc-disabled')
+      else:
+        tags.append('webgpu-dxc-enabled')
 
     # No need to tag _use_webgpu_power_preference here,
     # since Telemetry already reports the GPU vendorID

@@ -211,4 +211,34 @@ std::string DisplayTypeToString(
   NOTREACHED();
 }
 
+ash::AppListSearchControlCategory MapSearchCategoryToControlCategory(
+    SearchCategory search_category) {
+  switch (search_category) {
+    case SearchCategory::kApps:
+      return ash::AppListSearchControlCategory::kApps;
+    case SearchCategory::kAppShortcuts:
+      return ash::AppListSearchControlCategory::kAppShortcuts;
+    case SearchCategory::kFiles:
+      return ash::AppListSearchControlCategory::kFiles;
+    case SearchCategory::kGames:
+      return ash::AppListSearchControlCategory::kGames;
+    case SearchCategory::kHelp:
+      return ash::AppListSearchControlCategory::kHelp;
+    case SearchCategory::kImages:
+      return ash::AppListSearchControlCategory::kImages;
+    case SearchCategory::kPlayStore:
+      return ash::AppListSearchControlCategory::kPlayStore;
+    case SearchCategory::kWeb:
+      return ash::AppListSearchControlCategory::kWeb;
+    case SearchCategory::kSettings:
+    case SearchCategory::kOmnibox:
+    case SearchCategory::kTest:
+    case SearchCategory::kDesksAdmin:
+    case SearchCategory::kAssistant:
+    case SearchCategory::kSystemInfoCard:
+      return ash::AppListSearchControlCategory::kCannotToggle;
+  }
+  NOTREACHED();
+}
+
 }  // namespace app_list

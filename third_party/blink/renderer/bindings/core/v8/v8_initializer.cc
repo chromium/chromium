@@ -35,7 +35,6 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
-#include "net/cookies/cookie_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -172,9 +171,9 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 
   UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInMainThread);
   base::UmaHistogramBoolean("V8.UnhandledExceptionCountInMainThread", true);
-  ukm::builders::ThirdPartyCookies_BreakageIndicator(context->UkmSourceID())
-      .SetBreakageIndicatorType(static_cast<int>(
-          net::cookie_util::BreakageIndicatorType::UNCAUGHT_JS_ERROR))
+  ukm::builders::ThirdPartyCookies_BreakageIndicator_UncaughtJSError(
+      context->UkmSourceID())
+      .SetHasOccurred(1)
       .Record(context->UkmRecorder());
 
   std::unique_ptr<SourceLocation> location =
@@ -207,13 +206,16 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
                                            v8::Local<v8::Value> data) {
   v8::Isolate* isolate = message->GetIsolate();
-
+  v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
+  CHECK(!v8_context.IsEmpty());
   // During the frame teardown, there may not be a valid context.
-  ScriptState* script_state = ScriptState::Current(isolate);
+  auto* script_state = ScriptState::From(v8_context);
+  CHECK(script_state);
   if (!script_state->ContextIsValid())
     return;
 
   ExecutionContext* context = ExecutionContext::From(script_state);
+  CHECK(context);
 
   UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInWorker);
   base::UmaHistogramBoolean("V8.UnhandledExceptionCountInWorker", true);
@@ -606,6 +608,15 @@ bool WasmJSStringBuiltinsEnabledCallback(v8::Local<v8::Context> context) {
       execution_context);
 }
 
+bool WasmJSPromiseIntegrationEnabledCallback(v8::Local<v8::Context> context) {
+  ExecutionContext* execution_context = ToExecutionContext(context);
+  if (!execution_context) {
+    return false;
+  }
+  return RuntimeEnabledFeatures::WebAssemblyJSPromiseIntegrationEnabled(
+      execution_context);
+}
+
 bool JavaScriptCompileHintsMagicEnabledCallback(
     v8::Local<v8::Context> context) {
   ExecutionContext* execution_context = ToExecutionContext(context);
@@ -756,6 +767,7 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetWasmInstanceCallback(WasmInstanceOverride);
   isolate->SetWasmImportedStringsEnabledCallback(
       WasmJSStringBuiltinsEnabledCallback);
+  isolate->SetWasmJSPIEnabledCallback(WasmJSPromiseIntegrationEnabledCallback);
   isolate->SetSharedArrayBufferConstructorEnabledCallback(
       SharedArrayBufferConstructorEnabledCallback);
   isolate->SetJavaScriptCompileHintsMagicEnabledCallback(

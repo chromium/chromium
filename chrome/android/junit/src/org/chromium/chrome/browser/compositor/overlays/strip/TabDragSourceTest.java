@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -84,6 +85,9 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Tests for {@link TabDragSource}. */
 @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
@@ -200,7 +204,7 @@ public class TabDragSourceTest {
         if (DragDropGlobalState.hasValue()) {
             DragDropGlobalState.clearForTesting();
         }
-        mSourceInstance.setIsDeviceSamsungForTesting(false);
+        mSourceInstance.setManufacturerAllowlistForTesting(null);
         ShadowToast.reset();
     }
 
@@ -302,10 +306,10 @@ public class TabDragSourceTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
-    public void test_startTabDragAction_returnFalseForNonSplitScreenNonSamsung() {
+    public void test_startTabDragAction_returnFalseForNonSplitScreen() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
-        mSourceInstance.setIsDeviceSamsungForTesting(false);
+        mSourceInstance.setManufacturerAllowlistForTesting(new HashSet<String>());
 
         // verify.
         assertFalse(
@@ -318,14 +322,18 @@ public class TabDragSourceTest {
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_returnTrueForNonSplitScreenSamsung() {
-        // Set params.
+        // Set params, add Samsung to allowed manufacturer list.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
-        mSourceInstance.setIsDeviceSamsungForTesting(true);
+        Set<String> set = new HashSet<String>();
+        Collections.addAll(set, "samsung");
+        TabDragSource spySource = spy(mSourceInstance);
+        spySource.setManufacturerAllowlistForTesting(set);
+        when(spySource.getCurrManufacturer()).thenReturn("samsung");
 
         // Verify.
         assertTrue(
                 "Tab drag should start",
-                mSourceInstance.startTabDragAction(
+                spySource.startTabDragAction(
                         mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
     }
 
@@ -438,7 +446,8 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabToWindow(any(), any(), anyInt(), anyInt());
         // Verify clear.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -475,7 +484,8 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is on source toolbar.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabToWindow(any(), any(), anyInt(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -504,7 +514,8 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is outside strip.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabToWindow(any(), any(), anyInt(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -553,7 +564,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab moved to destination window at TAB_INDEX.
         verify(mDestMultiInstanceManager, times(1))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX));
+                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX), eq(CURR_INSTANCE_ID));
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip calls.
@@ -587,7 +598,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab moved to destination window at end.
         verify(mDestMultiInstanceManager, times(1))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(5));
+                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(5), eq(CURR_INSTANCE_ID));
 
         assertNotNull(ShadowToast.getLatestToast());
         TextView textView = (TextView) ShadowToast.getLatestToast().getView();
@@ -653,7 +664,8 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is on source toolbar.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabToWindow(any(), any(), anyInt(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         histogramExpectation.assertExpected();
@@ -686,7 +698,8 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabToWindow(any(), any(), anyInt(), anyInt());
         // Verify clear.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -733,7 +746,7 @@ public class TabDragSourceTest {
 
         // Verify - Move to new window not invoked.
         verify(mDestMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt(), anyInt());
         histogramExpectation.assertExpected();
     }
 
@@ -760,7 +773,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab is not moved to destination window.
         verify(mDestMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt(), anyInt());
 
         assertNull(ShadowToast.getLatestToast());
         histogramExpectation.assertExpected();

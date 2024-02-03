@@ -71,8 +71,7 @@ std::string FormatVariable(const std::string& input,
   if (!hash_variable) {
     return "${" + input + "}";
   }
-  std::string hash = crypto::SHA256HashString(salt + input);
-  return base::HexEncode(hash);
+  return base::HexEncode(crypto::SHA256HashString(salt + input));
 }
 
 // Returns a copy of `template` where the identifier placeholders are replaced

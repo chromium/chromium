@@ -54,6 +54,30 @@ constexpr ui::ColorId kInactiveButtonBackgroundColorId =
 constexpr ui::ColorId kInactiveButtonTextColorId =
     cros_tokens::kCrosSysOnSurface;
 
+class SystemUIComponentsStyleViewerClientView : public views::ClientView {
+ public:
+  SystemUIComponentsStyleViewerClientView(views::Widget* widget,
+                                          views::View* contents_view)
+      : views::ClientView(widget, contents_view) {}
+
+  SystemUIComponentsStyleViewerClientView(
+      const SystemUIComponentsStyleViewerClientView&) = delete;
+  SystemUIComponentsStyleViewerClientView& operator=(
+      const SystemUIComponentsStyleViewerClientView&) = delete;
+
+  ~SystemUIComponentsStyleViewerClientView() override = default;
+
+  // ClientView:
+  void UpdateWindowRoundedCorners(int corner_radius) override {
+    //  The top corners will be rounded by NonClientFrameViewAsh. The
+    // client-view is responsible for rounding the bottom corners.
+
+    const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
+    contents_view()->SetBackground(views::CreateThemedRoundedRectBackground(
+        ui::kColorDialogBackground, radii));
+  }
+};
+
 }  // namespace
 
 // The global singleton of the viewer widget.
@@ -241,15 +265,20 @@ void SystemUIComponentsStyleViewerView::ShowComponentInstances(
       components_grid_view_factories_[name].Run());
 }
 
-void SystemUIComponentsStyleViewerView::Layout() {
+void SystemUIComponentsStyleViewerView::Layout(PassKey) {
   menu_contents_view_->SetSize(
       gfx::Size(kMenuWidth, menu_contents_view_->GetPreferredSize().height()));
   components_grid_view_->SizeToPreferredSize();
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 std::u16string SystemUIComponentsStyleViewerView::GetWindowTitle() const {
   return u"System Components Style Viewer";
+}
+
+views::ClientView* SystemUIComponentsStyleViewerView::CreateClientView(
+    views::Widget* widget) {
+  return new SystemUIComponentsStyleViewerClientView(widget, this);
 }
 
 void SystemUIComponentsStyleViewerView::OnWidgetDestroyed(

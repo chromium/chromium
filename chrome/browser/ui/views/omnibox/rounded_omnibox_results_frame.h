@@ -39,7 +39,7 @@ class RoundedOmniboxResultsFrame : public views::View {
   static gfx::Insets GetShadowInsets();
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
 #if !defined(USE_AURA)
   void OnMouseMoved(const ui::MouseEvent& event) override;

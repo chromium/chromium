@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/proto/install_attributes.pb.h"
@@ -268,21 +268,23 @@ TEST_F(InstallAttributesTest, VerifyFakeInstallAttributesCache) {
 }
 
 TEST_F(InstallAttributesTest, CheckSetBlockDevmodeInTpm) {
-  std::optional<::user_data_auth::SetFirmwareManagementParametersReply> reply;
+  std::optional<::device_management::SetFirmwareManagementParametersReply>
+      reply;
   install_attributes_->SetBlockDevmodeInTpm(
-      true, base::BindOnce(
-                [](std::optional<
-                       ::user_data_auth::SetFirmwareManagementParametersReply>*
-                       reply_ptr,
-                   std::optional<
-                       ::user_data_auth::SetFirmwareManagementParametersReply>
-                       reply) { *reply_ptr = reply; },
-                &reply));
+      true,
+      base::BindOnce(
+          [](std::optional<
+                 ::device_management::SetFirmwareManagementParametersReply>*
+                 reply_ptr,
+             std::optional<
+                 ::device_management::SetFirmwareManagementParametersReply>
+                 reply) { *reply_ptr = reply; },
+          &reply));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(reply.has_value());
-  EXPECT_EQ(reply->error(),
-            ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
+  EXPECT_EQ(reply->error(), ::device_management::DeviceManagementErrorCode::
+                                DEVICE_MANAGEMENT_ERROR_NOT_SET);
 }
 
 TEST_F(InstallAttributesTest, ConsistencyCheckTriggeredWithTpmPassword) {

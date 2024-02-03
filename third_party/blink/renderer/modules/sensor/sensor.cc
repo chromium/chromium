@@ -120,15 +120,15 @@ bool Sensor::hasReading() const {
   return sensor_proxy_->GetReading().timestamp() != 0.0;
 }
 
-absl::optional<DOMHighResTimeStamp> Sensor::timestamp(
+std::optional<DOMHighResTimeStamp> Sensor::timestamp(
     ScriptState* script_state) const {
   if (!hasReading()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   if (!window) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window);

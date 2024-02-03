@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -115,7 +115,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     void Add(const blink::OriginWithPossibleWildcards& origin);
 
     // Add an origin representing self to the allowlist.
-    void AddSelf(absl::optional<url::Origin> self);
+    void AddSelf(std::optional<url::Origin> self);
 
     // Adds all origins to the allowlist.
     void AddAll();
@@ -128,7 +128,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     bool Contains(const url::Origin& origin) const;
 
     // Returns the origin for self if included in the allowlist.
-    const absl::optional<url::Origin>& SelfIfMatches() const;
+    const std::optional<url::Origin>& SelfIfMatches() const;
 
     // Returns true if the allowlist matches all origins.
     bool MatchesAll() const;
@@ -156,7 +156,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
    private:
     std::vector<OriginWithPossibleWildcards> allowed_origins_;
-    absl::optional<url::Origin> self_if_matches_;
+    std::optional<url::Origin> self_if_matches_;
     bool matches_all_origins_{false};
     bool matches_opaque_src_{false};
   };
@@ -219,10 +219,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   // Returns the allowlist of a given feature if it already exists. Doesn't
   // build a default allow list based on the policy if not.
-  absl::optional<const Allowlist> GetAllowlistForFeatureIfExists(
+  std::optional<const Allowlist> GetAllowlistForFeatureIfExists(
       mojom::PermissionsPolicyFeature feature) const;
 
-  absl::optional<std::string> GetEndpointForFeature(
+  std::optional<std::string> GetEndpointForFeature(
       mojom::PermissionsPolicyFeature feature) const;
 
   // Sets the declared policy from the parsed Permissions-Policy HTTP header.

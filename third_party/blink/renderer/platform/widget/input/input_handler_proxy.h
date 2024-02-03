@@ -347,8 +347,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   bool gesture_pinch_in_progress_ = false;
   bool in_inertial_scrolling_ = false;
   bool scroll_sequence_ignored_;
-  absl::optional<EventDisposition>
-      main_thread_touch_sequence_start_disposition_;
+  std::optional<EventDisposition> main_thread_touch_sequence_start_disposition_;
 
   // Used to animate rubber-band/bounce over-scroll effect.
   std::unique_ptr<ElasticOverscrollController> elastic_overscroll_controller_;
@@ -357,12 +356,12 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // within a single touch sequence. This value will get returned for
   // subsequent TouchMove events to allow passive events not to block
   // scrolling.
-  absl::optional<EventDisposition> touch_result_;
+  std::optional<EventDisposition> touch_result_;
 
   // The result of the last mouse wheel event in a wheel phase sequence. This
   // value is used to determine whether the next wheel scroll is blocked on the
   // Main thread or not.
-  absl::optional<EventDisposition> mouse_wheel_result_;
+  std::optional<EventDisposition> mouse_wheel_result_;
 
   // Used to record overscroll notifications while an event is being
   // dispatched.  If the event causes overscroll, the overscroll metadata is
@@ -373,7 +372,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   // Set only when the compositor input handler is handling a gesture. Tells
   // which source device is currently performing a gesture based scroll.
-  absl::optional<blink::WebGestureDevice> currently_active_gesture_device_;
+  std::optional<blink::WebGestureDevice> currently_active_gesture_device_;
 
   base::OnceClosure queue_flushed_callback_;
 

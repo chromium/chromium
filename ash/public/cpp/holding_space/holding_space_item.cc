@@ -54,17 +54,14 @@ HoldingSpaceItem::InProgressCommand::InProgressCommand(
       icon(other.icon),
       handler(other.handler) {}
 
-HoldingSpaceItem::InProgressCommand::~InProgressCommand() = default;
-
 HoldingSpaceItem::InProgressCommand&
-HoldingSpaceItem::InProgressCommand::operator=(const InProgressCommand& other) =
+HoldingSpaceItem::InProgressCommand::operator=(const InProgressCommand&) =
     default;
 
+HoldingSpaceItem::InProgressCommand::~InProgressCommand() = default;
+
 bool HoldingSpaceItem::InProgressCommand::operator==(
-    const InProgressCommand& other) const {
-  return command_id == other.command_id && label_id == other.label_id &&
-         icon == other.icon && handler == other.handler;
-}
+    const InProgressCommand&) const = default;
 
 // HoldingSpaceItem ------------------------------------------------------------
 

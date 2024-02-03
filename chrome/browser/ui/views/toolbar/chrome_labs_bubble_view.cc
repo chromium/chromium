@@ -43,8 +43,9 @@
 namespace {
 
 class ChromeLabsFooter : public views::View {
+  METADATA_HEADER(ChromeLabsFooter, views::View)
+
  public:
-  METADATA_HEADER(ChromeLabsFooter);
   explicit ChromeLabsFooter(base::RepeatingClosure restart_callback) {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -88,7 +89,7 @@ class ChromeLabsFooter : public views::View {
   raw_ptr<views::Label> restart_label_;
 };
 
-BEGIN_METADATA(ChromeLabsFooter, views::View)
+BEGIN_METADATA(ChromeLabsFooter)
 END_METADATA
 
 }  // namespace

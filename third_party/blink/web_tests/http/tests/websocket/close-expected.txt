@@ -6,67 +6,67 @@ Invalid code test: 0
 Code 999 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 999 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 999 is neither."
 Invalid code test: 1
 Code 1001 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 1001 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 1001 is neither."
 Invalid code test: 2
 Code 2999 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 2999 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 2999 is neither."
 Invalid code test: 3
 Code 5000 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 5000 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 5000 is neither."
 Invalid code test: 4
 Code 66536 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 65535 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 65535 is neither."
 Invalid code test: 5
 Code 4294968296 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 65535 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 65535 is neither."
 Invalid code test: 6
 Code 2999.9 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 2999 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 2999 is neither."
 Invalid code test: 7
 Code NaN must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 0 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 0 is neither."
 Invalid code test: 8
 Code 0 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 0 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 0 is neither."
 Invalid code test: 9
 Code 100 must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 100 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 100 is neither."
 Invalid code test: 10
 Code Infinity must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 65535 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 65535 is neither."
 Invalid code test: 11
 Code -Infinity must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 0 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 0 is neither."
 Invalid code test: 12
 Code NaN must cause InvalidAccessError.
 PASS exceptionProto === DOMException.prototype is true
 PASS exceptionName is invalidAccessErr
-PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 0 is neither."
+PASS exceptionMessage is "Failed to execute 'close' on 'WebSocket': The close code must be either 1000, or between 3000 and 4999. 0 is neither."
 PASS onerror was called.
 runCodeTest: onclose().
 PASS closeEvent.code is abnormalClosure

@@ -85,8 +85,9 @@ double AverageLatency(const std::vector<base::TimeDelta>& latencies) {
 
 }  // namespace
 
-DnsLatencyRoutine::DnsLatencyRoutine()
-    : tick_clock_(base::DefaultTickClock::GetInstance()) {
+DnsLatencyRoutine::DnsLatencyRoutine(mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source),
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   profile_ = GetUserProfile();
   network_context_ =
       profile_->GetDefaultStoragePartition()->GetNetworkContext();

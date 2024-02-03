@@ -9,7 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 
-/** Java accessor for base/feature_map.h state. */
+/** Java accessor for base/android/feature_map.h state. */
 @JNINamespace("android_webview")
 public final class AwFeatureMap extends FeatureMap {
     private static final AwFeatureMap sInstance = new AwFeatureMap();

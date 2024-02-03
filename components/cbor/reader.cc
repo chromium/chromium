@@ -424,8 +424,14 @@ std::optional<base::span<const uint8_t>> Reader::ReadBytes(uint64_t num_bytes) {
     error_code_ = DecoderError::INCOMPLETE_CBOR_DATA;
     return std::nullopt;
   }
-  const base::span<const uint8_t> ret = rest_.first(num_bytes);
-  rest_ = rest_.subspan(num_bytes);
+
+  // The `uint64_t` => `size_t` conversion below will always succeed
+  // because the `if` condition above implies that `num_bytes` fits into a
+  // `size_t`.
+  size_t size = base::checked_cast<size_t>(num_bytes);
+
+  const base::span<const uint8_t> ret = rest_.first(size);
+  rest_ = rest_.subspan(size);
   return ret;
 }
 

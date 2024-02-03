@@ -53,7 +53,7 @@ class DocumentScanAshTest : public testing::Test {
     const user_manager::User* user =
         fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
             account_id,
-            /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR,
+            /*is_affiliated=*/false, user_manager::UserType::kRegular,
             &profile_);
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,

@@ -101,7 +101,7 @@ const char* LatencyCategoryToString(
 }
 
 String GetAudioContextLogString(const WebAudioLatencyHint& latency_hint,
-                                absl::optional<float> sample_rate) {
+                                std::optional<float> sample_rate) {
   StringBuilder builder;
   builder.AppendFormat("AudioContext({latency_hint=%s}",
                        LatencyCategoryToString(latency_hint.Category()));
@@ -175,7 +175,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
       WebAudioLatencyHint::AudioContextLatencyCategory::kLastValue);
 
   // This value can be `nullopt` when there's no user-provided options.
-  absl::optional<float> sample_rate;
+  std::optional<float> sample_rate;
   if (context_options->hasSampleRate()) {
     sample_rate = context_options->sampleRate();
   }
@@ -242,7 +242,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
 
 AudioContext::AudioContext(LocalDOMWindow& window,
                            const WebAudioLatencyHint& latency_hint,
-                           absl::optional<float> sample_rate,
+                           std::optional<float> sample_rate,
                            WebAudioSinkDescriptor sink_descriptor)
     : BaseAudioContext(&window, kRealtimeContext),
       context_id_(context_id++),

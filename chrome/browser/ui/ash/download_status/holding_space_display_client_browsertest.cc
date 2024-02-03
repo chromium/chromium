@@ -156,7 +156,21 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   // Cache download chips. NOTE: Chips are displayed in reverse order of their
   // underlying holding space item creation.
   const views::View* const completed_download_chip = download_chips.at(0);
+  ASSERT_TRUE(completed_download_chip);
   const views::View* const in_progress_download_chip = download_chips.at(1);
+  ASSERT_TRUE(in_progress_download_chip);
+
+  // The image of `completed_download_chip` should show.
+  const views::View* const completed_chip_image_view =
+      completed_download_chip->GetViewByID(kHoldingSpaceItemImageId);
+  ASSERT_TRUE(completed_chip_image_view);
+  EXPECT_TRUE(completed_chip_image_view->GetVisible());
+
+  // The image of `in_progress_download_chip` should be hidden.
+  const views::View* const in_progress_chip_image_view =
+      in_progress_download_chip->GetViewByID(kHoldingSpaceItemImageId);
+  ASSERT_TRUE(in_progress_chip_image_view);
+  EXPECT_FALSE(in_progress_chip_image_view->GetVisible());
 
   // Right click the `completed_download_chip`. Because the underlying download
   // is completed, the context menu should not contain a "Cancel" command.
@@ -522,6 +536,32 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   download->state = crosapi::mojom::DownloadState::kComplete;
   Update(download->Clone());
   EXPECT_EQ(test_api().GetDownloadChips().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       InProgressDownloadWithHiddenProgress) {
+  // Create an in-progress download with an invisible progress. In reality, this
+  // could happen when a download is blocked.
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*received_bytes=*/0,
+                                     /*total_bytes=*/1024);
+  download->progress->visible = false;
+  Update(download->Clone());
+  test_api().Show();
+
+  // Verify the existence of a single download chip.
+  const std::vector<views::View*> chips = test_api().GetDownloadChips();
+  ASSERT_EQ(chips.size(), 1u);
+  views::View* in_progress_download_chip = chips[0];
+  ASSERT_TRUE(in_progress_download_chip);
+
+  // The image of `in_progress_download_chip` should show because `download`
+  // suggests that the progress is hidden.
+  const views::View* const image_view =
+      in_progress_download_chip->GetViewByID(kHoldingSpaceItemImageId);
+  ASSERT_TRUE(image_view);
+  EXPECT_TRUE(image_view->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,

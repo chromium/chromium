@@ -13,8 +13,7 @@
 #include "base/strings/string_util.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 ParseInfo::ParseInfo(size_t rules_count,
                      size_t regex_rules_count,
@@ -37,5 +36,4 @@ ParseInfo::ParseInfo(ParseInfo&&) = default;
 ParseInfo& ParseInfo::operator=(ParseInfo&&) = default;
 ParseInfo::~ParseInfo() = default;
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

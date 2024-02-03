@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384959399684842514">Download pausado</translation>
 <translation id="1415402041810619267">URL truncado</translation>
-<translation id="1426410128494586442">Sim</translation>
 <translation id="1434873037477293673">card de redução no preço</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Para permitir que o app <ph name="APP_NAME" /> acesse sua câmera, ative-a também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2238944249568001759">Pesquisas sugeridas com base na sua última guia</translation>
+<translation id="2241587408274973373">Cards da página "Nova guia"</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2253414712144136228">Remover <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site bloqueado}one{# site bloqueado}other{# sites bloqueados}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Sites podem exibir solicitações de login de serviços de identificação.</translation>
 <translation id="2790501146643349491">Quando essa configuração está ativada, os sites fechados recentemente podem terminar de enviar e receber dados. Quando está desativada, os sites fechados recentemente não conseguem terminar de enviar ou receber dados.</translation>
 <translation id="2822354292072154809">Tem certeza de que quer redefinir todas as permissões de site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Solicitar a versão para dispositivos móveis</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Leitor de certificados</translation>
 <translation id="2979365474350987274">Cookies de terceiros são limitados</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
-<translation id="3013291976881901233">Dispositivos MIDI</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3069226013421428034">Permita o login de terceiros em um site específico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expira amanhã}one{Expira em # dia}other{Expira em # dias}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Conectado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que sites vejam e mudem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
-<translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Mover para baixo</translation>
 <translation id="6749077623962119521">Redefinir permissões?</translation>
 <translation id="6766622839693428701">Deslize para baixo para fechar.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> no dispositivo <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecione uma opção para <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6818926723028410516">Selecionar itens</translation>
@@ -475,7 +471,7 @@
 <translation id="8719283222052720129">Ative a permissão para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Quando essa configuração está ativada, os sites podem pedir para procurar dispositivos Bluetooth. Quando está desativada, os sites não podem procurar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
-<translation id="8730621377337864115">Concluído</translation>
+<translation id="8730621377337864115">Concluir</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 site permitido}one{# site permitido}other{# sites permitidos}}</translation>
 <translation id="8751914237388039244">Selecione uma imagem</translation>
 <translation id="8800034312320686233">Site indisponível?</translation>

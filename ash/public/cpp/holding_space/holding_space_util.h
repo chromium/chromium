@@ -22,7 +22,13 @@ namespace ui {
 class OSExchangeData;
 }  // namespace ui
 
-namespace ash::holding_space_util {
+namespace ash {
+
+namespace holding_space_metrics {
+enum class EventSource;
+}  // namespace holding_space_metrics
+
+namespace holding_space_util {
 
 // Returns the file paths extracted from the specified `data` at one of two
 // possible storage locations, either:
@@ -66,7 +72,8 @@ ASH_PUBLIC_EXPORT bool SupportsInProgressCommand(
 // `item`, returning whether the attempt was successful.
 ASH_PUBLIC_EXPORT bool ExecuteInProgressCommand(
     const HoldingSpaceItem* item,
-    HoldingSpaceCommandId command_id);
+    HoldingSpaceCommandId command_id,
+    holding_space_metrics::EventSource event_source);
 
 // Returns the string representation of the specified file system `type`.
 ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceFile::FileSystemType type);
@@ -74,6 +81,7 @@ ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceFile::FileSystemType type);
 // Returns the string representation of the specified holding space item `type`.
 ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceItem::Type type);
 
-}  // namespace ash::holding_space_util
+}  // namespace holding_space_util
+}  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_

@@ -128,7 +128,7 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
   }
 
   MaybeSizeToContents();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SharingHubBubbleViewImpl::MaybeSizeToContents() {

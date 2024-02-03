@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1384959399684842514">Upakuaji umesitishwa</translation>
 <translation id="1415402041810619267">URL imepunguzwa</translation>
-<translation id="1426410128494586442">Ndiyo</translation>
 <translation id="1434873037477293673">kadi ya kushuka kwa bei</translation>
 <translation id="1448064542941920355">Punguza ukuzaji</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{Tovuti <ph name="SITE_COUNT" />}other{Tovuti <ph name="SITE_COUNT" />}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Ili uruhusu <ph name="APP_NAME" /> ifikie kamera yako, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Vidakuzi vya washirika wengine vimezuiwa</translation>
 <translation id="2238944249568001759">Utafutaji unaopendekezwa kulingana na kichupo chako ulichofungua mara ya mwisho</translation>
+<translation id="2241587408274973373">Kadi za ukurasa wa kichupo kipya</translation>
 <translation id="2241634353105152135">Mara moja tu</translation>
 <translation id="2253414712144136228">Ondoa <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Tovuti 1 imezuiwa}other{Tovuti # zimezuiwa}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Tovuti inaweza kuonyesha vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>
 <translation id="2790501146643349491">Kikiwashwa, tovuti zilizofungwa hivi karibuni zinaweza kumaliza kutuma na kupokea data. Kikizimwa, tovuti zilizofungwa hivi karibuni haziwezi kumaliza kutuma au kupokea data.</translation>
 <translation id="2822354292072154809">Una uhakika ungependa kubadilisha ruhusa zote za tovuti ya <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Omba mwonekano wa kifaa cha mkononi</translation>
 <translation id="2870560284913253234">Tovuti</translation>
 <translation id="2874939134665556319">Wimbo uliotangulia</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Kitazamaji vyeti</translation>
 <translation id="2979365474350987274">Vidakuzi vya wahusika wengine vimedhibitiwa</translation>
 <translation id="3008272652534848354">Badilisha ruhusa</translation>
-<translation id="3013291976881901233">Vifaa vya MIDI</translation>
 <translation id="301521992641321250">Imezuiwa kiotomatiki</translation>
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Imeunganishwa kwenye kifaa cha USB</translation>
 <translation id="4194328954146351878">Uliza kabla ya kuruhusu tovuti zione na zibadilishe maelezo kwenye vifaa vya NFC (inapendekezwa)</translation>
 <translation id="4200726100658658164">Fungua Mipangilio ya Mahali</translation>
-<translation id="4212246570487010370">Endelea kuvinjari</translation>
 <translation id="4226663524361240545">Arifa huenda zitatetemesha kifaa</translation>
 <translation id="4259722352634471385">Kudurusu kumezuiwa: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Imeruhusiwa</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Songa chini</translation>
 <translation id="6749077623962119521">Ungependa kubadilisha ruhusa?</translation>
 <translation id="6766622839693428701">Telezesha chini ili ufunge.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Kwenye <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Teua chaguo la <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6818926723028410516">Chagua vipengee</translation>

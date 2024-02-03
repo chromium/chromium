@@ -1204,8 +1204,8 @@ TEST_F(MediaStreamConstraintsUtilSetsTest, NumericRangeSetDouble) {
   EXPECT_FALSE(intersection.IsEmpty());
 
   // Intersection with partially open sets.
-  set = DoubleRangeSet(absl::nullopt, kMax);
-  intersection = set.Intersection(DoubleRangeSet(kMin2, absl::nullopt));
+  set = DoubleRangeSet(std::nullopt, kMax);
+  intersection = set.Intersection(DoubleRangeSet(kMin2, std::nullopt));
   EXPECT_EQ(kMin2, *intersection.Min());
   EXPECT_EQ(kMax, *intersection.Max());
   EXPECT_FALSE(intersection.IsEmpty());

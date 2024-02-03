@@ -126,7 +126,7 @@ class PerUserStateManagerChromeOSTest : public testing::Test {
     profile_ = profile_builder.Build();
 
     return test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, false, user_manager::USER_TYPE_REGULAR, profile_.get());
+        account_id, false, user_manager::UserType::kRegular, profile_.get());
   }
 
   user_manager::User* RegisterGuestUser() {
@@ -474,7 +474,7 @@ TEST_F(PerUserStateManagerChromeOSTest, MultiUserUsesPrimaryUser) {
   // Add user.
   user_manager::User* test_user2 =
       test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-          test_user2_account_id, false, user_manager::USER_TYPE_REGULAR,
+          test_user2_account_id, false, user_manager::UserType::kRegular,
           test_user2_profile.get());
 
   // Explicitly set the user consent to false.

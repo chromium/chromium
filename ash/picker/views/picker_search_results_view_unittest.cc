@@ -6,7 +6,6 @@
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_search_results.h"
-#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -64,7 +63,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kSearchResults({{PickerSearchResults::Section(
-      u"Gif Section", {{PickerSearchResult::Gif(GURL())}})}});
+      u"Gif Section", {{PickerSearchResult::Gif(GURL(), gfx::Size())}})}});
   view.SetSearchResults(kSearchResults);
 
   EXPECT_THAT(view.children(), SizeIs(kSearchResults.sections().size()));
@@ -94,7 +93,17 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
                   MatchesResultSection(kUpdatedSearchResults.sections()[0]))));
 }
 
-TEST_F(PickerSearchResultsViewTest, LeftClickSelectsTextResult) {
+struct PickerSearchResultTestCase {
+  std::string test_name;
+  PickerSearchResult result;
+};
+
+class PickerSearchResultsViewResultSelectionTest
+    : public PickerSearchResultsViewTest,
+      public testing::WithParamInterface<PickerSearchResultTestCase> {};
+
+TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
+  const PickerSearchResultTestCase& test_case = GetParam();
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   base::test::TestFuture<const PickerSearchResult&> future;
@@ -103,44 +112,33 @@ TEST_F(PickerSearchResultsViewTest, LeftClickSelectsTextResult) {
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           future.GetCallback(), &asset_fetcher));
   view->SetSearchResults(PickerSearchResults({{
-      PickerSearchResults::Section(u"section",
-                                   {{PickerSearchResult::Text(u"result")}}),
+      PickerSearchResults::Section(u"section", {{test_case.result}}),
   }}));
   ASSERT_THAT(view->section_views_for_testing(), Not(IsEmpty()));
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
               Not(IsEmpty()));
 
-  PickerItemView* result_view =
+  views::View* result_view =
       view->section_views_for_testing()[0]->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(result_view);
   LeftClickOn(result_view);
 
-  EXPECT_EQ(future.Get(), PickerSearchResult::Text(u"result"));
+  EXPECT_EQ(future.Get(), test_case.result);
 }
 
-TEST_F(PickerSearchResultsViewTest, LeftClickSelectsGifResult) {
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-  widget->SetFullscreen(true);
-  base::test::TestFuture<const PickerSearchResult&> future;
-  MockPickerAssetFetcher asset_fetcher;
-  auto* view =
-      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          future.GetCallback(), &asset_fetcher));
-  view->SetSearchResults(PickerSearchResults({{
-      PickerSearchResults::Section(u"section",
-                                   {{PickerSearchResult::Gif(GURL())}}),
-  }}));
-  ASSERT_THAT(view->section_views_for_testing(), Not(IsEmpty()));
-  ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
-              Not(IsEmpty()));
-
-  PickerItemView* gif_result_view =
-      view->section_views_for_testing()[0]->item_views_for_testing()[0];
-  ViewDrawnWaiter().Wait(gif_result_view);
-  LeftClickOn(gif_result_view);
-
-  EXPECT_EQ(future.Get(), PickerSearchResult::Gif(GURL()));
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PickerSearchResultsViewResultSelectionTest,
+    testing::ValuesIn<PickerSearchResultTestCase>(
+        {{"Text", PickerSearchResult::Text(u"result")},
+         {"Emoji", PickerSearchResult::Emoji(u"😊")},
+         {"Symbol", PickerSearchResult::Symbol(u"♬")},
+         {"Emoticon", PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")},
+         {"Gif", PickerSearchResult::Gif(GURL(), gfx::Size(10, 10))}}),
+    [](const testing::TestParamInfo<
+        PickerSearchResultsViewResultSelectionTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 }  // namespace ash

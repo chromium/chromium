@@ -22,7 +22,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
   bool AllowsHitTest() const override { return false; }
   bool IsSolidColor() const override { return true; }
   SkColor4f GetSolidColor(
-      const absl::optional<Color>& thumb_color) const override;
+      const std::optional<Color>& thumb_color) const override;
   bool UsesNinePatchThumbResource() const override { return false; }
 
  protected:

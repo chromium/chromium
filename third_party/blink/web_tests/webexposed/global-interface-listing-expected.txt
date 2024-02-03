@@ -6789,6 +6789,7 @@ interface Observable
     attribute @@toStringTag
     method constructor
     method subscribe
+    method takeUntil
     method toArray
 interface OfflineAudioCompletionEvent : Event
     attribute @@toStringTag
@@ -9357,6 +9358,7 @@ interface ShadowRoot : DocumentFragment
     attribute @@toStringTag
     getter activeElement
     getter adoptedStyleSheets
+    getter clonable
     getter delegatesFocus
     getter fullscreenElement
     getter host
@@ -11710,6 +11712,11 @@ interface WebSocket : EventTarget
     setter onerror
     setter onmessage
     setter onopen
+interface WebSocketError : DOMException
+    attribute @@toStringTag
+    getter closeCode
+    getter reason
+    method constructor
 interface WebSocketStream
     attribute @@toStringTag
     getter closed

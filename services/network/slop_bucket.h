@@ -11,6 +11,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
@@ -18,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class URLRequest;
@@ -51,10 +51,10 @@ class SlopBucket final {
   // value from Read() if a Read() was attempted. If the return value was
   // ERR_IO_PENDING, then OnReadCompleted() should be called later when the
   // URLRequest calls OnReadCompleted() on its Delegate. If the return value is
-  // absl::nullopt then there was no bucket available to read into, and Read()
+  // std::nullopt then there was no bucket available to read into, and Read()
   // was *not* attempted. Should not be called if read_in_progress() or
   // IsComplete() are true.
-  absl::optional<int> AttemptRead();
+  std::optional<int> AttemptRead();
 
   // When a read completes and read_in_progress() is true, the SlopBucket object
   // must be informed by passing the value of `bytes_read` to this function.
@@ -111,7 +111,7 @@ class SlopBucket final {
   // If we saw the final read from the URLRequest, the value it returned. This
   // will be either 0 if the response body was read successfully, or a
   // net::Error code.
-  absl::optional<int> completion_code_;
+  std::optional<int> completion_code_;
 
   // True if we are currently performing an async read.
   bool read_in_progress_ = false;

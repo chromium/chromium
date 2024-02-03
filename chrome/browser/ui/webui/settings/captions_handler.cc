@@ -156,7 +156,7 @@ void CaptionsHandler::HandleInstallLanguagePacks(
 }
 
 base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
-  auto enabled_languages = speech::GetEnabledLanguages();
+  auto enabled_languages = speech::GetLiveCaptionEnabledLanguages();
   std::vector<base::Value::Dict> available_language_packs;
   for (const auto& config : speech::kLanguageComponentConfigs) {
     if (config.language_code != speech::LanguageCode::kNone &&

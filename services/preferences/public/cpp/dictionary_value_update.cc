@@ -5,12 +5,12 @@
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 
 #include <iterator>
+#include <optional>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace prefs {
 
@@ -123,7 +123,7 @@ DictionaryValueUpdate::SetDictionaryWithoutPathExpansion(
 
 bool DictionaryValueUpdate::GetBoolean(std::string_view path,
                                        bool* out_value) const {
-  absl::optional<bool> value = value_->FindBoolByDottedPath(path);
+  std::optional<bool> value = value_->FindBoolByDottedPath(path);
   if (!value.has_value())
     return false;
   if (out_value)
@@ -133,7 +133,7 @@ bool DictionaryValueUpdate::GetBoolean(std::string_view path,
 
 bool DictionaryValueUpdate::GetInteger(std::string_view path,
                                        int* out_value) const {
-  if (absl::optional<int> value = value_->FindIntByDottedPath(path)) {
+  if (std::optional<int> value = value_->FindIntByDottedPath(path)) {
     if (out_value) {
       *out_value = *value;
     }
@@ -144,7 +144,7 @@ bool DictionaryValueUpdate::GetInteger(std::string_view path,
 
 bool DictionaryValueUpdate::GetDouble(std::string_view path,
                                       double* out_value) const {
-  if (absl::optional<double> value = value_->FindDoubleByDottedPath(path)) {
+  if (std::optional<double> value = value_->FindDoubleByDottedPath(path)) {
     if (out_value) {
       *out_value = *value;
     }
@@ -242,7 +242,7 @@ bool DictionaryValueUpdate::Remove(std::string_view path) {
 
 bool DictionaryValueUpdate::RemoveWithoutPathExpansion(std::string_view key,
                                                        base::Value* out_value) {
-  absl::optional<base::Value> value = value_->Extract(key);
+  std::optional<base::Value> value = value_->Extract(key);
   if (!value) {
     return false;
   }

@@ -150,7 +150,7 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<base::HistogramTester> histogram_tester;
+  std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   // Test touch scroll.
@@ -196,7 +196,7 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<base::HistogramTester> histogram_tester;
+  std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
@@ -236,7 +236,7 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<base::HistogramTester> histogram_tester;
+  std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
@@ -295,7 +295,7 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("inner"));
-  absl::optional<base::HistogramTester> histogram_tester;
+  std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);

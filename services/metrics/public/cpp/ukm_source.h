@@ -6,6 +6,7 @@
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_SOURCE_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/strings/string_util.h"
@@ -13,7 +14,6 @@
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ukm {
@@ -99,7 +99,7 @@ class METRICS_EXPORT UkmSource {
 
     // The navigation start time relative to session start. The navigation
     // time within session should be monotonically increasing.
-    absl::optional<base::TimeTicks> navigation_time;
+    std::optional<base::TimeTicks> navigation_time;
   };
 
   UkmSource(SourceId id, const GURL& url);

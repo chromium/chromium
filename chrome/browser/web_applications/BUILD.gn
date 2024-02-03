@@ -577,8 +577,12 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
+    "isolated_web_apps/test/isolated_web_app_builder.cc",
+    "isolated_web_apps/test/isolated_web_app_builder.h",
     "isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.cc",
     "isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.h",
+    "isolated_web_apps/test/iwa_test_server_configurator.cc",
+    "isolated_web_apps/test/iwa_test_server_configurator.h",
     "isolated_web_apps/test/test_signed_web_bundle_builder.cc",
     "isolated_web_apps/test/test_signed_web_bundle_builder.h",
     "test/debug_info_printer.cc",
@@ -634,6 +638,12 @@ source_set("web_applications_test_support") {
     "test/with_crosapi_param.cc",
     "test/with_crosapi_param.h",
   ]
+  if (is_chromeos) {
+    sources += [
+      "isolated_web_apps/test/policy_generator.cc",
+      "isolated_web_apps/test/policy_generator.h",
+    ]
+  }
   public_deps = [ "//components/webapps/common:mojo_bindings" ]
   deps = [
     ":web_applications",
@@ -696,7 +706,8 @@ source_set("prevent_close_test_support") {
 if (fuzztest_supported) {
   test("web_application_fuzztests") {
     testonly = true
-    enable_fuzztest = true
+    fuzztests =
+        [ "UpdateManifestFuzzTest.UpdateManifestCanSuccessfullyParseAnyString" ]
 
     sources = [ "isolated_web_apps/update_manifest/update_manifest_fuzzer.cc" ]
 

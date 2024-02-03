@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
@@ -25,12 +26,12 @@ bool ScrollSnapshotTimeline::IsActive() const {
   return timeline_state_snapshotted_.phase != TimelinePhase::kInactive;
 }
 
-absl::optional<ScrollOffsets> ScrollSnapshotTimeline::GetResolvedScrollOffsets()
+std::optional<ScrollOffsets> ScrollSnapshotTimeline::GetResolvedScrollOffsets()
     const {
   return timeline_state_snapshotted_.scroll_offsets;
 }
 
-absl::optional<ScrollSnapshotTimeline::ViewOffsets>
+std::optional<ScrollSnapshotTimeline::ViewOffsets>
 ScrollSnapshotTimeline::GetResolvedViewOffsets() const {
   return timeline_state_snapshotted_.view_offsets;
 }
@@ -72,17 +73,17 @@ void ScrollSnapshotTimeline::ResolveTimelineOffsets() const {
 }
 
 // Scroll-linked animations are initialized with the start time of zero.
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 ScrollSnapshotTimeline::InitialStartTimeForAnimations() {
   return base::TimeDelta();
 }
 
 AnimationTimeDelta ScrollSnapshotTimeline::CalculateIntrinsicIterationDuration(
     const TimelineRange& timeline_range,
-    const absl::optional<TimelineOffset>& range_start,
-    const absl::optional<TimelineOffset>& range_end,
+    const std::optional<TimelineOffset>& range_start,
+    const std::optional<TimelineOffset>& range_end,
     const Timing& timing) {
-  absl::optional<AnimationTimeDelta> duration = GetDuration();
+  std::optional<AnimationTimeDelta> duration = GetDuration();
 
   // Only run calculation for progress based scroll timelines
   if (duration && timing.iteration_count > 0) {
@@ -114,13 +115,13 @@ AnimationTimeDelta ScrollSnapshotTimeline::CalculateIntrinsicIterationDuration(
 }
 
 TimelineRange ScrollSnapshotTimeline::GetTimelineRange() const {
-  absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
+  std::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
 
   if (!scroll_offsets.has_value()) {
     return TimelineRange();
   }
 
-  absl::optional<ViewOffsets> view_offsets = GetResolvedViewOffsets();
+  std::optional<ViewOffsets> view_offsets = GetResolvedViewOffsets();
 
   return TimelineRange(scroll_offsets.value(), view_offsets.has_value()
                                                    ? view_offsets.value()

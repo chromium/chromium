@@ -475,9 +475,9 @@ void Widget::Init(InitParams params) {
     non_client_view_->SetFrameView(CreateNonClientFrameView());
     non_client_view_->SetOverlayView(widget_delegate_->CreateOverlayView());
 
-    // Bypass the Layout() that happens in Widget::SetContentsView(). Layout()
-    // will occur after setting the initial bounds below. The RootView's size is
-    // not valid until that happens.
+    // Bypass the layout that happens in Widget::SetContentsView().
+    // LayoutImmediately() will occur after setting the initial bounds below.
+    // The RootView's size is not valid until that happens.
     root_view_->SetContentsView(non_client_view_);
 
     // Initialize the window's icon and title before setting the window's
@@ -493,7 +493,7 @@ void Widget::Init(InitParams params) {
     // Perform the initial layout. This handles the case where the size might
     // not actually change when setting the initial bounds. If it did, child
     // views won't have a dirty Layout state, so won't do any work.
-    root_view_->Layout();
+    root_view_->LayoutImmediately();
 
     if (show_state == ui::SHOW_STATE_MAXIMIZED) {
       Maximize();
@@ -659,7 +659,7 @@ void Widget::SetContentsView(View* view) {
   // containing window's bounds. Note that we call Layout directly rather than
   // calling the widget's size changed handler, since the RootView's bounds may
   // not have changed, which will cause the Layout not to be done otherwise.
-  root_view_->Layout();
+  root_view_->LayoutImmediately();
 }
 
 View* Widget::GetContentsView() {
@@ -1981,10 +1981,10 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
 }
 
 void Widget::LayoutRootViewIfNecessary() {
-  TRACE_EVENT1("views", "Widget::LayoutRootViewIfNecessary", "widget name",
+  TRACE_EVENT1("ui", "Widget::LayoutRootViewIfNecessary", "widget name",
                GetName());
   if (root_view_ && root_view_->needs_layout())
-    root_view_->Layout();
+    root_view_->LayoutImmediately();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

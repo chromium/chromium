@@ -81,11 +81,11 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   void RequestEncodingParametersChangeWithBitrate(
       const media::Bitrate& bitrate_allocation,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void RequestEncodingParametersChangeWithLayers(
       const media::VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void IsFlushSupported(IsFlushSupportedCallback callback) override;
   void Flush(FlushCallback callback) override;
 

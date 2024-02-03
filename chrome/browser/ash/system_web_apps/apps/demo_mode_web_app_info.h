@@ -18,6 +18,7 @@ class DemoModeSystemAppDelegate : public ash::SystemWebAppDelegate {
   // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
+  gfx::Size GetMinimumWindowSize() const override;
   bool IsAppEnabled() const override;
 };
 

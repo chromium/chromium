@@ -25,22 +25,24 @@ import org.chromium.net.httpflags.Flags;
 import org.chromium.net.httpflags.HttpFlagsLoader;
 import org.chromium.net.httpflags.ResolvedFlags;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /** CronetLibraryLoader loads and initializes native library on init thread. */
 @JNINamespace("cronet")
 @VisibleForTesting
 public class CronetLibraryLoader {
     // Synchronize initialization.
     private static final Object sLoadLock = new Object();
+
+    @GuardedBy("sLoadLock")
+    private static boolean sInitialized;
+
     private static final String LIBRARY_NAME = "cronet." + ImplVersion.getCronetVersion();
     @VisibleForTesting public static final String TAG = CronetLibraryLoader.class.getSimpleName();
     // Thread used for initialization work and processing callbacks for
     // long-lived global singletons. This thread lives forever as things like
     // the global singleton NetworkChangeNotifier live on it and are never killed.
     private static final HandlerThread sInitThread = new HandlerThread("CronetInit");
-    // Has library loading commenced?  Setting guarded by sLoadLock.
-    private static volatile boolean sLibraryLoaded;
-    // Has ensureInitThreadInitialized() completed?
-    private static volatile boolean sInitThreadInitDone;
     // Block calling native methods until this ConditionVariable opens to indicate loadLibrary()
     // is completed and native methods have been registered.
     private static final ConditionVariable sWaitForLibLoad = new ConditionVariable();
@@ -56,43 +58,48 @@ public class CronetLibraryLoader {
      */
     public static void ensureInitialized(
             Context applicationContext, final CronetEngineBuilderImpl builder) {
+        ensureInitialized(applicationContext, builder, /* libAlreadyLoaded= */ false);
+    }
+
+    public static void ensureInitialized(
+            Context applicationContext,
+            final CronetEngineBuilderImpl builder,
+            boolean libAlreadyLoaded) {
         synchronized (sLoadLock) {
-            if (!sInitThreadInitDone) {
-                ContextUtils.initApplicationContext(applicationContext);
-                if (!sInitThread.isAlive()) {
-                    sInitThread.start();
-                }
+            if (sInitialized) return;
+            ContextUtils.initApplicationContext(applicationContext);
+            // The init thread may already be running if a previous initialization attempt failed.
+            // In this case there is no need to spin it up again.
+            //
+            // Note: if we never succeed in loading the library, the init thread will end up
+            // blocking on `sWaitForLibLoad` forever. Obviously this is suboptimal, but given this
+            // is not supposed to fail, it's arguably benign.
+            if (!sInitThread.isAlive()) {
+                sInitThread.start();
                 postToInitThread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                ensureInitializedOnInitThread();
-                            }
+                        () -> {
+                            initializeOnInitThread();
                         });
             }
-            if (!sLibraryLoaded) {
+            if (!libAlreadyLoaded) {
                 if (builder.libraryLoader() != null) {
                     builder.libraryLoader().loadLibrary(LIBRARY_NAME);
                 } else {
                     System.loadLibrary(LIBRARY_NAME);
                 }
-                String implVersion = ImplVersion.getCronetVersion();
-                if (!implVersion.equals(CronetLibraryLoaderJni.get().getCronetVersion())) {
-                    throw new RuntimeException(
-                            String.format(
-                                    "Expected Cronet version number %s, "
-                                            + "actual version number %s.",
-                                    implVersion, CronetLibraryLoaderJni.get().getCronetVersion()));
-                }
-                Log.i(
-                        TAG,
-                        "Cronet version: %s, arch: %s",
-                        implVersion,
-                        System.getProperty("os.arch"));
-                setNativeLoggingLevel();
-                sLibraryLoaded = true;
-                sWaitForLibLoad.open();
             }
+            CronetLibraryLoaderJni.get().nativeInit();
+            String implVersion = ImplVersion.getCronetVersion();
+            if (!implVersion.equals(CronetLibraryLoaderJni.get().getCronetVersion())) {
+                throw new RuntimeException(
+                        String.format(
+                                "Expected Cronet version number %s, " + "actual version number %s.",
+                                implVersion, CronetLibraryLoaderJni.get().getCronetVersion()));
+            }
+            Log.i(TAG, "Cronet version: %s, arch: %s", implVersion, System.getProperty("os.arch"));
+            setNativeLoggingLevel();
+            sWaitForLibLoad.open();
+            sInitialized = true;
         }
     }
 
@@ -122,15 +129,11 @@ public class CronetLibraryLoader {
     }
 
     /**
-     * Ensure that the init thread initialization has completed. Can only be called from
-     * the init thread. Ensures that HTTP flags are loaded, the NetworkChangeNotifier is initialzied
-     * and the init thread native MessageLoop is initialized.
+     * Runs Cronet initialization tasks on the init thread. Ensures that HTTP flags are loaded, the
+     * NetworkChangeNotifier is initialzied and the init thread native MessageLoop is initialized.
      */
-    static void ensureInitializedOnInitThread() {
+    static void initializeOnInitThread() {
         assert onInitThread();
-        if (sInitThreadInitDone) {
-            return;
-        }
 
         // Load HTTP flags. This is a potentially expensive call, so we do this in parallel with
         // library loading in the hope of minimizing impact on Cronet initialization latency.
@@ -157,18 +160,12 @@ public class CronetLibraryLoader {
         NetworkChangeNotifier.registerToReceiveNotificationsAlways();
         // Wait for loadLibrary() to complete so JNI is registered.
         sWaitForLibLoad.block();
-        assert sLibraryLoaded;
-
-        // TODO: override native base::Feature flags based on `resolvedFlags`. Note that this might
-        // be tricky because we can only set up base::Feature overrides after the .so is loaded, but
-        // we have to do it before any native code runs and tries to use any base::Feature flag.
 
         // registerToReceiveNotificationsAlways() is called before the native
         // NetworkChangeNotifierAndroid is created, so as to avoid receiving
         // the undesired initial network change observer notification, which
         // will cause active requests to fail with ERR_NETWORK_CHANGED.
         CronetLibraryLoaderJni.get().cronetInitOnInitThread();
-        sInitThreadInitDone = true;
     }
 
     /** Run {@code r} on the initialization thread. */
@@ -224,20 +221,11 @@ public class CronetLibraryLoader {
      */
     @CalledByNative
     private static void ensureInitializedFromNative() {
-        // Called by native, so native library is already loaded.
-        // It is possible that loaded native library is not regular
-        // "libcronet.xyz.so" but test library that statically links
-        // native code like "libcronet_unittests.so".
-        synchronized (sLoadLock) {
-            sLibraryLoaded = true;
-            sWaitForLibLoad.open();
-        }
-
         // The application context must already be initialized
         // using ContextUtils.initApplicationContext().
         Context applicationContext = ContextUtils.getApplicationContext();
         assert applicationContext != null;
-        ensureInitialized(applicationContext, null);
+        ensureInitialized(applicationContext, null, /* libAlreadyLoaded= */ true);
     }
 
     @CalledByNative
@@ -248,6 +236,8 @@ public class CronetLibraryLoader {
     @NativeMethods
     interface Natives {
         // Native methods are implemented in cronet_library_loader.cc.
+        void nativeInit();
+
         void cronetInitOnInitThread();
 
         String getCronetVersion();

@@ -72,7 +72,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     const BlockBreakToken* break_token,
     const EarlyBreak* early_break,
     const ColumnSpannerPath* column_spanner_path,
-    absl::optional<FragmentGeometry>* initial_fragment_geometry,
+    std::optional<FragmentGeometry>* initial_fragment_geometry,
     LayoutCacheStatus* out_cache_status) {
   NOT_DESTROYED();
   *out_cache_status = LayoutCacheStatus::kNeedsLayout;
@@ -157,8 +157,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
 
   BlockNode node(this);
   LayoutCacheStatus size_cache_status = LayoutCacheStatus::kHit;
-  if (use_layout_cache_slot ||
-      !RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled()) {
+  if (use_layout_cache_slot) {
     size_cache_status = CalculateSizeBasedLayoutCacheStatus(
         node, break_token, *cached_layout_result, new_space,
         initial_fragment_geometry);
@@ -208,7 +207,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
   }
 
   LayoutUnit bfc_line_offset = new_space.GetBfcOffset().line_offset;
-  absl::optional<LayoutUnit> bfc_block_offset =
+  std::optional<LayoutUnit> bfc_block_offset =
       cached_layout_result->BfcBlockOffset();
   LayoutUnit block_offset_delta;
   MarginStrut end_margin_strut = cached_layout_result->EndMarginStrut();
@@ -389,7 +388,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
           // If the fragmentainer size has changed, and there previously was
           // space shortage reported, we should re-run layout to avoid reporting
           // the same space shortage again.
-          absl::optional<LayoutUnit> space_shortage =
+          std::optional<LayoutUnit> space_shortage =
               cached_layout_result->MinimalSpaceShortage();
           if (space_shortage && *space_shortage > LayoutUnit())
             return nullptr;

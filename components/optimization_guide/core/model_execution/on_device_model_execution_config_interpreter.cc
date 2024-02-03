@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
 
@@ -129,9 +130,16 @@ bool DoConditionsApply(const google::protobuf::MessageLite& message,
 }  // namespace
 
 OnDeviceModelExecutionConfigInterpreter::
-    OnDeviceModelExecutionConfigInterpreter()
-    : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
+    OnDeviceModelExecutionConfigInterpreter() {
+  // Set background task priority to user visible if feature param is specified
+  // to load config with higher priority. Otherwise, use best effort.
+  auto background_task_priority =
+      features::ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority()
+          ? base::TaskPriority::USER_VISIBLE
+          : base::TaskPriority::BEST_EFFORT;
+  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), background_task_priority});
+}
 
 OnDeviceModelExecutionConfigInterpreter::
     ~OnDeviceModelExecutionConfigInterpreter() {

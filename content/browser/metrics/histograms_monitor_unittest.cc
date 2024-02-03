@@ -26,7 +26,7 @@ TEST_F(HistogramsMonitorTest, StartMonitoringThenGetDiff) {
       "MonitorHistogram1", 1, 1000, 10, base::HistogramBase::kNoFlags);
   histogram1->Add(30);
   HistogramsMonitor monitor;
-  monitor.StartMonitoring("");
+  monitor.StartMonitoring(/*query=*/"");
 
   // Get diff immediately should return nothing.
   base::Value::List diff = monitor.GetDiff();
@@ -60,13 +60,42 @@ TEST_F(HistogramsMonitorTest, StartMonitoringWithQueryThenGetDiff) {
       "MonitorHistogram1", 1, 1000, 10, base::HistogramBase::kNoFlags);
   histogram1->Add(30);
   HistogramsMonitor monitor;
-  monitor.StartMonitoring("MonitorHistogram1");
+  monitor.StartMonitoring(/*query=*/"MonitorHistogram1");
 
   base::HistogramBase* histogram2 = base::Histogram::FactoryGet(
       "MonitorHistogram2", 1, 1000, 10, base::HistogramBase::kNoFlags);
   histogram2->Add(50);
   base::Value::List diff = monitor.GetDiff();
   ASSERT_EQ(diff.size(), 0ull);
+}
+
+TEST_F(HistogramsMonitorTest, CaseInsensitiveQuery) {
+  base::StatisticsRecorder::ForgetHistogramForTesting("MonitorHistogram1");
+  base::StatisticsRecorder::ForgetHistogramForTesting("MonitorHistogram2");
+
+  base::HistogramBase* histogram1 = base::Histogram::FactoryGet(
+      "MonitorHistogram1", 1, 1000, 10, base::HistogramBase::kNoFlags);
+  histogram1->Add(30);
+
+  HistogramsMonitor monitor;
+  monitor.StartMonitoring(/*query=*/"histogram1");
+
+  base::HistogramBase* histogram2 = base::Histogram::FactoryGet(
+      "MonitorHistogram2", 1, 1000, 10, base::HistogramBase::kNoFlags);
+  histogram2->Add(50);
+
+  // The query shouldn't match "MonitorHistogram2".
+  base::Value::List diff = monitor.GetDiff();
+  ASSERT_EQ(diff.size(), 0ull);
+
+  histogram1->Add(10);
+
+  // The query should match "MonitorHistogram1", since it's case insensitive.
+  diff = monitor.GetDiff();
+  ASSERT_EQ(diff.size(), 1ull);
+  std::string* header2 = diff[0].GetDict().FindString("header");
+  EXPECT_EQ(*header2,
+            "Histogram: MonitorHistogram1 recorded 1 samples, mean = 10.0");
 }
 
 }  // namespace content

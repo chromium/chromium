@@ -291,6 +291,24 @@ const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type) {
   return "";
 }
 
+const char* ProtoEnumToString(sync_pb::SharedTabGroup::Color color) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SharedTabGroup, Color, UNSPECIFIED, ORANGE);
+  switch (color) {
+    ENUM_CASE(sync_pb::SharedTabGroup, UNSPECIFIED);
+    ENUM_CASE(sync_pb::SharedTabGroup, GREY);
+    ENUM_CASE(sync_pb::SharedTabGroup, BLUE);
+    ENUM_CASE(sync_pb::SharedTabGroup, RED);
+    ENUM_CASE(sync_pb::SharedTabGroup, YELLOW);
+    ENUM_CASE(sync_pb::SharedTabGroup, GREEN);
+    ENUM_CASE(sync_pb::SharedTabGroup, PINK);
+    ENUM_CASE(sync_pb::SharedTabGroup, PURPLE);
+    ENUM_CASE(sync_pb::SharedTabGroup, CYAN);
+    ENUM_CASE(sync_pb::SharedTabGroup, ORANGE);
+  }
+  NOTREACHED();
+  return "";
+}
+
 const char* ProtoEnumToString(sync_pb::SyncEnums::BrowserType browser_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, BrowserType, BROWSER_TYPE_UNKNOWN,
                      TYPE_CUSTOM_TAB);

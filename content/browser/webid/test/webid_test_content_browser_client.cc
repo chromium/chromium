@@ -38,8 +38,8 @@ void WebIdTestContentBrowserClient::SetDigitalCredentialProvider(
 void WebIdTestContentBrowserClient::SetIdentityRegistry(
     WebContents* web_contents,
     base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-    const url::Origin& url) {
-  IdentityRegistry::CreateForWebContents(web_contents, delegate, url);
+    const GURL& config_url) {
+  IdentityRegistry::CreateForWebContents(web_contents, delegate, config_url);
 }
 
 }  // namespace content

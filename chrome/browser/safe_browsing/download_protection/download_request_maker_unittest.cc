@@ -674,7 +674,7 @@ TEST_F(DownloadRequestMakerTest, UsesPassword) {
   ASSERT_EQ(request_future.Get()->archived_binary_size(), 1);
   std::string sha256 =
       request_future.Get()->archived_binary(0).digests().sha256();
-  EXPECT_EQ(base::HexEncode(sha256.data(), sha256.size()),
+  EXPECT_EQ(base::HexEncode(sha256),
             "E11FFA0C9F25234453A9EDD1CB251D46107F34B536AD74642A8584ACA8C1A8CE");
 }
 

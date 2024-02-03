@@ -22,8 +22,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -98,6 +100,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
+@DisableFeatures({ChromeFeatureList.READALOUD_IN_MULTI_WINDOW})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     private static final long KNOWN_READABLE_TRIAL_PTR = 12345678L;
@@ -258,6 +261,25 @@ public class ReadAloudControllerUnitTest {
     public void testIsAvailable_noMSBB() {
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(false);
         assertFalse(mController.isAvailable());
+    }
+
+    @Test
+    public void testIsAvailable_inMultiWindow() {
+        shadowOf(mActivity).setInMultiWindowMode(true);
+        assertFalse(mController.isAvailable());
+
+        shadowOf(mActivity).setInMultiWindowMode(false);
+        assertTrue(mController.isAvailable());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_IN_MULTI_WINDOW})
+    public void testIsAvailable_inMultiWindow_flag() {
+        shadowOf(mActivity).setInMultiWindowMode(true);
+        assertTrue(mController.isAvailable());
+
+        shadowOf(mActivity).setInMultiWindowMode(false);
+        assertTrue(mController.isAvailable());
     }
 
     @Test
@@ -507,6 +529,41 @@ public class ReadAloudControllerUnitTest {
         newTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc."));
         mController.playTab(newTab);
         verify(mPlayback, times(1)).release();
+    }
+
+    @Test
+    public void testPlayTab_inMultiWindow() {
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks)
+                .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
+        assertEquals(null, mPlaybackArgsCaptor.getValue().getLanguage());
+
+        shadowOf(mActivity).setInMultiWindowMode(true);
+        onPlaybackSuccess(mPlayback);
+
+        verify(mPlayerCoordinator).playbackFailed();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_IN_MULTI_WINDOW})
+    public void testPlayTab_inMultiWindow_flag() {
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks)
+                .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
+        assertEquals(null, mPlaybackArgsCaptor.getValue().getLanguage());
+
+        shadowOf(mActivity).setInMultiWindowMode(true);
+        onPlaybackSuccess(mPlayback);
+
+        verify(mPlayerCoordinator, times(1))
+                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
+        verify(mPlayerCoordinator).addObserver(mController);
     }
 
     @Test
@@ -1631,6 +1688,66 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab);
         // No playback request should be made.
         verify(mPlaybackHooks, never()).createPlayback(any(), any());
+    }
+
+    @Test
+    public void testPause_notPlayingTab() {
+        mController.pause();
+        // Not currently playing, so nothing should happen.
+        verify(mPlayback, never()).pause();
+    }
+
+    @Test
+    public void testPause_alreadyStopped() {
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.STOPPED).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        mController.pause();
+        // Not currently playing, so nothing should happen.
+        verify(mPlayback, never()).pause();
+    }
+
+    @Test
+    public void testPause() {
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        mController.pause();
+        verify(mPlayback).pause();
+    }
+
+    @Test
+    public void testMaybePauseForOutgoingIntent_pause() {
+        // Play.
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        // Simulate select-to-speak context menu click. Playback should pause.
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_PROCESS_TEXT);
+        mController.maybePauseForOutgoingIntent(intent);
+        verify(mPlayback).pause();
+    }
+
+    @Test
+    public void testMaybePauseForOutgoingIntent_noPause() {
+        // Play.
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        // Simulate some unimportant context menu click. Playback should not pause.
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_DEFINE);
+        mController.maybePauseForOutgoingIntent(intent);
+        verify(mPlayback, never()).pause();
     }
 
     private void requestAndStartPlayback() {

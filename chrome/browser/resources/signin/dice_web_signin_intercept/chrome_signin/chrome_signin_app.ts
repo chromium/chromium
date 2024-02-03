@@ -11,7 +11,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ChromeSigninInterceptionParameters, DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl} from '../dice_web_signin_intercept_browser_proxy.js';
+import type {ChromeSigninInterceptionParameters, DiceWebSigninInterceptBrowserProxy} from '../dice_web_signin_intercept_browser_proxy.js';
+import {DiceWebSigninInterceptBrowserProxyImpl} from '../dice_web_signin_intercept_browser_proxy.js';
 
 import {getTemplate} from './chrome_signin_app.html.js';
 

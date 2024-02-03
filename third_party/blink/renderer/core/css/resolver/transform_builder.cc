@@ -306,7 +306,7 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
       return Matrix3DTransformOperation::Create(matrix);
     }
     case TransformOperation::kPerspective: {
-      absl::optional<double> p;
+      std::optional<double> p;
       const auto& first_value = transform_value.Item(0);
       const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(first_value);
       if (primitive_value) {

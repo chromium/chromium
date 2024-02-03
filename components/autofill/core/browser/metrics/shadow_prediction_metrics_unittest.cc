@@ -62,7 +62,7 @@ FormData GetFormWith2Fields(const GURL& form_origin) {
                    .name = u"email",
                },
            },
-       .unique_renderer_id = test::MakeFormRendererId(),
+       .renderer_id = test::MakeFormRendererId(),
        .main_frame_origin = url::Origin::Create(form_origin)});
 }
 

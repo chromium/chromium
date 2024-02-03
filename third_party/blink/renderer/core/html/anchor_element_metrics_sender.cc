@@ -189,18 +189,11 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
   DCHECK(clock_);
 
   intersection_observer_ = IntersectionObserver::Create(
-      /* (root) margin */ Vector<Length>(),
-      /* scroll_margin */ Vector<Length>(),
-      /* thresholds */ {kIntersectionRatioThreshold},
-      /* document */ &document,
-      /* callback */
+      document,
       WTF::BindRepeating(&AnchorElementMetricsSender::UpdateVisibleAnchors,
                          WrapWeakPersistent(this)),
-      /* ukm_metric_id */
       LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
-      /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-      /* semantics */ IntersectionObserver::kFractionOfTarget,
-      /* delay */ 100);
+      {.thresholds = {kIntersectionRatioThreshold}, .delay = 100});
 }
 
 void AnchorElementMetricsSender::SetNowAsNavigationStartForTesting() {
@@ -350,7 +343,7 @@ void AnchorElementMetricsSender::EnqueueLeftViewport(
   DCHECK(it != anchor_elements_timing_stats_.end());
   AnchorElementTimingStats& timing_stats = it->value;
   timing_stats.entered_viewport_should_be_enqueued_ = true;
-  absl::optional<base::TimeTicks>& entered_viewport =
+  std::optional<base::TimeTicks>& entered_viewport =
       timing_stats.viewport_entry_time_;
   if (!entered_viewport.has_value()) {
     return;

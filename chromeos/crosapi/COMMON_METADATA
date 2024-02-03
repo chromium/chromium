@@ -1,5 +1,8 @@
-monorail {
+monorail: {
   component: "OS>Lacros"
 }
 team_email: "lacros-team@google.com"
 os: LACROS
+buganizer_public: {
+  component_id: 1456869
+}

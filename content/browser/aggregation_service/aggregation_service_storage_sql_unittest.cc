@@ -1170,6 +1170,10 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_RespectsLimit) {
   histograms_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
       false, 1);
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "StoredRequestsPerReportingOrigin",
+      example_limit + 2);
 }
 
 TEST_F(AggregationServiceStorageSqlTest, StoreRequest_LimitIsScopedCorrectly) {
@@ -1228,6 +1232,10 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_LimitIsScopedCorrectly) {
   histograms_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
       false, 2);
+  histograms_.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "StoredRequestsPerReportingOrigin",
+      example_limit + 3);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,

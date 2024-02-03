@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_close_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_stream_options.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -78,6 +79,11 @@ class WebSocketStreamTest : public ::testing::Test {
       return false;
 
     return dom_exception->code() == static_cast<uint16_t>(code);
+  }
+
+  bool IsWebSocketError(ScriptState* script_state, ScriptValue value) {
+    return V8WebSocketError::HasInstance(script_state->GetIsolate(),
+                                         value.V8Value());
   }
 
   // Returns the value of the property |key| on object |object|, stringified as
@@ -195,11 +201,10 @@ TEST_F(WebSocketStreamTest, ConnectWithFailedHandshake) {
   closed_tester.WaitUntilSettled();
 
   EXPECT_TRUE(opened_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(script_state, opened_tester.Value(),
-                             DOMExceptionCode::kNetworkError));
+  EXPECT_TRUE(IsWebSocketError(script_state, opened_tester.Value()));
+
   EXPECT_TRUE(closed_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(script_state, closed_tester.Value(),
-                             DOMExceptionCode::kNetworkError));
+  EXPECT_TRUE(IsWebSocketError(script_state, closed_tester.Value()));
 }
 
 TEST_F(WebSocketStreamTest, ConnectWithSuccessfulHandshake) {
@@ -270,9 +275,9 @@ TEST_F(WebSocketStreamTest, ConnectThenCloseCleanly) {
   closed_tester.WaitUntilSettled();
   EXPECT_TRUE(closed_tester.IsFulfilled());
   ASSERT_TRUE(closed_tester.Value().IsObject());
-  EXPECT_EQ(
-      PropertyAsString(script_state, closed_tester.Value().V8Value(), "code"),
-      "1005");
+  EXPECT_EQ(PropertyAsString(script_state, closed_tester.Value().V8Value(),
+                             "closeCode"),
+            "1005");
   EXPECT_EQ(
       PropertyAsString(script_state, closed_tester.Value().V8Value(), "reason"),
       "");
@@ -312,11 +317,9 @@ TEST_F(WebSocketStreamTest, CloseDuringHandshake) {
   closed_tester.WaitUntilSettled();
 
   EXPECT_TRUE(opened_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(script_state, opened_tester.Value(),
-                             DOMExceptionCode::kNetworkError));
+  EXPECT_TRUE(IsWebSocketError(script_state, opened_tester.Value()));
   EXPECT_TRUE(closed_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(script_state, closed_tester.Value(),
-                             DOMExceptionCode::kNetworkError));
+  EXPECT_TRUE(IsWebSocketError(script_state, closed_tester.Value()));
 }
 
 TEST_F(WebSocketStreamTest, AbortBeforeHandshake) {

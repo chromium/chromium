@@ -24,7 +24,25 @@ enum class AppListSearchResultType;
 
 namespace app_list {
 
-class SearchController;
+// This enum scopes search providers into logically connected groups that
+// a client expect to search together. This category do not have to be unique
+// for each provider.
+enum class SearchCategory {
+  kTest = 0,
+  kApps = 1,
+  kAppShortcuts = 2,
+  kFiles = 3,
+  kGames = 4,
+  kHelp = 5,
+  kImages = 6,
+  kPlayStore = 7,
+  kWeb = 8,
+  kSettings = 9,
+  kOmnibox = 10,
+  kDesksAdmin = 11,
+  kAssistant = 12,
+  kSystemInfoCard = 13
+};
 
 class SearchProvider {
  public:
@@ -32,12 +50,9 @@ class SearchProvider {
   using OnSearchResultsCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType, Results)>;
 
-  // Each provider should assign its control category during construction to
-  // indicate whether or not they need a control to disable themselves. The
-  // default value `kCannotToggle` means it is non-toggleable and should always
-  // provide results for search.
-  explicit SearchProvider(
-      ControlCategory control_category = ControlCategory::kCannotToggle);
+  // Each provider should assign its search category during construction to
+  // indicate the type of search results.
+  explicit SearchProvider(SearchCategory search_category);
 
   SearchProvider(const SearchProvider&) = delete;
   SearchProvider& operator=(const SearchProvider&) = delete;
@@ -68,8 +83,8 @@ class SearchProvider {
   // Returns the main result type created by this provider.
   virtual ash::AppListSearchResultType ResultType() const = 0;
 
-  // Returns the launcher search control category of this provider.
-  ControlCategory control_category() const { return control_category_; }
+  // Returns the launcher search category of this provider.
+  SearchCategory search_category() const { return search_category_; }
 
  protected:
   // Swaps the internal results with |new_results|.
@@ -78,12 +93,6 @@ class SearchProvider {
   // TODO(b/315709613): Deprecated. To be removed. Use `on_search_done_`
   // directly.
   void SwapResults(Results* new_results);
-
-  // The control category setters should be called in derived class constructor
-  // only.
-  void set_control_category(ControlCategory control_category) {
-    control_category_ = control_category;
-  }
 
   // A callback to be called when a search is done.
   OnSearchResultsCallback on_search_done_;
@@ -95,10 +104,8 @@ class SearchProvider {
   // TODO(b/315709613): Deprecated. To be removed.
   virtual void StartZeroState() {}
 
-  // The launcher search control category of the provider. Each provider is
-  // enabled by default.
-  // TODO(b/315709613): Deprecated. To be removed.
-  ControlCategory control_category_ = ControlCategory::kCannotToggle;
+  // Indicates what kind of search the provider does.
+  const SearchCategory search_category_;
 };
 
 }  // namespace app_list

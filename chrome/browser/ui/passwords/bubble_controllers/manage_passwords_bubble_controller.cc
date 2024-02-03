@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -71,6 +72,10 @@ ManagePasswordsBubbleController::~ManagePasswordsBubbleController() {
 }
 
 std::u16string ManagePasswordsBubbleController::GetTitle() const {
+  if (!delegate_) {
+    return std::u16string();
+  }
+
   switch (delegate_->GetState()) {
     case password_manager::ui::SAVE_CONFIRMATION_STATE:
       return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/false);
@@ -135,15 +140,21 @@ void ManagePasswordsBubbleController::OnGooglePasswordManagerLinkClicked() {
   }
 }
 
-// TODO(1503146): Add implementation of this method.
 void ManagePasswordsBubbleController::OnMovePasswordLinkClicked() {
+  CHECK(currently_selected_password_.has_value());
   password_manager::metrics_util::LogUserInteractionsInPasswordManagementBubble(
       PasswordManagementBubbleInteractions::kMovePasswordLinkClicked);
+  if (delegate_) {
+    delegate_->ShowMovePasswordBubble(currently_selected_password_.value());
+  }
 }
 
-const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+base::span<std::unique_ptr<password_manager::PasswordForm> const>
 ManagePasswordsBubbleController::GetCredentials() const {
-  return delegate_->GetCurrentForms();
+  if (!delegate_) {
+    return base::span<std::unique_ptr<password_manager::PasswordForm> const>();
+  }
+  return base::make_span(delegate_->GetCurrentForms());
 }
 
 void ManagePasswordsBubbleController::UpdateSelectedCredentialInPasswordStore(
@@ -190,6 +201,11 @@ void ManagePasswordsBubbleController::UpdateSelectedCredentialInPasswordStore(
 void ManagePasswordsBubbleController::AuthenticateUserAndDisplayDetailsOf(
     password_manager::PasswordForm password_form,
     base::OnceCallback<void(bool)> completion) {
+  if (!delegate_) {
+    std::move(completion).Run(false);
+    return;
+  }
+
   std::u16string message;
 #if BUILDFLAG(IS_MAC)
   message = l10n_util::GetStringUTF16(
@@ -213,6 +229,9 @@ void ManagePasswordsBubbleController::AuthenticateUserAndDisplayDetailsOf(
 
 bool ManagePasswordsBubbleController::UsernameExists(
     const std::u16string& username) {
+  if (!delegate_) {
+    return false;
+  }
   return base::ranges::any_of(
       GetCredentials(),
       [&username](const std::unique_ptr<password_manager::PasswordForm>& form) {
@@ -221,6 +240,9 @@ bool ManagePasswordsBubbleController::UsernameExists(
 }
 
 bool ManagePasswordsBubbleController::IsOptedInForAccountStorage() const {
+  if (!delegate_) {
+    return false;
+  }
   return delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
 }
 

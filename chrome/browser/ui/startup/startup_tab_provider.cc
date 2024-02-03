@@ -61,6 +61,10 @@
 #include "extensions/browser/extension_registry.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/headless/headless_mode_util.h"
+#endif
+
 namespace {
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.
@@ -78,6 +82,7 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
 // checked in a different layer (such as the dbus UrlHandlerService and the
 // ArcIntentHelperBridge). Thus, chrome:// URLs are allowed on Lacros so that
 // trusted calls in Ash can open them.
+// Headless mode also allows chrome:// URLs if the user explicitly allowed it.
 bool ValidateUrl(const GURL& url) {
   if (!url.is_valid())
     return false;
@@ -96,12 +101,27 @@ bool ValidateUrl(const GURL& url) {
   url_points_to_an_approved_settings_page = url == reset_settings_url;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  bool url_scheme_is_chrome = false;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // In ChromeOS, allow any URL pattern that matches chrome:// scheme.
+  url_scheme_is_chrome = url.SchemeIs(content::kChromeUIScheme);
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // In Headless mode, allow any URL pattern that matches chrome:// scheme if
+  // the user explicitly allowed it.
+  if (headless::IsHeadlessMode() && url.SchemeIs(content::kChromeUIScheme)) {
+    if (headless::IsChromeSchemeUrlAllowed()) {
+      url_scheme_is_chrome = true;
+    } else {
+      LOG(WARNING) << "Headless mode requires the --allow-chrome-scheme-url "
+                      "command-line option to access "
+                   << url;
+    }
+  }
+#endif
+
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   return policy->IsWebSafeScheme(url.scheme()) ||
-         url.SchemeIs(url::kFileScheme) ||
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-         url.SchemeIs(content::kChromeUIScheme) ||
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+         url.SchemeIs(url::kFileScheme) || url_scheme_is_chrome ||
          url_points_to_an_approved_settings_page ||
          url.spec() == url::kAboutBlankURL;
 }

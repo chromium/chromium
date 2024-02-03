@@ -39,6 +39,11 @@ class MockComponentUpdateService : public ComponentUpdateService {
     return base::Version(kNullVersion);
   }
 
+  base::Version GetMaxPreviousProductVersion(
+      const std::string& app_id) override {
+    return base::Version(kNullVersion);
+  }
+
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
   MOCK_METHOD1(RegisterComponent, bool(const ComponentRegistration& component));

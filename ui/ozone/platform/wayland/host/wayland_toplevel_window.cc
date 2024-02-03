@@ -481,23 +481,10 @@ void WaylandToplevelWindow::UnlockFrame() {
   OnFrameLockingChanged(false);
 }
 
-void WaylandToplevelWindow::OcclusionStateChanged(uint32_t mode) {
-  auto state = PlatformWindowOcclusionState::kUnknown;
-  switch (mode) {
-    case ZAURA_SURFACE_OCCLUSION_STATE_UNKNOWN:
-      state = PlatformWindowOcclusionState::kUnknown;
-      break;
-    case ZAURA_SURFACE_OCCLUSION_STATE_VISIBLE:
-      state = PlatformWindowOcclusionState::kVisible;
-      break;
-    case ZAURA_SURFACE_OCCLUSION_STATE_OCCLUDED:
-      state = PlatformWindowOcclusionState::kOccluded;
-      break;
-    case ZAURA_SURFACE_OCCLUSION_STATE_HIDDEN:
-      state = PlatformWindowOcclusionState::kHidden;
-      break;
-  }
-  OnOcclusionStateChanged(state);
+void WaylandToplevelWindow::OcclusionStateChanged(
+    PlatformWindowOcclusionState occlusion_state) {
+  WaylandWindow::OcclusionStateChanged(occlusion_state);
+  delegate()->OnOcclusionStateChanged(occlusion_state);
 }
 
 void WaylandToplevelWindow::DeskChanged(int state) {
@@ -1287,11 +1274,6 @@ void WaylandToplevelWindow::OnDecorationModeChanged() {
 void WaylandToplevelWindow::OnFrameLockingChanged(bool lock) {
   DCHECK(delegate());
   delegate()->OnSurfaceFrameLockingChanged(lock);
-}
-
-void WaylandToplevelWindow::OnOcclusionStateChanged(
-    PlatformWindowOcclusionState occlusion_state) {
-  delegate()->OnOcclusionStateChanged(occlusion_state);
 }
 
 void WaylandToplevelWindow::OnDeskChanged(int state) {

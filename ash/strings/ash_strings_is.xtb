@@ -607,9 +607,11 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3526440770046466733">Opna tengil í nýjum flipa og halda áfram í núverandi flipa</translation>
 <translation id="353086728817903341">Tengdist við <ph name="NUM_DEVICES" /> tæki</translation>
 <translation id="3533126039236445965">Forrit á hillu</translation>
+<translation id="3537350467437346467">Þú skoðaðir</translation>
 <translation id="3539957339480430241">Heitur reitur <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Hafna að setja upp skoðun nýlegra mynda og efnis í símanum</translation>
 <translation id="3542066395059568317">Þú sérð tillögur svo þú getir haldið áfram þar sem frá var horfið. Þú getur hægrismellt til að fjarlægja tillögur.</translation>
+<translation id="3547318469722231257">Þú breyttir</translation>
 <translation id="3552189655002856821">Slökkt er á Wi-Fi</translation>
 <translation id="3554215588514239132">Sýna eða fela svæði forritunarverkfæra</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> var fest</translation>
@@ -701,6 +703,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="385300504083504382">Byrjun</translation>
 <translation id="3859364108019690">Ekki er hægt að streyma forritum</translation>
 <translation id="3861651314799684201">Ýttu á Enter til að taka upp allan skjáinn</translation>
+<translation id="3882323608730650973">Breytt</translation>
 <translation id="3886872229787704059">Opnað í dag</translation>
 <translation id="3891340733213178823">Ýttu tvisvar á Ctrl+Shift+Q til að skrá þig út.</translation>
 <translation id="3893630138897523026">ChromeVox (raddsvörun)</translation>
@@ -894,6 +897,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4582666543382004902">Slökkt var á heitum reit til að nota WiFi. Slökktu á WiFi til að nota heitan reit.</translation>
 <translation id="4585337515783392668">Hætta að senda út í óþekkt tæki</translation>
 <translation id="4596144739579517758">Slökkt er á dökku þema</translation>
+<translation id="4596442969149038771"><ph name="USER" /> deildi</translation>
 <translation id="4611292653554630842">Skrá inn</translation>
 <translation id="462160925400706389">Tengt er við <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Staðfesta reikning</translation>
@@ -1337,6 +1341,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="6298183524022479114">Sérsníða þetta tæki í forriti</translation>
 <translation id="6309219492973062892">Smella eða ýta á hillutákn 1–8</translation>
 <translation id="6315170314923504164">Tal</translation>
+<translation id="6319058840130157106">Fara til baka til að skipta á milli hægra horns neðst, ræsiforrits, veffangastiku, bókamerkjastiku, vefsvæðis sem er opið og niðurhals</translation>
 <translation id="6324916366299863871">Breyta flýtileið</translation>
 <translation id="6330012934079202188">Sýnir glugga allra skrifborða, ýttu á ör upp til að sýna glugga núverandi skrifborðs</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er stýrð lota sem <ph name="MANAGER" /> hefur umsjón með</translation>
@@ -1500,6 +1505,7 @@ Ný uppsetning</translation>
 <translation id="6981291220124935078">Kveikja á aðgangi</translation>
 <translation id="6981982820502123353">Aðgengi</translation>
 <translation id="698231206551913481">Öllum skrám og staðbundnum gögnum sem tengjast notandanum verður varanlega eytt þegar notandinn er fjarlægður.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Veldu „Staðfesta“ til að halda breytingunum. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Horfðu á stutta kynningu til að læra á grunnatriði Chromebook. Komdu þér á rétta braut í 6 skrefum.</translation>
 <translation id="7004910047186208204">Tengjast við farsímagögn</translation>
 <translation id="7005239792648594238">Opnaðu forrit til að hefjast handa</translation>
@@ -1814,6 +1820,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8314772463905284467">Kveikt er á hástafalás</translation>
 <translation id="8315514906653279104">Kveikir...</translation>
 <translation id="8331351032546853669">Niðurhal í bið</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> gluggi valinn</translation>
 <translation id="8349826889576450703">ræsa</translation>
@@ -1920,6 +1927,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="878215960996152260"><ph name="APP_NAME" />, uppsett forrit, útilokað</translation>
 <translation id="8785070478575117577">Tengjast <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Fara áfram til að skipta á milli hægra horns neðst, ræsiforrits, veffangastiku, bókamerkjastiku, vefsvæðis sem er opið og niðurhals</translation>
 <translation id="8792626944327216835">hljóðnema</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Mappan <ph name="FOLDER_NAME" /></translation>
@@ -2033,6 +2041,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="953431725143473984">Slökkva á tækinu?</translation>
 <translation id="954052413789300507">Ekki nægilegt pláss fyrir <ph name="FILENAME" />. Losaðu um pláss.</translation>
 <translation id="954520015070501466">30 mín.</translation>
+<translation id="954786879461589145"><ph name="USER" /> breytti</translation>
 <translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
 <translation id="981011780479609956">Enginn skiladagur</translation>
 <translation id="98120814841227350">Fara aftast í skjal</translation>

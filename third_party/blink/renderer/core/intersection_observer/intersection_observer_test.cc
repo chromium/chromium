@@ -71,17 +71,14 @@ class IntersectionObserverTest : public SimTest,
 
     IntersectionObserver* scroll_margin_observer =
         MakeGarbageCollected<IntersectionObserver>(
-            /* delegate */ *scroll_margin_delegate,
-            /* root */ nullptr,
-            /* margin */ Vector<Length>{Length::Fixed(10)},
-            /* scroll_margin */ Vector<Length>{Length::Fixed(scroll_margin)},
-            /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
-            /* semantics */ IntersectionObserver::kFractionOfTarget,
-            /* delay */ 0,
-            /* track_visibility */ false,
-            /* always_report_root_bounds */ false,
-            /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-            /* use_overflow_clip_edge */ false);
+            *scroll_margin_delegate,
+            /*root=*/nullptr,
+            IntersectionObserver::Params{
+                .margin = {Length::Fixed(10)},
+                .scroll_margin = {Length::Fixed(scroll_margin)},
+                .thresholds = {
+                    std::numeric_limits<float>::min(),
+                }});
 
     DummyExceptionStateForTesting exception_state;
     scroll_margin_observer->observe(target, exception_state);
@@ -133,17 +130,12 @@ class IntersectionObserverTest : public SimTest,
 
     IntersectionObserver* scroll_margin_observer =
         MakeGarbageCollected<IntersectionObserver>(
-            /* delegate */ *scroll_margin_delegate,
-            /* root */ nullptr,
-            /* margin */ Vector<Length>{Length::Fixed(10)},
-            /* scroll_margin */ Vector<Length>{Length::Fixed(scroll_margin)},
-            /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
-            /* semantics */ IntersectionObserver::kFractionOfTarget,
-            /* delay */ 0,
-            /* track_visibility */ false,
-            /* always_report_root_bounds */ false,
-            /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-            /* use_overflow_clip_edge */ false);
+            *scroll_margin_delegate,
+            /*root=*/nullptr,
+            IntersectionObserver::Params{
+                .margin = {Length::Fixed(10)},
+                .scroll_margin = {Length::Fixed(scroll_margin)},
+                .thresholds = {std::numeric_limits<float>::min()}});
 
     DummyExceptionStateForTesting exception_state;
     scroll_margin_observer->observe(target, exception_state);
@@ -323,17 +315,11 @@ TEST_P(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
 
   IntersectionObserver* target_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          /* delegate */ *target_observer_delegate,
-          /* root */ nullptr,
-          /* margin */ Vector<Length>(),
-          /* scroll_margin */ Vector<Length>{},
-          /* thresholds */ Vector<float>{kExpectedFractionOfTarget / 2},
-          /* semantics */ IntersectionObserver::kFractionOfTarget,
-          /* delay */ 0,
-          /* track_visibility */ false,
-          /* always_report_root_bounds */ false,
-          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-          /* use_overflow_clip_edge */ false);
+          *target_observer_delegate,
+          /*root=*/nullptr,
+          IntersectionObserver::Params{
+              .thresholds = {kExpectedFractionOfTarget / 2},
+          });
 
   DummyExceptionStateForTesting exception_state;
   target_observer->observe(target, exception_state);
@@ -344,17 +330,11 @@ TEST_P(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
 
   IntersectionObserver* root_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          /* delegate */ *root_observer_delegate,
-          /* root */ nullptr,
-          /* margin */ Vector<Length>(),
-          /* scroll_margin */ Vector<Length>{},
-          /* thresholds */ Vector<float>{kExpectedFractionOfRoot / 2},
-          /* semantics */ IntersectionObserver::kFractionOfRoot,
-          /* delay */ 0,
-          /* track_visibility */ false,
-          /* always_report_root_bounds */ false,
-          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-          /* use_overflow_clip_edge */ false);
+          *root_observer_delegate,
+          /*root=*/nullptr,
+          IntersectionObserver::Params{
+              .thresholds = {kExpectedFractionOfRoot / 2},
+              .semantics = IntersectionObserver::kFractionOfRoot});
 
   root_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -410,17 +390,11 @@ TEST_P(IntersectionObserverTest, TargetRectIsEmptyAfterMapping) {
 
   IntersectionObserver* target_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          /* delegate */ *target_observer_delegate,
-          /* root */ nullptr,
-          /* margin */ Vector<Length>(),
-          /* scroll_margin */ Vector<Length>{},
-          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
-          /* semantics */ IntersectionObserver::kFractionOfTarget,
-          /* delay */ 0,
-          /* track_visibility */ false,
-          /* always_report_root_bounds */ false,
-          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-          /* use_overflow_clip_edge */ false);
+          *target_observer_delegate,
+          /*root=*/nullptr,
+          IntersectionObserver::Params{
+              .thresholds = {std::numeric_limits<float>::min()},
+          });
 
   DummyExceptionStateForTesting exception_state;
   target_observer->observe(target, exception_state);
@@ -1715,6 +1689,105 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdZero) {
             frame_view->GetIntersectionObservationStateForTesting());
 }
 
+TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateWithPageZoom) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  GetDocument().GetFrame()->SetPageZoomFactor(2);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  // The test HTML is the same as MinScrollDeltaToUpdateThresholdZero.
+  main_resource.Complete(R"HTML(
+    <div id='root' style="width: 100px; height: 100px; overflow: scroll">
+      <div style="height: 200px"></div>
+      <div id='target' style="width: 50px; height: 100px"></div>
+      <div style="width: 1000px; height: 1000px"></div>
+    </div>
+  )HTML");
+
+  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  LocalFrameView* frame_view = GetDocument().View();
+
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
+  DummyExceptionStateForTesting exception_state;
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  observer->observe(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  const IntersectionObservation* observation =
+      target->IntersectionObserverData()->GetObservationFor(*observer);
+  EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kRequired,
+            frame_view->GetIntersectionObservationStateForTesting());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(gfx::Vector2dF(100, 200), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
+
+  // Note that this CSSOM function uses CSS (unzoomed) coordinates.
+  root->scrollTo(0, 50);
+  // While our internal geometries are zoomed.
+  EXPECT_EQ(gfx::Vector2dF(100, 200), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kDesired,
+            frame_view->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+
+  root->scrollTo(0, 100);
+  EXPECT_EQ(gfx::Vector2dF(100, 100), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kDesired,
+            frame_view->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_EQ(observer_delegate->EntryCount(), 2);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(gfx::Vector2dF(100, 0), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
+
+  root->scrollTo(0, 101);
+  EXPECT_EQ(gfx::Vector2dF(100, 0), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kDesired,
+            frame_view->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_EQ(observer_delegate->EntryCount(), 2);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(gfx::Vector2dF(100, 2), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
+
+  root->scrollTo(51, 101);
+  EXPECT_EQ(gfx::Vector2dF(100, 2), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kDesired,
+            frame_view->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 3);
+  EXPECT_EQ(observer_delegate->EntryCount(), 3);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(gfx::Vector2dF(2, 2), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            frame_view->GetIntersectionObservationStateForTesting());
+}
+
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateImplicitRoot) {
   if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     return;
@@ -2208,17 +2281,11 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOneOfRoot) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
 
   IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
-      /* delegate */ *observer_delegate,
-      /* root */ root,
-      /* margin */ Vector<Length>(),
-      /* scroll_margin */ Vector<Length>{},
-      /* thresholds */ Vector<float>{1},
-      /* semantics */ IntersectionObserver::kFractionOfRoot,
-      /* delay */ 0,
-      /* track_visibility */ false,
-      /* always_report_root_bounds */ false,
-      /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-      /* use_overflow_clip_edge */ false);
+      *observer_delegate, root,
+      IntersectionObserver::Params{
+          .thresholds = {1},
+          .semantics = IntersectionObserver::kFractionOfRoot,
+      });
 
   DummyExceptionStateForTesting exception_state;
   observer->observe(target, exception_state);
@@ -2704,17 +2771,12 @@ TEST_P(IntersectionObserverTest, ApplyMarginToTarget) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* root_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          /* delegate */ *root_margin_delegate,
-          /* root */ nullptr,
-          /* margin */ Vector<Length>{Length::Fixed(10)},
-          /* scroll_margin */ Vector<Length>{},
-          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
-          /* semantics */ IntersectionObserver::kFractionOfTarget,
-          /* delay */ 0,
-          /* track_visibility */ false,
-          /* always_report_root_bounds */ false,
-          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-          /* use_overflow_clip_edge */ false);
+          *root_margin_delegate,
+          /*root=*/nullptr,
+          IntersectionObserver::Params{
+              .margin = {Length::Fixed(10)},
+              .thresholds = {std::numeric_limits<float>::min()},
+          });
 
   DummyExceptionStateForTesting exception_state;
   root_margin_observer->observe(target, exception_state);
@@ -2725,17 +2787,13 @@ TEST_P(IntersectionObserverTest, ApplyMarginToTarget) {
   // Same parameters as above except that margin is applied to target.
   IntersectionObserver* target_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          /* delegate */ *target_margin_delegate,
-          /* root */ nullptr,
-          /* margin */ Vector<Length>{Length::Fixed(10)},
-          /* scroll_margin */ Vector<Length>{},
-          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
-          /* semantics */ IntersectionObserver::kFractionOfTarget,
-          /* delay */ 0,
-          /* track_visibility */ false,
-          /* always_report_root_bounds */ false,
-          /* margin_target */ IntersectionObserver::kApplyMarginToTarget,
-          /* use_overflow_clip_edge */ false);
+          *target_margin_delegate,
+          /*root=*/nullptr,
+          IntersectionObserver::Params{
+              .margin = {Length::Fixed(10)},
+              .margin_target = IntersectionObserver::kApplyMarginToTarget,
+              .thresholds = {std::numeric_limits<float>::min()},
+          });
 
   target_margin_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -2786,17 +2844,13 @@ TEST_P(IntersectionObserverTest, TargetMarginPercentResolvesAgainstRoot) {
   // resolved against root, which would make it intersecting.
   IntersectionObserver* target_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          /* delegate */ *target_margin_delegate,
-          /* root */ nullptr,
-          /* margin */ Vector<Length>{Length::Percent(10)},
-          /* scroll_margin */ Vector<Length>{},
-          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
-          /* semantics */ IntersectionObserver::kFractionOfTarget,
-          /* delay */ 0,
-          /* track_visibility */ false,
-          /* always_report_root_bounds */ false,
-          /* margin_target */ IntersectionObserver::kApplyMarginToTarget,
-          /* use_overflow_clip_edge */ false);
+          *target_margin_delegate,
+          /*root=*/nullptr,
+          IntersectionObserver::Params{
+              .margin = {Length::Percent(10)},
+              .margin_target = IntersectionObserver::kApplyMarginToTarget,
+              .thresholds = {std::numeric_limits<float>::min()},
+          });
 
   DummyExceptionStateForTesting exception_state;
   target_margin_observer->observe(target, exception_state);
@@ -2889,17 +2943,11 @@ TEST_P(IntersectionObserverTest, ScrollMarginIntersectingNonScrollingRoot) {
 
   IntersectionObserver* scroll_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          /* delegate */ *scroll_margin_delegate,
-          /* root */ root,
-          /* margin */ Vector<Length>{Length::Fixed(10)},
-          /* scroll_margin */ Vector<Length>{Length::Fixed(10)},
-          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
-          /* semantics */ IntersectionObserver::kFractionOfTarget,
-          /* delay */ 0,
-          /* track_visibility */ false,
-          /* always_report_root_bounds */ false,
-          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-          /* use_overflow_clip_edge */ false);
+          *scroll_margin_delegate, root,
+          IntersectionObserver::Params{
+              .margin = {Length::Fixed(10)},
+              .thresholds = {std::numeric_limits<float>::min()},
+          });
 
   DummyExceptionStateForTesting exception_state;
   scroll_margin_observer->observe(target, exception_state);

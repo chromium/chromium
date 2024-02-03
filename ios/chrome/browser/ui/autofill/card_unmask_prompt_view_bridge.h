@@ -12,16 +12,20 @@
 @class CardUnmaskPromptViewController;
 @class UIViewController;
 @class UINavigationController;
+@class CreditCardData;
+@class UIImage;
 
 namespace autofill {
 
 class CardUnmaskPromptController;
+class PersonalDataManager;
 
 // iOS implementation of the unmask prompt UI.
 class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
  public:
   CardUnmaskPromptViewBridge(CardUnmaskPromptController* controller,
-                             UIViewController* base_view_controller);
+                             UIViewController* base_view_controller,
+                             PersonalDataManager* personal_data_manager);
   CardUnmaskPromptViewBridge(const CardUnmaskPromptViewBridge&) = delete;
   CardUnmaskPromptViewBridge& operator=(const CardUnmaskPromptViewBridge&) =
       delete;
@@ -44,6 +48,8 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   // This call destroys `this`.
   void NavigationControllerDismissed();
 
+  CreditCardData* credit_card_data() { return credit_card_data_; }
+
  protected:
   // The presented UINavigationController containing `prompt_view_controller_`.
   UINavigationController* navigation_controller_;
@@ -59,8 +65,14 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   // dismissing its own UI elements.
   void DeleteSelf();
 
+  UIImage* GetCardIcon();
+
   // Weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;
+
+  raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  CreditCardData* credit_card_data_;
 
   base::WeakPtrFactory<CardUnmaskPromptViewBridge> weak_ptr_factory_;
 };

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/picker/picker_feature_usage_metrics.h"
+#include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"

@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
-<translation id="1426410128494586442">Có</translation>
 <translation id="1434873037477293673">thẻ thông báo giảm giá</translation>
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> trang web}other{<ph name="SITE_COUNT" /> trang web}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Để cho phép <ph name="APP_NAME" /> truy cập vào máy ảnh của bạn, hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Đã chặn các cookie bên thứ ba</translation>
 <translation id="2238944249568001759">Cụm từ tìm kiếm đề xuất dựa trên thẻ gần đây nhất của bạn</translation>
+<translation id="2241587408274973373">Thẻ trên trang Thẻ mới</translation>
 <translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Xoá</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Đã chặn 1 trang web}other{Đã chặn # trang web}}</translation>
@@ -85,7 +85,7 @@
 <translation id="2438120137003069591">Bạn đã tạm thời cho phép trang web này sử dụng cookie của bên thứ ba. Điều này sẽ làm giảm khả năng bảo vệ khi duyệt web nhưng giúp các tính năng của trang web hoạt động bình thường một cách dễ dàng hơn. <ph name="BEGIN_LINK" />Gửi phản hồi<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Tính năng trên một số trang web có thể không hoạt động được ở Chế độ ẩn danh</translation>
 <translation id="2442870161001914531">Luôn yêu cầu trang web dành cho máy tính</translation>
-<translation id="2469312991797799607">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie của <ph name="ORIGIN" /> cũng như mọi trang web trong đó</translation>
+<translation id="2469312991797799607">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie của <ph name="ORIGIN" /> cũng như mọi trang web thuộc miền đó</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Các trang web có thể đưa ra lời nhắc đăng nhập từ các dịch vụ nhận dạng.</translation>
 <translation id="2790501146643349491">Khi bạn bật tuỳ chọn này, các trang web đã đóng gần đây có thể hoàn tất quá trình gửi và nhận dữ liệu. Khi bạn tắt tuỳ chọn này, các trang web đã đóng gần đây không thể hoàn tất quá trình gửi hoặc nhận dữ liệu.</translation>
 <translation id="2822354292072154809">Bạn có chắc muốn đặt lại tất cả các quyền của trang web cho <ph name="CHOSEN_OBJECT_NAME" /> không?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Yêu cầu chế độ xem trên thiết bị di động</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Trình xem chứng chỉ</translation>
 <translation id="2979365474350987274">Cookie của bên thứ ba bị hạn chế</translation>
 <translation id="3008272652534848354">Đặt lại quyền</translation>
-<translation id="3013291976881901233">Thiết bị MIDI</translation>
 <translation id="301521992641321250">Tự động bị chặn</translation>
 <translation id="3069226013421428034">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
@@ -149,7 +147,7 @@
 <translation id="344449859752187052">Đã chặn cookie của bên thứ ba</translation>
 <translation id="3448554387819310837">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng camera. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng camera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome sẽ chặn cookie trở lại vào ngày mai}other{Chrome sẽ chặn cookie trở lại sau # ngày nữa}}</translation>
-<translation id="3521663503435878242">Các trang web trong <ph name="DOMAIN" /></translation>
+<translation id="3521663503435878242">Các trang web thuộc miền <ph name="DOMAIN" /></translation>
 <translation id="3536227077203206203">Đã cho phép sử dụng cho lần này</translation>
 <translation id="3538390592868664640">Chặn không cho trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="3544058026430919413">Một công ty có thể xác định nhóm các trang web được sử dụng cookie để chia sẻ hoạt động của bạn trong nhóm. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
@@ -188,11 +186,10 @@
 <translation id="4149890623864272035">Bạn có chắc chắn muốn xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho trang web này không?</translation>
 <translation id="4149994727733219643">Chế độ xem đơn giản cho trang web</translation>
 <translation id="4151930093518524179">Thu phóng mặc định</translation>
-<translation id="4165986682804962316">Cài đặt trang web</translation>
+<translation id="4165986682804962316">Chế độ cài đặt trang web</translation>
 <translation id="4169549551965910670">Đã kết nối với một thiết bị USB</translation>
 <translation id="4194328954146351878">Hỏi trước khi cho phép các trang web xem và thay đổi thông tin trên thiết bị NFC (nên chọn)</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
-<translation id="4212246570487010370">Tiếp tục duyệt web</translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Được cho phép</translation>
@@ -221,7 +218,7 @@
 <translation id="4779083564647765204">Thu phóng</translation>
 <translation id="4811450222531576619">Tìm hiểu về nguồn và chủ đề của trang</translation>
 <translation id="4836046166855586901">Hỏi khi một trang web muốn biết khi bạn đang dùng thiết bị này</translation>
-<translation id="483914009762354899">Bao gồm tất cả trang web trong miền này</translation>
+<translation id="483914009762354899">Bao gồm tất cả trang web thuộc miền này</translation>
 <translation id="4883854917563148705">Bạn không thể đặt lại các tùy chọn cài đặt được quản lý</translation>
 <translation id="4887024562049524730">Hỏi ý bạn trước khi cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
 <translation id="4953688446973710931">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tự động tải nhiều tệp xuống. Khi bạn tắt tuỳ chọn này, các trang web không thể tự động tải nhiều tệp xuống.</translation>
@@ -248,7 +245,7 @@
 <translation id="5216942107514965959">Lần truy cập gần đây nhất: hôm nay</translation>
 <translation id="5225463052809312700">Bật máy ảnh</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
-<translation id="5246825184569358663">Thao tác này sẽ xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho <ph name="DOMAIN" /> cũng như mọi trang web thuộc nhóm này</translation>
+<translation id="5246825184569358663">Thao tác này sẽ xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho <ph name="DOMAIN" /> cũng như mọi trang web thuộc miền này</translation>
 <translation id="5264323282659631142">Xóa "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Kéo từ trên xuống và chạm vào nút quay lại để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="5295729974480418933">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thông tin mà trang web đã lưu về bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể yêu cầu sử dụng thông tin mà trang web đã lưu về bạn.</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Di chuyển xuống</translation>
 <translation id="6749077623962119521">Đặt lại quyền?</translation>
 <translation id="6766622839693428701">Vuốt xuống để đóng.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Từ <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Chọn một lựa chọn cho <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
@@ -374,7 +370,7 @@
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7188508872042490670">Dữ liệu trang web trên thiết bị</translation>
-<translation id="7201549776650881587">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do tất cả trang web trong <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ</translation>
+<translation id="7201549776650881587">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do tất cả trang web thuộc miền <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ</translation>
 <translation id="7203150201908454328">Được mở rộng</translation>
 <translation id="7219254577985949841">Xoá dữ liệu trang web?</translation>
 <translation id="723171743924126238">Chọn hình ảnh</translation>
@@ -398,9 +394,9 @@
 <translation id="7561196759112975576">Luôn luôn</translation>
 <translation id="757524316907819857">Chặn không cho trang web phát nội dung được bảo vệ</translation>
 <translation id="7594634374516752650">Đã kết nối với một thiết bị Bluetooth</translation>
-<translation id="7641339528570811325">Xóa dữ liệu duyệt web…</translation>
+<translation id="7641339528570811325">Xoá dữ liệu duyệt web…</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
-<translation id="7658239707568436148">Hủy</translation>
+<translation id="7658239707568436148">Huỷ</translation>
 <translation id="7667547420449112975">Phù thủy xứ Oz</translation>
 <translation id="7684642910516280563">Không cho phép một trang web dùng cookie của bên thứ ba</translation>
 <translation id="7719367874908701697">Thu phóng trang</translation>

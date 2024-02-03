@@ -74,7 +74,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
             bool has_video_,
             bool has_audio_,
             std::unique_ptr<Delegate> delegate,
-            absl::optional<base::TimeDelta> max_data_output_interval);
+            std::optional<base::TimeDelta> max_data_output_interval);
 
   WebmMuxer(const WebmMuxer&) = delete;
   WebmMuxer& operator=(const WebmMuxer&) = delete;
@@ -98,7 +98,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // frame size.
   void AddVideoTrack(const gfx::Size& frame_size,
                      double frame_rate,
-                     const absl::optional<gfx::ColorSpace>& color_space);
+                     const std::optional<gfx::ColorSpace>& color_space);
   void AddAudioTrack(const AudioParameters& params);
   bool WriteWebmFrame(EncodedFrame frame, base::TimeDelta relative_timestamp);
 

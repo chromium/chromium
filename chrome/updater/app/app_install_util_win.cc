@@ -4,20 +4,10 @@
 
 #include "chrome/updater/app/app_install_util_win.h"
 
-#include <shellapi.h>
 #include <windows.h>
 
-#include <string>
-#include <vector>
-
 #include "base/check.h"
-#include "base/logging.h"
-#include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_util.h"
-#include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/scoped_localalloc.h"
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/util/win_util.h"
 
@@ -40,40 +30,8 @@ HRESULT LaunchCmdLine(const AppCompletionInfo& app_info) {
   CHECK(SUCCEEDED(app_info.error_code));
   CHECK(!app_info.is_noupdate);
 
-  if (!IsElevatedWithUACOn()) {
-    auto process = base::LaunchProcess(
-        base::UTF8ToWide(app_info.post_install_launch_command_line), {});
-    return process.IsValid() ? S_OK : HRESULTFromLastError();
-  }
-
-  std::wstring command_format =
-      base::UTF8ToWide(app_info.post_install_launch_command_line);
-  int num_args = 0;
-  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      ::CommandLineToArgvW(&command_format[0], &num_args));
-  if (!argv || num_args < 1) {
-    LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
-    return E_INVALIDARG;
-  }
-
-  return RunDeElevated(
-      argv.get()[0],
-      base::JoinString(
-          [&]() -> std::vector<std::wstring> {
-            if (num_args <= 1) {
-              return {};
-            }
-
-            std::vector<std::wstring> parameters;
-            base::ranges::for_each(
-                argv.get() + 1, argv.get() + num_args,
-                [&](const auto& parameter) {
-                  parameters.push_back(
-                      base::CommandLine::QuoteForCommandLineToArgvW(parameter));
-                });
-            return parameters;
-          }(),
-          L" "));
+  return RunDeElevatedCmdLine(
+      base::UTF8ToWide(app_info.post_install_launch_command_line));
 }
 
 }  // namespace

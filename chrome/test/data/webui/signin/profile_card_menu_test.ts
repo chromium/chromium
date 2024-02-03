@@ -157,7 +157,7 @@ suite('ProfileCardMenuTest', function() {
 
     const statisticsCountElements =
         dialog.querySelector('.statistics')!.querySelectorAll<HTMLElement>(
-            '.count')!;
+            '.count');
     for (let i = 0; i < statisticsDataTypes.length; i++) {
       assertEquals(
           statisticsCountElements[i]!.innerText,
@@ -185,7 +185,7 @@ suite('ProfileCardMenuTest', function() {
 
     const statisticsCountElements =
         dialog.querySelector('.statistics')!.querySelectorAll<HTMLElement>(
-            '.count')!;
+            '.count');
     assertNotEquals(
         statisticsCountElements[statisticsDataTypes.indexOf('BrowsingHistory')]!
             .innerText,

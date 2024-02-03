@@ -48,8 +48,9 @@ class DisplayOverlayController;
 // ||           Done button          ||
 // +----------------------------------+
 class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
+  METADATA_HEADER(ButtonOptionsMenu, ArrowContainer)
+
  public:
-  METADATA_HEADER(ButtonOptionsMenu);
   ButtonOptionsMenu(DisplayOverlayController* controller, Action* action);
   ButtonOptionsMenu(const ButtonOptionsMenu&) = delete;
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;

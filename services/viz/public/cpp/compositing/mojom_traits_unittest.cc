@@ -755,7 +755,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   constexpr gfx::Transform kTransformToRoot =
       gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   constexpr gfx::Rect kDamageRect(56, 123, 19, 43);
-  const absl::optional<gfx::RRectF> kBackdropFilterBounds(
+  const std::optional<gfx::RRectF> kBackdropFilterBounds(
       {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
   constexpr SubtreeCaptureId kSubtreeCaptureId(base::Token(0u, 22u));
   constexpr bool kHasTransparentBackground = true;
@@ -825,7 +825,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   surface_quad->SetNew(
       shared_state_2, surface_quad_rect, surface_quad_rect,
       SurfaceRange(
-          absl::nullopt,
+          std::nullopt,
           SurfaceId(FrameSinkId(1337, 1234),
                     LocalSurfaceId(1234, base::UnguessableToken::Create()))),
       SkColors::kYellow, false);
@@ -918,7 +918,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   constexpr gfx::Rect kDamageRect(56, 123, 19, 43);
   constexpr gfx::Transform kTransformToRoot =
       gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
-  const absl::optional<gfx::RRectF> kBackdropFilterBounds;
+  const std::optional<gfx::RRectF> kBackdropFilterBounds;
   constexpr SubtreeCaptureId kEmptySubtreeCaptureId;
   constexpr bool kHasTransparentBackground = true;
   constexpr bool kCacheRenderPass = false;

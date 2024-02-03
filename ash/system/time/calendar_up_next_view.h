@@ -35,7 +35,7 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
   SkPath GetClipPath() const;
 
   // views::View
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   friend class CalendarUpNextViewAnimationTest;

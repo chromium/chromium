@@ -291,7 +291,7 @@ bool KeyboardShortcutView::AcceleratorPressed(
   return true;
 }
 
-void KeyboardShortcutView::Layout() {
+void KeyboardShortcutView::Layout(PassKey) {
   gfx::Rect content_bounds(GetContentsBounds());
   if (content_bounds.IsEmpty()) {
     return;

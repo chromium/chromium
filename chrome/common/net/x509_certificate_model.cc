@@ -314,10 +314,6 @@ std::string ProcessRawBytes(base::span<const uint8_t> data) {
   return ProcessRawBytesWithSeparators(data, ' ', '\n');
 }
 
-std::string ProcessRawBytes(bssl::der::Input data) {
-  return ProcessRawBytes(data.AsSpan());
-}
-
 OptionalStringOrError FindAttributeOfType(
     bssl::der::Input oid,
     const bssl::RelativeDistinguishedName& rdn) {
@@ -365,7 +361,7 @@ OptionalStringOrError FindLastNameOfType(bssl::der::Input oid,
 // "OID.", or an empty string on error.
 std::string OidToNumericString(bssl::der::Input oid) {
   CBS cbs;
-  CBS_init(&cbs, oid.UnsafeData(), oid.Length());
+  CBS_init(&cbs, oid.data(), oid.size());
   bssl::UniquePtr<char> text(CBS_asn1_oid_to_text(&cbs));
   if (!text)
     return std::string();
@@ -823,15 +819,15 @@ std::optional<std::string> ProcessGeneralNames(
                             uniform_resource_identifier);
   }
   for (const auto& ip_address_bytes : names.ip_addresses) {
-    net::IPAddress ip_address(ip_address_bytes.AsSpan());
+    net::IPAddress ip_address(ip_address_bytes);
     // The `GeneralNames` parser should guarantee this.
     CHECK(ip_address.IsValid());
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_IP_ADDRESS,
                             ip_address.ToString());
   }
   for (const auto& ip_address_range : names.ip_address_ranges) {
-    net::IPAddress ip_address(ip_address_range.first.AsSpan());
-    net::IPAddress mask(ip_address_range.second.AsSpan());
+    net::IPAddress ip_address(ip_address_range.first);
+    net::IPAddress mask(ip_address_range.second);
     // The `GeneralNames` parser should guarantee this.
     CHECK(ip_address.IsValid());
     CHECK(mask.IsValid());
@@ -1253,8 +1249,8 @@ X509CertificateModel::X509CertificateModel(
   options.allow_invalid_serial_numbers = true;
   bssl::CertErrors unused_errors;
   if (!bssl::ParseCertificate(
-          bssl::der::Input(CRYPTO_BUFFER_data(cert_data_.get()),
-                           CRYPTO_BUFFER_len(cert_data_.get())),
+          bssl::der::Input(
+              net::x509_util::CryptoBufferAsSpan(cert_data_.get())),
           &tbs_certificate_tlv_, &signature_algorithm_tlv_, &signature_value_,
           &unused_errors) ||
       !ParseTbsCertificate(tbs_certificate_tlv_, options, &tbs_,
@@ -1327,7 +1323,7 @@ std::string X509CertificateModel::GetVersion() const {
 
 std::string X509CertificateModel::GetSerialNumberHexified() const {
   DCHECK(parsed_successfully_);
-  return ProcessRawBytesWithSeparators(tbs_.serial_number.AsSpan(), ':', ':');
+  return ProcessRawBytesWithSeparators(tbs_.serial_number, ':', ':');
 }
 
 bool X509CertificateModel::GetTimes(base::Time* not_before,
@@ -1547,7 +1543,7 @@ std::string X509CertificateModel::ProcessSecAlgorithmSignatureWrap() const {
 
 std::string X509CertificateModel::ProcessSubjectPublicKeyInfo() const {
   DCHECK(parsed_successfully_);
-  std::string rv = ProcessRawSubjectPublicKeyInfo(tbs_.spki_tlv.AsSpan());
+  std::string rv = ProcessRawSubjectPublicKeyInfo(tbs_.spki_tlv);
   if (rv.empty())
     return std::string();
   return rv;
@@ -1555,7 +1551,7 @@ std::string X509CertificateModel::ProcessSubjectPublicKeyInfo() const {
 
 std::string X509CertificateModel::HashSpkiSHA256() const {
   DCHECK(parsed_successfully_);
-  auto hash = crypto::SHA256Hash(tbs_.spki_tlv.AsSpan());
+  auto hash = crypto::SHA256Hash(tbs_.spki_tlv);
   return base::ToLowerASCII(base::HexEncode(hash));
 }
 

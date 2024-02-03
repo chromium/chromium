@@ -63,8 +63,8 @@ LayoutOpportunity FindLayoutOpportunityForFloat(
 // should only be set when we want to fragmentation to occur.
 ConstraintSpace CreateConstraintSpaceForFloat(
     const UnpositionedFloat& unpositioned_float,
-    absl::optional<LayoutUnit> origin_block_offset = absl::nullopt,
-    absl::optional<BoxStrut> margins = absl::nullopt) {
+    std::optional<LayoutUnit> origin_block_offset = std::nullopt,
+    std::optional<BoxStrut> margins = std::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
   const ConstraintSpace& parent_space = unpositioned_float.parent_space;
   ConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),

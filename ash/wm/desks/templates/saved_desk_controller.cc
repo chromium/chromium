@@ -107,7 +107,8 @@ bool ScrubLacrosProfileFromSavedDesk(DeskTemplate& saved_desk,
 
     std::erase_if(launch_list, [&](auto& window_entry) {
       auto& app_restore_data = window_entry.second;
-      if (app_restore_data->lacros_profile_id != lacros_profile_id) {
+      if (app_restore_data->browser_extra_info.lacros_profile_id !=
+          lacros_profile_id) {
         return false;
       }
 

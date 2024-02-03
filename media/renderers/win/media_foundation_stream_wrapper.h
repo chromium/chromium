@@ -10,6 +10,7 @@
 #include <wrl.h>
 
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "base/memory/raw_ptr.h"
@@ -20,7 +21,6 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

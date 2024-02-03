@@ -328,7 +328,7 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
     VideoFrame::StorageType dst_storage_type,
-    absl::optional<gfx::BufferUsage> dst_buffer_usage) {
+    std::optional<gfx::BufferUsage> dst_buffer_usage) {
   if (!src_frame)
     return nullptr;
   if (!src_frame->IsMappable()) {
@@ -417,7 +417,7 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     return nullptr;
   }
 
-  absl::optional<gfx::BufferFormat> buffer_format =
+  std::optional<gfx::BufferFormat> buffer_format =
       VideoPixelFormatToGfxBufferFormat(frame->format());
   if (!buffer_format) {
     LOG(ERROR) << "Unexpected format: " << frame->format();
@@ -451,7 +451,7 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
 
   // Create planes for layout. We cannot use WrapExternalData() because it
   // calls GetDefaultLayout() and it supports only a few pixel formats.
-  absl::optional<VideoFrameLayout> layout =
+  std::optional<VideoFrameLayout> layout =
       CreateVideoFrameLayout(format, image_size, /*alignment=*/1u);
   if (!layout) {
     LOG(ERROR) << "Failed to create VideoFrameLayout";
@@ -470,7 +470,7 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
   return video_frame;
 }
 
-absl::optional<VideoFrameLayout> CreateVideoFrameLayout(
+std::optional<VideoFrameLayout> CreateVideoFrameLayout(
     VideoPixelFormat pixel_format,
     const gfx::Size& dimension,
     const uint32_t alignment,

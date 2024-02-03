@@ -1641,7 +1641,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginNetError) {
             mojom::PrivateNetworkAccessPreflightResult::kWarning);
 
   EXPECT_EQ(client().completion_status().error_code, net::OK);
-  EXPECT_EQ(client().completion_status().cors_error_status, absl::nullopt);
+  EXPECT_EQ(client().completion_status().cors_error_status, std::nullopt);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kNone);
@@ -1710,7 +1710,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginCorsError) {
             mojom::PrivateNetworkAccessPreflightResult::kWarning);
 
   EXPECT_EQ(client().completion_status().error_code, net::OK);
-  EXPECT_EQ(client().completion_status().cors_error_status, absl::nullopt);
+  EXPECT_EQ(client().completion_status().cors_error_status, std::nullopt);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kNone);

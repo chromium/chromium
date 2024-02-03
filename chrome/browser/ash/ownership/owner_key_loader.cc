@@ -41,20 +41,6 @@ BASE_FEATURE(kMigrateOwnerKeyToPrivateSlot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsStoreOwnerKeyInPrivateSlotEnabled() {
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          kStoreOwnerKeyInPrivateSlot.name)) {
-    // Return the value if it was overridden by Finch, command line, etc.
-    return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
-  }
-
-  version_info::Channel channel = chrome::GetChannel();
-  if (channel == version_info::Channel::STABLE ||
-      channel == version_info::Channel::BETA) {
-    // TODO(b/264397430): Disable on beta and stable channels for now, remove
-    // the condition when the new code is more reliable.
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
 }
 
@@ -228,14 +214,14 @@ bool UserCanBecomeOwner(const user_manager::User* user) {
     return false;
   }
   switch (user->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
       return true;
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return false;
   }
 }

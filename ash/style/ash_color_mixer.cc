@@ -7,6 +7,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/harmonized_colors.h"
+#include "ash/style/sparkle_colors.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -632,6 +633,8 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
   }
   // Add after ref colors since it needs to override them.
   AddHarmonizedColors(mixer, key);
+  AddSparkleColors(mixer, key);
+
   cros_tokens::AddCrosSysColorsToMixer(mixer, dark_mode);
   // Gaming colors override sys colors (so need to be added later).
   AddGamingColors(mixer, key);

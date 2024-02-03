@@ -610,6 +610,17 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
       StartWebAppProvider(profile());
   }
 
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+    AccountId account_id = AccountId::FromUserEmail(email);
+    user_manager()->AddUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+  }
+
   virtual bool StartWebAppProviderForMainProfile() const { return true; }
 
   void StartWebAppProvider(Profile* profile) {
@@ -1371,7 +1382,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   scoped_refptr<Extension> extension_platform_app_;
   scoped_refptr<Extension> arc_support_host_;
 
-  ArcAppTest arc_test_;
+  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
   bool auto_start_arc_test_ = false;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
   std::unique_ptr<ash::ShelfModel> model_;
@@ -1468,19 +1479,6 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
 
   // testing::Test:
   void SetUp() override {
-    // Checking to see if Lacros is allowed requires a user.
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager = user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-
-    // Login a user. The "email" must match the TestingProfile's
-    // GetProfileUserName() so that profile() will be the primary profile.
-    const AccountId account_id =
-        AccountId::FromUserEmail("testing_profile@test");
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
-
     // Creates profile().
     ChromeShelfControllerTestBase::SetUp();
 
@@ -1530,7 +1528,6 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
   raw_ptr<StandaloneBrowserExtensionAppShelfItemController, DanglingUntriaged>
       chrome_app_shelf_item_ = nullptr;
@@ -1628,10 +1625,6 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
 
   // Overwrite the Setup function to enable multi profile and needed objects.
   void SetUp() override {
-    // Initialize the UserManager singleton to a fresh FakeUserManager instance.
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
-
     // Initialize the rest.
     ChromeShelfControllerTestBase::SetUp();
 
@@ -1642,7 +1635,6 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
 
   void TearDown() override {
     ChromeShelfControllerTestBase::TearDown();
-    user_manager_enabler_.reset();
 
     // A Task is leaked if we don't destroy everything, then run the message
     // loop.
@@ -1663,7 +1655,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
 
   // Switch to another user.
   void SwitchActiveUser(const AccountId& account_id) {
-    GetFakeUserManager()->SwitchActiveUser(account_id);
+    user_manager()->SwitchActiveUser(account_id);
     ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
         ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
     ash::MultiUserWindowManagerImpl::Get()->OnActiveUserSessionChanged(
@@ -1704,10 +1696,14 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
     const AccountId account_id = AccountId::FromUserEmail(email);
     // Add a user to the fake user manager.
-    auto* user = GetFakeUserManager()->AddUser(account_id);
+    auto* user = user_manager()->AddUser(account_id);
     ash_test_helper()->test_session_controller_client()->AddUserSession(
         user->GetDisplayEmail());
-    GetFakeUserManager()->LoginUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -1715,8 +1711,6 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
         BrowserWithTestWindowTest::CreateProfile(profile_name);
     StartWebAppProvider(profile);
 
-    // Remember the profile name so that we can destroy it upon destruction.
-    created_profiles_[profile] = profile_name;
     if (MultiUserWindowManagerHelper::GetInstance()) {
       MultiUserWindowManagerHelper::GetInstance()->AddUser(profile);
     }
@@ -1727,16 +1721,6 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   }
 
  private:
-  typedef std::map<Profile*, std::string> ProfileToNameMap;
-
-  ash::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  ProfileToNameMap created_profiles_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

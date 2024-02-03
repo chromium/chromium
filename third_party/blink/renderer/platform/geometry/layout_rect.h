@@ -37,9 +37,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -58,12 +56,6 @@ class PLATFORM_EXPORT DeprecatedLayoutRect {
                                  LayoutUnit height)
       : location_(LayoutPoint(x, y)),
         size_(DeprecatedLayoutSize(width, height)) {}
-  constexpr DeprecatedLayoutRect(int x, int y, int width, int height)
-      : location_(LayoutPoint(x, y)),
-        size_(DeprecatedLayoutSize(width, height)) {}
-  constexpr explicit operator gfx::RectF() const {
-    return gfx::RectF(X(), Y(), Width(), Height());
-  }
 
   // This is deleted to avoid unwanted lossy conversion from float or double to
   // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
@@ -74,14 +66,8 @@ class PLATFORM_EXPORT DeprecatedLayoutRect {
 
   ALWAYS_INLINE constexpr LayoutUnit X() const { return location_.X(); }
   ALWAYS_INLINE constexpr LayoutUnit Y() const { return location_.Y(); }
-  ALWAYS_INLINE LayoutUnit MaxX() const { return X() + Width(); }
-  ALWAYS_INLINE LayoutUnit MaxY() const { return Y() + Height(); }
   constexpr LayoutUnit Width() const { return size_.Width(); }
   constexpr LayoutUnit Height() const { return size_.Height(); }
-
-  void MoveBy(const LayoutPoint& offset) {
-    location_.Move(offset.X(), offset.Y());
-  }
 
   String ToString() const;
 

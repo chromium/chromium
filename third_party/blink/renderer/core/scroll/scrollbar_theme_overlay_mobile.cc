@@ -62,7 +62,7 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
 }
 
 SkColor4f ScrollbarThemeOverlayMobile::GetSolidColor(
-    const absl::optional<Color>& thumb_color) const {
+    const std::optional<Color>& thumb_color) const {
   return thumb_color.value_or(default_color_).toSkColor4f();
 }
 

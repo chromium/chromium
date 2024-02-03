@@ -607,9 +607,11 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3526440770046466733">Atidaryti nuorodą naujame skirtuke ir likti dabartiniame skirtuke</translation>
 <translation id="353086728817903341">Prisijungta prie įrenginių: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Lentynoje esančios programos</translation>
+<translation id="3537350467437346467">Jūs peržiūrėjote</translation>
 <translation id="3539957339480430241">„<ph name="DEVICE_NAME" />“ viešosios interneto prieigos taškas</translation>
 <translation id="3540893133818942399">Atsisakykite nustatyti naujausių telefono nuotraukų ir medijos peržiūrą</translation>
 <translation id="3542066395059568317">Matysite rekomendacijas, kad galėtumėte tęsti nuo ten, kur baigėte. Spustelėkite dešiniuoju klavišu, jei norite pašalinti rekomendacijas.</translation>
+<translation id="3547318469722231257">Jūs keitėte</translation>
 <translation id="3552189655002856821">„Wi-Fi“ išjungtas</translation>
 <translation id="3554215588514239132">Rodyti arba slėpti kūrėjo įrankių skydelį</translation>
 <translation id="3554637740840164787">Prisegta: <ph name="ITEM_TITLE" /></translation>
@@ -701,6 +703,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="385300504083504382">Pradžia</translation>
 <translation id="3859364108019690">Nepavyko perduoti programų srautu</translation>
 <translation id="3861651314799684201">Paspauskite „Enter“, kad įrašytumėte visą ekraną</translation>
+<translation id="3882323608730650973">Pakeista</translation>
 <translation id="3886872229787704059">Atidaryta šiandien</translation>
 <translation id="3891340733213178823">Jei norite atsijungti, du kartus paspauskite „Ctrl“ + „Shift“ + Q.</translation>
 <translation id="3893630138897523026">„ChromeVox“ (ekrano skaitymas balsu)</translation>
@@ -894,6 +897,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4582666543382004902">Viešosios interneto prieigos taškas išjungtas, kad būtų galima naudoti „Wi-Fi“. Jei norite naudoti viešosios interneto prieigos tašką, išjunkite „Wi-Fi“.</translation>
 <translation id="4585337515783392668">Sustabdyti perdavimą į nežinomą imtuvą</translation>
 <translation id="4596144739579517758">Tamsioji tema išjungta</translation>
+<translation id="4596442969149038771"><ph name="USER" /> bendrino</translation>
 <translation id="4611292653554630842">Prisijungti</translation>
 <translation id="462160925400706389">Prijungta: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Patvirtinti paskyrą</translation>
@@ -1337,6 +1341,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6298183524022479114">Tinkinti šį įrenginį programoje</translation>
 <translation id="6309219492973062892">Spustelėti arba paliesti 1–8 lentynos piktogramas</translation>
 <translation id="6315170314923504164">Balsas</translation>
+<translation id="6319058840130157106">Perkelti atgal iš apatinio dešiniojo kampo, Paleidimo priemonės, adreso juostos, žymių juostos, atidarytos svetainės ir atsisiuntimų aplanko (arba į juos)</translation>
 <translation id="6324916366299863871">Redaguoti spartųjį klavišą</translation>
 <translation id="6330012934079202188">Rodomi visų darbastalių langai. Paspauskite rodyklės aukštyn klavišą, kad būtų rodomi dabartinio darbastalio langai</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> yra valdomas seansas, kurį valdo <ph name="MANAGER" /></translation>
@@ -1500,6 +1505,7 @@ Naujas įdiegimas</translation>
 <translation id="6981291220124935078">Įjungti prieigą</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="698231206551913481">Visi failai ir su šiuo naudotoju susiję duomenys bus ištrinti visam laikui, kai šis naudotojas bus pašalintas.</translation>
+<translation id="6984028004251196682">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Skyra pakeista į <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Spustelėkite patvirtinimo mygtuką, kad išsaugotumėte pakeitimus. Ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Peržiūrėkite trumpą „Chromebook“ apžvalgą. Pradėkite dirbti atlikę šešis veiksmus.</translation>
 <translation id="7004910047186208204">Prisijungti prie mobiliojo ryšio duomenų tinklo</translation>
 <translation id="7005239792648594238">Atidarykite programą ir pradėkite</translation>
@@ -1814,6 +1820,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8314772463905284467">Įjungtas didžiųjų raidžių klavišas</translation>
 <translation id="8315514906653279104">Įjungiama...</translation>
 <translation id="8331351032546853669">Laukiama atsisiuntimo</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Pasirinktas langas „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="8349826889576450703">paleidimo priemonė</translation>
@@ -1920,6 +1927,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="878215960996152260">„<ph name="APP_NAME" />“, įdiegta programa, užblokuota</translation>
 <translation id="8785070478575117577">Prisijungti prie „<ph name="NETWORK_NAME" />“</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Perkelti pirmyn iš apatinio dešiniojo kampo, Paleidimo priemonės, adreso juostos, žymių juostos, atidarytos svetainės ir atsisiuntimų aplanko (arba į juos)</translation>
 <translation id="8792626944327216835">mikrofonas</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Aplankas „<ph name="FOLDER_NAME" />“</translation>
@@ -2033,6 +2041,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="953431725143473984">Išjungti įrenginį?</translation>
 <translation id="954052413789300507">Nepakanka vietos failui „<ph name="FILENAME" />“. Atlaisvinkite vietos.</translation>
 <translation id="954520015070501466">30 min.</translation>
+<translation id="954786879461589145"><ph name="USER" /> pakeitė</translation>
 <translation id="974545358917229949">Pagal užklausą „<ph name="QUERY" />“ pateikiama rezultatų: <ph name="RESULT_COUNT" /></translation>
 <translation id="981011780479609956">Termino nėra</translation>
 <translation id="98120814841227350">Eiti į dokumento pabaigą</translation>

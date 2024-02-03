@@ -1870,35 +1870,33 @@ void Color::ApplyInherit(StyleResolverState& state) const {
 void Color::ApplyValue(StyleResolverState& state,
                        const CSSValue& value,
                        ValueMode) const {
-  // As per the spec, 'color: currentColor' is treated as 'color: inherit'
   ComputedStyleBuilder& builder = state.StyleBuilder();
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value &&
-      identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
-    ApplyInherit(state);
-    builder.SetColorIsCurrentColor(true);
-    if (state.UsesHighlightPseudoInheritance() &&
-        state.OriginatingElementStyle()) {
-      builder.SetColor(state.OriginatingElementStyle()->Color());
-    }
-    return;
-  }
   if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     builder.SetColor(builder.InitialColorForColorScheme());
   } else {
-    // color-mix with currentcolor is a special case for this property.
-    // currentColor used in the color property value refers to the parent's
-    // computed currentColor which means we can fully resolve currentColor at
-    // ApplyValue time to get the correct resolved and used values for the color
-    // property, even for the color-mix() function.
-    // For typed OM, currentColor and color-mix() functions containing
-    // currentColor should have been preserved for values in computedStyleMap().
-    // See crbug.com/1099874
     StyleColor color = StyleBuilderConverter::ConvertStyleColor(state, value);
     if (color.IsUnresolvedColorMixFunction()) {
+      // color-mix with currentcolor is a special case for this property.
+      // currentColor used in the color property value refers to the parent's
+      // computed currentColor which means we can fully resolve currentColor at
+      // ApplyValue time to get the correct resolved and used values for the
+      // color property, even for the color-mix() function.
+      // For typed OM, currentColor and color-mix() functions containing
+      // currentColor should have been preserved for values in
+      // computedStyleMap().
+      // See crbug.com/1099874
       color = StyleColor(color.GetUnresolvedColorMix().Resolve(
           state.ParentStyle()->Color().GetColor()));
+    } else if (color.IsCurrentColor()) {
+      // As per the spec, 'color: currentColor' is treated as 'color: inherit'
+      ApplyInherit(state);
+      builder.SetColorIsCurrentColor(true);
+      if (state.UsesHighlightPseudoInheritance() &&
+          state.OriginatingElementStyle()) {
+        builder.SetColor(state.OriginatingElementStyle()->Color());
+      }
+      return;
     }
     builder.SetColor(color);
   }
@@ -2879,7 +2877,7 @@ struct DisplayValidationResult {
 // Find <display-outside>, <display-inside>, and `list-item` in the unordered
 // keyword list `values`.  Returns nullopt if `values` contains an invalid
 // combination of keywords.
-absl::optional<DisplayValidationResult> ValidateDisplayKeywords(
+std::optional<DisplayValidationResult> ValidateDisplayKeywords(
     const CSSValueList& values) {
   const CSSIdentifierValue* outside = nullptr;
   const CSSIdentifierValue* inside = nullptr;
@@ -2894,7 +2892,7 @@ absl::optional<DisplayValidationResult> ValidateDisplayKeywords(
     } else if (!list_item && IsDisplayListItem(value_id)) {
       list_item = value;
     } else {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   DisplayValidationResult result{outside, inside, list_item};
@@ -5860,7 +5858,7 @@ const CSSValue* ObjectPosition::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return ConsumePosition(range, context,
                          css_parsing_utils::UnitlessQuirk::kForbid,
-                         absl::optional<WebFeature>());
+                         std::optional<WebFeature>());
 }
 
 const CSSValue* ObjectPosition::CSSValueFromComputedStyleInternal(
@@ -5916,7 +5914,7 @@ const CSSValue* OffsetAnchor::ParseSingleValue(
   }
   return css_parsing_utils::ConsumePosition(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      absl::optional<WebFeature>());
+      std::optional<WebFeature>());
 }
 
 const CSSValue* OffsetAnchor::CSSValueFromComputedStyleInternal(
@@ -6001,7 +5999,7 @@ const CSSValue* OffsetPosition::ParseSingleValue(
   }
   CSSValue* value = css_parsing_utils::ConsumePosition(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      absl::optional<WebFeature>());
+      std::optional<WebFeature>());
 
   // Count when we receive a valid position other than 'auto'.
   if (value && value->IsValuePair()) {
@@ -6759,7 +6757,7 @@ const CSSValue* PerspectiveOrigin::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return ConsumePosition(range, context,
                          css_parsing_utils::UnitlessQuirk::kForbid,
-                         absl::optional<WebFeature>());
+                         std::optional<WebFeature>());
 }
 
 bool PerspectiveOrigin::IsLayoutDependent(const ComputedStyle* style,
@@ -6829,6 +6827,7 @@ const CSSValue* PositionFallback::ParseSingleValue(
   }
   return nullptr;
 }
+
 const CSSValue* PositionFallback::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -6861,6 +6860,13 @@ const CSSValue* PositionFallbackBounds::CSSValueFromComputedStyleInternal(
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(
       *style.PositionFallbackBounds());
+}
+
+const CSSValue* PositionTryOrder::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.PositionTryOrder());
 }
 
 const CSSValue* Quotes::ParseSingleValue(CSSParserTokenRange& range,
@@ -6991,7 +6997,7 @@ const CSSValue* Rotate::ParseSingleValue(CSSParserTokenRange& range,
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
   CSSValue* rotation = css_parsing_utils::ConsumeAngle(
-      range, context, absl::optional<WebFeature>());
+      range, context, std::optional<WebFeature>());
 
   CSSValue* axis = css_parsing_utils::ConsumeAxis(range, context);
   if (axis) {
@@ -7005,7 +7011,7 @@ const CSSValue* Rotate::ParseSingleValue(CSSParserTokenRange& range,
 
   if (!rotation) {
     rotation = css_parsing_utils::ConsumeAngle(range, context,
-                                               absl::optional<WebFeature>());
+                                               std::optional<WebFeature>());
     if (!rotation) {
       return nullptr;
     }
@@ -7175,8 +7181,8 @@ const CSSValue* ScrollbarColor::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  absl::optional<StyleScrollbarColor> scrollbar_color = style.ScrollbarColor();
-  if (scrollbar_color == absl::nullopt) {
+  std::optional<StyleScrollbarColor> scrollbar_color = style.ScrollbarColor();
+  if (scrollbar_color == std::nullopt) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
 
@@ -8707,8 +8713,8 @@ const CSSValue* TransformOrigin::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (layout_object) {
-    gfx::RectF reference_box = ComputedStyleUtils::ReferenceBoxForTransform(
-        *layout_object, ComputedStyleUtils::kDontUsePixelSnappedBox);
+    gfx::RectF reference_box =
+        ComputedStyleUtils::ReferenceBoxForTransform(*layout_object);
     gfx::PointF resolved_origin(
         FloatValueForLength(style.GetTransformOrigin().X(),
                             reference_box.width()),

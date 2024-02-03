@@ -78,13 +78,13 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
                     int64_t id,
                     const gfx::Size& size,
                     const gfx::ColorSpace& color_space,
-                    absl::optional<gfx::Size> coded_size_alignment);
+                    std::optional<gfx::Size> coded_size_alignment);
 
   // For testing, since CodecWrapperImpl isn't available.  Uses nullptr.
   CodecOutputBuffer(int64_t id,
                     const gfx::Size& size,
                     const gfx::ColorSpace& color_space,
-                    absl::optional<gfx::Size> coded_size_alignment);
+                    std::optional<gfx::Size> coded_size_alignment);
 
   scoped_refptr<CodecWrapperImpl> codec_;
   int64_t id_;
@@ -94,7 +94,7 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   gfx::ColorSpace color_space_;
 
   // The alignment to use for width, height when guessing coded size.
-  const absl::optional<gfx::Size> coded_size_alignment_;
+  const std::optional<gfx::Size> coded_size_alignment_;
 };
 
 // This wraps a MediaCodecBridge and provides higher level features and tracks
@@ -129,7 +129,7 @@ class MEDIA_GPU_EXPORT CodecWrapper {
                OutputReleasedCB output_buffer_release_cb,
                scoped_refptr<base::SequencedTaskRunner> release_task_runner,
                const gfx::Size& initial_expected_size,
-               absl::optional<gfx::Size> coded_size_alignment);
+               std::optional<gfx::Size> coded_size_alignment);
 
   CodecWrapper(const CodecWrapper&) = delete;
   CodecWrapper& operator=(const CodecWrapper&) = delete;

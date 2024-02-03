@@ -340,7 +340,6 @@ TEST_F(SQLitePersistentCookieStoreTest, TestInvalidVersionRecovery) {
     // Keep in sync with latest unsupported version from:
     // net/extras/sqlite/sqlite_persistent_cookie_store.cc
     ASSERT_TRUE(meta_table.SetVersionNumber(16));
-    db.Close();
   }
 
   // Upon loading, the database should be reset to a good, blank state.
@@ -380,7 +379,6 @@ TEST_F(SQLitePersistentCookieStoreTest, TestInvalidMetaTableRecovery) {
     sql::MetaTable meta_table;
     ASSERT_TRUE(meta_table.Init(&db, 1, 1));
     ASSERT_TRUE(db.Execute("DELETE FROM meta"));
-    db.Close();
   }
 
   // Upon loading, the database should be reset to a good, blank state.
@@ -1713,7 +1711,7 @@ bool AddV17CookiesToDB(sql::Database* db) {
     statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value
     statement.BindString(6, cookie.Path());
     statement.BindTime(7, cookie.ExpiryDate());
-    statement.BindInt(8, cookie.IsSecure());
+    statement.BindInt(8, cookie.SecureAttribute());
     statement.BindInt(9, cookie.IsHttpOnly());
     // Note that this, Priority(), and SourceScheme() below nominally rely on
     // the enums in sqlite_persistent_cookie_store.cc having the same values as
@@ -1772,7 +1770,7 @@ bool AddV18CookiesToDB(sql::Database* db,
     statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value
     statement.BindString(6, cookie.Path());
     statement.BindTime(7, std::min(cookie.ExpiryDate(), max_expiration));
-    statement.BindInt(8, cookie.IsSecure());
+    statement.BindInt(8, cookie.SecureAttribute());
     statement.BindInt(9, cookie.IsHttpOnly());
     // Note that this, Priority(), and SourceScheme() below nominally rely on
     // the enums in sqlite_persistent_cookie_store.cc having the same values as
@@ -1807,13 +1805,15 @@ bool AddV20CookiesToDB(sql::Database* db) {
 void ConfirmCookiesAfterMigrationTest(
     std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies,
     bool expect_last_update_date = false) {
+  ASSERT_EQ(read_in_cookies.size(), 6u);
+
   std::sort(read_in_cookies.begin(), read_in_cookies.end(), &CompareCookies);
   int i = 0;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/", read_in_cookies[i]->Path());
-  EXPECT_TRUE(read_in_cookies[i]->IsSecure());
+  EXPECT_TRUE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1826,7 +1826,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/path", read_in_cookies[i]->Path());
-  EXPECT_FALSE(read_in_cookies[i]->IsSecure());
+  EXPECT_FALSE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1839,7 +1839,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example2.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/", read_in_cookies[i]->Path());
-  EXPECT_TRUE(read_in_cookies[i]->IsSecure());
+  EXPECT_TRUE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1852,7 +1852,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/", read_in_cookies[i]->Path());
-  EXPECT_TRUE(read_in_cookies[i]->IsSecure());
+  EXPECT_TRUE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1865,7 +1865,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/path", read_in_cookies[i]->Path());
-  EXPECT_FALSE(read_in_cookies[i]->IsSecure());
+  EXPECT_FALSE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1881,81 +1881,114 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example2.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/", read_in_cookies[i]->Path());
-  EXPECT_FALSE(read_in_cookies[i]->IsSecure());
+  EXPECT_FALSE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate() + base::Days(399));
+}
 
-  EXPECT_EQ(read_in_cookies.size(), static_cast<size_t>(i) + 1);
+void ConfirmDatabaseVersionAfterMigration(const base::FilePath path,
+                                          int version) {
+  sql::Database connection;
+  ASSERT_TRUE(connection.Open(path));
+  ASSERT_GE(GetDBCurrentVersionNumber(&connection), version);
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion18) {
   // Open db.
-  sql::Database connection;
-  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
-  ASSERT_TRUE(CreateV17Schema(&connection));
-  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 17);
-  ASSERT_TRUE(AddV17CookiesToDB(&connection));
+  const base::FilePath database_path =
+      temp_dir_.GetPath().Append(kCookieFilename);
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(database_path));
+    ASSERT_TRUE(CreateV17Schema(&connection));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 17);
+    ASSERT_TRUE(AddV17CookiesToDB(&connection));
+  }
 
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(false, false, &read_in_cookies);
-  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies));
-  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 18);
-  connection.Close();
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies)));
+  DestroyStore();
+
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmDatabaseVersionAfterMigration(database_path, 18));
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion19) {
   // Open db.
-  sql::Database connection;
-  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
-  ASSERT_TRUE(CreateV18Schema(&connection));
-  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
-  ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
+  const base::FilePath database_path =
+      temp_dir_.GetPath().Append(kCookieFilename);
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(database_path));
+    ASSERT_TRUE(CreateV18Schema(&connection));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
+    ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
+  }
 
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(false, false, &read_in_cookies);
-  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                   /*expect_last_update_date=*/true);
-  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 19);
-  connection.Close();
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
+                                       /*expect_last_update_date=*/true));
+  DestroyStore();
+
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmDatabaseVersionAfterMigration(database_path, 19));
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion20) {
   // Open db.
-  sql::Database connection;
-  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
-  // V19's schema is the same as V18, so we can reuse the creation function.
-  ASSERT_TRUE(CreateV18Schema(&connection));
-  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
-  ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
+  const base::FilePath database_path =
+      temp_dir_.GetPath().Append(kCookieFilename);
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(database_path));
+    // V19's schema is the same as V18, so we can reuse the creation function.
+    ASSERT_TRUE(CreateV18Schema(&connection));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
+    ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
+  }
 
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(/*crypt_cookies=*/false, /*restore_old_session_cookies=*/false,
                 &read_in_cookies);
-  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                   /*expect_last_update_date=*/true);
-  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 20);
-  connection.Close();
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
+                                       /*expect_last_update_date=*/true));
+  DestroyStore();
+
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmDatabaseVersionAfterMigration(database_path, 20));
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion21) {
   // Open db.
-  sql::Database connection;
-  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
-  ASSERT_TRUE(CreateV20Schema(&connection));
-  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 20);
-  ASSERT_TRUE(AddV20CookiesToDB(&connection));
+  const base::FilePath database_path =
+      temp_dir_.GetPath().Append(kCookieFilename);
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(database_path));
+    ASSERT_TRUE(CreateV20Schema(&connection));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 20);
+    ASSERT_TRUE(AddV20CookiesToDB(&connection));
+  }
 
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(/*crypt_cookies=*/false, /*restore_old_session_cookies=*/false,
                 &read_in_cookies);
-  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                   /*expect_last_update_date=*/true);
-  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 21);
-  connection.Close();
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
+                                       /*expect_last_update_date=*/true));
+  DestroyStore();
+
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmDatabaseVersionAfterMigration(database_path, 21));
 }
 
 class SQLitePersistentCookieStoreTest_OriginBoundCookies
@@ -2162,6 +2195,7 @@ TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
   stmt.BindTime(10, last_update);
   ASSERT_TRUE(stmt.Run());
   stmt.Clear();
+  db.reset();
 
   CanonicalCookieVector cookies;
   CreateAndLoad(false, false, &cookies);

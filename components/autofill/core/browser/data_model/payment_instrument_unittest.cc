@@ -8,53 +8,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-class TestPaymentInstrument : public PaymentInstrument {
- public:
-  explicit TestPaymentInstrument(int64_t instrument_id)
-      : PaymentInstrument(instrument_id,
-                          u"test_nickname",
-                          GURL("http://www.example.com")) {}
-  ~TestPaymentInstrument() override = default;
-  // PaymentInstrument
-  InstrumentType GetInstrumentType() const override {
-    return PaymentInstrument::InstrumentType::kBankAccount;
-  }
-
-  bool AddToDatabase(PaymentsAutofillTable* database) const override {
-    return false;
-  }
-  bool UpdateInDatabase(PaymentsAutofillTable* database) const override {
-    return false;
-  }
-  bool DeleteFromDatabase(PaymentsAutofillTable* database) const override {
-    return false;
-  }
-};
 
 TEST(PaymentInstrumentTest, VerifyFieldValues) {
-  TestPaymentInstrument payment_instrument(100);
-  payment_instrument.AddPaymentRail(PaymentInstrument::PaymentRail::kPix);
-  payment_instrument.AddPaymentRail(PaymentInstrument::PaymentRail::kUnknown);
+  PaymentInstrument payment_instrument(
+      100, u"test_nickname", GURL("http://www.example.com"),
+      DenseSet<PaymentInstrument::PaymentRail>(
+          {PaymentInstrument::PaymentRail::kPix,
+           PaymentInstrument::PaymentRail::kUnknown}));
 
   EXPECT_EQ(100, payment_instrument.instrument_id());
   EXPECT_EQ(u"test_nickname", payment_instrument.nickname());
   EXPECT_EQ(GURL("http://www.example.com"),
             payment_instrument.display_icon_url());
-}
-
-TEST(PaymentInstrumentTest, AddPaymentRailMultipleTimes_OnlyAddedOnce) {
-  TestPaymentInstrument payment_instrument(100);
-  payment_instrument.AddPaymentRail(PaymentInstrument::PaymentRail::kPix);
-  payment_instrument.AddPaymentRail(PaymentInstrument::PaymentRail::kPix);
-
-  EXPECT_EQ(1u, payment_instrument.supported_rails().size());
-}
-
-TEST(PaymentInstrumentTest, IsSupported_ReturnsTrueForSupportedPaymentRail) {
-  TestPaymentInstrument payment_instrument(100);
-  payment_instrument.AddPaymentRail(PaymentInstrument::PaymentRail::kPix);
-  payment_instrument.AddPaymentRail(PaymentInstrument::PaymentRail::kUnknown);
-
   EXPECT_TRUE(
       payment_instrument.IsSupported(PaymentInstrument::PaymentRail::kPix));
   EXPECT_TRUE(
@@ -62,7 +27,9 @@ TEST(PaymentInstrumentTest, IsSupported_ReturnsTrueForSupportedPaymentRail) {
 }
 
 TEST(PaymentInstrumentTest, IsSupported_ReturnsFalseForUnsupportedPaymentRail) {
-  TestPaymentInstrument payment_instrument(100);
+  PaymentInstrument payment_instrument(
+      100, u"test_nickname", GURL("http://www.example.com"),
+      DenseSet<PaymentInstrument::PaymentRail>({}));
 
   EXPECT_FALSE(
       payment_instrument.IsSupported(PaymentInstrument::PaymentRail::kPix));

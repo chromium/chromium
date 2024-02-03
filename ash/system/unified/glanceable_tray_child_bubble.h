@@ -34,7 +34,7 @@ class ASH_EXPORT GlanceableTrayChildBubble : public views::View {
   GlanceablesErrorMessageView* error_message() { return error_message_; }
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
  protected:
   // Removes an active `error_message_` from the view, if any.

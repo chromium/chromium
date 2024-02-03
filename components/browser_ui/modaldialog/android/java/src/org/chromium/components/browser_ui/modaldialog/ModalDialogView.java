@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -32,6 +34,8 @@ import java.util.Set;
 
 /** Generic dialog view for app modal or tab modal alert dialogs. */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
+    private static final String TAG_PREFIX = "ModalDialogViewButton";
+
     private static boolean sEnableButtonTapProtection = true;
 
     private static long sCurrentTimeMsForTesting;
@@ -104,9 +108,23 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                 });
     }
 
+    @VisibleForTesting
+    public static String getTagForButtonType(@ButtonType int buttonType) {
+        return TAG_PREFIX + buttonType;
+    }
+
+    private @ButtonType int getButtonTypeForTag(Object tag) {
+        assert tag instanceof String;
+        String tagString = (String) tag;
+        Integer buttonType =
+                Integer.parseInt(tagString.substring(TAG_PREFIX.length(), tagString.length()));
+        assert buttonType != null;
+        return buttonType;
+    }
+
     private void setupClickableView(View view, @ButtonType int buttonType) {
         setFilterTouchForSecurityIfNecessary(view);
-        view.setTag(buttonType);
+        view.setTag(getTagForButtonType(buttonType));
         view.setOnClickListener(this);
     }
 
@@ -114,10 +132,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     @Override
     public void onClick(View v) {
         if (isWithinButtonTapProtectionPeriod()) return;
-        Object buttonType = v.getTag();
-        if (buttonType instanceof Integer) {
-            mOnButtonClickedCallback.onResult((Integer) buttonType);
-        }
+        mOnButtonClickedCallback.onResult(getButtonTypeForTag(v.getTag()));
     }
 
     // Dialog buttons will not react to any tap event for a short period after this view is
@@ -353,7 +368,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
      * @param buttonType Indicates which button should be returned.
      */
     private Button getButton(@ButtonType int buttonType) {
-        Button button = findViewWithTag(buttonType);
+        Button button = findViewWithTag(getTagForButtonType(buttonType));
         assert button != null : "Tried to retrieve a button that doesn't exist.";
         return button;
     }

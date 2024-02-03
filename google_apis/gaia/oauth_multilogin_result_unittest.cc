@@ -139,11 +139,12 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
                           Property(&CanonicalCookie::IsHttpOnly, Eq(true)),
                           Property(&CanonicalCookie::IsHttpOnly, Eq(true)),
                           Property(&CanonicalCookie::IsHttpOnly, Eq(true))));
-  EXPECT_THAT(result.cookies(),
-              ElementsAre(Property(&CanonicalCookie::IsSecure, Eq(true)),
-                          Property(&CanonicalCookie::IsSecure, Eq(false)),
-                          Property(&CanonicalCookie::IsSecure, Eq(true)),
-                          Property(&CanonicalCookie::IsSecure, Eq(true))));
+  EXPECT_THAT(
+      result.cookies(),
+      ElementsAre(Property(&CanonicalCookie::SecureAttribute, Eq(true)),
+                  Property(&CanonicalCookie::SecureAttribute, Eq(false)),
+                  Property(&CanonicalCookie::SecureAttribute, Eq(true)),
+                  Property(&CanonicalCookie::SecureAttribute, Eq(true))));
   EXPECT_THAT(result.cookies(),
               ElementsAre(Property(&CanonicalCookie::SameSite,
                                    Eq(net::CookieSameSite::UNSPECIFIED)),

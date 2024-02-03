@@ -383,6 +383,25 @@ error. If you're passing between threads, be sure it's RefCountedThreadSafe! See
 "Advanced binding of member functions" below if you don't want to use reference
 counting.
 
+Binding a non-const method with a const object is not allowed, for example:
+
+```cpp
+class MyClass {
+ public:
+  base::OnceClosure GetCallback() const {
+    base::BindOnce(
+        // A template error will prevent the non-const method from being bound
+        // to the the WeakPtr<const MyClass>.
+        &MyClass::OnCallback,
+        weak_factory_.GetWeakPtr());
+  }
+
+ private:
+  void OnCallback(); // non-const
+  base::WeakPtrFactory<MyClass> weak_factory_{this};
+}
+```
+
 ### Running A Callback
 
 Callbacks can be run with their `Run` method, which has the same signature as

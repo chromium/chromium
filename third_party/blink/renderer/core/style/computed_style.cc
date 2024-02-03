@@ -2179,7 +2179,7 @@ template <typename T>
 CSSVariableData* GetVariableData(
     const T& style_or_builder,
     const AtomicString& name,
-    absl::optional<bool> inherited_hint = absl::nullopt) {
+    std::optional<bool> inherited_hint = std::nullopt) {
   if (inherited_hint.value_or(true) && style_or_builder.InheritedVariables()) {
     if (auto data = style_or_builder.InheritedVariables()->GetData(name)) {
       return *data;
@@ -2201,7 +2201,7 @@ template <typename T>
 const CSSValue* GetVariableValue(
     const T& style_or_builder,
     const AtomicString& name,
-    absl::optional<bool> inherited_hint = absl::nullopt) {
+    std::optional<bool> inherited_hint = std::nullopt) {
   if (inherited_hint.value_or(true) && style_or_builder.InheritedVariables()) {
     if (auto data = style_or_builder.InheritedVariables()->GetValue(name)) {
       return *data;
@@ -2568,32 +2568,30 @@ bool ComputedStyle::MarkerShouldBeInside(const Element& parent) const {
          (IsA<HTMLLIElement>(parent) && !IsInsideListElement());
 }
 
-absl::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
+std::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
   const StyleAutoColor& auto_color = AccentColor();
   if (auto_color.IsAutoColor()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return auto_color.Resolve(GetCurrentColor(), UsedColorScheme());
 }
 
-absl::optional<blink::Color> ComputedStyle::ScrollbarThumbColorResolved()
-    const {
-  const absl::optional<StyleScrollbarColor>& scrollbar_color = ScrollbarColor();
+std::optional<blink::Color> ComputedStyle::ScrollbarThumbColorResolved() const {
+  const std::optional<StyleScrollbarColor>& scrollbar_color = ScrollbarColor();
   if (scrollbar_color.has_value()) {
     return scrollbar_color.value().GetThumbColor().Resolve(GetCurrentColor(),
                                                            UsedColorScheme());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<blink::Color> ComputedStyle::ScrollbarTrackColorResolved()
-    const {
-  const absl::optional<StyleScrollbarColor>& scrollbar_color = ScrollbarColor();
+std::optional<blink::Color> ComputedStyle::ScrollbarTrackColorResolved() const {
+  const std::optional<StyleScrollbarColor>& scrollbar_color = ScrollbarColor();
   if (scrollbar_color.has_value()) {
     return scrollbar_color.value().GetTrackColor().Resolve(GetCurrentColor(),
                                                            UsedColorScheme());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ComputedStyle::ShouldApplyAnyContainment(const Element& element,

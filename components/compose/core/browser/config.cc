@@ -62,6 +62,10 @@ Config::Config() {
       features::kEnableComposeSavedStateNotification,
       "saved_state_timeout_milliseconds", saved_state_timeout_milliseconds);
 
+  stay_in_window_bounds = base::GetFieldTrialParamByFeatureAsBool(
+      features::kComposeUiParams, "stay_in_window_bounds",
+      stay_in_window_bounds);
+
   positioning_strategy = static_cast<DialogFallbackPositioningStrategy>(
       base::GetFieldTrialParamByFeatureAsInt(
           features::kComposeUiParams, "positioning_strategy",

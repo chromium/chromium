@@ -94,7 +94,7 @@ class LearningTaskControllerHelperTest : public testing::Test {
   FeatureProvider::FeatureVectorCB fp_cb_;
 
   // Most recently added example via OnLabelledExample, if any.
-  absl::optional<LabelledExample> most_recent_example_;
+  std::optional<LabelledExample> most_recent_example_;
   ukm::SourceId most_recent_source_id_;
 
   LearningTask task_;
@@ -123,7 +123,7 @@ TEST_F(LearningTaskControllerHelperTest, AddingAnExampleWithoutFPWorks) {
 TEST_F(LearningTaskControllerHelperTest, DropTargetValueWithoutFPWorks) {
   // Verify that we can drop an example without labelling it.
   CreateClient(false);
-  helper_->BeginObservation(id_, example_.features, absl::nullopt);
+  helper_->BeginObservation(id_, example_.features, std::nullopt);
   EXPECT_EQ(pending_example_count(), 1u);
   helper_->CancelObservation(id_);
   task_environment_.RunUntilIdle();
@@ -134,7 +134,7 @@ TEST_F(LearningTaskControllerHelperTest, DropTargetValueWithoutFPWorks) {
 TEST_F(LearningTaskControllerHelperTest, AddTargetValueBeforeFP) {
   // Verify that an example is added if the target value arrives first.
   CreateClient(true);
-  helper_->BeginObservation(id_, example_.features, absl::nullopt);
+  helper_->BeginObservation(id_, example_.features, std::nullopt);
   EXPECT_EQ(pending_example_count(), 1u);
   task_environment_.RunUntilIdle();
   // The feature provider should know about the example.
@@ -159,7 +159,7 @@ TEST_F(LearningTaskControllerHelperTest, AddTargetValueBeforeFP) {
 TEST_F(LearningTaskControllerHelperTest, DropTargetValueBeforeFP) {
   // Verify that an example is correctly dropped before the FP adds features.
   CreateClient(true);
-  helper_->BeginObservation(id_, example_.features, absl::nullopt);
+  helper_->BeginObservation(id_, example_.features, std::nullopt);
   EXPECT_EQ(pending_example_count(), 1u);
   task_environment_.RunUntilIdle();
   // The feature provider should know about the example.
@@ -182,7 +182,7 @@ TEST_F(LearningTaskControllerHelperTest, DropTargetValueBeforeFP) {
 TEST_F(LearningTaskControllerHelperTest, AddTargetValueAfterFP) {
   // Verify that an example is added if the target value arrives second.
   CreateClient(true);
-  helper_->BeginObservation(id_, example_.features, absl::nullopt);
+  helper_->BeginObservation(id_, example_.features, std::nullopt);
   EXPECT_EQ(pending_example_count(), 1u);
   task_environment_.RunUntilIdle();
   // The feature provider should know about the example.
@@ -208,7 +208,7 @@ TEST_F(LearningTaskControllerHelperTest, AddTargetValueAfterFP) {
 TEST_F(LearningTaskControllerHelperTest, DropTargetValueAfterFP) {
   // Verify that we can cancel the observationc after sending features.
   CreateClient(true);
-  helper_->BeginObservation(id_, example_.features, absl::nullopt);
+  helper_->BeginObservation(id_, example_.features, std::nullopt);
   EXPECT_EQ(pending_example_count(), 1u);
   task_environment_.RunUntilIdle();
   // The feature provider should know about the example.

@@ -10,10 +10,10 @@
 var container = document.getElementById('container');
 
 function styleOf(name, attributes) {
-    var element = document.createElement('div');
-    for (var name in attributes) {
-        var value = attributes[name];
-        element.setAttribute(name, value);
+    var element = document.createElement(name);
+    for (var attr in attributes) {
+        var value = attributes[attr];
+        element.setAttribute(attr, value);
     }
     container.appendChild(element);
     return getComputedStyle(element);

@@ -594,7 +594,7 @@ void CompoundTabContainer::CompleteAnimationAndLayout() {
   bounds_animator_.Complete();
   pinned_tab_container_->CompleteAnimationAndLayout();
   unpinned_tab_container_->CompleteAnimationAndLayout();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 int CompoundTabContainer::GetAvailableWidthForTabContainer() const {
@@ -701,7 +701,7 @@ views::View* CompoundTabContainer::GetTooltipHandlerForPoint(
                        : this;
 }
 
-void CompoundTabContainer::Layout() {
+void CompoundTabContainer::Layout(PassKey) {
   // Pinned container gets however much space it wants.
   pinned_tab_container_->SetBoundsRect(
       gfx::Rect(pinned_tab_container_->GetPreferredSize()));

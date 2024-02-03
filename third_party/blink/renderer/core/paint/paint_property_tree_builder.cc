@@ -226,12 +226,12 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE bool CanPropagateSubpixelAccumulation() const;
   ALWAYS_INLINE void UpdatePaintOffset();
   ALWAYS_INLINE void UpdateForPaintOffsetTranslation(
-      absl::optional<gfx::Vector2d>&);
+      std::optional<gfx::Vector2d>&);
   ALWAYS_INLINE void UpdatePaintOffsetTranslation(
-      const absl::optional<gfx::Vector2d>&);
+      const std::optional<gfx::Vector2d>&);
   ALWAYS_INLINE void SetNeedsPaintPropertyUpdateIfNeeded();
   ALWAYS_INLINE void UpdateForObjectLocation(
-      absl::optional<gfx::Vector2d>& paint_offset_translation);
+      std::optional<gfx::Vector2d>& paint_offset_translation);
   ALWAYS_INLINE void UpdateStickyTranslation();
   ALWAYS_INLINE void UpdateAnchorPositionScrollTranslation();
 
@@ -410,7 +410,7 @@ class FragmentPaintPropertyTreeBuilder {
   // These are updated in UpdateClipPathClip() and used in UpdateEffect() if
   // needs_mask_base_clip_path_ is true.
   bool needs_mask_based_clip_path_ = false;
-  absl::optional<gfx::RectF> clip_path_bounding_box_;
+  std::optional<gfx::RectF> clip_path_bounding_box_;
 };
 
 // True if a scroll translation is needed for static scroll offset (e.g.,
@@ -594,7 +594,7 @@ bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
-    absl::optional<gfx::Vector2d>& paint_offset_translation) {
+    std::optional<gfx::Vector2d>& paint_offset_translation) {
   if (!NeedsPaintOffsetTranslation(object_,
                                    full_context_.direct_compositing_reasons,
                                    full_context_.container_for_fixed_position,
@@ -653,7 +653,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
-    const absl::optional<gfx::Vector2d>& paint_offset_translation) {
+    const std::optional<gfx::Vector2d>& paint_offset_translation) {
   DCHECK(properties_);
 
   if (paint_offset_translation) {
@@ -1518,7 +1518,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsEffect()) {
-      absl::optional<gfx::RectF> mask_clip = CSSMaskPainter::MaskBoundingBox(
+      std::optional<gfx::RectF> mask_clip = CSSMaskPainter::MaskBoundingBox(
           object_, context_.current.paint_offset);
       if (mask_clip || needs_mask_based_clip_path_) {
         DCHECK(mask_clip || clip_path_bounding_box_.has_value());
@@ -2000,7 +2000,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
                 ? gfx::Vector2dF(context_.current.paint_offset)
                 : gfx::Vector2dF();
         clip_path_bounding_box_->Offset(paint_offset);
-        if (absl::optional<Path> path = ClipPathClipper::PathBasedClip(
+        if (std::optional<Path> path = ClipPathClipper::PathBasedClip(
                 object_, context_.current.is_in_block_fragmentation)) {
           path->Translate(paint_offset);
           ClipPaintPropertyNode::State state(
@@ -2139,8 +2139,7 @@ bool FragmentPaintPropertyTreeBuilder::NeedsOverflowControlsClip() const {
   if (const auto* scrollbar = scrollable_area->VerticalScrollbar())
     scroll_controls_bounds.Union(scrollbar->FrameRect());
   gfx::Rect pixel_snapped_border_box_rect(
-      gfx::Point(),
-      box.PixelSnappedBorderBoxSize(context_.current.paint_offset));
+      gfx::Point(), scrollable_area->PixelSnappedBorderBoxSize());
   return !pixel_snapped_border_box_rect.Contains(scroll_controls_bounds);
 }
 
@@ -2530,9 +2529,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       state.snap_container_data =
           box.GetScrollableArea() &&
                   box.GetScrollableArea()->GetSnapContainerData()
-              ? absl::optional<cc::SnapContainerData>(
+              ? std::optional<cc::SnapContainerData>(
                     *box.GetScrollableArea()->GetSnapContainerData())
-              : absl::nullopt;
+              : std::nullopt;
 
       OnUpdateScroll(properties_->UpdateScroll(*context_.current.scroll,
                                                std::move(state)));
@@ -2962,7 +2961,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
-    absl::optional<gfx::Vector2d>& paint_offset_translation) {
+    std::optional<gfx::Vector2d>& paint_offset_translation) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
   UpdateForPaintOffsetTranslation(paint_offset_translation);
@@ -3033,7 +3032,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   bool should_check_paint_under_invalidation =
       RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       !PrePaintDisableSideEffectsScope::IsDisabled();
-  absl::optional<FindPaintOffsetNeedingUpdateScope> check_paint_offset;
+  std::optional<FindPaintOffsetNeedingUpdateScope> check_paint_offset;
   if (should_check_paint_under_invalidation) {
     check_paint_offset.emplace(object_, fragment_data_,
                                full_context_.is_actually_needed);
@@ -3042,7 +3041,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 
   // This is not in FindObjectPropertiesNeedingUpdateScope because paint offset
   // can change without NeedsPaintPropertyUpdate.
-  absl::optional<gfx::Vector2d> paint_offset_translation;
+  std::optional<gfx::Vector2d> paint_offset_translation;
   UpdateForObjectLocation(paint_offset_translation);
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();
@@ -3054,7 +3053,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   }
 
 #if DCHECK_IS_ON()
-  absl::optional<FindPropertiesNeedingUpdateScope> check_paint_properties;
+  std::optional<FindPropertiesNeedingUpdateScope> check_paint_properties;
   if (should_check_paint_under_invalidation) {
     bool force_subtree_update = full_context_.force_subtree_update_reasons;
     check_paint_properties.emplace(object_, fragment_data_,
@@ -3113,8 +3112,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
   // here to out-live check_paint_offset. It's false because paint offset
   // should not change during this function.
   const bool needs_paint_offset_update = false;
-  absl::optional<FindPaintOffsetNeedingUpdateScope> check_paint_offset;
-  absl::optional<FindPropertiesNeedingUpdateScope> check_paint_properties;
+  std::optional<FindPaintOffsetNeedingUpdateScope> check_paint_offset;
+  std::optional<FindPropertiesNeedingUpdateScope> check_paint_properties;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       !PrePaintDisableSideEffectsScope::IsDisabled()) {
     check_paint_offset.emplace(object_, fragment_data_,

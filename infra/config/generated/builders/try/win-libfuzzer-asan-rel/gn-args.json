@@ -2,7 +2,6 @@
   "gn_args": {
     "dcheck_always_on": true,
     "enable_mojom_fuzzer": true,
-    "enable_nacl": false,
     "ffmpeg_branding": "Chrome",
     "generate_fuzzer_owners": false,
     "is_asan": true,
@@ -12,6 +11,7 @@
     "proprietary_codecs": true,
     "symbol_level": 0,
     "use_libfuzzer": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

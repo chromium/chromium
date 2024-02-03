@@ -101,7 +101,6 @@ public class SingleWebsiteSettingsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     @UseMethodParameter(SingleWebsiteSettingsParams.class)
     public void testExceptionToggleShowing(
             @ContentSettingsType.EnumType int contentSettingsType,
@@ -113,16 +112,11 @@ public class SingleWebsiteSettingsTest {
                 contentSettingsType == ContentSettingsType.NOTIFICATIONS
                         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
 
-        // TODO(http://crbug.com/1450349) Remove this conditional once MIDI permissions project is
-        // fully launched
-        if (contentSettingsType != ContentSettingsType.MIDI_SYSEX) {
-            new SingleExceptionTestCase(contentSettingsType, contentSettingValue).run();
-        }
+        new SingleExceptionTestCase(contentSettingsType, contentSettingValue).run();
     }
 
     @Test
     @SmallTest
-    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "Notification does not have a toggle when disabled.")
@@ -148,7 +142,6 @@ public class SingleWebsiteSettingsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     public void testDesktopSiteException() {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(
@@ -209,10 +202,7 @@ public class SingleWebsiteSettingsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS,
-        PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT
-    })
+    @EnableFeatures(PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)
     public void testStorageAccessPermission() {
         int type = ContentSettingsType.STORAGE_ACCESS;
         GURL example = new GURL("https://example.com");

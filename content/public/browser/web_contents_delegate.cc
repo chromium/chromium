@@ -404,10 +404,6 @@ bool WebContentsDelegate::IsPrivileged() {
   return false;
 }
 
-bool WebContentsDelegate::IsInPreviewMode() const {
-  return false;
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 bool WebContentsDelegate::ShouldUseInstancedSystemMediaControls() const {
   return false;

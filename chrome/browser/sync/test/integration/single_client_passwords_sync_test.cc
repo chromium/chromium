@@ -264,12 +264,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
 
 class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {
  public:
-  SingleClientPasswordsWithAccountStorageSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::
-                                  kEnablePasswordsAccountStorage},
-        /*disabled_features=*/{switches::kUnoDesktop});
-  }
+  SingleClientPasswordsWithAccountStorageSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientPasswordsWithAccountStorageSyncTest(
       const SingleClientPasswordsWithAccountStorageSyncTest&) = delete;

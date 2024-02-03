@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -72,9 +71,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
               phonehub::DiscoveryEntryPoint::kManualConnectionRetry)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON),
-      chromeos::features::IsJellyrollEnabled()
-          ? PillButton::Type::kPrimaryWithoutIcon
-          : PillButton::Type::kDefaultWithoutIcon,
+      PillButton::Type::kPrimaryWithoutIcon,
       /*icon=*/nullptr);
   refresh->SetID(PhoneHubViewID::kDisconnectedRefreshButton);
   content_view_->AddButton(std::move(refresh));

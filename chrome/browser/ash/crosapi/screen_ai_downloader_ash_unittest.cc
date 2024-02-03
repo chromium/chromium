@@ -100,9 +100,8 @@ class ScreenAIDownloaderAshReplyTest
       EXPECT_TRUE(downloader_ash_.install_state_observer_.IsObserving());
     }
 
-    if (prior_state_ == screen_ai::ScreenAIInstallState::State::kDownloaded ||
-        prior_state_ == screen_ai::ScreenAIInstallState::State::kReady) {
-      // The component is already downloaded in these two states.
+    if (prior_state_ == screen_ai::ScreenAIInstallState::State::kDownloaded) {
+      // The component is already downloaded.
       install_state_.DownloadComponentInternal();
     }
     install_state_.SetStateForTesting(prior_state_);
@@ -112,7 +111,8 @@ class ScreenAIDownloaderAshReplyTest
     if (fake_download_success_) {
       install_state_.DownloadComponentInternal();
     } else {
-      install_state_.SetState(screen_ai::ScreenAIInstallState::State::kFailed);
+      install_state_.SetState(
+          screen_ai::ScreenAIInstallState::State::kDownloadFailed);
     }
   }
 
@@ -158,9 +158,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(screen_ai::ScreenAIInstallState::State::kNotDownloaded,
                         screen_ai::ScreenAIInstallState::State::kDownloading,
-                        screen_ai::ScreenAIInstallState::State::kFailed,
-                        screen_ai::ScreenAIInstallState::State::kDownloaded,
-                        screen_ai::ScreenAIInstallState::State::kReady),
+                        screen_ai::ScreenAIInstallState::State::kDownloadFailed,
+                        screen_ai::ScreenAIInstallState::State::kDownloaded),
         testing::Bool(),
         testing::Bool(),
         testing::Bool()));

@@ -20,6 +20,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/complex_feature.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
@@ -41,7 +42,7 @@ namespace extensions {
 namespace {
 
 struct IsAvailableTestData {
-  std::string extension_id;
+  ExtensionId extension_id;
   Manifest::Type extension_type;
   ManifestLocation location;
   Feature::Platform platform;

@@ -289,7 +289,12 @@ class CORE_EXPORT CSSSelector {
     kPseudoSelectorFragmentAnchor,
     kPseudoSingleButton,
     kPseudoStart,
+    // kPseudoState is for :state(foo). kPseudoStateDeprecated is for :--foo.
+    // :--foo is deprecated and is replacing :state(foo).
+    // TODO(crbug.com/1514397): Remove kPseudoStateDeprecatedSyntax after the
+    // deprecation is done.
     kPseudoState,
+    kPseudoStateDeprecatedSyntax,
     kPseudoTarget,
     kPseudoUnknown,
     // Something that was unparsable, but contained either a nesting
@@ -582,6 +587,23 @@ class CORE_EXPORT CSSSelector {
   void SetSignal(Signal signal) { signal_ = static_cast<unsigned>(signal); }
   Signal GetSignal() const { return static_cast<Signal>(signal_); }
 
+  // Invisible Rules
+  // ===============
+  //
+  // Invisible rules are rules which exist internally for use-counting
+  // purposes, but don't have any author-visible effect on the cascade,
+  // and are not otherwise reachable through APIs.
+  //
+  // Invisible rules are useful when used in conjunction with signaling rules
+  // (above), because it makes it possible to check if a given rule has
+  // any impact in the presence of some alternative/hypothetical rule.
+  //
+  // TODO(crbug.com/1517290): Remove invisible rules when we're done
+  // use-counting.
+
+  void SetInvisible() { is_invisible = true; }
+  bool IsInvisible() const { return is_invisible; }
+
   void Trace(Visitor* visitor) const;
 
   static String FormatPseudoTypeForDebugging(PseudoType);
@@ -615,6 +637,7 @@ class CORE_EXPORT CSSSelector {
   // RuleData (by calling MarkAsCoveredByBucketing()).
   unsigned is_covered_by_bucketing_ : 1;
   unsigned signal_ : 2 = static_cast<unsigned>(Signal::kNone);
+  unsigned is_invisible : 1 = false;
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
@@ -825,6 +848,7 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       is_implicitly_added_(o.is_implicitly_added_),
       is_covered_by_bucketing_(o.is_covered_by_bucketing_),
       signal_(o.signal_),
+      is_invisible(o.is_invisible),
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);

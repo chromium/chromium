@@ -27,6 +27,7 @@ group("resources") {
       "app_service_internals:resources",
       "bookmarks:resources",
       "commander:resources",
+      "commerce:resources",
       "downloads:resources",
       "feed:resources",
       "feedback:resources",

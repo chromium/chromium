@@ -3358,8 +3358,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
       /*privacy_filtering_enabled=*/false,
       /*convert_to_legacy_json=*/false,
       perfetto::protos::gen::ChromeConfig::USER_INITIATED);
-  base::Base64Encode(perfetto_config.SerializeAsString(),
-                     &perfetto_config_encoded);
+  perfetto_config_encoded =
+      base::Base64Encode(perfetto_config.SerializeAsString());
 
   base::Value::Dict params;
   params.Set("perfettoConfig", perfetto_config_encoded);
@@ -3395,9 +3395,8 @@ class SystemTracingDevToolsProtocolTest : public DevToolsProtocolTest {
         /*convert_to_legacy_json=*/false,
         perfetto::protos::gen::ChromeConfig::USER_INITIATED);
 
-    std::string perfetto_config_encoded;
-    base::Base64Encode(perfetto_config.SerializeAsString(),
-                       &perfetto_config_encoded);
+    std::string perfetto_config_encoded =
+        base::Base64Encode(perfetto_config.SerializeAsString());
 
     base::Value::Dict params;
     params.Set("perfettoConfig", perfetto_config_encoded);

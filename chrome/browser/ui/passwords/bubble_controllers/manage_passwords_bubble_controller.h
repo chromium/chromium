@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -61,7 +62,7 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   void OnMovePasswordLinkClicked();
 
   // Returns the available credentials which match the current site.
-  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  base::span<std::unique_ptr<password_manager::PasswordForm> const>
   GetCredentials() const;
 
   // Calls the password store backend to update the currently selected password

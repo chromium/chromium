@@ -368,6 +368,32 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
       proto::USER_FEEDBACK_THUMBS_DOWN, 1);
 }
 
+TEST_F(ModelQualityLogsUploaderServiceTest,
+       TabOrganizationUserFeedbackNullCheck) {
+  // Set TabOrganization ModelQualityLogEntry without any quality data tab
+  // organization.
+  std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request_1(
+      new proto::LogAiDataRequest());
+
+  proto::TabOrganizationLoggingData tab_organization_logging_data;
+
+  proto::TabOrganizationRequest tab_request;
+
+  *(tab_organization_logging_data.mutable_request_data()) = tab_request;
+  *(log_ai_data_request_1->mutable_tab_organization()) =
+      tab_organization_logging_data;
+  std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
+      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request_1));
+
+  // Upload logs without quality data set this should mark user_feedback as
+  // unspecified.
+  UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
+
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
+      proto::USER_FEEDBACK_UNSPECIFIED, 1);
+}
+
 TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(

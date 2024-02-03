@@ -25,9 +25,6 @@ class MockDevToolsAgentHost : public content::DevToolsAgentHost {
   void InspectElement(content::RenderFrameHost* frame_host,
                       int x,
                       int y) override {}
-  void GetUniqueFormControlId(
-      int node_id,
-      GetUniqueFormControlIdCallback callback) override {}
   std::string GetId() override;
   std::string GetParentId() override;
   std::string GetOpenerId() override;

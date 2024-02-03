@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-local-handle.h"
 
@@ -37,11 +38,12 @@ class PLATFORM_EXPORT DictionaryBase : public GarbageCollected<DictionaryBase> {
   DictionaryBase& operator=(const DictionaryBase&) = delete;
   DictionaryBase& operator=(const DictionaryBase&&) = delete;
 
-  // Fills the given v8::Object with the dictionary members.  Returns true on
-  // success, otherwise returns false with throwing an exception.
-  virtual bool FillV8ObjectWithMembers(
+  virtual const void* TemplateKey() const = 0;
+  virtual void FillTemplateProperties(
+      WTF::Vector<std::string_view>& properties) const = 0;
+  virtual v8::Local<v8::Object> FillValues(
       ScriptState* script_state,
-      v8::Local<v8::Object> v8_dictionary) const = 0;
+      v8::Local<v8::DictionaryTemplate> dict_template) const = 0;
 };
 
 }  // namespace bindings

@@ -71,7 +71,6 @@ class ButtonOptionsActionEdit : public ActionEditView {
     name_tag_->SetTitle(l10n_util::GetStringUTF16(
         action_->is_new() ? IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGN_NEW_KEY
                           : IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY));
-    labels_view_->set_should_update_title(false);
   }
   ButtonOptionsActionEdit(const ButtonOptionsActionEdit&) = delete;
   ButtonOptionsActionEdit& operator=(const ButtonOptionsActionEdit&) = delete;
@@ -253,7 +252,7 @@ void ButtonOptionsMenu::AddActionSelection() {
   auto* container = AddChildView(std::make_unique<views::View>());
   container->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/16.0f,
-      /*bottom_radius=*/0.0f, /*for_border_thickness=*/0.0f));
+      /*bottom_radius=*/0.0f));
   container->SetUseDefaultFillLayout(true);
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 2, 0));
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -281,7 +280,7 @@ void ButtonOptionsMenu::AddActionEdit() {
   // ------------------------------
   action_edit_ = AddChildView(
       std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
-  action_name_label_->SetText(action_edit_->GetActionName());
+  action_name_label_->SetText(action_edit_->CalculateActionName());
 }
 
 void ButtonOptionsMenu::AddDoneButton() {
@@ -319,14 +318,14 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   RemoveChildViewT(action_edit_);
   action_edit_ = AddChildViewAt(
       std::make_unique<ButtonOptionsActionEdit>(controller_, action_), *index);
-  action_name_label_->SetText(action_edit_->GetActionName());
+  action_name_label_->SetText(action_edit_->CalculateActionName());
   UpdateWidget();
 }
 
 void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
   if (action_ == &action) {
     action_edit_->OnActionInputBindingUpdated();
-    action_name_label_->SetText(action_edit_->GetActionName());
+    action_name_label_->SetText(action_edit_->CalculateActionName());
   }
 }
 
@@ -336,7 +335,7 @@ void ButtonOptionsMenu::OnActionNewStateRemoved(const Action& action) {
   }
 }
 
-BEGIN_METADATA(ButtonOptionsMenu, views::View)
+BEGIN_METADATA(ButtonOptionsMenu)
 END_METADATA
 
 }  // namespace arc::input_overlay

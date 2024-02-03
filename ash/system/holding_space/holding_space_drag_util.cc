@@ -434,8 +434,8 @@ class DragImageView : public views::View {
     return gfx::Insets::TLBR(size.height() / 2, 0, 0, size.width() / 2);
   }
 
-  void Layout() override {
-    views::View::Layout();
+  void Layout(PassKey) override {
+    LayoutSuperclass<views::View>(this);
 
     if (!drag_image_overflow_badge_)
       return;

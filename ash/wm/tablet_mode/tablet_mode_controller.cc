@@ -412,8 +412,10 @@ void TabletModeController::Shutdown() {
   // Stop observing any animations and delete any pending screenshots.
   StopObservingAnimation(/*record_stats=*/false, /*delete_screenshot=*/true);
 
-  if (tablet_mode_window_manager_)
-    tablet_mode_window_manager_->Shutdown();
+  if (tablet_mode_window_manager_) {
+    tablet_mode_window_manager_->Shutdown(
+        TabletModeWindowManager::ShutdownReason::kSystemShutdown);
+  }
   tablet_mode_window_manager_.reset();
 
   UMA_HISTOGRAM_COUNTS_1000("Tablet.AppWindowDrag.CountOfPerUserSession",
@@ -906,8 +908,10 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kExitingTabletMode);
 
-    if (tablet_mode_window_manager_)
-      tablet_mode_window_manager_->Shutdown();
+    if (tablet_mode_window_manager_) {
+      tablet_mode_window_manager_->Shutdown(
+          TabletModeWindowManager::ShutdownReason::kExitTabletUIMode);
+    }
     tablet_mode_window_manager_.reset();
 
     base::RecordAction(base::UserMetricsAction("Touchview_Disabled"));

@@ -60,10 +60,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   void PageVisibilityChanged();
   bool Restore();
 
-  void DrawFullImage(const cc::PaintImage&);
-
-  // This may recreate CanvasResourceProvider
-  cc::PaintCanvas* GetPaintCanvas();
   bool WritePixels(const SkImageInfo&,
                    const void* pixels,
                    size_t row_bytes,

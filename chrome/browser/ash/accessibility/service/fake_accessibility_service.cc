@@ -277,6 +277,13 @@ void FakeAccessibilityService::
   }
 }
 
+void FakeAccessibilityService::RequestSendSyntheticMouseEvent(
+    ax::mojom::SyntheticMouseEventPtr mouse_event) {
+  for (auto& ui_client : ui_remotes_) {
+    ui_client->SendSyntheticMouseEvent(mojo::Clone(mouse_event));
+  }
+}
+
 void FakeAccessibilityService::RequestDarkenScreen(bool darken) {
   for (auto& ux_client : ux_remotes_) {
     ux_client->DarkenScreen(darken);

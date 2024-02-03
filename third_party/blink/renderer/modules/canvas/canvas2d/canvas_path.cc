@@ -51,20 +51,27 @@ void CanvasPath::closePath() {
   if (UNLIKELY(IsEmpty())) {
     return;
   }
+  // If the current path is a zero lengthed path (ex: moveTo p1 and lineTo p1),
+  // then closePath is no op.
+  if (UNLIKELY(path_.BoundingRect().height() == 0 &&
+               path_.BoundingRect().width() == 0 &&
+               (IsLine() && line_builder_.BoundingRect().height() == 0 &&
+                line_builder_.BoundingRect().width() == 0))) {
+    if (!path_.HasCurrentPoint()) {
+      Clear();
+      return;
+    }
+    auto p = path_.CurrentPoint();
+    Clear();
+    moveTo(p.x(), p.y());
+    return;
+  }
 
   UpdatePathFromLineIfNecessaryForMutation();
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
   }
-  // If the last subpath has zero length, then `closePath()` should have no
-  // effect.
-  if (sub_path_.BoundingRect().height() != 0 ||
-      sub_path_.BoundingRect().width() != 0) {
-    sub_path_.CloseSubpath();
-    completed_path_.AddPath(sub_path_, AffineTransform());
-  }
-
-  sub_path_.Clear();
+  path_.CloseSubpath();
 }
 
 void CanvasPath::moveTo(double double_x, double double_y) {
@@ -84,10 +91,7 @@ void CanvasPath::moveTo(double double_x, double double_y) {
     line_builder_.MoveTo(point);
   } else {
     UpdatePathFromLineIfNecessaryForMutation();
-    // Save the previous subpath to `completed_path_`.
-    completed_path_.AddPath(sub_path_, AffineTransform());
-    sub_path_.Clear();
-    sub_path_.MoveTo(point);
+    path_.MoveTo(point);
   }
 }
 
@@ -111,16 +115,15 @@ void CanvasPath::lineTo(double double_x, double double_y) {
   }
 
   if (line_builder_.CanCreateLineTo()) {
-    // `completed_path_` may contain the move to, reset it so that if
-    // `completed_path_` is needed it will be updated.
-    completed_path_.Clear();
-    sub_path_.Clear();
+    // `path_` may contain the move to, reset it so that if `path_` is needed
+    // it will be updated.
+    path_.Clear();
     line_builder_.LineTo(p1);
     DCHECK(IsLine());
     return;
   }
   UpdatePathFromLineIfNecessaryForMutation();
-  sub_path_.AddLineTo(p1);
+  path_.AddLineTo(p1);
 }
 
 void CanvasPath::quadraticCurveTo(double double_cpx,
@@ -149,11 +152,11 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
     cp = GetTransform().MapPoint(cp);
   }
 
-  if (UNLIKELY(!sub_path_.HasCurrentPoint())) {
-    sub_path_.MoveTo(gfx::PointF(cpx, cpy));
+  if (UNLIKELY(!path_.HasCurrentPoint())) {
+    path_.MoveTo(gfx::PointF(cpx, cpy));
   }
 
-  sub_path_.AddQuadCurveTo(cp, p1);
+  path_.AddQuadCurveTo(cp, p1);
 }
 
 void CanvasPath::bezierCurveTo(double double_cp1x,
@@ -188,11 +191,11 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
     cp1 = GetTransform().MapPoint(cp1);
     cp2 = GetTransform().MapPoint(cp2);
   }
-  if (UNLIKELY(!sub_path_.HasCurrentPoint())) {
-    sub_path_.MoveTo(gfx::PointF(cp1x, cp1y));
+  if (UNLIKELY(!path_.HasCurrentPoint())) {
+    path_.MoveTo(gfx::PointF(cp1x, cp1y));
   }
 
-  sub_path_.AddBezierCurveTo(cp1, cp2, p1);
+  path_.AddBezierCurveTo(cp1, cp2, p1);
 }
 
 void CanvasPath::arcTo(double double_x1,
@@ -231,12 +234,12 @@ void CanvasPath::arcTo(double double_x1,
     p2 = GetTransform().MapPoint(p2);
   }
 
-  if (UNLIKELY(!sub_path_.HasCurrentPoint())) {
-    sub_path_.MoveTo(p1);
-  } else if (UNLIKELY(p1 == sub_path_.CurrentPoint() || p1 == p2 || !r)) {
+  if (UNLIKELY(!path_.HasCurrentPoint())) {
+    path_.MoveTo(p1);
+  } else if (UNLIKELY(p1 == path_.CurrentPoint() || p1 == p2 || !r)) {
     lineTo(x1, y1);
   } else {
-    sub_path_.AddArcTo(p1, p2, r);
+    path_.AddArcTo(p1, p2, r);
   }
 }
 
@@ -448,8 +451,8 @@ void CanvasPath::arc(double double_x,
   }
 
   CanonicalizeAngle(&start_angle, &end_angle);
-  sub_path_.AddArc(gfx::PointF(x, y), radius, start_angle,
-                   AdjustEndAngle(start_angle, end_angle, anticlockwise));
+  path_.AddArc(gfx::PointF(x, y), radius, start_angle,
+               AdjustEndAngle(start_angle, end_angle, anticlockwise));
 }
 
 void CanvasPath::ellipse(double double_x,
@@ -511,8 +514,8 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  sub_path_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation,
-                       start_angle, adjusted_end_angle);
+  path_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation, start_angle,
+                   adjusted_end_angle);
 }
 
 void CanvasPath::rect(double double_x,
@@ -540,7 +543,7 @@ void CanvasPath::rect(double double_x,
         CanvasOps::kRect, double_x, double_y, double_width, double_height);
   }
 
-  sub_path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
+  path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
 }
 
 void CanvasPath::roundRect(
@@ -618,7 +621,7 @@ void CanvasPath::roundRect(
   if (UNLIKELY(width == 0) || UNLIKELY(height == 0)) {
     // AddRoundRect does not handle flat rects, correctly.  But since there are
     // no rounded corners on a flat rect, we can just use AddRect.
-    sub_path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
+    path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
     return;
   }
 
@@ -666,11 +669,10 @@ void CanvasPath::roundRect(
   }
 
   gfx::RectF rect(x, y, width, height);
-  sub_path_.AddRoundedRect(
-      FloatRoundedRect(rect, corner_radii[0], corner_radii[1], corner_radii[2],
-                       corner_radii[3]),
-      clockwise);
-  sub_path_.MoveTo(gfx::PointF(x, y));
+  path_.AddRoundedRect(FloatRoundedRect(rect, corner_radii[0], corner_radii[1],
+                                        corner_radii[2], corner_radii[3]),
+                       clockwise);
+  path_.MoveTo(gfx::PointF(x, y));
 }
 
 void CanvasPath::roundRect(
@@ -691,9 +693,7 @@ gfx::RectF CanvasPath::BoundingRect() const {
     return line_builder_.BoundingRect();
   }
   UpdatePathFromLineIfNecessary();
-  gfx::RectF union_bounding_rect = completed_path_.BoundingRect();
-  union_bounding_rect.Union(sub_path_.BoundingRect());
-  return union_bounding_rect;
+  return path_.BoundingRect();
 }
 
 void CanvasPath::Trace(Visitor* visitor) const {
@@ -709,12 +709,12 @@ bool CanvasPath::UpdatePathFromLineIfNecessary() const {
   if (!DoesPathNeedUpdatingFromLine()) {
     return false;
   }
-  DCHECK(completed_path_.IsEmpty() && sub_path_.IsEmpty());
+  DCHECK(path_.IsEmpty());
   // If we get this far, there is a starting point, but possibly no ending
   // point.
-  sub_path_.MoveTo(line_builder_.starting_point());
+  path_.MoveTo(line_builder_.starting_point());
   if (IsLine()) {
-    sub_path_.AddLineTo(line_builder_.ending_point());
+    path_.AddLineTo(line_builder_.ending_point());
   }
   return true;
 }

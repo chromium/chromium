@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/native_widget_mac.h"
@@ -372,4 +373,37 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
   // Cleanup
   [testWindow close];
+}
+
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       ContentFullscreenChildren) {
+  chrome::DisableFindBarAnimationsDuringTesting(true);
+
+  // Enter browser fullscreen.
+  ToggleBrowserWindowFullscreen();
+
+  // Open the find bar
+  views::NamedWidgetShownWaiter shown_waiter(
+      views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+  chrome::Find(browser());
+  views::Widget* find_bar = shown_waiter.WaitIfNeededAndGet();
+
+  // The find bar should be a child of the overlay widget.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  EXPECT_EQ(browser_view->overlay_widget(), find_bar->parent());
+
+  // Enter content fullscreen. The find bar should move to become a child of the
+  // browser widget.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
+  EXPECT_EQ(browser_view->GetWidget(), find_bar->parent());
+
+  // Leave content fullscreen (back to browser fullscreen), the find bar should
+  // move back to the overlay widget.
+  tab->GetDelegate()->ExitFullscreenModeForTab(tab);
+  EXPECT_EQ(browser_view->overlay_widget(), find_bar->parent());
+
+  chrome::CloseFind(browser());
+  chrome::DisableFindBarAnimationsDuringTesting(false);
 }

@@ -337,6 +337,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // number (more specifically, bfloat16). Public to enable testing.
   static double RoundStochasticallyToKBits(double value, unsigned k);
 
+  // As above, but passes nullopts through.
+  static std::optional<double> RoundStochasticallyToKBits(
+      std::optional<double> maybe_value,
+      unsigned k);
+
  private:
   // Starts request for a seller worklet. Invokes OnSellerWorkletReceived() on
   // success, OnSellerWorkletFatalError() on error.

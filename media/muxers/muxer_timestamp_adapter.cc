@@ -26,7 +26,7 @@ bool MuxerTimestampAdapter::OnEncodedVideo(
     const Muxer::VideoParameters& params,
     std::string encoded_data,
     std::string encoded_alpha,
-    absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+    std::optional<media::VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp,
     bool is_key_frame) {
   TRACE_EVENT2("media", __func__, "timestamp", timestamp - base::TimeTicks(),
@@ -62,7 +62,7 @@ bool MuxerTimestampAdapter::OnEncodedVideo(
 bool MuxerTimestampAdapter::OnEncodedAudio(
     const AudioParameters& params,
     std::string encoded_data,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+    std::optional<media::AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
   TRACE_EVENT1("media", __func__, "timestamp", timestamp - base::TimeTicks());
   DVLOG(2) << __func__ << " - " << encoded_data.size() << "B ts " << timestamp;
@@ -173,7 +173,7 @@ bool MuxerTimestampAdapter::FlushNextFrame() {
 }
 
 base::TimeTicks MuxerTimestampAdapter::UpdateLastTimestampAndGetNext(
-    absl::optional<base::TimeTicks>& last_timestamp,
+    std::optional<base::TimeTicks>& last_timestamp,
     base::TimeTicks timestamp) {
   if (!last_timestamp.has_value()) {
     last_timestamp = timestamp;

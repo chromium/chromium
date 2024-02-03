@@ -45,7 +45,9 @@ class WorkerOrWorkletGlobalScope;
 class CORE_EXPORT WorkerOrWorkletScriptController final
     : public GarbageCollected<WorkerOrWorkletScriptController> {
  public:
-  WorkerOrWorkletScriptController(WorkerOrWorkletGlobalScope*, v8::Isolate*);
+  WorkerOrWorkletScriptController(WorkerOrWorkletGlobalScope*,
+                                  v8::Isolate*,
+                                  bool is_default_world_of_isolate);
 
   WorkerOrWorkletScriptController(const WorkerOrWorkletScriptController&) =
       delete;

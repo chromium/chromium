@@ -29,7 +29,7 @@ component("power") {
   ]
 }
 
-source_set("test_support") {
+source_set("unit_tests") {
   testonly = true
   public_deps = [ ":power" ]
   deps = [

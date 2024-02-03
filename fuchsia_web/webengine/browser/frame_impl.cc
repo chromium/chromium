@@ -49,6 +49,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
 #include "fuchsia_web/webengine/browser/event_filter.h"
@@ -226,7 +227,10 @@ void HandleMediaPermissionsRequestResult(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
       devices->audio_device = blink::MediaStreamDevice(
-          request.audio_type, request.requested_audio_device_id,
+          request.audio_type,
+          request.requested_audio_device_ids.empty()
+              ? ""
+              : request.requested_audio_device_ids.front(),
           /*name=*/"");
     }
     result_pos++;
@@ -236,7 +240,10 @@ void HandleMediaPermissionsRequestResult(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
       devices->video_device = blink::MediaStreamDevice(
-          request.video_type, request.requested_video_device_id,
+          request.video_type,
+          request.requested_video_device_ids.empty()
+              ? ""
+              : request.requested_video_device_ids.front(),
           /*name=*/"");
     }
   }
@@ -1635,14 +1642,12 @@ void FrameImpl::OnPixelScaleUpdate(float pixel_scale) {
 }
 
 void FrameImpl::SetAccessibilityEnabled(bool enabled) {
-  auto* browser_accessibility_state =
-      content::BrowserAccessibilityState::GetInstance();
-
-  if (enabled) {
-    browser_accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-  } else {
-    browser_accessibility_state->RemoveAccessibilityModeFlags(
-        ui::kAXModeComplete);
+  if (!enabled) {
+    scoped_accessibility_mode_.reset();
+  } else if (!scoped_accessibility_mode_) {
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::kAXModeComplete);
   }
 }
 

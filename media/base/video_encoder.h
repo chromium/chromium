@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_VIDEO_ENCODER_H_
 #define MEDIA_BASE_VIDEO_ENCODER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
@@ -14,7 +16,6 @@
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -49,7 +50,7 @@ struct MEDIA_EXPORT VideoEncoderOutput {
 
   // Some platforms may adjust the encoding size to meet hardware requirements.
   // If not set, the encoded size is the same as configured.
-  absl::optional<gfx::Size> encoded_size;
+  std::optional<gfx::Size> encoded_size;
 };
 
 class MEDIA_EXPORT VideoEncoder {
@@ -70,21 +71,24 @@ class MEDIA_EXPORT VideoEncoder {
     Options();
     Options(const Options&);
     ~Options();
-    absl::optional<Bitrate> bitrate;
-    absl::optional<double> framerate;
+    std::optional<Bitrate> bitrate;
+    std::optional<double> framerate;
 
     gfx::Size frame_size;
 
-    absl::optional<int> keyframe_interval = 10000;
+    std::optional<int> keyframe_interval = 10000;
 
     LatencyMode latency_mode = LatencyMode::Realtime;
 
-    absl::optional<SVCScalabilityMode> scalability_mode;
+    std::optional<SVCScalabilityMode> scalability_mode;
 
-    absl::optional<ContentHint> content_hint;
+    std::optional<ContentHint> content_hint;
 
     // Controls encoded pixel format.
-    absl::optional<VideoChromaSampling> subsampling;
+    std::optional<VideoChromaSampling> subsampling;
+
+    // Controls encoded bit depth.
+    std::optional<uint8_t> bit_depth;
 
     // Only used for H264 encoding.
     AvcOptions avc;
@@ -101,7 +105,7 @@ class MEDIA_EXPORT VideoEncoder {
     bool key_frame = false;
     // Per-frame codec-specific quantizer value.
     // Should only be used when encoder configured with kExternal bitrate mode.
-    absl::optional<int> quantizer;
+    std::optional<int> quantizer;
   };
 
   // A sequence of codec specific bytes, commonly known as extradata.
@@ -118,7 +122,7 @@ class MEDIA_EXPORT VideoEncoder {
   // becomes available.
   using OutputCB =
       base::RepeatingCallback<void(VideoEncoderOutput output,
-                                   absl::optional<CodecDescription>)>;
+                                   std::optional<CodecDescription>)>;
 
   // Callback to report success and errors in encoder calls.
   using EncoderStatusCB = base::OnceCallback<void(EncoderStatus error)>;

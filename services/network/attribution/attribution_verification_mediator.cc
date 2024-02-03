@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -75,7 +75,7 @@ void AttributionVerificationMediator::GetHeadersForVerification(
 
   metrics_recorder_->Start();
 
-  absl::optional<SuitableTrustTokenOrigin> issuer =
+  std::optional<SuitableTrustTokenOrigin> issuer =
       SuitableTrustTokenOrigin::Create(url);
   if (!issuer.has_value()) {
     metrics_recorder_->FinishGetHeadersWith(
@@ -142,7 +142,7 @@ AttributionVerificationMediator::BeginIssuances(
   blinded_messages.reserve(messages.size());
 
   for (size_t i = 0; i < messages.size(); ++i) {
-    absl::optional<BlindedMessage> blinded_message =
+    std::optional<BlindedMessage> blinded_message =
         cryptographers.at(i)->BeginIssuance(messages.at(i));
     if (!blinded_message.has_value()) {
       return AttributionVerificationMediator::CryptographersAndBlindedMessages{
@@ -189,7 +189,7 @@ void AttributionVerificationMediator::OnDoneBeginIssuance(
 std::vector<BlindedToken>
 AttributionVerificationMediator::DeserializeBlindedTokens(
     const std::string& blinded_tokens_header) {
-  absl::optional<net::structured_headers::List> parsed_list =
+  std::optional<net::structured_headers::List> parsed_list =
       net::structured_headers::ParseList(blinded_tokens_header);
   if (!parsed_list.has_value()) {
     return {};
@@ -220,7 +220,7 @@ std::string AttributionVerificationMediator::SerializeBlindedMessages(
     headers.emplace_back(
         net::structured_headers::ParameterizedMember(item, {}));
   }
-  absl::optional<std::string> serialized =
+  std::optional<std::string> serialized =
       net::structured_headers::SerializeList(headers);
   CHECK(serialized.has_value());
   return serialized.value();
@@ -278,7 +278,7 @@ AttributionVerificationMediator::ConfirmIssuancesAndBeginRedemptions(
   tokens.reserve(blind_tokens.size());
 
   for (size_t i = 0; i < blind_tokens.size(); ++i) {
-    absl::optional<Token> token =
+    std::optional<Token> token =
         cryptographers.at(i)->ConfirmIssuanceAndBeginRedemption(
             blind_tokens.at(i));
     if (!token.has_value()) {

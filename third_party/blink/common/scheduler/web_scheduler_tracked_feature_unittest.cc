@@ -14,7 +14,7 @@ TEST(WebSchedulerTrackedFeatureTest, StringToFeature) {
             StringToFeature("websocket"));
   ASSERT_EQ(WebSchedulerTrackedFeature::kDocumentLoaded,
             StringToFeature("DocumentLoaded"));
-  ASSERT_EQ(absl::nullopt, StringToFeature("FeatureThatNeverExists"));
+  ASSERT_EQ(std::nullopt, StringToFeature("FeatureThatNeverExists"));
 }
 
 TEST(WebSchedulerTrackedFeatureTest, ToEnumBitMasks) {

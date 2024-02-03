@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LOGICAL_BOX_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LOGICAL_BOX_FRAGMENT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -38,9 +39,9 @@ class CORE_EXPORT LogicalBoxFragment final : public LogicalFragment {
     return block_size / 2;
   }
 
-  absl::optional<LayoutUnit> FirstBaseline() const {
+  std::optional<LayoutUnit> FirstBaseline() const {
     if (!IsWritingModeEqual())
-      return absl::nullopt;
+      return std::nullopt;
 
     auto baseline = GetPhysicalBoxFragment().FirstBaseline();
     if (baseline && physical_fragment_.IsScrollContainer())
@@ -57,9 +58,9 @@ class CORE_EXPORT LogicalBoxFragment final : public LogicalFragment {
         baseline_type, writing_direction_.IsFlippedLines(), BlockSize());
   }
 
-  absl::optional<LayoutUnit> LastBaseline() const {
+  std::optional<LayoutUnit> LastBaseline() const {
     if (!IsWritingModeEqual())
-      return absl::nullopt;
+      return std::nullopt;
 
     auto baseline = GetPhysicalBoxFragment().LastBaseline();
     if (baseline && physical_fragment_.IsScrollContainer())

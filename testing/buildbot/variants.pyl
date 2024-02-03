@@ -5,6 +5,12 @@
 # 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {
+  'AMD_RADEON_RX_5500_XT': {
+    'identifier': 'AMD Radeon RX 5500 XT',
+    'mixins': [
+      'amd_radeon_rx_5500_xt',
+    ],
+  },
   'CROS_BRYA_RELEASE_ASH_LKGM': {
     'identifier': 'BRYA_RELEASE_LKGM',
     'skylab': {
@@ -43,34 +49,6 @@
       'cros_board': 'brya',
       'cros_img': 'brya-release/R120-15662.76.0',
       'dut_pool': 'chrome',
-    },
-  },
-  'CROS_DEDEDE_RELEASE_BETA': {
-    'identifier': 'DEDEDE_RELEASE_BETA',
-    'skylab': {
-      'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R121-15699.40.0',
-    },
-  },
-  'CROS_DEDEDE_RELEASE_DEV': {
-    'identifier': 'DEDEDE_RELEASE_DEV',
-    'skylab': {
-      'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R122-15748.0.0',
-    },
-  },
-  'CROS_DEDEDE_RELEASE_LKGM': {
-    'identifier': 'DEDEDE_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'dedede',
-      'use_lkgm': True,
-    },
-  },
-  'CROS_DEDEDE_RELEASE_STABLE': {
-    'identifier': 'DEDEDE_RELEASE_STABLE',
-    'skylab': {
-      'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R120-15662.76.0',
     },
   },
   'CROS_FIZZ_RELEASE_BETA': {
@@ -220,7 +198,7 @@
     'identifier': 'TROGDOR_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_img': 'trogdor-public/R123-15759.0.0',
+      'cros_img': 'trogdor-public/R123-15763.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -236,7 +214,7 @@
     'skylab': {
       'cros_board': 'volteer',
       'cros_model': 'voxel',
-      'cros_img': 'volteer-public/R123-15759.0.0',
+      'cros_img': 'volteer-public/R123-15763.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
@@ -274,6 +252,12 @@
     'args': [
       '--webview-command-line-arg=--disable-field-trial-config',
       '--webview-command-line-arg=--webview-verbose-logging',
+    ],
+  },
+  'INTEL_UHD_630': {
+    'identifier': 'Intel UHD 630',
+    'mixins': [
+      'intel_uhd_630',
     ],
   },
   'IPHONE_7_15_4_1': {
@@ -323,16 +307,16 @@
   },
   'LACROS_VERSION_SKEW_CANARY': {
     'identifier': 'Lacros version skew testing ash canary',
-    'description': 'Run with ash-chrome version 123.0.6267.0',
+    'description': 'Run with ash-chrome version 123.0.6277.0',
     'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v123.0.6267.0/test_ash_chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v123.0.6277.0/test_ash_chrome',
     ],
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v123.0.6267.0',
-          'revision': 'version:123.0.6267.0',
+          'location': 'lacros_version_skew_tests_v123.0.6277.0',
+          'revision': 'version:123.0.6277.0',
         },
       ],
     },
@@ -355,16 +339,16 @@
   },
   'LACROS_VERSION_SKEW_STABLE': {
     'identifier': 'Lacros version skew testing ash stable',
-    'description': 'Run with ash-chrome version 120.0.6099.259',
+    'description': 'Run with ash-chrome version 120.0.6099.272',
     'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6099.259/test_ash_chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6099.272/test_ash_chrome',
     ],
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v120.0.6099.259',
-          'revision': 'version:120.0.6099.259',
+          'location': 'lacros_version_skew_tests_v120.0.6099.272',
+          'revision': 'version:120.0.6099.272',
         },
       ],
     },
@@ -435,16 +419,16 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPAD_10TH_GEN_17_0': {
-    'identifier': 'iPad (10th generation) 17.0',
+  'SIM_IPAD_10TH_GEN_17_2': {
+    'identifier': 'iPad (10th generation) 17.2',
     'args': [
       '--platform',
       'iPad (10th generation)',
       '--version',
-      '17.0',
+      '17.2',
     ],
     'mixins': [
-      'ios_runtime_cache_17_0',
+      'ios_runtime_cache_17_2',
     ],
   },
   'SIM_IPAD_AIR_2_15_5': {
@@ -483,18 +467,6 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPAD_AIR_5TH_GEN_17_0': {
-    'identifier': 'iPad Air (5th generation) 17.0',
-    'args': [
-      '--platform',
-      'iPad Air (5th generation)',
-      '--version',
-      '17.0',
-    ],
-    'mixins': [
-      'ios_runtime_cache_17_0',
-    ],
-  },
   'SIM_IPAD_AIR_5TH_GEN_17_2': {
     'identifier': 'iPad Air (5th generation) 17.2',
     'args': [
@@ -505,6 +477,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_17_2',
+    ],
+  },
+  'SIM_IPAD_AIR_5TH_GEN_17_4': {
+    'identifier': 'iPad Air (5th generation) 17.4',
+    'args': [
+      '--platform',
+      'iPad Air (5th generation)',
+      '--version',
+      '17.4',
+    ],
+    'mixins': [
+      'ios_runtime_cache_17_4',
     ],
   },
   'SIM_IPAD_PRO_6TH_GEN_16_4': {
@@ -519,16 +503,16 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPAD_PRO_6TH_GEN_17_0': {
-    'identifier': 'iPad Pro (12.9-inch) (6th generation) 17.0',
+  'SIM_IPAD_PRO_6TH_GEN_17_2': {
+    'identifier': 'iPad Pro (12.9-inch) (6th generation) 17.2',
     'args': [
       '--platform',
       'iPad Pro (12.9-inch) (6th generation)',
       '--version',
-      '17.0',
+      '17.2',
     ],
     'mixins': [
-      'ios_runtime_cache_17_0',
+      'ios_runtime_cache_17_2',
     ],
   },
   'SIM_IPHONE_13_15_5': {
@@ -555,18 +539,6 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPHONE_14_17_0': {
-    'identifier': 'iPhone 14 17.0',
-    'args': [
-      '--platform',
-      'iPhone 14',
-      '--version',
-      '17.0',
-    ],
-    'mixins': [
-      'ios_runtime_cache_17_0',
-    ],
-  },
   'SIM_IPHONE_14_17_2': {
     'identifier': 'iPhone 14 17.2',
     'args': [
@@ -577,6 +549,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_17_2',
+    ],
+  },
+  'SIM_IPHONE_14_17_4': {
+    'identifier': 'iPhone 14 17.4',
+    'args': [
+      '--platform',
+      'iPhone 14',
+      '--version',
+      '17.4',
+    ],
+    'mixins': [
+      'ios_runtime_cache_17_4',
     ],
   },
   'SIM_IPHONE_14_PLUS_16_4': {
@@ -591,16 +575,16 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPHONE_14_PLUS_17_0': {
-    'identifier': 'iPhone 14 Plus 17.0',
+  'SIM_IPHONE_14_PLUS_17_2': {
+    'identifier': 'iPhone 14 Plus 17.2',
     'args': [
       '--platform',
       'iPhone 14 Plus',
       '--version',
-      '17.0',
+      '17.2',
     ],
     'mixins': [
-      'ios_runtime_cache_17_0',
+      'ios_runtime_cache_17_2',
     ],
   },
   'SIM_IPHONE_14_PRO_MAX_16_4': {
@@ -615,16 +599,16 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPHONE_14_PRO_MAX_17_0': {
-    'identifier': 'iPhone 14 Pro Max 17.0',
+  'SIM_IPHONE_14_PRO_MAX_17_2': {
+    'identifier': 'iPhone 14 Pro Max 17.2',
     'args': [
       '--platform',
       'iPhone 14 Pro Max',
       '--version',
-      '17.0',
+      '17.2',
     ],
     'mixins': [
-      'ios_runtime_cache_17_0',
+      'ios_runtime_cache_17_2',
     ],
   },
   'SIM_IPHONE_6S_15_5': {
@@ -663,18 +647,6 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPHONE_SE_3RD_GEN_17_0': {
-    'identifier': 'iPhone SE (3rd generation) 17.0',
-    'args': [
-      '--platform',
-      'iPhone SE (3rd generation)',
-      '--version',
-      '17.0',
-    ],
-    'mixins': [
-      'ios_runtime_cache_17_0',
-    ],
-  },
   'SIM_IPHONE_SE_3RD_GEN_17_2': {
     'identifier': 'iPhone SE (3rd generation) 17.2',
     'args': [
@@ -685,6 +657,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_17_2',
+    ],
+  },
+  'SIM_IPHONE_SE_3RD_GEN_17_4': {
+    'identifier': 'iPhone SE (3rd generation) 17.4',
+    'args': [
+      '--platform',
+      'iPhone SE (3rd generation)',
+      '--version',
+      '17.4',
+    ],
+    'mixins': [
+      'ios_runtime_cache_17_4',
     ],
   },
   'SIM_IPHONE_X_15_5': {

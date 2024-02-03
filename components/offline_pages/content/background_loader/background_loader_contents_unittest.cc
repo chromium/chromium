@@ -121,7 +121,7 @@ TEST_F(BackgroundLoaderContentsTest, DoesNotFocusAfterCrash) {
 
 TEST_F(BackgroundLoaderContentsTest, CannotDownloadNoDelegate) {
   contents()->CanDownload(
-      GURL::EmptyGURL(), std::string(),
+      GURL(), std::string(),
       base::BindOnce(&BackgroundLoaderContentsTest::DownloadCallback,
                      base::Unretained(this)));
   WaitForSignal();
@@ -132,7 +132,7 @@ TEST_F(BackgroundLoaderContentsTest, CannotDownloadNoDelegate) {
 TEST_F(BackgroundLoaderContentsTest, CanDownload_DelegateCalledWhenSet) {
   SetDelegate();
   contents()->CanDownload(
-      GURL::EmptyGURL(), std::string(),
+      GURL(), std::string(),
       base::BindOnce(&BackgroundLoaderContentsTest::DownloadCallback,
                      base::Unretained(this)));
   WaitForSignal();
@@ -145,7 +145,7 @@ TEST_F(BackgroundLoaderContentsTest, ShouldNotCreateWebContents) {
       nullptr /* source_site_instance */,
       content::mojom::WindowContainerType::NORMAL /* window_container_type */,
       GURL() /* opener_url */, "foo" /* frame_name */,
-      GURL::EmptyGURL() /* target_url */));
+      GURL() /* target_url */));
 }
 
 TEST_F(BackgroundLoaderContentsTest, ShouldNotAddNewContents) {
@@ -163,12 +163,10 @@ TEST_F(BackgroundLoaderContentsTest, ShouldNotAddNewContents) {
 TEST_F(BackgroundLoaderContentsTest, DoesNotGiveMediaAccessPermission) {
   content::MediaStreamRequest request(
       0 /* render_process_id */, 0 /* render_frame_id */,
-      0 /* page_request_id */,
-      url::Origin::Create(GURL::EmptyGURL()) /* url_origin */,
+      0 /* page_request_id */, url::Origin::Create(GURL()) /* url_origin */,
       false /* user_gesture */,
       blink::MediaStreamRequestType::MEDIA_DEVICE_ACCESS /* request_type */,
-      std::string() /* requested_audio_device_id */,
-      std::string() /* requested_video_device_id */,
+      {} /* requested_audio_device_ids */, {} /* requested_video_device_ids */,
       blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE /* audio_type */,
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE /* video_type */,
       false /* disable_local_echo */,

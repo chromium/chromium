@@ -33,8 +33,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.tab_ui.R;
@@ -106,7 +106,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final LayoutStateObserver mLayoutStateObserver;
     private LayoutStateProvider mLayoutStateProvider;
 
-    private TabGroupModelFilter.Observer mTabGroupModelFilterObserver;
+    private TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private Callback<Boolean> mOmniboxFocusObserver;
     private boolean mIsTabGroupUiVisible;
@@ -279,7 +279,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                 };
 
         mTabGroupModelFilterObserver =
-                new EmptyTabGroupModelFilterObserver() {
+                new TabGroupModelFilterObserver() {
                     @Override
                     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                         if (mIsTabGroupUiVisible && movedTab == mTabModelSelector.getCurrentTab()) {

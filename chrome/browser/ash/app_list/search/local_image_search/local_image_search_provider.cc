@@ -24,7 +24,7 @@ constexpr size_t kMaxNumResults = 3;
 }  // namespace
 
 LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
-    : SearchProvider(ControlCategory::kImages),
+    : SearchProvider(SearchCategory::kImages),
       profile_(profile),
       thumbnail_loader_(profile) {
   DCHECK(profile_);

@@ -265,8 +265,8 @@ class CalendarModelTest : public AshTestBase {
                      bool is_child = false) {
     UserSession session;
     session.session_id = session_id;
-    session.user_info.type = is_child ? user_manager::USER_TYPE_CHILD
-                                      : user_manager::USER_TYPE_REGULAR;
+    session.user_info.type = is_child ? user_manager::UserType::kChild
+                                      : user_manager::UserType::kRegular;
     session.user_info.account_id = AccountId::FromUserEmail(email);
     session.user_info.display_name = email;
     session.user_info.display_email = email;

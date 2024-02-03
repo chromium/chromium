@@ -12,6 +12,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
@@ -48,6 +49,9 @@ void AddDesksBarTraversableViews(
   } else {
     for (ash::DeskMiniView* mini_view : bar_view->mini_views()) {
       out_traversable_views.push_back(mini_view->desk_preview());
+      if (auto* profiles_button = mini_view->desk_profiles_button()) {
+        out_traversable_views.push_back(profiles_button);
+      }
       out_traversable_views.push_back(mini_view->desk_name_view());
     }
   }

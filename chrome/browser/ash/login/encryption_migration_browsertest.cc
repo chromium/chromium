@@ -240,7 +240,7 @@ class EncryptionMigrationChildUserTest : public EncryptionMigrationTestBase {
   EncryptionMigrationChildUserTest()
       : EncryptionMigrationTestBase(LoginManagerMixin::TestUserInfo{
             AccountId::FromUserEmailGaiaId("userchild@gmail.com", "userchild"),
-            test::kDefaultAuthSetup, user_manager::USER_TYPE_CHILD}) {}
+            test::kDefaultAuthSetup, user_manager::UserType::kChild}) {}
   ~EncryptionMigrationChildUserTest() override = default;
 
   EncryptionMigrationChildUserTest(

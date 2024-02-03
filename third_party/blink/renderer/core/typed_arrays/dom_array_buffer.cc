@@ -51,9 +51,12 @@ static void AccumulateArrayBuffersForAllWorlds(
   Vector<scoped_refptr<DOMWrapperWorld>> worlds;
   DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
   for (const auto& world : worlds) {
-    v8::Local<v8::Object> wrapper = world->DomDataStore().Get(object, isolate);
-    if (!wrapper.IsEmpty())
+    v8::Local<v8::Object> wrapper;
+    if (world->DomDataStore()
+            .Get</*entered_context=*/false>(isolate, object)
+            .ToLocal(&wrapper)) {
       buffers.push_back(v8::Local<v8::ArrayBuffer>::Cast(wrapper));
+    }
   }
 }
 
@@ -237,7 +240,7 @@ DOMArrayBuffer* DOMArrayBuffer::CreateUninitializedOrNull(
 }
 
 v8::Local<v8::Value> DOMArrayBuffer::Wrap(ScriptState* script_state) {
-  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+  DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));
 
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
 

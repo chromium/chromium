@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_WORKLET_ANIMATION_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_WORKLET_ANIMATION_EFFECT_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -20,7 +21,7 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  WorkletAnimationEffect(absl::optional<base::TimeDelta> local_time,
+  WorkletAnimationEffect(std::optional<base::TimeDelta> local_time,
                          const Timing& timing,
                          const Timing::NormalizedTiming& normalized_timing);
 
@@ -37,14 +38,14 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
 
   ComputedEffectTiming* getComputedTiming() const;
 
-  absl::optional<double> localTime() const;
-  void setLocalTime(absl::optional<double> time_ms);
-  absl::optional<base::TimeDelta> local_time() const;
+  std::optional<double> localTime() const;
+  void setLocalTime(std::optional<double> time_ms);
+  std::optional<base::TimeDelta> local_time() const;
 
  private:
   void UpdateInheritedTime(double inherited_time) const;
 
-  absl::optional<base::TimeDelta> local_time_;
+  std::optional<base::TimeDelta> local_time_;
   // We chose to not call this variable "timing_" to avoid confusion with the
   // above function call getTiming() which returns a pointer to an EffectTiming
   // object, as is defined in worklet_animation_effect.idl.
@@ -53,7 +54,7 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
   mutable Timing::CalculatedTiming calculated_;
   // last_update_time_ has type base::TimeDelta to match the type of local_time_
   // since it is a cached value of local_time_
-  mutable absl::optional<base::TimeDelta> last_update_time_;
+  mutable std::optional<base::TimeDelta> last_update_time_;
 };
 
 }  // namespace blink

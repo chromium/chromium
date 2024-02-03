@@ -141,7 +141,7 @@ class V8ScriptRunnerTest : public testing::Test {
   ScriptResource* CreateResource(v8::Isolate* isolate,
                                  const WTF::TextEncoding& encoding,
                                  Vector<uint8_t> serialized_metadata,
-                                 absl::optional<String> code = {}) {
+                                 std::optional<String> code = {}) {
     return CreateResource(isolate, encoding,
                           base::make_span(serialized_metadata), code);
   }
@@ -150,7 +150,7 @@ class V8ScriptRunnerTest : public testing::Test {
       v8::Isolate* isolate,
       const WTF::TextEncoding& encoding,
       base::span<const uint8_t> serialized_metadata = {},
-      absl::optional<String> code = {}) {
+      std::optional<String> code = {}) {
     ScriptResource* resource =
         ScriptResource::CreateForTest(isolate, Url(), encoding);
     if (!code)

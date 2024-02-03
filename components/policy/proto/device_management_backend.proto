@@ -438,6 +438,29 @@ message DeviceRegisterResponse {
   // registering for policy is affiliated on the device.
   // Only sent if DeviceRegisterRequest.Type == USER
   repeated string user_affiliation_ids = 5;
+
+  // The display name Chrome should use when setting up the profile, used for
+  // OIDC managed profile only.
+  optional string user_display_name = 7;
+
+  // The email of the user who logged into this profile, used for OIDC managed
+  // profile only.
+  optional string user_email = 8;
+
+  // Enum listing the possible types of the third party identity used for OIDC
+  // managed profiles.
+  enum ThirdPartyIdentityType {
+    // The profile does not have third party identity.
+    NONE = 0;
+    // The third party identity is synced to Google (Dasher) and there is an
+    // associated GAIA ID for it.
+    DASHER_BASED = 1;
+    // The third party identity is not synced to Google and there is no
+    // associated GAIA ID for it.
+    DASHERLESS = 2;
+  }
+  optional ThirdPartyIdentityType third_party_identity_type = 9
+      [default = NONE];
 }
 
 // Request from device to server to unregister device.

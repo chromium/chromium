@@ -19,6 +19,7 @@
 #include "base/containers/checked_iterators.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
+#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -172,15 +173,17 @@ TEST(SpanTest, ConstructFromDataAndSize) {
   EXPECT_EQ(vector.data(), dynamic_span.data());
   EXPECT_EQ(vector.size(), dynamic_span.size());
 
-  for (size_t i = 0; i < dynamic_span.size(); ++i)
+  for (size_t i = 0; i < dynamic_span.size(); ++i) {
     EXPECT_EQ(vector[i], dynamic_span[i]);
+  }
 
   span<int, 6> static_span(vector.data(), vector.size());
   EXPECT_EQ(vector.data(), static_span.data());
   EXPECT_EQ(vector.size(), static_span.size());
 
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(vector[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, ConstructFromIterAndSize) {
@@ -195,15 +198,17 @@ TEST(SpanTest, ConstructFromIterAndSize) {
   EXPECT_EQ(vector.data(), dynamic_span.data());
   EXPECT_EQ(vector.size(), dynamic_span.size());
 
-  for (size_t i = 0; i < dynamic_span.size(); ++i)
+  for (size_t i = 0; i < dynamic_span.size(); ++i) {
     EXPECT_EQ(vector[i], dynamic_span[i]);
+  }
 
   span<int, 6> static_span(vector.begin(), vector.size());
   EXPECT_EQ(vector.data(), static_span.data());
   EXPECT_EQ(vector.size(), static_span.size());
 
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(vector[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, ConstructFromIterPair) {
@@ -218,15 +223,17 @@ TEST(SpanTest, ConstructFromIterPair) {
   EXPECT_EQ(vector.data(), dynamic_span.data());
   EXPECT_EQ(vector.size() / 2, dynamic_span.size());
 
-  for (size_t i = 0; i < dynamic_span.size(); ++i)
+  for (size_t i = 0; i < dynamic_span.size(); ++i) {
     EXPECT_EQ(vector[i], dynamic_span[i]);
+  }
 
   span<int, 3> static_span(vector.begin(), vector.begin() + vector.size() / 2);
   EXPECT_EQ(vector.data(), static_span.data());
   EXPECT_EQ(vector.size() / 2, static_span.size());
 
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(vector[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, AllowedConversionsFromStdArray) {
@@ -355,20 +362,23 @@ TEST(SpanTest, ConstructFromArray) {
   span<const int> const_span(array);
   EXPECT_EQ(array, const_span.data());
   EXPECT_EQ(std::size(array), const_span.size());
-  for (size_t i = 0; i < const_span.size(); ++i)
+  for (size_t i = 0; i < const_span.size(); ++i) {
     EXPECT_EQ(array[i], const_span[i]);
+  }
 
   span<int> dynamic_span(array);
   EXPECT_EQ(array, dynamic_span.data());
   EXPECT_EQ(std::size(array), dynamic_span.size());
-  for (size_t i = 0; i < dynamic_span.size(); ++i)
+  for (size_t i = 0; i < dynamic_span.size(); ++i) {
     EXPECT_EQ(array[i], dynamic_span[i]);
+  }
 
   span<int, std::size(array)> static_span(array);
   EXPECT_EQ(array, static_span.data());
   EXPECT_EQ(std::size(array), static_span.size());
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(array[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, ConstructFromVolatileArray) {
@@ -411,20 +421,23 @@ TEST(SpanTest, ConstructFromStdArray) {
   span<const int> const_span(array);
   EXPECT_EQ(array.data(), const_span.data());
   EXPECT_EQ(array.size(), const_span.size());
-  for (size_t i = 0; i < const_span.size(); ++i)
+  for (size_t i = 0; i < const_span.size(); ++i) {
     EXPECT_EQ(array[i], const_span[i]);
+  }
 
   span<int> dynamic_span(array);
   EXPECT_EQ(array.data(), dynamic_span.data());
   EXPECT_EQ(array.size(), dynamic_span.size());
-  for (size_t i = 0; i < dynamic_span.size(); ++i)
+  for (size_t i = 0; i < dynamic_span.size(); ++i) {
     EXPECT_EQ(array[i], dynamic_span[i]);
+  }
 
   span<int, std::size(array)> static_span(array);
   EXPECT_EQ(array.data(), static_span.data());
   EXPECT_EQ(array.size(), static_span.size());
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(array[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, ConstructFromInitializerList) {
@@ -434,15 +447,17 @@ TEST(SpanTest, ConstructFromInitializerList) {
   EXPECT_EQ(il.begin(), const_span.data());
   EXPECT_EQ(il.size(), const_span.size());
 
-  for (size_t i = 0; i < const_span.size(); ++i)
+  for (size_t i = 0; i < const_span.size(); ++i) {
     EXPECT_EQ(il.begin()[i], const_span[i]);
+  }
 
   span<const int, 6> static_span(il.begin(), il.end());
   EXPECT_EQ(il.begin(), static_span.data());
   EXPECT_EQ(il.size(), static_span.size());
 
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(il.begin()[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, ConstructFromStdString) {
@@ -452,22 +467,25 @@ TEST(SpanTest, ConstructFromStdString) {
   EXPECT_EQ(str.data(), const_span.data());
   EXPECT_EQ(str.size(), const_span.size());
 
-  for (size_t i = 0; i < const_span.size(); ++i)
+  for (size_t i = 0; i < const_span.size(); ++i) {
     EXPECT_EQ(str[i], const_span[i]);
+  }
 
   span<char> dynamic_span(str);
   EXPECT_EQ(str.data(), dynamic_span.data());
   EXPECT_EQ(str.size(), dynamic_span.size());
 
-  for (size_t i = 0; i < dynamic_span.size(); ++i)
+  for (size_t i = 0; i < dynamic_span.size(); ++i) {
     EXPECT_EQ(str[i], dynamic_span[i]);
+  }
 
   span<char, 6> static_span(data(str), str.size());
   EXPECT_EQ(str.data(), static_span.data());
   EXPECT_EQ(str.size(), static_span.size());
 
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(str[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, ConstructFromConstContainer) {
@@ -477,15 +495,17 @@ TEST(SpanTest, ConstructFromConstContainer) {
   EXPECT_EQ(vector.data(), const_span.data());
   EXPECT_EQ(vector.size(), const_span.size());
 
-  for (size_t i = 0; i < const_span.size(); ++i)
+  for (size_t i = 0; i < const_span.size(); ++i) {
     EXPECT_EQ(vector[i], const_span[i]);
+  }
 
   span<const int, 6> static_span(vector.data(), vector.size());
   EXPECT_EQ(vector.data(), static_span.data());
   EXPECT_EQ(vector.size(), static_span.size());
 
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(vector[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, ConstructFromContainer) {
@@ -495,22 +515,25 @@ TEST(SpanTest, ConstructFromContainer) {
   EXPECT_EQ(vector.data(), const_span.data());
   EXPECT_EQ(vector.size(), const_span.size());
 
-  for (size_t i = 0; i < const_span.size(); ++i)
+  for (size_t i = 0; i < const_span.size(); ++i) {
     EXPECT_EQ(vector[i], const_span[i]);
+  }
 
   span<int> dynamic_span(vector);
   EXPECT_EQ(vector.data(), dynamic_span.data());
   EXPECT_EQ(vector.size(), dynamic_span.size());
 
-  for (size_t i = 0; i < dynamic_span.size(); ++i)
+  for (size_t i = 0; i < dynamic_span.size(); ++i) {
     EXPECT_EQ(vector[i], dynamic_span[i]);
+  }
 
   span<int, 6> static_span(vector.data(), vector.size());
   EXPECT_EQ(vector.data(), static_span.data());
   EXPECT_EQ(vector.size(), static_span.size());
 
-  for (size_t i = 0; i < static_span.size(); ++i)
+  for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(vector[i], static_span[i]);
+  }
 }
 
 TEST(SpanTest, FromRefOfMutableStackVariable) {
@@ -526,6 +549,11 @@ TEST(SpanTest, FromRefOfMutableStackVariable) {
   s[0] = 456;
   EXPECT_EQ(456, x);
   EXPECT_EQ(456, s[0]);
+
+  auto b = byte_span_from_ref(x);
+  static_assert(std::is_same_v<decltype(b), span<uint8_t, sizeof(int)>>);
+  EXPECT_EQ(reinterpret_cast<uint8_t*>(&x), b.data());
+  EXPECT_EQ(sizeof(int), b.size());
 }
 
 TEST(SpanTest, FromRefOfConstStackVariable) {
@@ -537,6 +565,11 @@ TEST(SpanTest, FromRefOfConstStackVariable) {
   EXPECT_EQ(1u, s.size());
   EXPECT_EQ(sizeof(int), s.size_bytes());
   EXPECT_EQ(123, s[0]);
+
+  auto b = byte_span_from_ref(x);
+  static_assert(std::is_same_v<decltype(b), span<const uint8_t, sizeof(int)>>);
+  EXPECT_EQ(reinterpret_cast<const uint8_t*>(&x), b.data());
+  EXPECT_EQ(sizeof(int), b.size());
 }
 
 TEST(SpanTest, ConvertNonConstIntegralToConst) {
@@ -784,12 +817,14 @@ TEST(SpanTest, TemplatedSubspan) {
 TEST(SpanTest, SubscriptedBeginIterator) {
   int array[] = {1, 2, 3};
   span<const int> const_span(array);
-  for (size_t i = 0; i < const_span.size(); ++i)
+  for (size_t i = 0; i < const_span.size(); ++i) {
     EXPECT_EQ(array[i], const_span.begin()[i]);
+  }
 
   span<int> mutable_span(array);
-  for (size_t i = 0; i < mutable_span.size(); ++i)
+  for (size_t i = 0; i < mutable_span.size(); ++i) {
     EXPECT_EQ(array[i], mutable_span.begin()[i]);
+  }
 }
 
 TEST(SpanTest, TemplatedFirstOnDynamicSpan) {
@@ -987,20 +1022,20 @@ TEST(SpanTest, First) {
   span<int> span(array);
 
   {
-    auto subspan = span.first(0);
+    auto subspan = span.first(0u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(0u, subspan.size());
   }
 
   {
-    auto subspan = span.first(1);
+    auto subspan = span.first(1u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(1u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
   }
 
   {
-    auto subspan = span.first(2);
+    auto subspan = span.first(2u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(2u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
@@ -1008,7 +1043,7 @@ TEST(SpanTest, First) {
   }
 
   {
-    auto subspan = span.first(3);
+    auto subspan = span.first(3u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(3u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
@@ -1022,20 +1057,20 @@ TEST(SpanTest, Last) {
   span<int> span(array);
 
   {
-    auto subspan = span.last(0);
+    auto subspan = span.last(0u);
     EXPECT_EQ(span.data() + 3, subspan.data());
     EXPECT_EQ(0u, subspan.size());
   }
 
   {
-    auto subspan = span.last(1);
+    auto subspan = span.last(1u);
     EXPECT_EQ(span.data() + 2, subspan.data());
     EXPECT_EQ(1u, subspan.size());
     EXPECT_EQ(3, subspan[0]);
   }
 
   {
-    auto subspan = span.last(2);
+    auto subspan = span.last(2u);
     EXPECT_EQ(span.data() + 1, subspan.data());
     EXPECT_EQ(2u, subspan.size());
     EXPECT_EQ(2, subspan[0]);
@@ -1043,7 +1078,7 @@ TEST(SpanTest, Last) {
   }
 
   {
-    auto subspan = span.last(3);
+    auto subspan = span.last(3u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(3u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
@@ -1232,8 +1267,9 @@ TEST(SpanTest, Iterator) {
   constexpr span<const int> span(kArray);
 
   std::vector<int> results;
-  for (int i : span)
+  for (int i : span) {
     results.emplace_back(i);
+  }
   EXPECT_THAT(results, ElementsAre(1, 6, 1, 8, 0));
 }
 
@@ -1341,16 +1377,51 @@ TEST(SpanTest, AsByteSpan) {
   {
     constexpr int kArray[] = {2, 3, 5, 7, 11, 13};
     auto byte_span = as_byte_span(kArray);
-    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    static_assert(std::is_same_v<decltype(byte_span),
+                                 span<const uint8_t, 6u * sizeof(int)>>);
     EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kArray));
     EXPECT_EQ(byte_span.size(), sizeof(kArray));
   }
   {
+    const std::vector<int> kVec({2, 3, 5, 7, 11, 13});
+    auto byte_span = as_byte_span(kVec);
+    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kVec.data()));
+    EXPECT_EQ(byte_span.size(), kVec.size() * sizeof(int));
+  }
+  {
     int kMutArray[] = {2, 3, 5, 7};
     auto byte_span = as_byte_span(kMutArray);
-    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    static_assert(std::is_same_v<decltype(byte_span),
+                                 span<const uint8_t, 4u * sizeof(int)>>);
     EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kMutArray));
     EXPECT_EQ(byte_span.size(), sizeof(kMutArray));
+  }
+  {
+    std::vector<int> kMutVec({2, 3, 5, 7});
+    auto byte_span = as_byte_span(kMutVec);
+    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    EXPECT_EQ(byte_span.data(),
+              reinterpret_cast<const uint8_t*>(kMutVec.data()));
+    EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
+  }
+}
+
+TEST(SpanTest, AsWritableByteSpan) {
+  {
+    int kMutArray[] = {2, 3, 5, 7};
+    auto byte_span = as_writable_byte_span(kMutArray);
+    static_assert(
+        std::is_same_v<decltype(byte_span), span<uint8_t, 4u * sizeof(int)>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutArray));
+    EXPECT_EQ(byte_span.size(), sizeof(kMutArray));
+  }
+  {
+    std::vector<int> kMutVec({2, 3, 5, 7});
+    auto byte_span = as_writable_byte_span(kMutVec);
+    static_assert(std::is_same_v<decltype(byte_span), span<uint8_t>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutVec.data()));
+    EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
   }
 }
 
@@ -1544,12 +1615,14 @@ TEST(SpanTest, EnsureConstexprGoodness) {
   const size_t start = 1;
   constexpr span<const int> subspan =
       constexpr_span.subspan(start, start + size);
-  for (size_t i = 0; i < subspan.size(); ++i)
+  for (size_t i = 0; i < subspan.size(); ++i) {
     EXPECT_EQ(kArray[start + i], subspan[i]);
+  }
 
   constexpr span<const int> firsts = constexpr_span.first(size);
-  for (size_t i = 0; i < firsts.size(); ++i)
+  for (size_t i = 0; i < firsts.size(); ++i) {
     EXPECT_EQ(kArray[i], firsts[i]);
+  }
 
   constexpr span<const int> lasts = constexpr_span.last(size);
   for (size_t i = 0; i < lasts.size(); ++i) {
@@ -1564,15 +1637,15 @@ TEST(SpanTest, EnsureConstexprGoodness) {
 TEST(SpanTest, OutOfBoundsDeath) {
   constexpr span<int, 0> kEmptySpan;
   ASSERT_DEATH_IF_SUPPORTED(kEmptySpan[0], "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.first(1), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.last(1), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.subspan(1), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.first(1u), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.last(1u), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.subspan(1u), "");
 
   constexpr span<int> kEmptyDynamicSpan;
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan[0], "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.front(), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.first(1), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.last(1), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.first(1u), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.last(1u), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.back(), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.subspan(1), "");
 
@@ -1594,8 +1667,8 @@ TEST(SpanTest, OutOfBoundsDeath) {
   // backed by larger arrays.
   int array1[] = {1, 2, 3, 4};
   int array2[] = {1, 2, 3, 4};
-  span<int> span_len2 = span(array1).first(2);
-  span<int> span_len3 = span(array2).first(3);
+  span<int> span_len2 = span(array1).first(2u);
+  span<int> span_len3 = span(array2).first(3u);
   ASSERT_DEATH_IF_SUPPORTED(*span_len2.end(), "");
   ASSERT_DEATH_IF_SUPPORTED(span_len2.begin()[2], "");
   ASSERT_DEATH_IF_SUPPORTED(span_len2.begin() + 3, "");
@@ -1738,7 +1811,8 @@ TEST(SpanTest, CopyFrom) {
   span<int> dynamic_span = base::make_span(vec);
 
   // Handle empty cases gracefully.
-  empty_static_span.copy_from(empty_dynamic_span);
+  // Dynamic size to static size requires an explicit conversion.
+  empty_static_span.copy_from(make_span<0u>(empty_dynamic_span));
   empty_dynamic_span.copy_from(empty_static_span);
   static_span.first(empty_static_span.size()).copy_from(empty_static_span);
   dynamic_span.first(empty_dynamic_span.size()).copy_from(empty_dynamic_span);
@@ -1746,23 +1820,166 @@ TEST(SpanTest, CopyFrom) {
   EXPECT_THAT(vec, ElementsAre(4, 5, 6));
 
   // Test too small destinations.
-  EXPECT_DEATH_IF_SUPPORTED(empty_static_span.copy_from(dynamic_span), "");
   EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(static_span), "");
   EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(dynamic_span), "");
-  EXPECT_DEATH_IF_SUPPORTED(static_span.first(2).copy_from(dynamic_span), "");
-  EXPECT_DEATH_IF_SUPPORTED(dynamic_span.last(2).copy_from(static_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(dynamic_span.last(2u).copy_from(static_span), "");
 
-  static_span.first(2).copy_from(static_span.last(2));
-  EXPECT_THAT(arr, ElementsAre(2, 3, 3));
+  std::vector<int> source = {7, 8, 9};
 
-  dynamic_span.first(2).copy_from(dynamic_span.last(2));
-  EXPECT_THAT(vec, ElementsAre(5, 6, 6));
+  static_span.first(2u).copy_from(span(source).last(2u));
+  EXPECT_THAT(arr, ElementsAre(8, 9, 3));
 
-  static_span.last(1).copy_from(dynamic_span.last(1));
-  EXPECT_THAT(arr, ElementsAre(2, 3, 6));
+  dynamic_span.first(2u).copy_from(span(source).last(2u));
+  EXPECT_THAT(vec, ElementsAre(8, 9, 6));
 
-  dynamic_span.first(1).copy_from(static_span.first(1));
-  EXPECT_THAT(vec, ElementsAre(2, 6, 6));
+  static_span.first(1u).copy_from(span(source).last(1u));
+  EXPECT_THAT(arr, ElementsAre(9, 9, 3));
+
+  dynamic_span.first(1u).copy_from(span(source).last(1u));
+  EXPECT_THAT(vec, ElementsAre(9, 9, 6));
+}
+
+TEST(SpanTest, CopyFromConversion) {
+  int arr[] = {1, 2, 3};
+  span<int, 3> static_span = base::make_span(arr);
+
+  std::vector<int> vec = {4, 5, 6};
+  span<int> dynamic_span = base::make_span(vec);
+
+  std::vector convert_from = {7, 8, 9};
+  // Dynamic size to static size requires an explicit conversion.
+  static_span.copy_from(make_span<3u>(convert_from));
+  dynamic_span.copy_from(convert_from);
+  EXPECT_THAT(static_span, ElementsAre(7, 8, 9));
+  EXPECT_THAT(dynamic_span, ElementsAre(7, 8, 9));
+
+  std::array<int, 3u> convert_from_fixed = {4, 5, 6};
+  static_span.copy_from(convert_from_fixed);
+  dynamic_span.copy_from(convert_from_fixed);
+  EXPECT_THAT(static_span, ElementsAre(4, 5, 6));
+  EXPECT_THAT(dynamic_span, ElementsAre(4, 5, 6));
+
+  int convert_from_array[] = {1, 2, 3};
+  static_span.copy_from(convert_from_array);
+  dynamic_span.copy_from(convert_from_array);
+  EXPECT_THAT(static_span, ElementsAre(1, 2, 3));
+  EXPECT_THAT(dynamic_span, ElementsAre(1, 2, 3));
+
+  int convert_from_const_array[] = {-1, -2, -3};
+  static_span.copy_from(convert_from_const_array);
+  dynamic_span.copy_from(convert_from_const_array);
+  EXPECT_THAT(static_span, ElementsAre(-1, -2, -3));
+  EXPECT_THAT(dynamic_span, ElementsAre(-1, -2, -3));
+}
+
+TEST(SpanTest, SplitAt) {
+  int arr[] = {1, 2, 3};
+  span<int, 0> empty_static_span;
+  span<int, 3> static_span = base::make_span(arr);
+
+  std::vector<int> vec = {4, 5, 6};
+  span<int> empty_dynamic_span;
+  span<int> dynamic_span = base::make_span(vec);
+
+  {
+    auto [left, right] = empty_static_span.split_at(0u);
+    EXPECT_EQ(left.size(), 0u);
+    EXPECT_EQ(right.size(), 0u);
+  }
+  {
+    auto [left, right] = empty_dynamic_span.split_at(0u);
+    EXPECT_EQ(left.size(), 0u);
+    EXPECT_EQ(right.size(), 0u);
+  }
+
+  {
+    auto [left, right] = static_span.split_at(0u);
+    EXPECT_EQ(left.size(), 0u);
+    EXPECT_EQ(right.size(), 3u);
+    EXPECT_EQ(right.front(), 1);
+  }
+  {
+    auto [left, right] = static_span.split_at(3u);
+    EXPECT_EQ(left.size(), 3u);
+    EXPECT_EQ(right.size(), 0u);
+    EXPECT_EQ(left.front(), 1);
+  }
+  {
+    auto [left, right] = static_span.split_at(1u);
+    EXPECT_EQ(left.size(), 1u);
+    EXPECT_EQ(right.size(), 2u);
+    EXPECT_EQ(left.front(), 1);
+    EXPECT_EQ(right.front(), 2);
+  }
+
+  {
+    auto [left, right] = dynamic_span.split_at(0u);
+    EXPECT_EQ(left.size(), 0u);
+    EXPECT_EQ(right.size(), 3u);
+    EXPECT_EQ(right.front(), 4);
+  }
+  {
+    auto [left, right] = dynamic_span.split_at(3u);
+    EXPECT_EQ(left.size(), 3u);
+    EXPECT_EQ(right.size(), 0u);
+    EXPECT_EQ(left.front(), 4);
+  }
+  {
+    auto [left, right] = dynamic_span.split_at(1u);
+    EXPECT_EQ(left.size(), 1u);
+    EXPECT_EQ(right.size(), 2u);
+    EXPECT_EQ(left.front(), 4);
+    EXPECT_EQ(right.front(), 5);
+  }
+
+  // Fixed-size splits.
+  {
+    auto [left, right] = static_span.split_at<0u>();
+    static_assert(std::same_as<decltype(left), span<int, 0u>>);
+    static_assert(std::same_as<decltype(right), span<int, 3u>>);
+    EXPECT_EQ(left.data(), static_span.data());
+    EXPECT_EQ(right.data(), static_span.data());
+  }
+  {
+    auto [left, right] = static_span.split_at<1u>();
+    static_assert(std::same_as<decltype(left), span<int, 1u>>);
+    static_assert(std::same_as<decltype(right), span<int, 2u>>);
+    EXPECT_EQ(left.data(), static_span.data());
+    EXPECT_EQ(right.data(), static_span.data() + 1u);
+  }
+  {
+    auto [left, right] = static_span.split_at<3u>();
+    static_assert(std::same_as<decltype(left), span<int, 3u>>);
+    static_assert(std::same_as<decltype(right), span<int, 0u>>);
+    EXPECT_EQ(left.data(), static_span.data());
+    EXPECT_EQ(right.data(), static_span.data() + 3u);
+  }
+  {
+    auto [left, right] = dynamic_span.split_at<0u>();
+    static_assert(std::same_as<decltype(left), span<int, 0u>>);
+    static_assert(std::same_as<decltype(right), span<int>>);
+    EXPECT_EQ(left.data(), dynamic_span.data());
+    EXPECT_EQ(right.data(), dynamic_span.data());
+    EXPECT_EQ(right.size(), 3u);
+  }
+  {
+    auto [left, right] = dynamic_span.split_at<1u>();
+    static_assert(std::same_as<decltype(left), span<int, 1u>>);
+    static_assert(std::same_as<decltype(right), span<int>>);
+    EXPECT_EQ(left.data(), dynamic_span.data());
+    EXPECT_EQ(right.data(), dynamic_span.data() + 1u);
+    EXPECT_EQ(right.size(), 2u);
+  }
+  {
+    auto [left, right] = dynamic_span.split_at<3u>();
+    static_assert(std::same_as<decltype(left), span<int, 3u>>);
+    static_assert(std::same_as<decltype(right), span<int>>);
+    EXPECT_EQ(left.data(), dynamic_span.data());
+    EXPECT_EQ(right.data(), dynamic_span.data() + 3u);
+    EXPECT_EQ(right.size(), 0u);
+  }
+  // Invalid fixed-size split from dynamic will fail at runtime.
+  EXPECT_CHECK_DEATH({ dynamic_span.split_at<4u>(); });
 }
 
 }  // namespace base

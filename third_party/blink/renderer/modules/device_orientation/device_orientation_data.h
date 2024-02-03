@@ -26,7 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_ORIENTATION_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_ORIENTATION_DATA_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -38,16 +39,16 @@ class MODULES_EXPORT DeviceOrientationData final
     : public GarbageCollected<DeviceOrientationData> {
  public:
   static DeviceOrientationData* Create();
-  static DeviceOrientationData* Create(const absl::optional<double>& alpha,
-                                       const absl::optional<double>& beta,
-                                       const absl::optional<double>& gamma,
+  static DeviceOrientationData* Create(const std::optional<double>& alpha,
+                                       const std::optional<double>& beta,
+                                       const std::optional<double>& gamma,
                                        bool absolute);
   static DeviceOrientationData* Create(const DeviceOrientationEventInit*);
 
   DeviceOrientationData();
-  DeviceOrientationData(const absl::optional<double>& alpha,
-                        const absl::optional<double>& beta,
-                        const absl::optional<double>& gamma,
+  DeviceOrientationData(const std::optional<double>& alpha,
+                        const std::optional<double>& beta,
+                        const std::optional<double>& gamma,
                         bool absolute);
 
   void Trace(Visitor* visitor) const {}
@@ -63,9 +64,9 @@ class MODULES_EXPORT DeviceOrientationData final
   bool CanProvideEventData() const;
 
  private:
-  absl::optional<double> alpha_;
-  absl::optional<double> beta_;
-  absl::optional<double> gamma_;
+  std::optional<double> alpha_;
+  std::optional<double> beta_;
+  std::optional<double> gamma_;
   bool absolute_;
 };
 

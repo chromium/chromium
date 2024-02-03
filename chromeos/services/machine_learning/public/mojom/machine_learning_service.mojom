@@ -23,6 +23,7 @@ module chromeos.machine_learning.mojom;
 import "chromeos/services/machine_learning/public/mojom/document_scanner.mojom";
 import "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom";
 import "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom";
+import "chromeos/services/machine_learning/public/mojom/heatmap_palm_rejection.mojom";
 import "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom";
 import "chromeos/services/machine_learning/public/mojom/model.mojom";
 import "chromeos/services/machine_learning/public/mojom/soda.mojom";
@@ -44,7 +45,7 @@ enum LoadModelResult {
 
 // Top-level interface between Chromium browser process and the ML Service
 // daemon.
-// Next ordinal: 13
+// Next ordinal: 14
 [Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
@@ -108,7 +109,10 @@ interface MachineLearningService {
   [MinVersion=7] LoadImageAnnotator@12(ImageAnnotatorConfig config,
       pending_receiver<ImageContentAnnotator> receiver)
       => (LoadModelResult result);
-
+  [MinVersion=13] LoadHeatmapPalmRejection@13(
+      HeatmapPalmRejectionConfig config,
+      pending_remote<HeatmapPalmRejectionClient> client)
+      => (LoadHeatmapPalmRejectionResult result);
 
   // Deprecated `LoadHandwritingModelWithSpec`
   REMOVED_4@4(

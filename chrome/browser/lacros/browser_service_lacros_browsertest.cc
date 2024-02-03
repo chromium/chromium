@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <optional>
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -141,9 +142,10 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(new_window_future.Get(), expected_result);
   }
 
-  void NewTabSync(CreationResult expected_result) {
+  void NewTabSync(std::optional<uint64_t> profile_id,
+                  CreationResult expected_result) {
     base::test::TestFuture<CreationResult> new_tab_future;
-    browser_service()->NewTab(new_tab_future.GetCallback());
+    browser_service()->NewTab(profile_id, new_tab_future.GetCallback());
     ASSERT_TRUE(new_tab_future.Wait())
         << "NewTab did not trigger the callback.";
     EXPECT_EQ(new_tab_future.Get(), expected_result);
@@ -392,7 +394,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 
   // `NewTab()` should create a new window if the system has only one
   // profile.
-  NewTabSync(CreationResult::kSuccess);
+  NewTabSync(/*profile_id=*/std::nullopt,
+             /*expected_result=*/CreationResult::kSuccess);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_FALSE(ProfilePicker::IsOpen());
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -403,7 +406,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   EXPECT_EQ(1, tab_strip->count());
 
   // Consequent `NewTab()` should add a new tab to an existing browser.
-  NewTabSync(CreationResult::kSuccess);
+  NewTabSync(/*profile_id=*/std::nullopt,
+             /*expected_result=*/CreationResult::kSuccess);
   EXPECT_EQ(2, tab_strip->count());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
@@ -429,7 +433,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   EXPECT_EQ(1, tab_strip->count());
 
   // `NewTab()` should add a tab to the main profile window;
-  NewTabSync(CreationResult::kSuccess);
+  NewTabSync(/*profile_id=*/std::nullopt,
+             /*expected_result=*/CreationResult::kSuccess);
   EXPECT_EQ(2, tab_strip->count());
 
   chrome::CloseAllBrowsers();
@@ -439,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // `NewTab()` should open the profile picker.
-  NewTabSync(CreationResult::kBrowserWindowUnavailable);
+  NewTabSync(/*profile_id=*/std::nullopt,
+             /*expected_result=*/CreationResult::kBrowserWindowUnavailable);
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
@@ -709,8 +715,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   base::test::TestFuture<CreationResult> new_tab_future;
-  browser_service()->NewTab(
-      /*callback=*/new_tab_future.GetCallback());
+  browser_service()->NewTab(/*profile_id=*/std::nullopt,
+                            /*callback=*/new_tab_future.GetCallback());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::ABORT_SYNC);
 
   ASSERT_TRUE(new_tab_future.Wait()) << "NewTab did not trigger the callback.";

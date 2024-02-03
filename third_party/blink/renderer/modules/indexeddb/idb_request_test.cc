@@ -516,7 +516,7 @@ class AsyncTraceStateForTesting : public IDBRequest::AsyncTraceState {
     return *this;
   }
 
-  absl::optional<IDBRequest::TypeForMetrics> type() const {
+  std::optional<IDBRequest::TypeForMetrics> type() const {
     return IDBRequest::AsyncTraceState::type();
   }
   const base::TimeTicks& start_time() const {

@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_RTP_RECEIVER_PLATFORM_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -48,7 +48,7 @@ class PLATFORM_EXPORT RTCRtpReceiverPlatform {
   virtual void GetStats(RTCStatsReportCallback) = 0;
   virtual std::unique_ptr<webrtc::RtpParameters> GetParameters() const = 0;
   virtual void SetJitterBufferMinimumDelay(
-      absl::optional<double> delay_seconds) = 0;
+      std::optional<double> delay_seconds) = 0;
   virtual RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer()
       const {
     return nullptr;

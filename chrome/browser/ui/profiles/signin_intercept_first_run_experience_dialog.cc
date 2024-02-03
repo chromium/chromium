@@ -311,7 +311,8 @@ void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
 
   TurnSyncOnHelper::SigninAbortedMode abort_mode =
-      base::FeatureList::IsEnabled(switches::kUnoDesktop)
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)
           ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY
           : TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT;
 

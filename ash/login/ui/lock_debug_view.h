@@ -40,7 +40,7 @@ class LockDebugView : public views::View {
   ~LockDebugView() override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnThemeChanged() override;
 
   LockContentsView* lock() { return lock_; }

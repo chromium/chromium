@@ -16,26 +16,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
+#include "components/services/screen_ai/public/cpp/utilities.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
 
 namespace {
-
-enum class Params {
-  kOCREnabled = 0,
-  kMainContentExtractionEnabled = 1,
-  kLibraryAvailable = 2,  // This must be the last one as the library is not
-                          // available in all trybots.
-};
-
-// Library is now only available on Linux.
-// TODO(crbug.com/1443346): Expand when more platforms are covered.
-#if BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER)
-#define MAX_PARAM_VALUE 8
-#else
-#define MAX_PARAM_VALUE 4
-#endif
 
 class ResultsWaiter {
  public:
@@ -81,20 +67,21 @@ class ResultsWaiter {
 
 namespace screen_ai {
 
-class ScreenAIServiceRouterTest : public InProcessBrowserTest,
-                                  public ::testing::WithParamInterface<int> {
+class ScreenAIServiceRouterTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   ScreenAIServiceRouterTest() {
     std::vector<base::test::FeatureRef> enabled;
     std::vector<base::test::FeatureRef> disabled;
 
-    if (IsEnabled(Params::kOCREnabled)) {
+    if (IsOCREnabled()) {
       enabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
     } else {
       disabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
     }
 
-    if (IsEnabled(Params::kMainContentExtractionEnabled)) {
+    if (IsMainContentExtractionEnabled()) {
       enabled.push_back(
           ax::mojom::features::kScreenAIMainContentExtractionEnabled);
     } else {
@@ -102,26 +89,26 @@ class ScreenAIServiceRouterTest : public InProcessBrowserTest,
           ax::mojom::features::kScreenAIMainContentExtractionEnabled);
     }
 
-    if (IsEnabled(Params::kLibraryAvailable)) {
+    if (IsLibraryAvailable()) {
       enabled.push_back(::features::kScreenAITestMode);
     }
 
     feature_list_.InitWithFeatures(enabled, disabled);
-    VLOG(0) << "Test Setup:\n\tOCR: " << IsEnabled(Params::kOCREnabled)
-            << "\n\tMainContentExtraction: "
-            << IsEnabled(Params::kMainContentExtractionEnabled)
-            << "\n\tLibrary: " << IsEnabled(Params::kLibraryAvailable);
   }
 
   ~ScreenAIServiceRouterTest() override = default;
 
-  bool IsEnabled(Params param) {
-    return (GetParam() & (1 << static_cast<int>(param))) != 0;
+  bool IsLibraryAvailable() {
+    return screen_ai::PlatformSupportsBrowserTests() ? std::get<0>(GetParam())
+                                                     : false;
   }
+
+  bool IsOCREnabled() { return std::get<1>(GetParam()); }
+  bool IsMainContentExtractionEnabled() { return std::get<2>(GetParam()); }
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
-    if (IsEnabled(Params::kLibraryAvailable)) {
+    if (IsLibraryAvailable()) {
       ScreenAIInstallState::GetInstance()->SetComponentFolderForTesting();
     }
   }
@@ -131,24 +118,28 @@ class ScreenAIServiceRouterTest : public InProcessBrowserTest,
     router()->GetServiceStateAsync(
         service, base::BindOnce(&ResultsWaiter::OnResultsCallback,
                                 waiter_.GetWeakPtr()));
-    if (!IsEnabled(Params::kLibraryAvailable)) {
-      ScreenAIInstallState::GetInstance()->SetState(
-          ScreenAIInstallState::State::kDownloadFailed);
-    }
+    TriggerDownloadFailIfNeeded();
     waiter_.WaitForResult();
   }
 
+  void TriggerDownloadFailIfNeeded() {
+    if (!IsLibraryAvailable()) {
+      ScreenAIInstallState::GetInstance()->SetState(
+          ScreenAIInstallState::State::kDownloadFailed);
+    }
+  }
+
   bool ExpectedInitializationResult(ScreenAIServiceRouter::Service service) {
-    if (!IsEnabled(Params::kLibraryAvailable)) {
+    if (!IsLibraryAvailable()) {
       return false;
     }
 
     switch (service) {
       case ScreenAIServiceRouter::Service::kOCR:
-        return IsEnabled(Params::kOCREnabled);
+        return IsOCREnabled();
 
       case ScreenAIServiceRouter::Service::kMainContentExtraction:
-        return IsEnabled(Params::kMainContentExtractionEnabled);
+        return IsMainContentExtractionEnabled();
     }
   }
 
@@ -203,9 +194,70 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest, MixedInitialization) {
   EXPECT_EQ(waiter_.GetResult(), ExpectedInitializationResult(service));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenAIServiceRouterTest,
-                         ::testing::Range(0, MAX_PARAM_VALUE));
+// Tests if asking for initialization of a second service before getting the
+// result of the first one passes.
+IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
+                       MixedInitializationWithoutWait) {
+  ScreenAIServiceRouter::Service service1 =
+      ScreenAIServiceRouter::Service::kOCR;
+  ScreenAIServiceRouter::Service service2 =
+      ScreenAIServiceRouter::Service::kMainContentExtraction;
+
+  ResultsWaiter waiter1;
+  ResultsWaiter waiter2;
+
+  router()->GetServiceStateAsync(
+      service1,
+      base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter1.GetWeakPtr()));
+  router()->GetServiceStateAsync(
+      service2,
+      base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter2.GetWeakPtr()));
+
+  TriggerDownloadFailIfNeeded();
+
+  waiter1.WaitForResult();
+  waiter2.WaitForResult();
+
+  EXPECT_EQ(waiter1.GetResult(), ExpectedInitializationResult(service1));
+  EXPECT_EQ(waiter2.GetResult(), ExpectedInitializationResult(service2));
+}
+
+// Tests if repeated asking for initialization of a service before getting the
+// result of the first request passes.
+IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
+                       RepeatedInitializationWithoutWait) {
+  ScreenAIServiceRouter::Service service = ScreenAIServiceRouter::Service::kOCR;
+
+  ResultsWaiter waiter1;
+  ResultsWaiter waiter2;
+
+  router()->GetServiceStateAsync(
+      service,
+      base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter1.GetWeakPtr()));
+  router()->GetServiceStateAsync(
+      service,
+      base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter2.GetWeakPtr()));
+
+  TriggerDownloadFailIfNeeded();
+
+  waiter1.WaitForResult();
+  waiter2.WaitForResult();
+
+  EXPECT_EQ(waiter1.GetResult(), ExpectedInitializationResult(service));
+  EXPECT_EQ(waiter2.GetResult(), ExpectedInitializationResult(service));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ScreenAIServiceRouterTest,
+    ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
+      return base::StringPrintf(
+          "Library_%s_OCR_%s_MCE_%s",
+          std::get<0>(info.param) ? "Available" : "Unavailable",
+          std::get<1>(info.param) ? "Enabled" : "Disabled",
+          std::get<2>(info.param) ? "Enabled" : "Disabled");
+    });
 
 // TODO(crbug.com/1520424): Consider adding a test that sets the download state
 // to false, and then sets the test download path only when download request

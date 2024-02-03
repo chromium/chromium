@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 
 #include "build/build_config.h"
-#include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink-forward.h"
@@ -48,7 +48,7 @@ class LocalFrameMojoHandler
       public mojom::blink::LocalMainFrame,
       public mojom::blink::HighPriorityLocalFrame,
       public mojom::blink::FullscreenVideoElementHandler,
-      public device::mojom::blink::DevicePostureClient {
+      public mojom::blink::DevicePostureClient {
  public:
   explicit LocalFrameMojoHandler(blink::LocalFrame& frame);
   void Trace(Visitor* visitor) const;
@@ -68,7 +68,7 @@ class LocalFrameMojoHandler
   }
 
   mojom::blink::ReportingServiceProxy* ReportingService();
-  device::mojom::blink::DevicePostureProvider* DevicePostureProvider();
+  mojom::blink::DevicePostureProvider* DevicePostureProvider();
   mojom::blink::BackForwardCacheControllerHost&
   BackForwardCacheControllerHostRemote();
 
@@ -78,9 +78,9 @@ class LocalFrameMojoHandler
   void RebindTextInputHostForTesting();
 #endif
 
-  device::mojom::blink::DevicePostureType GetDevicePosture();
+  mojom::blink::DevicePostureType GetDevicePosture();
   void OverrideDevicePostureForEmulation(
-      device::mojom::blink::DevicePostureType device_posture_param);
+      mojom::blink::DevicePostureType device_posture_param);
   void DisableDevicePostureOverrideForEmulation();
 
  private:
@@ -131,7 +131,7 @@ class LocalFrameMojoHandler
                            RequestVideoFrameAtCallback callback) final;
   void AdvanceFocusInFrame(
       mojom::blink::FocusType focus_type,
-      const absl::optional<RemoteFrameToken>& source_frame_token) final;
+      const std::optional<RemoteFrameToken>& source_frame_token) final;
   void AdvanceFocusForIME(mojom::blink::FocusType focus_type) final;
   void ReportContentSecurityPolicyViolation(
       network::mojom::blink::CSPViolationPtr csp_violation) final;
@@ -142,7 +142,7 @@ class LocalFrameMojoHandler
   // until the next navigation.
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) final;
   void PostMessageEvent(
-      const absl::optional<RemoteFrameToken>& source_frame_token,
+      const std::optional<RemoteFrameToken>& source_frame_token,
       const String& source_origin,
       const String& target_origin,
       BlinkTransferableMessage message) final;
@@ -176,7 +176,7 @@ class LocalFrameMojoHandler
   void BindReportingObserver(
       mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) final;
   void UpdateOpener(
-      const absl::optional<blink::FrameToken>& opener_routing_id) final;
+      const std::optional<blink::FrameToken>& opener_routing_id) final;
   void GetSavableResourceLinks(GetSavableResourceLinksCallback callback) final;
   void MixedContentFound(
       const KURL& main_resource_url,
@@ -264,7 +264,7 @@ class LocalFrameMojoHandler
   void RequestFullscreenVideoElement() final;
 
   // DevicePostureClient implementation:
-  void OnPostureChanged(device::mojom::blink::DevicePostureType posture) final;
+  void OnPostureChanged(mojom::blink::DevicePostureType posture) final;
 
   Member<blink::LocalFrame> frame_;
 
@@ -279,14 +279,13 @@ class LocalFrameMojoHandler
       nullptr};
 
   // Device posture fields should only be used, e.g. non-null, on local roots.
-  HeapMojoRemote<device::mojom::blink::DevicePostureProvider>
+  HeapMojoRemote<mojom::blink::DevicePostureProvider>
       device_posture_provider_service_{nullptr};
   // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
-  HeapMojoReceiver<device::mojom::blink::DevicePostureClient,
-                   LocalFrameMojoHandler>
+  HeapMojoReceiver<mojom::blink::DevicePostureClient, LocalFrameMojoHandler>
       device_posture_receiver_{this, nullptr};
-  device::mojom::blink::DevicePostureType current_device_posture_ =
-      device::mojom::blink::DevicePostureType::kContinuous;
+  mojom::blink::DevicePostureType current_device_posture_ =
+      mojom::blink::DevicePostureType::kContinuous;
 
   HeapMojoAssociatedRemote<mojom::blink::LocalFrameHost>
       local_frame_host_remote_{nullptr};

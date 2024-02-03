@@ -506,7 +506,7 @@ TEST_F(SBNavigationObserverTest,
   GURL url_0("http://foo/0");
   std::unique_ptr<NavigationEvent> nav_event =
       CreateNavigationEventUniquePtr(url_0, base::Time::Now());
-  nav_event->source_url = GURL::EmptyGURL();
+  nav_event->source_url = GURL();
   nav_event->navigation_initiation =
       ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
   navigation_event_list()->RecordNavigationEvent(std::move(nav_event));
@@ -527,7 +527,7 @@ TEST_F(SBNavigationObserverTest,
   GURL url_0("http://foo/0");
   std::unique_ptr<NavigationEvent> nav_event =
       CreateNavigationEventUniquePtr(url_0, base::Time::Now());
-  nav_event->source_url = GURL::EmptyGURL();
+  nav_event->source_url = GURL();
   // How the notification navigation is initiated is the sole difference with
   // desktop.
   nav_event->navigation_initiation = ReferrerChainEntry::BROWSER_INITIATED;

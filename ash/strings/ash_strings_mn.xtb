@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Холбоосыг шинэ табд нээж, одоогийн табд үлдэх</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> төхөөрөмжид холбогдсон</translation>
 <translation id="3533126039236445965">Тавиур дээрх аппууд</translation>
+<translation id="3537350467437346467">Та үзсэн</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-н сүлжээний цэг</translation>
 <translation id="3540893133818942399">Утасныхаа саяхны зургууд болон медиаг харахыг тохируулахыг үл хэрэгсэх</translation>
 <translation id="3542066395059568317">Та зөвлөмжүүд харах бөгөөд ингэснээр орхисон газраасаа үргэлжлүүлэх боломжтой. Та зөвлөмжүүдийг хасахын тулд баруун талыг товшиж болно.</translation>
+<translation id="3547318469722231257">Та өөрчилсөн</translation>
 <translation id="3552189655002856821">Wi-Fi унтраалттай байна</translation>
 <translation id="3554215588514239132">Хөгжүүлэгчийн хэрэгслийн түр зуурын самбарыг харуулах эсвэл нуух</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />-г бэхэллээ</translation>
@@ -702,6 +704,7 @@
 <translation id="385300504083504382">Эхлэл</translation>
 <translation id="3859364108019690">Аппуудыг дамжуулах боломжгүй</translation>
 <translation id="3861651314799684201">Бүтэн дэлгэцийг бичихийн тулд enter дээр дарна уу</translation>
+<translation id="3882323608730650973">Өөрчилсөн</translation>
 <translation id="3886872229787704059">Өнөөдөр нээсэн</translation>
 <translation id="3891340733213178823">Гарахын тулд Ctrl+Shift+Q дээр хоёр удаа дарна уу.</translation>
 <translation id="3893630138897523026">ChromeVox (ярьдаг санал хүсэлт)</translation>
@@ -895,6 +898,7 @@
 <translation id="4582666543382004902">Wi-Fi-г ашиглахын тулд сүлжээний цэгийг унтраасан. Сүлжээний цэгийг ашиглахын тулд Wi-Fi-г унтраана уу.</translation>
 <translation id="4585337515783392668">Үл мэдэгдэх хүлээн авагч руу дамжуулахаа зогсоох</translation>
 <translation id="4596144739579517758">Бараан загвар унтраалттай байна</translation>
+<translation id="4596442969149038771"><ph name="USER" /> хуваалцсан</translation>
 <translation id="4611292653554630842">Нэвтрэх</translation>
 <translation id="462160925400706389"><ph name="NAME" /> холбогдсон</translation>
 <translation id="4623167406982293031">Бүртгэлийг бататгах</translation>
@@ -1338,6 +1342,7 @@
 <translation id="6298183524022479114">Энэ төхөөрөмжийг аппад өөрчлөх</translation>
 <translation id="6309219492973062892">Тавиурын 1-8-р дүрс тэмдгийг дарах эсвэл товших</translation>
 <translation id="6315170314923504164">Дуу хоолой</translation>
+<translation id="6319058840130157106">Баруун доод булан, Эхлүүлэгч, хаяг оруулах хэсэг, хавчуургын хэсэг, нээлттэй вебсайт болон татаж авсан файл хооронд арагш шилжих</translation>
 <translation id="6324916366299863871">Товчлолыг засах</translation>
 <translation id="6330012934079202188">Бүх дэлгэцээс цонхнуудыг харуулж байна. Одоогийн дэлгэцээс цонхнуудыг харуулахын тулд Дээш сум товчийг дарна уу</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> нь <ph name="MANAGER" />-н удирддаг хяналттай харилцан үйлдэл юм</translation>
@@ -1501,6 +1506,7 @@
 <translation id="6981291220124935078">Хандалтыг асаах</translation>
 <translation id="6981982820502123353">Хандалт</translation>
 <translation id="698231206551913481">Энэ хэрэглэгчийг устгасан тохиолдолд холбоотой бүх файл болон дотоод өгөгдөл нь бүрмөсөн устах болно.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц)-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц) болгож өөрчилсөн. Өөрчлөлтүүдийг хэвээр үлдээхийн тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="6989752354829085073">Chromebook-ийнхээ эргэн тойронд хэрхэн очихыг мэдэж авахын тулд шуурхай аялал хийнэ үү. Босоод, 6 алхмаар ажиллуулаарай.</translation>
 <translation id="7004910047186208204">Мобайл датад холбогдох</translation>
 <translation id="7005239792648594238">Эхлүүлэхийн тулд аппыг нээнэ үү</translation>
@@ -1815,6 +1821,7 @@
 <translation id="8314772463905284467">Caps Lock асаалттай байна</translation>
 <translation id="8315514906653279104">Асааж байна...</translation>
 <translation id="8331351032546853669">Таталт хүлээгдэж байна</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> цонх сонгосон</translation>
 <translation id="8349826889576450703">эхлүүлэгч</translation>
@@ -1922,6 +1929,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, Суулгасан апп, Блоклосон</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-д холбогдох</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Баруун доод булан, Эхлүүлэгч, хаяг оруулах хэсэг, хавчуургын хэсэг, нээлттэй вебсайт болон татаж авсан файл хооронд урагш шилжих</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Хавтас <ph name="FOLDER_NAME" /></translation>
@@ -2035,6 +2043,7 @@
 <translation id="953431725143473984">Төхөөрөмжийг унтраах уу?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" />-д хангалттай зай байхгүй байна. Зай гаргана уу.</translation>
 <translation id="954520015070501466">30 мин</translation>
+<translation id="954786879461589145"><ph name="USER" /> өөрчилсөн</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-н <ph name="RESULT_COUNT" /> илэрцийг үзүүлж байна</translation>
 <translation id="981011780479609956">Ямар ч эцсийн хугацаа байхгүй</translation>
 <translation id="98120814841227350">Документын төгсгөл хэсэгт очих</translation>

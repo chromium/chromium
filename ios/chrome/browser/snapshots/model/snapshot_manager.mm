@@ -6,7 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_generator.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -16,7 +16,7 @@
   SnapshotID _snapshotID;
 }
 
-- (instancetype)initWithGenerator:(SnapshotGenerator*)generator
+- (instancetype)initWithGenerator:(LegacySnapshotGenerator*)generator
                        snapshotID:(SnapshotID)snapshotID {
   if ((self = [super init])) {
     DCHECK(snapshotID.valid());
@@ -39,7 +39,7 @@
   DCHECK(callback);
 
   __weak SnapshotManager* weakSelf = self;
-  __weak SnapshotGenerator* weakGenerator = _snapshotGenerator;
+  __weak LegacySnapshotGenerator* weakGenerator = _snapshotGenerator;
   void (^wrappedCallback)(UIImage*) = ^(UIImage* image) {
     if (!image) {
       image = [weakGenerator generateUIViewSnapshotWithOverlays];

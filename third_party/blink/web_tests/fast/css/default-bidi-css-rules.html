@@ -20,7 +20,7 @@ function styleOf(name, attributes) {
 }
 
 var tests = [
-    ['div', {}, 'ltr', '-webkit-isolate'],
+    ['div', {}, 'ltr', 'isolate'],
     ['div', {'dir': 'ltr'}, 'ltr', 'isolate'],
     ['div', {'dir': 'rtl'}, 'rtl', 'isolate'],
     ['div', {'dir': 'auto'}, 'ltr', 'isolate'],
@@ -56,7 +56,7 @@ var tests = [
     ['textarea', {'dir': 'auto'}, 'ltr', 'plaintext'],
     ['textarea', {'dir': ''}, 'ltr', 'isolate'],
 
-    ['pre', {}, 'ltr', 'normal'],
+    ['pre', {}, 'ltr', 'isolate'],
     ['pre', {'dir': 'ltr'}, 'ltr', 'isolate'],
     ['pre', {'dir': 'rtl'}, 'rtl', 'isolate'],
     ['pre', {'dir': 'auto'}, 'ltr', 'plaintext'],

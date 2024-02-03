@@ -85,7 +85,7 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
 
  protected:
   void PushFrame(
-      const absl::optional<base::TimeDelta>& timestamp = absl::nullopt) {
+      const std::optional<base::TimeDelta>& timestamp = std::nullopt) {
     const scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
     if (timestamp)

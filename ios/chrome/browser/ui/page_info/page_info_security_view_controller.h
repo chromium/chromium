@@ -10,9 +10,15 @@
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 
+@protocol PageInfoCommands;
+
 // View Controller for displaying the security subpage of page info.
 @interface PageInfoSecurityViewController
     : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
+
+// Handler for actions related to the entire Page Info UI such as showing or
+// dismissing the entire UI.
+@property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
 
 // Designated initializer.
 - (instancetype)initWithSiteSecurityDescription:

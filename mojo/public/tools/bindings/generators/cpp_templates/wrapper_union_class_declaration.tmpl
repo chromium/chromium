@@ -23,7 +23,7 @@ class {{export_attribute}} {{union.name}} {
   static {{union.name}}Ptr
   New{{field.name|under_to_camel}}(
       {{field.kind|cpp_wrapper_param_type_new}} value) {
-    auto result = {{union.name}}Ptr(absl::in_place);
+    auto result = {{union.name}}Ptr(std::in_place);
     result->set_{{field.name}}(std::move(value));
     return result;
   }

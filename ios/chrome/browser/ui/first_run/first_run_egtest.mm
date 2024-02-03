@@ -171,12 +171,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                                 unified_consent::prefs::
                                     kUrlKeyedAnonymizedDataCollectionEnabled)];
 
-  // Clear the "choice was made" timestamp pref.
-  [ChromeEarlGreyAppInterface
-      clearUserPrefWithName:
-          base::SysUTF8ToNSString(
-              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)];
-
   [super tearDown];
 }
 
@@ -426,11 +420,11 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 @end
 
 // Test first run stages without search engine choice
-@interface FirstRunTestCaseWithoutSearchEngineChoice : FirstRunTestCase
+@interface FirstRunWithoutSearchEngineChoiceTestCase : FirstRunTestCase
 
 @end
 
-@implementation FirstRunTestCaseWithoutSearchEngineChoice
+@implementation FirstRunWithoutSearchEngineChoiceTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -1469,22 +1463,32 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 @end
 
 // Tests first run stages with search engine choice
-@interface FirstRunTestCaseWithSearchEngineChoice : FirstRunTestCase
+@interface FirstRunWithSearchEngineChoiceTestCase : FirstRunTestCase
 
 @end
 
-@implementation FirstRunTestCaseWithSearchEngineChoice
+@implementation FirstRunWithSearchEngineChoiceTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   // Set the country to one that is eligible for the choice screen (in this
   // case, France).
-  config.additional_args.push_back("--search-engine-choice-country=FR");
-  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   config.additional_args.push_back(
-      std::string("-") + base::SysNSStringToUTF8(kSearchEngineForceEnabled));
+      "--" + std::string(switches::kSearchEngineChoiceCountry) + "=FR");
+  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
+  config.additional_args.push_back("--" +
+                                   std::string(kSearchEngineForceEnabled));
   config.additional_args.push_back("true");
   return config;
+}
+
+- (void)tearDown {
+  // Clear the "choice was made" timestamp pref.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:
+          base::SysUTF8ToNSString(
+              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)];
+  [super tearDown];
 }
 
 #pragma mark - Tests
@@ -1492,7 +1496,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenSelectThenScroll {
+// TODO(crbug.com/1523586): Re-enable the test.
+- (void)DISABLED_testSearchEngineChoiceScreenSelectThenScroll {
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
@@ -1539,7 +1544,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // Tests that the Search Engine Choice screen is displayed, that the
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenScrollThenSelect {
+// TODO(crbug.com/1523586): Re-enable the test.
+- (void)DISABLED_testSearchEngineChoiceScreenScrollThenSelect {
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()

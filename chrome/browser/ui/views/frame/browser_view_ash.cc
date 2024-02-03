@@ -16,8 +16,8 @@
 BrowserViewAsh::BrowserViewAsh(std::unique_ptr<Browser> browser)
     : BrowserView(std::move(browser)) {}
 
-void BrowserViewAsh::Layout() {
-  BrowserView::Layout();
+void BrowserViewAsh::Layout(PassKey) {
+  LayoutSuperclass<BrowserView>(this);
 
   // In ChromeOS ash we round the bottom two corners of the browser frame by
   // rounding the respective corners of visible client contents i.e main web

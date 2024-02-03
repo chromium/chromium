@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_MATHML_MATHML_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MATHML_MATHML_ELEMENT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
@@ -51,7 +52,7 @@ class CORE_EXPORT MathMLElement : public Element {
       AllowPercentages allow_percentages = AllowPercentages::kYes,
       CSSPrimitiveValue::ValueRange value_range =
           CSSPrimitiveValue::ValueRange::kAll);
-  absl::optional<Length> AddMathLengthToComputedStyle(
+  std::optional<Length> AddMathLengthToComputedStyle(
       const CSSToLengthConversionData&,
       const QualifiedName&,
       AllowPercentages allow_percentages = AllowPercentages::kYes,
@@ -61,7 +62,7 @@ class CORE_EXPORT MathMLElement : public Element {
   void ParseAttribute(const AttributeModificationParams&) override;
 
   // https://w3c.github.io/mathml-core/#dfn-boolean
-  absl::optional<bool> BooleanAttribute(const QualifiedName& name) const;
+  std::optional<bool> BooleanAttribute(const QualifiedName& name) const;
 };
 
 template <typename T>

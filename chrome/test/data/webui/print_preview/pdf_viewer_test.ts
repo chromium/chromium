@@ -7,7 +7,7 @@
 
 import 'chrome://print/pdf/pdf_print_wrapper.js';
 
-import {PdfViewerPrintElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
+import type {PdfViewerPrintElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
 import {pdfCreateOutOfProcessPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

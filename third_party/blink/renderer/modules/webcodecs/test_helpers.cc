@@ -18,7 +18,7 @@ std::string BufferToString(const media::DecoderBuffer& buffer) {
 
 std::unique_ptr<media::DecryptConfig> CreateTestDecryptConfig(
     media::EncryptionScheme scheme,
-    absl::optional<media::EncryptionPattern> pattern) {
+    std::optional<media::EncryptionPattern> pattern) {
   constexpr const char kKeyId[] = "123";
   using std::string_literals::operator""s;
   const std::string kIV = "\x00\x02\x02\x04\x06 abc1234567"s;

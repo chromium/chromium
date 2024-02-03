@@ -26,6 +26,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -87,6 +88,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_utils.h"
@@ -863,8 +865,8 @@ class PrerenderTargetAgnosticBrowserTest
     test::PrerenderHostObserver prerender_observer(prerender_web_contents, url);
     if (GetTargetHint() == "_blank") {
       TestNavigationObserver observer(&prerender_web_contents);
-      std::string script = R"(window.open($1, "_blank", "noopener");)";
-      EXPECT_TRUE(ExecJs(web_contents(), JsReplace(script, url.spec())));
+      test::PrerenderTestHelper::OpenNewWindowWithoutOpener(*web_contents(),
+                                                            url);
       observer.WaitForNavigationFinished();
     } else {
       test::PrerenderTestHelper::NavigatePrimaryPage(*web_contents(), url);
@@ -11725,7 +11727,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Enable accessibility.
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  ScopedAccessibilityModeOverride inner_scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   // Start prerendering `kPrerenderingUrl`, which has an iframe attached.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -11902,12 +11905,8 @@ class PrerenderSessionHistoryBrowserTest
 
   void WaitForHttpCacheQueryCompletion(WebContentsImpl* web_contents) {
     PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-    while (registry->HasOngoingHttpCacheQueryForTesting()) {
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-      run_loop.Run();
-    }
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return !registry->HasOngoingHttpCacheQueryForTesting(); }));
   }
 
   void ClearBackForwardCache(WebContentsImpl* web_contents) {

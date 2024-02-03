@@ -2071,7 +2071,7 @@ bool EditorCommand::Execute(const String& parameter,
   // We need to force unlock activatable DisplayLocks for Editor::FindString
   // before the following call to UpdateStyleAndLayout. Otherwise,
   // ExecuteFindString/Editor::FindString will hit bad style/layout data.
-  absl::optional<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
+  std::optional<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
       forced_locks;
   if (command_->command_type == EditingCommandType::kFindString) {
     forced_locks = GetFrame()

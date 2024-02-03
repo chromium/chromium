@@ -91,7 +91,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
 
   // This `Finish()` variant connects the resulting factory to the given
   // `PendingReceiver`.
-  template <typename... Args>
+  // `OutType` is only for consistency with other `Finish()` variants for
+  // `content/browser/loader/url_loader_factory_utils.cc` callers.
+  template <typename OutType = void, typename... Args>
   void Finish(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
               Args... terminal_args) && {
     if (IsEmpty()) {
@@ -136,13 +138,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
     return remote;
   }
 
-  // `ContextType` is an object with a method:
-  // void ContextType::CreateURLLoaderFactory(
-  //   mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
-  //   mojom::URLLoaderFactoryParamsPtr factory_param);
-  // e.g. `mojom::NetworkContext`.
-  template <typename OutType, typename ContextType>
-  static OutType WrapAs(ContextType* context,
+  template <typename OutType>
+  static OutType WrapAs(mojom::NetworkContext* context,
                         mojom::URLLoaderFactoryParamsPtr factory_param) {
     mojo::PendingRemote<mojom::URLLoaderFactory> remote;
     context->CreateURLLoaderFactory(remote.InitWithNewPipeAndPassReceiver(),
@@ -162,20 +159,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
   static void ConnectTerminal(
       mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
       scoped_refptr<SharedURLLoaderFactory> terminal_factory);
-
-  // `ContextType` is an object with a method:
-  // void ContextType::CreateURLLoaderFactory(
-  //   mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
-  //   mojom::URLLoaderFactoryParamsPtr factory_param);
-  // e.g. `mojom::NetworkContext`.
-  template <typename ContextType>
   static void ConnectTerminal(
       mojo::PendingReceiver<mojom::URLLoaderFactory> pending_receiver,
-      ContextType* terminal_context,
-      mojom::URLLoaderFactoryParamsPtr factory_param) {
-    terminal_context->CreateURLLoaderFactory(std::move(pending_receiver),
-                                             std::move(factory_param));
-  }
+      mojom::NetworkContext* terminal_context,
+      mojom::URLLoaderFactoryParamsPtr factory_param);
 
   // If `head_` and `tail_` are both valid, they hold the head/tail of the
   // chained interceptors, connected like:

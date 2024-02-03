@@ -44,7 +44,7 @@ void AppendDataToRequestBody(
 
 void AppendFileRangeToRequestBody(
     const scoped_refptr<network::ResourceRequestBody>& request_body,
-    const absl::optional<std::u16string>& file_path,
+    const std::optional<std::u16string>& file_path,
     int file_start,
     int file_length,
     base::Time file_modification_time) {
@@ -59,7 +59,7 @@ void AppendFileRangeToRequestBody(
 
 void AppendReferencedFilesFromHttpBody(
     const std::vector<network::DataElement>& elements,
-    std::vector<absl::optional<std::u16string>>* referenced_files) {
+    std::vector<std::optional<std::u16string>>* referenced_files) {
   for (size_t i = 0; i < elements.size(); ++i) {
     if (elements[i].type() == network::DataElement::Tag::kFile) {
       referenced_files->emplace_back(
@@ -69,8 +69,8 @@ void AppendReferencedFilesFromHttpBody(
 }
 
 bool AppendReferencedFilesFromDocumentState(
-    const std::vector<absl::optional<std::u16string>>& document_state,
-    std::vector<absl::optional<std::u16string>>* referenced_files) {
+    const std::vector<std::optional<std::u16string>>& document_state,
+    std::vector<std::optional<std::u16string>>* referenced_files) {
   if (document_state.empty())
     return true;
 
@@ -99,7 +99,7 @@ bool AppendReferencedFilesFromDocumentState(
       return false;
 
     index++;  // Skip over name.
-    const absl::optional<std::u16string>& type = document_state[index++];
+    const std::optional<std::u16string>& type = document_state[index++];
 
     if (index >= document_state.size())
       return false;
@@ -129,7 +129,7 @@ bool AppendReferencedFilesFromDocumentState(
 
 bool RecursivelyAppendReferencedFiles(
     const ExplodedFrameState& frame_state,
-    std::vector<absl::optional<std::u16string>>* referenced_files) {
+    std::vector<std::optional<std::u16string>>* referenced_files) {
   if (frame_state.http_body.request_body) {
     AppendReferencedFilesFromHttpBody(
         *frame_state.http_body.request_body->elements(), referenced_files);
@@ -307,7 +307,7 @@ void WriteString(const std::u16string& str, SerializeObject* obj) {
 
 // If str is a null optional, this simply pickles a length of -1. Otherwise,
 // delegates to the std::u16string overload.
-void WriteString(const absl::optional<std::u16string>& str,
+void WriteString(const std::optional<std::u16string>& str,
                  SerializeObject* obj) {
   if (!str) {
     obj->pickle.WriteInt(-1);
@@ -316,7 +316,7 @@ void WriteString(const absl::optional<std::u16string>& str,
   }
 }
 
-// This reads a serialized absl::optional<std::u16string> from obj. If a string
+// This reads a serialized std::optional<std::u16string> from obj. If a string
 // can't be read, nullptr is returned.
 const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   int length_in_bytes;
@@ -339,10 +339,10 @@ const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   return reinterpret_cast<const char16_t*>(data);
 }
 
-absl::optional<std::u16string> ReadString(SerializeObject* obj) {
+std::optional<std::u16string> ReadString(SerializeObject* obj) {
   int num_chars;
   const char16_t* chars = ReadStringNoCopy(obj, &num_chars);
-  absl::optional<std::u16string> result;
+  std::optional<std::u16string> result;
   if (chars)
     result.emplace(chars, num_chars);
   return result;
@@ -374,7 +374,7 @@ size_t ReadAndValidateVectorSize(SerializeObject* obj, size_t element_size) {
 }
 
 // Writes a Vector of strings into a SerializeObject for serialization.
-void WriteStringVector(const std::vector<absl::optional<std::u16string>>& data,
+void WriteStringVector(const std::vector<std::optional<std::u16string>>& data,
                        SerializeObject* obj) {
   WriteAndValidateVectorSize(data, obj);
   for (size_t i = 0; i < data.size(); ++i) {
@@ -383,9 +383,9 @@ void WriteStringVector(const std::vector<absl::optional<std::u16string>>& data,
 }
 
 void ReadStringVector(SerializeObject* obj,
-                      std::vector<absl::optional<std::u16string>>* result) {
+                      std::vector<std::optional<std::u16string>>* result) {
   size_t num_elements =
-      ReadAndValidateVectorSize(obj, sizeof(absl::optional<std::u16string>));
+      ReadAndValidateVectorSize(obj, sizeof(std::optional<std::u16string>));
 
   result->resize(num_elements);
   for (size_t i = 0; i < num_elements; ++i)
@@ -437,7 +437,7 @@ void ReadResourceRequestBody(
                                 length);
       }
     } else if (type == HTTPBodyElementType::kTypeFile) {
-      absl::optional<std::u16string> file_path = ReadString(obj);
+      std::optional<std::u16string> file_path = ReadString(obj);
       int64_t file_start = ReadInteger64(obj);
       int64_t file_length = ReadInteger64(obj);
       double file_modification_time = ReadReal(obj);

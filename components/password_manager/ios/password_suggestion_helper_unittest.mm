@@ -7,10 +7,12 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -82,6 +84,10 @@ class PasswordSuggestionHelperTest : public PlatformTest {
             ->GetSupportedContentWorld();
     web_state_.SetWebFramesManager(content_world, std::move(frames_manager));
 
+    autofill::AutofillDriverIOSFactory::CreateForWebState(
+        &web_state_, &autofill_client_, /*autofill_agent=*/nil,
+        /*locale=*/"en");
+
     delegate_ = OCMProtocolMock(@protocol(PasswordSuggestionHelperDelegate));
 
     helper_ = [[PasswordSuggestionHelper alloc] initWithWebState:&web_state_];
@@ -94,6 +100,7 @@ class PasswordSuggestionHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
+  autofill::TestAutofillClient autofill_client_;
   web::FakeWebState web_state_;
   id delegate_;
   PasswordSuggestionHelper* helper_;

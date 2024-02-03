@@ -634,6 +634,41 @@ HRESULT RunDeElevated(const std::wstring& path,
       base::win::ScopedVariant::kEmptyVariant);
 }
 
+HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
+  if (!IsElevatedWithUACOn()) {
+    auto process = base::LaunchProcess(cmd_line, {});
+    return process.IsValid() ? S_OK : HRESULTFromLastError();
+  }
+
+  std::wstring command_format = cmd_line;
+  int num_args = 0;
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+      ::CommandLineToArgvW(&command_format[0], &num_args));
+  if (!argv || num_args < 1) {
+    LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
+    return E_INVALIDARG;
+  }
+
+  return RunDeElevated(
+      argv.get()[0],
+      base::JoinString(
+          [&]() -> std::vector<std::wstring> {
+            if (num_args <= 1) {
+              return {};
+            }
+
+            std::vector<std::wstring> parameters;
+            base::ranges::for_each(
+                argv.get() + 1, argv.get() + num_args,
+                [&](const auto& parameter) {
+                  parameters.push_back(
+                      base::CommandLine::QuoteForCommandLineToArgvW(parameter));
+                });
+            return parameters;
+          }(),
+          L" "));
+}
+
 std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
   base::FilePath goopdate_base_dir;
   if (!base::PathService::Get(IsSystemInstall(scope)

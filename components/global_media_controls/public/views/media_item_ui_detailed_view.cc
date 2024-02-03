@@ -79,8 +79,8 @@ class MediaLabelButton : public views::Button {
     // Hide the label button if the label text is empty.
     SetEnabled(false);
 
-    label_ = AddChildView(
-        std::make_unique<views::Label>(base::EmptyString16(), font));
+    label_ =
+        AddChildView(std::make_unique<views::Label>(std::u16string(), font));
     label_->SetLineHeight(text_line_height);
     label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label_->SetEnabledColorId(text_color_id);
@@ -625,7 +625,8 @@ void MediaItemUIDetailedView::StartCastingButtonPressed() {
       break;
     }
     case MediaDisplayPage::kQuickSettingsMediaDetailedView:
-    case MediaDisplayPage::kSystemShelfMediaDetailedView: {
+    case MediaDisplayPage::kSystemShelfMediaDetailedView:
+    case MediaDisplayPage::kMediaDialogView: {
       // Clicking the button on the media detailed view will toggle the device
       // list in the device selector view.
       if (device_selector_view_->IsDeviceSelectorExpanded()) {

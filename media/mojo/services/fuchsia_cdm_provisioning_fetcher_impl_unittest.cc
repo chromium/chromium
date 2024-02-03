@@ -78,7 +78,7 @@ TEST_F(FuchsiaCdmProvisioningFetcherImplTest, Fetch) {
 
   fetcher.Bind(base::MakeExpectedNotRunClosure(FROM_HERE));
 
-  absl::optional<std::string> response_message;
+  std::optional<std::string> response_message;
   fetcher.Fetch(CreateProvisioningRequest(kTestDefaultUrl, kTestRequest),
                 [&](drm::ProvisioningResponse response) {
                   response_message =
@@ -102,7 +102,7 @@ TEST_F(FuchsiaCdmProvisioningFetcherImplTest, RetrieveFails) {
 
   fetcher.Bind(base::MakeExpectedNotRunClosure(FROM_HERE));
 
-  absl::optional<std::string> response_message;
+  std::optional<std::string> response_message;
   fetcher.Fetch(CreateProvisioningRequest(kTestDefaultUrl, kTestRequest),
                 [&](drm::ProvisioningResponse response) {
                   response_message =

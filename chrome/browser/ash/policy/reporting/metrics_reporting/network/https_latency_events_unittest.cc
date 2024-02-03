@@ -144,7 +144,7 @@ class HttpsLatencyEventsTest : public ::testing::Test {
     profile_builder.SetProfileName(account_id.GetUserEmail());
     profile_ = profile_builder.Build();
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, affiliated, user_manager::USER_TYPE_REGULAR,
+        account_id, affiliated, user_manager::UserType::kRegular,
         profile_.get());
     user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
   }

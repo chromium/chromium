@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isRTL} from 'chrome://resources/ash/common/util.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
 import type {VolumeManager} from '../background/js/volume_manager.js';
 import {maybeShowTooltip} from '../common/js/dom_utils.js';

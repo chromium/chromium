@@ -14,7 +14,6 @@
 
 #include <fcntl.h>
 #include <linux/videodev2.h>
-#include <sys/eventfd.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
@@ -179,11 +178,11 @@ VideoCodec V4L2PixFmtToVideoCodec(uint32_t pix_fmt) {
   return VideoCodec::kUnknown;
 }
 
-absl::optional<BufferFormat> V4L2FormatToBufferFormat(
+std::optional<BufferFormat> V4L2FormatToBufferFormat(
     const struct v4l2_format& format) {
   const auto fourcc = Fourcc::FromV4L2PixFmt(format.fmt.pix_mp.pixelformat);
   if (!fourcc) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const gfx::Size resolution =
@@ -322,20 +321,20 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
 }
 
 // VIDIOC_G_FMT
-absl::optional<BufferFormat> Device::GetOutputFormat() {
+std::optional<BufferFormat> Device::GetOutputFormat() {
   DVLOGF(4);
   struct v4l2_format format;
   memset(&format, 0, sizeof(format));
   format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
   if (IoctlDevice(VIDIOC_G_FMT, &format) != kIoctlOk) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return V4L2FormatToBufferFormat(format);
 }
 
-absl::optional<BufferFormat> Device::TrySetOutputFormat(
+std::optional<BufferFormat> Device::TrySetOutputFormat(
     int request,
     const BufferFormat& format) {
   DVLOGF(4);
@@ -344,24 +343,24 @@ absl::optional<BufferFormat> Device::TrySetOutputFormat(
   BufferFormatToV4L2Format(v_format, format);
 
   if (IoctlDevice(request, &v_format) != kIoctlOk) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (format.fourcc.ToV4L2PixFmt() != v_format.fmt.pix_mp.pixelformat) {
     DVLOGF(1) << "Format tried is not the format returned.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return V4L2FormatToBufferFormat(v_format);
 }
 
-absl::optional<BufferFormat> Device::TryOutputFormat(
+std::optional<BufferFormat> Device::TryOutputFormat(
     const BufferFormat& format) {
   DVLOGF(4);
   return TrySetOutputFormat(VIDIOC_TRY_FMT, format);
 }
 
-absl::optional<BufferFormat> Device::SetOutputFormat(
+std::optional<BufferFormat> Device::SetOutputFormat(
     const BufferFormat& format) {
   DVLOGF(4);
   return TrySetOutputFormat(VIDIOC_S_FMT, format);
@@ -442,9 +441,9 @@ std::vector<base::ScopedFD> Device::ExportAsDMABUF(const Buffer& buffer) {
 }
 
 // VIDIOC_REQBUFS
-absl::optional<uint32_t> Device::RequestBuffers(BufferType type,
-                                                MemoryType memory,
-                                                uint32_t count) {
+std::optional<uint32_t> Device::RequestBuffers(BufferType type,
+                                               MemoryType memory,
+                                               uint32_t count) {
   DVLOGF(4);
   struct v4l2_requestbuffers reqbufs;
   memset(&reqbufs, 0, sizeof(reqbufs));
@@ -457,17 +456,17 @@ absl::optional<uint32_t> Device::RequestBuffers(BufferType type,
   if (ret) {
     DVLOGF(1) << "Failed to allocate " << count
               << " input buffers with VIDIOC_REQBUFS: " << ret;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return reqbufs.count;
 }
 
 // VIDIOC_QUERYBUF
-absl::optional<Buffer> Device::QueryBuffer(BufferType buffer_type,
-                                           MemoryType memory_type,
-                                           uint32_t index,
-                                           uint32_t num_planes) {
+std::optional<Buffer> Device::QueryBuffer(BufferType buffer_type,
+                                          MemoryType memory_type,
+                                          uint32_t index,
+                                          uint32_t num_planes) {
   struct v4l2_buffer v4l2_buffer;
   struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
   memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
@@ -482,7 +481,7 @@ absl::optional<Buffer> Device::QueryBuffer(BufferType buffer_type,
   const int ret = IoctlDevice(VIDIOC_QUERYBUF, &v4l2_buffer);
   if (ret) {
     DVLOGF(1) << "VIDIOC_QUERYBUF failed: ";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return V4L2BufferToBuffer(v4l2_buffer);
@@ -513,9 +512,9 @@ bool Device::QueueBuffer(const Buffer& buffer,
 }
 
 // VIDIOC_DQBUF
-absl::optional<Buffer> Device::DequeueBuffer(BufferType buffer_type,
-                                             MemoryType memory_type,
-                                             uint32_t num_planes) {
+std::optional<Buffer> Device::DequeueBuffer(BufferType buffer_type,
+                                            MemoryType memory_type,
+                                            uint32_t num_planes) {
   DVLOGF(4) << BufferTypeString(buffer_type);
   struct v4l2_buffer v4l2_buffer;
   struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
@@ -528,7 +527,7 @@ absl::optional<Buffer> Device::DequeueBuffer(BufferType buffer_type,
   v4l2_buffer.memory = MemoryTypeToV4L2(memory_type);
 
   if (IoctlDevice(VIDIOC_DQBUF, &v4l2_buffer) != kIoctlOk) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return V4L2BufferToBuffer(v4l2_buffer);
@@ -656,13 +655,6 @@ void Device::MunmapBuffer(Buffer& buffer) {
       buffer.SetMappedAddress(plane, nullptr);
     }
   }
-}
-
-struct pollfd Device::GetPollEvent() {
-  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
-  // Poll events that are relevant are those around the CAPTURE queue. These
-  // events will occur when there is data to dequeue.
-  return {.fd = device_fd_.get(), .events = POLLIN | POLLRDNORM};
 }
 
 Device::~Device() {}

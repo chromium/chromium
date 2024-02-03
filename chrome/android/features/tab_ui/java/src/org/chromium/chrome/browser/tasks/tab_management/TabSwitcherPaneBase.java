@@ -48,6 +48,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
+import java.util.function.DoubleConsumer;
 
 /**
  * An abstract {@link Pane} representing a tab switcher for shared logic between the normal and
@@ -98,6 +99,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     private final FrameLayout mRootView;
     private final TabSwitcherPaneCoordinatorFactory mFactory;
     private final boolean mIsIncognito;
+    private final DoubleConsumer mOnToolbarAlphaChange;
 
     private boolean mNativeInitialized;
     private @Nullable PaneHubController mPaneHubController;
@@ -106,17 +108,20 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
      * @param context The activity context.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param isIncognito Whether the pane is incognito.
+     * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      */
     TabSwitcherPaneBase(
             @NonNull Context context,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
-            boolean isIncognito) {
+            boolean isIncognito,
+            @NonNull DoubleConsumer onToolbarAlphaChange) {
         mFactory = factory;
         mIsIncognito = isIncognito;
 
         mRootView = new FrameLayout(context);
         mIsVisibleSupplier.set(false);
         mIsAnimatingSupplier.set(false);
+        mOnToolbarAlphaChange = onToolbarAlphaChange;
     }
 
     @Override
@@ -192,7 +197,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         int tabId = getCurrentTabId();
         if (getTabListMode() == TabListMode.LIST || tabId == Tab.INVALID_TAB_ID) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
-                    hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
+                    hubContainerView, HubLayoutConstants.FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
 
         @ColorInt int backgroundColor = getAnimationBackgroundColor();
@@ -202,7 +207,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                 hubContainerView,
                 animationDataSupplier,
                 backgroundColor,
-                SHRINK_EXPAND_DURATION_MS);
+                SHRINK_EXPAND_DURATION_MS,
+                mOnToolbarAlphaChange);
     }
 
     @Override
@@ -212,7 +218,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         int tabId = getCurrentTabId();
         if (getTabListMode() == TabListMode.LIST || tabId == Tab.INVALID_TAB_ID) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
-                    hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
+                    hubContainerView, HubLayoutConstants.FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
 
         @ColorInt int backgroundColor = getAnimationBackgroundColor();
@@ -222,7 +228,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                 hubContainerView,
                 animationDataSupplier,
                 backgroundColor,
-                SHRINK_EXPAND_DURATION_MS);
+                SHRINK_EXPAND_DURATION_MS,
+                mOnToolbarAlphaChange);
     }
 
     private @ColorInt int getAnimationBackgroundColor() {
@@ -346,14 +353,14 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     /** Show the Quick Delete animation on the tab list . */
-    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) {
             onAnimationEnd.run();
             return;
         }
-        coordinator.showQuickDeleteAnimation(onAnimationEnd);
+        coordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
 
     /**

@@ -10,7 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ContentSuggestionsGestureCommands;
+@protocol MostVisitedTilesCommands;
 @protocol ContentSuggestionsMenuProvider;
 @class FaviconAttributes;
 class GURL;
@@ -19,7 +19,7 @@ class GURL;
 @interface ContentSuggestionsMostVisitedItem : NSObject
 
 // Text for the title and the accessibility label of the cell.
-@property(nonatomic, copy, nonnull) NSString* title;
+@property(nonatomic, copy) NSString* title;
 
 // URL of the Most Visited.
 @property(nonatomic, assign) GURL URL;
@@ -28,10 +28,9 @@ class GURL;
 // Source of the Most Visited tile.
 @property(nonatomic, assign) ntp_tiles::TileSource source;
 // Attributes for favicon.
-@property(nonatomic, strong, nullable) FaviconAttributes* attributes;
-// Command handler for the accessibility custom actions.
-@property(nonatomic, weak, nullable) id<ContentSuggestionsGestureCommands>
-    commandHandler;
+@property(nonatomic, strong) FaviconAttributes* attributes;
+// Command handler for actions.
+@property(nonatomic, weak) id<MostVisitedTilesCommands> commandHandler;
 // Whether the incognito action should be available.
 @property(nonatomic, assign) BOOL incognitoAvailable;
 // Index position of this item.

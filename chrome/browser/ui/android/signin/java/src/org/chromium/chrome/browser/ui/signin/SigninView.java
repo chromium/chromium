@@ -59,21 +59,6 @@ class SigninView extends LinearLayout {
         mDetailsDescription = findViewById(R.id.signin_details_description);
         mMoreButton = findViewById(R.id.more_button);
 
-        mRefuseButton = DualControlLayout.createButtonForLayout(getContext(), false, "", null);
-        mRefuseButton.setLayoutParams(
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        mAcceptButton = DualControlLayout.createButtonForLayout(getContext(), true, "", null);
-        mAcceptButton.setLayoutParams(
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        mButtonBar = findViewById(R.id.dual_control_button_bar);
-        mButtonBar.addView(mAcceptButton);
-        mButtonBar.addView(mRefuseButton);
-        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
-
         ImageView headerImage = findViewById(R.id.signin_header_image);
         mAnimationLooper = new AnimationLooper(headerImage.getDrawable());
     }
@@ -140,6 +125,25 @@ class SigninView extends LinearLayout {
 
     void stopAnimations() {
         mAnimationLooper.stop();
+    }
+
+    void createButtons(boolean equallyWeighted) {
+        mRefuseButton = DualControlLayout.createButtonForLayout(getContext(), false, "", null);
+        mRefuseButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mAcceptButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(), /* isPrimary= */ equallyWeighted, "", null);
+        mAcceptButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mButtonBar = findViewById(R.id.dual_control_button_bar);
+        mButtonBar.addView(mAcceptButton);
+        mButtonBar.addView(mRefuseButton);
+        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
     }
 
     static Drawable getExpandArrowDrawable(Context context) {

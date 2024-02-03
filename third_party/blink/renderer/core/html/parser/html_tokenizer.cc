@@ -1873,7 +1873,7 @@ void HTMLTokenizer::UpdateStateFor(html_names::HTMLTag tag) {
     SetState(*state);
 }
 
-absl::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
+std::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
     html_names::HTMLTag tag) const {
   switch (tag) {
     case html_names::HTMLTag::kTextarea:
@@ -1892,9 +1892,9 @@ absl::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
     case html_names::HTMLTag::kNoscript:
       if (options_.scripting_flag)
         return HTMLTokenizer::kRAWTEXTState;
-      return absl::nullopt;
+      return std::nullopt;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

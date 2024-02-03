@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 
+#include <optional>
+
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -46,10 +47,12 @@ bool ShouldReportForEventTiming(WindowPerformance* performance) {
 
 EventTiming::EventTiming(base::TimeTicks processing_start,
                          WindowPerformance* performance,
-                         const Event& event)
+                         const Event& event,
+                         EventTarget* original_event_target)
     : processing_start_(processing_start),
       performance_(performance),
-      event_(&event) {
+      event_(&event),
+      original_event_target_(original_event_target) {
   performance_->SetCurrentEventTimingEvent(&event);
 }
 
@@ -93,8 +96,10 @@ bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
 }
 
 // static
-std::unique_ptr<EventTiming> EventTiming::Create(LocalDOMWindow* window,
-                                                 const Event& event) {
+std::unique_ptr<EventTiming> EventTiming::Create(
+    LocalDOMWindow* window,
+    const Event& event,
+    EventTarget* original_event_target) {
   auto* performance = DOMWindowPerformance::performance(*window);
   if (!performance || !event.isTrusted() ||
       (!IsEventTypeForEventTiming(event) &&
@@ -118,7 +123,7 @@ std::unique_ptr<EventTiming> EventTiming::Create(LocalDOMWindow* window,
   HandleInputDelay(window, event, processing_start);
   return should_report_for_event_timing
              ? std::make_unique<EventTiming>(processing_start, performance,
-                                             event)
+                                             event, original_event_target)
              : nullptr;
 }
 
@@ -133,8 +138,15 @@ EventTiming::~EventTiming() {
   base::TimeTicks event_timestamp =
       pointer_event ? pointer_event->OldestPlatformTimeStamp()
                     : event_->PlatformTimeStamp();
-  performance_->RegisterEventTiming(*event_, event_timestamp, processing_start_,
-                                    Now());
+
+  // `event->target()` is assigned as part of EventDispatch, and will be unset
+  // whenever we skip dispatch. (See: crbug.com/1367329).
+  // In those cases, we may still have an `original_event_target` which was the
+  // result of the original HitTest.  Use that as fallback only.
+  EventTarget* event_target =
+      event_->target() ? event_->target() : original_event_target_.Get();
+  performance_->RegisterEventTiming(*event_, event_target, event_timestamp,
+                                    processing_start_, Now());
 }
 
 }  // namespace blink

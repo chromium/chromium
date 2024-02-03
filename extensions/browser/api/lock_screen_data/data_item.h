@@ -49,7 +49,7 @@ class DataItem {
       content::BrowserContext* context,
       ValueStoreCache* value_store_cache,
       base::SequencedTaskRunner* task_runner,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       RegisteredValuesCallback callback);
 
   // Clears data item value store for the extension with the provided extension
@@ -57,7 +57,7 @@ class DataItem {
   static void DeleteAllItemsForExtension(content::BrowserContext* context,
                                          ValueStoreCache* value_store_cache,
                                          base::SequencedTaskRunner* task_runner,
-                                         const std::string& extension_id,
+                                         const ExtensionId& extension_id,
                                          base::OnceClosure callback);
 
   // |id| - Data item ID.
@@ -75,7 +75,7 @@ class DataItem {
   // |crypto_key| - Symmetric AES key for encrypting/decrypting data item
   //     content.
   DataItem(const std::string& id,
-           const std::string& extension_id,
+           const ExtensionId& extension_id,
            content::BrowserContext* context,
            ValueStoreCache* value_store_cache,
            base::SequencedTaskRunner* task_runner,

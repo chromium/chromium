@@ -35,10 +35,6 @@ class CssSelectorFragmentAnchorTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
 
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        blink::features::kCssSelectorFragmentAnchor);
-
     // Focus handlers aren't run unless the page is focused.
     GetDocument().GetPage()->GetFocusController().SetActive(true);
     GetDocument().GetPage()->GetFocusController().SetFocused(true);

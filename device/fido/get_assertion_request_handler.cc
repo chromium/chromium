@@ -737,13 +737,16 @@ void GetAssertionRequestHandler::HandleResponse(
       std::move(completion_callback_)
           .Run(GetAssertionStatus::kAuthenticatorResponseInvalid, absl::nullopt,
                authenticator);
-    } else if (authenticator->GetType() == AuthenticatorType::kPhone) {
+    } else if (authenticator->GetType() == AuthenticatorType::kPhone ||
+               authenticator->GetType() == AuthenticatorType::kEnclave) {
       FIDO_LOG(ERROR) << "Status " << static_cast<int>(status) << " from "
                       << authenticator->GetDisplayName()
                       << " is fatal to the request";
       std::move(completion_callback_)
-          .Run(GetAssertionStatus::kHybridTransportError, absl::nullopt,
-               authenticator);
+          .Run(authenticator->GetType() == AuthenticatorType::kPhone
+                   ? GetAssertionStatus::kHybridTransportError
+                   : GetAssertionStatus::kEnclaveError,
+               absl::nullopt, authenticator);
     } else {
       FIDO_LOG(ERROR) << "Ignoring status " << static_cast<int>(status)
                       << " from " << authenticator->GetDisplayName();

@@ -161,7 +161,8 @@ void ToolbarActionView::UpdateState() {
     SetTooltipText(view_controller_->GetTooltip(web_contents));
   }
 
-  Layout();  // We need to layout since we may have added an icon as a result.
+  DeprecatedLayoutImmediately();  // We need to layout since we may have added
+                                  // an icon as a result.
   SchedulePaint();
 }
 

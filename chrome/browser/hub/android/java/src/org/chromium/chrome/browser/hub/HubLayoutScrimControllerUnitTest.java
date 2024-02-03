@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -49,45 +50,37 @@ public class HubLayoutScrimControllerUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private Activity mActivity;
-    private FrameLayout mRootView;
-    private View mAnchorView;
-
     @Mock private ScrimCoordinator.SystemUiScrimDelegate mScrimDelegate;
-    private ScrimCoordinator mScrimCoordinator;
-
-    private HubLayoutScrimController mScrimController;
-    private boolean mIsIncognito;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelArgumentCaptor;
 
+    private Activity mActivity;
+    private View mAnchorView;
+    private ScrimCoordinator mScrimCoordinator;
+    private ObservableSupplierImpl<Boolean> mIsIncognitoSupplier;
+    private HubLayoutScrimController mScrimController;
+
     @Before
     public void setUp() {
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        (activity) -> {
-                            mActivity = activity;
-                            mRootView = new FrameLayout(mActivity);
-                            mActivity.setContentView(mRootView);
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
 
-                            mAnchorView = new View(mActivity);
-                            mRootView.addView(mAnchorView);
+    private void onActivity(Activity activity) {
+        mActivity = activity;
+        FrameLayout rootView = new FrameLayout(mActivity);
+        mActivity.setContentView(rootView);
 
-                            mScrimCoordinator =
-                                    spy(
-                                            new ScrimCoordinator(
-                                                    mActivity,
-                                                    mScrimDelegate,
-                                                    mRootView,
-                                                    Color.RED));
+        mAnchorView = new View(mActivity);
+        rootView.addView(mAnchorView);
 
-                            mScrimController =
-                                    new HubLayoutScrimController(
-                                            mScrimCoordinator,
-                                            () -> mAnchorView,
-                                            () -> mIsIncognito);
-                        });
+        mScrimCoordinator =
+                spy(new ScrimCoordinator(mActivity, mScrimDelegate, rootView, Color.RED));
+
+        mIsIncognitoSupplier = new ObservableSupplierImpl<>(false);
+
+        mScrimController =
+                new HubLayoutScrimController(
+                        mScrimCoordinator, () -> mAnchorView, mIsIncognitoSupplier);
     }
 
     @After
@@ -105,7 +98,7 @@ public class HubLayoutScrimControllerUnitTest {
         // this.
         assertTrue(mScrimCoordinator.isShowingScrim());
         verify(mScrimCoordinator).showScrim(mPropertyModelArgumentCaptor.capture());
-        assertPropertyModel(mPropertyModelArgumentCaptor.getValue(), mIsIncognito);
+        assertPropertyModel(mIsIncognitoSupplier.get());
 
         // Finish the animation.
         ShadowLooper.runUiThreadTasks();
@@ -115,31 +108,39 @@ public class HubLayoutScrimControllerUnitTest {
         ShadowLooper.runUiThreadTasks();
 
         assertFalse(mScrimCoordinator.isShowingScrim());
+
+        mIsIncognitoSupplier.set(true);
+        assertPropertyModel(false);
     }
 
     @Test
     @SmallTest
     public void testShowForceAnimationToFinish() {
-        mIsIncognito = true;
+        mIsIncognitoSupplier.set(true);
         assertFalse(mScrimCoordinator.isShowingScrim());
 
         mScrimController.startShowingScrim();
         assertTrue(mScrimCoordinator.isShowingScrim());
         verify(mScrimCoordinator).showScrim(mPropertyModelArgumentCaptor.capture());
-        assertPropertyModel(mPropertyModelArgumentCaptor.getValue(), mIsIncognito);
+        assertPropertyModel(mIsIncognitoSupplier.get());
 
         // Force the animation to finish.
         mScrimController.forceAnimationToFinish();
         verify(mScrimCoordinator).forceAnimationToFinish();
 
         assertTrue(mScrimCoordinator.isShowingScrim());
+
+        mIsIncognitoSupplier.set(false);
+        assertPropertyModel(mIsIncognitoSupplier.get());
     }
 
-    private void assertPropertyModel(PropertyModel model, boolean isIncognito) {
+    private void assertPropertyModel(boolean isIncognito) {
+        PropertyModel model = mPropertyModelArgumentCaptor.getValue();
         assertEquals(mAnchorView, model.get(ScrimProperties.ANCHOR_VIEW));
         assertFalse(model.get(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW));
         assertTrue(model.get(ScrimProperties.AFFECTS_STATUS_BAR));
-        @ColorInt int scrimColor = ChromeColors.getPrimaryBackgroundColor(mActivity, isIncognito);
+        final @ColorInt int scrimColor =
+                ChromeColors.getPrimaryBackgroundColor(mActivity, isIncognito);
         assertEquals(scrimColor, model.get(ScrimProperties.BACKGROUND_COLOR));
     }
 }

@@ -92,7 +92,7 @@ class ExecutionContextClipboardEventState
 
   struct State {
     const AtomicString* event_type = nullptr;
-    absl::optional<EditorCommandSource> source;
+    std::optional<EditorCommandSource> source;
   };
 
   base::AutoReset<State> SetState(const AtomicString& event_type,
@@ -462,7 +462,7 @@ ClipboardCommands::GetFragmentFromClipboard(LocalFrame& frame) {
     KURL url;
     const String markup =
         frame.GetSystemClipboard()->ReadHTML(url, fragment_start, fragment_end);
-    fragment = CreateSanitizedFragmentFromMarkupWithContext(
+    fragment = CreateStrictlyProcessedFragmentFromMarkupWithContext(
         *frame.GetDocument(), markup, fragment_start, fragment_end, url);
   }
   if (fragment)
@@ -640,7 +640,7 @@ class CORE_EXPORT PasteImageResourceObserver final
     unsigned fragment_start = 0;
     unsigned fragment_end = 0;
 
-    return CreateSanitizedFragmentFromMarkupWithContext(
+    return CreateStrictlyProcessedFragmentFromMarkupWithContext(
         *(frame_->GetDocument()), BuildMarkup(), fragment_start, fragment_end,
         String());
   }

@@ -6,7 +6,7 @@
  * @fileoverview 'app-language-selection-item' is part of app language picker
  * dialog to display language option in a single row.
  */
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../../settings_shared.css.js';
 
 import {Locale} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';

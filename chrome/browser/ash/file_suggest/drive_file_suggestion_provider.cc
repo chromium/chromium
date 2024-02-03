@@ -218,6 +218,7 @@ void DriveFileSuggestionProvider::OnDriveFilePathsLocated(
         FileSuggestionType::kDriveFile,
         ReparentToDriveMount(path_or_error->get_path(), drive_service_), reason,
         /*timestamp=*/std::nullopt,
+        /*secondary_timestamp=*/std::nullopt,
         /*score=*/std::nullopt);
   }
 

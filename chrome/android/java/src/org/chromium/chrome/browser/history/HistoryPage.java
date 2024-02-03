@@ -60,7 +60,9 @@ public class HistoryPage extends BasicNativePage {
                         tabSupplier,
                         showHistoryClustersImmediately,
                         historyClustersQuery,
-                        new BrowsingHistoryBridge(profile.getOriginalProfile()));
+                        new BrowsingHistoryBridge(profile.getOriginalProfile()),
+                        null,
+                        true);
         mTitle = host.getContext().getResources().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());

@@ -94,6 +94,11 @@ void OnInstallBasePackComplete(
   std::move(mojo_callback).Run(std::move(info));
 }
 
+void OnUninstallComplete(LanguagePacksImpl::UninstallPackCallback mojo_callback,
+                         const PackResult& result) {
+  std::move(mojo_callback).Run();
+}
+
 }  // namespace
 
 LanguagePacksImpl::LanguagePacksImpl() = default;
@@ -167,8 +172,9 @@ void LanguagePacksImpl::UninstallPack(FeatureId feature_id,
 
   // We ignore the request if the input parameters are incorrect.
   if (pack_id.has_value()) {
-    LanguagePackManager::RemovePack(pack_id.value(), language,
-                                    base::DoNothing());
+    LanguagePackManager::RemovePack(
+        pack_id.value(), language,
+        base::BindOnce(&OnUninstallComplete, std::move(mojo_callback)));
   }
 }
 

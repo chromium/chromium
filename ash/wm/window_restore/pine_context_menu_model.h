@@ -18,19 +18,11 @@ class ASH_EXPORT PineContextMenuModel : public ui::SimpleMenuModel,
   PineContextMenuModel();
   PineContextMenuModel(const PineContextMenuModel&) = delete;
   PineContextMenuModel& operator=(const PineContextMenuModel&) = delete;
-
   ~PineContextMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
-
- private:
-  // TODO(hewer): Link to histograms.
-  enum class CommandId { kAskEveryTime, kAlways, kOff };
-
-  // TODO(hewer): Remove temporary radio selection.
-  CommandId current_radio_ = CommandId::kAskEveryTime;
 };
 
 }  // namespace ash

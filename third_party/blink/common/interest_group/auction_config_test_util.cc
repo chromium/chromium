@@ -26,6 +26,7 @@ AuctionConfig CreateFullAuctionConfig() {
   AuctionConfig auction_config = CreateBasicAuctionConfig();
 
   auction_config.trusted_scoring_signals_url = GURL("https://seller.test/bar");
+  auction_config.max_trusted_scoring_signals_url_length = 2560;
   auction_config.seller_experiment_group_id = 1;
   auction_config.all_buyer_experiment_group_id = 2;
 
@@ -42,7 +43,7 @@ AuctionConfig CreateFullAuctionConfig() {
       AuctionConfig::MaybePromiseJson::FromValue("[5]");
   non_shared_params.seller_timeout = base::Seconds(6);
 
-  absl::optional<base::flat_map<url::Origin, std::string>> per_buyer_signals;
+  std::optional<base::flat_map<url::Origin, std::string>> per_buyer_signals;
   per_buyer_signals.emplace();
   (*per_buyer_signals)[buyer] = "[7]";
   non_shared_params.per_buyer_signals =
@@ -90,6 +91,11 @@ AuctionConfig CreateFullAuctionConfig() {
       {AuctionConfig::NonSharedParams::BuyerReportType::
            kTotalSignalsFetchLatency,
        {absl::MakeUint128(0, 1), 2.0}}};
+  non_shared_params.auction_report_buyer_debug_mode_config.emplace();
+  non_shared_params.auction_report_buyer_debug_mode_config->is_enabled = true;
+  non_shared_params.auction_report_buyer_debug_mode_config->debug_key =
+      0x8000000000000000u;
+
   non_shared_params.requested_size = AdSize(
       100, AdSize::LengthUnit::kPixels, 70, AdSize::LengthUnit::kScreenHeight);
   non_shared_params.all_slots_requested_sizes = {

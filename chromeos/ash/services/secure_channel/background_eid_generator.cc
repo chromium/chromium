@@ -119,9 +119,7 @@ std::string BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
         ss << "BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement: "
            << (success ? "Identified " : "Failed to identify ")
            << "the following remote device from advertisement service data 0x"
-           << base::HexEncode(service_data_without_flags.data(),
-                              service_data_without_flags.size())
-           << ": "
+           << base::HexEncode(service_data_without_flags) << ": "
            << "\n  device_name: " << remote_device.name()
            << "\n  device_id: " << remote_device.GetDeviceId()
            << "\n  beacon seeds: ";

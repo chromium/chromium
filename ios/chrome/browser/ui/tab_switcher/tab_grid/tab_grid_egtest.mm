@@ -598,7 +598,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that the Undo button is no longer available after tapping Close All,
 // then creating a new tab, then coming back to the tab grid.
 // Validates this case when Tab Grid Bulk Actions feature is enabled.
-- (void)testUndoCloseAllNotAvailableAfterNewTabCreation {
+// TODO(crbug.com/1521789): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testUndoCloseAllNotAvailableAfterNewTabCreation \
+  DISABLED_testUndoCloseAllNotAvailableAfterNewTabCreation
+#else
+#define MAYBE_testUndoCloseAllNotAvailableAfterNewTabCreation \
+  testUndoCloseAllNotAvailableAfterNewTabCreation
+#endif
+- (void)MAYBE_testUndoCloseAllNotAvailableAfterNewTabCreation {
   [ChromeEarlGreyUI openTabGrid];
 
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]

@@ -504,7 +504,7 @@ gfx::Size BubbleFrameView::GetMaximumSize() const {
 #endif
 }
 
-void BubbleFrameView::Layout() {
+void BubbleFrameView::Layout(PassKey) {
   // The title margins may not be set, but make sure that's only the case when
   // there's no title.
   DCHECK(!title_margins_.IsEmpty() ||
@@ -571,9 +571,9 @@ void BubbleFrameView::Layout() {
   }
 
   // TODO(tapted): Layout() should skip more surrounding code when !HasTitle().
-  // Currently DCHECKs fail since title_insets is 0 when there is no title.
-  // Skip checking if bounds is empty, as async bounds setting during bubble
-  // creation may cause unreliable layout results.
+  // Currently DCHECKs fail since title_insets is 0 when there is no title. Skip
+  // checking if bounds is empty, as async bounds setting during bubble creation
+  // may cause unreliable layout results.
   if (DCHECK_IS_ON() && HasTitle() && !bounds.IsEmpty()) {
     const gfx::Insets title_insets =
         GetTitleLabelInsetsFromFrame() + GetInsets();
@@ -609,7 +609,7 @@ void BubbleFrameView::Layout() {
   }
 
   // Lay out the client view.
-  NonClientFrameView::Layout();
+  LayoutSuperclass<NonClientFrameView>(this);
 }
 
 void BubbleFrameView::OnThemeChanged() {
@@ -948,8 +948,8 @@ void BubbleFrameView::MirrorArrowIfOutOfBounds(
     gfx::Rect mirror_bounds =
         bubble_border_->GetBounds(anchor_rect, client_size);
     // Restore the original arrow if mirroring doesn't show more of the bubble.
-    // Otherwise it should invoke parent's Layout() to layout the content based
-    // on the new bubble border.
+    // Otherwise it should direct the parent to layout the content based on the
+    // new bubble border.
     if (GetOverflowLength(available_bounds, mirror_bounds, vertical) >=
         GetOverflowLength(available_bounds, window_bounds, vertical)) {
       bubble_border_->set_arrow(arrow);

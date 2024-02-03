@@ -162,6 +162,10 @@ UserPolicySigninService::GetDeviceDMTokenIfAffiliatedCallback() {
   return base::BindRepeating(&GetDeviceDMTokenIfAffiliated);
 }
 
+std::string UserPolicySigninService::GetProfileId() {
+  return ::policy::GetProfileId(profile_);
+}
+
 base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();

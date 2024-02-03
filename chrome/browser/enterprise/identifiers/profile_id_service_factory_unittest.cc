@@ -49,16 +49,6 @@ class ProfileIdServiceFactoryTest : public testing::Test {
  public:
   ProfileIdServiceFactoryTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    EXPECT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("test-user");
-  }
-
-  Profile* get_new_profile(const std::string& profile_name) {
-    return profile_manager_.CreateTestingProfile(profile_name);
-  }
-
- protected:
-  void SetUp() override {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||                \
     BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&         \
@@ -84,10 +74,18 @@ class ProfileIdServiceFactoryTest : public testing::Test {
         // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
         // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+    EXPECT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("test-user");
+
     service_ = ProfileIdServiceFactory::GetForProfile(profile_);
-    ASSERT_TRUE(service_);
+    EXPECT_TRUE(service_);
   }
 
+  Profile* CreateProfile(const std::string& profile_name) {
+    return profile_manager_.CreateTestingProfile(profile_name);
+  }
+
+ protected:
   std::string GetTestProfileId(const Profile* profile) {
     std::string encoded_string;
     std::string device_id = kFakeDeviceID;
@@ -142,7 +140,7 @@ TEST_F(ProfileIdServiceFactoryTest, GetProfileId_MultipleProfiles) {
   // The original profile is the profile set in BaseTest.
   auto profile_id_1 = service_->GetProfileId();
   EXPECT_EQ(GetTestProfileId(profile_), profile_id_1.value());
-  auto* profile_2 = get_new_profile("profile-2");
+  auto* profile_2 = CreateProfile("profile-2");
   SetProfileIdService(profile_2);
   auto profile_id_2 = service_->GetProfileId();
   EXPECT_EQ(GetTestProfileId(profile_2), profile_id_2.value());

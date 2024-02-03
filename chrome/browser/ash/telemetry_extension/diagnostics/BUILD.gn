@@ -12,11 +12,12 @@ source_set("diagnostics") {
     "diagnostics_service_ash.h",
     "diagnostics_service_converters.cc",
     "diagnostics_service_converters.h",
+    "mojo_utils.cc",
+    "mojo_utils.h",
   ]
 
   deps = [
     "//base",
-    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",

@@ -12,6 +12,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 MediaCoordinator::EligibleDevices::EligibleDevices() = default;
 MediaCoordinator::EligibleDevices::EligibleDevices(
@@ -24,13 +25,11 @@ MediaCoordinator::EligibleDevices::EligibleDevices(const EligibleDevices&) =
 
 MediaCoordinator::MediaCoordinator(ViewType view_type,
                                    views::View& parent_view,
-                                   std::optional<size_t> index,
                                    bool is_subsection,
                                    EligibleDevices eligible_devices,
                                    PrefService& prefs) {
   media_view_ =
-      parent_view.AddChildViewAt(std::make_unique<MediaView>(is_subsection),
-                                 index.value_or(parent_view.children().size()));
+      parent_view.AddChildView(std::make_unique<MediaView>(is_subsection));
 
   if (!is_subsection) {
     auto* provider = ChromeLayoutProvider::Get();

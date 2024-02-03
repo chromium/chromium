@@ -65,7 +65,7 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
     /** A method to show the Incognito re-auth dialog. */
     @Override
     public void show() {
-        prepareToshow(/* menuButtonDelegate= */ null, /* fullscreen= */ false);
+        prepareToShow(/* menuButtonDelegate= */ null, /* fullscreen= */ false);
         boolean success =
                 mTabSwitcherCustomViewManager.requestView(
                         getIncognitoReauthView(), mBackPressRunnable, /* clearTabList= */ true);

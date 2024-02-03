@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
@@ -13,6 +14,8 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -119,6 +122,24 @@ bool MaybeCreateFullRestoreServiceForLacros() {
   return FullRestoreService::GetForProfile(profile);
 }
 
+class DelegateImpl : public FullRestoreService::Delegate {
+ public:
+  DelegateImpl() = default;
+  DelegateImpl(const DelegateImpl&) = delete;
+  DelegateImpl& operator=(const DelegateImpl&) = delete;
+  ~DelegateImpl() override = default;
+
+  void MaybeStartPineOverviewSession() override {
+    // A unit test that does not override this default delegate may not have ash
+    // shell.
+    if (Shell::HasInstance()) {
+      Shell::Get()
+          ->window_restore_controller()
+          ->MaybeStartPineOverviewSession();
+    }
+  }
+};
+
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
   TRACE_EVENT0("ui", "FullRestoreService::GetForProfile");
@@ -138,8 +159,8 @@ FullRestoreService::FullRestoreService(Profile* profile)
       app_launch_handler_(std::make_unique<FullRestoreAppLaunchHandler>(
           profile_,
           /*should_init_service=*/true)),
-      restore_data_handler_(
-          std::make_unique<FullRestoreDataHandler>(profile_)) {
+      restore_data_handler_(std::make_unique<FullRestoreDataHandler>(profile_)),
+      delegate_(std::make_unique<DelegateImpl>()) {
   on_app_terminating_subscription_ =
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &FullRestoreService::OnAppTerminating, base::Unretained(this)));
@@ -149,7 +170,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
 
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       base::BindRepeating(&FullRestoreService::OnPreferenceChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
@@ -235,7 +256,7 @@ void FullRestoreService::Init(bool& show_notification) {
   }
 
   RestoreOption restore_pref = static_cast<RestoreOption>(
-      prefs->GetInteger(kRestoreAppsAndPagesPrefName));
+      prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
   switch (restore_pref) {
     case RestoreOption::kAlways:
@@ -457,6 +478,20 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   if (id == kRestoreForCrashNotificationId && exit_type_service)
     crashed_lock_ = exit_type_service->CreateCrashedLock();
 
+  if (Shell::HasInstance()) {
+    Shell::Get()
+        ->post_login_glanceables_metrics_reporter()
+        ->RecordPostLoginFullRestoreShown();
+  }
+
+  if (features::IsForestFeatureEnabled()) {
+    CHECK(delegate_);
+    delegate_->MaybeStartPineOverviewSession();
+    // Set to true as we might want to show the post reboot notification.
+    show_notification = true;
+    return;
+  }
+
   auto* accelerator_controller = AcceleratorController::Get();
   if (accelerator_controller) {
     DCHECK(!accelerator_controller_observer_.IsObserving());
@@ -517,12 +552,6 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
                                         *notification_,
                                         /*metadata=*/nullptr);
   show_notification = true;
-
-  if (Shell::HasInstance()) {
-    Shell::Get()
-        ->post_login_glanceables_metrics_reporter()
-        ->RecordPostLoginFullRestoreShown();
-  }
 }
 
 void FullRestoreService::RecordRestoreAction(const std::string& notification_id,
@@ -534,10 +563,10 @@ void FullRestoreService::RecordRestoreAction(const std::string& notification_id,
 }
 
 void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
-  DCHECK_EQ(pref_name, kRestoreAppsAndPagesPrefName);
+  DCHECK_EQ(pref_name, prefs::kRestoreAppsAndPagesPrefName);
 
   RestoreOption restore_option = static_cast<RestoreOption>(
-      profile_->GetPrefs()->GetInteger(kRestoreAppsAndPagesPrefName));
+      profile_->GetPrefs()->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   base::UmaHistogramEnumeration(kRestoreSettingHistogramName, restore_option);
 
   const user_manager::User* user =

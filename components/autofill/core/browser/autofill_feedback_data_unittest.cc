@@ -102,7 +102,7 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
 FormData CreateFeedbackTestFormData() {
   FormData form;
   form.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(false));
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");

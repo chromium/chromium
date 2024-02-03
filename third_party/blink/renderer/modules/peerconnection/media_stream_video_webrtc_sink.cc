@@ -29,8 +29,8 @@ namespace blink {
 
 namespace {
 
-absl::optional<bool> ToAbslOptionalBool(const absl::optional<bool>& value) {
-  return value ? absl::optional<bool>(*value) : absl::nullopt;
+std::optional<bool> ToAbslOptionalBool(const std::optional<bool>& value) {
+  return value ? std::optional<bool>(*value) : std::nullopt;
 }
 
 webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
@@ -209,7 +209,7 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
   MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::From(component);
   DCHECK(video_track);
 
-  absl::optional<bool> needs_denoising =
+  std::optional<bool> needs_denoising =
       ToAbslOptionalBool(video_track->noise_reduction());
 
   bool is_screencast = video_track->is_screencast();
@@ -283,8 +283,8 @@ void MediaStreamVideoWebRtcSink::OnContentHintChanged(
 }
 
 void MediaStreamVideoWebRtcSink::OnVideoConstraintsChanged(
-    absl::optional<double> min_fps,
-    absl::optional<double> max_fps) {
+    std::optional<double> min_fps,
+    std::optional<double> max_fps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << " min " << min_fps.value_or(-1) << " max "
            << max_fps.value_or(-1);
@@ -292,8 +292,8 @@ void MediaStreamVideoWebRtcSink::OnVideoConstraintsChanged(
       webrtc::VideoTrackSourceConstraints{min_fps, max_fps});
 }
 
-absl::optional<bool>
-MediaStreamVideoWebRtcSink::SourceNeedsDenoisingForTesting() const {
+std::optional<bool> MediaStreamVideoWebRtcSink::SourceNeedsDenoisingForTesting()
+    const {
   return video_source_->needs_denoising();
 }
 

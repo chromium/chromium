@@ -25,6 +25,7 @@
 <translation id="1617663976202781617">Chromium සමමුහූර්තය වෙතින් දත්ත</translation>
 <translation id="1647558790457890304">Chromium සැකසීම්</translation>
 <translation id="164952285225495380">මෙම පැකේජය දැනටමත් Chromium හි නිරීක්ෂණය කර ඇත.</translation>
+<translation id="1707458603865303524">ඔබ පණිවිඩ හෝ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chromium භාවිතා කරන්න.</translation>
 <translation id="1722370509450468186">ඔබගේ මුරපදය ඔබගේ ගිණුම තුළ සුරැකිනු ඇත (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium දත්ත හිස් කරන ලදී</translation>
 <translation id="1791845338122684020">ඔබේ Chromium ඉතිහාස පිටුව විවෘත කරයි.</translation>
@@ -40,9 +41,11 @@
 <translation id="2054703085270098503">Chromium සමගින් ආරක්ෂිතව සිටින්න</translation>
 <translation id="2098023844024447022">Chromium තුළ මගේ නවතම පටිත්ත විවෘත කරන්න.</translation>
 <translation id="2109439615198500433">Chromium ඉඟිය</translation>
+<translation id="2147210759439165826">අන්තර්ගත සහ ප්‍රයෝජනවත් Chromium ඉඟි සමග සිටින්න.</translation>
 <translation id="2168108852149185974">ඇතැම් ඈඳුම් Chromium බිඳ වැටීමට හේතු වේ. කරුණාකර අස්ථාපනය කරන්න:</translation>
 <translation id="2178608107313874732">Chromium හට මේ අවස්ථාවේදී ඔබේ කැමරාව භාවිත කළ නොහැකිය</translation>
 <translation id="2195025571279539885">ඔබ Chromium ඊළඟ අවස්ථාවේ මෙම අඩවිය වෙතින් <ph name="LANGUAGE_NAME" /> පිටු පරිවර්තනය කිරීමට පිරිනමනවාට කැමතිද?</translation>
+<translation id="2216344354848599203">Chromium නිරූපකය ඔබා අල්ලාගෙන "මුල් තිරය සංස්කරණය කරන්න" ක්ලික් කරන්න</translation>
 <translation id="2218146227246548550">ඔබගේ සංවිධානයට ඔබ Chromium භාවිත කිරීමට පිරීම අවශ්‍ය වේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">මෙම ලිපිනය දැනට Chromium වෙත සුරැකෙයි. එය Google නිෂ්පාදන පුරා භාවිතා කිරීමට, එය ඔබේ Google ගිණුම, <ph name="USER_EMAIL" /> තුළ සුරකින්න.</translation>
 <translation id="2236584955986023187">මෙයින් අදහස් කරන්නේ Chromium සැම විටම ඩෙස්ක්ටොප් අඩවිය ඉල්ලනු ඇති බවය.</translation>
@@ -95,6 +98,7 @@
 <translation id="3805899903892079518">Chromium හට ඔබේ ඡායාරූප හෝ වීඩියෝවලට ප්‍රවේශය නැත. iOS සැකසීම් &gt; රහස්‍යතාව &gt; ඡායාරූප තුළ ප්‍රවේශය සබල කරන්න.</translation>
 <translation id="3827545470516145620">ඔබට මෙම උපාංගයේ සම්මත ආරක්ෂක රැකවරණය ලැබේ</translation>
 <translation id="3833326979834193417">දත්ත කඩ කිරීම්, අනාරක්ෂිත වෙබ් අඩවි සහ තවත් දේ වෙතින් ඔබව ආරක්ෂා කර ගැනීමට Chromium ස්වයංක්‍රීයව සෑම දිනකම ආරක්ෂිත පරීක්ෂාව ධාවනය කරයි. ඔබට සැකසීම් තුළ ආරක්ෂිත පරීක්ෂාව පිළිබඳ වැඩිදුර සොයා ගත හැක.</translation>
+<translation id="3855938650519180865">Chromium හි අලුත් දේ</translation>
 <translation id="3886689467633467988">ඔබේ සියලුම උපාංග මත ඔබේ පිටුසන් සහ තවත් ඒවා ලබා ගැනීමට මෙම අඩවියට සහ Chromium වෙත පුරන්න.</translation>
 <translation id="394413318816989199">මුර වැකිකඩ සංකේතනයට ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නොවේ.
 
@@ -107,6 +111,7 @@
 <translation id="4106512142782407609"><ph name="EMAIL" /> ලෙස පුරනය වී ඇත.
 
 ඔබේ දත්ත ඔබේ මුර-වැකිකඩ සමග සංකේතනය කර ඇත. ඔබේ Google ගිණුමේ Chromium දත්ත භාවිතා කිරීමට සහ සුරැකීමට එය ඇතුළු කරන්න.</translation>
+<translation id="4118287192800900567">Chromium ඉඟිය: Chromium වෙත පුරන්න</translation>
 <translation id="4195557071150719219">Chromium මෑත කාලීන පටිති බලන්න</translation>
 <translation id="4200712796753248893">iOS මත Chromium ක්‍රියා භාවිතා කරන්න</translation>
 <translation id="420541179527342563">Chromium තුළ අගුළු දැමීමේ ප්‍රකාරය අබල කිරීම සඳහා එය ඔබේ iPad මත ක්‍රියාවිරහිත කරන්න.</translation>
@@ -158,6 +163,7 @@
 <translation id="5688047395118852662">මෙම කාඩ්පත ඔබට Chromium වෙතින් උපරිම ප්‍රයෝජන ගන්නා ආකාරය පිළිබඳ යෝජනා පෙන්වයි.</translation>
 <translation id="5700709190537129682">Chromium හට ඔබේ මුරපද පරීක්‍ෂා කළ නොහැකිය</translation>
 <translation id="5777187867430702742">Chromium පිටුව</translation>
+<translation id="584239279770005676">Chromium ඉඟිය: පෙරනිමියෙන් Chromium භාවිතා කරන්න</translation>
 <translation id="584550191241316896">Chromium වෙත පුරනය වී ඇත</translation>
 <translation id="5889847953983052353">සක්‍රීය වූ විට:
 <ph name="BEGIN_INDENT" />  • ඔබ භාවිත කරන ආකාරයෙන් ම එය භාවිත කරන අය සඳහා Chromium ඉතා හොඳ කිරීමට උදවු කරන්න.<ph name="END_INDENT" />
@@ -172,6 +178,7 @@
 <translation id="5951593919357934226">Chromium වෙතින් උපරිම ඵලය ලබන්න.</translation>
 <translation id="5983312940147103417">Chromium වඩාත් යහපත් කරන්න</translation>
 <translation id="5985102273857091344">"Chromium" තෝරන්න.</translation>
+<translation id="5985254578475526217">Chromium වෙතින් දැනුම්දීම් ලැබීමට, ඔබේ iOS සැකසීම් තුළ දැනුම්දීම් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="6062449165341879460">ඔබේ සංවිධාන <ph name="DOMAIN" /> හට ඔබ මෙම ගිණුම තුළ සුරකින ඔබේ Chromium දත්ත, පිටුසන්, ඉතිහාසය, මුරපද සහ වෙනත් සැකසීම් වෙත ප්‍රවේශය තිබෙයි. ඔබ වරන විට, මෙම උපාංගයෙන් ඔබේ දත්ත හිස් කෙරේ.  කෙසේ වෙතත්, ඔබේ දත්ත ඔබේ කළමනා කෙරෙන Google ගිණුම තුළ සුරැකී පවතින අතර ඔබේ සංවිධානයට ලද හැකි වෙයි. ඔබේ සංවිධානය Chromium හි හැසිරීම වෙනස් කළ හැකි පරිදි එම ගිණුමට නිශ්චිත පරිශීලක ප්‍රතිපත්ති ද සැකසිය හැක.</translation>
 <translation id="6093744543579359059">Chromium තුළ මුරපද කළමනාකරණය කරන්න</translation>
 <translation id="6104024151682120539">Chromium තුළ විවෘත කරන්න</translation>
@@ -180,6 +187,7 @@
 1. සැකසීම් විවෘත කරන්න
 2. පෙරනිමි බ්‍රව්සර යෙදුම තට්ටු කරන්න
 3. Chromium තෝරන්න.</translation>
+<translation id="6132149203299792222">ඔබේ මුරපද, පිටුසන්, සහ තවත් දේ සමමුහුර්ත කිරීමට ඔබේ Google ගිණුම සමගින් පුරන්න.</translation>
 <translation id="6154098560469640583">ඔබ පණිවිඩ, ලේඛන, සහ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chromium භාවිතා කරන්න.</translation>
 <translation id="6170619162539716595">හඳුනාගත් ලිපින මත ඔබට උපදෙස් සහ දේශීය තතු ලබා දීමට Google සිතියම් භාවිත කිරීමට Chromium හට ඉඩ දෙන්න.</translation>
 <translation id="6175967839221456271">Chromium බෙදා ගන්න</translation>
@@ -191,6 +199,7 @@
 <translation id="632825460376924298">Chromium පිරීමට ඉඩ දෙන්න</translation>
 <translation id="6337530241089703714">මෙම උපාංගයෙන් ඔබගේ Chromium දත්ත හිස් කරන්නේද හෝ එය තබා ගන්නේද යන්න තෝරන්න</translation>
 <translation id="6348483005826990855">3. Chromium තෝරන්න</translation>
+<translation id="6383607155624074112">ඔබේ මුල් තිර ඩොක් එකෙන් Chromium වෙත වේගයෙන් ප්‍රවේශ වන්න</translation>
 <translation id="6407399265324739055">ගෙවීමේ ක්‍රම සහ ලිපින සංකේතන නොකෙරේ Chromium වෙතින් බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහූර්ත නොවේ.
 
 ඔබේ සංකේතිත දත්ත කියවිය හැක්කේ ඔබේ මුර වැකිකඩ සහිත කෙනෙකුට පමණි. මුර වැකිකඩ Google වෙත යවන්නේ හෝ ගබඩා කරන්නේ නැත. ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම් <ph name="BEGIN_LINK" />ඔබේ ගිණුම තුළ ඇති Chromium දත්ත හිස් කරන්න<ph name="END_LINK" />.</translation>
@@ -257,6 +266,7 @@
 <translation id="8234150821523419638">Chromium මෙනුව විවෘත කරන්න</translation>
 <translation id="8235427517854598594">Chromium ඔබේ පෙරනිමි බ්‍රව්සරය කරන්න ද?</translation>
 <translation id="8240981428553046115">Chromium හට යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
+<translation id="8254729934443216898">ඔබට Chromium වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට උදවු වන නව විශේෂාංග ගවේෂණය කරන්න.</translation>
 <translation id="8303579360494576778">Chromium තුළ ගෙවීම් ක්‍රම කළමනාකරණය කරන්න</translation>
 <translation id="830951810931292870">අප්‍රසිද්ධ තුළ Chromium හි ආදානය කළ URLs විවෘත කරයි.</translation>
 <translation id="8386869251364507178">Chromium ක්‍රියා</translation>

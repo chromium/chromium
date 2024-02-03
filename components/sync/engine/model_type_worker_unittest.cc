@@ -1639,10 +1639,10 @@ TEST_F(ModelTypeWorkerTest, CommitOnly) {
   EXPECT_FALSE(entity.has_ctime());
   EXPECT_FALSE(entity.has_deleted());
   EXPECT_FALSE(entity.has_folder());
-  EXPECT_FALSE(entity.has_id_string());
   EXPECT_FALSE(entity.has_mtime());
   EXPECT_FALSE(entity.has_version());
   EXPECT_FALSE(entity.has_name());
+  EXPECT_TRUE(entity.has_id_string());
   EXPECT_TRUE(entity.specifics().has_user_event());
   EXPECT_EQ(id, entity.specifics().user_event().event_time_usec());
 
@@ -1974,8 +1974,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   *entity.mutable_specifics()
        ->mutable_webauthn_credential()
        ->mutable_sync_id() = sync_id;
-  *entity.mutable_client_tag_hash() =
-      base::HexEncode(sync_id.data(), sync_id.size());
+  *entity.mutable_client_tag_hash() = base::HexEncode(sync_id);
 
   ASSERT_EQ(
       ModelTypeWorker::SUCCESS,

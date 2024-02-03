@@ -72,7 +72,7 @@ String RTCSessionDescription::type() const {
   return platform_session_description_->GetType();
 }
 
-void RTCSessionDescription::setType(absl::optional<V8RTCSdpType> type) {
+void RTCSessionDescription::setType(std::optional<V8RTCSdpType> type) {
   platform_session_description_->SetType(
       type.has_value() ? type.value().AsString() : String());
 }

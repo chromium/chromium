@@ -1,0 +1,77 @@
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file, platform_buildflag %}
+{{ license() }}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/settings_base.h"
+
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "third_party/blink/renderer/core/frame/settings_string_converter.h"
+
+namespace blink {
+
+SettingsBase::SettingsBase()
+    : delegate_(nullptr)
+{% for setting in settings if setting.initial is not none and setting.type != 'bool' %}
+  {% if setting.initial is mapping %}
+    {% for platform in setting.initial_platforms %}
+#{% if not loop.first %}el{% endif %}if {{platform_buildflag(platform)}}
+    , {{setting.name.to_class_data_member()}}({{setting.initial[platform]}})
+    {% endfor %}
+#else
+    , {{setting.name.to_class_data_member()}}({{setting.initial['default']}})
+#endif
+  {% else %}
+    , {{setting.name.to_class_data_member()}}({{setting.initial}})
+  {% endif %}
+{% endfor %}
+{% for setting in settings if setting.initial is not none and setting.type == 'bool' %}
+  {% if setting.initial is mapping %}
+    {% for platform in setting.initial_platforms %}
+#{% if not loop.first %}el{% endif %}if {{platform_buildflag(platform)}}
+    , {{setting.name.to_class_data_member()}}({{setting.initial[platform]|cpp_bool}})
+    {% endfor %}
+#else
+    , {{setting.name.to_class_data_member()}}({{setting.initial['default']|cpp_bool}})
+#endif
+  {% else %}
+    , {{setting.name.to_class_data_member()}}({{setting.initial|cpp_bool}})
+  {% endif %}
+{% endfor %}
+    {}
+
+{% for setting in settings %}
+void SettingsBase::Set{{setting.name.to_upper_camel_case()}}({{setting.type|to_passing_type}} {{setting.name.to_snake_case()}}) {
+  if ({{setting.name.to_class_data_member()}} == {{setting.name.to_snake_case()}})
+    return;
+  {{setting.name.to_class_data_member()}} = {{setting.name.to_snake_case()}};
+  {% if setting.invalidate %}
+    {% for type in setting.invalidate %}
+  Invalidate(SettingsDelegate::ChangeType::k{{type}});
+    {% endfor %}
+  {% endif  %}
+}
+
+{% endfor %}
+
+void SettingsBase::SetFromStrings(const String& name, const String& value) {
+{% for setting in settings %}
+  if (name == "{{setting.name}}") {
+    Set{{setting.name.to_upper_camel_case()}}(FromString<{{setting.type}}>()(value));
+    return;
+  }
+{% endfor %}
+}
+
+void SettingsBase::SetDelegate(SettingsDelegate* delegate) {
+  delegate_ = delegate;
+}
+
+void SettingsBase::Invalidate(SettingsDelegate::ChangeType change_type) {
+  if (delegate_) {
+    delegate_->SettingsChanged(change_type);
+  }
+}
+
+}  // namespace blink

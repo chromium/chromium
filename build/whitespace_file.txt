@@ -194,7 +194,7 @@ And you know you're going to fall
 Tell 'em a hookah-smoking caterpillar
 
 Isn't it supposed to be a whitespace file?
-Let's add some "                    ".
+Let's add some "                     ".
 
 I'll join to add my first commit here. P. S. It has stopped being a story long long ago.
 
@@ -208,4 +208,4 @@ STEP 4: When hot, cook your pancakes for 1 min on each side until golden, keepin
 in a low oven as you go.
 STEP 5: Serve with lemon wedges and caster sugar, or your favourite filling.
 Once cold, you can layer the pancakes between baking parchment,
-then wrap in cling film and freeze for up to 2 months.   
+then wrap in cling film and freeze for up to 2 months.

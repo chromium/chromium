@@ -10,10 +10,13 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
+
+import java.util.List;
 
 /**
  * An interface for providing and handling quick-delete operations, such as the browsing data
@@ -82,6 +85,8 @@ abstract class QuickDeleteDelegate {
      * Show the Quick Delete animation on the tab list.
      *
      * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     * @param tabs The tabs to fade with the animation. These tabs will get closed after the
+     *     animation is complete.
      */
-    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd) {}
+    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs) {}
 }

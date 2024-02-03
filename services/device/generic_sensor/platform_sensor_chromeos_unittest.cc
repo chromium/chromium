@@ -80,7 +80,7 @@ class PlatformSensorChromeOSTestBase {
   mojo::PendingReceiver<chromeos::sensors::mojom::SensorDevice>
       pending_receiver_;
 
-  absl::optional<uint32_t> custom_reason_code_;
+  std::optional<uint32_t> custom_reason_code_;
 
   base::test::SingleThreadTaskEnvironment task_environment;
 };
@@ -170,7 +170,7 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, MissingChannels) {
   sensor_->StartListening(client.get(),
                           PlatformSensorConfiguration(
                               GetSensorMaxAllowedFrequency(GetParam().first)));
-  EXPECT_TRUE(sensor_->IsActiveForTesting());
+  EXPECT_TRUE(sensor_->is_active());
 
   EXPECT_CALL(*client.get(), OnSensorReadingChanged(GetParam().first)).Times(0);
   // Wait until all tasks done and no samples updated.
@@ -186,7 +186,7 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, GetSamples) {
   sensor_->AddClient(client.get());
   double frequency = GetSensorMaxAllowedFrequency(GetParam().first);
   sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
-  EXPECT_TRUE(sensor_->IsActiveForTesting());
+  EXPECT_TRUE(sensor_->is_active());
 
   WaitForAndCheckReading(client.get());
 
@@ -227,7 +227,7 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, ResetOnTooManyFailures) {
   sensor_->StartListening(client.get(),
                           PlatformSensorConfiguration(
                               GetSensorMaxAllowedFrequency(GetParam().first)));
-  EXPECT_TRUE(sensor_->IsActiveForTesting());
+  EXPECT_TRUE(sensor_->is_active());
 
   WaitForAndCheckReading(client.get());
 
@@ -364,7 +364,7 @@ TEST_P(PlatformSensorChromeOSAxesTest, MissingChannels) {
   sensor_->StartListening(client.get(),
                           PlatformSensorConfiguration(
                               GetSensorMaxAllowedFrequency(GetParam().first)));
-  EXPECT_TRUE(sensor_->IsActiveForTesting());
+  EXPECT_TRUE(sensor_->is_active());
 
   EXPECT_CALL(*client.get(), OnSensorReadingChanged(GetParam().first)).Times(0);
   // Wait until all tasks done and no samples updated.
@@ -380,7 +380,7 @@ TEST_P(PlatformSensorChromeOSAxesTest, GetSamples) {
   sensor_->AddClient(client.get());
   double frequency = GetSensorMaxAllowedFrequency(GetParam().first);
   sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
-  EXPECT_TRUE(sensor_->IsActiveForTesting());
+  EXPECT_TRUE(sensor_->is_active());
 
   WaitForAndCheckReading(client.get());
 

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
@@ -404,8 +405,9 @@ std::u16string HoldingSpaceItemChipView::GetTooltipText(
 
   // If there is neither a primary nor a secondary tooltip which should be
   // shown, then there is no tooltip to be shown at all.
-  if (primary_tooltip.empty() && secondary_tooltip.empty())
-    return base::EmptyString16();
+  if (primary_tooltip.empty() && secondary_tooltip.empty()) {
+    return std::u16string();
+  }
 
   // If there is no primary tooltip, fallback to using the primary text. This
   // would occur if the `primary_label_` is not elided in same way.
@@ -515,8 +517,11 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
       secondary_action_pause_->GetVisible()
           ? HoldingSpaceCommandId::kPauseItem
           : HoldingSpaceCommandId::kResumeItem;
-  if (!holding_space_util::ExecuteInProgressCommand(item(), command_id))
+  if (!holding_space_util::ExecuteInProgressCommand(
+          item(), command_id,
+          holding_space_metrics::EventSource::kHoldingSpaceItem)) {
     NOTREACHED();
+  }
 }
 
 void HoldingSpaceItemChipView::UpdateImage() {
@@ -629,7 +634,7 @@ void HoldingSpaceItemChipView::UpdateLabels() {
   // Secondary.
   const std::u16string last_secondary_text = secondary_label_->GetText();
   secondary_label_->SetText(
-      item()->secondary_text().value_or(base::EmptyString16()));
+      item()->secondary_text().value_or(std::u16string()));
 
   secondary_label_->SetEnabledColorId(
       selected() && multiselect ? kColorAshMultiSelectTextColor

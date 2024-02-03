@@ -201,6 +201,7 @@ public class SingleTabModuleViewBinderUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         /* TabContentManager= */ null,
+                        /* singleTabCardClickedCallback= */ null,
                         /* isSurfacePolishEnabled= */ false,
                         /* moduleDelegate= */ null);
         mediator.setOnTabSelectingListener(mOnTabSelectingListener);

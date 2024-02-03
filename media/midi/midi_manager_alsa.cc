@@ -393,8 +393,8 @@ std::string MidiManagerAlsa::MidiPort::JSONValue() const {
 //               http://crbug.com/465320
 std::string MidiManagerAlsa::MidiPort::OpaqueKey() const {
   uint8_t hash[crypto::kSHA256Length];
-  crypto::SHA256HashString(JSONValue(), &hash, sizeof(hash));
-  return base::HexEncode(&hash, sizeof(hash));
+  crypto::SHA256HashString(JSONValue(), hash, sizeof(hash));
+  return base::HexEncode(hash);
 }
 
 bool MidiManagerAlsa::MidiPort::MatchConnected(const MidiPort& query) const {

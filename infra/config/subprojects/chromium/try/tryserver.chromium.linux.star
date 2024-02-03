@@ -71,7 +71,6 @@ try_.builder(
             "dcheck_always_on",
             "chromeos_codecs",
             "pdf_xfa",
-            "disable_nacl",
             "optimize_for_fuzzing",
             "mojo_fuzzer",
             "skip_generate_fuzzer_owners",
@@ -147,7 +146,6 @@ try_.builder(
             "dcheck_always_on",
             "chromeos_codecs",
             "pdf_xfa",
-            "disable_nacl",
             "optimize_for_fuzzing",
             "mojo_fuzzer",
             "skip_generate_fuzzer_owners",
@@ -328,13 +326,16 @@ try_.builder(
             "dcheck_always_on",
             "chromeos_codecs",
             "pdf_xfa",
-            "disable_nacl",
             "optimize_for_fuzzing",
             "mojo_fuzzer",
             "skip_generate_fuzzer_owners",
         ],
     ),
     builderless = not settings.is_main,
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
+    },
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -385,6 +386,8 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        # crbug/940930
+        "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -398,10 +401,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    experiments = {
-        # crbug/940930
-        "chromium.enable_cleandead": 50,
-    },
     main_list_view = "try",
     siso_enabled = True,
 )
@@ -433,6 +432,11 @@ try_.builder(
         ],
     ),
     coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        location_filters = [
+            "ui/ozone/platform/wayland/.+",
+        ],
+    ),
     use_clang_coverage = True,
 )
 
@@ -506,6 +510,10 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
+    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     siso_enabled = True,
@@ -559,6 +567,8 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -705,6 +715,10 @@ try_.builder(
             path = "linux_debug",
         ),
     ],
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
+    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -823,6 +837,8 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -992,7 +1008,6 @@ try_.gpu.optional_tests_builder(
             "reclient",
             "minimal_symbols",
             "dcheck_always_on",
-            "disable_nacl",
         ],
     ),
     main_list_view = "try",

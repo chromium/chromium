@@ -5,33 +5,39 @@
 #include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
-
-MemoryMetricsRefreshWaiter::MemoryMetricsRefreshWaiter() = default;
-MemoryMetricsRefreshWaiter::~MemoryMetricsRefreshWaiter() = default;
-
-void MemoryMetricsRefreshWaiter::OnMemoryMetricsRefreshed() {
-  std::move(quit_closure_).Run();
-}
 
 // Forces and waits for the memory metrics to refresh
 void MemoryMetricsRefreshWaiter::Wait() {
-  auto* const manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
+  // kNestableTasksAllowed is used to prevent kombucha interactive tests from
+  // hanging
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  quit_closure_ = run_loop.QuitClosure();
-  base::ScopedObservation<
-      performance_manager::user_tuning::UserPerformanceTuningManager,
-      MemoryMetricsRefreshWaiter>
-      memory_metrics_observer(this);
-  memory_metrics_observer.Observe(manager);
+  base::OnceClosure quit_closure = run_loop.QuitClosure();
   performance_manager::PerformanceManager::CallOnGraph(
       FROM_HERE,
-      base::BindLambdaForTesting([](performance_manager::Graph* graph) {
-        auto* metrics_decorator = graph->GetRegisteredObjectAs<
+      base::BindLambdaForTesting([&](performance_manager::Graph* graph) {
+        auto* const metrics_decorator = graph->GetRegisteredObjectAs<
             performance_manager::ProcessMetricsDecorator>();
-        metrics_decorator->RequestImmediateMetrics();
+        metrics_decorator->RequestImmediateMetrics(std::move(quit_closure));
       }));
+  run_loop.Run();
+}
+
+TabResourceUsageRefreshWaiter::TabResourceUsageRefreshWaiter()
+    : ResourceUsageCollectorObserver(base::DoNothing()) {}
+TabResourceUsageRefreshWaiter::~TabResourceUsageRefreshWaiter() = default;
+
+// Forces and waits for the memory metrics to refresh
+void TabResourceUsageRefreshWaiter::Wait() {
+  // kNestableTasksAllowed is used to prevent kombucha interactive tests from
+  // hanging
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  metrics_refresh_callback_ = run_loop.QuitClosure();
+  TabResourceUsageCollector::Get()->ImmediatelyRefreshMetricsForAllTabs();
   run_loop.Run();
 }

@@ -121,7 +121,7 @@ class CORE_EXPORT IntersectionGeometry {
                        const Vector<Length>& target_margin,
                        const Vector<Length>& scroll_margin,
                        unsigned flags,
-                       absl::optional<RootGeometry>& root_geometry,
+                       std::optional<RootGeometry>& root_geometry,
                        CachedRects* cached_rects = nullptr);
 
   IntersectionGeometry(const IntersectionGeometry&) = default;

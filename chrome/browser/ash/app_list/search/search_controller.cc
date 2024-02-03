@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
+#include "chrome/browser/ash/app_list/search/common/types_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
@@ -73,7 +74,7 @@ SearchController::~SearchController() = default;
 void SearchController::Initialize() {
   burn_in_controller_ = std::make_unique<BurnInController>(base::BindRepeating(
       &SearchController::OnBurnInPeriodElapsed, base::Unretained(this)));
-  ranker_manager_ = std::make_unique<RankerManager>(profile_, this);
+  ranker_manager_ = std::make_unique<RankerManager>(profile_);
   metrics_manager_ =
       std::make_unique<SearchMetricsManager>(profile_, notifier_);
   session_metrics_manager_ =
@@ -90,9 +91,7 @@ void SearchController::Initialize() {
 
 std::vector<ash::AppListSearchControlCategory>
 SearchController::GetToggleableCategories() const {
-  // TODO(b/315709613): Temporary. precompute and store in search_controller.cc.
-  // Ask the search service to search the desired categories only per-query.
-  return search_engine_->GetToggleableCategories();
+  return toggleable_categories_;
 }
 
 void SearchController::OnBurnInPeriodElapsed() {
@@ -104,7 +103,17 @@ void SearchController::AddProvider(std::unique_ptr<SearchProvider> provider) {
   if (ash::IsZeroStateResultType(provider->ResultType())) {
     ++total_zero_state_blockers_;
   }
+
   // TODO(b/315709613): Temporary. Update the factory.
+  const auto control_category =
+      MapSearchCategoryToControlCategory(provider->search_category());
+  if (control_category != ControlCategory::kCannotToggle &&
+      std::find(toggleable_categories_.begin(), toggleable_categories_.end(),
+                control_category) == toggleable_categories_.end()) {
+    toggleable_categories_.push_back(control_category);
+    std::sort(toggleable_categories_.begin(), toggleable_categories_.end());
+  }
+
   search_engine_->AddProvider(std::move(provider));
 }
 
@@ -132,15 +141,32 @@ void SearchController::StartSearch(const std::u16string& query) {
     Publish();
   }
 
-  // TODO(b/315709613): This should use toggable categories.
   categories_ = CreateAllCategories();
+  SearchOptions search_options;
+
+  if (ash::features::IsLauncherSearchControlEnabled()) {
+    search_options.search_categories = std::vector<SearchCategory>();
+    base::flat_set<ControlCategory> disabled_categories;
+    for (const auto category : toggleable_categories_) {
+      if (!IsControlCategoryEnabled(profile_, category)) {
+        disabled_categories.insert(category);
+      }
+    }
+
+    for (const auto category : search_engine_->GetAllSearchCategories()) {
+      if (!disabled_categories.contains(
+              MapSearchCategoryToControlCategory(category))) {
+        search_options.search_categories->push_back(category);
+      }
+    }
+  }
+
   ranker_manager_->Start(truncated_query, categories_);
 
   session_start_ = base::Time::Now();
   last_query_ = truncated_query;
 
-  // TODO(b/315709613): Should ask for desired categories.
-  search_engine_->StartSearch(truncated_query,
+  search_engine_->StartSearch(truncated_query, std::move(search_options),
                               base::BindRepeating(&SearchController::SetResults,
                                                   base::Unretained(this)));
 }

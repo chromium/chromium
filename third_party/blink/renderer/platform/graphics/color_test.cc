@@ -47,7 +47,7 @@ Color CreateSRGBColor(float r, float g, float b, float a) {
 // Helper struct for testing purposes.
 struct ColorMixTest {
   Color::ColorSpace mix_space;
-  absl::optional<Color::HueInterpolationMethod> hue_method;
+  std::optional<Color::HueInterpolationMethod> hue_method;
   Color color_left;
   Color color_right;
   float percentage_right;
@@ -64,25 +64,25 @@ struct ColorTest {
 
 TEST(BlinkColor, ColorMixSameColorSpace) {
   ColorMixTest color_mix_tests[] = {
-      {Color::ColorSpace::kSRGB, absl::nullopt,
+      {Color::ColorSpace::kSRGB, std::nullopt,
        CreateSRGBColor(1.0f, 0.0f, 0.0f, 1.0f),
        CreateSRGBColor(0.0f, 1.0f, 0.0f, 1.0f),
        /*percentage =*/0.5f, /*alpha_multiplier=*/1.0f,
        CreateSRGBColor(0.5f, 0.5f, 0.0f, 1.0f)},
-      {Color::ColorSpace::kSRGB, absl::nullopt,
+      {Color::ColorSpace::kSRGB, std::nullopt,
        Color::FromColorSpace(Color::ColorSpace::kRec2020, 0.7919771358198009f,
                              0.23097568481079767f, 0.07376147493817597f, 1.0f),
        Color::FromColorSpace(Color::ColorSpace::kLab, 87.81853633115202f,
                              -79.27108223854806f, 80.99459785152247f, 1.0f),
        /*percentage =*/0.5f, /*alpha_multiplier=*/1.0f,
        CreateSRGBColor(0.5f, 0.5f, 0.0f, 1.0f)},
-      {Color::ColorSpace::kSRGB, absl::nullopt,
+      {Color::ColorSpace::kSRGB, std::nullopt,
        CreateSRGBColor(1.0f, 0.0f, 0.0f, 1.0f),
        CreateSRGBColor(0.0f, 1.0f, 0.0f, 1.0f),
        /*percentage =*/0.25f, /*alpha_multiplier=*/0.5f,
        CreateSRGBColor(0.75f, 0.25f, 0.0f, 0.5f)},
       // Value obtained form the spec https://www.w3.org/TR/css-color-5/.
-      {Color::ColorSpace::kSRGB, absl::nullopt,
+      {Color::ColorSpace::kSRGB, std::nullopt,
        CreateSRGBColor(1.0f, 0.0f, 0.0f, 0.7f),
        CreateSRGBColor(0.0f, 1.0f, 0.0f, 0.2f),
        /*percentage =*/0.75f, /*alpha_multiplier=*/1.0f,
@@ -155,13 +155,13 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
 }
 
 TEST(BlinkColor, ColorMixNone) {
-  Color color1 = Color::FromColorSpace(
-      Color::ColorSpace::kXYZD50, absl::nullopt, 0.5f, absl::nullopt, 1.0f);
-  Color color2 = Color::FromColorSpace(
-      Color::ColorSpace::kXYZD50, absl::nullopt, absl::nullopt, 0.7f, 1.0f);
+  Color color1 = Color::FromColorSpace(Color::ColorSpace::kXYZD50, std::nullopt,
+                                       0.5f, std::nullopt, 1.0f);
+  Color color2 = Color::FromColorSpace(Color::ColorSpace::kXYZD50, std::nullopt,
+                                       std::nullopt, 0.7f, 1.0f);
 
   Color result = Color::FromColorMix(
-      Color::ColorSpace::kXYZD50, /*hue_method=*/absl::nullopt, color1, color2,
+      Color::ColorSpace::kXYZD50, /*hue_method=*/std::nullopt, color1, color2,
       /*percentage=*/0.5f, /*alpha_multiplier=*/1.0f);
 
   EXPECT_EQ(result.param0_is_none_, true);
@@ -176,7 +176,7 @@ TEST(BlinkColor, ColorInterpolation) {
     Color color1;
     Color color2;
     Color::ColorSpace space;
-    absl::optional<Color::HueInterpolationMethod> hue_method;
+    std::optional<Color::HueInterpolationMethod> hue_method;
     float percentage;
     Color expected;
   };
@@ -184,39 +184,39 @@ TEST(BlinkColor, ColorInterpolation) {
   // Tests extracted from the CSS Color 4 spec, among others.
   // https://csswg.sesse.net/css-color-4/#interpolation-alpha
   ColorsTest colors_test[] = {
-      {Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt, 0.12f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt, 0.12f,
                              0.98f, 1.0f),
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.62f, 0.26f, 0.64f,
                              1.0f),
-       Color::ColorSpace::kSRGB, absl::nullopt, 0.5f,
+       Color::ColorSpace::kSRGB, std::nullopt, 0.5f,
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.62f, 0.19f, 0.81f,
                              1.0f)},
 
-      {Color::FromColorSpace(Color::ColorSpace::kHSL, absl::nullopt, 0.5f, 0.5f,
+      {Color::FromColorSpace(Color::ColorSpace::kHSL, std::nullopt, 0.5f, 0.5f,
                              1.0f),
        Color::FromColorSpace(Color::ColorSpace::kHSL, 180.0f, 0.1f, 0.1f, 1.0f),
-       Color::ColorSpace::kHSL, absl::nullopt, 0.5f,
+       Color::ColorSpace::kHSL, std::nullopt, 0.5f,
        Color::FromColorSpace(Color::ColorSpace::kHSL, 180.0f, 0.3f, 0.3f,
                              1.0f)},
 
-      {Color::FromColorSpace(Color::ColorSpace::kHWB, absl::nullopt, 0.5f, 0.5f,
+      {Color::FromColorSpace(Color::ColorSpace::kHWB, std::nullopt, 0.5f, 0.5f,
                              1.0f),
        Color::FromColorSpace(Color::ColorSpace::kHWB, 180.0f, 0.1f, 0.1f, 1.0f),
-       Color::ColorSpace::kHWB, absl::nullopt, 0.5f,
+       Color::ColorSpace::kHWB, std::nullopt, 0.5f,
        Color::FromColorSpace(Color::ColorSpace::kHWB, 180.0f, 0.3f, 0.3f,
                              1.0f)},
 
-      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.5f, absl::nullopt,
-                             1.0f, 1.0f),
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.5f, std::nullopt, 1.0f,
+                             1.0f),
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.0f, 0.5f, 0.0f, 1.0f),
-       Color::ColorSpace::kSRGB, absl::nullopt, 0.5f,
+       Color::ColorSpace::kSRGB, std::nullopt, 0.5f,
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.75f, 0.5f, 0.5f,
                              1.0f)},
 
       {Color::FromColorSpace(Color::ColorSpace::kSRGB, .5f, 0.0f, 0.0f,
-                             absl::nullopt),
+                             std::nullopt),
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.f, 0.5f, 1.0f, 1.0f),
-       Color::ColorSpace::kSRGB, absl::nullopt, 0.5f,
+       Color::ColorSpace::kSRGB, std::nullopt, 0.5f,
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.75f, 0.25f, 0.5f,
                              1.0f)},
 
@@ -224,7 +224,7 @@ TEST(BlinkColor, ColorInterpolation) {
                              0.4f),
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.62f, 0.26f, 0.64f,
                              0.6f),
-       Color::ColorSpace::kSRGB, absl::nullopt, 0.5f,
+       Color::ColorSpace::kSRGB, std::nullopt, 0.5f,
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.468f, 0.204f, 0.776f,
                              0.5f)},
 
@@ -232,7 +232,7 @@ TEST(BlinkColor, ColorInterpolation) {
                              0.4f),
        Color::FromColorSpace(Color::ColorSpace::kDisplayP3, 0.84f, 0.19f, 0.72f,
                              0.6f),
-       Color::ColorSpace::kLab, absl::nullopt, 0.5f,
+       Color::ColorSpace::kLab, std::nullopt, 0.5f,
        Color::FromColorSpace(Color::ColorSpace::kLab, 58.873f, 51.552f, 7.108f,
                              0.5f)},
 
@@ -531,26 +531,26 @@ TEST(BlinkColor, Premultiply) {
   ColorTest color_tests[] = {
       // Testing rectangular-color-space premultiplication.
       {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
-                                0.4f),
+                             0.4f),
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.24f * 0.4f,
-                                0.12f * 0.4f, 0.98f * 0.4f, 1.0f)},
+                             0.12f * 0.4f, 0.98f * 0.4f, 1.0f)},
       // Testing none value in each component premultiplication.
-      {Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt, 0.26f,
-                                0.64f, 0.6f),
-       Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt,
-                                0.26f * 0.6f, 0.64f * 0.6f, 1.0f)},
-      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f, absl::nullopt,
-                                0.64f, 0.6f),
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt, 0.26f,
+                             0.64f, 0.6f),
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt,
+                             0.26f * 0.6f, 0.64f * 0.6f, 1.0f)},
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f, std::nullopt,
+                             0.64f, 0.6f),
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f * 0.6f,
-                                absl::nullopt, 0.64f * 0.6f, 1.0f)},
+                             std::nullopt, 0.64f * 0.6f, 1.0f)},
       {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f, 0.64f,
-                                absl::nullopt, 0.6f),
+                             std::nullopt, 0.6f),
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f * 0.6f,
-                                0.64f * 0.6f, absl::nullopt, 1.0f)},
+                             0.64f * 0.6f, std::nullopt, 1.0f)},
       {Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
-                                absl::nullopt),
+                             std::nullopt),
        Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
-                                absl::nullopt)},
+                             std::nullopt)},
       // Testing polar-color-space premultiplication. Hue component should not
       // be premultiplied.
       {Color::FromColorSpace(Color::ColorSpace::kLch, 0.24f, 0.12f, 0.98f,
@@ -774,35 +774,35 @@ TEST(BlinkColor, ResolveMissingComponents) {
 
   ResolveMissingComponentsTest tests[] = {
       {
-          Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt, 0.2f,
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt, 0.2f,
                                 0.3f, 0.4f),
           Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.0f, 0.2f, 0.3f,
                                 0.4f),
       },
       {
-          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, absl::nullopt,
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, std::nullopt,
                                 0.3f, 0.4f),
           Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.0f, 0.3f,
                                 0.4f),
       },
       {
           Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.2f,
-                                absl::nullopt, 0.4f),
+                                std::nullopt, 0.4f),
           Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.2f, 0.0f,
                                 0.4f),
       },
       {
           // Alpha remains unresolved
           Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.2f, 0.3f,
-                                absl::nullopt),
+                                std::nullopt),
           Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1f, 0.2f, 0.3f,
-                                absl::nullopt),
+                                std::nullopt),
       },
       {
-          Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt,
-                                absl::nullopt, absl::nullopt, absl::nullopt),
+          Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt,
+                                std::nullopt, std::nullopt, std::nullopt),
           Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.0f, 0.0f, 0.0f,
-                                absl::nullopt),
+                                std::nullopt),
       },
   };
 

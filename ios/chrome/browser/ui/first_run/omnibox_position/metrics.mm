@@ -6,12 +6,33 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "ios/chrome/browser/ui/toolbar/public/omnibox_position_util.h"
 
 namespace {
 
 /// Returns the metric name variation for `is_first_run`.
 std::string MetricNameForContext(const std::string& name, BOOL is_first_run) {
   return name + (is_first_run ? ".FRE" : ".Startup");
+}
+
+/// Returns the metric name variation for classification `result`.
+std::string MetricNameForDeviceSwitcherResult(
+    const std::string& name,
+    const segmentation_platform::ClassificationResult& result) {
+  if (!omnibox::IsNewUser()) {
+    return name + ".NotNew";
+  }
+
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    return name + ".Unavailable";
+  }
+
+  if (omnibox::IsSafariSwitcher(result)) {
+    return name + ".IsSwitcher";
+  } else {
+    return name + ".NotSwitcher";
+  }
 }
 
 }  // namespace
@@ -71,9 +92,12 @@ void RecordScreenEvent(OmniboxPositionChoiceScreenEvent event,
   }
 }
 
-void RecordSelectedPosition(ToolbarType toolbar_type,
-                            BOOL is_default,
-                            BOOL is_first_run) {
+void RecordSelectedPosition(
+    ToolbarType toolbar_type,
+    BOOL is_default,
+    BOOL is_first_run,
+    segmentation_platform::DeviceSwitcherResultDispatcher*
+        device_switcher_result_dispatcher) {
   std::string histogram =
       MetricNameForContext("IOS.Omnibox.Promo.SelectedPosition", is_first_run);
   OmniboxPromoSelectedPosition position =
@@ -86,6 +110,15 @@ void RecordSelectedPosition(ToolbarType toolbar_type,
                           : OmniboxPromoSelectedPosition::kBottomNotDefault;
   }
   base::UmaHistogramEnumeration(histogram, position);
+
+  // Record selected position grouped by device switcher result.
+  if (device_switcher_result_dispatcher) {
+    segmentation_platform::ClassificationResult result =
+        device_switcher_result_dispatcher->GetCachedClassificationResult();
+    std::string histogram_with_classification =
+        MetricNameForDeviceSwitcherResult(histogram, result);
+    base::UmaHistogramEnumeration(histogram_with_classification, position);
+  }
 }
 
 void RecordTimeOpen(base::TimeDelta elapsed, BOOL is_first_run) {

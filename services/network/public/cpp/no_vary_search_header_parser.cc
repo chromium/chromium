@@ -4,11 +4,12 @@
 
 #include "services/network/public/cpp/no_vary_search_header_parser.h"
 
+#include <optional>
+
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -70,12 +71,12 @@ mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
       std::move(no_vary_search));
 }
 
-absl::optional<std::string> GetNoVarySearchConsoleMessage(
+std::optional<std::string> GetNoVarySearchConsoleMessage(
     const mojom::NoVarySearchParseError& error,
     const GURL& preloaded_url) {
   switch (error) {
     case network::mojom::NoVarySearchParseError::kOk:
-      return absl::nullopt;
+      return std::nullopt;
     case network::mojom::NoVarySearchParseError::kDefaultValue:
       return base::StringPrintf(
           "No-Vary-Search header value received for prefetched url %s"
@@ -130,11 +131,11 @@ absl::optional<std::string> GetNoVarySearchConsoleMessage(
   }
 }
 
-absl::optional<std::string> GetNoVarySearchHintConsoleMessage(
+std::optional<std::string> GetNoVarySearchHintConsoleMessage(
     const mojom::NoVarySearchParseError& error) {
   switch (error) {
     case network::mojom::NoVarySearchParseError::kOk:
-      return absl::nullopt;
+      return std::nullopt;
     case network::mojom::NoVarySearchParseError::kDefaultValue:
       return base::StringPrintf(
           "No-Vary-Search hint value is equivalent to the default behavior."

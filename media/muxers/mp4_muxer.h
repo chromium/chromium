@@ -22,7 +22,7 @@ class MEDIA_EXPORT Mp4Muxer : public Muxer {
            bool has_video,
            bool has_audio,
            std::unique_ptr<Mp4MuxerDelegateInterface> delegate,
-           absl::optional<base::TimeDelta> max_data_output_interval);
+           std::optional<base::TimeDelta> max_data_output_interval);
 
   Mp4Muxer(const Mp4Muxer&) = delete;
   Mp4Muxer& operator=(const Mp4Muxer&) = delete;

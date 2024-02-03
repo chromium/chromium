@@ -16,6 +16,7 @@
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
@@ -336,7 +337,8 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     // Dropping `data` on the wallpaper results in pinning of files to holding
     // space. Note that this will cause holding space to be visible in the shelf
     // if it wasn't already visible.
-    client->PinFiles(unpinned_file_paths);
+    client->PinFiles(unpinned_file_paths,
+                     holding_space_metrics::EventSource::kWallpaper);
 
     // Open the holding space tray so that the user can see the newly pinned
     // files and understands the relationship between the action they took on
@@ -543,7 +545,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
 
       // The nudge is supported for regular users only.
       if (const auto user_type = session_controller->GetUserType();
-          user_type != user_manager::UserType::USER_TYPE_REGULAR) {
+          user_type != user_manager::UserType::kRegular) {
         eligibility = false;
       }
 

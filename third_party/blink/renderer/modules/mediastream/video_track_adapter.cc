@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -24,7 +25,6 @@
 #include "build/build_config.h"
 #include "media/base/limits.h"
 #include "media/base/video_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
@@ -133,7 +133,7 @@ bool MaybeUpdateFrameRate(ComputedSettings* settings) {
 VideoTrackAdapterSettings ReturnSettingsMaybeOverrideMaxFps(
     const VideoTrackAdapterSettings& settings) {
   VideoTrackAdapterSettings new_settings = settings;
-  absl::optional<double> max_fps_override =
+  std::optional<double> max_fps_override =
       Platform::Current()->GetWebRtcMaxCaptureFrameRate();
   if (max_fps_override) {
     DVLOG(1) << "Overriding max frame rate.  Was="
@@ -262,10 +262,10 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
 
   // The target timestamp delta between video frames, corresponding to the max
   // fps.
-  const absl::optional<base::TimeDelta> target_delta_;
+  const std::optional<base::TimeDelta> target_delta_;
 
   // The maximum allowed deviation from |target_delta_| before dropping a frame.
-  const absl::optional<base::TimeDelta> max_delta_deviation_;
+  const std::optional<base::TimeDelta> max_delta_deviation_;
 
   // The timestamp of the last delivered video frame.
   base::TimeDelta timestamp_last_delivered_frame_ = base::TimeDelta::Max();
@@ -292,13 +292,13 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
       media_stream_video_source_(media_stream_video_source),
       settings_(ReturnSettingsMaybeOverrideMaxFps(settings)),
       target_delta_(settings_.max_frame_rate()
-                        ? absl::make_optional(base::Seconds(
+                        ? std::make_optional(base::Seconds(
                               1.0 / settings_.max_frame_rate().value()))
-                        : absl::nullopt),
+                        : std::nullopt),
       max_delta_deviation_(target_delta_
-                               ? absl::make_optional(kMaxDeltaDeviationFactor *
-                                                     target_delta_.value())
-                               : absl::nullopt) {
+                               ? std::make_optional(kMaxDeltaDeviationFactor *
+                                                    target_delta_.value())
+                               : std::nullopt) {
   DVLOG(1) << __func__ << " max_framerate "
            << settings.max_frame_rate().value_or(-1);
   DCHECK(renderer_task_runner_.get());

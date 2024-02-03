@@ -187,7 +187,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   EXPECT_EQ(ScrollOffset(), scrollable_area->GetScrollOffset());
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.push_back(
-      {scroll_element_id, gfx::Vector2dF(0, 1), absl::nullopt});
+      {scroll_element_id, gfx::Vector2dF(0, 1), std::nullopt});
   overflow_scroll_layer->layer_tree_host()->ApplyCompositorChanges(
       &commit_data);
   UpdateAllLifecyclePhases();
@@ -209,7 +209,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   ASSERT_EQ(overflow_scroll_layer,
             CcLayerByCcElementId(RootCcLayer(), scroll_element_id));
   commit_data.scrolls[0] = {scroll_element_id, gfx::Vector2dF(0, 1),
-                            absl::nullopt};
+                            std::nullopt};
   overflow_scroll_layer->layer_tree_host()->ApplyCompositorChanges(
       &commit_data);
 
@@ -246,7 +246,7 @@ TEST_P(CompositingTest, FrameViewScroll) {
   EXPECT_EQ(ScrollOffset(), scrollable_area->GetScrollOffset());
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.push_back({scrollable_area->GetScrollElementId(),
-                                 gfx::Vector2dF(0, 1), absl::nullopt});
+                                 gfx::Vector2dF(0, 1), std::nullopt});
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
@@ -2157,7 +2157,7 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
   // Simulate the scroll update with scroll delta from impl-side.
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.emplace_back(cc::CompositorCommitData::ScrollUpdateInfo(
-      element_id, gfx::Vector2dF(0, 10), absl::nullopt));
+      element_id, gfx::Vector2dF(0, 10), std::nullopt));
   Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
   EXPECT_EQ(gfx::PointF(0, 10), scrollable_area->ScrollPosition());
   EXPECT_EQ(
@@ -2302,7 +2302,7 @@ TEST_P(CompositingSimTest, ScrollWithMainThreadReasonsNeedsCommit) {
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.emplace_back(
       MainFrame().GetFrameView()->LayoutViewport()->GetScrollElementId(),
-      gfx::Vector2dF(0, 100.f), absl::nullopt);
+      gfx::Vector2dF(0, 100.f), std::nullopt);
   layer_tree_host->ApplyCompositorChanges(&commit_data);
 
   // Due to main thread scrolling reasons (fixed-background element), we need a

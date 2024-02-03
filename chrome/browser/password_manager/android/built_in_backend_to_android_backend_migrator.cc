@@ -176,6 +176,11 @@ void BuiltInBackendToAndroidBackendMigrator::OnSyncServiceInitialized(
   sync_service_ = sync_service;
 }
 
+BuiltInBackendToAndroidBackendMigrator::MigrationType
+BuiltInBackendToAndroidBackendMigrator::migration_in_progress_type() const {
+  return migration_in_progress_type_;
+}
+
 base::WeakPtr<BuiltInBackendToAndroidBackendMigrator>
 BuiltInBackendToAndroidBackendMigrator::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

@@ -27,14 +27,14 @@ class WebThemeEngineDefault : public WebThemeEngine {
              const WebThemeEngine::ExtraParams* extra_params,
              mojom::ColorScheme color_scheme,
              const ui::ColorProvider* color_provider,
-             const absl::optional<SkColor>& accent_color) override;
+             const std::optional<SkColor>& accent_color) override;
   void GetOverlayScrollbarStyle(WebThemeEngine::ScrollbarStyle*) override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size NinePatchCanvasSize(Part part) const override;
   gfx::Rect NinePatchAperture(Part part) const override;
-  absl::optional<SkColor> GetSystemColor(
+  std::optional<SkColor> GetSystemColor(
       WebThemeEngine::SystemThemeColor system_theme_color) const override;
-  absl::optional<SkColor> GetAccentColor() const override;
+  std::optional<SkColor> GetAccentColor() const override;
 #if BUILDFLAG(IS_WIN)
   // Caches the scrollbar metrics. These are retrieved in the browser and passed
   // to the renderer in RendererPreferences because the required Windows
@@ -81,7 +81,7 @@ class WebThemeEngineDefault : public WebThemeEngine {
   // `light_color_provider_`, and `dark_contrasting_color` is the one used from
   // `dark_color_provider_`.
   mojom::ColorScheme CalculateColorSchemeForAccentColor(
-      absl::optional<SkColor> accent_color,
+      std::optional<SkColor> accent_color,
       mojom::ColorScheme color_scheme,
       SkColor light_contrasting_color,
       SkColor dark_contrasting_color) const;

@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384959399684842514">Преземањето е паузирано</translation>
 <translation id="1415402041810619267">URL-адресата е скратена</translation>
-<translation id="1426410128494586442">Да</translation>
 <translation id="1434873037477293673">картичка за намалување на цената</translation>
 <translation id="1448064542941920355">Одзумирај</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сајт}one{<ph name="SITE_COUNT" /> сајт}other{<ph name="SITE_COUNT" /> сајта}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">За да овозможите <ph name="APP_NAME" /> да пристапува до вашата камера, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Блокирани се колачиња од трети страни</translation>
 <translation id="2238944249568001759">Предложени пребарувања според вашата последна картичка</translation>
+<translation id="2241587408274973373">Картички за страница во нова картичка</translation>
 <translation id="2241634353105152135">Само еднаш</translation>
 <translation id="2253414712144136228">Отстранете <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Блокиран е 1 сајт}one{Блокирани се # сајт}other{Блокирани се # сајтови}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Сајтовите може да прикажуваат prompt за најавување од услуги за идентификација.</translation>
 <translation id="2790501146643349491">Кога е вклучено, неодамна затворените сајтови може да го завршат испраќањето и примањето податоци. Кога е исклучено, неодамна затворените сајтови не може да го завршат испраќањето и примањето податоци.</translation>
 <translation id="2822354292072154809">Сигурно ли сакате да ги ресетирате сите дозволи на сајтот за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Барање приказ на мобилен</translation>
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2874939134665556319">Претходна песна</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Прикажувач на сертификат</translation>
 <translation id="2979365474350987274">Колачињата од трети страни се ограничени</translation>
 <translation id="3008272652534848354">Ресетирај ги дозволите</translation>
-<translation id="3013291976881901233">MIDI-уреди</translation>
 <translation id="301521992641321250">Автоматски блокирана</translation>
 <translation id="3069226013421428034">Дозволете најавување на трети лица за конкретен сајт.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Истекува утре}one{Истекува за # ден}other{Истекува за # дена}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Поврзано со USB-уред</translation>
 <translation id="4194328954146351878">Прашај пред да дозволиш сајтовите да гледаат и менуваат податоци на NFC-уреди (се препорачува)</translation>
 <translation id="4200726100658658164">Отворете ги поставките за локација</translation>
-<translation id="4212246570487010370">Продолжете да прелистувате</translation>
 <translation id="4226663524361240545">Известувањата може да предизвикаат вибрации на уредот</translation>
 <translation id="4259722352634471385">Навигацијата е блокирана: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Дозволено</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Премести долу</translation>
 <translation id="6749077623962119521">Да се ресетираат дозволите?</translation>
 <translation id="6766622839693428701">Повлечете надолу за да затворите.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> од <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Изберете опција за <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6818926723028410516">Изберете ставки</translation>

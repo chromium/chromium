@@ -143,8 +143,8 @@ bool VerifyCRL(const Crl& crl,
   }
 
   CBS spki;
-  CBS_init(&spki, parsed_cert->tbs().spki_tlv.UnsafeData(),
-           parsed_cert->tbs().spki_tlv.Length());
+  CBS_init(&spki, parsed_cert->tbs().spki_tlv.data(),
+           parsed_cert->tbs().spki_tlv.size());
   bssl::UniquePtr<EVP_PKEY> pubkey(EVP_parse_public_key(&spki));
   if (!pubkey || CBS_len(&spki) != 0) {
     VLOG(2) << "CRL - Parsing public key failed";

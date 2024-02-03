@@ -228,4 +228,26 @@ void EditorMetricsRecorder::LogNumberOfResponsesFromServer(
   }
 }
 
+void EditorMetricsRecorder::LogLengthOfLongestResponseFromServer(
+    int number_of_characters) {
+  switch (mode_) {
+    case EditorOpportunityMode::kWrite:
+      base::UmaHistogramCounts100000(
+          "InputMethod.Manta.Orca.LengthOfLongestResponse.Write",
+          number_of_characters);
+      return;
+    case EditorOpportunityMode::kRewrite:
+      base::UmaHistogramCounts100000(
+          "InputMethod.Manta.Orca.LengthOfLongestResponse.Rewrite",
+          number_of_characters);
+      base::UmaHistogramCounts100000(
+          base::StrCat({"InputMethod.Manta.Orca.LengthOfLongestResponse.",
+                        GetToneStringFromEnum(tone_)}),
+          number_of_characters);
+      return;
+    case EditorOpportunityMode::kNone:
+      return;
+  }
+}
+
 }  // namespace ash::input_method

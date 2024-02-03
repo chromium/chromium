@@ -32,9 +32,10 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 
 #include <map>
+#include <optional>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
@@ -114,7 +115,7 @@ class WebThemeEngine {
     int track_y = 0;
     int track_width = 0;
     int track_height = 0;
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> track_color;
   };
 
   // Extra parameters for PartCheckbox, PartPushButton and PartRadio.
@@ -193,7 +194,7 @@ class WebThemeEngine {
   struct ScrollbarThumbExtraParams {
     WebScrollbarOverlayColorTheme scrollbar_theme =
         WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark;
-    absl::optional<SkColor> thumb_color;
+    std::optional<SkColor> thumb_color;
   };
 
   struct ScrollbarButtonExtraParams {
@@ -202,8 +203,8 @@ class WebThemeEngine {
     float zoom = 0;
     bool needs_rounded_corner = false;
     bool right_to_left = false;
-    absl::optional<SkColor> thumb_color;
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
   };
 
   // Represents ui::NativeTheme System Info
@@ -229,8 +230,8 @@ class WebThemeEngine {
     mojom::ColorScheme scrollbar_theme = mojom::ColorScheme::kLight;
     ScrollbarOrientation orientation = ScrollbarOrientation::kVerticalOnRight;
     float scale_from_dip = 0;
-    absl::optional<SkColor> thumb_color;
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
   };
 #endif
 
@@ -291,16 +292,14 @@ class WebThemeEngine {
       const ExtraParams*,
       blink::mojom::ColorScheme,
       const ui::ColorProvider*,
-      const absl::optional<SkColor>& accent_color = absl::nullopt) {}
+      const std::optional<SkColor>& accent_color = std::nullopt) {}
 
-  virtual absl::optional<SkColor> GetSystemColor(
+  virtual std::optional<SkColor> GetSystemColor(
       SystemThemeColor system_theme) const {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  virtual absl::optional<SkColor> GetAccentColor() const {
-    return absl::nullopt;
-  }
+  virtual std::optional<SkColor> GetAccentColor() const { return std::nullopt; }
 
   virtual ForcedColors GetForcedColors() const { return ForcedColors::kNone; }
   virtual void OverrideForcedColorsTheme(bool is_dark_theme) {}

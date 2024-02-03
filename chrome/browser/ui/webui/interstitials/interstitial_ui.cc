@@ -347,6 +347,7 @@ std::unique_ptr<EnterpriseBlockPage> CreateEnterpriseBlockPage(
   const GURL kRequestUrl("https://enterprise-block.example.net");
   return std::make_unique<EnterpriseBlockPage>(
       web_contents, kRequestUrl,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
       std::make_unique<EnterpriseBlockControllerClient>(web_contents,
                                                         kRequestUrl));
 }

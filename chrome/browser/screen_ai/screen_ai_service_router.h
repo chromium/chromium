@@ -56,22 +56,23 @@ class ScreenAIServiceRouter : public KeyedService,
   // ScreenAIInstallState::Observer:
   void StateChanged(ScreenAIInstallState::State state) override;
 
-  // Initialzies the `service` if it's not already done.
-  // TODO(crbug.com/1520424): Move to private when all clients are updated.
-  void InitializeServiceIfNeeded(Service service);
-
   // Returns true if the connection for `service` is bound.
   bool IsConnectionBoundForTesting(Service service);
 
  private:
+  // Initialzies the `service` if it's not already done.
+  void InitializeServiceIfNeeded(Service service);
+
   void InitializeOCR(int request_id,
                      mojo::PendingReceiver<mojom::OCRService> receiver,
                      std::unique_ptr<ComponentFiles> model_files);
+
   void InitializeMainContentExtraction(
       int request_id,
       mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
       std::unique_ptr<ComponentFiles> model_files);
 
+  // Launches the service if it's not already launched.
   void LaunchIfNotRunning();
 
   // True if service is already initialized, false if it is disabled, and
@@ -88,6 +89,9 @@ class ScreenAIServiceRouter : public KeyedService,
 
   // Calls back all pendnding service state requests.
   void CallPendingStatusRequests(Service service, bool successful);
+
+  // Returns the list of services that have a pending status request.
+  std::set<Service> GetAllPendingStatusServices();
 
   // Service type and trigger time of initialization requests, keyed on request
   // id.

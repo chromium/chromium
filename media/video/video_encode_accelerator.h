@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -23,7 +24,6 @@
 #include "media/base/video_encoder.h"
 #include "media/base/video_types.h"
 #include "media/video/video_encoder_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 
 namespace media {
@@ -143,22 +143,22 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool end_of_picture = true;
 
   bool dropped_frame() const;
-  absl::optional<uint8_t> spatial_idx() const;
+  std::optional<uint8_t> spatial_idx() const;
 
   // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,
   // it's also possible for none of them to be set.
-  absl::optional<H264Metadata> h264;
-  absl::optional<Vp8Metadata> vp8;
-  absl::optional<Vp9Metadata> vp9;
-  absl::optional<Av1Metadata> av1;
-  absl::optional<H265Metadata> h265;
+  std::optional<H264Metadata> h264;
+  std::optional<Vp8Metadata> vp8;
+  std::optional<Vp9Metadata> vp9;
+  std::optional<Av1Metadata> av1;
+  std::optional<H265Metadata> h265;
 
   // Some platforms may adjust the encoding size to meet hardware requirements.
   // If not set, the encoded size is the same as configured.
-  absl::optional<gfx::Size> encoded_size;
+  std::optional<gfx::Size> encoded_size;
 
   // Some platforms may adjust the color space.
-  absl::optional<gfx::ColorSpace> encoded_color_space;
+  std::optional<gfx::ColorSpace> encoded_color_space;
 };
 
 // Video encoder interface.
@@ -263,18 +263,18 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
 
     // Initial encoding framerate in frames per second. This is optional and
     // VideoEncodeAccelerator should use |kDefaultFramerate| if not given.
-    absl::optional<uint32_t> initial_framerate =
+    std::optional<uint32_t> initial_framerate =
         VideoEncodeAccelerator::kDefaultFramerate;
 
     // Group of picture length for encoded output stream, indicates the
     // distance between two key frames, i.e. IPPPIPPP would be represent as 4.
-    absl::optional<uint32_t> gop_length;
+    std::optional<uint32_t> gop_length;
 
     // Codec level of encoded output stream for H264 only. This value should
     // be aligned to the H264 standard definition of SPS.level_idc.
     // If this is not given, VideoEncodeAccelerator selects one of proper H.264
     // levels for |input_visible_size| and |initial_framerate|.
-    absl::optional<uint8_t> h264_output_level;
+    std::optional<uint8_t> h264_output_level;
 
     // Indicates baseline profile or constrained baseline profile for H264 only.
     bool is_constrained_h264 = false;
@@ -284,7 +284,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Encode().
     // This is kShmem iff a video frame is mapped in user space.
     // This is kDmabuf iff a video frame has dmabuf.
-    absl::optional<StorageType> storage_type;
+    std::optional<StorageType> storage_type;
 
     // Indicates captured video (from a camera) or generated (screen grabber).
     // Screen content has a number of special properties such as lack of noise,
@@ -429,7 +429,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual void RequestEncodingParametersChange(
       const Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) = 0;
+      const std::optional<gfx::Size>& size) = 0;
 
   // Request a change to the encoding parameters. If not implemented, default
   // behavior is to get the sum over layers and pass to version with bitrate
@@ -448,7 +448,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual void RequestEncodingParametersChange(
       const VideoBitrateAllocation& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size);
+      const std::optional<gfx::Size>& size);
 
   // Destroys the encoder: all pending inputs and outputs are dropped
   // immediately and the component is freed.  This call may asynchronously free

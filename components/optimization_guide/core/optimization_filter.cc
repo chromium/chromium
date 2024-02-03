@@ -43,8 +43,7 @@ bool MatchesRegexp(const GURL& url, const RegexpList& regexps) {
 std::string SHA256(base::StringPiece input) {
   uint8_t result[crypto::kSHA256Length];
   crypto::SHA256HashString(input, result, std::size(result));
-  std::string sha256hex = base::HexEncode(result, std::size(result));
-  return sha256hex;
+  return base::HexEncode(result);
 }
 
 }  // namespace

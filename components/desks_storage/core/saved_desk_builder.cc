@@ -152,9 +152,8 @@ BuiltApp SavedDeskGenericAppBuilder::Build() {
     app_launch_info->event_flag = event_flag_.value();
   }
 
-  app_launch_info->app_name = name_;
+  app_launch_info->browser_extra_info.app_name = name_;
   app_launch_info->window_id = window_id_;
-  // app_launch_info->event_flag = event_flag_.value_or(0);
 
   return BuiltApp(BuiltApp::Status::kOk, std::move(window_info),
                   std::move(app_launch_info));
@@ -278,22 +277,24 @@ BuiltApp SavedDeskBrowserBuilder::Build() {
   if (generic_app.status != BuiltApp::Status::kOk)
     return BuiltApp(generic_app.status, nullptr, nullptr);
 
-  generic_app.launch_info->active_tab_index = active_tab_index_;
-  generic_app.launch_info->first_non_pinned_tab_index =
+  generic_app.launch_info->browser_extra_info.urls = urls_;
+  generic_app.launch_info->browser_extra_info.active_tab_index =
+      active_tab_index_;
+  generic_app.launch_info->browser_extra_info.first_non_pinned_tab_index =
       first_non_pinned_tab_index_;
-  generic_app.launch_info->urls = urls_;
-  generic_app.launch_info->app_type_browser = is_app_;
-  generic_app.launch_info->lacros_profile_id = lacros_profile_id_;
-
+  generic_app.launch_info->browser_extra_info.app_type_browser = is_app_;
+  generic_app.launch_info->browser_extra_info.lacros_profile_id =
+      lacros_profile_id_;
   for (auto& tab_group : tab_group_builders_) {
     SavedDeskTabGroupBuilder::TabGroupWithStatus built_group =
         tab_group.Build();
     if (built_group.status !=
-        SavedDeskTabGroupBuilder::TabGroupBuildStatus::kOk)
+        SavedDeskTabGroupBuilder::TabGroupBuildStatus::kOk) {
       continue;
+    }
     DCHECK(built_group.tab_group);
 
-    generic_app.launch_info->tab_group_infos.push_back(
+    generic_app.launch_info->browser_extra_info.tab_group_infos.push_back(
         *built_group.tab_group.release());
   }
 

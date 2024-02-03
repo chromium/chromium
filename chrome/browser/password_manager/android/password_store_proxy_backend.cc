@@ -61,12 +61,12 @@ std::string GetFallbackMetricNameForMethod(const MethodName& method_name) {
 }  // namespace
 
 PasswordStoreProxyBackend::PasswordStoreProxyBackend(
-    PasswordStoreBackend* built_in_backend,
-    PasswordStoreBackend* android_backend,
+    std::unique_ptr<PasswordStoreBackend> built_in_backend,
+    std::unique_ptr<PasswordStoreBackend> android_backend,
     PrefService* prefs,
     IsAccountStore is_account_store)
-    : built_in_backend_(built_in_backend),
-      android_backend_(android_backend),
+    : built_in_backend_(std::move(built_in_backend)),
+      android_backend_(std::move(android_backend)),
       prefs_(prefs),
       is_account_store_(is_account_store) {}
 
@@ -110,8 +110,15 @@ void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
       /*num_closures=*/2, std::move(shutdown_completed));
   android_backend_->Shutdown(pending_shutdown_calls);
   built_in_backend_->Shutdown(pending_shutdown_calls);
+  android_backend_.reset();
+  built_in_backend_.reset();
 }
 
+bool PasswordStoreProxyBackend::IsAbleToSavePasswords() {
+  // shadow_backend()->IsAbleToSavePasswords() doesn't matter because it's a
+  // fallback.
+  return main_backend()->IsAbleToSavePasswords();
+}
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   main_backend()->GetAllLoginsAsync(std::move(callback));
 }
@@ -148,7 +155,7 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
           backend->FillMatchingLoginsAsync(std::move(reply_callback),
                                            include_psl, forms);
         },
-        base::Unretained(built_in_backend_), include_psl, forms);
+        base::Unretained(built_in_backend_.get()), include_psl, forms);
 
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
@@ -170,7 +177,7 @@ void PasswordStoreProxyBackend::GetGroupedMatchingLoginsAsync(
   if (UsesAndroidBackendAsMainBackend()) {
     auto execute_on_built_in_backend =
         base::BindOnce(&PasswordStoreBackend::GetGroupedMatchingLoginsAsync,
-                       base::Unretained(built_in_backend_), form_digest);
+                       base::Unretained(built_in_backend_.get()), form_digest);
 
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
@@ -192,7 +199,7 @@ void PasswordStoreProxyBackend::AddLoginAsync(
   if (UsesAndroidBackendAsMainBackend()) {
     auto execute_on_built_in_backend =
         base::BindOnce(&PasswordStoreBackend::AddLoginAsync,
-                       base::Unretained(built_in_backend_), form);
+                       base::Unretained(built_in_backend_.get()), form);
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
             PasswordChangesOrError>,
@@ -212,7 +219,7 @@ void PasswordStoreProxyBackend::UpdateLoginAsync(
   if (UsesAndroidBackendAsMainBackend()) {
     auto execute_on_built_in_backend =
         base::BindOnce(&PasswordStoreBackend::UpdateLoginAsync,
-                       base::Unretained(built_in_backend_), form);
+                       base::Unretained(built_in_backend_.get()), form);
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
             PasswordChangesOrError>,
@@ -329,13 +336,13 @@ void PasswordStoreProxyBackend::MaybeFallbackOnOperation(
 }
 
 PasswordStoreBackend* PasswordStoreProxyBackend::main_backend() {
-  return UsesAndroidBackendAsMainBackend() ? android_backend_
-                                           : built_in_backend_;
+  return UsesAndroidBackendAsMainBackend() ? android_backend_.get()
+                                           : built_in_backend_.get();
 }
 
 PasswordStoreBackend* PasswordStoreProxyBackend::shadow_backend() {
-  return UsesAndroidBackendAsMainBackend() ? built_in_backend_
-                                           : android_backend_;
+  return UsesAndroidBackendAsMainBackend() ? built_in_backend_.get()
+                                           : android_backend_.get();
 }
 
 void PasswordStoreProxyBackend::OnSyncShutdown(

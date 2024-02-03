@@ -132,7 +132,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   }
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 

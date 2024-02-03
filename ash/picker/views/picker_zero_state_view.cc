@@ -17,6 +17,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
@@ -28,7 +30,7 @@ namespace {
 const std::u16string kPlaceholderCategorySectionTitle =
     u"Placeholder Categories";
 
-// TODO: b/316935667 - Get a relevant icon for each category.
+// TODO: b/322905189 - Get a relevant icon for each category.
 const gfx::VectorIcon& kPlaceholderIcon = kImeMenuEmoticonIcon;
 
 }  // namespace
@@ -43,11 +45,11 @@ PickerZeroStateView::PickerZeroStateView(
       std::make_unique<PickerSectionView>(kPlaceholderCategorySectionTitle));
   for (auto category : PickerModel().GetAvailableCategories()) {
     auto item_view = std::make_unique<PickerItemView>(
-        base::BindRepeating(select_category_callback, category),
-        PickerItemView::ItemType::kListItem);
+        base::BindRepeating(select_category_callback, category));
     item_view->SetPrimaryText(GetStringForPickerCategory(category));
-    item_view->SetLeadingIcon(kPlaceholderIcon);
-    section_view->AddItem(std::move(item_view));
+    item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+        kPlaceholderIcon, cros_tokens::kCrosSysOnSurface));
+    section_view->AddListItem(std::move(item_view));
   }
   section_views_.push_back(section_view);
 }

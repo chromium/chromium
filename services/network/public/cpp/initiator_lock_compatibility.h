@@ -5,8 +5,9 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_INITIATOR_LOCK_COMPATIBILITY_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_INITIATOR_LOCK_COMPATIBILITY_H_
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -50,8 +51,8 @@ enum class InitiatorLockCompatibility {
 // (ones that are not coverd by the kExcludedPlugin exception).
 COMPONENT_EXPORT(NETWORK_CPP)
 InitiatorLockCompatibility VerifyRequestInitiatorLock(
-    const absl::optional<url::Origin>& request_initiator_origin_lock,
-    const absl::optional<url::Origin>& request_initiator);
+    const std::optional<url::Origin>& request_initiator_origin_lock,
+    const std::optional<url::Origin>& request_initiator);
 
 namespace debug {
 
@@ -59,7 +60,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) ScopedRequestInitiatorOriginLockCrashKey
     : public url::debug::ScopedOriginCrashKey {
  public:
   explicit ScopedRequestInitiatorOriginLockCrashKey(
-      const absl::optional<url::Origin>& request_initiator_origin_lock);
+      const std::optional<url::Origin>& request_initiator_origin_lock);
   ~ScopedRequestInitiatorOriginLockCrashKey();
 
   ScopedRequestInitiatorOriginLockCrashKey(

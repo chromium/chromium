@@ -7,6 +7,8 @@
 
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 
+namespace web_app {
+
 class FakeIsolatedWebAppsEnabledPrefObserver
     : public IsolatedWebAppsEnabledPrefObserver {
  public:
@@ -23,5 +25,7 @@ class FakeIsolatedWebAppsEnabledPrefObserver
   PrefChangedCallback callback_;
   bool pref_value_;
 };
+
+}  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_FAKE_PREF_OBSERVER_H_

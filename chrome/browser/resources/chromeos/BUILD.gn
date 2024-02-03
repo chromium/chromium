@@ -44,6 +44,7 @@ group("resources") {
     "parent_access:resources",
     "password_change:resources",
     "remote_maintenance_curtain:resources",
+    "seal:resources",
     "sensor_info:resources",
     "set_time_dialog:resources",
     "supervision:resources",

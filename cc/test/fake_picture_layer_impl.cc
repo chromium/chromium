@@ -21,7 +21,7 @@ FakePictureLayerImpl::FakePictureLayerImpl(
     scoped_refptr<RasterSource> raster_source)
     : PictureLayerImpl(tree_impl, id) {
   if (raster_source) {
-    SetBounds(raster_source->GetSize());
+    SetBounds(raster_source->size());
     SetRasterSource(raster_source, Region());
   } else {
     // Just to avoid crash on null RasterSource when updating tilings.

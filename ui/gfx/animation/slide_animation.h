@@ -21,30 +21,24 @@ namespace gfx {
 // class MyClass : public AnimationDelegate {
 //  public:
 //   MyClass() {
-//     animation_ = std::make_unique<SlideAnimation>(this);
-//     animation_->SetSlideDuration(base::Milliseconds(500));
+//     animation_.SetSlideDuration(base::Milliseconds(500));
 //   }
-//   void OnMouseOver() {
-//     animation_->Show();
+//
+//   void OnMouseEntered(const ui::MouseEvent& event) {
+//     animation_.Show();
 //   }
-//   void OnMouseOut() {
-//     animation_->Hide();
+//
+//   void OnMouseExited(const ui::MouseEvent& event) {
+//     animation_.Hide();
 //   }
+//
 //   void AnimationProgressed(const Animation* animation) {
-//     if (animation == animation_.get()) {
-//       Layout();
-//       SchedulePaint();
-//     } else if (animation == other_animation_.get()) {
-//       ...
-//     }
+//     CHECK_EQ(animation, &animation_);
+//     hover_image_.SetOpacity(animation_.GetCurrentValue());
 //   }
-//   void Layout() {
-//     if (animation_->is_animating()) {
-//       hover_image_.SetOpacity(animation_->GetCurrentValue());
-//     }
-//   }
+//
 //  private:
-//   std::unique_ptr<SlideAnimation> animation_;
+//   SlideAnimation animation_{this};
 // }
 class ANIMATION_EXPORT SlideAnimation : public LinearAnimation {
  public:

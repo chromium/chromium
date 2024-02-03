@@ -75,6 +75,17 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Not allowed because the input looks like a URL"/>
 </enum>
 
+<enum name="DocumentSuggestRequestEvent">
+  <int value="1" label="requests sent">Request was sent.</int>
+  <int value="2" label="requests invalidated">
+    Request was invalidated (cancelled because URLLoader was deleted before the
+    callback was invoked).
+  </int>
+  <int value="3" label="responses received">
+    Response was received asynchronously.
+  </int>
+</enum>
+
 <enum name="GroupId">
   <summary>
     Suggestion group IDs toggled visible or hidden in the omnibox result list.
@@ -105,12 +116,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="@bookmarks starter pack engine"/>
   <int value="3" label="@history starter pack engine"/>
   <int value="4" label="@tabs starter pack engine"/>
-</enum>
-
-<enum name="OmniboxDocumentSuggestRequests">
-  <int value="1" label="requests sent"/>
-  <int value="2" label="requests invalidated"/>
-  <int value="3" label="(non-invalidated) replies received"/>
 </enum>
 
 <enum name="OmniboxEnteredKeywordMode2">
@@ -157,37 +162,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Title prefix"/>
   <int value="3" label="Title non-prefix"/>
   <int value="4" label="Shortcut text prefix"/>
-</enum>
-
-<enum name="OmniboxSuggestRequests">
-  <int value="1" label="requests sent"/>
-  <int value="2" label="requests invalidated"/>
-  <int value="3" label="(non-invalidated) replies received"/>
-</enum>
-
-<enum name="OmniboxZeroSuggestRequests">
-  <obsolete>
-    Obsolete as of M105.
-  </obsolete>
-  <int value="1" label="requests sent">Suggest requests that were sent.</int>
-  <int value="2" label="requests invalidated">
-    Suggest requests that were invalidated, e.g., due to user starting to type.
-  </int>
-  <int value="3" label="responses received">
-    Suggest responses that were received. Includes both those received directly
-    from the server and those loaded from the HTTP cache.
-  </int>
-  <int value="4" label="responses loaded from HTTP cache">
-    Subset of Suggest responses that were loaded from the HTTP cache.
-  </int>
-  <int value="5"
-      label="out-of-date responses loaded from HTTP cache (deprecated)">
-    Subset of Suggest responses that were loaded from the HTTP cache and were
-    out-of-date.
-  </int>
-  <int value="6" label="responses updated displayed results">
-    Subset of Suggest responses that ended up updating the displayed results.
-  </int>
 </enum>
 
 <enum name="SearchPrefetchEligibilityReason">
@@ -248,6 +222,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kStartedServing"/>
   <int value="2" label="kFailed"/>
   <int value="3" label="kCompleted"/>
+</enum>
+
+<enum name="SearchSuggestRequestEvent">
+  <int value="1" label="requests sent">Request was sent.</int>
+  <int value="2" label="requests invalidated">
+    Request was invalidated (cancelled because URLLoader was deleted before the
+    callback was invoked).
+  </int>
+  <int value="3" label="responses received">
+    Response was received asynchronously.
+  </int>
 </enum>
 
 <enum name="SuggestionAnswerOptionalType">
@@ -343,6 +328,16 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="Set Chrome as default browser"/>
 </enum>
 
+<enum name="SuggestRequestType">
+  <int value="0" label="search suggestion"/>
+  <int value="1" label="search suggestion warm-up"/>
+  <int value="2" label="search suggestion for images"/>
+  <int value="3" label="zero-prefix suggestion"/>
+  <int value="4" label="zero-prefix suggestion prefetching"/>
+  <int value="5" label="document suggestion"/>
+  <int value="6" label="suggestion deletion"/>
+</enum>
+
 <enum name="ZeroSuggestEligibility">
   <int value="0" label="Eligible for current context and external conditions">
     Zero-prefix suggestions are eligible.
@@ -381,22 +376,23 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="ZeroSuggestProviderEvent">
+<enum name="ZeroSuggestRequestEvent">
   <int value="0" label="cached response converted to results">
     Cached response was synchronously converted to displayed matches.
   </int>
-  <int value="1" label="request sent">Remote request was sent.</int>
+  <int value="1" label="request sent">Request was sent.</int>
   <int value="2" label="request invalidated">
-    Remote request was invalidated (due to user starting to type or another
-    zero-suggest request).
+    Request was invalidated (cancelled because URLLoader was deleted before the
+    callback was invoked).
   </int>
   <int value="3" label="response received">
-    Remote response was received asynchronously.
+    Response was received asynchronously.
   </int>
-  <int value="4" label="response cached">Remote response was cached.</int>
+  <int value="4" label="response cached">Response was cached.</int>
   <int value="5" label="response converted to results">
-    Remote response ended up being converted to displayed matches. This may
-    happen due to an empty displayed result set or an empty remote result set.
+    Response was converted to displayed matches. This can happen if the
+    displayed result set is empty and the response result set is non-empty; or
+    vice versa.
   </int>
 </enum>
 

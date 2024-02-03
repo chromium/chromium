@@ -83,8 +83,8 @@
   }
 </style>
 
-<tr id="container" tabindex$="[[getTabIndex()]]"
-    on-focus="onFocusOrMouseEnter"
+<tr id="container" tabindex="-1" role="row"
+    on-focus="onFocusOrMouseEnter" on-blur="onBlur"
     on-mouseenter="onFocusOrMouseEnter"
     aria-label$="[[getAriaLabel(description, acceleratorInfos)]]">
   <th id="descriptionText" scope="row">[[description]]</th>
@@ -93,8 +93,9 @@
       <template is="dom-repeat" items="[[acceleratorInfos]]" as="item"
           index-as="index">
         <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
-            action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]"
-            show-edit-icon="true" is-first-accelerator="[[isFirstAccelerator(index)]]">
+            description="[[description]]" action="[[action]]" source="[[source]]"
+            source-is-locked="[[isLocked]]" show-edit-icon="true"
+            is-first-accelerator="[[isFirstAccelerator(index)]]">
         </accelerator-view>
       </template>
       <div id="noShortcutAssignedContainer" hidden="[[!isEmptyList(acceleratorInfos)]]">
@@ -102,7 +103,8 @@
           [[i18n('noShortcutAssigned')]]
         </div>
         <template is="dom-if" if="[[!isLocked]]">
-          <div class="edit-icon-container" aria-label="[[i18n('edit')]]">
+          <div class="edit-icon-container"
+            aria-label="[[getEditButtonAriaLabel(description)]]">
             <cr-icon-button class="edit-button" class="clickable-button"
                 iron-icon="shortcut-customization:edit"
                 on-click="onEditIconClicked">

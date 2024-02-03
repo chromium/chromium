@@ -19,11 +19,14 @@ import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/c
 import {CrosNetworkConfigRemote, InhibitReason, MAX_NUM_CUSTOM_APNS, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+
+import {clearBody} from './utils.js';
 
 suite('InternetPage', function() {
   /** @type {?InternetPageElement} */
@@ -220,7 +223,7 @@ suite('InternetPage', function() {
     hotspotConfig = new FakeHotspotConfig();
     setHotspotConfigForTesting(hotspotConfig);
 
-    PolymerTest.clearBody();
+    clearBody();
   });
 
   teardown(function() {

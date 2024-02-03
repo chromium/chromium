@@ -45,10 +45,18 @@ ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
 ScriptPromiseResolver::ScriptPromiseResolver(
     ScriptState* script_state,
     const ExceptionContext& exception_context)
+    : ScriptPromiseResolver(script_state,
+                            exception_context,
+                            Resolver(script_state)) {}
+
+ScriptPromiseResolver::ScriptPromiseResolver(
+    ScriptState* script_state,
+    const ExceptionContext& exception_context,
+    Resolver resolver)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+      resolver_(std::move(resolver)),
       state_(kPending),
       script_state_(script_state),
-      resolver_(script_state),
       exception_context_(exception_context) {
   if (GetExecutionContext()->IsContextDestroyed()) {
     state_ = kDetached;
@@ -56,7 +64,6 @@ ScriptPromiseResolver::ScriptPromiseResolver(
   }
   script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
 }
-
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;
 
 void ScriptPromiseResolver::Dispose() {

@@ -1,0 +1,30 @@
+caption: Managed toolbar avatar label setting
+default: 0
+desc: |-
+  Leaving this policy unset or setting it to <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE">display_management_label_permanent</ph> (value 0) will show a Work or School label next to the toolbar avatar.
+  These labels will only be shown if the signed in account is managed.
+
+  Setting it to <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE">display_management_label_transient</ph> (value 1) will show a Work or School label next to the toolbar avatar for 30 seconds after opening the profile.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome.*
+items:
+- caption: Always display management label
+  name: display_management_label_permanent
+  value: 0
+- caption: Display management labels for 30s
+  name: display_management_label_transient
+  value: 1
+owners:
+- ydago@chromium.org
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+deprecated: false
+tags: []
+type: int-enum

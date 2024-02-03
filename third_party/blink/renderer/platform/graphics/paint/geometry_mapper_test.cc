@@ -92,9 +92,9 @@ class GeometryMapperTest : public testing::Test,
   PropertyTreeStateOrAlias ancestor_state = PropertyTreeState::Root();
   gfx::RectF input_rect;
   FloatClipRect expected_visual_rect;
-  absl::optional<FloatClipRect> expected_visual_rect_expanded_for_compositing;
+  std::optional<FloatClipRect> expected_visual_rect_expanded_for_compositing;
   gfx::Vector2dF expected_translation_2d;
-  absl::optional<gfx::Transform> expected_transform;
+  std::optional<gfx::Transform> expected_transform;
   FloatClipRect expected_clip;
   bool expected_clip_has_transform_animation = false;
   bool expected_clip_has_sticky_transform = false;

@@ -38,9 +38,9 @@ class ContinueTaskView;
 // layout with the number of columns specified at construction.
 class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
                                              public views::View {
- public:
-  METADATA_HEADER(ContinueTaskContainerView);
+  METADATA_HEADER(ContinueTaskContainerView, views::View)
 
+ public:
   using OnResultsChanged = base::RepeatingClosure;
 
   ContinueTaskContainerView(AppListViewDelegate* view_delegate,

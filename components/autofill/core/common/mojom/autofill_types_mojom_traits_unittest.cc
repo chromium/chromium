@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
@@ -87,6 +88,17 @@ void CreatePasswordGenerationUIData(
   data->form_data = test::CreateTestAddressFormData();
 }
 
+void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
+  data->element_id = FieldRendererId(123);
+  data->form_data = test::CreateTestAddressFormData();
+  data->username_field_index = 0ul;
+  data->password_field_index = 1ul;
+  data->text_direction = base::i18n::RIGHT_TO_LEFT;
+  data->typed_username = u"username";
+  data->options = SHOW_ALL | IS_PASSWORD_FIELD | ACCEPTS_WEBAUTHN_CREDENTIALS;
+  data->form_data = test::CreateTestAddressFormData();
+}
+
 void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
                                     const PasswordFormFillData& actual) {
   EXPECT_EQ(expected.form_renderer_id, actual.form_renderer_id);
@@ -110,6 +122,20 @@ void CheckEqualPassPasswordGenerationUIData(
   EXPECT_EQ(expected.text_direction, actual.text_direction);
   EXPECT_TRUE(test::WithoutUnserializedData(expected.form_data)
                   .SameFormAs(actual.form_data));
+}
+
+void CheckEqualPasswordSuggestionRequest(
+    const PasswordSuggestionRequest& expected,
+    const PasswordSuggestionRequest& actual) {
+  EXPECT_EQ(expected.element_id, actual.element_id);
+  EXPECT_TRUE(test::WithoutUnserializedData(expected.form_data)
+                  .SameFormAs(actual.form_data));
+  EXPECT_EQ(expected.username_field_index, actual.username_field_index);
+  EXPECT_EQ(expected.password_field_index, actual.password_field_index);
+  EXPECT_EQ(expected.text_direction, actual.text_direction);
+  EXPECT_EQ(expected.typed_username, actual.typed_username);
+  EXPECT_EQ(expected.options, actual.options);
+  EXPECT_EQ(expected.bounds, actual.bounds);
 }
 
 }  // namespace
@@ -166,6 +192,12 @@ class AutofillTypeTraitsTestImpl : public testing::Test,
   void PassPasswordGenerationUIData(
       const password_generation::PasswordGenerationUIData& s,
       PassPasswordGenerationUIDataCallback callback) override {
+    std::move(callback).Run(s);
+  }
+
+  void PassPasswordSuggestionRequest(
+      const PasswordSuggestionRequest& s,
+      PassPasswordSuggestionRequestCallback callback) override {
     std::move(callback).Run(s);
   }
 
@@ -236,6 +268,13 @@ void ExpectPasswordGenerationUIData(
   std::move(closure).Run();
 }
 
+void ExpectPasswordSuggestionRequest(const PasswordSuggestionRequest& expected,
+                                     base::OnceClosure closure,
+                                     const PasswordSuggestionRequest& passed) {
+  CheckEqualPasswordSuggestionRequest(expected, passed);
+  std::move(closure).Run();
+}
+
 // Test all Section::SectionPrefix states.
 class AutofillTypeTraitsTestImplSectionTest
     : public AutofillTypeTraitsTestImpl,
@@ -277,7 +316,7 @@ std::vector<Section> SectionTestCases() {
   // doesn't exist yet because SectionTestCases() is called by
   // INSTANTIATE_TEST_SUITE_P().
   field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(false));
-  field.unique_renderer_id = FieldRendererId(123);
+  field.renderer_id = FieldRendererId(123);
   s = Section::FromFieldIdentifier(field, frame_token_ids);
   test_cases.push_back(s);
 
@@ -307,7 +346,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.css_classes = u"class1";
   input.aria_label = u"aria label";
   input.aria_description = u"aria description";
-  input.unique_renderer_id = FieldRendererId(1234);
+  input.renderer_id = FieldRendererId(1234);
   input.host_form_id = FormRendererId(123);
   input.max_length = 12345;
   input.is_autofilled = true;
@@ -337,7 +376,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
       "DatalistLabel", "DatalistName", "DatalistValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
-  input.unique_renderer_id = FieldRendererId(1234);
+  input.renderer_id = FieldRendererId(1234);
   input.id_attribute = u"id";
   input.name_attribute = u"name";
   input.autocomplete_attribute = "on";
@@ -447,6 +486,18 @@ TEST_F(AutofillTypeTraitsTestImpl, PassPasswordGenerationUIData) {
   mojo::Remote<mojom::TypeTraitsTest> remote(GetTypeTraitsTestRemote());
   remote->PassPasswordGenerationUIData(
       input, base::BindOnce(&ExpectPasswordGenerationUIData, input,
+                            loop.QuitClosure()));
+  loop.Run();
+}
+
+TEST_F(AutofillTypeTraitsTestImpl, PassPasswordSuggestionRequest) {
+  PasswordSuggestionRequest input;
+  CreatePasswordSuggestionRequest(&input);
+
+  base::RunLoop loop;
+  mojo::Remote<mojom::TypeTraitsTest> remote(GetTypeTraitsTestRemote());
+  remote->PassPasswordSuggestionRequest(
+      input, base::BindOnce(&ExpectPasswordSuggestionRequest, input,
                             loop.QuitClosure()));
   loop.Run();
 }

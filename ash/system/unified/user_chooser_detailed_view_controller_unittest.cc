@@ -138,7 +138,7 @@ TEST_F(UserChooserDetailedViewControllerTest,
   GetSessionControllerClient()->Reset();
 
   // Log in as a child user.
-  SimulateUserLogin("child@gmail.com", user_manager::USER_TYPE_CHILD);
+  SimulateUserLogin("child@gmail.com", user_manager::UserType::kChild);
 
   EXPECT_FALSE(UserChooserDetailedViewController::IsUserChooserEnabled());
 }

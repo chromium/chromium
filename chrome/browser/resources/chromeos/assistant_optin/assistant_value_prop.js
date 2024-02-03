@@ -11,7 +11,7 @@
  * Event 'loaded' will be fired when the page has been successfully loaded.
  */
 
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../components/dialogs/oobe_adaptive_dialog.js';
 import '../components/buttons/oobe_next_button.js';

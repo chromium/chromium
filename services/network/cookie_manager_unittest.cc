@@ -441,7 +441,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ(cookies[0].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[0].ExpiryDate(), base::Time());
   EXPECT_FALSE(cookies[0].IsPersistent());
-  EXPECT_FALSE(cookies[0].IsSecure());
+  EXPECT_FALSE(cookies[0].SecureAttribute());
   EXPECT_FALSE(cookies[0].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::LAX_MODE, cookies[0].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[0].Priority());
@@ -455,7 +455,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ(cookies[1].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[1].ExpiryDate(), base::Time());
   EXPECT_FALSE(cookies[1].IsPersistent());
-  EXPECT_FALSE(cookies[1].IsSecure());
+  EXPECT_FALSE(cookies[1].SecureAttribute());
   EXPECT_FALSE(cookies[1].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::LAX_MODE, cookies[1].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[1].Priority());
@@ -469,7 +469,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ(cookies[2].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[2].ExpiryDate(), base::Time());
   EXPECT_FALSE(cookies[2].IsPersistent());
-  EXPECT_FALSE(cookies[2].IsSecure());
+  EXPECT_FALSE(cookies[2].SecureAttribute());
   EXPECT_TRUE(cookies[2].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::LAX_MODE, cookies[2].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[2].Priority());
@@ -483,7 +483,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ(cookies[3].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[3].ExpiryDate(), base::Time());
   EXPECT_FALSE(cookies[3].IsPersistent());
-  EXPECT_TRUE(cookies[3].IsSecure());
+  EXPECT_TRUE(cookies[3].SecureAttribute());
   EXPECT_FALSE(cookies[3].IsHttpOnly());
   EXPECT_EQ(net::CookieSameSite::NO_RESTRICTION, cookies[3].SameSite());
   EXPECT_EQ(net::COOKIE_PRIORITY_MEDIUM, cookies[3].Priority());
@@ -765,7 +765,7 @@ TEST_F(CookieManagerTest, GetCookieListCookiePartitionKeyCollection) {
           base::Time(), base::Time(),
           /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
           net::COOKIE_PRIORITY_MEDIUM,
-          /*partition_key=*/absl::nullopt),
+          /*partition_key=*/std::nullopt),
       "https", true));
   // Add partitioned cookies.
   ASSERT_TRUE(SetCanonicalCookie(
@@ -1005,7 +1005,7 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
   GURL http_localhost_url("http://localhost/path");
   auto http_localhost_cookie = net::CanonicalCookie::Create(
       http_localhost_url, "http_localhost=1; Secure", base::Time::Now(),
-      absl::nullopt, absl::nullopt /* cookie_partition_key */);
+      std::nullopt, std::nullopt /* cookie_partition_key */);
 
   // Secure cookie can be set from non-cryptographic localhost URL.
   EXPECT_TRUE(service_wrapper()
@@ -1022,12 +1022,12 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
   EXPECT_EQ("http_localhost", http_localhost_cookies[0].Name());
   EXPECT_EQ(net::CookieSourceScheme::kSecure,
             http_localhost_cookies[0].SourceScheme());
-  EXPECT_TRUE(http_localhost_cookies[0].IsSecure());
+  EXPECT_TRUE(http_localhost_cookies[0].SecureAttribute());
 
   GURL http_other_url("http://other.test/path");
   auto http_other_cookie = net::CanonicalCookie::Create(
-      http_other_url, "http_other=1; Secure", base::Time::Now(), absl::nullopt,
-      absl::nullopt /* cookie_partition_key */);
+      http_other_url, "http_other=1; Secure", base::Time::Now(), std::nullopt,
+      std::nullopt /* cookie_partition_key */);
 
   // Secure cookie cannot be set from another non-cryptographic URL if there is
   // no CookieAccessDelegate.
@@ -1066,7 +1066,7 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
   EXPECT_EQ("http_other", http_other_cookies[0].Name());
   EXPECT_EQ(net::CookieSourceScheme::kSecure,
             http_other_cookies[0].SourceScheme());
-  EXPECT_TRUE(http_other_cookies[0].IsSecure());
+  EXPECT_TRUE(http_other_cookies[0].SecureAttribute());
 }
 
 TEST_F(CookieManagerTest, ConfirmHttpOnlySetFails) {

@@ -411,10 +411,9 @@ class BookmarkModel final : public BookmarkUndoProvider,
       size_t max_count,
       query_parser::MatchingAlgorithm matching_algorithm) const;
 
-  // Sets the store to NULL, making it so the BookmarkModel does not persist
-  // any changes to disk. This is only useful during testing to speed up
+  // Disables the persistence to disk, useful during testing to speed up
   // testing.
-  void ClearStore();
+  void DisableWritesToDiskForTest();
 
   // Returns the next node ID.
   int64_t next_node_id() const { return next_node_id_; }
@@ -561,6 +560,9 @@ class BookmarkModel final : public BookmarkUndoProvider,
                                          const base::Time delete_begin,
                                          const base::Time delete_end);
 
+  // Schedules saving the bookmark model to disk.
+  void ScheduleSave();
+
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
 
@@ -602,8 +604,9 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Used for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;
 
-  // Writes bookmarks to disk.
-  std::unique_ptr<BookmarkStorage> store_;
+  // Write bookmarks to disk.
+  std::unique_ptr<BookmarkStorage> local_or_syncable_store_;
+  std::unique_ptr<BookmarkStorage> account_store_;
 
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
 

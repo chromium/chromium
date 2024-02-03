@@ -132,6 +132,7 @@ class RenderWidgetHostImpl;
 class RenderWidgetHostInputEventRouter;
 class SafeAreaInsetsHost;
 class SavePackage;
+class ScopedAccessibilityMode;
 class ScreenChangeMonitor;
 class ScreenOrientationProvider;
 class SiteInstanceGroup;
@@ -284,7 +285,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Adds the given accessibility mode to the current accessibility mode
   // bitmap.
-  void AddAccessibilityMode(ui::AXMode mode);
+  void AddAccessibilityModeForTesting(ui::AXMode mode);
 
   // Sets the zoom level for frames associated with this WebContents.
   void UpdateZoom();
@@ -333,6 +334,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // human-readable name.
   std::string GetTitleForMediaControls();
 
+  // Sets the accessibility mode if this WebContents will potentially be
+  // user-visible, and broadcasts it to all of its frames if it differs from the
+  // previous mode.
+  void SetAccessibilityMode(ui::AXMode mode);
+
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() final;
   void SetDelegate(WebContentsDelegate* delegate) override;
@@ -372,7 +378,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool ShouldOverrideUserAgentForRendererInitiatedNavigation() override;
   void SetAlwaysSendSubresourceNotifications() override;
   bool GetSendSubresourceNotification() override;
-  void EnableAccessibilityMode(ui::AXMode mode) override;
   bool IsWebContentsOnlyAccessibilityModeForTesting() override;
   bool IsFullAccessibilityModeForTesting() override;
   const std::u16string& GetTitle() override;
@@ -580,6 +585,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
                              bool destination_is_loaded) override;
+  bool IsInPreviewMode() const override;
+  void WillActivatePreviewPage() override;
   void ActivatePreviewPage() override;
 
   // Implementation of PageNavigator.
@@ -656,7 +663,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       blink::mojom::CaptureHandleConfigPtr config) override;
   ui::AXMode GetAccessibilityMode() override;
   // Broadcasts the mode change to all frames.
-  void SetAccessibilityMode(ui::AXMode mode) override;
+  void ResetAccessibility() override;
   void AXTreeIDForMainFrameHasChanged() override;
   void AccessibilityEventReceived(
       const AXEventNotificationDetails& details) override;
@@ -1012,6 +1019,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // bool IsFullscreen() const override;
   blink::mojom::DisplayMode GetDisplayMode() const override;
   ui::WindowShowState GetWindowShowState() override;
+  DevicePostureProviderImpl* GetDevicePostureProvider() override;
   bool GetResizable() override;
   void LostPointerLock(RenderWidgetHostImpl* render_widget_host) override;
   bool HasPointerLock(RenderWidgetHostImpl* render_widget_host) override;
@@ -1064,7 +1072,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnVirtualKeyboardModeChanged(PageImpl& page) override;
   void NotifyPageBecamePrimary(PageImpl& page) override;
 
-  bool IsInPreviewMode() const override;
+  bool IsPageInPreviewMode() const override;
   void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) override;
   void OnCanResizeFromWebAPIChanged() override;
@@ -2221,6 +2229,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   std::unique_ptr<ui::AXEventRecorder> event_recorder_;
 
+  // Enables ui::kAXModeBasic for the duration of a recording session.
+  std::unique_ptr<ScopedAccessibilityMode> recording_mode_;
+
   // Monitors power levels for audio streams associated with this WebContents.
   AudioStreamMonitor audio_stream_monitor_;
 
@@ -2422,6 +2433,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   base::WeakPtr<FileChooserImpl> active_file_chooser_;
 
   std::optional<base::Location> ownership_location_;
+
+  // Indicates if the instance is hosted in a preview window.
+  // This will be set in Init() and will be reset in WillActivatePreviewPage().
+  bool is_in_preview_mode_ = false;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

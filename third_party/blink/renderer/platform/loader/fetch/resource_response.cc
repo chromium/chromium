@@ -319,7 +319,7 @@ bool ResourceResponse::HasCacheValidatorFields() const {
          !http_header_fields_.Get(http_names::kLowerETag).empty();
 }
 
-absl::optional<base::TimeDelta> ResourceResponse::CacheControlMaxAge() const {
+std::optional<base::TimeDelta> ResourceResponse::CacheControlMaxAge() const {
   if (!cache_control_header_.parsed) {
     cache_control_header_ = ParseCacheControlDirectives(
         http_header_fields_.Get(http_names::kLowerCacheControl),
@@ -342,12 +342,12 @@ base::TimeDelta ResourceResponse::CacheControlStaleWhileRevalidate() const {
   return cache_control_header_.stale_while_revalidate.value();
 }
 
-static absl::optional<base::Time> ParseDateValueInHeader(
+static std::optional<base::Time> ParseDateValueInHeader(
     const HTTPHeaderMap& headers,
     const AtomicString& header_name) {
   const AtomicString& header_value = headers.Get(header_name);
   if (header_value.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // In case of parsing the Expires header value, an invalid string 0 should be
   // treated as expired according to the RFC 9111 section 5.3 as below:
@@ -364,14 +364,14 @@ static absl::optional<base::Time> ParseDateValueInHeader(
   // Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
   // Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
   // Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
-  absl::optional<base::Time> date = ParseDate(header_value);
+  std::optional<base::Time> date = ParseDate(header_value);
 
   if (date && date.value().is_max())
-    return absl::nullopt;
+    return std::nullopt;
   return date;
 }
 
-absl::optional<base::Time> ResourceResponse::Date() const {
+std::optional<base::Time> ResourceResponse::Date() const {
   if (!have_parsed_date_header_) {
     date_ = ParseDateValueInHeader(http_header_fields_, http_names::kLowerDate);
     have_parsed_date_header_ = true;
@@ -379,14 +379,14 @@ absl::optional<base::Time> ResourceResponse::Date() const {
   return date_;
 }
 
-absl::optional<base::TimeDelta> ResourceResponse::Age() const {
+std::optional<base::TimeDelta> ResourceResponse::Age() const {
   if (!have_parsed_age_header_) {
     const AtomicString& header_value =
         http_header_fields_.Get(http_names::kLowerAge);
     bool ok;
     double seconds = header_value.ToDouble(&ok);
     if (!ok) {
-      age_ = absl::nullopt;
+      age_ = std::nullopt;
     } else {
       age_ = base::Seconds(seconds);
     }
@@ -395,7 +395,7 @@ absl::optional<base::TimeDelta> ResourceResponse::Age() const {
   return age_;
 }
 
-absl::optional<base::Time> ResourceResponse::Expires() const {
+std::optional<base::Time> ResourceResponse::Expires() const {
   if (!have_parsed_expires_header_) {
     expires_ =
         ParseDateValueInHeader(http_header_fields_, http_names::kLowerExpires);
@@ -404,7 +404,7 @@ absl::optional<base::Time> ResourceResponse::Expires() const {
   return expires_;
 }
 
-absl::optional<base::Time> ResourceResponse::LastModified() const {
+std::optional<base::Time> ResourceResponse::LastModified() const {
   if (!have_parsed_last_modified_header_) {
     last_modified_ = ParseDateValueInHeader(http_header_fields_,
                                             http_names::kLowerLastModified);

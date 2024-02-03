@@ -6,7 +6,9 @@
 #define SERVICES_AUDIO_OUTPUT_CONTROLLER_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -26,7 +28,6 @@
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_power_monitor.h"
 #include "services/audio/loopback_group_member.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // An OutputController controls an AudioOutputStream and provides data to this
 // output stream. It executes audio operations like play, pause, stop, etc. on
@@ -348,7 +349,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // Used for keeping track of and logging stats. Created when a stream starts
   // and destroyed when a stream stops. Also reset every time there is a stream
   // being created due to device changes.
-  absl::optional<ErrorStatisticsTracker> stats_tracker_;
+  std::optional<ErrorStatisticsTracker> stats_tracker_;
 };
 
 }  // namespace audio

@@ -86,7 +86,7 @@ void StaticDataNavigationBodyLoader::Continue() {
     client_ = nullptr;
     client->BodyLoadingFinished(
         base::TimeTicks::Now(), total_encoded_data_length_,
-        total_encoded_data_length_, total_encoded_data_length_, absl::nullopt);
+        total_encoded_data_length_, total_encoded_data_length_, std::nullopt);
     // |this| can be destroyed from BodyLoadingFinished.
     if (!weak_self)
       return;

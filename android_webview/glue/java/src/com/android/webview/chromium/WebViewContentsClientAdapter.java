@@ -52,7 +52,9 @@ import org.chromium.android_webview.permission.Resource;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PathUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -64,6 +66,7 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.WeakHashMap;
+import java.util.regex.Pattern;
 
 /**
  * An adapter class that forwards the callbacks from {@link ContentViewClient}
@@ -101,6 +104,11 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
 
     private WeakHashMap<AwPermissionRequest, WeakReference<PermissionRequestAdapter>>
             mOngoingPermissionRequests;
+
+    // Pattern to match URLs that WebView internally handles as asset or
+    // resource lookups.
+    private static final Pattern FILE_ANDROID_ASSET_PATTERN =
+            Pattern.compile("^file:/*android_(asset|res).*");
 
     /**
      * Adapter constructor.
@@ -895,6 +903,16 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                                 s = new String[uriList.length];
                                 for (int i = 0; i < uriList.length; i++) {
                                     s[i] = uriList[i].toString();
+                                    if ("file".equals(uriList[i].getScheme())
+                                            && !FILE_ANDROID_ASSET_PATTERN
+                                                    .matcher(s[i])
+                                                    .matches()) {
+                                        RecordHistogram.recordBooleanHistogram(
+                                                "Android.WebView.FileChooserResultOutsideAppDataDir",
+                                                PathUtils.isPathUnderAppDir(
+                                                        uriList[i].getSchemeSpecificPart(),
+                                                        mContext));
+                                    }
                                 }
                             }
                             uploadFileCallback.onResult(s);

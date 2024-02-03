@@ -44,8 +44,8 @@ js_library("offline_ad_login") {
     "//ash/webui/common/resources:load_time_data.m",
   ]
   externs_list = [
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
+    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
+    "//ash/webui/common/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
   extra_deps = [ ":web_components" ]
 }

@@ -50,7 +50,7 @@ class ReferenceLines : public views::View {
   ~ReferenceLines() override;
 
   // views::View
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   // The following methods update reference line parameters.

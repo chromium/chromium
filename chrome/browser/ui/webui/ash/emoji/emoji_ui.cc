@@ -20,6 +20,8 @@
 #include "chrome/grit/emoji_picker_resources.h"
 #include "chrome/grit/emoji_picker_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/seal_resources.h"
+#include "chrome/grit/seal_resources_map.h"
 #include "chromeos/ash/components/emoji/grit/emoji_map.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
@@ -37,8 +39,9 @@ constexpr gfx::Size kExtensionWindowSize(420, 480);
 constexpr int kPaddingAroundCursor = 8;
 
 class EmojiBubbleDialogView : public WebUIBubbleDialogView {
+  METADATA_HEADER(EmojiBubbleDialogView, WebUIBubbleDialogView)
+
  public:
-  METADATA_HEADER(EmojiBubbleDialogView);
   explicit EmojiBubbleDialogView(
       std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
       : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
@@ -51,7 +54,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
 };
 
-BEGIN_METADATA(EmojiBubbleDialogView, WebUIBubbleDialogView)
+BEGIN_METADATA(EmojiBubbleDialogView)
 END_METADATA
 
 }  // namespace
@@ -70,6 +73,21 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
       source, base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
       IDR_EMOJI_PICKER_INDEX_HTML);
   source->AddResourcePaths(base::make_span(kEmoji, kEmojiSize));
+
+  // Add seal extra resources.
+  if (SealUtils::ShouldEnable()) {
+    source->AddResourcePaths(
+        base::make_span(kSealResources, kSealResourcesSize));
+  }
+
+  // Some web components defined in seal extra resources are based on lit; so
+  // we override content security policy here to make them work.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types goog#html parse-html-subset sanitize-inner-html "
+      "static-types lit-html lottie-worker-script-loader webui-test-script "
+      "webui-test-html print-preview-plugin-loader polymer-html-literal "
+      "polymer-template-event-attribute-policy;");
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile,

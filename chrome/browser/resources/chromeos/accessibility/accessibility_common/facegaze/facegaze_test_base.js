@@ -149,20 +149,22 @@ FaceGazeTestBase = class extends E2ETestBase {
       };
     }
 
-    // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
-    const module =
-        await import('/accessibility_common/accessibility_common_loader.js');
     await importModule(
         ['Action', 'FaceGaze'], '/accessibility_common/facegaze/facegaze.js');
     await importModule(
         ['FacialGesture'],
         '/accessibility_common/facegaze/gesture_detector.js');
-    accessibilityCommon = new module.AccessibilityCommon();
+    await importModule(
+        ['MouseController'],
+        '/accessibility_common/facegaze/mouse_controller.js');
     assertNotNullNorUndefined(accessibilityCommon);
     assertNotNullNorUndefined(Action);
     assertNotNullNorUndefined(FaceGaze);
     assertNotNullNorUndefined(FacialGesture);
-    accessibilityCommon.faceGaze_ = new FaceGaze();
+    assertNotNullNorUndefined(MouseController);
+    await new Promise(resolve => {
+      accessibilityCommon.setFeatureLoadCallbackForTest('facegaze', resolve);
+    });
   }
 
   /** @override */
@@ -195,7 +197,7 @@ FaceGazeTestBase = class extends E2ETestBase {
   }
 
   /** @param {!Config} config */
-  configureFaceGaze(config) {
+  async configureFaceGaze(config) {
     const faceGaze = this.getFaceGaze();
     if (config.mouseLocation) {
       // TODO(b/309121742): Set the mouse location using a fake automation
@@ -212,19 +214,23 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     if (config.bufferSize !== -1) {
-      faceGaze.mouseController_.targetBufferSize_ = config.bufferSize;
-      faceGaze.mouseController_.calcSmoothKernel_();
+      await this.setPref(
+          MouseController.PREF_CURSOR_SMOOTHING, config.bufferSize);
     }
 
     if (config.speeds) {
-      faceGaze.mouseController_.spdUp_ = config.speeds.up;
-      faceGaze.mouseController_.spdDown_ = config.speeds.down;
-      faceGaze.mouseController_.spdLeft_ = config.speeds.left;
-      faceGaze.mouseController_.spdRight_ = config.speeds.right;
+      await this.setPref(MouseController.PREF_SPD_UP, config.speeds.up);
+      await this.setPref(MouseController.PREF_SPD_DOWN, config.speeds.down);
+      await this.setPref(MouseController.PREF_SPD_LEFT, config.speeds.left);
+      await this.setPref(MouseController.PREF_SPD_RIGHT, config.speeds.right);
     }
 
-    faceGaze.mouseController_.useMouseAcceleration_ =
-        config.useMouseAcceleration;
+    await this.setPref(
+        MouseController.PREF_CURSOR_USE_ACCELERATION,
+        config.useMouseAcceleration);
+    assertEquals(
+        faceGaze.mouseController_.useMouseAcceleration_,
+        config.useMouseAcceleration);
 
     return new Promise(resolve => {
       faceGaze.setOnInitCallbackForTest(resolve);

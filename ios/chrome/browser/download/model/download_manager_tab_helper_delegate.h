@@ -37,17 +37,28 @@ typedef NS_ENUM(NSInteger, NewDownloadPolicy) {
 
 // Informs the delegate that WebState related to this download was hidden.
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-                 didHideDownload:(web::DownloadTask*)download;
+                 didHideDownload:(web::DownloadTask*)download
+                        animated:(BOOL)animated;
 
 // Informs the delegate that WebState related to this download was shown.
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-                 didShowDownload:(web::DownloadTask*)download;
+                 didShowDownload:(web::DownloadTask*)download
+                        animated:(BOOL)animated;
+
+// Informs the delegate that the download task was cancelled.
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+               didCancelDownload:(web::DownloadTask*)download;
 
 // Informs the delegate that `download` was added to Save to Drive and will be
 // uploaded once the download has completed. This should lead the delegate to
 // start the download task.
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
             wantsToStartDownload:(web::DownloadTask*)download;
+
+// Informs the delegate that it should observe fullscreen and adapt the Download
+// UI accordingly.
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+               adaptToFullscreen:(bool)adaptToFullscreen;
 
 @end
 

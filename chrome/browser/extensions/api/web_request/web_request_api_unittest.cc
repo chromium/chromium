@@ -49,7 +49,6 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/web_request.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_util.h"

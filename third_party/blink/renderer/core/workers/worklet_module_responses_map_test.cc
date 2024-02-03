@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
@@ -105,7 +106,7 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
 
    private:
     Result result_ = Result::kInitial;
-    absl::optional<ModuleScriptCreationParams> params_;
+    std::optional<ModuleScriptCreationParams> params_;
   };
 
   void Fetch(const KURL& url, ClientImpl* client) {

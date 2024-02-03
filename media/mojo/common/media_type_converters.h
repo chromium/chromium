@@ -6,12 +6,12 @@
 #define MEDIA_MOJO_COMMON_MEDIA_TYPE_CONVERTERS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioBuffer;
@@ -37,14 +37,14 @@ struct TypeConverter<std::unique_ptr<media::DecryptConfig>,
 
 template <>
 struct TypeConverter<media::mojom::DecoderBufferSideDataPtr,
-                     absl::optional<media::DecoderBufferSideData>> {
+                     std::optional<media::DecoderBufferSideData>> {
   static media::mojom::DecoderBufferSideDataPtr Convert(
-      const absl::optional<media::DecoderBufferSideData>& input);
+      const std::optional<media::DecoderBufferSideData>& input);
 };
 template <>
-struct TypeConverter<absl::optional<media::DecoderBufferSideData>,
+struct TypeConverter<std::optional<media::DecoderBufferSideData>,
                      media::mojom::DecoderBufferSideDataPtr> {
-  static absl::optional<media::DecoderBufferSideData> Convert(
+  static std::optional<media::DecoderBufferSideData> Convert(
       const media::mojom::DecoderBufferSideDataPtr& input);
 };
 

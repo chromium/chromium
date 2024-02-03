@@ -173,7 +173,7 @@ void SearchResultContainerView::Update() {
 
   update_factory_.InvalidateWeakPtrs();
   num_results_ = DoUpdate();
-  Layout();
+  DeprecatedLayoutImmediately();
   if (delegate_)
     delegate_->OnSearchResultContainerResultsChanged();
 }

@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.AccountInfo;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,12 +29,20 @@ public class AccountHolder {
     private final Account mAccount;
     private final Map<String, AccessTokenData> mAuthTokens;
     private final Set<String> mFeatures;
+    private AccountCapabilities mAccountCapabilities = new AccountCapabilities(new HashMap<>());
 
     private AccountHolder(Account account) {
         assert account != null : "account shouldn't be null!";
         mAccount = account;
         mAuthTokens = new HashMap<>();
         mFeatures = new HashSet<>();
+    }
+
+    private AccountHolder(AccountInfo accountInfo) {
+        this(AccountUtils.createAccountFromName(accountInfo.getEmail()));
+        if (accountInfo != null) {
+            mAccountCapabilities = accountInfo.getAccountCapabilities();
+        }
     }
 
     public Account getAccount() {
@@ -95,10 +105,19 @@ public class AccountHolder {
         return new AccountHolder(account);
     }
 
+    /** Creates an {@link AccountHolder} from account and accountInfo. */
+    public static AccountHolder createFromAccount(AccountInfo accountInfo) {
+        return new AccountHolder(accountInfo);
+    }
+
     /** Creates an {@link AccountHolder} from email and features. */
     public static AccountHolder createFromEmailAndFeatures(String email, String... features) {
         final AccountHolder accountHolder = createFromEmail(email);
         Collections.addAll(accountHolder.mFeatures, features);
         return accountHolder;
+    }
+
+    public AccountCapabilities getAccountCapabilities() {
+        return mAccountCapabilities;
     }
 }

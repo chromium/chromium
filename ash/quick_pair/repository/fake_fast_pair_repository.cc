@@ -118,9 +118,7 @@ void FakeFastPairRepository::DeleteAssociatedDeviceByAccountKey(
     DeleteAssociatedDeviceByAccountKeyCallback callback) {
   for (auto it = devices_.begin(); it != devices_.end(); it++) {
     if (it->has_account_key() &&
-        base::HexEncode(std::vector<uint8_t>(it->account_key().begin(),
-                                             it->account_key().end())) ==
-            base::HexEncode(account_key)) {
+        base::HexEncode(it->account_key()) == base::HexEncode(account_key)) {
       devices_.erase(it);
       std::move(callback).Run(/*success=*/true);
       return;

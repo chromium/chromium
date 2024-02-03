@@ -51,7 +51,7 @@ import './trash.js';
 import './traverse.js';
 import './zip_files.js';
 
-import {FilesAppState} from '../files_app_state.js';
+import {FilesAppState} from '../prod/file_manager/shared_types.js';
 import {RemoteCallFilesApp} from '../remote_call.js';
 import {addEntries, getCaller, getRootPathsResult, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
@@ -85,9 +85,6 @@ export let remoteCall;
  *     Files app.
  * @return {Promise<string>} Promise to be fulfilled after window creating.
  */
-// @ts-ignore: error TS2740: Type '{}' is missing the following properties from
-// type 'FilesAppState': currentDirectoryURL, selectionURL, targetName,
-// searchQuery, and 6 more.
 export async function openNewWindow(initialRoot, appState = {}) {
   // TODO(mtomasz): Migrate from full paths to a pair of a volumeId and a
   // relative path. To compose the URL communicate via messages with
@@ -231,9 +228,6 @@ export async function openAndWaitForClosingDialog(
  */
 export async function setupAndWaitUntilReady(
     initialRoot, initialLocalEntries = BASIC_LOCAL_ENTRY_SET,
-    // @ts-ignore: error TS2740: Type '{}' is missing the following properties
-    // from type 'FilesAppState': currentDirectoryURL, selectionURL, targetName,
-    // searchQuery, and 6 more.
     initialDriveEntries = BASIC_DRIVE_ENTRY_SET, appState = {}) {
   const localEntriesPromise = addEntries(['local'], initialLocalEntries);
   const driveEntriesPromise = addEntries(['drive'], initialDriveEntries);

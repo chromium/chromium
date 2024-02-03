@@ -354,7 +354,7 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
     return false;
   }
 
-  absl::optional<AXSelection::TextControlSelection> text_control_selection =
+  std::optional<AXSelection::TextControlSelection> text_control_selection =
       AsTextControlSelection();
 
   // We need to make sure we only go into here if we're dealing with a position
@@ -437,7 +437,7 @@ String AXSelection::ToString() const {
          Extent().ToString();
 }
 
-absl::optional<AXSelection::TextControlSelection>
+std::optional<AXSelection::TextControlSelection>
 AXSelection::AsTextControlSelection() const {
   if (!IsValid() || !base_.IsTextPosition() || !extent_.IsTextPosition() ||
       base_.ContainerObject() != extent_.ContainerObject()) {

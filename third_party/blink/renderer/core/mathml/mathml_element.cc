@@ -132,14 +132,14 @@ void MathMLElement::ParseAttribute(const AttributeModificationParams& param) {
   Element::ParseAttribute(param);
 }
 
-absl::optional<bool> MathMLElement::BooleanAttribute(
+std::optional<bool> MathMLElement::BooleanAttribute(
     const QualifiedName& name) const {
   const AtomicString& value = FastGetAttribute(name);
   if (EqualIgnoringASCIICase(value, "true"))
     return true;
   if (EqualIgnoringASCIICase(value, "false"))
     return false;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const CSSPrimitiveValue* MathMLElement::ParseMathLength(
@@ -161,7 +161,7 @@ const CSSPrimitiveValue* MathMLElement::ParseMathLength(
   return parsed_value;
 }
 
-absl::optional<Length> MathMLElement::AddMathLengthToComputedStyle(
+std::optional<Length> MathMLElement::AddMathLengthToComputedStyle(
     const CSSToLengthConversionData& conversion_data,
     const QualifiedName& attr_name,
     AllowPercentages allow_percentages,
@@ -170,7 +170,7 @@ absl::optional<Length> MathMLElement::AddMathLengthToComputedStyle(
           ParseMathLength(attr_name, allow_percentages, value_range)) {
     return parsed_value->ConvertToLength(conversion_data);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace blink

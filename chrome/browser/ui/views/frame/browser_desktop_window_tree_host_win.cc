@@ -106,7 +106,9 @@ class VirtualDesktopHelper
 
 VirtualDesktopHelper::VirtualDesktopHelper(const std::string& initial_workspace)
     : base::RefCountedDeleteOnSequence<VirtualDesktopHelper>(
-          base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
+          base::ThreadPool::CreateCOMSTATaskRunner(
+              {base::MayBlock(),
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       initial_workspace_(initial_workspace) {}
 
 void VirtualDesktopHelper::Init(HWND hwnd) {
@@ -449,7 +451,7 @@ void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
       WINDOWPOS* window_pos = reinterpret_cast<WINDOWPOS*>(l_param);
       views::NonClientView* non_client_view = GetWidget()->non_client_view();
       if (window_pos->flags & SWP_SHOWWINDOW && non_client_view) {
-        non_client_view->Layout();
+        non_client_view->DeprecatedLayoutImmediately();
         non_client_view->SchedulePaint();
       }
       break;

@@ -381,7 +381,7 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
       const gfx::Insets& in_session_shelf_insets);
 
   // Called from the scrollable shelf container when it updates its bounds.
-  void HandleScrollableShelfContainerBoundsChange() const;
+  void HandleScrollableShelfContainerBoundsChange();
 
  private:
   void UpdateWorkAreaInsetsAndNotifyObserversInternal(
@@ -610,6 +610,9 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   void UpdateVisibilityStateForTrayBubbleChange(bool bubble_shown);
 
   bool IsShelfContainerAnimating() const;
+
+  // Calculates target bounds for the hotseat widget and the desk button widget.
+  void CalculateDeskButtonAndHotseatTargetBounds();
 
   bool in_shutdown_ = false;
 

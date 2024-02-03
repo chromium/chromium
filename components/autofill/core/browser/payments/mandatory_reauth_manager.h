@@ -55,6 +55,11 @@ class MandatoryReauthManager {
       const std::u16string& message,
       device_reauth::DeviceAuthenticator::AuthenticateCallback callback);
 
+  // Once the authentication is complete, triggers
+  // `authentication_complete_callback` with a success or failure response.
+  virtual void StartDeviceAuthentication(
+      base::OnceCallback<void(bool)> authentication_complete_callback);
+
   // This method is triggered once an authentication flow is completed. It will
   // reset `device_authenticator_` before triggering `callback` with `success`.
   void OnAuthenticationCompleted(
@@ -96,6 +101,12 @@ class MandatoryReauthManager {
   // Return the authentication method to be used on this device. Used for metric
   // logging.
   virtual MandatoryReauthAuthenticationMethod GetAuthenticationMethod();
+
+  void SetDeviceAuthenticatorPtrForTesting(
+      std::unique_ptr<device_reauth::DeviceAuthenticator>
+          device_authenticator) {
+    device_authenticator_ = std::move(device_authenticator);
+  }
 
   device_reauth::DeviceAuthenticator* GetDeviceAuthenticatorPtrForTesting() {
     return device_authenticator_.get();

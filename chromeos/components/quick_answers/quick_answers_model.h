@@ -215,7 +215,7 @@ struct QuickAnswersRequest {
   QuickAnswersRequest(const QuickAnswersRequest& other);
   ~QuickAnswersRequest();
 
-  // The selected Text.
+  // The selected text.
   std::string selected_text;
 
   // Output of processed result.
@@ -228,7 +228,7 @@ struct QuickAnswersRequest {
   // links, etc).
 };
 
-// `Sense` must be copyable.
+// `Sense` must be copyable as a member of `DefinitionResult`.
 struct Sense {
  public:
   Sense();
@@ -260,7 +260,7 @@ struct DefinitionResult {
 };
 
 // `TranslationResult` holds result for translation intent.
-// `TranslationResult` must be copyable as it can be copied to a view.
+// `TranslationResult` must be copyable.
 struct TranslationResult {
  public:
   TranslationResult();
@@ -274,33 +274,98 @@ struct TranslationResult {
   std::string target_locale;
 };
 
-// `StandardUnitConversionRates` must be copyable.
-struct StandardUnitConversionRates {
+// A unit conversion rule between a unit and the standard SI unit
+// of the same category.
+// `ConversionRule` must be copyable as a member of `UnitConversion`.
+class ConversionRule {
  public:
-  StandardUnitConversionRates(double source_rate, double dest_rate);
-  StandardUnitConversionRates(const StandardUnitConversionRates& other);
-  StandardUnitConversionRates& operator=(
-      const StandardUnitConversionRates& other);
-  ~StandardUnitConversionRates();
+  ConversionRule(const ConversionRule& other);
+  ConversionRule& operator=(const ConversionRule& other);
+  ~ConversionRule();
 
-  // These conversion rates are, respectively, how to convert the source and
-  // destination units to the SI (International System of Units) unit of the
-  // same unit category (e.g. to kilogram for units of mass).
-  double source_to_standard_conversion_rate = kInvalidRateValue;
-  double dest_to_standard_conversion_rate = kInvalidRateValue;
+  // Build a `ConversionRule` – returns nullopt if invalid conversion variables.
+  static std::optional<ConversionRule> Create(
+      const std::string& category,
+      const std::string& unit_name,
+      const std::optional<double>& term_a,
+      const std::optional<double>& term_b,
+      const std::optional<double>& term_c);
+
+  double ConvertAmountToSi(double unit_amount) const;
+  double ConvertAmountFromSi(double si_amount) const;
+
+  double linear_term() const { return term_a_; }
+  const std::string& category() const { return category_; }
+  const std::string& unit_name() const { return unit_name_; }
+
+ private:
+  ConversionRule(const std::string& category,
+                 const std::string& unit_name,
+                 double term_a,
+                 double term_b,
+                 double term_c);
+
+  std::string category_;
+  std::string unit_name_;
+  // Conversion formulas are in one of the two formula formats:
+  // 1. 'target = a * source + b'
+  // 2. 'target = c / source'
+  // where a corresponds with |term_a_|, b corresponds with |term_b_|, and c
+  // corresponds with |term_c_|.
+  // If |term_a_| is a valid value then |term_c_| must be an invalid value, and
+  // vice versa.
+  //
+  // If |term_a_| is not |kInvalidRateTermValue|, then the conversion formula is
+  // 'target = a * source + b'
+  double term_a_;
+  double term_b_;
+  // If |term_c_| is not |kInvalidRateTermValue|, then the conversion formula is
+  // 'target = c / source'
+  double term_c_;
 };
 
-// `UnitConversionInfo` must be copyable.
-struct UnitConversionInfo {
-  UnitConversionInfo(
-      std::string unit,
-      StandardUnitConversionRates standard_unit_conversion_rates);
-  UnitConversionInfo(const UnitConversionInfo& other);
-  UnitConversionInfo& operator=(const UnitConversionInfo& other);
-  ~UnitConversionInfo();
+// A unit conversion between two units in the same category.
+// `UnitConversion` must be copyable as a member of `UnitConversionResult`.
+class UnitConversion {
+ public:
+  UnitConversion(const UnitConversion& other);
+  UnitConversion& operator=(const UnitConversion& other);
+  ~UnitConversion();
 
-  std::string unit;
-  StandardUnitConversionRates standard_unit_conversion_rates;
+  // Build a `UnitConversion` – returns nullopt if different unit categories.
+  static std::optional<UnitConversion> Create(const ConversionRule& source_rule,
+                                              const ConversionRule& dest_rule);
+
+  // Used for sorting alternative unit conversions.
+  //
+  // We have no direct way of comparing unit conversions with different
+  // formulas. The best approximation is to limit comparisons to linear
+  // formulas where we only consider the |term_a_| values. A
+  // smaller a1/a2 ratio between the |source_rule_| and |dest_rule_| of a
+  // `UnitConversion` is understood as a "smaller" unit conversion.
+  //
+  // Unit conversions involving non-linear formulas will be considered greater
+  // by default for our purposes.
+  bool operator<(const UnitConversion& other) const;
+
+  // Given a |source_amount| in the source unit, returns the equivalent amount
+  // in the destination unit.
+  double ConvertSourceAmountToDestAmount(double source_amount) const;
+
+  // Function to build the formula description text shown on the Quick Answers
+  // card. Return nullopt if no simple formula can be derived.
+  std::optional<std::string> GetConversionFormulaText() const;
+
+  const std::string& category() const { return source_rule_.category(); }
+  const ConversionRule& source_rule() const { return source_rule_; }
+  const ConversionRule& dest_rule() const { return dest_rule_; }
+
+ private:
+  UnitConversion(const ConversionRule& source_rule,
+                 const ConversionRule& dest_rule);
+
+  ConversionRule source_rule_;
+  ConversionRule dest_rule_;
 };
 
 // `UnitConversionResult` holds result for unit conversion intent.
@@ -316,9 +381,9 @@ struct UnitConversionResult {
   std::string result_text;
   std::string category;
   double source_amount = 0;
-  // Not every unit conversion will have a conversion rate or alternative units.
-  std::optional<StandardUnitConversionRates> standard_unit_conversion_rates;
-  std::optional<std::vector<UnitConversionInfo>> alternative_units_list;
+  // Not every unit conversion result will have valid unit conversions.
+  std::optional<UnitConversion> source_to_dest_unit_conversion;
+  std::vector<UnitConversion> alternative_unit_conversions_list;
 };
 
 // `StructuredResult` is NOT copyable as it's not trivial to make a class with
@@ -330,7 +395,8 @@ class StructuredResult {
   StructuredResult(const StructuredResult&) = delete;
   StructuredResult& operator=(const StructuredResult) = delete;
 
-  // Result type specific structs must be copyable.
+  // Result type specific structs must be copyable as they can be copied to
+  // views.
   std::unique_ptr<TranslationResult> translation_result;
   std::unique_ptr<DefinitionResult> definition_result;
   std::unique_ptr<UnitConversionResult> unit_conversion_result;

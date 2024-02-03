@@ -1,10 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] GamepadHapticActuator interface: operation canPlayEffectType(GamepadHapticEffectType)
-  assert_own_property: interface prototype object missing non-static operation expected property "canPlayEffectType" missing
-[FAIL] GamepadHapticActuator interface: operation playEffect(GamepadHapticEffectType, optional GamepadEffectParameters)
-  assert_equals: property has wrong .length expected 1 but got 2
-[FAIL] GamepadHapticActuator interface: operation pulse(double, double)
-  assert_own_property: interface prototype object missing non-static operation expected property "pulse" missing
 [FAIL] GamepadPose interface: existence and properties of interface object
   assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
 [FAIL] GamepadPose interface object length
@@ -39,5 +33,7 @@ This is a testharness.js-based test.
   assert_true: The prototype object must have a property "hapticActuators" expected true got false
 [FAIL] Gamepad interface: attribute pose
   assert_true: The prototype object must have a property "pose" expected true got false
+[FAIL] GamepadHapticActuator interface: operation pulse(double, double)
+  assert_own_property: interface prototype object missing non-static operation expected property "pulse" missing
 Harness: the test ran to completion.
 

@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_
 
-#include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/scripting.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -83,8 +83,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     NavigationControls navigation_controls = NavigationControls::kNone;
     int horizontal_viewport_segments = 0;
     int vertical_viewport_segments = 0;
-    device::mojom::blink::DevicePostureType device_posture =
-        device::mojom::blink::DevicePostureType::kContinuous;
+    mojom::blink::DevicePostureType device_posture =
+        mojom::blink::DevicePostureType::kContinuous;
     Scripting scripting = Scripting::kNone;
 
     MediaValuesCachedData();
@@ -128,7 +128,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   NavigationControls GetNavigationControls() const override;
   int GetHorizontalViewportSegments() const override;
   int GetVerticalViewportSegments() const override;
-  device::mojom::blink::DevicePostureType GetDevicePosture() const override;
+  mojom::blink::DevicePostureType GetDevicePosture() const override;
   Scripting GetScripting() const override;
 
   void OverrideViewportDimensions(double width, double height);

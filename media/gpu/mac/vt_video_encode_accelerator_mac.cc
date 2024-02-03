@@ -133,7 +133,7 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
   info.is_hardware_accelerated = true;
 #endif
 
-  absl::optional<int> max_frame_delay_property;
+  std::optional<int> max_frame_delay_property;
   base::apple::ScopedCFTypeRef<CFNumberRef> max_frame_delay_count;
   if (VTSessionCopyProperty(
           compression_session, kVTCompressionPropertyKey_MaxFrameDelayCount,
@@ -521,7 +521,7 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   std::ostringstream parameters_description;
   parameters_description << ": bitrate=" << bitrate.ToString()
                          << ": framerate=" << framerate;
@@ -735,7 +735,7 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession(VideoCodec codec) {
     return false;
   }
 
-  RequestEncodingParametersChange(bitrate_, frame_rate_, absl::nullopt);
+  RequestEncodingParametersChange(bitrate_, frame_rate_, std::nullopt);
   return true;
 }
 

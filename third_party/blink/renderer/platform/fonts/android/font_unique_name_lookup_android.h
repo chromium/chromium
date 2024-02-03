@@ -57,8 +57,8 @@ class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
       firmware_font_lookup_service_;
   mojo::Remote<mojom::blink::AndroidFontLookup> android_font_lookup_service_;
   WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
-  absl::optional<bool> sync_available_;
-  absl::optional<Vector<String>> queryable_fonts_;
+  std::optional<bool> sync_available_;
+  std::optional<Vector<String>> queryable_fonts_;
   HashMap<String, base::File> prefetched_font_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);

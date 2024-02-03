@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_ANIMATION_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/worklet_animation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -32,7 +32,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
   // existing cc::Animation, the existing Animation's id should be
   // passed in to ensure the same id is used.
   static std::unique_ptr<CompositorAnimation> Create(
-      absl::optional<int> replaced_cc_animation_id = absl::nullopt);
+      std::optional<int> replaced_cc_animation_id = std::nullopt);
   static std::unique_ptr<CompositorAnimation> CreateWorkletAnimation(
       cc::WorkletAnimationId,
       const String& name,
@@ -82,7 +82,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
                                base::TimeTicks animation_start_time,
                                std::unique_ptr<gfx::AnimationCurve>) override;
   void NotifyLocalTimeUpdated(
-      absl::optional<base::TimeDelta> local_time) override;
+      std::optional<base::TimeDelta> local_time) override;
 
   scoped_refptr<cc::Animation> animation_;
   raw_ptr<CompositorAnimationDelegate, ExperimentalRenderer> delegate_;

@@ -19,7 +19,7 @@ extern const char kSigninSyncItemState[];
 extern const char kDefaultBrowserItemState[];
 extern const char kAutofillItemState[];
 extern const char kFollowItemState[];
-extern const char kContentNotificationItemState[];
+extern const char kNotificationsItemState[];
 extern const char kDisabled[];
 
 // Possible values stored in prefs for each Set Up List item state.

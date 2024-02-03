@@ -312,8 +312,8 @@ void VirtualTrackpadView::Toggle() {
       std::move(targeter));
 }
 
-void VirtualTrackpadView::Layout() {
-  views::View::Layout();
+void VirtualTrackpadView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   // The height of the finger buttons container stays the same while the width
   // matches the parent width.

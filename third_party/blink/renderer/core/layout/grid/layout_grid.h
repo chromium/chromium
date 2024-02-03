@@ -66,8 +66,8 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) override;
 
-  absl::optional<GridPlacementData> cached_placement_data_;
-  absl::optional<MinMaxSizes> cached_min_max_sizes_;
+  std::optional<GridPlacementData> cached_placement_data_;
+  std::optional<MinMaxSizes> cached_min_max_sizes_;
 };
 
 // wtf/casting.h helper.

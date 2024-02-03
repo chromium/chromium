@@ -607,9 +607,11 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3526440770046466733">Otvori link na novoj kartici i ostani na aktuelnoj kartici</translation>
 <translation id="353086728817903341">Povezani ste sa <ph name="NUM_DEVICES" /> uređaja</translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
+<translation id="3537350467437346467">Pregledali ste</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">Odbacite podešavanje pregleda nedavnih slika i medija na telefonu</translation>
 <translation id="3542066395059568317">Videćete preporuke da biste mogli da nastavite tamo gde ste stali. Možete da kliknete desnim tasterom da biste uklonili preporuke.</translation>
+<translation id="3547318469722231257">Izmenili ste</translation>
 <translation id="3552189655002856821">WiFi je isključen</translation>
 <translation id="3554215588514239132">Prikaži ili sakrij okno Alatke za programere</translation>
 <translation id="3554637740840164787">Stavka <ph name="ITEM_TITLE" /> je zakačena</translation>
@@ -701,6 +703,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3859364108019690">Strimovanje aplikacija nije uspelo</translation>
 <translation id="3861651314799684201">Pritisnite Enter da biste snimili ceo ekran</translation>
+<translation id="3882323608730650973">Izmenjeno je</translation>
 <translation id="3886872229787704059">Otvarano danas</translation>
 <translation id="3891340733213178823">Dvaput pritisnite Ctrl+Shift+Q da biste se odjavili.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -895,6 +898,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4582666543382004902">Hotspot je isključen da biste koristili WiFi. Da biste koristili hotspot, isključite WiFi.</translation>
 <translation id="4585337515783392668">Zaustavi prebacivanje na nepoznati prijemnik</translation>
 <translation id="4596144739579517758">Tamna tema je isključena</translation>
+<translation id="4596442969149038771"><ph name="USER" /> deli</translation>
 <translation id="4611292653554630842">Prijavi me</translation>
 <translation id="462160925400706389"><ph name="NAME" /> – povezano</translation>
 <translation id="4623167406982293031">Verifikujte nalog</translation>
@@ -1338,6 +1342,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="6298183524022479114">Prilagodite ovaj uređaj u aplikaciji</translation>
 <translation id="6309219492973062892">Kliknite na ikone police od 1 do 8 ili ih dodirnite</translation>
 <translation id="6315170314923504164">Glas</translation>
+<translation id="6319058840130157106">Krećite se unazad iz donjeg desnog ugla na pokretač, traku za adresu, traku sa obeleživačima, veb-sajt koji je otvoren i preuzimanja</translation>
 <translation id="6324916366299863871">Izmeni prečicu</translation>
 <translation id="6330012934079202188">Prikazuju se prozori sa svih radnih površina. Pritisnite taster sa strelicom nagore da bi se prikazivali prozori sa aktuelne radne površine.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je sesija kojom upravlja <ph name="MANAGER" /></translation>
@@ -1817,6 +1822,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8314772463905284467">Caps Lock je uključen</translation>
 <translation id="8315514906653279104">Uključuje se…</translation>
 <translation id="8331351032546853669">Preuzimanje je na čekanju</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Prozor <ph name="WINDOW_TITLE" /> je izabran</translation>
 <translation id="8349826889576450703">Pokretač</translation>
@@ -1923,6 +1929,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="878215960996152260"><ph name="APP_NAME" />, instalirana aplikacija, blokirana</translation>
 <translation id="8785070478575117577">Povežite sa uređajem <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Krećite se unapred iz donjeg desnog ugla na pokretač, traku za adresu, traku sa obeleživačima, veb-sajt koji je otvoren i preuzimanja</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
@@ -2036,6 +2043,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="953431725143473984">Želite da isključite uređaj?</translation>
 <translation id="954052413789300507">Nema dovoljno prostora za <ph name="FILENAME" />. Oslobodite prostor.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Korisnik <ph name="USER" /> je izmenio</translation>
 <translation id="974545358917229949">Prikazuju se rezultati (<ph name="RESULT_COUNT" />) za: <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Nema roka</translation>
 <translation id="98120814841227350">Idite na kraj dokumenta</translation>

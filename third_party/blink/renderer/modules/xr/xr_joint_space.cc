@@ -26,7 +26,7 @@ XRJointSpace::XRJointSpace(XRHand* hand,
       radius_(radius),
       handedness_(handedness) {}
 
-absl::optional<gfx::Transform> XRJointSpace::MojoFromNative() const {
+std::optional<gfx::Transform> XRJointSpace::MojoFromNative() const {
   return *mojo_from_joint_space_.get();
 }
 

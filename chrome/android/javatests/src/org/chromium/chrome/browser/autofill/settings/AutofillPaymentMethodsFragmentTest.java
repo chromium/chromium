@@ -1100,11 +1100,14 @@ public class AutofillPaymentMethodsFragmentTest {
                 ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)
                         && !BuildInfo.getInstance().isAutomotive;
-        if (mandatoryReauthToggleShown) {
-            return getPreferenceScreen(activity).getPreference(2);
-        } else {
-            return getPreferenceScreen(activity).getPreference(1);
-        }
+        boolean saveCvcToggleShown =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE);
+        // The first payment method will come after the general settings for enabling
+        // autofill, enabling mandatory re-auth (if available), and enabling CVC storage (if
+        // available).
+        int firstPaymentMethodIndex =
+                1 + (mandatoryReauthToggleShown ? 1 : 0) + (saveCvcToggleShown ? 1 : 0);
+        return getPreferenceScreen(activity).getPreference(firstPaymentMethodIndex);
     }
 
     private Preference getCardPreference(SettingsActivity activity) {

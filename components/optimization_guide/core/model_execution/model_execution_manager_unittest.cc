@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -58,6 +59,10 @@ class FakeServiceController : public OnDeviceModelServiceController {
 
   bool received_safety_info() const { return received_safety_info_; }
 
+  std::optional<base::FilePath> language_detection_model_path() {
+    return OnDeviceModelServiceController::language_detection_model_path();
+  }
+
  private:
   ~FakeServiceController() override = default;
 
@@ -70,13 +75,27 @@ class FakeModelProvider : public TestOptimizationGuideModelProvider {
       proto::OptimizationTarget optimization_target,
       const std::optional<optimization_guide::proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
-    CHECK_EQ(optimization_target, proto::OPTIMIZATION_TARGET_TEXT_SAFETY);
-    was_registered_ = true;
+    switch (optimization_target) {
+      case proto::OPTIMIZATION_TARGET_TEXT_SAFETY:
+        registered_for_text_safety_ = true;
+        break;
+
+      case proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION:
+        registered_for_language_detection_ = true;
+        break;
+
+      default:
+        NOTREACHED();
+    }
   }
-  bool was_registered() const { return was_registered_; }
+
+  bool was_registered() const {
+    return registered_for_text_safety_ && registered_for_language_detection_;
+  }
 
  private:
-  bool was_registered_ = false;
+  bool registered_for_text_safety_ = false;
+  bool registered_for_language_detection_ = false;
 };
 
 class ModelExecutionManagerTest : public testing::Test {
@@ -585,6 +604,17 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest, NotifiesServiceController) {
       proto::OPTIMIZATION_TARGET_TEXT_SAFETY, *model_info);
 
   EXPECT_TRUE(service_controller()->received_safety_info());
+}
+
+TEST_F(ModelExecutionManagerSafetyEnabledTest, UpdateLanguageDetection) {
+  const base::FilePath kTestPath{FILE_PATH_LITERAL("foo")};
+  std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder()
+                                              .SetVersion(123)
+                                              .SetModelFilePath(kTestPath)
+                                              .Build();
+  model_execution_manager()->OnModelUpdated(
+      proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, *model_info);
+  EXPECT_EQ(kTestPath, service_controller()->language_detection_model_path());
 }
 
 }  // namespace

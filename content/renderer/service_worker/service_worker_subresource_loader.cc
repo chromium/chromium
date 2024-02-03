@@ -380,7 +380,9 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
     const auto& sources = eval_result->sources;
     // TODO(crbug.com/1371756): support other sources in the full form.
     // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
-    switch (sources[0].type) {
+    auto source_type = sources[0].type;
+    set_used_router_source_type(source_type);
+    switch (source_type) {
       case blink::ServiceWorkerRouterSource::Type::kNetwork:
         // Network fallback is requested.
         {
@@ -494,6 +496,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
   auto params = blink::mojom::DispatchFetchEventParams::New();
   params->request = blink::mojom::FetchAPIRequest::From(resource_request_);
   params->client_id = controller_connector_->client_id();
+  params->resulting_client_id = controller_connector_->client_id();
   if (remote_forwarded_race_network_request_url_loader_factory_) {
     params->race_network_request_loader_factory =
         std::move(remote_forwarded_race_network_request_url_loader_factory_);
@@ -753,15 +756,17 @@ void ServiceWorkerSubresourceLoader::OnFallback(
 
 void ServiceWorkerSubresourceLoader::UpdateResponseTiming(
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
-  // |service_worker_ready_time| becomes web-exposed
-  // PerformanceResourceTiming#fetchStart, which is the time just before
-  // dispatching the fetch event, so set it to |dispatch_event_time|.
-  response_head_->load_timing.service_worker_ready_time =
-      timing->dispatch_event_time;
-  response_head_->load_timing.service_worker_fetch_start =
-      timing->dispatch_event_time;
-  response_head_->load_timing.service_worker_respond_with_settled =
-      timing->respond_with_settled_time;
+  if (!ShouldAvoidRecordingServiceWorkerTimingInfo()) {
+    // |service_worker_ready_time| becomes web-exposed
+    // PerformanceResourceTiming#fetchStart, which is the time just before
+    // dispatching the fetch event, so set it to |dispatch_event_time|.
+    response_head_->load_timing.service_worker_ready_time =
+        timing->dispatch_event_time;
+    response_head_->load_timing.service_worker_fetch_start =
+        timing->dispatch_event_time;
+    response_head_->load_timing.service_worker_respond_with_settled =
+        timing->respond_with_settled_time;
+  }
   fetch_event_timing_ = std::move(timing);
 }
 
@@ -1048,6 +1053,10 @@ bool ServiceWorkerSubresourceLoader::InitRecordTimingMetricsIfEligible(
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "ServiceWorker", "ServiceWorker.LoadTiming.Subresource", this,
       completion_time_);
+
+  if (ShouldAvoidRecordingServiceWorkerTimingInfo()) {
+    return false;
+  }
 
   return true;
 }

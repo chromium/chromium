@@ -13,39 +13,10 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {VolumeType} from '../../common/js/volume_manager_types.js';
+import {type ElementObject, type KeyModifiers, VolumeType} from '../../common/js/shared_types.js';
 import type {MetadataKey} from '../../foreground/js/metadata/metadata_item.js';
 
 import {test} from './test_util_base.js';
-
-export interface ElementObject {
-  attributes: Record<string, string|null>;
-  text: string|null;
-  innerText: string|null;
-  value: string|null;
-  styles?: Record<string, string>;
-  hidden: boolean;
-  hasShadowRoot: boolean;
-  imageWidth?: number;
-  imageHeight?: number;
-  renderedWidth?: number;
-  renderedHeight?: number;
-  renderedTop?: number;
-  renderedLeft?: number;
-  scrollLeft?: number;
-  scrollTop?: number;
-  scrollWidth?: number;
-  scrollHeight?: number;
-}
-
-/**
- * Object containing common key modifiers: shift, alt, and ctrl.
- */
-export interface KeyModifiers {
-  shift?: boolean;
-  alt?: boolean;
-  ctrl?: boolean;
-}
 
 export interface RemoteRequest {
   func: string;

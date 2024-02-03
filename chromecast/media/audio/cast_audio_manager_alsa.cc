@@ -4,11 +4,11 @@
 
 #include "chromecast/media/audio/cast_audio_manager_alsa.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/audio_buildflags.h"
@@ -34,7 +34,7 @@ const int kCommunicationsInputBufferSize = 160;  // 10 ms.
 
 // Since "default" and "dmix" devices are virtual devices mapped to real
 // devices, we remove them from the list to avoiding duplicate counting.
-constexpr base::StringPiece kInvalidAudioInputDevices[] = {
+constexpr std::string_view kInvalidAudioInputDevices[] = {
     "default",
     "dmix",
     "null",

@@ -330,7 +330,7 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryTrusted) {
   EXPECT_EQ(response.scanners[0].model, "Scanner");
 }
 
-TEST_F(DocumentScanAPIHandlerTest, GetScannerList_NewIdBetweenCalls) {
+TEST_F(DocumentScanAPIHandlerTest, GetScannerList_SameIdBetweenCalls) {
   GetDocumentScan().AddScanner(CreateTestScannerInfo());
   MarkExtensionTrusted(kExtensionId);
 
@@ -340,6 +340,8 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_NewIdBetweenCalls) {
       /*native_window=*/nullptr, extension_, std::move(filter1),
       future1.GetCallback());
 
+  // Since the DocumentScanAsh service hasn't changed, the same ID should come
+  // back for the same device.
   api::document_scan::DeviceFilter filter2;
   GetScannerListFuture future2;
   document_scan_api_handler_->GetScannerList(
@@ -352,7 +354,7 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_NewIdBetweenCalls) {
   EXPECT_EQ(response1.result, api::document_scan::OperationResult::kSuccess);
   ASSERT_EQ(response1.scanners.size(), 1U);
   ASSERT_EQ(response2.scanners.size(), 1U);
-  EXPECT_NE(response1.scanners[0].scanner_id, response2.scanners[0].scanner_id);
+  EXPECT_EQ(response1.scanners[0].scanner_id, response2.scanners[0].scanner_id);
 }
 
 TEST_F(DocumentScanAPIHandlerTest, OpenScanner_OpenBeforeListFails) {
@@ -371,16 +373,14 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_OpenInvalidFails) {
   std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
-  // Calling GetScannerList invalidates the previously returned ID.
-  document_scan_api_handler_->GetScannerList(
-      /*native_window=*/nullptr, extension_, {}, base::DoNothing());
-
+  // The extension got back a valid ID, but tries to open a different one.
   OpenScannerFuture future;
-  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+  std::string bad_id = scanner_id + "_invalid";
+  document_scan_api_handler_->OpenScanner(extension_, bad_id,
                                           future.GetCallback());
   const api::document_scan::OpenScannerResponse& response = future.Get();
 
-  EXPECT_EQ(response.scanner_id, scanner_id);
+  EXPECT_EQ(response.scanner_id, bad_id);
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kInvalid);
   EXPECT_FALSE(response.scanner_handle.has_value());
   EXPECT_FALSE(response.options.has_value());
@@ -495,6 +495,57 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondExtensionOpenFails) {
             api::document_scan::OperationResult::kDeviceBusy);
   EXPECT_FALSE(open_response2.scanner_handle.has_value());
   EXPECT_FALSE(open_response2.options.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondOpenClosesFirstHandle) {
+  const std::string scanner_id = CreateScannerIdForExtension(extension_);
+  ASSERT_FALSE(scanner_id.empty());
+
+  // The first open succeeds because the scanner is not open.
+  OpenScannerFuture future1;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          future1.GetCallback());
+  const api::document_scan::OpenScannerResponse& response1 = future1.Get();
+  EXPECT_EQ(response1.scanner_id, scanner_id);
+  EXPECT_EQ(response1.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(response1.scanner_handle.has_value());
+  EXPECT_FALSE(response1.scanner_handle->empty());
+  ASSERT_TRUE(response1.options.has_value());
+  EXPECT_TRUE(response1.options->additional_properties.contains("option1"));
+
+  // First GetOptionGroups succeeds because the scanner is open.
+  GetOptionGroupsFuture options_future1;
+  document_scan_api_handler_->GetOptionGroups(
+      extension_, *response1.scanner_handle, options_future1.GetCallback());
+  const api::document_scan::GetOptionGroupsResponse& options_response1 =
+      options_future1.Get();
+  EXPECT_EQ(options_response1.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_TRUE(options_response1.groups.has_value());
+
+  // The second open succeeds because this is the same extension.  This
+  // implicitly closes the first handle.
+  OpenScannerFuture future2;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          future2.GetCallback());
+  const api::document_scan::OpenScannerResponse& response2 = future2.Get();
+  EXPECT_EQ(response2.scanner_id, scanner_id);
+  EXPECT_EQ(response2.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(response2.scanner_handle.has_value());
+  EXPECT_FALSE(response2.scanner_handle->empty());
+  ASSERT_TRUE(response2.options.has_value());
+  EXPECT_TRUE(response2.options->additional_properties.contains("option1"));
+
+  // Second GetOptionGroups for the original handle fails because the handle is
+  // now invalid.
+  GetOptionGroupsFuture options_future2;
+  document_scan_api_handler_->GetOptionGroups(
+      extension_, *response1.scanner_handle, options_future2.GetCallback());
+  const api::document_scan::GetOptionGroupsResponse& options_response2 =
+      options_future2.Get();
+  EXPECT_NE(options_response2.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_FALSE(options_response2.groups.has_value());
 }
 
 TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_NoScanner) {
@@ -1099,8 +1150,8 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_HandleNotMine) {
   EXPECT_EQ(cancel_response.job, job_handle);
 }
 
-TEST_F(DocumentScanAPIHandlerTest, CancelScan_GetListMaintainsJob) {
-  // After a `GetScannerList`, the job handles should remain valid.
+TEST_F(DocumentScanAPIHandlerTest, CancelScan_GetListClears) {
+  // After a `GetScannerList`, the job handles should be cleared.
   std::string job_handle = StartScanForExtension(extension_);
   EXPECT_FALSE(job_handle.empty());
 
@@ -1112,7 +1163,8 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_GetListMaintainsJob) {
   EXPECT_EQ(list_response.result,
             api::document_scan::OperationResult::kSuccess);
 
-  // This cancel should work even after the get list call.
+  // This cancel should fail because the GetScannerList call cleared active
+  // handles.
   CancelScanFuture cancel_future;
   document_scan_api_handler_->CancelScan(extension_, job_handle,
                                          cancel_future.GetCallback());
@@ -1120,7 +1172,7 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_GetListMaintainsJob) {
   const api::document_scan::CancelScanResponse& cancel_response =
       cancel_future.Get();
   EXPECT_EQ(cancel_response.result,
-            api::document_scan::OperationResult::kSuccess);
+            api::document_scan::OperationResult::kInvalid);
   EXPECT_EQ(cancel_response.job, job_handle);
 }
 
@@ -1190,6 +1242,101 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
   EXPECT_EQ(read_response3.job, job_handle);
   EXPECT_FALSE(read_response3.data.has_value());
   EXPECT_FALSE(read_response3.estimated_completion.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromClosedScannerFails) {
+  MarkExtensionTrusted(kExtensionId);
+
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+  std::string job_handle =
+      StartScanForScannerHandle(extension_, scanner_handle);
+  EXPECT_FALSE(job_handle.empty());
+
+  // First read succeeds because the job is open.
+  ReadScanDataFuture read_future1;
+  document_scan_api_handler_->ReadScanData(extension_, job_handle,
+                                           read_future1.GetCallback());
+  const api::document_scan::ReadScanDataResponse& read_response1 =
+      read_future1.Get();
+  EXPECT_EQ(read_response1.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(read_response1.job, job_handle);
+  EXPECT_TRUE(read_response1.data.has_value());
+  EXPECT_TRUE(read_response1.estimated_completion.has_value());
+
+  // Closing the scanner handle also invalidates the job handle.
+  document_scan_api_handler_->CloseScanner(extension_, scanner_handle,
+                                           base::DoNothing());
+
+  // Second read fails because the job is no longer valid.
+  ReadScanDataFuture read_future2;
+  document_scan_api_handler_->ReadScanData(extension_, job_handle,
+                                           read_future2.GetCallback());
+  const api::document_scan::ReadScanDataResponse& read_response2 =
+      read_future2.Get();
+  EXPECT_NE(read_response2.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(read_response2.job, job_handle);
+  EXPECT_FALSE(read_response2.data.has_value());
+  EXPECT_FALSE(read_response2.estimated_completion.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromReopenedScannerFails) {
+  MarkExtensionTrusted(kExtensionId);
+
+  const std::string scanner_id = CreateScannerIdForExtension(extension_);
+  ASSERT_FALSE(scanner_id.empty());
+
+  // The first open succeeds because the scanner is not open.
+  OpenScannerFuture open_future1;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          open_future1.GetCallback());
+  const api::document_scan::OpenScannerResponse& open_response1 =
+      open_future1.Get();
+  EXPECT_EQ(open_response1.result,
+            api::document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(open_response1.scanner_handle.has_value());
+  EXPECT_FALSE(open_response1.scanner_handle->empty());
+
+  const std::string job_handle =
+      StartScanForScannerHandle(extension_, *open_response1.scanner_handle);
+  EXPECT_FALSE(job_handle.empty());
+
+  // First read succeeds because the job is open.
+  ReadScanDataFuture read_future1;
+  document_scan_api_handler_->ReadScanData(extension_, job_handle,
+                                           read_future1.GetCallback());
+  const api::document_scan::ReadScanDataResponse& read_response1 =
+      read_future1.Get();
+  EXPECT_EQ(read_response1.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(read_response1.job, job_handle);
+  EXPECT_TRUE(read_response1.data.has_value());
+  EXPECT_TRUE(read_response1.estimated_completion.has_value());
+
+  // Reopening the same scanner ID also invalidates the job handle.
+  OpenScannerFuture open_future2;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          open_future2.GetCallback());
+  const api::document_scan::OpenScannerResponse& open_response2 =
+      open_future2.Get();
+  EXPECT_EQ(open_response2.result,
+            api::document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(open_response2.scanner_handle.has_value());
+  EXPECT_FALSE(open_response2.scanner_handle->empty());
+
+  // Second read fails because the job is no longer valid.
+  ReadScanDataFuture read_future2;
+  document_scan_api_handler_->ReadScanData(extension_, job_handle,
+                                           read_future2.GetCallback());
+  const api::document_scan::ReadScanDataResponse& read_response2 =
+      read_future2.Get();
+  EXPECT_NE(read_response2.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(read_response2.job, job_handle);
+  EXPECT_FALSE(read_response2.data.has_value());
+  EXPECT_FALSE(read_response2.estimated_completion.has_value());
 }
 
 }  // namespace

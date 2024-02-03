@@ -70,7 +70,6 @@ source_set("feed_top_section_promos_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols:symbols",
     "//ios/chrome/browser/shared/ui/util:util",
-    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util:util",
     "//ui/base:base",

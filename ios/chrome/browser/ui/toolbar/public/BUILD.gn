@@ -7,6 +7,8 @@ source_set("public") {
     "fakebox_focuser.h",
     "omnibox_position_metrics.h",
     "omnibox_position_metrics.mm",
+    "omnibox_position_util.h",
+    "omnibox_position_util.mm",
     "side_swipe_toolbar_interacting.h",
     "side_swipe_toolbar_snapshot_providing.h",
     "toolbar_coordinating.h",
@@ -19,6 +21,9 @@ source_set("public") {
   deps = [
     ":constants",
     "//base",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/fullscreen:ui",

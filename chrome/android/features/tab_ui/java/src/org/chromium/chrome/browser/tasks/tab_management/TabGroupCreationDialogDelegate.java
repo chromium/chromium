@@ -15,8 +15,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -24,13 +24,15 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /** Delegate that manages the observer for the modal dialog on new tab group creation. */
 public class TabGroupCreationDialogDelegate {
     private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private EmptyTabGroupModelFilterObserver mRegularObserver;
-    private EmptyTabGroupModelFilterObserver mIncognitoObserver;
+    private TabGroupModelFilterObserver mRegularObserver;
+    private TabGroupModelFilterObserver mIncognitoObserver;
     private PropertyModel mModel;
 
     public TabGroupCreationDialogDelegate(
@@ -65,7 +67,7 @@ public class TabGroupCreationDialogDelegate {
 
     // TODO(crbug.com/1517346): Make this private and initialize it only when TabModelSelector's tab
     // state has been initialized.
-    /** Add an EmptyTabGroupModelFilterObserver to notify when a new tab group is being created. */
+    /** Add an TabGroupModelFilterObserver to notify when a new tab group is being created. */
     public void addObservers() {
         TabModelFilterProvider tabModelFilterProvider =
                 mTabModelSelectorSupplier.get().getTabModelFilterProvider();
@@ -78,9 +80,9 @@ public class TabGroupCreationDialogDelegate {
                         (TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true));
     }
 
-    private EmptyTabGroupModelFilterObserver attachObserver(TabGroupModelFilter filter) {
-        EmptyTabGroupModelFilterObserver observer =
-                new EmptyTabGroupModelFilterObserver() {
+    private TabGroupModelFilterObserver attachObserver(TabGroupModelFilter filter) {
+        TabGroupModelFilterObserver observer =
+                new TabGroupModelFilterObserver() {
                     // Handles the tab selection editor group action and longpressing a link for a
                     // context menu to create a group.
                     @Override
@@ -118,6 +120,19 @@ public class TabGroupCreationDialogDelegate {
                                         R.plurals.bottom_tab_grid_title_placeholder,
                                         tabCount,
                                         tabCount));
+
+        List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+        ColorPickerCoordinator.Delegate delegate =
+                new ColorPickerCoordinator.Delegate() {
+                    @Override
+                    public int getColorPickerUIComponent() {
+                        return R.layout.tab_group_color_picker_container;
+                    }
+                };
+
+        ColorPickerCoordinator colorPickerCoordinator =
+                new ColorPickerCoordinator(mActivity, colors, delegate);
+        colorPickerCoordinator.setSelectedColorItem(colors.get(1));
 
         TabGroupCreationTextInputLayout groupTitle = customView.findViewById(R.id.tab_group_title);
         ModalDialogProperties.Controller dialogController =

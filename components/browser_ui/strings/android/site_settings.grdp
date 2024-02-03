@@ -79,9 +79,6 @@
   <message name="IDS_WEBSITE_SETTINGS_USE_MIC" desc="The category filter 'Mic' for site settings.">
     Microphone
   </message>
-  <message name="IDS_MIDI_PERMISSION_TITLE" desc="Title of the permission that allows a website to use MIDI devices [CHAR_LIMIT=32]">
-    MIDI devices
-  </message>
   <message name="IDS_MIDI_SYSEX_PERMISSION_TITLE" desc="Title of the permission that allows a website to get full control of MIDI devices [CHAR_LIMIT=32]">
     MIDI device control / reprogram
   </message>

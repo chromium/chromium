@@ -33,8 +33,8 @@ class CORE_EXPORT SpeculationRule final
       Vector<KURL>,
       DocumentRulePredicate*,
       RequiresAnonymousClientIPWhenCrossOrigin,
-      absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
-      absl::optional<network::mojom::ReferrerPolicy>,
+      std::optional<mojom::blink::SpeculationTargetHint> target_hint,
+      std::optional<network::mojom::ReferrerPolicy>,
       mojom::blink::SpeculationEagerness,
       network::mojom::blink::NoVarySearchPtr,
       mojom::blink::SpeculationInjectionType);
@@ -45,11 +45,11 @@ class CORE_EXPORT SpeculationRule final
   bool requires_anonymous_client_ip_when_cross_origin() const {
     return requires_anonymous_client_ip_.value();
   }
-  absl::optional<mojom::blink::SpeculationTargetHint>
+  std::optional<mojom::blink::SpeculationTargetHint>
   target_browsing_context_name_hint() const {
     return target_browsing_context_name_hint_;
   }
-  absl::optional<network::mojom::ReferrerPolicy> referrer_policy() const {
+  std::optional<network::mojom::ReferrerPolicy> referrer_policy() const {
     return referrer_policy_;
   }
   mojom::blink::SpeculationEagerness eagerness() const { return eagerness_; }
@@ -67,9 +67,9 @@ class CORE_EXPORT SpeculationRule final
   const Vector<KURL> urls_;
   const Member<DocumentRulePredicate> predicate_;
   const RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip_;
-  const absl::optional<mojom::blink::SpeculationTargetHint>
+  const std::optional<mojom::blink::SpeculationTargetHint>
       target_browsing_context_name_hint_;
-  const absl::optional<network::mojom::ReferrerPolicy> referrer_policy_;
+  const std::optional<network::mojom::ReferrerPolicy> referrer_policy_;
   mojom::blink::SpeculationEagerness eagerness_;
   network::mojom::blink::NoVarySearchPtr no_vary_search_expected_;
   mojom::blink::SpeculationInjectionType injection_type_ =

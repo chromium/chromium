@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
-<translation id="1426410128494586442">Tak</translation>
 <translation id="1434873037477293673">karta obniżki ceny</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> witryna}few{<ph name="SITE_COUNT" /> witryny}many{<ph name="SITE_COUNT" /> witryn}other{<ph name="SITE_COUNT" /> witryny}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
 <translation id="2238944249568001759">Sugerowane wyszukiwania na podstawie ostatnio otwartej karty</translation>
+<translation id="2241587408274973373">Karty na stronie nowej karty</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2253414712144136228">Usuń <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Zablokowane w 1 witrynie}few{Zablokowane w # witrynach}many{Zablokowane w # witrynach}other{Zablokowane w # witryny}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
 <translation id="2790501146643349491">Gdy ta opcja jest włączona, ostatnio zamknięte strony internetowe mogą dokończyć wysyłanie i odbieranie danych. Gdy jest wyłączona, nie mogą tego zrobić.</translation>
 <translation id="2822354292072154809">Czy na pewno chcesz zresetować wszystkie uprawnienia witryny dla obiektu <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Żądaj wersji na urządzenia mobilne</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2874939134665556319">Poprzedni utwór</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Przeglądarka certyfikatów</translation>
 <translation id="2979365474350987274">Pliki cookie innych firm są ograniczone</translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
-<translation id="3013291976881901233">Urządzenia MIDI</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
@@ -169,7 +167,7 @@
 <translation id="3803367742635802571">Strony, które odwiedzasz, mogą przestać działać zgodnie z założeniami ich twórców</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Numery telefonów</translation>
-<translation id="3826050100957962900">Logowanie przez usługę zewnętrzną</translation>
+<translation id="3826050100957962900">Logowanie przez inną usługę</translation>
 <translation id="3835233591525155343">Korzystanie z urządzenia</translation>
 <translation id="3843916486309149084">Chrome ponownie zablokuje pliki cookie dzisiaj</translation>
 <translation id="385051799172605136">Wstecz</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Połączona z urządzeniem USB</translation>
 <translation id="4194328954146351878">Pytaj, zanim zezwolisz stronom na odczytywanie i zmienianie informacji na urządzeniach z funkcją NFC (zalecane)</translation>
 <translation id="4200726100658658164">Otwórz ustawienia lokalizacji</translation>
-<translation id="4212246570487010370">Przeglądaj dalej</translation>
 <translation id="4226663524361240545">Powiadomienia będą sygnalizowane wibracjami</translation>
 <translation id="4259722352634471385">Adres zablokowany: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dozwolone</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">W dół</translation>
 <translation id="6749077623962119521">Zresetować uprawnienia?</translation>
 <translation id="6766622839693428701">Przesuń w dół, by zamknąć.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Z urządzenia <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Wybierz opcję dla <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6818926723028410516">Wybierz elementy</translation>

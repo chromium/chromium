@@ -33,12 +33,12 @@ class OpenXRSceneUnderstandingManager {
   OpenXRSceneUnderstandingManager();
   virtual ~OpenXRSceneUnderstandingManager();
 
-  HitTestSubscriptionId SubscribeToHitTest(
+  std::optional<HitTestSubscriptionId> SubscribeToHitTest(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray);
 
-  HitTestSubscriptionId SubscribeToHitTestForTransientInput(
+  std::optional<HitTestSubscriptionId> SubscribeToHitTestForTransientInput(
       const std::string& profile_name,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray);
@@ -53,7 +53,9 @@ class OpenXRSceneUnderstandingManager {
   virtual void OnFrameUpdate(XrTime predicted_display_time) = 0;
 
  protected:
-  virtual void OnNewHitTestSubscription() = 0;
+  // Can return false to indicate that there was an error with processing the
+  // new subscription and that it is not actually registered.
+  virtual bool OnNewHitTestSubscription() = 0;
   virtual void OnAllHitTestSubscriptionsRemoved() = 0;
 
   // Called to get hit test results in the mojom space from the specified origin

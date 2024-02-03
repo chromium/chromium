@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1415402041810619267">已截斷網址</translation>
-<translation id="1426410128494586442">是</translation>
 <translation id="1434873037477293673">價格下降資訊卡</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">如要允許 <ph name="APP_NAME" /> 存取裝置的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
+<translation id="2241587408274973373">新分頁資訊卡</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{已封鎖 1 個網站}other{已封鎖 # 個網站}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">網站可以顯示身分識別服務的登入提示。</translation>
 <translation id="2790501146643349491">如果啟用，最近關閉的網站就可以完成資料收發作業。如果停用，最近關閉的網站將無法完成資料收發作業。</translation>
 <translation id="2822354292072154809">確定要重設「<ph name="CHOSEN_OBJECT_NAME" />」的所有網站權限嗎？</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">要求使用行動裝置檢視畫面</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">憑證檢視器</translation>
 <translation id="2979365474350987274">限制使用第三方 Cookie</translation>
 <translation id="3008272652534848354">重設權限</translation>
-<translation id="3013291976881901233">MIDI 裝置</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
 <translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
-<translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4278390842282768270">允許</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
 <translation id="6766622839693428701">向下滑動即可關閉。</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> 來自「<ph name="FROM_DEVICE" />」</translation>
 <translation id="6787751205395685251">選取用於 <ph name="SITE_NAME" /> 的選項</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">選取項目</translation>

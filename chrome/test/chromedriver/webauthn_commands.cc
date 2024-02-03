@@ -62,7 +62,7 @@ Status ConvertBase64UrlToBase64(base::Value::Dict& params,
       return Status(kInvalidArgument, key + kBase64UrlError);
     }
 
-    base::Base64Encode(temp, &value);
+    value = base::Base64Encode(temp);
   }
 
   return Status(kOk);

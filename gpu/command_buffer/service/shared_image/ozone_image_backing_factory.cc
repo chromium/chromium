@@ -44,8 +44,7 @@ gfx::BufferUsage GetBufferUsage(uint32_t usage) {
     // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
     return gfx::BufferUsage::SCANOUT;
   } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
-    if (base::FeatureList::IsEnabled(features::kOzoneFrontBufferUsage) &&
-        usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
       // Example usage here is low latency (desynchronized) 2d canvas. Note that
       // this does not imply CPU read/write.
       return gfx::BufferUsage::SCANOUT_FRONT_RENDERING;

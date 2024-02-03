@@ -303,7 +303,7 @@ TEST_F(CWVAutofillControllerTest, FocusCallback) {
     params.frame_id = web::kMainFakeFrameId;
     params.has_user_gesture = true;
     params.type = "focus";
-    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
     form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
     [delegate verify];
 }
@@ -328,7 +328,7 @@ TEST_F(CWVAutofillControllerTest, InputCallback) {
     params.frame_id = web::kMainFakeFrameId;
     params.type = "input";
     params.has_user_gesture = true;
-    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+    auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
     form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
     [delegate verify];
 }
@@ -354,7 +354,7 @@ TEST_F(CWVAutofillControllerTest, InputCallbackFromKeyup) {
   params.frame_id = web::kMainFakeFrameId;
   params.type = "keyup";
   params.has_user_gesture = true;
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
   [delegate verify];
 }
@@ -379,7 +379,7 @@ TEST_F(CWVAutofillControllerTest, BlurCallback) {
   params.frame_id = web::kMainFakeFrameId;
   params.type = "blur";
   params.has_user_gesture = true;
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
 
   [delegate verify];
@@ -394,7 +394,7 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
                   didSubmitFormWithName:kTestFormName
                                 frameID:frame_id_
                           userInitiated:YES];
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->DocumentSubmitted(
       /*sender_frame*/ frame.get(), base::SysNSStringToUTF8(kTestFormName),
       /*form_data=*/"",

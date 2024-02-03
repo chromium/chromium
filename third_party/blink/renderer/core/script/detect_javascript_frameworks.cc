@@ -95,12 +95,14 @@ inline void CheckPropertyMatches(Element& element,
                                  v8::Local<v8::Context> context,
                                  v8::Isolate* isolate,
                                  JavaScriptFrameworkDetectionResult& result) {
-  v8::Local<v8::Object> v8_element = dom_data_store.Get(&element, isolate);
-  if (v8_element.IsEmpty())
+  v8::Local<v8::Object> v8_element;
+  if (!dom_data_store.Get(isolate, &element).ToLocal(&v8_element)) {
     return;
+  }
   v8::Local<v8::Array> property_names;
-  if (!v8_element->GetOwnPropertyNames(context).ToLocal(&property_names))
+  if (!v8_element->GetOwnPropertyNames(context).ToLocal(&property_names)) {
     return;
+  }
 
   DEFINE_STATIC_LOCAL(AtomicString, vue_string, ("__vue__"));
   DEFINE_STATIC_LOCAL(AtomicString, vue_app_string, ("__vue_app__"));

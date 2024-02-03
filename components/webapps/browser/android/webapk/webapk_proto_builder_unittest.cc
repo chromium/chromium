@@ -54,7 +54,7 @@ class BuildProtoRunner {
                  bool is_manifest_stale,
                  bool is_app_identity_update_supported,
                  const std::vector<GURL>& best_shortcut_icon_urls) {
-    webapps::ShortcutInfo info(GURL::EmptyGURL());
+    webapps::ShortcutInfo info{GURL()};
     info.manifest_id = manifest_id;
     info.dark_theme_color = dark_theme_color;
     info.dark_background_color = dark_background_color;
@@ -91,7 +91,7 @@ class BuildProtoRunner {
       std::map<std::string, webapps::WebApkIconHasher::Icon>
           icon_url_to_murmur2_hash,
       const std::string& icon_data) {
-    webapps::ShortcutInfo info(GURL::EmptyGURL());
+    webapps::ShortcutInfo info{GURL()};
     info.best_primary_icon_url = icon_url;
     info.icon_urls = std::move(icon_urls);
     webapps::BuildProto(info, GURL() /*app_key*/, icon_data,

@@ -88,6 +88,7 @@ struct AddOptions {
   CSSSelector::Signal signal = CSSSelector::Signal::kNone;
   bool is_inline_style = false;
   bool is_fallback_style = false;
+  bool is_invisible = false;
 };
 
 class TestCascade {
@@ -138,7 +139,8 @@ class TestCascade {
         {.link_match_type = options.link_match_type,
          .signal = options.signal,
          .is_inline_style = options.is_inline_style,
-         .is_fallback_style = options.is_fallback_style});
+         .is_fallback_style = options.is_fallback_style,
+         .is_invisible = options.is_invisible});
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {
@@ -1954,7 +1956,7 @@ TEST_F(StyleCascadeTest, SubstituteRegisteredUniversal) {
 }
 
 TEST_F(StyleCascadeTest, SubstituteRegisteredUniversalInvalid) {
-  RegisterProperty(GetDocument(), "--x", "*", absl::nullopt, false);
+  RegisterProperty(GetDocument(), "--x", "*", std::nullopt, false);
 
   TestCascade cascade(GetDocument());
   cascade.Add("--y", " var(--x) ");
@@ -3938,6 +3940,69 @@ TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_Winning) {
               {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
   cascade.Apply();
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleCascadeTest, NoInvisibleRule) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:1px");
+  cascade.Add("top:2px");
+  cascade.Apply();
+  EXPECT_EQ("2px", cascade.ComputedValue("top"));
+}
+
+TEST_F(StyleCascadeTest, InvisibleRuleHigherPriority) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:1px");
+  cascade.Add("top:2px", {.is_invisible = true});
+  cascade.Apply();
+  EXPECT_EQ("1px", cascade.ComputedValue("top"));
+}
+
+TEST_F(StyleCascadeTest, InvisibleRuleLowerPriority) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:1px", {.is_invisible = true});
+  cascade.Add("top:2px");
+  cascade.Apply();
+  EXPECT_EQ("2px", cascade.ComputedValue("top"));
+}
+
+TEST_F(StyleCascadeTest, RevertToInvisibleRule) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:1px", {.origin = CascadeOrigin::kUserAgent});
+  cascade.Add("top:2px",
+              {.origin = CascadeOrigin::kUser, .is_invisible = true});
+  cascade.Add("top:revert", {.origin = CascadeOrigin::kAuthor});
+  cascade.Apply();
+  EXPECT_EQ("1px", cascade.ComputedValue("top"));
+}
+
+TEST_F(StyleCascadeTest, SignalingInvisibleRule) {
+  ClearUseCounter(WebFeature::kCSSNestedGroupRuleSpecificity);
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:1px");
+  cascade.Add("top:2px",
+              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity,
+               .is_invisible = true});
+  cascade.Apply();
+  EXPECT_EQ("1px", cascade.ComputedValue("top"));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleCascadeTest, SignalAgainstInvisible) {
+  ClearUseCounter(WebFeature::kCSSNestedGroupRuleSpecificity);
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:1px");
+  cascade.Add("top:2px", {.is_invisible = true});
+  cascade.Add("top:2px",
+              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
+  cascade.Apply();
+  EXPECT_EQ("2px", cascade.ComputedValue("top"));
+  // This case should not trigger the use counter, because signals should only
+  // be processed for the invisible pass of the cascade, i.e. the cascade as
+  // it would be with invisible rules included. With invisible rules
+  // included, the signaling declaration doesn't matter, because we already
+  // had 2px in the cascade.
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
 }
 
 }  // namespace blink

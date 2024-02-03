@@ -50,8 +50,9 @@ constexpr int kRetryResponseCodes[] = {net::ERR_TIMED_OUT,
 
 const int kTotalNumRetries = 3;
 
-HttpsFirewallRoutine::HttpsFirewallRoutine()
-    : num_retries_(kTotalNumRetries),
+HttpsFirewallRoutine::HttpsFirewallRoutine(mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source),
+      num_retries_(kTotalNumRetries),
       tls_prober_getter_callback_(base::BindRepeating(
           &HttpsFirewallRoutine::CreateAndExecuteTlsProber)) {
   std::vector<std::string> url_strings =
@@ -153,7 +154,7 @@ network::mojom::NetworkContext* HttpsFirewallRoutine::GetNetworkContext() {
 }
 
 std::unique_ptr<TlsProber> HttpsFirewallRoutine::CreateAndExecuteTlsProber(
-    TlsProber::NetworkContextGetter network_context_getter,
+    network::NetworkContextGetter network_context_getter,
     net::HostPortPair host_port_pair,
     bool negotiate_tls,
     TlsProber::TlsProbeCompleteCallback callback) {

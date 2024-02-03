@@ -171,7 +171,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
 
     auto accountId = AccountId::FromUserEmail(kUserEmail);
     session_controller->AddUserSession(kUserEmail,
-                                       user_manager::USER_TYPE_REGULAR,
+                                       user_manager::UserType::kRegular,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(accountId, std::move(user_prefs));
 

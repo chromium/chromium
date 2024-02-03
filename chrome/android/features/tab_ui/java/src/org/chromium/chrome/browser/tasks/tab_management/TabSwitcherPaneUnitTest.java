@@ -65,6 +65,8 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
+import java.util.function.DoubleConsumer;
+
 /** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherPaneUnitTest {
@@ -85,6 +87,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private PaneHubController mPaneHubController;
     @Mock private TabSwitcherCustomViewManager.Delegate mCustomViewManagerDelegate;
     @Mock private View mCustomView;
+    @Mock private DoubleConsumer mOnAlphaChange;
 
     @Captor ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
     @Captor ArgumentCaptor<Callback<Integer>> mOnTabClickedCallbackCaptor;
@@ -157,7 +160,8 @@ public class TabSwitcherPaneUnitTest {
                         mTabSwitcherPaneCoordinatorFactory,
                         () -> mTabModelFilter,
                         mNewTabButtonClickListener,
-                        mTabSwitcherPaneDrawableCoordinator);
+                        mTabSwitcherPaneDrawableCoordinator,
+                        mOnAlphaChange);
         ShadowLooper.runUiThreadTasks();
         verify(mSharedPreferences)
                 .registerOnSharedPreferenceChangeListener(

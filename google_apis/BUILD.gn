@@ -176,7 +176,7 @@ component("google_apis") {
   ]
 
   deps = [
-    ":oauth2_mint_token_consent_result_proto",
+    ":proto",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -202,8 +202,11 @@ component("google_apis") {
   defines = [ "IS_GOOGLE_APIS_IMPL" ]
 }
 
-proto_library("oauth2_mint_token_consent_result_proto") {
-  sources = [ "gaia/oauth2_mint_token_consent_result.proto" ]
+proto_library("proto") {
+  sources = [
+    "gaia/bound_oauth_token.proto",
+    "gaia/oauth2_mint_token_consent_result.proto",
+  ]
 }
 
 static_library("test_support") {
@@ -223,7 +226,7 @@ static_library("test_support") {
 
   public_deps = [
     ":google_apis",
-    ":oauth2_mint_token_consent_result_proto",
+    ":proto",
     "//base",
     "//base/test:test_support",
     "//net:test_support",
@@ -267,7 +270,7 @@ test("google_apis_unittests") {
 
   deps = [
     ":google_apis",
-    ":oauth2_mint_token_consent_result_proto",
+    ":proto",
     ":run_all_unittests",
     ":test_support",
     "//base",

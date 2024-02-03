@@ -33,10 +33,6 @@ struct GLDisplayEGL::ObjCStorage {
 GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id, DisplayKey display_key)
     : GLDisplay(system_device_id, display_key, EGL) {
   ext = std::make_unique<DisplayExtensionsEGL>();
-
-  // -- BEGIN difference from copy in gl_display.cc --
-  objc_storage_ = std::make_unique<ObjCStorage>();
-  // -- END difference from copy in gl_display.cc --
 }
 
 GLDisplayEGL::~GLDisplayEGL() = default;
@@ -132,7 +128,11 @@ void GLDisplayEGL::WaitForMetalSharedEvent(id<MTLSharedEvent> shared_event,
   eglDestroySync(display_, sync);
 }
 
-void GLDisplayEGL::CleanupMetalSharedEvent() {
+void GLDisplayEGL::InitMetalSharedEventStorage() {
+  objc_storage_ = std::make_unique<ObjCStorage>();
+}
+
+void GLDisplayEGL::CleanupMetalSharedEventStorage() {
   objc_storage_.reset();
 }
 

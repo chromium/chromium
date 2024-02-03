@@ -26,7 +26,6 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -261,10 +260,8 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateHeaderView() {
   title->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_APP_STREAM_LAUNCHER_TITLE));
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
-                                          *title);
-  }
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
+                                        *title);
 
   return header;
 }
@@ -282,13 +279,11 @@ std::unique_ptr<views::Button> AppStreamLauncherView::CreateButton(
   views::SetImageFromVectorIconWithColor(button.get(), icon, color,
                                          disabled_color);
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    ash::StyleUtil::SetUpInkDropForButton(button.get(), gfx::Insets(),
-                                          /*highlight_on_hover=*/false,
-                                          /*highlight_on_focus=*/true);
-    views::FocusRing::Get(button.get())
-        ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
-  }
+  ash::StyleUtil::SetUpInkDropForButton(button.get(), gfx::Insets(),
+                                        /*highlight_on_hover=*/false,
+                                        /*highlight_on_focus=*/true);
+  views::FocusRing::Get(button.get())
+      ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
 
   button->SetTooltipText(l10n_util::GetStringUTF16(message_id));
   button->SizeToPreferredSize();

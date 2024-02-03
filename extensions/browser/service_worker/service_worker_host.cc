@@ -91,7 +91,6 @@ void ServiceWorkerHost::BindReceiver(
       render_process_host, std::move(receiver)));
 }
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // static
 ServiceWorkerHost* ServiceWorkerHost::GetWorkerFor(const WorkerId& worker_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -113,13 +112,10 @@ ServiceWorkerHost* ServiceWorkerHost::GetWorkerFor(const WorkerId& worker_id) {
   }
   return nullptr;
 }
-#endif
 
 void ServiceWorkerHost::RemoteDisconnected() {
   receiver_.reset();
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   permissions_observer_.Reset();
-#endif
   Destroy();
   // This instance has now been destroyed.
 }
@@ -152,13 +148,11 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     // running in a given process.
     return;
   }
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   worker_id_.extension_id = extension_id;
   worker_id_.version_id = service_worker_version_id;
   worker_id_.render_process_id = render_process_id;
   worker_id_.thread_id = worker_thread_id;
   permissions_observer_.Observe(PermissionsManager::Get(browser_context));
-#endif
 
   ServiceWorkerTaskQueue::Get(browser_context)
       ->DidInitializeServiceWorkerContext(render_process_id, extension_id,
@@ -253,7 +247,6 @@ content::BrowserContext* ServiceWorkerHost::GetBrowserContext() {
   return render_process_host_->GetBrowserContext();
 }
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 mojom::ServiceWorker* ServiceWorkerHost::GetServiceWorker() {
   if (!remote_.is_bound()) {
     content::ServiceWorkerContext* context =
@@ -295,7 +288,6 @@ void ServiceWorkerHost::OnExtensionPermissionsUpdated(
       std::move(*permissions_data->active_permissions().Clone()),
       std::move(*permissions_data->withheld_permissions().Clone()));
 }
-#endif
 
 void ServiceWorkerHost::OpenChannelToExtension(
     extensions::mojom::ExternalConnectionInfoPtr info,
@@ -307,10 +299,6 @@ void ServiceWorkerHost::OpenChannelToExtension(
         port_host) {
   TRACE_EVENT("extensions", "ServiceWorkerHost::OpenChannelToExtension",
               ChromeTrackEvent::kRenderProcessHost, *render_process_host_);
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  bad_message::ReceivedBadMessage(render_process_host_,
-                                  bad_message::LEGACY_IPC_MISMATCH);
-#else
   content::BrowserContext* browser_context = GetBrowserContext();
   if (!browser_context) {
     return;
@@ -319,7 +307,6 @@ void ServiceWorkerHost::OpenChannelToExtension(
   MessageServiceApi::GetMessageService()->OpenChannelToExtension(
       browser_context, worker_id_, port_id, *info, channel_type, channel_name,
       std::move(port), std::move(port_host));
-#endif
 }
 
 void ServiceWorkerHost::OpenChannelToNativeApp(
@@ -330,10 +317,6 @@ void ServiceWorkerHost::OpenChannelToNativeApp(
         port_host) {
   TRACE_EVENT("extensions", "ServiceWorkerHost::OnOpenChannelToNativeApp",
               ChromeTrackEvent::kRenderProcessHost, *render_process_host_);
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  bad_message::ReceivedBadMessage(render_process_host_,
-                                  bad_message::LEGACY_IPC_MISMATCH);
-#else
   content::BrowserContext* browser_context = GetBrowserContext();
   if (!browser_context) {
     return;
@@ -342,7 +325,6 @@ void ServiceWorkerHost::OpenChannelToNativeApp(
   MessageServiceApi::GetMessageService()->OpenChannelToNativeApp(
       browser_context, worker_id_, port_id, native_app_name, std::move(port),
       std::move(port_host));
-#endif
 }
 
 void ServiceWorkerHost::OpenChannelToTab(
@@ -357,10 +339,6 @@ void ServiceWorkerHost::OpenChannelToTab(
         port_host) {
   TRACE_EVENT("extensions", "ServiceWorkerHost::OpenChannelToTab",
               ChromeTrackEvent::kRenderProcessHost, *render_process_host_);
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  bad_message::ReceivedBadMessage(render_process_host_,
-                                  bad_message::LEGACY_IPC_MISMATCH);
-#else
   content::BrowserContext* browser_context = GetBrowserContext();
   if (!browser_context) {
     return;
@@ -370,7 +348,6 @@ void ServiceWorkerHost::OpenChannelToTab(
       browser_context, worker_id_, port_id, tab_id, frame_id,
       document_id ? *document_id : std::string(), channel_type, channel_name,
       std::move(port), std::move(port_host));
-#endif
 }
 
 void ServiceWorkerHost::Destroy() {

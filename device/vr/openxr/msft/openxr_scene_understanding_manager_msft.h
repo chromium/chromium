@@ -41,7 +41,7 @@ class OpenXRSceneUnderstandingManagerMSFT
  private:
   // OpenXRSceneUnderstandingManager
   void OnFrameUpdate(XrTime predicted_display_time) override;
-  void OnNewHitTestSubscription() override;
+  bool OnNewHitTestSubscription() override;
   void OnAllHitTestSubscriptionsRemoved() override;
   std::vector<mojom::XRHitResultPtr> RequestHitTest(
       const gfx::Point3F& origin,

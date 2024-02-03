@@ -1190,6 +1190,11 @@ ui::Layer* HotseatWidget::GetLayerForNudgeAnimation() {
   return delegate_view_->layer();
 }
 
+bool HotseatWidget::CalculateShelfOverflow(bool use_target_bounds) const {
+  return scrollable_shelf_view_->CalculateMirroredEdgePadding(use_target_bounds)
+      .IsEmpty();
+}
+
 HotseatWidget::LayoutInputs HotseatWidget::GetLayoutInputs() const {
   const ShelfLayoutManager* layout_manager = shelf_->shelf_layout_manager();
   gfx::Rect inset_bounds = target_bounds_;

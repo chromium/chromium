@@ -185,7 +185,7 @@ using base::UmaHistogramEnumeration;
   }
 
   base::Value::Dict data;
-  data.Set("unique_renderer_id",
+  data.Set("renderer_id",
            static_cast<int>(self.lastFocusedElementUniqueId.value()));
   data.Set("value", base::SysNSStringToUTF16(string));
   autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(

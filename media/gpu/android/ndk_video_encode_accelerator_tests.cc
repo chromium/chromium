@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/android/ndk_video_encode_accelerator.h"
+
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/android/build_info.h"
@@ -21,10 +24,8 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
-#include "media/gpu/android/ndk_video_encode_accelerator.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 
@@ -231,7 +232,7 @@ class NdkVideoEncoderAcceleratorTest
     BitstreamBufferMetadata md;
   };
   std::vector<Output> outputs_;
-  absl::optional<EncoderStatus> error_status_;
+  std::optional<EncoderStatus> error_status_;
   size_t input_buffer_size_ = 0;
   int32_t last_buffer_id_ = 0;
   VideoFrameConverter frame_converter_;

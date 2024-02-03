@@ -545,7 +545,6 @@ ci.gpu.linux_builder(
             "release_builder",
             "try_builder",
             "reclient",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -576,7 +575,6 @@ ci.gpu.linux_builder(
             "gpu_fyi_tests",
             "debug_builder",
             "reclient",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -610,7 +608,6 @@ ci.gpu.linux_builder(
             "try_builder",
             "reclient",
             "tsan",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -641,7 +638,6 @@ ci.gpu.mac_builder(
             "release_builder",
             "try_builder",
             "reclient",
-            "disable_nacl",
             "x64",
         ],
     ),
@@ -674,7 +670,6 @@ ci.gpu.mac_builder(
             "try_builder",
             "reclient",
             "asan",
-            "disable_nacl",
             "x64",
         ],
     ),
@@ -705,7 +700,6 @@ ci.gpu.mac_builder(
             "gpu_fyi_tests",
             "debug_builder",
             "reclient",
-            "disable_nacl",
             "x64",
         ],
     ),
@@ -739,7 +733,6 @@ ci.gpu.mac_builder(
             "try_builder",
             "reclient",
             "arm64",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1409,10 +1402,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Windows|10|x64|Intel",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|10|x64|Intel",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -1619,14 +1612,13 @@ gpu_fyi_windows_builder(
             "release_builder",
             "try_builder",
             "reclient",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Release",
         short_name = "a64",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -1652,7 +1644,6 @@ gpu_fyi_windows_builder(
             "try_builder",
             "reclient",
             "x86",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1684,7 +1675,6 @@ gpu_fyi_windows_builder(
             "release_builder",
             "try_builder",
             "reclient",
-            "disable_nacl",
             # Remove this once the decision to use cross-compilation or not in
             # crbug.com/1510985 is made.
             "win_cross",
@@ -1718,7 +1708,6 @@ gpu_fyi_windows_builder(
             "gpu_fyi_tests",
             "debug_builder",
             "reclient",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1751,7 +1740,6 @@ gpu_fyi_windows_builder(
             "release_builder",
             "try_builder",
             "reclient",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1783,7 +1771,6 @@ gpu_fyi_windows_builder(
             "dx12vk",
             "debug_builder",
             "reclient",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1822,7 +1809,6 @@ gpu_fyi_windows_builder(
             "release_builder",
             "try_builder",
             "reclient",
-            "disable_nacl",
         ],
     ),
     console_view_entry = consoles.console_view_entry(

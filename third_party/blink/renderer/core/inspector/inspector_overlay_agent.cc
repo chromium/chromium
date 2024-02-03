@@ -1921,12 +1921,12 @@ InspectorOverlayAgent::ToIsolationModeHighlightConfig(
 }
 
 // static
-absl::optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
+std::optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
     protocol::Overlay::LineStyle* config) {
   if (!config) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<LineStyle> line_style = LineStyle();
+  std::optional<LineStyle> line_style = LineStyle();
   line_style->color = ParseColor(config->getColor(nullptr));
   line_style->pattern = config->getPattern("solid");
 
@@ -1934,12 +1934,12 @@ absl::optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
 }
 
 // static
-absl::optional<BoxStyle> InspectorOverlayAgent::ToBoxStyle(
+std::optional<BoxStyle> InspectorOverlayAgent::ToBoxStyle(
     protocol::Overlay::BoxStyle* config) {
   if (!config) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<BoxStyle> box_style = BoxStyle();
+  std::optional<BoxStyle> box_style = BoxStyle();
   box_style->fill_color = ParseColor(config->getFillColor(nullptr));
   box_style->hatch_color = ParseColor(config->getHatchColor(nullptr));
 

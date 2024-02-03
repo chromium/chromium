@@ -53,6 +53,10 @@
 #include "content/browser/media/captured_surface_controller.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "media/capture/video/chromeos/system_event_monitor_impl.h"
+#endif
+
 namespace media {
 class AudioSystem;
 }
@@ -660,18 +664,18 @@ class CONTENT_EXPORT MediaStreamManager
   // valid alternate device ID.
   // Returns false if the required device ID is present and invalid.
   // Otherwise, if no valid device is found, device_id is unchanged.
-  bool PickDeviceId(const MediaDeviceSaltAndOrigin& salt_and_origin,
-                    const blink::TrackControls& controls,
-                    const blink::WebMediaDeviceInfoArray& devices,
-                    std::string* device_id) const;
+  bool RemoveInvalidDeviceIds(const MediaDeviceSaltAndOrigin& salt_and_origin,
+                              const blink::TrackControls& controls,
+                              const blink::WebMediaDeviceInfoArray& devices,
+                              std::vector<std::string>* device_id) const;
 
   // Finds the requested device id from request. The requested device type
   // must be MEDIA_DEVICE_AUDIO_CAPTURE or MEDIA_DEVICE_VIDEO_CAPTURE.
-  bool GetRequestedDeviceCaptureId(
+  bool GetEligibleCaptureDeviceids(
       const DeviceRequest* request,
       blink::mojom::MediaStreamType type,
       const blink::WebMediaDeviceInfoArray& devices,
-      std::string* device_id) const;
+      std::vector<std::string>* device_id) const;
 
   void TranslateDeviceIdToSourceId(const DeviceRequest* request,
                                    blink::MediaStreamDevice* device) const;
@@ -846,6 +850,10 @@ class CONTENT_EXPORT MediaStreamManager
   mojo::UniqueReceiverSet<media::mojom::VideoCaptureHost> video_capture_hosts_;
 
   GenerateStreamTestCallback generate_stream_test_callback_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<media::SystemEventMonitorImpl> system_event_monitor_;
+#endif
 };
 
 }  // namespace content

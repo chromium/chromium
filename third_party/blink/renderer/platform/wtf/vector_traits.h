@@ -40,6 +40,8 @@ namespace WTF {
 //    `WTF::Vector` and `std::vector`.
 template <typename T>
 struct VectorTraitsBase {
+  using TraitType = T;
+
   // When true, T will be destroyed using `~T`.
   static const bool kNeedsDestruction =
       !std::is_trivially_destructible<T>::value;
@@ -76,13 +78,6 @@ struct VectorTraitsBase {
   // invoked.
   static constexpr bool kCanCopyWithMemcpy =
       std::is_trivially_copy_assignable<T>::value;
-
-  // Garbage collection support: When a backing store is traced, its elements
-  // will be traced if their class type has a trace method.
-  template <typename U = void>
-  struct IsTraceableInCollection {
-    static const bool value = IsTraceable<T>::value;
-  };
 
   // Garbage collection support: Must be true for types used in `HeapVector`.
   // The reason is that GCed vector backings are initialized to zeroed memory.
@@ -146,6 +141,8 @@ static_assert(VectorTraits<std::unique_ptr<int>>::kCanCompareWithMemcmp,
 
 template <typename First, typename Second>
 struct VectorTraits<std::pair<First, Second>> {
+  using TraitType = std::pair<First, Second>;
+
   typedef VectorTraits<First> FirstTraits;
   typedef VectorTraits<Second> SecondTraits;
 
@@ -169,12 +166,6 @@ struct VectorTraits<std::pair<First, Second>> {
   static const bool kCanClearUnusedSlotsWithMemset =
       FirstTraits::kCanClearUnusedSlotsWithMemset &&
       SecondTraits::kCanClearUnusedSlotsWithMemset;
-  template <typename U = void>
-  struct IsTraceableInCollection {
-    static const bool value =
-        IsTraceableInCollectionTrait<FirstTraits>::value ||
-        IsTraceableInCollectionTrait<SecondTraits>::value;
-  };
 
   static constexpr bool kCanTraceConcurrently = false;
 };

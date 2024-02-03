@@ -108,7 +108,7 @@ class CORE_EXPORT InlinePaintContext {
   // The last |AppliedTextDecorations| |this| was synchronized with.
   const Vector<AppliedTextDecoration, 1>* last_decorations_ = nullptr;
   const Vector<AppliedTextDecoration, 1>* line_decorations_ = nullptr;
-  absl::optional<InlineCursor> line_cursor_;
+  std::optional<InlineCursor> line_cursor_;
   PhysicalOffset paint_offset_;
 };
 

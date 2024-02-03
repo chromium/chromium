@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1124772482545689468">Erabiltzailea</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">biderkatu</translation>
 <translation id="1145018782460575098">Kanpoko gailuen firmwarea eguneratzeko leihoa irekita dago. <ph name="NUM_UPDATES" /> eguneratze daude.</translation>
 <translation id="1145516343487477149">Bilatu laguntza-artikuluak eta Chromebook-ei buruz egin ohi diren galderen erantzunak</translation>
 <translation id="1154390310959620237">5 lasterbide soilik pertsonaliza ditzakezu. Beste lasterbide bat gehitzeko, ezabatu bat.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Egokitu eskanea daitekeen eremura</translation>
 <translation id="1367951781824006909">Aukeratu fitxategi bat</translation>
+<translation id="1371650399987522809">Google-ren AA bidezko horma-paperari buruzko oharrak</translation>
 <translation id="1387854245479784695">Nukleo guztien multzokatze bat da hau</translation>
 <translation id="1394661041439318933">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren kutxari.</translation>
 <translation id="1397738625398125236">Ping egin dakioke atebideari</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Ukipen-teklatua</translation>
 <translation id="1561927818299383735">atzeko argiaren kolorea</translation>
 <translation id="1565038567006703504">Ezin da eguneratu <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">zatitu</translation>
 <translation id="1567064801249837505">Albumak</translation>
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
 <translation id="1578784163189013834">Aukeratu pantaila-babeslearen atzeko planoa</translation>
 <translation id="160633243685262989">Aurrebista-irudia</translation>
 <translation id="1611649489706141841">aurrera</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datu-erabilera</translation>
+<translation id="1615576200479539465">Irudiak sortzen…</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
 <translation id="1626590945318984973">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat funtzio- eta <ph name="META_KEY" /> teklarik erabili gabe.</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> deskargatu da <ph name="NUM_SECONDS" /> segundoan.</translation>
 <translation id="2880569433548999039">Hodeien fluxua erakusten duen pantaila-babeslea</translation>
 <translation id="2926057806159140518">Idatzi erabiltzaile-izena eta pasahitza, edo eskaneatu QR kodea</translation>
+<translation id="2938573842839598578">Gutxi gorabeherako emaitza bat lortzeko, <ph name="OPERATOR_TEXT" /> <ph name="CATEGORY_TEXT" /> balioa <ph name="CONVERSION_RATE" /> faktorearekin</translation>
 <translation id="2940811910881150316">Ezin da probatu gailua. Probak egiteko, ireki berriro estalkia.</translation>
 <translation id="2941112035454246133">Txikia</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Chrome OS-ren eguneratzea</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Tokiko identitatea (aukerakoa)</translation>
 <translation id="3565064564551103223">Baimena duten IPak</translation>
 <translation id="3569407787324516067">Pantaila-babeslea</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7180865173735832675">Pertsonalizatu</translation>
 <translation id="7184043045742675738">Botoia pertsonalizatzeko, egin klik edozein teklatan. Aldatu teklaren posizioa saguarekin edo gezi-teklekin.</translation>
+<translation id="7206979415662233817">Zerbitzu-baldintzak</translation>
 <translation id="7212547870105584639">Kudeatu sarearen APNaren ezarpenak. Sare mugikorren eta Interneten arteko konexioak ezartzen dituzte APNek. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Kanpoko gailuen firmware-eguneratzeak</translation>
 <translation id="7216409898977639127">Zerbitzu mugikorraren hornitzailea</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">teklatuaren kolorea</translation>
 <translation id="7317831949569936035">Ikastetxeko gailuaren erregistroa</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Gutxienez 18 urte izan behar dituzu, eta AAko horma-paperen erabilera <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google-ren Zerbitzu-baldintzek<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> eta <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />AA generatiboaren zerbitzu-baldintza gehigarriek<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> arautzen dutela onartu.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AAko horma-paperak erabilera pertsonal eta ez-komertzialerako soilik sor ditzakezu. Horma-paperak sortzeko laguntza jasotzen duzunean, testua Google-ren AAren zerbitzarietara bidaltzen da horma-paperen iradokizunak sortzeko, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ren Pribatutasun-gidalerroei<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> jarraikiz. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; emaitza Google Bilaketa zerbitzuan ikusteko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="7343649194310845056">Sareko gailuak</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> bilaketa-emaitza: "<ph name="SEARCH_RESULT_TEXT" />". Lasterbidera nabigatzeko, sakatu Sartu.</translation>

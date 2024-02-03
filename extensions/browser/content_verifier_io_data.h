@@ -13,6 +13,7 @@
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/content_verifier_delegate.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -56,17 +57,17 @@ class ContentVerifierIOData {
 
   ~ContentVerifierIOData();
 
-  void AddData(const std::string& extension_id,
+  void AddData(const ExtensionId& extension_id,
                std::unique_ptr<ExtensionData> data);
-  void RemoveData(const std::string& extension_id);
+  void RemoveData(const ExtensionId& extension_id);
   void Clear();
 
   // This should be called on the IO thread, and the return value should not
   // be retained or used on other threads.
-  const ExtensionData* GetData(const std::string& extension_id);
+  const ExtensionData* GetData(const ExtensionId& extension_id);
 
  private:
-  std::map<std::string, std::unique_ptr<ExtensionData>> data_map_;
+  std::map<ExtensionId, std::unique_ptr<ExtensionData>> data_map_;
 };
 
 }  // namespace extensions

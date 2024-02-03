@@ -111,7 +111,7 @@ void TrustTokenRequestHelperFactory::CreateTrustTokenHelperForRequest(
     }
   }
 
-  absl::optional<SuitableTrustTokenOrigin> maybe_top_frame_origin =
+  std::optional<SuitableTrustTokenOrigin> maybe_top_frame_origin =
       SuitableTrustTokenOrigin::Create(top_frame_origin);
   if (!maybe_top_frame_origin) {
     LogOutcome(net_log, params.operation, Outcome::kUnsuitableTopFrameOrigin);
@@ -175,7 +175,7 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
 
       std::vector<SuitableTrustTokenOrigin> issuers;
       for (url::Origin& potentially_unsuitable_issuer : params->issuers) {
-        absl::optional<SuitableTrustTokenOrigin> maybe_issuer =
+        std::optional<SuitableTrustTokenOrigin> maybe_issuer =
             SuitableTrustTokenOrigin::Create(
                 std::move(potentially_unsuitable_issuer));
         if (!maybe_issuer) {

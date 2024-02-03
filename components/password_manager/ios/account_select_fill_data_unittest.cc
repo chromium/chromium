@@ -48,7 +48,7 @@ PasswordFormFillData EligibleSingleUsernameFormData() {
   // Set fill data with 1 non-empty username and 1 empty username.
   PasswordFormFillData form_data;
   test_helpers::SetPasswordFormFillData(
-      kUrl, /*form_name=*/"", /*unique_renderer_id=*/1, /*username_field=*/"",
+      kUrl, /*form_name=*/"", /*renderer_id=*/1, /*username_field=*/"",
       /*username_field_id=*/1,
       /*username_value=*/"", /*password_field=*/"", /*password_field_id=*/0,
       /*password_value=*/"secret1", /*additional_username=*/"username",
@@ -61,7 +61,7 @@ PasswordFormFillData FormDataWithEmptyUsernamesOnly() {
   // Set fill data with 2 empty usernames.
   PasswordFormFillData form_data;
   test_helpers::SetPasswordFormFillData(
-      kUrl, /*form_name=*/"", /*unique_renderer_id=*/1, /*username_field=*/"",
+      kUrl, /*form_name=*/"", /*renderer_id=*/1, /*username_field=*/"",
       /*username_field_id=*/2,
       /*username_value=*/"", /*password_field=*/"", /*password_field_id=*/3,
       /*password_value=*/"secret1", /*additional_username=*/"",

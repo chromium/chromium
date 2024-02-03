@@ -19,14 +19,9 @@ struct InterceptFunctionInformation {
   bool finished_operation;
   const char* imported_from_module;
   const char* function_name;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
+  // RAW_PTR_EXCLUSION: #reinterpret-cast-trivial-type
   RAW_PTR_EXCLUSION void* new_function;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
   RAW_PTR_EXCLUSION void** old_function;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
   RAW_PTR_EXCLUSION IMAGE_THUNK_DATA** iat_thunk;
   DWORD return_code;
 };
@@ -217,9 +212,10 @@ DWORD IATPatchFunction::PatchFromModule(HMODULE module,
   DCHECK_EQ(nullptr, intercept_function_);
   DCHECK(module);
 
-  DWORD error =
-      InterceptImportedFunction(module, imported_from_module, function_name,
-                                new_function, &original_function_, &iat_thunk_);
+  DWORD error = InterceptImportedFunction(
+      module, imported_from_module, function_name, new_function,
+      &original_function_.AsEphemeralRawAddr(),
+      &iat_thunk_.AsEphemeralRawAddr());
 
   if (NO_ERROR == error) {
     DCHECK_NE(original_function_, intercept_function_);

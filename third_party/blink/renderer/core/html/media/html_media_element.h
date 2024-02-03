@@ -28,13 +28,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_MEDIA_ELEMENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
@@ -240,7 +240,7 @@ class CORE_EXPORT HTMLMediaElement
   bool Loop() const;
   void SetLoop(bool);
   ScriptPromise playForBindings(ScriptState*);
-  absl::optional<DOMExceptionCode> Play();
+  std::optional<DOMExceptionCode> Play();
 
   // Called when the video should pause to let audio descriptions finish.
   void PauseToLetDescriptionFinish();
@@ -766,7 +766,7 @@ class CORE_EXPORT HTMLMediaElement
   double volume_;
   double last_seek_time_;
 
-  absl::optional<base::ElapsedTimer> previous_progress_time_;
+  std::optional<base::ElapsedTimer> previous_progress_time_;
 
   // Cached duration to suppress duplicate events if duration unchanged.
   double duration_;
@@ -853,7 +853,7 @@ class CORE_EXPORT HTMLMediaElement
 
   // Set if the user has used the context menu to set the visibility of the
   // controls.
-  absl::optional<bool> user_wants_controls_visible_;
+  std::optional<bool> user_wants_controls_visible_;
 
   // Whether or not |web_media_player_| should apply pitch adjustments at
   // playback raters other than 1.0.
@@ -866,8 +866,8 @@ class CORE_EXPORT HTMLMediaElement
   // Whether the media content is encrypted.
   bool is_encrypted_media_ = false;
   WebString remote_device_friendly_name_;
-  absl::optional<media::AudioCodec> audio_codec_ = absl::nullopt;
-  absl::optional<media::VideoCodec> video_codec_ = absl::nullopt;
+  std::optional<media::AudioCodec> audio_codec_ = std::nullopt;
+  std::optional<media::VideoCodec> video_codec_ = std::nullopt;
 
   Member<AudioTrackList> audio_tracks_;
   Member<VideoTrackList> video_tracks_;

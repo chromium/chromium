@@ -194,11 +194,11 @@ XRRigidTransform* XRView::refSpaceFromView() const {
   return ref_space_from_view_.Get();
 }
 
-absl::optional<double> XRView::recommendedViewportScale() const {
+std::optional<double> XRView::recommendedViewportScale() const {
   return view_data_->recommendedViewportScale();
 }
 
-void XRView::requestViewportScale(absl::optional<double> scale) {
+void XRView::requestViewportScale(std::optional<double> scale) {
   view_data_->requestViewportScale(scale);
 }
 
@@ -242,11 +242,11 @@ void XRView::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-absl::optional<double> XRViewData::recommendedViewportScale() const {
+std::optional<double> XRViewData::recommendedViewportScale() const {
   return recommended_viewport_scale_;
 }
 
-void XRViewData::requestViewportScale(absl::optional<double> scale) {
+void XRViewData::requestViewportScale(std::optional<double> scale) {
   if (!scale)
     return;
 

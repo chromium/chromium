@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -234,6 +235,13 @@ bool IsOfficeWebAppInstalled(Profile* profile) {
         installed = apps_util::IsInstalled(update.Readiness());
       });
   return installed;
+}
+
+bool IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
+    Profile* profile) {
+  return chromeos::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
+             profile) &&
+         IsODFSInstalled(profile);
 }
 
 bool UrlIsOnODFS(Profile* profile, const FileSystemURL& url) {

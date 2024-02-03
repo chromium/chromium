@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_TIMELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_TIMELINE_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/memory/values_equivalent.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/animation/timeline_inset.h"
 #include "third_party/blink/renderer/core/core_export.h"

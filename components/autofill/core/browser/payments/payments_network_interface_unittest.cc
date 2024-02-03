@@ -371,7 +371,7 @@ class PaymentsNetworkInterfaceTest : public testing::Test {
   // starting the request.
   void StartGettingUploadDetails(
       GetUploadDetailsOptions get_upload_details_options) {
-    payments_network_interface_->GetUploadDetails(
+    payments_network_interface_->GetCardUploadDetails(
         BuildTestProfiles(), kAllDetectableValues,
         get_upload_details_options.client_behavior_signals, "language-LOCALE",
         base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidGetUploadDetails,
@@ -384,7 +384,7 @@ class PaymentsNetworkInterfaceTest : public testing::Test {
   // Issue an UploadCard request. This requires an OAuth token before starting
   // the request.
   void StartUploading(UploadCardOptions upload_card_options) {
-    PaymentsNetworkInterface::UploadRequestDetails request_details;
+    PaymentsNetworkInterface::UploadCardRequestDetails request_details;
     request_details.billing_customer_number =
         upload_card_options.billing_customer_number;
     request_details.card = test::GetCreditCard();

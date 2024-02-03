@@ -401,8 +401,8 @@ bool ScrollbarThemeMac::JumpOnTrackClick() const {
 
 // static
 void ScrollbarThemeMac::UpdateScrollbarsWithNSDefaults(
-    absl::optional<float> initial_button_delay,
-    absl::optional<float> autoscroll_button_delay,
+    std::optional<float> initial_button_delay,
+    std::optional<float> autoscroll_button_delay,
     bool prefer_overlay_scroller_style,
     bool redraw,
     bool jump_on_track_click) {

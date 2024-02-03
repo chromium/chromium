@@ -48,7 +48,8 @@ std::tuple<absl::optional<AuthenticatorMakeCredentialResponse>,
            std::string>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseMakeCredentialResponse(cbor::Value response,
-                                    const CtapMakeCredentialRequest& request);
+                                    const CtapMakeCredentialRequest& request,
+                                    int32_t wrapped_secret_version);
 
 // Returns a CBOR value with the provided GetAssertion request and associated
 // passkey. The return value can be serialized into a Command request according
@@ -63,7 +64,8 @@ cbor::Value COMPONENT_EXPORT(DEVICE_FIDO) BuildGetAssertionCommand(
 // value can be serialized into a Command request according to the enclave
 // protocol.
 cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
-    BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request);
+    BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request,
+                               std::vector<uint8_t> wrapped_secret);
 
 // Builds a CBOR serialization of the command to be sent to the enclave
 // service which can then be encrypted and sent over HTTPS.
@@ -80,19 +82,6 @@ void COMPONENT_EXPORT(DEVICE_FIDO) BuildCommandRequestBody(
     SigningCallback signing_callback,
     base::span<const uint8_t, crypto::kSHA256Length> handshake_hash,
     base::OnceCallback<void(std::vector<uint8_t>)> complete_callback);
-
-// For testing only. (Also this is obsolete, the test service code needs to
-// be updated).
-std::string COMPONENT_EXPORT(DEVICE_FIDO)
-    AuthenticatorGetAssertionResponseToJson(
-        const AuthenticatorGetAssertionResponse& response);
-
-// For testing only. (Also this is obsolete, the test service code needs to
-// be updated).
-bool COMPONENT_EXPORT(DEVICE_FIDO) ParseGetAssertionRequestBody(
-    const std::string& request_body,
-    sync_pb::WebauthnCredentialSpecifics* out_passkey,
-    base::Value* out_request);
 
 }  // namespace enclave
 

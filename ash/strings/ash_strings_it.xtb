@@ -607,9 +607,11 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3526440770046466733">Apri il link in una nuova scheda e rimani nella scheda corrente</translation>
 <translation id="353086728817903341">Connessione stabilita con <ph name="NUM_DEVICES" /> dispositivi</translation>
 <translation id="3533126039236445965">App nella barra delle app</translation>
+<translation id="3537350467437346467">Visualizzato da te</translation>
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Chiudi la configurazione della visualizzazione di contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="3542066395059568317">Vedrai consigli per poter continuare dal punto in cui avevi interrotto. Puoi fare clic con il tasto destro del mouse sui consigli per rimuoverli.</translation>
+<translation id="3547318469722231257">Modificato da te</translation>
 <translation id="3552189655002856821">Il Wi-Fi non è attivo</translation>
 <translation id="3554215588514239132">Mostra o nascondi il riquadro Strumenti per sviluppatori</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> è stato bloccato</translation>
@@ -698,6 +700,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="385300504083504382">Inizio</translation>
 <translation id="3859364108019690">Impossibile trasmettere app in streaming</translation>
 <translation id="3861651314799684201">Premi invio per registrare a schermo intero</translation>
+<translation id="3882323608730650973">Modificato</translation>
 <translation id="3886872229787704059">Aperto oggi</translation>
 <translation id="3891340733213178823">Premi due volte Ctrl+Maiusc+Q per uscire.</translation>
 <translation id="3893630138897523026">ChromeVox (lettura vocale)</translation>
@@ -891,6 +894,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4582666543382004902">L'hotspot è stato disattivato per utilizzare il Wi-Fi. Per utilizzare l'hotspot, disattiva il Wi-Fi.</translation>
 <translation id="4585337515783392668">Interrompi la trasmissione su ricevitore sconosciuto</translation>
 <translation id="4596144739579517758">Tema scuro disattivato</translation>
+<translation id="4596442969149038771">Condiviso da <ph name="USER" /></translation>
 <translation id="4611292653554630842">Accedi</translation>
 <translation id="462160925400706389">Connessione di <ph name="NAME" /> attiva</translation>
 <translation id="4623167406982293031">Verifica account</translation>
@@ -1334,6 +1338,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6298183524022479114">Personalizza questo dispositivo nell'app</translation>
 <translation id="6309219492973062892">Tocca o fai clic sulle icone 1-8 nella barra delle app</translation>
 <translation id="6315170314923504164">Voce</translation>
+<translation id="6319058840130157106">Spostati indietro tra l'angolo in basso a destra, Avvio app, la barra degli indirizzi, la barra dei preferiti, il sito web aperto e i download</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
 <translation id="6330012934079202188">Dalla visualizzazione delle finestre di tutte le scrivanie, premi il tasto Freccia su per mostrare le finestre della scrivania corrente</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> è una sessione gestita da <ph name="MANAGER" /></translation>
@@ -1497,6 +1502,7 @@ Nuova installazione</translation>
 <translation id="6981291220124935078">Attiva l'accesso</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="698231206551913481">Tutti i file e i dati locali associati a questo utente verranno eliminati definitivamente in seguito alla rimozione dell'utente.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> non supporta <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La risoluzione è stata modificata in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Fai un rapido tour per scoprire come usare il tuo Chromebook. Puoi iniziare a usarlo in 6 passaggi.</translation>
 <translation id="7004910047186208204">Connettiti ai dati mobili</translation>
 <translation id="7005239792648594238">Apri un'app per iniziare</translation>
@@ -1811,6 +1817,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8314772463905284467">Bloc maiusc è attivo</translation>
 <translation id="8315514906653279104">Attivazione in corso…</translation>
 <translation id="8331351032546853669">Download in attesa</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Finestra <ph name="WINDOW_TITLE" /> selezionata</translation>
 <translation id="8349826889576450703">Avvio applicazioni</translation>
@@ -1916,6 +1923,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8785070478575117577">Connetti a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Spostati avanti tra l'angolo in basso a destra, Avvio app, la barra degli indirizzi, la barra dei preferiti, il sito web aperto e i download</translation>
 <translation id="8792626944327216835">microfono</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Cartella <ph name="FOLDER_NAME" /></translation>
@@ -2029,6 +2037,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="953431725143473984">Vuoi arrestare il dispositivo?</translation>
 <translation id="954052413789300507">Spazio disponibile insufficiente per il file <ph name="FILENAME" />. Libera spazio.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Modificato da <ph name="USER" /></translation>
 <translation id="974545358917229949">Visualizzazione di <ph name="RESULT_COUNT" /> risultati per <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Nessuna data di scadenza</translation>
 <translation id="98120814841227350">Passa alla fine del documento</translation>

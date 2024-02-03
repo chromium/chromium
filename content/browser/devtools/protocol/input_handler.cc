@@ -992,6 +992,10 @@ void InputHandler::DragController::EndDragging(
     RenderWidgetHostImpl* host_hint,
     std::unique_ptr<blink::WebMouseEvent> event,
     std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback) {
+  if (!drag_state_) {
+    // Dragging already ended.
+    return;
+  }
   if (drag_state_->updating > 0) {
     auto update_callback = base::BindOnce(
         &InputHandler::DragController::EndDragging, weak_factory_.GetWeakPtr(),

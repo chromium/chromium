@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384959399684842514">Изтеглянето е на пауза</translation>
 <translation id="1415402041810619267">URL адресът е съкратен</translation>
-<translation id="1426410128494586442">Да</translation>
 <translation id="1434873037477293673">карта за понижение на цената</translation>
 <translation id="1448064542941920355">Намаляване на нивото на мащаба</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайта}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">За да разрешите на <ph name="APP_NAME" /> да осъществява достъп до камерата ви, тя трябва да бъде включена и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
 <translation id="2238944249568001759">Предложения за търсене въз основа на последния ви раздел</translation>
+<translation id="2241587408274973373">Карти за нов раздел в браузъра</translation>
 <translation id="2241634353105152135">Само веднъж</translation>
 <translation id="2253414712144136228">Премахване на <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Блокиран е 1 сайт}other{Блокирани са # сайта}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Сайтовете могат да показват подкани за вход от услуги за идентифициране.</translation>
 <translation id="2790501146643349491">Когато настройката е включена, наскоро затворените сайтове могат да завършват изпращането и получаването на данни. Когато е изключена, наскоро затворените сайтове не могат да правят това.</translation>
 <translation id="2822354292072154809">Наистина ли искате да зададете повторно всички разрешения за сайта за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Заявяване на изглед за мобилни устройства</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Визуализатор на сертификатите</translation>
 <translation id="2979365474350987274">„Бисквитките“ на трети страни са ограничени</translation>
 <translation id="3008272652534848354">Нулиране на разрешенията</translation>
-<translation id="3013291976881901233">MIDI устройства</translation>
 <translation id="301521992641321250">Автоматично блокирано</translation>
 <translation id="3069226013421428034">Разрешаване на влизането с профили от трети страни за конкретен сайт.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Изтича утре}other{Изтича след # дни}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Установена е връзка с USB устройство</translation>
 <translation id="4194328954146351878">Извеждане на запитване, преди да се разреши на сайтовете да четат и променят информация на устройства с NFC (препоръчително)</translation>
 <translation id="4200726100658658164">Отваряне на настройките за местоположението</translation>
-<translation id="4212246570487010370">Продължаване на сърфирането</translation>
 <translation id="4226663524361240545">Възможно е устройството да вибрира при известия</translation>
 <translation id="4259722352634471385">Навигирането е блокирано: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Разрешено</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Придвижване надолу</translation>
 <translation id="6749077623962119521">Да се нулират ли разрешенията?</translation>
 <translation id="6766622839693428701">Прекарайте пръст надолу, за да затворите.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> От <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Изберете опция за <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6818926723028410516">Избор на елементи</translation>

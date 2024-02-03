@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DRAWING_RECORDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DRAWING_RECORDER_H_
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -85,7 +86,7 @@ class PLATFORM_EXPORT DrawingRecorder {
   const DisplayItemClient& client_;
   const DisplayItem::Type type_;
   gfx::Rect visual_rect_;
-  absl::optional<DOMNodeId> dom_node_id_to_restore_;
+  std::optional<DOMNodeId> dom_node_id_to_restore_;
 };
 
 #if DCHECK_IS_ON()

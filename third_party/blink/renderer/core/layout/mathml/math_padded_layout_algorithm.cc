@@ -27,18 +27,18 @@ LayoutUnit MathPaddedLayoutAlgorithm::RequestedVOffset() const {
   return ValueForLength(Style().GetMathPaddedVOffset(), LayoutUnit());
 }
 
-absl::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedAscent(
+std::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedAscent(
     LayoutUnit content_ascent) const {
   if (Style().GetMathBaseline().IsAuto())
-    return absl::nullopt;
+    return std::nullopt;
   return std::max(LayoutUnit(),
                   ValueForLength(Style().GetMathBaseline(), content_ascent));
 }
 
-absl::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedDescent(
+std::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedDescent(
     LayoutUnit content_descent) const {
   if (Style().GetMathPaddedDepth().IsAuto())
-    return absl::nullopt;
+    return std::nullopt;
   return std::max(LayoutUnit(), ValueForLength(Style().GetMathPaddedDepth(),
                                                content_descent));
 }

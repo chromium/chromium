@@ -9,7 +9,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_GENERATED_CODE_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_GENERATED_CODE_HELPER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -130,14 +131,14 @@ typename IDLSequence<T>::ImplType VariadicArgumentsToNativeValues(
   return std::move(result);
 }
 
-CORE_EXPORT absl::optional<size_t> FindIndexInEnumStringTable(
+CORE_EXPORT std::optional<size_t> FindIndexInEnumStringTable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     base::span<const char* const> enum_value_table,
     const char* enum_type_name,
     ExceptionState& exception_state);
 
-CORE_EXPORT absl::optional<size_t> FindIndexInEnumStringTable(
+CORE_EXPORT std::optional<size_t> FindIndexInEnumStringTable(
     const String& str_value,
     base::span<const char* const> enum_value_table);
 

@@ -448,12 +448,6 @@ void RenderFrameDevToolsAgentHost::InspectElement(RenderFrameHost* frame_host,
   host->GetRendererChannel()->InspectElement(point);
 }
 
-void RenderFrameDevToolsAgentHost::GetUniqueFormControlId(
-    int node_id,
-    GetUniqueFormControlIdCallback callback) {
-  GetRendererChannel()->GetUniqueFormControlId(node_id, std::move(callback));
-}
-
 RenderFrameDevToolsAgentHost::~RenderFrameDevToolsAgentHost() {
   SetFrameTreeNode(nullptr);
   ChangeFrameHostAndObservedProcess(nullptr);

@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1213425325105380833">ဤအကောင့်သို့ ချိတ်ဆက်ထားသော စက်များတွင် လတ်တလော သုံးထားသည့် ဝဘ်အက်ပ်များကို ပြန်ယူနိုင်သည်</translation>
+<translation id="1786044937610313874">Chrome တွင် ဖြတ်လမ်းလင့်ခ်များဖွင့်သည်</translation>
+<translation id="204914487372604757">ဖြတ်လမ်း ပြုလုပ်ရန်</translation>
 <translation id="2065911435109240297">ဝဘ်အက်ပ်များ ပြန်ယူရန်</translation>
 <translation id="2111649875343992405">မည်သည့်ဝဘ်အက်ပ်များ ပြန်ယူလိုသည်ကို စိစစ်နိုင်သည်</translation>
 <translation id="2139186145475833000">ပင်မမျက်နှာပြင်သို့ ထည့်ရန်</translation>
@@ -10,8 +12,10 @@
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
 <translation id="3910402514791813257">ထည့်သွင်း၍မရပါ</translation>
 <translation id="4250229828105606438">မျက်နှာပြင် လျှပ်တပြက်ပုံ</translation>
+<translation id="4338600611020922010">ပင်မစာမျက်နှာတွင် ထည့်ခြင်း</translation>
 <translation id="4665282149850138822"><ph name="NAME" />ကို သင်၏ ပင်မ မျက်နှာပြင်သို့ ထည့်ပေးခဲ့သည်</translation>
 <translation id="5250483651202458397">ဖန်သားပြင်ဓာတ်ပုံ။ ပိတ်ရန် တို့ပါ။</translation>
+<translation id="5684726956335420505">အက်ပ်အား ပင်မစာမျက်နှာတွင် ထည့်သည့်ပုံစံကို ရွေးနိုင်သည်</translation>
 <translation id="5972844218283131174">အားလုံးမရွေးပါနှင့်</translation>
 <translation id="6838423508083736333">ပြီးခဲ့သည့်လအတွင်း သုံးထားသော ဝဘ်အက်ပ်များ</translation>
 <translation id="6990079615885386641">Google ပလေးစတိုးမှ အက်ပ်အားရယူမည်- <ph name="APP_ACTION" /></translation>

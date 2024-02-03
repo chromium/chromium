@@ -21,6 +21,35 @@ PasswordAndMetadata& PasswordAndMetadata::operator=(PasswordAndMetadata&&) =
     default;
 PasswordAndMetadata::~PasswordAndMetadata() = default;
 
+PasswordSuggestionRequest::PasswordSuggestionRequest(
+    FieldRendererId element_id,
+    const FormData& form_data,
+    uint64_t username_field_index,
+    uint64_t password_field_index,
+    base::i18n::TextDirection text_direction,
+    const std::u16string& typed_username,
+    int options,
+    const gfx::RectF& bounds)
+    : element_id(element_id),
+      form_data(form_data),
+      username_field_index(username_field_index),
+      password_field_index(password_field_index),
+      text_direction(text_direction),
+      typed_username(typed_username),
+      options(options),
+      bounds(bounds) {}
+
+PasswordSuggestionRequest::PasswordSuggestionRequest() = default;
+PasswordSuggestionRequest::PasswordSuggestionRequest(
+    const PasswordSuggestionRequest&) = default;
+PasswordSuggestionRequest& PasswordSuggestionRequest::operator=(
+    const PasswordSuggestionRequest&) = default;
+PasswordSuggestionRequest::PasswordSuggestionRequest(
+    PasswordSuggestionRequest&&) = default;
+PasswordSuggestionRequest& PasswordSuggestionRequest::operator=(
+    PasswordSuggestionRequest&&) = default;
+PasswordSuggestionRequest::~PasswordSuggestionRequest() = default;
+
 PasswordFormFillData::PasswordFormFillData() = default;
 PasswordFormFillData::PasswordFormFillData(const PasswordFormFillData&) =
     default;

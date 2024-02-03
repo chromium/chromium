@@ -26,7 +26,7 @@ sync_pb::CrossUserSharingPublicKey PublicKey::ToProto() const {
 PublicKey PublicKey::FromProto(
     const sync_pb::CrossUserSharingPublicKey& proto_public_key) {
   PublicKey result;
-  base::Base64Encode(proto_public_key.x25519_public_key(), &result.key);
+  result.key = base::Base64Encode(proto_public_key.x25519_public_key());
   result.key_version = proto_public_key.version();
   return result;
 }

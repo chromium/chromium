@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/trace_event/traced_value.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/adjust_mask_layer_geometry.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
@@ -91,7 +91,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   raster_invalidator_.Generate(raster_invalidation_function_, paint_chunks,
                                layer_offset, layer_bounds, layer_state);
 
-  absl::optional<RasterUnderInvalidationCheckingParams>
+  std::optional<RasterUnderInvalidationCheckingParams>
       raster_under_invalidation_params;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
     raster_under_invalidation_params.emplace(

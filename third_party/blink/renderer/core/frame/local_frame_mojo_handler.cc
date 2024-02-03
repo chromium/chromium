@@ -96,7 +96,7 @@ size_t GetCurrentCursorPositionInFrame(LocalFrame* local_frame) {
 #endif
 
 RemoteFrame* SourceFrameForOptionalToken(
-    const absl::optional<RemoteFrameToken>& source_frame_token) {
+    const std::optional<RemoteFrameToken>& source_frame_token) {
   if (!source_frame_token)
     return nullptr;
   return RemoteFrame::FromFrameToken(source_frame_token.value());
@@ -424,7 +424,7 @@ mojom::blink::ReportingServiceProxy* LocalFrameMojoHandler::ReportingService() {
   return reporting_service_.get();
 }
 
-device::mojom::blink::DevicePostureProvider*
+mojom::blink::DevicePostureProvider*
 LocalFrameMojoHandler::DevicePostureProvider() {
   if (!frame_->IsLocalRoot()) {
     return frame_->LocalFrameRoot().GetDevicePostureProvider();
@@ -440,15 +440,15 @@ LocalFrameMojoHandler::DevicePostureProvider() {
   return device_posture_provider_service_.get();
 }
 
-device::mojom::blink::DevicePostureType
-LocalFrameMojoHandler::GetDevicePosture() {
+mojom::blink::DevicePostureType LocalFrameMojoHandler::GetDevicePosture() {
   if (!frame_->IsLocalRoot()) {
     return frame_->LocalFrameRoot().GetDevicePosture();
   }
 
   DCHECK(frame_->IsLocalRoot());
-  if (device_posture_provider_service_.is_bound())
+  if (device_posture_receiver_.is_bound()) {
     return current_device_posture_;
+  }
 
   auto task_runner = frame_->GetTaskRunner(TaskType::kInternalDefault);
   DevicePostureProvider()->AddListenerAndGetCurrentPosture(
@@ -459,7 +459,7 @@ LocalFrameMojoHandler::GetDevicePosture() {
 }
 
 void LocalFrameMojoHandler::OverrideDevicePostureForEmulation(
-    device::mojom::blink::DevicePostureType device_posture_param) {
+    mojom::blink::DevicePostureType device_posture_param) {
   DevicePostureProvider()->OverrideDevicePostureForEmulation(
       device_posture_param);
 }
@@ -727,7 +727,7 @@ void LocalFrameMojoHandler::RequestVideoFrameAt(
 
 void LocalFrameMojoHandler::AdvanceFocusInFrame(
     mojom::blink::FocusType focus_type,
-    const absl::optional<RemoteFrameToken>& source_frame_token) {
+    const std::optional<RemoteFrameToken>& source_frame_token) {
   RemoteFrame* source_frame =
       source_frame_token ? SourceFrameForOptionalToken(*source_frame_token)
                          : nullptr;
@@ -797,7 +797,7 @@ void LocalFrameMojoHandler::DidUpdateFramePolicy(
 }
 
 void LocalFrameMojoHandler::OnPostureChanged(
-    device::mojom::blink::DevicePostureType posture) {
+    mojom::blink::DevicePostureType posture) {
   if (!RuntimeEnabledFeatures::DevicePostureEnabled())
     return;
   current_device_posture_ = posture;
@@ -809,7 +809,7 @@ void LocalFrameMojoHandler::OnPostureChanged(
 }
 
 void LocalFrameMojoHandler::PostMessageEvent(
-    const absl::optional<RemoteFrameToken>& source_frame_token,
+    const std::optional<RemoteFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {
@@ -963,7 +963,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
       mojom::blink::LoadEventBlockingOption::kDoNotBlock,
       WTF::BindOnce(
           [](JavaScriptExecuteRequestInIsolatedWorldCallback callback,
-             absl::optional<base::Value> value, base::TimeTicks start_time) {
+             std::optional<base::Value> value, base::TimeTicks start_time) {
             std::move(callback).Run(value ? std::move(*value) : base::Value());
           },
           std::move(callback)),
@@ -1031,7 +1031,7 @@ void LocalFrameMojoHandler::BindReportingObserver(
 }
 
 void LocalFrameMojoHandler::UpdateOpener(
-    const absl::optional<blink::FrameToken>& opener_frame_token) {
+    const std::optional<blink::FrameToken>& opener_frame_token) {
   if (WebFrame::FromCoreFrame(frame_)) {
     Frame* opener_frame = nullptr;
     if (opener_frame_token)
@@ -1136,8 +1136,8 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
     if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier())
       canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier());
   }
-  std::move(callback).Run(canon_url.IsNull() ? absl::nullopt
-                                             : absl::make_optional(canon_url));
+  std::move(callback).Run(canon_url.IsNull() ? std::nullopt
+                                             : std::make_optional(canon_url));
 #if BUILDFLAG(IS_ANDROID)
   base::UmaHistogramMicrosecondsTimes("Blink.Frame.GetCanonicalUrlRendererTime",
                                       base::TimeTicks::Now() - start_time);

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
@@ -16,12 +17,14 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.signin.SyncConsentDelegate;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
@@ -32,9 +35,35 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
     // TODO(crbug/1168516): Remove IS_CHILD_ACCOUNT
     public static final String IS_CHILD_ACCOUNT = "IsChildAccount";
 
+    private final SyncConsentDelegate mSyncConsentDelegate;
+
     // Do not remove. Empty fragment constructor is required for re-creating the fragment from a
     // saved state bundle. See crbug.com/1225102
-    public SyncConsentFirstRunFragment() {}
+    public SyncConsentFirstRunFragment() {
+        mSyncConsentDelegate =
+                new SyncConsentDelegate() {
+                    @NonNull
+                    @Override
+                    public WindowAndroid getWindowAndroid() {
+                        return getPageDelegate().getWindowAndroid();
+                    }
+
+                    @NonNull
+                    @Override
+                    public Profile getProfile() {
+                        return getPageDelegate()
+                                .getProfileProviderSupplier()
+                                .get()
+                                .getOriginalProfile();
+                    }
+                };
+    }
+
+    @NonNull
+    @Override
+    protected SyncConsentDelegate getDelegate() {
+        return mSyncConsentDelegate;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -100,7 +129,8 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
 
                             if (!accountName.equals(syncingAccount.getEmail())) {
                                 throw new IllegalStateException(
-                                        "Child accounts should only be allowed to sync with a single account");
+                                        "Child accounts should only be allowed to sync with a"
+                                                + " single account");
                             }
 
                             // SigninChecker enabled sync already. Just open settings if needed.

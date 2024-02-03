@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 namespace mojo {
@@ -34,7 +35,7 @@ class ChannelPosix : public Channel,
 
   void Start() override;
   void ShutDownImpl() override;
-  void Write(MessagePtr message) override;
+  void Write(MessagePtr message) override LOCKS_EXCLUDED(write_lock_);
   void LeakHandle() override;
   bool GetReadPlatformHandles(const void* payload,
                               size_t payload_size,
@@ -53,9 +54,14 @@ class ChannelPosix : public Channel,
 
  protected:
   ~ChannelPosix() override;
-  virtual void StartOnIOThread();
-  virtual void ShutDownOnIOThread();
-  virtual void OnWriteError(Error error);
+  virtual void StartOnIOThread() LOCKS_EXCLUDED(write_lock_);
+  virtual void ShutDownOnIOThread() LOCKS_EXCLUDED(write_lock_
+#if BUILDFLAG(IS_IOS)
+                                                   ,
+                                                   fds_to_close_lock_
+#endif  // BUILDFLAG(IS_IOS)
+  );
+  virtual void OnWriteError(Error error) LOCKS_EXCLUDED(write_lock_);
 
   void RejectUpgradeOffer();
   void AcceptUpgradeOffer();
@@ -66,24 +72,30 @@ class ChannelPosix : public Channel,
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
  private:
-  void WaitForWriteOnIOThread();
-  void WaitForWriteOnIOThreadNoLock();
+  void WaitForWriteOnIOThread() LOCKS_EXCLUDED(write_lock_);
+  void WaitForWriteOnIOThreadNoLock() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override;
 
   // base::MessagePumpForIO::FdWatcher:
   void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int fd) override;
+  void OnFileCanWriteWithoutBlocking(int fd) override
+      LOCKS_EXCLUDED(write_lock_);
 
   // Attempts to write a message directly to the channel. If the full message
   // cannot be written, it's queued and a wait is initiated to write the message
   // ASAP on the I/O thread.
-  bool WriteNoLock(MessageView message_view);
-  bool FlushOutgoingMessagesNoLock();
+  bool WriteNoLock(MessageView message_view)
+      EXCLUSIVE_LOCKS_REQUIRED(write_lock_)
+#if BUILDFLAG(IS_IOS)
+          LOCKS_EXCLUDED(fds_to_close_lock_)
+#endif  // BUILDFLAG(IS_IOS)
+              ;
+  bool FlushOutgoingMessagesNoLock() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 
 #if !BUILDFLAG(IS_NACL)
-  bool WriteOutgoingMessagesWithWritev();
+  bool WriteOutgoingMessagesWithWritev() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 
   // FlushOutgoingMessagesWritevNoLock is equivalent to
   // FlushOutgoingMessagesNoLock except it looks for opportunities to make
@@ -91,33 +103,38 @@ class ChannelPosix : public Channel,
   // most situations this is very straight forward; however, when a handle
   // needs to be transferred we cannot use writev(2) and instead will fall
   // back to the standard write.
-  bool FlushOutgoingMessagesWritevNoLock();
+  bool FlushOutgoingMessagesWritevNoLock()
+      EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 #endif  // !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_IOS)
-  bool CloseHandles(const int* fds, size_t num_fds);
+  bool CloseHandles(const int* fds, size_t num_fds)
+      LOCKS_EXCLUDED(fds_to_close_lock_);
 #endif  // BUILDFLAG(IS_IOS)
 
   // The socket over which to communicate.
   base::ScopedFD socket_;
 
-  // These watchers must only be accessed on the IO thread.
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> read_watcher_;
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> write_watcher_;
+  // These watchers must only be accessed on the IO thread. These are locked for
+  // allowing concurrent nullptr checking the unique_ptr but not dereferencing
+  // outside of the `io_task_runner_`.
+  std::unique_ptr<base::MessagePumpForIO::FdWatchController> read_watcher_
+      GUARDED_BY(write_lock_);
+  std::unique_ptr<base::MessagePumpForIO::FdWatchController> write_watcher_
+      GUARDED_BY(write_lock_);
 
   base::circular_deque<base::ScopedFD> incoming_fds_;
 
-  // Protects |pending_write_| and |outgoing_messages_|.
   base::Lock write_lock_;
-  bool pending_write_ = false;
-  bool reject_writes_ = false;
-  base::circular_deque<MessageView> outgoing_messages_;
+  bool pending_write_ GUARDED_BY(write_lock_) = false;
+  bool reject_writes_ GUARDED_BY(write_lock_) = false;
+  base::circular_deque<MessageView> outgoing_messages_ GUARDED_BY(write_lock_);
 
   bool leak_handle_ = false;
 
 #if BUILDFLAG(IS_IOS)
   base::Lock fds_to_close_lock_;
-  std::vector<base::ScopedFD> fds_to_close_;
+  std::vector<base::ScopedFD> fds_to_close_ GUARDED_BY(fds_to_close_lock_);
 #endif  // BUILDFLAG(IS_IOS)
 };
 

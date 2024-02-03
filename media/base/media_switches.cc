@@ -410,9 +410,12 @@ BASE_FEATURE(kUseAndroidOverlayForSecureOnly,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows usage of OS-level (platform) audio encoders.
+// TODO(crbug.com/1522976): re-enable platform audio encoders on arm64 win when
+//                          querying for OS support works as expected.
 BASE_FEATURE(kPlatformAudioEncoder,
              "PlatformAudioEncoder",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if (BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -685,6 +688,18 @@ BASE_FEATURE(kDedicatedMediaServiceThread,
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
+// Defer requesting persistent audio focus until the WebContents is audible.
+// The goal is to prevent silent playback from taking audio focus from
+// background apps on android, where focus is typically exclusive.
+BASE_FEATURE(kDeferAudioFocusUntilAudible,
+             "DeferAudioFocusUntilAudible",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
 
@@ -1673,6 +1688,13 @@ BASE_FEATURE(kCastStreamingVp9,
              "CastStreamingVp9",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
+// Controls whether hardware H264 is default enabled on macOS.
+BASE_FEATURE(kCastStreamingMacHardwareH264,
+             "CastStreamingMacHardwareH264",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 // Enables use of Fuchsia's Mediacodec service for encoding.
 BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
@@ -1778,10 +1800,6 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 
 bool IsMultiPlaneFormatForHardwareVideoEnabled() {
   return
-#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER) && BUILDFLAG(IS_CHROMEOS)
-      gl::UsePassthroughCommandDecoder(
-          base::CommandLine::ForCurrentProcess()) &&
-#endif
       base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
 }
 

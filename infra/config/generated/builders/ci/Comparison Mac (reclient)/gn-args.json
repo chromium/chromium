@@ -3,7 +3,6 @@
     "build1": {
       "gn_args": {
         "dcheck_always_on": false,
-        "enable_nacl": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,
@@ -15,7 +14,6 @@
     "build2": {
       "gn_args": {
         "dcheck_always_on": false,
-        "enable_nacl": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,

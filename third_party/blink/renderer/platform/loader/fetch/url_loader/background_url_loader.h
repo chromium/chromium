@@ -61,7 +61,7 @@ class BLINK_PLATFORM_EXPORT BackgroundURLLoader : public URLLoader {
                          base::TimeDelta timeout_interval,
                          URLLoaderClient* client,
                          WebURLResponse& response,
-                         absl::optional<WebURLError>& error,
+                         std::optional<WebURLError>& error,
                          scoped_refptr<SharedBuffer>& data,
                          int64_t& encoded_data_length,
                          uint64_t& encoded_body_length,

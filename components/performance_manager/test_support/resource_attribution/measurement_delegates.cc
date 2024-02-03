@@ -118,17 +118,10 @@ void SimulatedCPUMeasurementDelegate::SetCPUUsage(SimulatedCPUUsage usage,
   });
 }
 
-void SimulatedCPUMeasurementDelegate::SetError(base::TimeDelta usage_error) {
-  usage_error_ = usage_error;
-}
-
-void SimulatedCPUMeasurementDelegate::ClearError() {
-  usage_error_ = std::nullopt;
-}
-
-base::TimeDelta SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {
-  if (usage_error_.has_value()) {
-    return usage_error_.value();
+std::optional<base::TimeDelta>
+SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {
+  if (has_error_) {
+    return std::nullopt;
   }
   base::TimeDelta cumulative_usage;
   for (const auto& usage_period : cpu_usage_periods_) {

@@ -633,7 +633,7 @@ void SharesheetBubbleView::InitBubble() {
 void SharesheetBubbleView::SetUpAndShowBubble() {
   main_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
   views::BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
-  GetWidget()->GetRootView()->Layout();
+  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
   RecordMimeTypeMetric(intent_);
   ShowWidgetWithAnimateFadeIn();
 
@@ -793,7 +793,7 @@ void SharesheetBubbleView::CloseWidgetWithReason(
   delegator_->OnBubbleClosed(active_target_);
 }
 
-BEGIN_METADATA(SharesheetBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(SharesheetBubbleView)
 END_METADATA
 
 }  // namespace sharesheet

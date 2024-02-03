@@ -133,7 +133,7 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
 }  // namespace
 
 FileSearchProvider::FileSearchProvider(Profile* profile)
-    : SearchProvider(ControlCategory::kFiles),
+    : SearchProvider(SearchCategory::kFiles),
       profile_(profile),
       thumbnail_loader_(profile),
       root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)) {

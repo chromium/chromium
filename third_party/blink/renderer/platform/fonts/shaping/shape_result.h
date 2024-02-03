@@ -101,6 +101,11 @@ struct OffsetWithSpacing {
   float spacing;
 };
 
+struct DeprecatedInkBounds : public GarbageCollected<DeprecatedInkBounds> {
+  void Trace(Visitor*) const {}
+  gfx::RectF ink_bounds;
+};
+
 // There are two options for how OffsetForPosition behaves:
 // IncludePartialGlyphs - decides what to do when the position hits more than
 // 50% of the glyph. If enabled, we count that glyph, if disable we don't.
@@ -144,7 +149,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
               TextDirection);
   ShapeResult(const ShapeResult&);
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(deprecated_ink_bounds_); }
 
   static ShapeResult* CreateEmpty(const ShapeResult& other) {
     return MakeGarbageCollected<ShapeResult>(other.primary_font_, 0, 0,
@@ -386,15 +391,20 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
   // Only used by CachingWordShapeIterator
   // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
-  void SetDeprecatedInkBounds(gfx::RectF r) const {
-    deprecated_ink_bounds_ = r;
+  void SetDeprecatedInkBounds(gfx::RectF ink_bounds) {
+    if (!deprecated_ink_bounds_) {
+      deprecated_ink_bounds_ = MakeGarbageCollected<DeprecatedInkBounds>();
+    }
+    deprecated_ink_bounds_->ink_bounds = ink_bounds;
   }
-  gfx::RectF DeprecatedInkBounds() const { return deprecated_ink_bounds_; }
+  gfx::RectF GetDeprecatedInkBounds() const {
+    DCHECK(deprecated_ink_bounds_);
+    return deprecated_ink_bounds_->ink_bounds;
+  }
 
   String ToString() const;
   void ToString(StringBuilder*) const;
 
-  using GlyphOffset = gfx::Vector2dF;
   struct RunInfo;
   RunInfo* InsertRunForTesting(unsigned start_index,
                                unsigned num_characters,
@@ -437,48 +447,6 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void OffsetForPosition(float target_x,
                          BreakGlyphsOption,
                          GlyphIndexResult*) const;
-
-  // Helper class storing a map between offsets and x-positions.
-  // Unlike the RunInfo and GlyphData structures in ShapeResult, which operates
-  // in glyph order, this class stores a map between character index and the
-  // total accumulated advance for each character. Allowing constant time
-  // mapping from character index to x-position and O(log n) time, using binary
-  // search, from x-position to character index.
-  class CharacterPositionData {
-    USING_FAST_MALLOC(CharacterPositionData);
-
-   public:
-    explicit CharacterPositionData(unsigned num_characters)
-        : data_(num_characters) {}
-
-    ShapeResultCharacterData& operator[](unsigned index) {
-      return data_[index];
-    }
-    const ShapeResultCharacterData& operator[](unsigned index) const {
-      return data_[index];
-    }
-
-    // Returns the next or previous offsets respectively at which it is safe to
-    // break without reshaping.
-    unsigned NextSafeToBreakOffset(unsigned offset) const;
-    unsigned PreviousSafeToBreakOffset(unsigned offset) const;
-
-    // Returns the offset of the last character that fully fits before the given
-    // x-position.
-    unsigned OffsetForPosition(float x, bool rtl) const;
-
-    // Returns the x-position for a given offset.
-    float PositionForOffset(unsigned offset, bool rtl) const;
-
-   private:
-    // This vector is indexed by visual-offset; the character offset from the
-    // left edge regardless of the TextDirection.
-    Vector<ShapeResultCharacterData> data_;
-    unsigned start_offset_;
-    float width_;
-
-    friend class ShapeResult;
-  };
 
   // Append a copy of a range within an existing result to another result.
   //
@@ -531,11 +499,18 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // Only used by CachingWordShapeIterator and stored here for memory reduction
   // reasons. See https://crbug.com/955776
   // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
-  mutable gfx::RectF deprecated_ink_bounds_;
+  Member<DeprecatedInkBounds> deprecated_ink_bounds_ = nullptr;
 
   Vector<scoped_refptr<RunInfo>> runs_;
+
+  // Stores x-positions for quick mapping between offsets and x-positions.
+  // Unlike the RunInfo and GlyphData, which operates in glyph order, this
+  // class stores a map between character index and the total accumulated
+  // advance for each character. Allowing constant time mapping from character
+  // index to x-position and O(log n) time, using binary search, from
+  // x-position to character index.
+  mutable Vector<ShapeResultCharacterData> character_position_;
   scoped_refptr<const SimpleFontData> primary_font_;
-  mutable std::unique_ptr<CharacterPositionData> character_position_;
 
   unsigned start_index_;
   unsigned num_characters_;

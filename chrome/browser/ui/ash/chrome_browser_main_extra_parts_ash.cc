@@ -29,8 +29,10 @@
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
+#include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
+#include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
@@ -85,6 +87,7 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -202,6 +205,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
     }
   }
 
+  if (chromeos::features::IsMahiEnabled()) {
+    mahi_manager_impl_ = std::make_unique<ash::MahiManagerImpl>();
+  }
+
   ash_shell_init_ = std::make_unique<AshShellInit>();
 
   screen_orientation_delegate_ =
@@ -291,8 +298,14 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   attestation_cleanup_manager_ =
       std::make_unique<enterprise_connectors::AshAttestationCleanupManager>();
 
-  if (ash::features::IsGrowthCampaignsInDemoModeEnabled()) {
+  if (ash::features::IsGrowthCampaignsInDemoModeEnabled() ||
+      ash::features::IsGrowthCampaignsInConsumerSessionEnabled()) {
     campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>();
+  }
+
+  // Requires UserManager.
+  if (ash::features::IsGrowthCampaignsInConsumerSessionEnabled()) {
+    campaigns_manager_session_ = std::make_unique<CampaignsManagerSession>();
   }
 
   ash::bluetooth_config::FastPairDelegate* delegate =
@@ -398,6 +411,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   chrome_shelf_controller_initializer_.reset();
   attestation_cleanup_manager_.reset();
 
+  campaigns_manager_session_.reset();
   campaigns_manager_client_.reset();
 
   desks_client_.reset();
@@ -437,6 +451,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // needs to be released before destroying the profile.
   app_list_client_.reset();
   ash_shell_init_.reset();
+
+  mahi_manager_impl_.reset();
 
   // These instances must be destructed after `ash_shell_init_`.
   video_conference_tray_controller_.reset();

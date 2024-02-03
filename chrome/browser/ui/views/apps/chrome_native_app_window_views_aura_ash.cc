@@ -230,10 +230,6 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   init_params->init_properties_container.SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));
 
-  if (chromeos::features::IsRoundedWindowsEnabled()) {
-    init_params->corner_radius = chromeos::features::RoundedWindowsRadius();
-  }
-
   app_restore::ModifyWidgetParams(restore_window_id, init_params);
 }
 
@@ -636,7 +632,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowDestroying(
 void ChromeNativeAppWindowViewsAuraAsh::OnTabletModeToggled(bool enabled) {
   tablet_mode_enabled_ = enabled;
   UpdateImmersiveMode();
-  widget()->non_client_view()->Layout();
+  widget()->non_client_view()->DeprecatedLayoutImmediately();
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::OnMenuClosed() {

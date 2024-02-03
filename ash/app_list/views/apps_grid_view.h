@@ -70,9 +70,9 @@ class ASH_EXPORT AppsGridView : public views::View,
                                 public AppListItemListObserver,
                                 public AppListItemObserver,
                                 public AppListModelObserver {
- public:
-  METADATA_HEADER(AppsGridView);
+  METADATA_HEADER(AppsGridView, views::View)
 
+ public:
   enum Pointer {
     NONE,
     MOUSE,
@@ -594,7 +594,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // item.
   std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
 
-  // If true, Layout() does nothing. See where set for details.
+  // If true, layout does nothing. See where set for details.
   bool ignore_layout_ = false;
 
   // True if the AppList is in cardified state. "Cardified" means showing a
@@ -758,8 +758,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // buffer area surrounding it that can trigger drop target change.
   bool IsPointWithinDragBuffer(const gfx::Point& point) const;
 
-  // Schedules a Layout() call. If `previous_grid_size` is different from the
-  // current grid size, calls PreferredSizeChanged().
+  // Schedules a layout. If `previous_grid_size` is different from the current
+  // grid size, calls PreferredSizeChanged().
   void ScheduleLayout(const gfx::Size& previous_grid_size);
 
   // Overridden from AppListItemListObserver:

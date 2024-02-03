@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 
+#include <optional>
+
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -595,7 +596,7 @@ class ComplexOutlinePainter {
                                  bool top_left_or_bottom_right) {
     // If width_ is odd, draw wider to fill the clip area.
     context_.SetStrokeThickness(width_ % 2 ? width_ + 2 : width_);
-    absl::optional<RoundedEdgePathIterator> rounded_edge_path_iterator;
+    std::optional<RoundedEdgePathIterator> rounded_edge_path_iterator;
     if (is_rounded_)
       rounded_edge_path_iterator.emplace(center_path, (width_ + 1) / 2);
     AutoDarkMode auto_dark_mode(
@@ -606,7 +607,7 @@ class ComplexOutlinePainter {
          &auto_dark_mode](const Vector<Line>& lines) {
           for (wtf_size_t i = 0; i < lines.size(); i++) {
             const Line& line = lines[i];
-            absl::optional<SkPath> rounded_edge_path;
+            std::optional<SkPath> rounded_edge_path;
             if (rounded_edge_path_iterator)
               rounded_edge_path = rounded_edge_path_iterator->Next();
             bool is_top_or_left =
@@ -747,7 +748,7 @@ FloatRoundedRect::Radii GetFocusRingCornerRadii(
     // For the elements that have not been styled and that have an appearance,
     // the focus ring should use the same border radius as the one used for
     // drawing the element.
-    absl::optional<ui::NativeTheme::Part> part;
+    std::optional<ui::NativeTheme::Part> part;
     switch (style.EffectiveAppearance()) {
       case kCheckboxPart:
         part = ui::NativeTheme::kCheckbox;
@@ -803,7 +804,7 @@ void PaintSingleFocusRing(GraphicsContext& context,
     return;
   }
 
-  absl::optional<float> corner_radius = corner_radii.UniformRadius();
+  std::optional<float> corner_radius = corner_radii.UniformRadius();
   if (corner_radius.has_value()) {
     context.DrawFocusRingPath(path, color, width, *corner_radius,
                               auto_dark_mode);
@@ -862,7 +863,7 @@ void OutlinePainter::PaintOutlineRects(
     return;
 
   Vector<gfx::Rect> pixel_snapped_outline_rects;
-  absl::optional<gfx::Rect> united_outline_rect;
+  std::optional<gfx::Rect> united_outline_rect;
   for (auto& r : outline_rects) {
     gfx::Rect pixel_snapped_rect = ToPixelSnappedRect(r);
     // Keep empty rect for normal outline, but not for focus rings.

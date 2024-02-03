@@ -32,15 +32,11 @@ public class CustomR8 {
         // Need to expand argfile arg in case our custom command line args are in the file.
         String[] expandedArgs = FlagFile.expandFlagFiles(args, null);
         List<String> argList = new ArrayList<>(Arrays.asList(expandedArgs));
-        boolean isolatedSplitsAsserts = argList.remove("--enable-isolated-splits-asserts");
         boolean startupLayoutOptimization = argList.remove("--enable-startup-layout-optimization");
 
         // Use R8 command line parser to handle the normal R8 command line.
         R8Command.Builder builder =
                 R8Command.parse(argList.toArray(new String[0]), new CommandLineOrigin());
-        if (isolatedSplitsAsserts) {
-            builder.setEnableExperimentalIsolatedSplits(true);
-        }
         if (startupLayoutOptimization) {
             builder.setEnableStartupLayoutOptimization(true);
         }

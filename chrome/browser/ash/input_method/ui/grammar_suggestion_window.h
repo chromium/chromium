@@ -21,8 +21,9 @@ namespace ime {
 // Pop up UI for users to undo an autocorrected word.
 class UI_CHROMEOS_EXPORT GrammarSuggestionWindow
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(GrammarSuggestionWindow, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(GrammarSuggestionWindow);
   explicit GrammarSuggestionWindow(gfx::NativeView parent,
                                    AssistiveDelegate* delegate);
   GrammarSuggestionWindow(const GrammarSuggestionWindow&) = delete;

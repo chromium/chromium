@@ -460,7 +460,7 @@ gfx::Size LockScreenMediaControlsView::CalculatePreferredSize() const {
   return contents_view_->GetPreferredSize();
 }
 
-void LockScreenMediaControlsView::Layout() {
+void LockScreenMediaControlsView::Layout(PassKey) {
   contents_view_->SetBoundsRect(GetContentsBounds());
 }
 
@@ -603,7 +603,7 @@ void LockScreenMediaControlsView::MediaSessionPositionChanged(
   if (!position.has_value()) {
     if (progress_->GetVisible()) {
       progress_->SetVisible(false);
-      Layout();
+      DeprecatedLayoutImmediately();
     }
     return;
   }
@@ -612,7 +612,7 @@ void LockScreenMediaControlsView::MediaSessionPositionChanged(
 
   if (!progress_->GetVisible()) {
     progress_->SetVisible(true);
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 
@@ -812,7 +812,7 @@ void LockScreenMediaControlsView::SetArtwork(
       ScaleSizeToFitView(img->size(), session_artwork_->GetPreferredSize()));
   session_artwork_->SetImage(*img);
 
-  Layout();
+  DeprecatedLayoutImmediately();
   session_artwork_->SetClipPath(GetArtworkClipPath());
 }
 

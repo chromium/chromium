@@ -208,7 +208,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
   VideoColorSpace GetVideoColorSpace() const override;
-  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -416,12 +416,12 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   std::vector<base::span<const uint8_t>> prior_cencv1_nalus_;
   std::vector<SubsampleEntry> prior_cencv1_subsamples_;
 
-  // These are absl::nullopt unless get recovery point SEI message after Reset.
+  // These are std::nullopt unless get recovery point SEI message after Reset.
   // A frame_num of the frame at output order that is correct in content.
-  absl::optional<int> recovery_frame_num_;
+  std::optional<int> recovery_frame_num_;
   // A value in the recovery point SEI message to compute |recovery_frame_num_|
   // later.
-  absl::optional<int> recovery_frame_cnt_;
+  std::optional<int> recovery_frame_cnt_;
 
   // Output picture size.
   gfx::Size pic_size_;
@@ -437,7 +437,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // Video picture color space of input bitstream.
   VideoColorSpace picture_color_space_;
   // HDR metadata in the bitstream.
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   // PicOrderCount of the previously outputted frame.
   int last_output_poc_;

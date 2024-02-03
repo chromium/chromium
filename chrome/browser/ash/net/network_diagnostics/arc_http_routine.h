@@ -23,7 +23,8 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
   using RunArcHttpCallback = chromeos::network_diagnostics::mojom::
       NetworkDiagnosticsRoutines::RunArcHttpCallback;
 
-  ArcHttpRoutine();
+  explicit ArcHttpRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   ArcHttpRoutine(const ArcHttpRoutine&) = delete;
   ArcHttpRoutine& operator=(const ArcHttpRoutine&) = delete;
   ~ArcHttpRoutine() override;

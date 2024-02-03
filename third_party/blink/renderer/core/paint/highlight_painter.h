@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
@@ -13,8 +14,8 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/selection_state.h"
-#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/highlight_overlay.h"
+#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -53,11 +54,11 @@ class CORE_EXPORT HighlightPainter {
     explicit SelectionPaintState(
         const InlineCursor& containing_block,
         const PhysicalOffset& box_offset,
-        const absl::optional<AffineTransform> writing_mode_rotation = {});
+        const std::optional<AffineTransform> writing_mode_rotation = {});
     explicit SelectionPaintState(
         const InlineCursor& containing_block,
         const PhysicalOffset& box_offset,
-        const absl::optional<AffineTransform> writing_mode_rotation,
+        const std::optional<AffineTransform> writing_mode_rotation,
         const FrameSelection&);
 
     const LayoutSelectionStatus& Status() const { return selection_status_; }
@@ -88,7 +89,7 @@ class CORE_EXPORT HighlightPainter {
         Node* node,
         const Document& document,
         const ComputedStyle& style,
-        const absl::optional<AffineTransform>& rotation);
+        const std::optional<AffineTransform>& rotation);
 
     void PaintSelectedText(TextPainter& text_painter,
                            const TextFragmentPaintInfo&,
@@ -119,8 +120,8 @@ class CORE_EXPORT HighlightPainter {
     const SelectionState state_;
     const InlineCursor& containing_block_;
     const PhysicalOffset& box_offset_;
-    const absl::optional<AffineTransform> writing_mode_rotation_;
-    absl::optional<SelectionRect> selection_rect_;
+    const std::optional<AffineTransform> writing_mode_rotation_;
+    std::optional<SelectionRect> selection_rect_;
     TextPaintStyle selection_style_;
     bool paint_selected_text_only_;
   };
@@ -131,7 +132,7 @@ class CORE_EXPORT HighlightPainter {
                    const PaintInfo& paint_info,
                    const InlineCursor& cursor,
                    const FragmentItem& fragment_item,
-                   const absl::optional<AffineTransform> writing_mode_rotation,
+                   const std::optional<AffineTransform> writing_mode_rotation,
                    const PhysicalOffset& box_origin,
                    const ComputedStyle& style,
                    const TextPaintStyle& text_style,
@@ -191,14 +192,14 @@ class CORE_EXPORT HighlightPainter {
   void PaintHighlightOverlays(const TextPaintStyle&,
                               DOMNodeId,
                               bool paint_marker_backgrounds,
-                              absl::optional<AffineTransform> rotation);
+                              std::optional<AffineTransform> rotation);
 
   static void PaintHighlightBackground(
       GraphicsContext& context,
       const ComputedStyle& style,
       Color color,
       const PhysicalRect& rect,
-      const absl::optional<AffineTransform>& rotation);
+      const std::optional<AffineTransform>& rotation);
 
   // Query various style pieces for the given marker type
   static PseudoId PseudoFor(DocumentMarker::MarkerType type);
@@ -258,9 +259,9 @@ class CORE_EXPORT HighlightPainter {
       const AppliedTextDecoration* decoration_override);
   LineRelativeRect LineRelativeWorldRect(
       const HighlightOverlay::HighlightRange&);
-  void ClipToPartDecorations(const LineRelativeRect&);
   LineRelativeRect LocalRectInWritingModeSpace(unsigned from,
                                                unsigned to) const;
+  void ClipToPartDecorations(const LineRelativeRect& part_rect);
   void PaintDecorationsExceptLineThrough(
       const HighlightOverlay::HighlightPart&);
   void PaintDecorationsExceptLineThrough(const HighlightOverlay::HighlightPart&,
@@ -284,7 +285,7 @@ class CORE_EXPORT HighlightPainter {
   // the fragment is generated text (or there are no markers). Used to reject
   // markers outside the target range in dom space, without converting the
   // marker's offsets to the fragment space.
-  absl::optional<TextOffsetRange> fragment_dom_offsets_{};
+  std::optional<TextOffsetRange> fragment_dom_offsets_{};
 
   TextPainter& text_painter_;
   TextDecorationPainter& decoration_painter_;

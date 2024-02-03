@@ -120,14 +120,6 @@ class POLICY_EXPORT UserPolicySigninServiceBase
       const CoreAccountId& account_id,
       PolicyRegistrationCallback callback);
 
-  // Creates a CloudPolicyClient. Used in situations where
-  // callers want to create a DMToken without actually initializing the
-  // profile's policy infrastructure (for example, during signin when we
-  // want to check if the user's domain requires policy).
-  static std::unique_ptr<CloudPolicyClient> CreateCloudPolicyClient(
-      DeviceManagementService* device_management_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
   // Set CloudPolicyClient::DeviceDMTokenCallback for policy fetch request.
   // Function is for testing purpose only to avoid setup affiliated id and
   // dm token for both user and device.
@@ -192,6 +184,8 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // is affiliated.
   virtual CloudPolicyClient::DeviceDMTokenCallback
   GetDeviceDMTokenIfAffiliatedCallback();
+
+  virtual std::string GetProfileId() = 0;
 
   // Convenience helpers to get the associated CloudPolicyManager and
   // IdentityManager.

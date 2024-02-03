@@ -29,5 +29,5 @@ import UIKit
   func snapshotOverlays(webStateInfo: WebStateSnapshotInfo) -> [UIView]
 
   // Returns the base view to be snapshotted.
-  func baseView(webStateInfo: WebStateSnapshotInfo) -> UIView
+  func baseView(webStateInfo: WebStateSnapshotInfo) -> UIView?
 }

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 
 import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
 import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
@@ -18,7 +18,7 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorResultData, Subactions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 import {ShortcutInputProviderInterface} from '../mojom-webui/shortcut_input_provider.mojom-webui.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
@@ -109,6 +109,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         notify: true,
       },
 
+      description: {
+        type: String,
+        value: '',
+      },
+
       action: {
         type: Number,
         value: 0,
@@ -154,6 +159,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   statusMessage: string;
   hasError: boolean;
   recordedError: boolean;
+  description: string;
   action: number;
   source: AcceleratorSource;
   sourceIsLocked: boolean;
@@ -236,9 +242,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
 
     this.pendingKeyEvent = resetKeyEvent();
-
-    // Announce hint message when focus and start capture.
-    this.makeA11yAnnouncement(this.i18n('editViewStatusMessage'));
   }
 
   async endCapture(shouldDelay: boolean): Promise<void> {
@@ -285,10 +288,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         composed: true,
       }));
       this.startCapture();
+      // Announce the hint message.
+      this.makeA11yAnnouncement(this.i18n('editViewStatusMessage'));
     }
   }
 
   private handleKeyDown(e: CustomEvent): void {
+    // Announce the key pressed.
+    this.makeA11yAnnouncement(e.detail.keyEvent.keyDisplay);
     const rewrittenKeyEvent = e.detail.keyEvent;
     const pendingAccelerator = keyEventToAccelerator(rewrittenKeyEvent);
     if (this.hasError) {
@@ -448,10 +455,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
                                  Subactions.kNoErrorSuccess);
         getShortcutProvider().recordUserAction(
             UserAction.kSuccessfulModification);
-        const message = (this.viewState == ViewState.ADD) ?
-            this.i18n('shortcutAdded') :
-            this.i18n('shortcutEdited');
-        this.makeA11yAnnouncement(message);
         this.fireUpdateEvent();
         return;
       }
@@ -573,6 +576,10 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     return this.lookupManager.getHasLauncherButton() ?
         this.i18n('iconLabelOpenLauncher') :
         this.i18n('iconLabelOpenSearch');
+  }
+
+  private getEditButtonAriaLabel(): string {
+    return this.i18n('editButtonForRow', this.description);
   }
 }
 

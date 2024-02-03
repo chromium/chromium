@@ -180,7 +180,7 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
   url::Origin another_origin =
       url::Origin::Create(GURL("https://www2.example.com"));
 
-  constexpr auto kAllow = absl::nullopt;
+  constexpr auto kAllow = std::nullopt;
   using mojom::RequestDestination;
   using mojom::RequestMode;
 
@@ -188,11 +188,11 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
     const RequestMode request_mode;
     const url::Origin origin;
     mojom::URLResponseHeadPtr response_info;
-    const absl::optional<mojom::BlockedByResponseReason>
+    const std::optional<mojom::BlockedByResponseReason>
         expectation_with_coep_none;
-    const absl::optional<mojom::BlockedByResponseReason>
+    const std::optional<mojom::BlockedByResponseReason>
         expectation_with_coep_require_corp;
-    const absl::optional<mojom::BlockedByResponseReason>
+    const std::optional<mojom::BlockedByResponseReason>
         expectation_with_coep_credentialless;
   } test_cases[] = {
       // We don't have a cross-origin-resource-policy header on a response. That
@@ -374,18 +374,18 @@ TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
   url::Origin another_origin =
       url::Origin::Create(GURL("https://www2.example.com"));
 
-  constexpr auto kAllow = absl::nullopt;
+  constexpr auto kAllow = std::nullopt;
   using mojom::RequestDestination;
   using mojom::RequestMode;
 
   struct TestCase {
     const url::Origin origin;
     mojom::URLResponseHeadPtr response_info;
-    const absl::optional<mojom::BlockedByResponseReason>
+    const std::optional<mojom::BlockedByResponseReason>
         expectation_with_coep_none;
-    const absl::optional<mojom::BlockedByResponseReason>
+    const std::optional<mojom::BlockedByResponseReason>
         expectation_with_coep_require_corp;
-    const absl::optional<mojom::BlockedByResponseReason>
+    const std::optional<mojom::BlockedByResponseReason>
         expectation_with_coep_credentialless;
   } test_cases[] = {
       // We don't have a cross-origin-resource-policy header on a response. That

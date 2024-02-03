@@ -73,8 +73,9 @@ DemoModeResourcesRemover::RemovalResult RemoveDirectory(
 // Note that DemoSession::IsDeviceInDemoMode will return false for these
 // sessions.
 bool IsLegacyDemoRetailModeSession(const user_manager::User* user) {
-  if (user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (user->GetType() != user_manager::UserType::kPublicAccount) {
     return false;
+  }
 
   const std::string enrollment_domain = g_browser_process->platform_part()
                                             ->browser_policy_connector_ash()
@@ -145,8 +146,9 @@ void DemoModeResourcesRemover::LowDiskSpace(
 
 void DemoModeResourcesRemover::ActiveUserChanged(user_manager::User* user) {
   // Ignore user activity in guest sessions.
-  if (user->GetType() == user_manager::USER_TYPE_GUEST)
+  if (user->GetType() == user_manager::UserType::kGuest) {
     return;
+  }
 
   // Attempt resources removal if the device is managed, and not in a retail
   // mode domain.

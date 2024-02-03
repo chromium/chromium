@@ -569,7 +569,15 @@ void MojoTrap::DispatchOrQueueEvent(Trigger& trigger,
   }
 
   dispatching_thread_ = base::PlatformThread::CurrentRef();
-  DispatchEvent(event);
+
+  // If `trigger.removed` is true, then either this is the cancellation event
+  // for the trigger (in which case it's OK to dispatch), or it was cancelled on
+  // some other thread while we were blocked above. In the latter case, this
+  // event is no longer valid and cannot be dispatched.
+  // See https://crbug.com/1508753.
+  if (!trigger.removed || event.result == MOJO_RESULT_CANCELLED) {
+    DispatchEvent(event);
+  }
 
   // NOTE: This vector is only shrunk by the clear() below, but it may
   // accumulate more events during each iteration. Hence we iterate by index.

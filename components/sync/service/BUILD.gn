@@ -78,7 +78,6 @@ static_library("service") {
 
   public_deps = [
     "//base",
-    "//components/invalidation/public",
     "//components/sync/base",
     "//components/sync/engine",
     "//components/sync/model",
@@ -96,7 +95,6 @@ static_library("service") {
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/os_crypt/sync",
-    "//components/password_manager/core/browser/features:password_features",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/prefs",

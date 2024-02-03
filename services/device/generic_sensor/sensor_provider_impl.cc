@@ -217,10 +217,7 @@ void SensorProviderImpl::UpdateVirtualSensor(
     return;
   }
 
-  if (auto virtual_sensor = virtual_provider->GetSensor(type)) {
-    static_cast<VirtualPlatformSensor*>(virtual_sensor.get())
-        ->AddReading(reading);
-  }
+  virtual_provider->AddReading(type, reading);
   std::move(callback).Run(mojom::UpdateVirtualSensorResult::kSuccess);
 }
 

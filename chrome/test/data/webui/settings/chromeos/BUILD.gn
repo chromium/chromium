@@ -19,8 +19,8 @@ mojom("test_api_mojom") {
 
 build_webui_tests("build") {
   files = [
-    "apn_subpage_tests.js",
     "apn_detail_dialog_test.ts",
+    "apn_subpage_test.ts",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
     "esim_remove_profile_dialog_test.js",
@@ -30,12 +30,12 @@ build_webui_tests("build") {
     "fake_media_devices.ts",
     "fake_metrics_private.ts",
     "fake_personalization_search_handler.ts",
-    "fake_quick_unlock_private.js",
-    "fake_receive_manager.js",
-    "fake_settings_private.js",
+    "fake_quick_unlock_private.ts",
+    "fake_receive_manager.ts",
+    "fake_settings_private.ts",
     "fake_settings_search_handler.ts",
     "fake_system_display.ts",
-    "fake_user_action_recorder.js",
+    "fake_user_action_recorder.ts",
     "fake_users_private.ts",
     "internet_page_tests.js",
     "lacros_extension_controlled_indicator_test.ts",
@@ -43,9 +43,8 @@ build_webui_tests("build") {
     "onc_mojo_test.ts",
     "os_about_page_tests.js",
     "os_page_availability_test.ts",
-    "test_about_page_browser_proxy_chromeos.js",
+    "test_about_page_browser_proxy.ts",
     "test_api.ts",
-    "test_device_name_browser_proxy.js",
     "test_extension_control_browser_proxy.ts",
     "test_lacros_extension_control_browser_proxy.ts",
     "test_os_lifetime_browser_proxy.ts",
@@ -202,6 +201,12 @@ build_webui_tests("build") {
     "os_a11y_page/text_to_speech_subpage_test.ts",
     "os_a11y_page/tts_voice_subpage_test.ts",
 
+    "os_about_page/channel_switcher_dialog_test.ts",
+    "os_about_page/consumer_auto_update_toggle_dialog_test.ts",
+    "os_about_page/detailed_build_info_subpage_test.ts",
+    "os_about_page/edit_hostname_dialog_test.ts",
+    "os_about_page/test_device_name_browser_proxy.ts",
+
     "os_apps_page/app_management_page/app_detail_view_test.ts",
     "os_apps_page/app_management_page/app_details_item_test.ts",
     "os_apps_page/app_management_page/app_item_test.ts",
@@ -219,7 +224,11 @@ build_webui_tests("build") {
     "os_apps_page/app_management_page/resize_lock_item_test.ts",
     "os_apps_page/app_management_page/supported_links_item_test.ts",
     "os_apps_page/app_management_page/test_plugin_vm_browser_proxy.ts",
+    "os_apps_page/app_management_page/file_handling_item_test.ts",
+    "os_apps_page/app_management_page/permission_item_test.ts",
+    "os_apps_page/app_management_page/uninstall_button_test.ts",
 
+    "os_apps_page/app_notifications_page/app_notification_row_test.ts",
     "os_apps_page/app_notifications_page/app_notifications_manager_subpage_test.ts",
     "os_apps_page/app_notifications_page/app_notifications_subpage_test.ts",
     "os_apps_page/app_notifications_page/fake_app_notification_handler.ts",
@@ -319,6 +328,7 @@ build_webui_tests("build") {
     "os_search_page/search_subpage_test.ts",
     "os_search_page/test_search_engines_browser_proxy.ts",
 
+    "os_settings_main/managed_footnote_test.ts",
     "os_settings_main/os_settings_main_test.ts",
 
     "os_settings_menu/os_settings_menu_test.ts",
@@ -349,6 +359,7 @@ build_webui_tests("build") {
 
     "settings_scheduler_slider/settings_scheduler_slider_test.ts",
 
+    "system_preferences_page/multitasking_settings_card_test.ts",
     "system_preferences_page/startup_settings_card_test.ts",
     "system_preferences_page/storage_and_power_settings_card_test.ts",
     "system_preferences_page/system_preferences_page_test.ts",
@@ -365,13 +376,13 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/ash/settings:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
     "//chrome/test/data/webui/cr_components/chromeos:build_ts",
     "//chrome/test/data/webui/nearby_share:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
-    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

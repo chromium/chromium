@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -95,6 +96,11 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kLogOnDeviceMetricsOnStartup);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kTextSafetyClassifier);
+
+typedef base::EnumSet<proto::RequestContext,
+                      proto::RequestContext_MIN,
+                      proto::RequestContext_MAX>
+    RequestContextSet;
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -287,10 +293,9 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
     proto::OptimizationTarget optimization_target);
 
-// Returns whether personalized metadata should be enabled for
-// |request_context|.
+// Returns requests contexts for which personalized metadata should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context);
+RequestContextSet GetAllowedContextsForPersonalizedMetadata();
 
 // Returns the minimum random delay before starting to fetch for prediction
 // models and host model features.
@@ -474,6 +479,12 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::map<proto::OptimizationTarget, std::set<int64_t>>
 GetPredictionModelVersionsInKillSwitch();
 
+// Returns whether the on-device config should be loaded with higher priority.
+// If true, all tasks for the on-device model execution config interpreter
+// will be run with user visible priority.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority();
+
 // Returns the idle timeout before the on device model service shuts down.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelIdleTimeout();
@@ -567,11 +578,17 @@ bool GetOnDeviceModelMustUseSafetyModel();
 
 // Whether we should initiate download of the text safety classifier model.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldDownloadTextSafetyClassifierModel();
+bool ShouldUseTextSafetyClassifierModel();
 
 // Number of tokens between each text safety update.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 uint32_t GetOnDeviceModelTextSafetyTokenInterval();
+
+// This is the minimum required reliability threshold for language detection to
+// be considered reliable enough for the text safety classifier. Clamped to the
+// range [0, 1].
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+double GetOnDeviceModelLanguageDetectionMinimumReliability();
 
 // These params configure the repetition checker. See HasRepeatingSuffix() in
 // repetition_checker.h for explanation. A value of 2 for num repeats and 16 for

@@ -152,6 +152,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/app_service_internals_resources.pak",
         "$root_gen_dir/chrome/bookmarks_resources.pak",
         "$root_gen_dir/chrome/commander_resources.pak",
+        "$root_gen_dir/chrome/commerce_resources.pak",
         "$root_gen_dir/chrome/component_extension_resources.pak",
         "$root_gen_dir/chrome/dev_ui_resources.pak",
         "$root_gen_dir/chrome/downloads_resources.pak",
@@ -196,6 +197,7 @@ template("chrome_extra_paks") {
       deps += [
         "//chrome/browser/resources:component_extension_resources",
         "//chrome/browser/resources:dev_ui_paks",
+        "//chrome/browser/resources/commerce:resources",
         "//chrome/browser/resources/search_engine_choice:resources",
         "//content/browser/devtools:devtools_resources",
         "//content/browser/tracing:resources",
@@ -287,6 +289,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/parent_access_resources.pak",
         "$root_gen_dir/chrome/password_change_resources.pak",
         "$root_gen_dir/chrome/remote_maintenance_curtain_resources.pak",
+        "$root_gen_dir/chrome/seal_resources.pak",
         "$root_gen_dir/chrome/sensor_info_resources.pak",
         "$root_gen_dir/chrome/set_time_dialog_resources.pak",
         "$root_gen_dir/chrome/supervision_resources.pak",
@@ -332,9 +335,9 @@ template("chrome_extra_paks") {
         "//ash/webui/resources:projector_app_bundle_resources",
         "//ash/webui/resources:projector_app_untrusted_resources",
         "//ash/webui/resources:projector_common_resources",
-        "//ash/webui/resources:shortcut_customization_app_resources",
         "//ash/webui/scanning/resources:resources",
         "//ash/webui/shimless_rma/resources:resources",
+        "//ash/webui/shortcut_customization_ui/resources:resources",
         "//ash/webui/status_area_internals/resources:resources",
         "//ash/webui/vc_background_ui/resources:resources",
         "//chromeos/ash/components/emoji:resources",
@@ -351,8 +354,8 @@ template("chrome_extra_paks") {
           "$root_gen_dir/ash/webui/ash_sample_system_web_app_untrusted_resources.pak",
         ]
         deps += [
-          "//ash/webui/resources:sample_system_web_app_resources",
-          "//ash/webui/resources:sample_system_web_app_untrusted_resources",
+          "//ash/webui/sample_system_web_app_ui/resources/trusted:resources",
+          "//ash/webui/sample_system_web_app_ui/resources/untrusted:resources",
         ]
       }
 

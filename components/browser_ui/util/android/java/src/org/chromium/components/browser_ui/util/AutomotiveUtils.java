@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.util;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 
 import androidx.annotation.LayoutRes;
@@ -57,8 +58,7 @@ public class AutomotiveUtils {
 
     private static boolean useVerticalAutomotiveBackButtonToolbar(Context activityContext) {
         return BrowserUiUtilsCachedFlags.getInstance().getVerticalAutomotiveBackButtonToolbarFlag()
-                && activityContext
-                        .getResources()
-                        .getBoolean(R.bool.use_vertical_automotive_back_button_toolbar);
+                && activityContext.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
     }
 }

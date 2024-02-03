@@ -5,20 +5,19 @@
 #ifndef SERVICES_ACCESSIBILITY_ANDROID_TEST_ANDROID_ACCESSIBILITY_TEST_UTIL_H_
 #define SERVICES_ACCESSIBILITY_ANDROID_TEST_ANDROID_ACCESSIBILITY_TEST_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ax::android {
 
 template <class PropType, class ValueType>
-void SetProperty(
-    absl::optional<base::flat_map<PropType, ValueType>>& properties,
-    PropType prop,
-    const ValueType& value) {
+void SetProperty(std::optional<base::flat_map<PropType, ValueType>>& properties,
+                 PropType prop,
+                 const ValueType& value) {
   if (!properties.has_value()) {
     properties = base::flat_map<PropType, ValueType>();
   }
@@ -28,7 +27,7 @@ void SetProperty(
 
 void AddStandardAction(mojom::AccessibilityNodeInfoData* node,
                        mojom::AccessibilityActionType action_type,
-                       absl::optional<std::string> label = absl::nullopt);
+                       std::optional<std::string> label = std::nullopt);
 
 void AddCustomAction(mojom::AccessibilityNodeInfoData* node,
                      int id,

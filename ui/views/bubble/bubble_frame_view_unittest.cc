@@ -1094,7 +1094,7 @@ TEST_F(BubbleFrameViewTest, WidthSnaps) {
 // Tests edge cases when the frame's title view starts to wrap text. This is to
 // ensure that the calculations BubbleFrameView does to determine the Widget
 // size for a given client view are consistent with the eventual size that the
-// client view takes after Layout().
+// client view takes after layout.
 TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
   test::TestLayoutProvider provider;
   auto delegate_unique = std::make_unique<TestBubbleDialogDelegateView>();

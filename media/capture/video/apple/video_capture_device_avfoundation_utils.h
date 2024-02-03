@@ -35,7 +35,7 @@ gfx::Size CAPTURE_EXPORT GetPixelBufferSize(CVPixelBufferRef pixel_buffer);
 gfx::Size CAPTURE_EXPORT GetSampleBufferSize(CMSampleBufferRef sample_buffer);
 
 #if BUILDFLAG(IS_IOS)
-absl::optional<int> MaybeGetVideoRotation(
+std::optional<int> MaybeGetVideoRotation(
     UIDeviceOrientation orientation,
     AVCaptureDevicePosition camera_position);
 #endif

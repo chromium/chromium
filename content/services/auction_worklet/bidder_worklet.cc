@@ -146,51 +146,6 @@ bool SetRenderUrl(v8::Isolate* isolate,
          SetDictMember(isolate, object, "renderUrl", v8_value);
 }
 
-bool SetBiddingLogicUrl(v8::Isolate* isolate,
-                        v8::Local<v8::Object> object,
-                        const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "biddingLogicURL", v8_value) &&
-         SetDictMember(isolate, object, "biddingLogicUrl", v8_value);
-}
-
-bool SetBiddingWasmHelperUrl(v8::Isolate* isolate,
-                             v8::Local<v8::Object> object,
-                             const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "biddingWasmHelperURL", v8_value) &&
-         SetDictMember(isolate, object, "biddingWasmHelperUrl", v8_value);
-}
-
-bool SetUpdateUrl(v8::Isolate* isolate,
-                  v8::Local<v8::Object> object,
-                  const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "updateURL", v8_value) &&
-         SetDictMember(isolate, object, "updateUrl", v8_value) &&
-         SetDictMember(isolate, object, "dailyUpdateUrl", v8_value);
-}
-
-bool SetTrustedBiddingSignalsUrl(v8::Isolate* isolate,
-                                 v8::Local<v8::Object> object,
-                                 const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "trustedBiddingSignalsURL", v8_value) &&
-         SetDictMember(isolate, object, "trustedBiddingSignalsUrl", v8_value);
-}
-
 bool CanSetRequestedAdSize(
     const std::optional<blink::AdSize>& requested_ad_size) {
   return requested_ad_size.has_value() &&
@@ -1261,17 +1216,6 @@ BidderWorklet::V8State::GenerateSingleBid(
       !interest_group_dict.Set("enableBiddingSignalsPrioritization",
                                bidder_worklet_non_shared_params
                                    .enable_bidding_signals_prioritization) ||
-      !SetBiddingLogicUrl(isolate, interest_group_object,
-                          script_source_url_.spec()) ||
-      (wasm_helper_url_ &&
-       !SetBiddingWasmHelperUrl(isolate, interest_group_object,
-                                wasm_helper_url_->spec())) ||
-      (bidder_worklet_non_shared_params.update_url &&
-       !SetUpdateUrl(isolate, interest_group_object,
-                     bidder_worklet_non_shared_params.update_url->spec())) ||
-      (trusted_bidding_signals_url_ &&
-       !SetTrustedBiddingSignalsUrl(isolate, interest_group_object,
-                                    trusted_bidding_signals_url_->spec())) ||
       !interest_group_dict.Set("executionMode", execution_mode_string) ||
       !interest_group_dict.Set(
           "trustedBiddingSignalsSlotSizeMode",
@@ -1282,6 +1226,11 @@ BidderWorklet::V8State::GenerateSingleBid(
   }
 
   context_recycler->interest_group_lazy_filler()->ReInitialize(
+      &script_source_url_,
+      wasm_helper_url_.has_value() ? &wasm_helper_url_.value() : nullptr,
+      trusted_bidding_signals_url_.has_value()
+          ? &trusted_bidding_signals_url_.value()
+          : nullptr,
       &bidder_worklet_non_shared_params);
   if (!context_recycler->interest_group_lazy_filler()->FillInObject(
           interest_group_object)) {
@@ -2085,10 +2034,8 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
         std::move(task->trusted_bidding_signals_error_msg).value());
   }
   task->generate_bid_client->OnGenerateBidComplete(
-      std::move(bid), std::move(kanon_bid),
-      bidding_signals_data_version.value_or(0),
-      bidding_signals_data_version.has_value(), debug_loss_report_url,
-      debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
+      std::move(bid), std::move(kanon_bid), bidding_signals_data_version,
+      debug_loss_report_url, debug_win_report_url, set_priority,
       std::move(update_priority_signals_overrides), std::move(pa_requests),
       std::move(non_kanon_pa_requests), bidding_latency,
       mojom::GenerateBidDependencyLatencies::New(

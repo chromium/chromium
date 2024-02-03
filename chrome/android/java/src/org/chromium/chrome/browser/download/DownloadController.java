@@ -9,6 +9,7 @@ import android.Manifest.permission;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -100,7 +101,7 @@ public class DownloadController {
     }
 
     @CalledByNative
-    private static void onDownloadStarted() {}
+    private static void onPdfDownloadStarted(Tab tab, DownloadInfo downloadInfo) {}
 
     @NativeMethods
     interface Natives {

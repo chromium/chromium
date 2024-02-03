@@ -153,13 +153,13 @@ class HighContrast {
    */
   onKeyDown(evt) {
     if (evt.keyCode == 122 /* F11 */ && evt.shiftKey) {
-      chrome.extension.sendRequest({'toggle_global': true});
+      chrome.runtime.sendMessage({'toggle_global': true});
       evt.stopPropagation();
       evt.preventDefault();
       return false;
     }
     if (evt.keyCode == 123 /* F12 */ && evt.shiftKey) {
-      chrome.extension.sendRequest({'toggle_site': true});
+      chrome.runtime.sendMessage({'toggle_site': true});
       evt.stopPropagation();
       evt.preventDefault();
       return false;
@@ -174,8 +174,8 @@ class HighContrast {
     } else {
       this.mode = 'b';
     }
-    chrome.extension.onRequest.addListener(this.onExtensionMessage.bind(this));
-    chrome.extension.sendRequest(
+    chrome.runtime.onMessage.addListener(this.onExtensionMessage.bind(this));
+    chrome.runtime.sendMessage(
         {'init': true}, this.onExtensionMessage.bind(this));
     document.addEventListener('keydown', this.onKeyDown.bind(this), false);
 
@@ -385,4 +385,4 @@ class HighContrast {
       }`;
 }
 
-const highContrast = new HighContrast();
+window.highContrast = new HighContrast();

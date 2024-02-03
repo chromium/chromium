@@ -405,8 +405,8 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithEmptyAllowlist) {
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(false));
 
   EXPECT_FALSE(IsUserAllowed(kUser1, std::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kChild));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kRegular));
 }
 
 // DeviceFamilyLinkAccountsAllowed should not have any effect if the feature is
@@ -433,8 +433,8 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithFeatureDisabled) {
 
   EXPECT_TRUE(IsUserAllowed(kOwner, std::nullopt));
   EXPECT_FALSE(IsUserAllowed(kUser1, std::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kChild));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kRegular));
 }
 
 TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
@@ -458,8 +458,8 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
 
   EXPECT_TRUE(IsUserAllowed(kOwner, std::nullopt));
   EXPECT_FALSE(IsUserAllowed(kUser1, std::nullopt));
-  EXPECT_TRUE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
+  EXPECT_TRUE(IsUserAllowed(kUser1, user_manager::UserType::kChild));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kRegular));
 }
 
 }  // namespace ash

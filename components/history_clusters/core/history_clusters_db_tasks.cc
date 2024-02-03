@@ -325,7 +325,7 @@ void GetAnnotatedVisitsToCluster::AddClusteredVisits(
         static_cast<size_t>(GetConfig().max_visits_to_cluster))
       break;
     cluster_ids_.push_back(cluster_id);
-    base::ranges::move(backend->ToAnnotatedVisits(
+    base::ranges::move(backend->ToAnnotatedVisitsFromIds(
                            visit_ids_of_cluster,
                            /*compute_redirect_chain_start_properties=*/true),
                        std::back_inserter(annotated_visits_));

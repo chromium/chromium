@@ -513,6 +513,9 @@ IN_PROC_BROWSER_TEST_F(
       syncer::PRIORITY_PREFERENCES));
 }
 
+// TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests and
+// all of these are.
+#if !BUILDFLAG(IS_ANDROID)
 // A test fixture to cover migration behavior: In PRE_ tests, the
 // kReplaceSyncPromosWithSignInPromos is *dis*abled, in non-PRE_ tests it is
 // *en*abled.
@@ -525,7 +528,6 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
     default_features_.InitWithFeatures(
         /*enabled_features=*/
         {syncer::kReadingListEnableSyncTransportModeUponSignIn,
-         password_manager::features::kEnablePasswordsAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kEnableBookmarkFoldersForAccountStorage,
          syncer::kEnablePreferencesAccountStorage},
@@ -543,8 +545,6 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
   base::test::ScopedFeatureList sync_to_signin_feature_;
 };
 
-// TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest,
     PRE_MigratesSignedInUser) {

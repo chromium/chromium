@@ -57,11 +57,11 @@ class WarningService : public KeyedService, public ExtensionRegistryObserver {
 
   // Returns all types of warnings effecting extension |extension_id|.
   std::set<Warning::WarningType> GetWarningTypesAffectingExtension(
-      const std::string& extension_id) const;
+      const ExtensionId& extension_id) const;
 
   // Returns all localized warnings for extension |extension_id| in |result|.
   std::vector<std::string> GetWarningMessagesForExtension(
-      const std::string& extension_id) const;
+      const ExtensionId& extension_id) const;
 
   const WarningSet& warnings() const { return warnings_; }
 

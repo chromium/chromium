@@ -43,8 +43,6 @@ async function checkDefaultTaskLabel(entry, expected_label) {
       await remoteCall.waitForElement(appId, '[command="#default-task"]');
 
   // Verify the context menu item's label.
-  // @ts-ignore: error TS2339: Property 'innerText' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq(expected_label, element.innerText);
 }
 

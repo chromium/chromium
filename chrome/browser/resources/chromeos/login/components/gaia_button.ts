@@ -6,10 +6,10 @@
  * @fileoverview Polymer element wrapping gaia styled button for login/oobe.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
 
-import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

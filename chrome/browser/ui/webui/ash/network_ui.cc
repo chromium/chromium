@@ -674,9 +674,8 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     const std::string* ssid =
         value->GetDict().FindString(shill::kTetheringConfSSIDProperty);
     if (ssid) {
-      value->GetDict().Set(
-          shill::kTetheringConfSSIDProperty,
-          base::Value(base::HexEncode(ssid->c_str(), ssid->size())));
+      value->GetDict().Set(shill::kTetheringConfSSIDProperty,
+                           base::Value(base::HexEncode(*ssid)));
     }
 
     ShillManagerClient::Get()->SetProperty(

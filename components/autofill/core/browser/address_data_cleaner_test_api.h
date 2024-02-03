@@ -15,11 +15,15 @@ class AddressDataCleanerTestApi {
   explicit AddressDataCleanerTestApi(AddressDataCleaner& data_cleaner)
       : data_cleaner_(data_cleaner) {}
 
-  void ApplyAddressDedupingRoutine() {
-    data_cleaner_->ApplyAddressDedupingRoutine();
+  void ApplyDeduplicationRoutine() {
+    data_cleaner_->ApplyDeduplicationRoutine();
   }
 
   void DeleteDisusedAddresses() { data_cleaner_->DeleteDisusedAddresses(); }
+
+  bool AreCleanupsPending() const {
+    return data_cleaner_->are_cleanups_pending_;
+  }
 
  private:
   const raw_ref<AddressDataCleaner> data_cleaner_;

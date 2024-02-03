@@ -200,14 +200,12 @@ void AutoplayPolicy::StartAutoplayMutedWhenVisible() {
     return;
 
   autoplay_intersection_observer_ = IntersectionObserver::Create(
-      /* (root) margin */ Vector<Length>(),
-      /* scroll_margin */ Vector<Length>(),
-      /* thresholds */ {IntersectionObserver::kMinimumThreshold},
-      /* document */ &element_->GetDocument(),
-      /* callback */
+      element_->GetDocument(),
       WTF::BindRepeating(&AutoplayPolicy::OnIntersectionChangedForAutoplay,
                          WrapWeakPersistent(this)),
-      /* ukm_metric_id */ LocalFrameUkmAggregator::kMediaIntersectionObserver);
+      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      IntersectionObserver::Params{
+          .thresholds = {IntersectionObserver::kMinimumThreshold}});
   autoplay_intersection_observer_->observe(element_);
 }
 
@@ -286,7 +284,7 @@ bool AutoplayPolicy::HasTransientUserActivation() const {
   return false;
 }
 
-absl::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
+std::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
   if (!HasTransientUserActivation()) {
     autoplay_uma_helper_->OnAutoplayInitiated(AutoplaySource::kMethod);
     if (IsGestureNeededForPlayback())
@@ -297,7 +295,7 @@ absl::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
 
   MaybeSetAutoplayInitiated();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool AutoplayPolicy::IsAutoplayingMutedInternal(bool muted) const {

@@ -5,6 +5,7 @@
 #include "services/device/geolocation/win/location_provider_winrt.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -14,7 +15,6 @@
 #include "services/device/geolocation/win/fake_geolocator_winrt.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace {
@@ -60,11 +60,11 @@ class TestingLocationProviderWinrt : public LocationProviderWinrt {
 
   bool IsHighAccuracyEnabled() { return enable_high_accuracy_; }
 
-  absl::optional<EventRegistrationToken> GetStatusChangedToken() {
+  std::optional<EventRegistrationToken> GetStatusChangedToken() {
     return status_changed_token_;
   }
 
-  absl::optional<EventRegistrationToken> GetPositionChangedToken() {
+  std::optional<EventRegistrationToken> GetPositionChangedToken() {
     return position_changed_token_;
   }
 
@@ -119,7 +119,7 @@ class LocationProviderWinrtTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
-  absl::optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
+  std::optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
   const std::unique_ptr<MockLocationObserver> observer_;
   const LocationProvider::LocationProviderUpdateCallback callback_;
   std::unique_ptr<TestingLocationProviderWinrt> provider_;

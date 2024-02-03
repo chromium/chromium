@@ -12,8 +12,6 @@
 #include "base/base64url.h"
 #include "components/cbor/values.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/attestation_object.h"
-#include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
@@ -131,31 +129,6 @@ AuthenticatorGetAssertionResponseFromValue(const base::Value& value) {
   }
 
   return std::move(response);
-}
-
-absl::optional<AuthenticatorMakeCredentialResponse>
-AuthenticatorMakeCredentialResponseFromValue(const base::Value& value) {
-  if (!value.is_dict()) {
-    FIDO_LOG(ERROR) << "Registration response value is not a dict.";
-    return absl::nullopt;
-  }
-
-  const base::Value::Dict& response_dict = value.GetDict();
-
-  // 'authenticatorData' is a required field.
-  // We ignore 'clientDataJSON', 'transports', 'publicKeyAlgorithm', and
-  // 'attestationObject', which are redundant with information in
-  // AuthenticatorData or are added at higher layers.
-  auto authenticator_data = ReadAuthenticatorData(response_dict);
-  if (!authenticator_data) {
-    return absl::nullopt;
-  }
-
-  AttestationObject attestation_object(
-      std::move(*authenticator_data),
-      std::make_unique<NoneAttestationStatement>());
-  return AuthenticatorMakeCredentialResponse(/*transport_used=*/absl::nullopt,
-                                             std::move(attestation_object));
 }
 
 }  // namespace device

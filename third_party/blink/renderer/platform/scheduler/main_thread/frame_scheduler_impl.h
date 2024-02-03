@@ -279,7 +279,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
     return frame_task_queue_controller_.get();
   }
 
-  // Create the QueueTraits for a specific TaskType. This returns absl::nullopt
+  // Create the QueueTraits for a specific TaskType. This returns std::nullopt
   // for loading tasks and non-frame-level tasks.
   static MainThreadTaskQueue::QueueTraits CreateQueueTraitsForTaskType(
       TaskType);
@@ -359,6 +359,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       back_forward_cache_disabling_feature_tracker_;
 
   TaskPriority default_loading_task_priority_ = TaskPriority::kNormalPriority;
+
+  TaskPriority low_priority_async_script_task_priority_;
 
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().

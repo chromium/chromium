@@ -256,11 +256,16 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       break;
     case chrome::DIR_CRASH_DUMPS:
+// Only use /var/log/{chrome,lacros} on IS_CHROMEOS_DEVICE builds. For
+// non-device builds we fall back to the #else below and store relative to the
+// default user-data directory.
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // ChromeOS uses a separate directory. See http://crosbug.com/25089
       cur = base::FilePath("/var/log/chrome");
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
       cur = base::FilePath(kLacrosLogDirectory);
+#endif  // BUILDFlAG(IS_CHROMEOS_ASH)
 #elif BUILDFLAG(IS_ANDROID)
       if (!base::android::GetCacheDirectory(&cur)) {
         return false;

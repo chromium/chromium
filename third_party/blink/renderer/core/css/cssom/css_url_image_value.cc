@@ -14,9 +14,9 @@ const String& CSSURLImageValue::url() const {
   return value_->RelativeUrl();
 }
 
-absl::optional<gfx::Size> CSSURLImageValue::IntrinsicSize() const {
+std::optional<gfx::Size> CSSURLImageValue::IntrinsicSize() const {
   if (Status() != ResourceStatus::kCached) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(!value_->IsCachePending());

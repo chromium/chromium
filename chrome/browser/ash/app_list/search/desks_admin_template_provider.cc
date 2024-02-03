@@ -12,6 +12,7 @@
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -58,7 +59,9 @@ void DesksAdminTemplateResult::Open(int event_flags) {
 DesksAdminTemplateProvider::DesksAdminTemplateProvider(
     Profile* profile,
     AppListControllerDelegate* list_controller)
-    : profile_(profile), list_controller_(list_controller) {
+    : SearchProvider(SearchCategory::kDesksAdmin),
+      profile_(profile),
+      list_controller_(list_controller) {
   DCHECK(profile_);
 }
 

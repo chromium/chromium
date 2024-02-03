@@ -166,7 +166,7 @@ class PLATFORM_EXPORT PendingLayer {
  private:
   // Checks basic merge-ability with `guest` and calls
   // PropertyTreeState::CanUpcastWith().
-  absl::optional<PropertyTreeState> CanUpcastWith(
+  std::optional<PropertyTreeState> CanUpcastWith(
       const PendingLayer& guest,
       const PropertyTreeState& guest_state,
       IsCompositedScrollFunction is_comosited_scroll) const;

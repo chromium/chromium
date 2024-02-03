@@ -28,9 +28,8 @@ TEST_P(SignedSeedDataTest, HasValidBase64Data) {
   ASSERT_TRUE(compression::GzipUncompress(decoded_compressed_data,
                                           &actual_uncompressed_data));
 
-  std::string actual_encoded_uncompressed_data;
-  base::Base64Encode(actual_uncompressed_data,
-                     &actual_encoded_uncompressed_data);
+  std::string actual_encoded_uncompressed_data =
+      base::Base64Encode(actual_uncompressed_data);
   EXPECT_EQ(actual_encoded_uncompressed_data,
             signed_seed_data.base64_uncompressed_data);
 

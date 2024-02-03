@@ -211,14 +211,14 @@ void CustomFrameView::OnPaint(gfx::Canvas* canvas) {
     PaintRestoredClientEdge(canvas);
 }
 
-void CustomFrameView::Layout() {
+void CustomFrameView::Layout(PassKey) {
   if (ShouldShowTitleBarAndBorder()) {
     LayoutWindowControls();
     LayoutTitleBar();
   }
 
   LayoutClientView();
-  NonClientFrameView::Layout();
+  LayoutSuperclass<NonClientFrameView>(this);
 }
 
 gfx::Size CustomFrameView::CalculatePreferredSize() const {

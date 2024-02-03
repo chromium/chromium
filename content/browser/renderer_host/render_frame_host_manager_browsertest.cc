@@ -2129,7 +2129,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   SiteInstance* blank_site_instance =
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), GURL());
-  EXPECT_EQ(blank_site_instance->GetSiteURL(), GURL::EmptyGURL());
+  EXPECT_EQ(blank_site_instance->GetSiteURL(), GURL());
   rvh_observers.EnsureRVHGetsDestructed(blank_rvh);
 
   // Now navigate to the view-source URL and ensure we got a different
@@ -2788,7 +2788,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   entries.push_back(std::move(cloned_entry));
   Shell* new_shell =
       Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
-                             GURL::EmptyGURL(), nullptr, gfx::Size());
+                             GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()

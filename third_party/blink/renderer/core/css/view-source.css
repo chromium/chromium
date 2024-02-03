@@ -49,7 +49,7 @@ table {
     font-size: initial;
     font-family: monospace;
     user-select: none;
-    background-color: -internal-light-dark(rgb(240, 240, 240), rgb(60, 60, 60));
+    background-color: light-dark(rgb(240, 240, 240), rgb(60, 60, 60));
     border-bottom: 1px solid rgb(187, 187, 187);
     display: flex;
     justify-content: flex-start;
@@ -70,7 +70,7 @@ td {
     box-sizing: border-box;
     padding: 0 4px !important;
     width: 31px;
-    background-color: -internal-light-dark(rgb(240, 240, 240), rgb(60, 60, 60));
+    background-color: light-dark(rgb(240, 240, 240), rgb(60, 60, 60));
     border-right: 1px solid rgb(187, 187, 187) !important;
     user-select: none;
 }
@@ -86,7 +86,7 @@ td {
 
 .line-number {
     text-align: right;
-    color: -internal-light-dark(rgb(148, 132, 132), rgb(128, 128, 128));
+    color: light-dark(rgb(148, 132, 132), rgb(128, 128, 128));
     word-break: normal;
     white-space: nowrap;
     font-size: 9px;
@@ -108,22 +108,22 @@ tbody:last-child .line-content:empty:before {
 
 .html-tag {
     /* Keep this in sync with inspectorSyntaxHighlight.css (.webkit-html-tag) */
-    color: -internal-light-dark(rgb(136, 18, 128), rgb(93, 176, 215));
+    color: light-dark(rgb(136, 18, 128), rgb(93, 176, 215));
 }
 
 .html-attribute-name {
     /* Keep this in sync with inspectorSyntaxHighlight.css (.webkit-html-attribute-name) */
-    color: -internal-light-dark(rgb(153, 69, 0), rgb(155 187 220));
+    color: light-dark(rgb(153, 69, 0), rgb(155 187 220));
 }
 
 .html-attribute-value {
     /* Keep this in sync with inspectorSyntaxHighlight.css (.webkit-html-attribute-value) */
-    color: -internal-light-dark(rgb(26, 26, 166), rgb(242, 151, 102));
+    color: light-dark(rgb(26, 26, 166), rgb(242, 151, 102));
 }
 
 .html-external-link, .html-resource-link {
     /* Keep this in sync with inspectorSyntaxHighlight.css (.webkit-html-external-link, .webkit-html-resource-link) */
-    color: -internal-light-dark(#00e, rgb(159, 180, 214));
+    color: light-dark(#00e, rgb(159, 180, 214));
 }
 
 .html-external-link {

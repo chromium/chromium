@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "third_party/omnibox_proto/groups.pb.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -540,9 +541,17 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     SuggestionGroupDisplayStyle displayStyle =
         SuggestionGroupDisplayStyleDefault;
 
-    if (currentSectionId &&
-        static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
-            omnibox::SECTION_MOBILE_MOST_VISITED) {
+    if (base::FeatureList::IsEnabled(
+            omnibox::kMostVisitedTilesHorizontalRenderGroup)) {
+      omnibox::GroupConfig_RenderType renderType =
+          headerMap.GetRenderTypeForSuggestionGroup(
+              static_cast<omnibox::GroupId>([currentGroupId intValue]));
+      displayStyle = (renderType == omnibox::GroupConfig_RenderType_HORIZONTAL)
+                         ? SuggestionGroupDisplayStyleCarousel
+                         : SuggestionGroupDisplayStyleDefault;
+    } else if (currentSectionId &&
+               static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
+                   omnibox::SECTION_MOBILE_MOST_VISITED) {
       displayStyle = SuggestionGroupDisplayStyleCarousel;
     }
 

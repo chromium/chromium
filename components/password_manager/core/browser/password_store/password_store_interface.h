@@ -27,6 +27,11 @@ class PasswordStoreBackend;
 class PasswordStoreConsumer;
 class SmartBubbleStatsStore;
 
+using IsAccountStore = base::StrongAlias<class IsAccountStoreTag, bool>;
+
+const IsAccountStore kProfileStore = IsAccountStore(false);
+const IsAccountStore kAccountStore = IsAccountStore(true);
+
 // Interface for storing form passwords in a secure way. The usage is
 // independent of the platform.
 // All methods are expected to have an asynchronous implementation that persists
@@ -59,7 +64,7 @@ class PasswordStoreInterface : public RefcountedKeyedService {
         const std::vector<PasswordForm>& retained_passwords) = 0;
   };
 
-  // Returns true iff initialization was successful.
+  // Necessary condition to offer saving passwords.
   virtual bool IsAbleToSavePasswords() const = 0;
 
   // Adds the given PasswordForm to the secure password store asynchronously.

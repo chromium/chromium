@@ -5,12 +5,13 @@
 #ifndef MEDIA_MOJO_MOJOM_VIDEO_DECODER_CONFIG_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_VIDEO_DECODER_CONFIG_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/video_color_space_mojom_traits.h"
 #include "media/mojo/mojom/video_transformation_mojom_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
@@ -65,7 +66,7 @@ struct StructTraits<media::mojom::VideoDecoderConfigDataView,
     return input.video_transformation();
   }
 
-  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
+  static const std::optional<gfx::HDRMetadata>& hdr_metadata(
       const media::VideoDecoderConfig& input) {
     return input.hdr_metadata();
   }

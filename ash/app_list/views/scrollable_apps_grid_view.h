@@ -28,9 +28,9 @@ class AppListViewDelegate;
 // feature where the user can drag an app icon to the top or bottom of the
 // containing ScrollView and the view will be scrolled automatically.
 class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
- public:
-  METADATA_HEADER(ScrollableAppsGridView);
+  METADATA_HEADER(ScrollableAppsGridView, AppsGridView)
 
+ public:
   ScrollableAppsGridView(AppListA11yAnnouncer* a11y_announcer,
                          AppListViewDelegate* view_delegate,
                          AppsGridViewFolderDelegate* folder_delegate,
@@ -46,7 +46,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   void SetMaxColumns(int max_cols);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // AppsGridView:
   gfx::Size GetTileViewSize() const override;

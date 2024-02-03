@@ -9,6 +9,8 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/test/test_helpers.h"
+#include "chromeos/components/quick_answers/test/unit_conversion_unittest_constants.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,32 +20,12 @@ namespace {
 
 using base::Value;
 
-constexpr char kMassCategory[] = "Mass";
 constexpr char kLengthCategory[] = "Length";
-
 constexpr char kFakeUnitName[] = "FakeUnit";
-constexpr double kKilogramRateA = 1.0;
-constexpr char kKilogramName[] = "Kilogram";
-constexpr double kPoundRateA = 0.45359237;
-constexpr char kPoundName[] = "Pound";
-constexpr double kOunceRateA = 0.028349523125;
-constexpr char kOunceName[] = "Ounce";
 
 constexpr double kSamplePreferredRange = 100;
 constexpr double kStrictPreferredRange = 1.001;
 constexpr double kConvertSouceValue = 100;
-
-Value::Dict CreateUnit(double rate_a,
-                       const std::string& name,
-                       const std::string& category = std::string()) {
-  Value::Dict unit;
-  unit.Set(kConversionToSiAPath, rate_a);
-  unit.Set(kNamePath, name);
-  if (!category.empty())
-    unit.Set(kCategoryPath, category);
-
-  return unit;
-}
 
 }  // namespace
 
@@ -105,7 +87,7 @@ TEST_F(UnitConverterTest, GetPossibleUnitsWithEmptyRulesetShouldReturnNullptr) {
 
 TEST_F(UnitConverterTest, GetPossibleUnitsWithKnownCategoryShouldSuccess) {
   Value::List input_units;
-  input_units.Append(CreateUnit(kKilogramRateA, kKilogramName));
+  input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
 
   AddConversion(kMassCategory, Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
@@ -122,7 +104,8 @@ TEST_F(UnitConverterTest,
   auto* converter = CreateUnitConverter();
 
   auto* unit = converter->FindProperDestinationUnit(
-      CreateUnit(kKilogramRateA, kKilogramName, kMassCategory),
+      CreateUnit(kKilogramName, kKilogramRateA,
+                 /*rate_b=*/kInvalidRateTermValue, kMassCategory),
       kSamplePreferredRange);
   EXPECT_EQ(unit, nullptr);
 }
@@ -130,14 +113,15 @@ TEST_F(UnitConverterTest,
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitForSameUnitShouldReturnNullptr) {
   Value::List input_units;
-  input_units.Append(CreateUnit(kKilogramRateA, kKilogramName));
+  input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
 
   AddConversion(kMassCategory, Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   // Should ignore the source unit itself in the ruleset.
   auto* unit = converter->FindProperDestinationUnit(
-      CreateUnit(kKilogramRateA, kKilogramName, kMassCategory),
+      CreateUnit(kKilogramName, kKilogramRateA,
+                 /*rate_b=*/kInvalidRateTermValue, kMassCategory),
       kSamplePreferredRange);
   EXPECT_EQ(unit, nullptr);
 }
@@ -145,14 +129,15 @@ TEST_F(UnitConverterTest,
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitWithProperUnitsShouldSuccess) {
   Value::List input_units;
-  input_units.Append(CreateUnit(kKilogramRateA, kKilogramName));
-  input_units.Append(CreateUnit(kPoundRateA, kPoundName));
+  input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
+  input_units.Append(CreateUnit(kPoundName, kPoundRateA));
 
   AddConversion(kMassCategory, Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   auto* unit = converter->FindProperDestinationUnit(
-      CreateUnit(kKilogramRateA, kKilogramName, kMassCategory),
+      CreateUnit(kKilogramName, kKilogramRateA,
+                 /*rate_b=*/kInvalidRateTermValue, kMassCategory),
       kSamplePreferredRange);
   EXPECT_EQ(unit->FindDoubleByDottedPath(kConversionToSiAPath), kPoundRateA);
   EXPECT_EQ(*unit->FindStringByDottedPath(kNamePath), kPoundName);
@@ -161,8 +146,8 @@ TEST_F(UnitConverterTest,
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitForEmptySourceUnitShouldReturnNullptr) {
   Value::List input_units;
-  input_units.Append(CreateUnit(kKilogramRateA, kKilogramName));
-  input_units.Append(CreateUnit(kPoundRateA, kPoundName));
+  input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
+  input_units.Append(CreateUnit(kPoundName, kPoundRateA));
 
   AddConversion(kMassCategory, Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
@@ -176,15 +161,16 @@ TEST_F(UnitConverterTest,
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitForStrictRangeShouldReturnNullptr) {
   Value::List input_units;
-  input_units.Append(CreateUnit(kKilogramRateA, kKilogramName));
-  input_units.Append(CreateUnit(kPoundRateA, kPoundName));
+  input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
+  input_units.Append(CreateUnit(kPoundName, kPoundRateA));
 
   AddConversion(kMassCategory, Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   // No unit within the preferred conversion rate found.
   auto* unit = converter->FindProperDestinationUnit(
-      CreateUnit(kKilogramRateA, kKilogramName, kMassCategory),
+      CreateUnit(kKilogramName, kKilogramRateA,
+                 /*rate_b=*/kInvalidRateTermValue, kMassCategory),
       kStrictPreferredRange);
   EXPECT_EQ(unit, nullptr);
 }
@@ -192,16 +178,18 @@ TEST_F(UnitConverterTest,
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitBetweenMultipleUnitsShouldReturnClosestRate) {
   Value::List input_units;
-  input_units.Append(CreateUnit(kKilogramRateA, kKilogramName));
-  input_units.Append(CreateUnit(kPoundRateA, kPoundName));
-  input_units.Append(CreateUnit(kOunceRateA, kOunceName));
+  input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
+  input_units.Append(CreateUnit(kPoundName, kPoundRateA));
+  input_units.Append(CreateUnit(kOunceName, kOunceRateA));
 
   AddConversion(kMassCategory, Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   // Should return the unit with closest conversion rate, which is Pound.
   auto* unit = converter->FindProperDestinationUnit(
-      CreateUnit(kKilogramRateA, kKilogramName, kMassCategory), 100);
+      CreateUnit(kKilogramName, kKilogramRateA,
+                 /*rate_b=*/kInvalidRateTermValue, kMassCategory),
+      100);
   EXPECT_EQ(unit->FindDoubleByDottedPath(kConversionToSiAPath), kPoundRateA);
   EXPECT_EQ(*unit->FindStringByDottedPath(kNamePath), kPoundName);
 }
@@ -210,8 +198,8 @@ TEST_F(UnitConverterTest, ConvertWithProperInputShouldSuccess) {
   auto* converter = CreateUnitConverter();
 
   auto result = converter->Convert(kConvertSouceValue,
-                                   CreateUnit(kKilogramRateA, kKilogramName),
-                                   CreateUnit(kPoundRateA, kPoundName));
+                                   CreateUnit(kKilogramName, kKilogramRateA),
+                                   CreateUnit(kPoundName, kPoundRateA));
   auto expected_result = BuildUnitConversionResultText(
       base::StringPrintf(kResultValueTemplate,
                          (kKilogramRateA / kPoundRateA) * kConvertSouceValue),
@@ -225,8 +213,8 @@ TEST_F(UnitConverterTest,
 
   // Should return empty result if input source unit has 0 conversion rate.
   auto result =
-      converter->Convert(kConvertSouceValue, CreateUnit(0, kFakeUnitName),
-                         CreateUnit(kPoundRateA, kPoundName));
+      converter->Convert(kConvertSouceValue, CreateUnit(kFakeUnitName),
+                         CreateUnit(kPoundName, kPoundRateA));
   EXPECT_EQ(result, std::string());
 }
 
@@ -236,8 +224,8 @@ TEST_F(UnitConverterTest,
 
   // Should return empty result if input destination unit has 0 conversion rate.
   auto result = converter->Convert(kConvertSouceValue,
-                                   CreateUnit(kPoundRateA, kPoundName),
-                                   CreateUnit(0, kFakeUnitName));
+                                   CreateUnit(kPoundName, kPoundRateA),
+                                   CreateUnit(kFakeUnitName));
   EXPECT_EQ(result, std::string());
 }
 

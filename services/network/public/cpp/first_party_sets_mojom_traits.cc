@@ -75,7 +75,7 @@ bool StructTraits<network::mojom::FirstPartySetEntryDataView,
   if (!entry.ReadSiteType(&site_type))
     return false;
 
-  absl::optional<net::FirstPartySetEntry::SiteIndex> site_index;
+  std::optional<net::FirstPartySetEntry::SiteIndex> site_index;
   if (!entry.ReadSiteIndex(&site_index))
     return false;
 
@@ -87,11 +87,11 @@ bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
                   net::FirstPartySetMetadata>::
     Read(network::mojom::FirstPartySetMetadataDataView metadata,
          net::FirstPartySetMetadata* out_metadata) {
-  absl::optional<net::FirstPartySetEntry> frame_entry;
+  std::optional<net::FirstPartySetEntry> frame_entry;
   if (!metadata.ReadFrameEntry(&frame_entry))
     return false;
 
-  absl::optional<net::FirstPartySetEntry> top_frame_entry;
+  std::optional<net::FirstPartySetEntry> top_frame_entry;
   if (!metadata.ReadTopFrameEntry(&top_frame_entry))
     return false;
 
@@ -135,9 +135,9 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
   // The manual_config must contain both the alias overrides and their
   // corresponding canonical overrides, none of which may be deletions.
   if (!base::ranges::all_of(manual_aliases, [&](const auto& pair) {
-        absl::optional<net::FirstPartySetEntryOverride> aliased_override =
+        std::optional<net::FirstPartySetEntryOverride> aliased_override =
             manual_config.FindOverride(pair.first);
-        absl::optional<net::FirstPartySetEntryOverride> canonical_override =
+        std::optional<net::FirstPartySetEntryOverride> canonical_override =
             manual_config.FindOverride(pair.second);
         return aliased_override.has_value() &&
                !aliased_override->IsDeletion() &&
@@ -158,7 +158,7 @@ bool StructTraits<network::mojom::FirstPartySetEntryOverrideDataView,
                   net::FirstPartySetEntryOverride>::
     Read(network::mojom::FirstPartySetEntryOverrideDataView override,
          net::FirstPartySetEntryOverride* out) {
-  absl::optional<net::FirstPartySetEntry> entry;
+  std::optional<net::FirstPartySetEntry> entry;
   if (!override.ReadEntry(&entry))
     return false;
 

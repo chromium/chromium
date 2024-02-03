@@ -295,12 +295,13 @@ void BindServerCvcToStatement(const ServerCvc& server_cvc,
 void BindMaskedBankAccountToStatement(const BankAccount& bank_account,
                                       sql::Statement* s) {
   int index = 0;
-  s->BindInt64(index++, bank_account.instrument_id());
+  s->BindInt64(index++, bank_account.payment_instrument().instrument_id());
   s->BindString16(index++, bank_account.bank_name());
   s->BindString16(index++, bank_account.account_number_suffix());
   s->BindInt(index++, static_cast<int>(bank_account.account_type()));
-  s->BindString16(index++, bank_account.nickname());
-  s->BindString(index++, bank_account.display_icon_url().spec());
+  s->BindString16(index++, bank_account.payment_instrument().nickname());
+  s->BindString(index++,
+                bank_account.payment_instrument().display_icon_url().spec());
 }
 
 void BindIbanToStatement(const Iban& iban,
@@ -617,7 +618,8 @@ bool PaymentsAutofillTable::RemoveMaskedBankAccount(
   sql::Statement bank_accounts_delete;
   DeleteBuilder(db_, bank_accounts_delete, kMaskedBankAccountsTable,
                 base::StrCat({kInstrumentId, "=?"}));
-  bank_accounts_delete.BindInt64(0, bank_account.instrument_id());
+  bank_accounts_delete.BindInt64(
+      0, bank_account.payment_instrument().instrument_id());
   if (!bank_accounts_delete.Run()) {
     return false;
   }

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -21,7 +22,6 @@
 #include "media/base/overlay_info.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/picture.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -154,7 +154,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
 
     // The CDM that the VDA should use to decode encrypted streams. Must be
     // set to a valid ID if |is_encrypted|.
-    absl::optional<base::UnguessableToken> cdm_id;
+    std::optional<base::UnguessableToken> cdm_id;
 
     // Whether the client supports deferred initialization.
     bool is_deferred_initialization_allowed = false;
@@ -183,7 +183,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     gfx::ColorSpace target_color_space;
 
     // HDR metadata specified by the container.
-    absl::optional<gfx::HDRMetadata> hdr_metadata;
+    std::optional<gfx::HDRMetadata> hdr_metadata;
   };
 
   // Interface for collaborating with picture interface to provide memory for

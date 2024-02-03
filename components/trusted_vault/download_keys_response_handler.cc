@@ -32,7 +32,7 @@ FindMembershipForSecurityDomain(
     SecurityDomainId security_domain) {
   for (const auto& membership : member.memberships()) {
     if (membership.security_domain() ==
-        GetSecurityDomainName(security_domain)) {
+        GetSecurityDomainPath(security_domain)) {
       return &membership;
     }
   }

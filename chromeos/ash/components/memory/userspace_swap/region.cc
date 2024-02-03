@@ -5,12 +5,13 @@
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
 
 #include <sys/uio.h>
+
 #include <cstdint>
 #include <ostream>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace ash {
 namespace memory {
@@ -21,9 +22,9 @@ struct iovec COMPONENT_EXPORT(USERSPACE_SWAP) Region::AsIovec() const {
   return {.iov_base = reinterpret_cast<void*>(address), .iov_len = length};
 }
 
-base::StringPiece COMPONENT_EXPORT(
+std::string_view COMPONENT_EXPORT(
     USERSPACE_SWAP) Region::AsStringPiece() const {
-  return base::StringPiece(reinterpret_cast<char*>(address), length);
+  return std::string_view(reinterpret_cast<char*>(address), length);
 }
 
 RegionOverlap COMPONENT_EXPORT(USERSPACE_SWAP) Region::CalculateRegionOverlap(

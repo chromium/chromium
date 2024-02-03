@@ -677,6 +677,7 @@ class BookmarkBridge {
     public void removeAllUserBookmarks() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
+        assert mIsNativeBookmarkModelLoaded;
         BookmarkBridgeJni.get().removeAllUserBookmarks(mNativeBookmarkBridge);
     }
 
@@ -685,11 +686,13 @@ class BookmarkBridge {
      *
      * @param bookmarkId The id of the bookmark that is being moved.
      * @param newParentId The parent folder id.
-     * @param index The new index for the bookmark.
+     * @param index The new index for the bookmark, this argument is ignored if the types of
+     *     bookmarkId and newParentId differ.
      */
     public void moveBookmark(BookmarkId bookmarkId, BookmarkId newParentId, int index) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return;
+        assert mIsNativeBookmarkModelLoaded;
         BookmarkBridgeJni.get().moveBookmark(mNativeBookmarkBridge, bookmarkId, newParentId, index);
     }
 
@@ -879,6 +882,7 @@ class BookmarkBridge {
      * @return Whether the URL has been bookmarked.
      */
     public boolean isBookmarked(GURL url) {
+        ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return false;
         return BookmarkBridgeJni.get().isBookmarked(mNativeBookmarkBridge, url);
     }

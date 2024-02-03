@@ -182,7 +182,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   int GetHeightForWidth(int w) const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void PreferredSizeChanged() override;
 
   // Sets the horizontal alignment; the argument value is mirrored in RTL UI.

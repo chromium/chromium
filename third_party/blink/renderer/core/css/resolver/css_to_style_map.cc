@@ -360,12 +360,12 @@ Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
   }
 }
 
-absl::optional<double> CSSToStyleMap::MapAnimationDuration(
+std::optional<double> CSSToStyleMap::MapAnimationDuration(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* identifier = DynamicTo<CSSIdentifierValue>(value);
       identifier && identifier->GetValueID() == CSSValueID::kAuto) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return To<CSSPrimitiveValue>(value).ComputeSeconds();
 }
@@ -473,12 +473,12 @@ EAnimPlayState CSSToStyleMap::MapAnimationPlayState(StyleResolverState& state,
 
 namespace {
 
-absl::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
-                                                 const CSSValue& value,
-                                                 double default_percent) {
+std::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
+                                                const CSSValue& value,
+                                                double default_percent) {
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
       ident && ident->GetValueID() == CSSValueID::kNormal) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const auto& list = To<CSSValueList>(value);
   DCHECK_GE(list.length(), 1u);
@@ -500,13 +500,13 @@ absl::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
 
 }  // namespace
 
-absl::optional<TimelineOffset> CSSToStyleMap::MapAnimationRangeStart(
+std::optional<TimelineOffset> CSSToStyleMap::MapAnimationRangeStart(
     StyleResolverState& state,
     const CSSValue& value) {
   return MapAnimationRange(state, value, 0);
 }
 
-absl::optional<TimelineOffset> CSSToStyleMap::MapAnimationRangeEnd(
+std::optional<TimelineOffset> CSSToStyleMap::MapAnimationRangeEnd(
     StyleResolverState& state,
     const CSSValue& value) {
   return MapAnimationRange(state, value, 100);

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/websockets/dom_websocket.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -414,15 +415,14 @@ void DOMWebSocket::close(uint16_t code,
 }
 
 void DOMWebSocket::close(ExceptionState& exception_state) {
-  CloseInternal(WebSocketChannel::kCloseEventCodeNotSpecified, String(),
-                exception_state);
+  CloseInternal(std::nullopt, String(), exception_state);
 }
 
 void DOMWebSocket::close(uint16_t code, ExceptionState& exception_state) {
   CloseInternal(code, String(), exception_state);
 }
 
-void DOMWebSocket::CloseInternal(int code,
+void DOMWebSocket::CloseInternal(std::optional<uint16_t> code,
                                  const String& reason,
                                  ExceptionState& exception_state) {
   common_.CloseInternal(code, reason, channel_, exception_state);

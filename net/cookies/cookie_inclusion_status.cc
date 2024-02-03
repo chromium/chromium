@@ -79,6 +79,8 @@ void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
   // If the cookie would be excluded for reasons unrelated to 3pcd, don't bother
   // warning about 3pcd.
   MaybeClearThirdPartyPhaseoutReason();
+  // If the cookie would have been excluded, clear the exemption reason.
+  exemption_reason_ = ExemptionReason::kNone;
 }
 
 void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
@@ -88,6 +90,12 @@ void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
 void CookieInclusionStatus::RemoveExclusionReasons(
     const std::vector<ExclusionReason>& reasons) {
   exclusion_reasons_ = ExclusionReasonsWithout(reasons);
+}
+
+void CookieInclusionStatus::MaybeSetExemptionReason(ExemptionReason reason) {
+  if (IsInclude() && exemption_reason_ == ExemptionReason::kNone) {
+    exemption_reason_ = reason;
+  }
 }
 
 CookieInclusionStatus::ExclusionReasonBitset

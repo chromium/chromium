@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -292,7 +293,10 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
     }
 
     EXPECT_EQ(selector->GetPseudoType(), test_case.type);
-    EXPECT_EQ(selector->Argument(), test_case.argument);
+    EXPECT_EQ(selector->GetPseudoType() == CSSSelector::kPseudoViewTransition
+                  ? selector->Argument()
+                  : selector->IdentList()[0],
+              test_case.argument);
   }
 }
 
@@ -529,7 +533,7 @@ static const SelectorTestCase is_where_nesting_data[] = {
     {"::cue(:is(.a .b))", "::cue(:is())"},
     {"::cue(:is(.a + .b))", "::cue(:is())"},
     {"::cue(:is(.a, .b + .c))", "::cue(:is(.a))"},
-    // Only user-action pseudos + :--state are allowed after kPseudoPart:
+    // Only user-action pseudos + :state() are allowed after kPseudoPart:
     {"::part(foo):is(.a)", "::part(foo):is()"},
     {"::part(foo):is(.a:hover)", "::part(foo):is()"},
     {"::part(foo):is(:hover.a)", "::part(foo):is()"},
@@ -541,6 +545,7 @@ static const SelectorTestCase is_where_nesting_data[] = {
      "::part(foo):is(:hover, :where())"},
     {"::part(foo):is(:hover, .a)", "::part(foo):is(:hover)"},
     {"::part(foo):is(:--bar, .a)", "::part(foo):is(:--bar)"},
+    {"::part(foo):is(:state(bar), .a)", "::part(foo):is(:state(bar))"},
     {"::part(foo):is(:enabled)", "::part(foo):is()"},
     // Only scrollbar pseudos after kPseudoScrollbar:
     {"::-webkit-scrollbar:is(:focus)", "::-webkit-scrollbar:is()"},
@@ -582,6 +587,7 @@ static const SelectorTestCase is_where_nesting_data[] = {
     {"::part(foo):is(:focus, :hover)"},
     {"::part(foo):is(:focus, :is(:hover))"},
     {"::part(foo):is(:focus, :--bar)"},
+    {"::part(foo):is(:focus, :state(bar))"},
     {"::-webkit-scrollbar:is(:enabled)"},
     {"::selection:is(:window-inactive)"},
     {"::-webkit-input-placeholder:is(:hover)"},
@@ -1110,12 +1116,12 @@ static CSSSelectorList* ParseNested(String inner_rule,
   return list;
 }
 
-static absl::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
+static std::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
     String inner_rule,
     CSSNestingType nesting_type) {
   CSSSelectorList* list = ParseNested(inner_rule, nesting_type);
   if (!list) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Vector<const CSSSelector*> selectors;
@@ -1134,7 +1140,7 @@ static absl::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
   const CSSSelector* back = !selectors.empty() ? selectors.back() : nullptr;
   if (!back || back->Match() != CSSSelector::kPseudoClass ||
       !back->IsImplicit()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return back->GetPseudoType();
 }
@@ -1149,11 +1155,11 @@ TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
       GetImplicitlyAddedPseudo(".foo:is(.bar)", CSSNestingType::kNesting));
   EXPECT_EQ(CSSSelector::kPseudoParent,
             GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kNesting));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kNesting));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
-                                                    CSSNestingType::kNesting));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                   CSSNestingType::kNesting));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kNesting));
 
   // :scope
@@ -1164,46 +1170,46 @@ TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
   EXPECT_EQ(CSSSelector::kPseudoScope,
             GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kScope));
   // :scope makes a selector :scope-containing:
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > :scope", CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(":scope .foo", CSSNestingType::kScope));
   // '&' also makes a selector :scope-containing:
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !&)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :SCOPE)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !:scope)",
-                                                    CSSNestingType::kScope));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !&)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :SCOPE)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !:scope)",
+                                                   CSSNestingType::kScope));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kScope));
 
   // kNone
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo:is(.bar)", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
-                                                    CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                   CSSNestingType::kNone));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(".foo > :scope", CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
-                                                    CSSNestingType::kNone));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                   CSSNestingType::kNone));
+  EXPECT_EQ(std::nullopt,
             GetImplicitlyAddedPseudo(":scope .foo", CSSNestingType::kNone));
 }
 
@@ -1321,26 +1327,26 @@ static wtf_size_t CountSimpleSelectors(const CSSSelectorList& list,
 }
 
 template <typename PredicateFunc>
-static absl::optional<wtf_size_t> CountSimpleSelectors(
+static std::optional<wtf_size_t> CountSimpleSelectors(
     String selector_text,
     CSSNestingType nesting_type,
     PredicateFunc predicate) {
   CSSSelectorList* list = ParseNested(selector_text, nesting_type);
   if (!list || !list->First()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CountSimpleSelectors<PredicateFunc>(*list, predicate);
 }
 
-static absl::optional<wtf_size_t> CountPseudoTrue(String selector_text,
-                                                  CSSNestingType nesting_type) {
+static std::optional<wtf_size_t> CountPseudoTrue(String selector_text,
+                                                 CSSNestingType nesting_type) {
   return CountSimpleSelectors(
       selector_text, nesting_type, [](const CSSSelector& selector) {
         return selector.GetPseudoType() == CSSSelector::kPseudoTrue;
       });
 }
 
-static absl::optional<wtf_size_t> CountScopeActivations(
+static std::optional<wtf_size_t> CountScopeActivations(
     String selector_text,
     CSSNestingType nesting_type) {
   return CountSimpleSelectors(
@@ -1349,7 +1355,7 @@ static absl::optional<wtf_size_t> CountScopeActivations(
       });
 }
 
-static absl::optional<wtf_size_t> CountPseudoTrueWithScopeActivation(
+static std::optional<wtf_size_t> CountPseudoTrueWithScopeActivation(
     String selector_text,
     CSSNestingType nesting_type) {
   return CountSimpleSelectors(

@@ -33,18 +33,18 @@ to crash in a controlled manner (e.g., with a ```__debugBreak```) when memory is
 exhausted or in other exceptional circumstances.
 
 
-## Critical severity {#TOC-Critical-severity}
+## Critical severity (S0) {#TOC-Critical-severity}
 
-Critical severity issues allow an attacker to read or write arbitrary resources
-(including but not limited to the file system, registry, network, etc.) on the
-underlying platform, with the user's full privileges.
+Critical severity (S0) issues allow an attacker to read or write arbitrary
+resources (including but not limited to the file system, registry, network,
+etc.) on the underlying platform, with the user's full privileges.
 
-They are normally assigned priority **Pri-0** and assigned to the current stable
+They are normally assigned Priority **P0** and assigned to the current stable
 milestone (or earliest milestone affected). For critical severity bugs,
 [SheriffBot](https://www.chromium.org/issue-tracking/autotriage) will
 automatically assign the milestone.
 
-**For critical severity vulnerabilities, we aim to deploy the patch to all
+**For critical severity (S0) vulnerabilities, we aim to deploy the patch to all
 Chrome users in under 30 days.**
 
 Critical vulnerability details may be made public in 60 days,
@@ -67,9 +67,9 @@ Note that the individual bugs that make up the chain will have lower severity
 ratings.
 
 
-## High severity {#TOC-High-severity}
+## High severity (S1) {#TOC-High-severity}
 
-High severity vulnerabilities allow an attacker to execute code in the context
+High severity (S1) vulnerabilities allow an attacker to execute code in the context
 of, or otherwise impersonate other origins or read cross-origin data.
 Bugs which would normally be
 critical severity with unusual mitigating factors may be rated as high severity.
@@ -84,13 +84,13 @@ bug with the precondition of browser shutdown or profile destruction should be
 considered to have a maximum severity of high and could potentially be
 reduced by other mitigating factors.
 
-They are normally assigned priority **Pri-1** and assigned to the current stable
+They are normally assigned Priority **P1** and assigned to the current stable
 milestone (or earliest milestone affected). For high severity bugs,
 [SheriffBot](https://www.chromium.org/issue-tracking/autotriage) will
 automatically assign the milestone.
 
-**For high severity vulnerabilities, we aim to deploy the patch to all Chrome
-users in under 60 days.**
+**For high severity (S1) vulnerabilities, we aim to deploy the patch to all
+Chrome users in under 60 days.**
 
 Example bugs:
 
@@ -118,9 +118,9 @@ compromised renderer ([377392](https://crbug.com/377392)).
       ([917668](https://crbug.com/917668), [927849](https://crbug.com/927849)).
 
 
-## Medium severity {#TOC-Medium-severity}
+## Medium severity (S2) {#TOC-Medium-severity}
 
-Medium severity bugs allow attackers to read or modify limited amounts of
+Medium severity (S2) bugs allow attackers to read or modify limited amounts of
 information, or are not harmful on their own but potentially harmful when
 combined with other bugs. This includes information leaks that could be useful
 in potential memory corruption exploits, or exposure of sensitive user
@@ -128,7 +128,7 @@ information that an attacker can exfiltrate. Bugs that would normally be rated
 at a higher severity level with unusual mitigating factors may be rated as
 medium severity.
 
-They are normally assigned priority **Pri-1** and assigned to the current stable
+They are normally assigned Priority **P1** and assigned to the current stable
 milestone (or earliest milestone affected). If the fix seems too complicated to
 merge to the current stable milestone, they may be assigned to the next stable
 milestone.
@@ -162,12 +162,13 @@ mitigating factors ([265221](https://crbug.com/265221)).
 interaction, such as dragging an object ([303772](https://crbug.com/303772)).
 
 
-## Low severity {#TOC-Low-severity}
+## Low severity (S3) {#TOC-Low-severity}
 
-Low severity vulnerabilities are usually bugs that would normally be a higher
-severity, but which have extreme mitigating factors or highly limited scope.
+Low severity (S3) vulnerabilities are usually bugs that would normally be a
+higher severity, but which have extreme mitigating factors or highly limited
+scope.
 
-They are normally assigned priority **Pri-2**. Milestones can be assigned to low
+They are normally assigned Priority **P2**. Milestones can be assigned to low
 severity bugs on a case-by-case basis, but they are not normally merged to
 stable or beta branches.
 
@@ -182,14 +183,14 @@ Example bugs:
 ## Priority for in the wild vulnerabilities {#TOC-itw-pri}
 
 If there is evidence of a weaponized exploit or active exploitation in the wild,
-the vulnerability is considered a Pri-0 - regardless of the severity rating -
-with a SLO of 7 days or faster. Our goal is to release a fix in a Stable
-channel update of Chrome as soon as possible.
+the vulnerability is considered a P0 priority - regardless of the severity
+rating -with a SLO of 7 days or faster. Our goal is to release a fix in a
+Stable channel update of Chrome as soon as possible.
 
 ## Can't impact Chrome users by default {#TOC-No-impact}
 
 If the bug can't impact Chrome users by default, this is denoted instead by
-the **Security-Impact_None** label. See
+the **Security-Impact_None** hotlist (hotlistID: 5433277). See
 [the security labels document](security-labels.md#TOC-Security_Impact-None)
 for more information. The bug should still have a severity set according
 to these guidelines.

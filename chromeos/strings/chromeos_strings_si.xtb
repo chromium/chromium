@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">අභ්‍යන්තර දෝෂය</translation>
 <translation id="1124772482545689468">පරිශීලක</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ගුණ කරන්න</translation>
 <translation id="1145018782460575098">බාහිර උපාංග සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන කිරීමේ කවුළුව විවෘතයි. යාවත්කාලීන <ph name="NUM_UPDATES" />ක් තිබේ.</translation>
 <translation id="1145516343487477149">සුලබ Chromebook ප්‍රශ්නවලට උදවු ලිපි සහ පිළිතුරු සොයන්න</translation>
 <translation id="1154390310959620237">ඔබට කෙටිමං 5 ක් පමණක් අභිරුචි කළ හැක. අලුත් එකක් එක් කිරීමට කෙටිමඟක් මකන්න.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ස්කෑන් කළ හැකි ප්‍රදේශයට ගළපන්න</translation>
 <translation id="1367951781824006909">ගොනුවක් තෝරන්න</translation>
+<translation id="1371650399987522809">Google AI මගින් බල ගැන්වෙන වෝල්පේපරය සඳහා ප්‍රතිපෝෂණය</translation>
 <translation id="1387854245479784695">මෙය සියලු කටයුතුවල එකතුවකි</translation>
 <translation id="1394661041439318933">උපාංගයෙහි ආවරණ බැටරිය <ph name="BATTERY_PERCENTAGE" />% ක් ඇත.</translation>
 <translation id="1397738625398125236">වාහල පින්ජ් කළ හැකිය</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">ස්පර්ශ පුවරුව</translation>
 <translation id="1561927818299383735">පසුආලෝක වර්ණය</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> යාවත්කාලීන කළ නොහැකිය</translation>
+<translation id="1566493343215789965">බෙදන්න</translation>
 <translation id="1567064801249837505">ඇල්බම</translation>
 <translation id="1572585716423026576">බිතුපත ලෙස සකසන්න</translation>
 <translation id="1578784163189013834">තිර සුරැකුම් පසුබිම තෝරන්න</translation>
 <translation id="160633243685262989">පෙරදසුන් රූපය</translation>
 <translation id="1611649489706141841">ඉදිරියට යන්න</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> සිට දත්ත භාවිතය</translation>
+<translation id="1615576200479539465">රූප උත්පාදනය කරමින්...</translation>
 <translation id="1621067168122174824">ආරෝපණ පරීක්ෂණය ධාවනය කරන්න</translation>
 <translation id="1626590945318984973">කෙටිමඟ නොලැබේ. කාර්යය සහ <ph name="META_KEY" /> යතුරු භාවිතා නොකර නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="1639239467298939599">පැටවෙමින්</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> විසර්ජනය වේ.</translation>
 <translation id="2880569433548999039">වලාකුළු ප්‍රවාහ තිර සුරැකුම</translation>
 <translation id="2926057806159140518">ඔබගේ පරිශීලක නාමය සහ මුරපදය ඇතුළත් කරන්න හෝ ඔබගේ QR කේතය ස්කෑන් කරන්න</translation>
+<translation id="2938573842839598578">ආසන්න ප්‍රතිඵලයක් සඳහා, <ph name="CATEGORY_TEXT" /> අගය <ph name="CONVERSION_RATE" />න් <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">උපාංගය පරීක්ෂා කළ නොහැක. පරීක්ෂා කිරීමට පියන නැවත විවෘත කරන්න.</translation>
 <translation id="2941112035454246133">අඩු</translation>
 <translation id="3008341117444806826">නැවුම් කරන්න</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS යාවත්කාලීනය</translation>
 <translation id="3527036260304016759">අසාර්ථක විය - නොදන්නා දෝෂයකි</translation>
 <translation id="3532980081107202182">මිනිත්තු <ph name="MIN_REMAINING" />ක් පමණ ඉතිරිය</translation>
+<translation id="3547264467365135390">සූත්‍රය</translation>
 <translation id="3557205324756024651">ස්ථානීය අනන්‍යතාව (විකල්පමය)</translation>
 <translation id="3565064564551103223">ඉඩ දෙන IP</translation>
 <translation id="3569407787324516067">තිර සුරැකුම</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
 <translation id="7180865173735832675">ගැලපුම් කරන්න</translation>
 <translation id="7184043045742675738">ඔබේ බොත්තම අභිරුචිකරණය කිරීමට ඕනෑම යතුරක් මත ක්ලික් කරන්න. මූසිකය හෝ ඊතල යතුරු සමග යතුර නැවත ස්ථානගත කරන්න.</translation>
+<translation id="7206979415662233817">සේවා නියම</translation>
 <translation id="7212547870105584639">ජාල APN සැකසීම් කළමනා කරන්න. APN සෙලියුලර් ජාලයක් සහ අන්තර්ජාලය අතර සම්බන්‍ධතාවක් ඇති කරයි. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">බාහිර උපාංග සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">යතුරුපුවරු වර්ණය</translation>
 <translation id="7317831949569936035">පාසල් ලියාපදිංචිය</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ඔබට අවම වශයෙන් වයස අවුරුදු 18ක් විය යුතු අතර ඔබේ AI වෝල්පේපර භාවිතය <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google සේවා නියම<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> සහ <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />උත්පාදක AI අතිරේක සේවා නියම<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> වෙත යටත් වන බවට එකඟ විය යුතු යි.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ඔබට පුද්ගලික සහ වාණිජ නොවන භාවිතය සඳහා පමණක් AI සමග වෝල්පේපර තැනීමට හැක. ඔබට වෝල්පේපර් උදවු ලැබුණු විට, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google හි පෞද්ගලිකත්ව ප්‍රතිපත්තියට<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> යටත්ව, වෝල්පේපර් යෝජනා උත්පාදනය කිරීමට Google AI සේවාදායක වෙත පෙළ යවනු ලැබේ. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google සෙවීම තුළ ප්‍රතිඵලය බැලීමට සෙවීම සහ ඉඩ යතුර ඔබන්න.</translation>
 <translation id="7343649194310845056">ජාල උපාංග</translation>
 <translation id="7353413232959255829">සෙවීම් ප්‍රතිඵලය <ph name="LIST_SIZE" />න් <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. කෙටිමඟ වෙත සංචාලනය කිරීමට Enter ඔබන්න.</translation>

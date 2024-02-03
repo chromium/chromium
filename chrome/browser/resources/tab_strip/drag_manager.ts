@@ -171,15 +171,9 @@ class DragSession {
           1;
     }
 
-    // If a tab group is moving backwards (to the front of the tab strip), the
-    // new index is the index of the first tab in that group. If a tab group is
-    // moving forwards (to the end of the tab strip), the new index is the index
-    // of the last tab in that group.
-    let dstIndex = this.delegate_.getIndexOfTab(
+    const dstIndex = this.delegate_.getIndexOfTab(
         this.element_.firstElementChild as TabElement);
-    if (this.srcIndex <= dstIndex) {
-      dstIndex += this.element_.childElementCount - 1;
-    }
+
     return dstIndex;
   }
 

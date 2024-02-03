@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   // TODO(crbug.com/1331312): Get rid of FormFieldData.
   FormData form;
   form.host_frame = form_id().frame_token;
-  form.unique_renderer_id = form_id().renderer_id;
+  form.renderer_id = form_id().renderer_id;
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_1", "value_1", FormControlType::kInputText));
   form.fields.back().id_attribute = u"id_1";
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue16("name", af->name_attribute));
     EXPECT_EQ(*ff.GetDict().FindIntByDottedPath("fieldId"),
-              (int)(ffd->unique_renderer_id.value()));
+              (int)(ffd->renderer_id.value()));
   }
 
   // The first filled field uses autocomplete attribute as filling strategy.

@@ -186,7 +186,7 @@ suite('SearchPageTestsWithSearchEngineChoiceUiEnabled', function() {
 
     // Simulate a user initiated change of the default search engine.
     const radioButtons =
-        searchEngineListDialog.shadowRoot!.querySelectorAll('cr-radio-button')!;
+        searchEngineListDialog.shadowRoot!.querySelectorAll('cr-radio-button');
     const setAsDefaultButton =
         searchEngineListDialog.shadowRoot!.querySelector<HTMLButtonElement>(
             '#setAsDefaultButton')!;

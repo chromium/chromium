@@ -344,8 +344,7 @@ TEST_P(TrustStoreWinTest, GetTrustDisallowedCerts) {
 
 MATCHER_P(ParsedCertEq, expected_cert, "") {
   return arg && expected_cert &&
-         base::ranges::equal(arg->der_cert().AsSpan(),
-                             expected_cert->der_cert().AsSpan());
+         base::ranges::equal(arg->der_cert(), expected_cert->der_cert());
 }
 
 TEST_P(TrustStoreWinTest, GetIssuersInitializationError) {

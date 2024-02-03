@@ -690,7 +690,7 @@ if (current_toolchain == default_toolchain) {
       "//components/dom_distiller/core:distiller_type_java",
       "//components/ntp_tiles:ntp_tiles_enums_java",
       "//components/offline_pages/core:offline_page_model_enums_java",
-      "//components/supervised_user/core/common:supervised_user_utils_enum_javagen",
+      "//components/supervised_user/core/browser:supervised_user_utils_enum_javagen",
       "//net:effective_connection_type_java",
     ]
 

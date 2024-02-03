@@ -43,8 +43,7 @@ namespace autofill {
 using CheckStatus = FormFieldData::CheckStatus;
 
 auto HasId(FormRendererId expected_id) {
-  return Field("unique_renderer_id", &FormData::unique_renderer_id,
-               expected_id);
+  return Field("renderer_id", &FormData::renderer_id, expected_id);
 }
 
 auto HasName(std::string_view expected_name) {
@@ -157,8 +156,8 @@ TEST_F(FormCacheBrowserTest, RemovedForms) {
 
   std::vector<FormRendererId> forms_renderer_id;
   for (const FormData& form : forms.updated_forms) {
-    if (form.unique_renderer_id != FormRendererId()) {
-      forms_renderer_id.push_back(form.unique_renderer_id);
+    if (form.renderer_id != FormRendererId()) {
+      forms_renderer_id.push_back(form.renderer_id);
     }
   }
   ASSERT_EQ(forms_renderer_id.size(), 2u);

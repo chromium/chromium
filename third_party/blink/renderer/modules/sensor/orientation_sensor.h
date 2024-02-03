@@ -16,7 +16,7 @@ class OrientationSensor : public Sensor {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  absl::optional<Vector<double>> quaternion();
+  std::optional<Vector<double>> quaternion();
   void populateMatrix(const V8RotationMatrixType* target_buffer,
                       ExceptionState& exception_state);
 

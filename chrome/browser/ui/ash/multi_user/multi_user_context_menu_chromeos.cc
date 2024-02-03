@@ -93,7 +93,7 @@ std::unique_ptr<ui::MenuModel> CreateMultiUserContextMenu(
       if (command_id > IDC_VISIT_DESKTOP_OF_LRU_USER_LAST) {
         break;
       }
-      const user_manager::UserInfo* user_info = logged_in_users[user_index];
+      const user_manager::User* user_info = logged_in_users[user_index];
       menu->AddItem(
           command_id,
           l10n_util::GetStringFUTF16(

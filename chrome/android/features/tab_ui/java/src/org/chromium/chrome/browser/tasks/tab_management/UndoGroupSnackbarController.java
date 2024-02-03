@@ -16,8 +16,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -27,15 +27,14 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * A controller that listens to
- * {@link TabGroupModelFilter.Observer#didCreateGroup(List, List, List)} and shows a
- * undo snackbar.
+ * A controller that listens to {@link TabGroupModelFilterObserver#didCreateGroup(List, List, List)}
+ * and shows a undo snackbar.
  */
 public class UndoGroupSnackbarController implements SnackbarManager.SnackbarController {
     private final Context mContext;
     private final TabModelSelector mTabModelSelector;
     private final SnackbarManager mSnackbarManager;
-    private final TabGroupModelFilter.Observer mTabGroupModelFilterObserver;
+    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
 
@@ -66,7 +65,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         mTabModelSelector = tabModelSelector;
         mSnackbarManager = snackbarManager;
         mTabGroupModelFilterObserver =
-                new EmptyTabGroupModelFilterObserver() {
+                new TabGroupModelFilterObserver() {
                     @Override
                     public void didCreateGroup(
                             List<Tab> tabs,
@@ -130,7 +129,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
 
     /**
      * Cleans up this class, removes {@link TabModelSelectorObserver} from {@link TabModelSelector}
-     * and {@link TabGroupModelFilter.Observer} from {@link TabGroupModelFilter}.
+     * and {@link TabGroupModelFilterObserver} from {@link TabGroupModelFilter}.
      */
     public void destroy() {
         if (mTabModelSelector != null) {

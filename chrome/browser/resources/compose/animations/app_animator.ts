@@ -119,11 +119,11 @@ export class ComposeAppAnimator extends Animator {
       this.fadeIn('#resultOptions', {delay: 200, duration: 200}),
 
       this.slideIn(
-          '#resultContainer .result-text', -16,
+          '#resultText', -16,
           {delay: 100, duration: 400, easing: EMPHASIZED_DECELERATE}),
-      this.fadeIn('#resultContainer .result-text', {delay: 100, duration: 300}),
+      this.fadeIn('#resultText', {delay: 100, duration: 300}),
       this.animate(
-          '#resultContainer .result-text',
+          '#resultText',
           [
             {color: 'var(--compose-result-text-color-while-loading)'},
             {color: 'var(--compose-result-text-color)'},

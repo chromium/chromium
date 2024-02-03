@@ -66,11 +66,11 @@ LoginPasswordView::TestApi MakeLoginPasswordTestApi(LockContentsView* view,
 }
 
 LoginUserInfo CreateUser(const std::string& email) {
-  return CreateUserWithType(email, user_manager::UserType::USER_TYPE_REGULAR);
+  return CreateUserWithType(email, user_manager::UserType::kRegular);
 }
 
 LoginUserInfo CreateChildUser(const std::string& email) {
-  return CreateUserWithType(email, user_manager::UserType::USER_TYPE_CHILD);
+  return CreateUserWithType(email, user_manager::UserType::kChild);
 }
 
 LoginUserInfo CreatePublicAccountUser(const std::string& email) {
@@ -80,7 +80,7 @@ LoginUserInfo CreatePublicAccountUser(const std::string& email) {
   user.basic_user_info.account_id = AccountId::FromUserEmail(email);
   user.basic_user_info.display_name = email_parts[0];
   user.basic_user_info.display_email = email;
-  user.basic_user_info.type = user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  user.basic_user_info.type = user_manager::UserType::kPublicAccount;
   user.public_account_info.emplace();
   user.public_account_info->device_enterprise_manager = email_parts[1];
   user.public_account_info->show_expanded_view = true;

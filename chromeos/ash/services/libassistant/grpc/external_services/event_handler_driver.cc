@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/grpc/external_services/event_handler_driver.h"
 
-#include "chromeos/assistant/internal/libassistant_util.h"
+#include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
 
 namespace ash::libassistant {
@@ -27,8 +27,7 @@ void PopulateRequest(const std::string& assistant_service_address,
   event_selection->set_select_all(true);
   auto* external_handler = request->mutable_handler();
   external_handler->set_server_address(assistant_service_address);
-  external_handler->set_service_name(
-      chromeos::assistant::GetLibassistGrpcServiceName(event_name));
+  external_handler->set_service_name(GetLibassistGrpcServiceName(event_name));
   external_handler->set_handler_method(kHandlerMethodName);
 }
 

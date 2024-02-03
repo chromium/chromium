@@ -46,7 +46,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/vector_icons/vector_icons.h"
@@ -109,8 +108,6 @@ constexpr auto kHeaderDefaultSpacing = gfx::Insets::VH(0, 6);
 
 constexpr auto kBubblePadding = gfx::Insets::VH(8, 8);
 
-constexpr int kAppStreamingTitleTextFontSize = 14;
-
 constexpr float kDefaultAspectRatio = 16.0 / 9.0f;
 constexpr gfx::Size kDefaultBubbleSize(360, 360 * kDefaultAspectRatio);
 
@@ -170,13 +167,10 @@ std::unique_ptr<views::Button> CreateButton(
     int message_id) {
   auto button = views::CreateVectorImageButton(std::move(callback));
 
-  // TODO(b/297056011): Remove Jelly flag checks post-M120.
   views::SetImageFromVectorIconWithColorId(
       button.get(), icon,
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshIconColorPrimary,
-      kColorAshButtonIconDisabledColor);
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
+      static_cast<ui::ColorId>(cros_tokens::kButtonIconColorPrimaryDisabled));
   button->SetTooltipText(l10n_util::GetStringUTF16(message_id));
   button->SizeToPreferredSize();
 
@@ -201,19 +195,9 @@ void ConfigureLabelText(views::Label* title) {
                                /*adjust_height_for_width =*/true)
           .WithWeight(1));
   title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-
-  if (chromeos::features::IsJellyrollEnabled()) {
-    title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
-                                          *title);
-  } else {
-    gfx::Font default_font;
-    gfx::Font text_font = default_font.Derive(
-        kAppStreamingTitleTextFontSize - default_font.GetFontSize(),
-        gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
-    gfx::FontList font_list(text_font);
-    title->SetFontList(font_list);
-  }
+  title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
+                                        *title);
 }
 
 }  // namespace
@@ -246,12 +230,7 @@ EcheTray::EcheTray(Shelf* shelf)
   // Note: `ScreenLayoutObserver` starts observing at its constructor.
   observed_session_.Observe(Shell::Get()->session_controller());
   icon_->SetTooltipText(GetAccessibleNameForTray());
-  if (chromeos::features::IsJellyEnabled()) {
-    UpdateTrayItemColor(is_active());
-  } else {
-    icon_->SetImage(ui::ImageModel::FromVectorIcon(kPhoneHubPhoneIcon,
-                                                   kColorAshIconColorPrimary));
-  }
+  UpdateTrayItemColor(is_active());
 
   shelf_observation_.Observe(shelf);
   shell_observer_.Observe(Shell::Get());
@@ -277,7 +256,6 @@ void EcheTray::ClickedOutsideBubble() {
 }
 
 void EcheTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       kPhoneHubPhoneIcon, is_active
                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer

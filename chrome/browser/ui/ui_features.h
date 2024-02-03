@@ -224,6 +224,8 @@ BASE_DECLARE_FEATURE(kUpdateTextOptions);
 extern const base::FeatureParam<int> kUpdateTextOptionNumber;
 #endif
 
+BASE_DECLARE_FEATURE(kEnterpriseProfileBadging);
+
 BASE_DECLARE_FEATURE(kWebUIBubblePerProfilePersistence);
 
 BASE_DECLARE_FEATURE(kWebUITabStrip);

@@ -94,6 +94,11 @@ WebNode WebNode::ParentNode() const {
   return WebNode(const_cast<ContainerNode*>(private_->parentNode()));
 }
 
+WebNode WebNode::ParentOrShadowHostNode() const {
+  return WebNode(
+      const_cast<ContainerNode*>(private_->ParentOrShadowHostNode()));
+}
+
 WebString WebNode::NodeValue() const {
   return private_->nodeValue();
 }

@@ -1124,8 +1124,7 @@ IN_PROC_BROWSER_TEST_F(
 // mime type is allowed, or initiates a download on Android.
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
                        PDF_BrowserInitiatedNavigation_Allow) {
-  std::string pdf_base64;
-  base::Base64Encode(kPDF, &pdf_base64);
+  std::string pdf_base64 = base::Base64Encode(kPDF);
   const GURL kPDFUrl(CreateURLWithBlockedScheme(
       "test.pdf", IsDataURLTest() ? pdf_base64 : kPDF, "application/pdf"));
 

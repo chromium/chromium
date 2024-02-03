@@ -47,12 +47,12 @@ void GetStackRegions(
 #error Port
 #endif
 
-  // TODO(fxbug.dev/74897): make this work for stack overflows, e.g., by looking
-  // up using the initial stack pointer (sp) when the thread was created. Right
-  // now, it gets the stack by getting the mapping that contains the current sp.
-  // But in the case of stack overflows, the current sp is by definition outside
-  // of the stack so the mapping returned is not the stack and fails the type
-  // check, at least on arm64.
+  // TODO(fxbug.dev/42154629): make this work for stack overflows, e.g., by
+  // looking up using the initial stack pointer (sp) when the thread was
+  // created. Right now, it gets the stack by getting the mapping that contains
+  // the current sp. But in the case of stack overflows, the current sp is by
+  // definition outside of the stack so the mapping returned is not the stack
+  // and fails the type check, at least on arm64.
   zx_info_maps_t range_with_sp;
   if (!memory_map.FindMappingForAddress(sp, &range_with_sp)) {
     LOG(ERROR) << "stack pointer not found in mapping";
@@ -235,8 +235,8 @@ void ProcessReaderFuchsia::InitializeModules() {
     // Crashpad needs to use the same module name at run time for symbol
     // resolution to work properly.
     //
-    // TODO: https://fxbug.dev/6057 - once Crashpad switches to elf-search, the
-    // following overwrites won't be necessary as only shared libraries will
+    // TODO: https://fxbug.dev/42138764 - once Crashpad switches to elf-search,
+    // the following overwrites won't be necessary as only shared libraries will
     // have a soname at runtime, just like at build time.
     //
     // * For shared libraries, the soname is used as module name at build time,

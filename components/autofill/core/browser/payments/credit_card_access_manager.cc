@@ -221,6 +221,11 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
           AutofillClient::PaymentsRpcCardType::kVirtualCard,
           autofill_metrics::ServerCardUnmaskFlowType::kOtpFallbackFromFido);
       break;
+    case UnmaskAuthFlowType::kThreeDomainSecure:
+      // TODO(crbug.com/1521960): Add logging for kThreeDomainSecure.
+    case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
+      // TODO(crbug.com/1521960): Add logging for
+      // kThreeDomainSecureConsentAlreadyGiven.
     case UnmaskAuthFlowType::kCvc:
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
     case UnmaskAuthFlowType::kNone:
@@ -460,6 +465,16 @@ void CreditCardAccessManager::StartAuthenticationFlowForVirtualCard(
     return;
   }
 
+  // If we only have one challenge option, and it is a 3DS challenge option,
+  // authenticate as kThreeDomainSecure flow type.
+  if (challenge_options.size() == 1 &&
+      challenge_options[0].type ==
+          CardUnmaskChallengeOptionType::kThreeDomainSecure) {
+    selected_challenge_option_ = &challenge_options[0];
+    Authenticate(UnmaskAuthFlowType::kThreeDomainSecure);
+    return;
+  }
+
   // If we have multiple challenge options available, render the challenge
   // option selection dialog. This dialog also handles the case where we only
   // have an OTP challenge option.
@@ -578,6 +593,11 @@ void CreditCardAccessManager::Authenticate(
             card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_,
             virtual_card_unmask_response_details_.context_token,
             *selected_challenge_option_);
+      } else if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+        CHECK(!risk_based_authentication_response_.context_token.empty());
+        client_->GetCvcAuthenticator()->Authenticate(
+            card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_,
+            risk_based_authentication_response_.context_token);
       } else {
         client_->GetCvcAuthenticator()->Authenticate(
             card_.get(), weak_ptr_factory_.GetWeakPtr(),
@@ -596,6 +616,12 @@ void CreditCardAccessManager::Authenticate(
           payments::GetBillingCustomerId(personal_data_manager_));
       break;
     }
+    case UnmaskAuthFlowType::kThreeDomainSecure:
+      // TODO(crbug.com/1521960): Triggering the Chrome UI for user consent.
+      break;
+    case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
+      // TODO(crbug.com/1521960): Triggering the 3DS pop-up.
+      break;
     case UnmaskAuthFlowType::kNone:
       // Run into other unexpected types.
       NOTREACHED();
@@ -1456,6 +1482,10 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
               ? UnmaskAuthFlowType::kOtpFallbackFromFido
               : UnmaskAuthFlowType::kOtp;
       break;
+    case CardUnmaskChallengeOptionType::kThreeDomainSecure:
+      selected_authentication_type =
+          UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven;
+      break;
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       break;
@@ -1493,6 +1523,12 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
       NOTREACHED();
       ABSL_FALLTHROUGH_INTENDED;
+    case UnmaskAuthFlowType::kThreeDomainSecure:
+      // TODO(crbug/1370329): Add a flow type for the kThreeDomainSecure flow
+      // for metrics.
+    case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
+      // TODO(crbug/1370329): Add a flow type for the
+      // kThreeDomainSecureConsentAlreadyGiven flow for metrics.
     case UnmaskAuthFlowType::kCvc:
       // TODO(crbug/1370329): Add a flow type for the CVC flow for metrics.
       Reset();

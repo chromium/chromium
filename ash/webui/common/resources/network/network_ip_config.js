@@ -7,8 +7,8 @@
  * a network state.
  */
 
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/cr_elements/policy/cr_policy_indicator.js';
+import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import './network_property_list_mojo.js';
 import './network_shared.css.js';
 

@@ -14,7 +14,7 @@ class SidePanelHeader : public views::View {
  public:
   SidePanelHeader();
 
-  void Layout() override;
+  void Layout(PassKey) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_HEADER_H_

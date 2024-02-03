@@ -52,7 +52,7 @@ void SimNetwork::DidReceiveResponse(URLLoaderClient* client,
   if (it == requests_.end()) {
     client->DidReceiveResponse(response,
                                /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-                               /*cached_metadata=*/absl::nullopt);
+                               /*cached_metadata=*/std::nullopt);
     return;
   }
   DCHECK(it->value);

@@ -7,7 +7,7 @@
  * element to back-end data from the store.
  */
 
-import {makeStoreClientMixin, StoreClientInterface} from 'chrome://resources/cr_elements/store_client/store_client.js';
+import {makeStoreClientMixin, StoreClientInterface} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
 
 import {AppManagementActions} from './actions.js';
 import {initStoreAndListeners} from './api_listener.js';

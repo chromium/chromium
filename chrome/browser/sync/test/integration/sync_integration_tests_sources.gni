@@ -48,6 +48,7 @@ if (!is_android) {
     "../browser/sync/test/integration/single_client_themes_sync_test.cc",
     "../browser/sync/test/integration/single_client_user_consents_sync_test.cc",
     "../browser/sync/test/integration/single_client_user_events_sync_test.cc",
+    "../browser/sync/test/integration/single_client_wallet_credential_test.cc",
     "../browser/sync/test/integration/single_client_wallet_sync_test.cc",
     "../browser/sync/test/integration/single_client_web_apps_sync_generated_icon_fix_sync_test.cc",
     "../browser/sync/test/integration/single_client_web_apps_sync_test.cc",

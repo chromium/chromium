@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "media/base/video_types.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -41,7 +41,7 @@ scoped_refptr<VideoFrame> CreateMockDmaBufVideoFrame(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size) {
-  const absl::optional<VideoFrameLayout> layout =
+  const std::optional<VideoFrameLayout> layout =
       VideoFrameLayout::Create(pixel_format, coded_size);
   if (!layout) {
     LOG(ERROR) << "Failed to create video frame layout";
@@ -71,7 +71,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
   constexpr VideoPixelFormat kPixelFormat = PIXEL_FORMAT_NV12;
   constexpr gfx::Size kCodedSize(320, 240);
 
-  const absl::optional<gfx::BufferFormat> gfx_format =
+  const std::optional<gfx::BufferFormat> gfx_format =
       VideoPixelFormatToGfxBufferFormat(kPixelFormat);
   ASSERT_TRUE(gfx_format) << "Invalid pixel format: " << kPixelFormat;
 

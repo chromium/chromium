@@ -29,6 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_REQUEST_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
@@ -44,7 +45,6 @@
 #include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
@@ -410,14 +410,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
     cors_preflight_policy_ = policy;
   }
 
-  const absl::optional<RedirectInfo>& GetRedirectInfo() const {
+  const std::optional<RedirectInfo>& GetRedirectInfo() const {
     return redirect_info_;
   }
 
-  void SetSuggestedFilename(const absl::optional<String>& suggested_filename) {
+  void SetSuggestedFilename(const std::optional<String>& suggested_filename) {
     suggested_filename_ = suggested_filename;
   }
-  const absl::optional<String>& GetSuggestedFilename() const {
+  const std::optional<String>& GetSuggestedFilename() const {
     return suggested_filename_;
   }
 
@@ -439,11 +439,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetAllowStaleResponse(bool value) { allow_stale_response_ = value; }
   bool AllowsStaleResponse() const { return allow_stale_response_; }
 
-  const absl::optional<base::UnguessableToken>& GetDevToolsToken() const {
+  const std::optional<base::UnguessableToken>& GetDevToolsToken() const {
     return devtools_token_;
   }
   void SetDevToolsToken(
-      const absl::optional<base::UnguessableToken>& devtools_token) {
+      const std::optional<base::UnguessableToken>& devtools_token) {
     devtools_token_ = devtools_token;
   }
 
@@ -479,10 +479,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // can use this to display the initiator call stack when debugging a process
   // that later intercepts the request, e.g., in a service worker fetch event
   // handler.
-  const absl::optional<String>& GetDevToolsStackId() const {
+  const std::optional<String>& GetDevToolsStackId() const {
     return devtools_stack_id_;
   }
-  void SetDevToolsStackId(const absl::optional<String>& devtools_stack_id) {
+  void SetDevToolsStackId(const std::optional<String>& devtools_stack_id) {
     devtools_stack_id_ = devtools_stack_id;
   }
 
@@ -501,10 +501,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
   void SetRecursivePrefetchToken(
-      const absl::optional<base::UnguessableToken>& token) {
+      const std::optional<base::UnguessableToken>& token) {
     recursive_prefetch_token_ = token;
   }
-  const absl::optional<base::UnguessableToken>& RecursivePrefetchToken() const {
+  const std::optional<base::UnguessableToken>& RecursivePrefetchToken() const {
     return recursive_prefetch_token_;
   }
 
@@ -538,12 +538,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
         prefetch_maybe_for_top_level_navigation;
   }
 
-  const absl::optional<network::mojom::blink::TrustTokenParams>&
+  const std::optional<network::mojom::blink::TrustTokenParams>&
   TrustTokenParams() const {
     return trust_token_params_;
   }
   void SetTrustTokenParams(
-      absl::optional<network::mojom::blink::TrustTokenParams> params) {
+      std::optional<network::mojom::blink::TrustTokenParams> params) {
     trust_token_params_ = std::move(params);
   }
 
@@ -559,7 +559,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
     original_destination_ = value;
   }
 
-  const absl::optional<ResourceRequestHead::WebBundleTokenParams>&
+  const std::optional<ResourceRequestHead::WebBundleTokenParams>&
   GetWebBundleTokenParams() const {
     return web_bundle_token_params_;
   }
@@ -610,12 +610,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
     attribution_reporting_runtime_features_ = runtime_features;
   }
 
-  const absl::optional<base::UnguessableToken>& GetAttributionSrcToken() const {
+  const std::optional<base::UnguessableToken>& GetAttributionSrcToken() const {
     return attribution_reporting_src_token_;
   }
 
   void SetAttributionReportingSrcToken(
-      absl::optional<base::UnguessableToken> src_token) {
+      std::optional<base::UnguessableToken> src_token) {
     attribution_reporting_src_token_ = src_token;
   }
 
@@ -627,7 +627,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
     shared_dictionary_writer_enabled_ = shared_dictionary_writer_enabled;
   }
 
-  const absl::optional<base::UnguessableToken>&
+  const std::optional<base::UnguessableToken>&
   GetServiceWorkerRaceNetworkRequestToken() const {
     return service_worker_race_network_request_token_;
   }
@@ -691,11 +691,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
   String referrer_string_;
   network::mojom::ReferrerPolicy referrer_policy_;
   network::mojom::CorsPreflightPolicy cors_preflight_policy_;
-  absl::optional<RedirectInfo> redirect_info_;
-  absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params_;
+  std::optional<RedirectInfo> redirect_info_;
+  std::optional<network::mojom::blink::TrustTokenParams> trust_token_params_;
   network::mojom::IPAddressSpace target_address_space_;
 
-  absl::optional<String> suggested_filename_;
+  std::optional<String> suggested_filename_;
 
   mutable CacheControlHeader cache_control_header_cache_;
 
@@ -708,13 +708,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   bool is_automatic_upgrade_ = false;
 
-  absl::optional<base::UnguessableToken> devtools_token_;
+  std::optional<base::UnguessableToken> devtools_token_;
   String devtools_id_;
   String requested_with_header_;
   String client_data_header_;
   String purpose_header_;
 
-  absl::optional<String> devtools_stack_id_;
+  std::optional<String> devtools_stack_id_;
 
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
@@ -745,12 +745,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // This is used when fetching preload header requests from cross-origin
   // prefetch responses. The browser process uses this token to ensure the
   // request is cached correctly.
-  absl::optional<base::UnguessableToken> recursive_prefetch_token_;
+  std::optional<base::UnguessableToken> recursive_prefetch_token_;
 
   // This is used when fetching either a WebBundle or a subresrouce in the
   // WebBundle. The network process uses this token to associate the request to
   // the bundle.
-  absl::optional<WebBundleTokenParams> web_bundle_token_params_;
+  std::optional<WebBundleTokenParams> web_bundle_token_params_;
 
   // Render blocking behavior of the resource. Used in maintaining correct
   // reporting for redirects.
@@ -760,7 +760,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  // Instead of using absl::optional, we use scoped_refptr to reduce
+  // Instead of using std::optional, we use scoped_refptr to reduce
   // blink memory footprint because the attribute is only used by DevTools
   // and we should keep the footprint minimal when DevTools is closed.
   scoped_refptr<
@@ -779,7 +779,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features_;
 
-  absl::optional<base::UnguessableToken> attribution_reporting_src_token_;
+  std::optional<base::UnguessableToken> attribution_reporting_src_token_;
 
   // Indicate the state of CompressionDictionaryTransport feature. When it is
   // true, `use-as-dictionary` response HTTP header may be processed.
@@ -787,7 +787,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled_ = false;
 
-  absl::optional<base::UnguessableToken>
+  std::optional<base::UnguessableToken>
       service_worker_race_network_request_token_;
 };
 

@@ -237,7 +237,7 @@ void TopIconAnimationView::OnThemeChanged() {
   }
 }
 
-void TopIconAnimationView::Layout() {
+void TopIconAnimationView::Layout(PassKey) {
   // This view's layout should be the same as AppListItemView's.
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty())

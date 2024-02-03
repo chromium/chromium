@@ -27,7 +27,7 @@ class BrowserViewAsh : public BrowserView {
   ~BrowserViewAsh() override = default;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // views::ClientView:
   void UpdateWindowRoundedCorners(int corner_radius) override;

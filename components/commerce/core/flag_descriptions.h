@@ -19,6 +19,9 @@ extern const char kCommercePriceTrackingDescription[];
 extern const char kPriceTrackingIconColorsName[];
 extern const char kPriceTrackingIconColorsDescription[];
 
+extern const char kProductSpecificationsName[];
+extern const char kProductSpecificationsDescription[];
+
 extern const char kShoppingIconColorVariantName[];
 extern const char kShoppingIconColorVariantDescription[];
 

@@ -21,7 +21,7 @@ namespace media {
 // encrypted, and the next nine are skipped. This pattern is applied
 // repeatedly until the end of the last 16-byte block in the subsample.
 // Any remaining bytes are left clear.
-// TODO(jrummell): Use absl::optional<EncryptionPattern> everywhere.
+// TODO(jrummell): Use std::optional<EncryptionPattern> everywhere.
 class MEDIA_EXPORT EncryptionPattern {
  public:
   EncryptionPattern();

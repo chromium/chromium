@@ -95,7 +95,7 @@ bool CachedStorageArea::SetItem(const String& key,
     return false;
 
   const FormatOption value_format = GetValueFormat();
-  absl::optional<Vector<uint8_t>> optional_old_value;
+  std::optional<Vector<uint8_t>> optional_old_value;
   if (!old_value.IsNull() && should_send_old_value_on_mutations_)
     optional_old_value = StringToUint8Vector(old_value, value_format);
   KURL page_url = source->GetPageUrl();
@@ -123,7 +123,7 @@ void CachedStorageArea::RemoveItem(const String& key, Source* source) {
   if (!map_->RemoveItem(key, &old_value))
     return;
 
-  absl::optional<Vector<uint8_t>> optional_old_value;
+  std::optional<Vector<uint8_t>> optional_old_value;
   if (should_send_old_value_on_mutations_)
     optional_old_value = StringToUint8Vector(old_value, GetValueFormat());
   KURL page_url = source->GetPageUrl();
@@ -338,7 +338,7 @@ void CachedStorageArea::ResetConnection(
 void CachedStorageArea::KeyChanged(
     const Vector<uint8_t>& key,
     const Vector<uint8_t>& new_value,
-    const absl::optional<Vector<uint8_t>>& old_value,
+    const std::optional<Vector<uint8_t>>& old_value,
     const String& source) {
   DCHECK(!IsSessionStorage());
 
@@ -418,7 +418,7 @@ void CachedStorageArea::KeyChangeFailed(const Vector<uint8_t>& key,
 
 void CachedStorageArea::KeyDeleted(
     const Vector<uint8_t>& key,
-    const absl::optional<Vector<uint8_t>>& old_value,
+    const std::optional<Vector<uint8_t>>& old_value,
     const String& source) {
   DCHECK(!IsSessionStorage());
 

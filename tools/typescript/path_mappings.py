@@ -58,14 +58,35 @@ def _add_third_party_lit_mappings(path_mappings, root_gen_dir):
 
 # Ash-only
 def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
+  # Note: The path for this target shadows all the paths for |shared_ts_folders|
+  # below. Eventually this target should be removed and everything should reside
+  # in a subfolder, so that missing deps can surface during the build, similar
+  # to how ui/webui/resources/ works.
   path_mappings['//ash/webui/common/resources:build_ts'] = [(
       '//resources/ash/common/*',
       f'{root_gen_dir}/ash/webui/common/resources/preprocessed/*',
   )]
-  path_mappings['//ash/webui/common/resources/cr_elements:build_ts'] = [(
-      '//resources/ash/common/cr_elements/*',
-      f'{root_gen_dir}/ash/webui/common/resources/preprocessed/cr_elements/*',
-  )]
+
+  # Calculate mappings for ash/webui/common/resources/ sub-folders that have a
+  # dedicated ts_library() target. The naming of the ts_library() target is
+  # expected to follow the default "build_ts" naming in the build_webui() rule.
+  # The output folder is expected to be at
+  # '$root_gen_dir/ash/webui/common/resources/preprocessed/'.
+  shared_ts_folders = [
+      "cellular_setup",
+      "cr_elements",
+      "personalization",
+      "sea_pen",
+
+      # List more folders here as they get migrated to use build_webui().
+  ]
+
+  for c in shared_ts_folders:
+    path_mappings[f'//ash/webui/common/resources/{c}:build_ts'] = [(
+        f'//resources/ash/common/{c}/*',
+        f'{root_gen_dir}/ash/webui/common/resources/preprocessed/{c}/*',
+    )]
+
   path_mappings['//third_party/cros-components:cros_components_ts'] = [(
       '//resources/cros_components/*',
       f'{root_gen_dir}/ui/webui/resources/tsc/cros_components/to_be_rewritten/*',

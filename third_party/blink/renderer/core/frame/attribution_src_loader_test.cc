@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,7 +26,6 @@
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -559,7 +559,7 @@ TEST_F(AttributionSrcLoaderTest, NoneSupported_CannotRegister) {
 
   EXPECT_FALSE(
       attribution_src_loader_->CanRegister(test_url, /*element=*/nullptr,
-                                           /*request_id=*/absl::nullopt));
+                                           /*request_id=*/std::nullopt));
 }
 
 TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
@@ -779,7 +779,30 @@ class AttributionSrcLoaderInBrowserMigrationEnabledTest
 };
 
 TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
-       MaybeRegisterAttributionHeaders_ResponseIgnored) {
+       MaybeRegisterAttributionHeaders_KeepAliveRequestsResponseIgnored) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  for (bool is_keep_alive : {true, false}) {
+    ResourceRequest request(test_url);
+    request.SetKeepalive(is_keep_alive);
+    request.SetAttributionReportingEligibility(
+        AttributionReportingEligibility::kTrigger);
+    auto* resource = MakeGarbageCollected<MockResource>(test_url);
+    ResourceResponse response(test_url);
+    response.SetHttpStatusCode(200);
+    response.SetHttpHeaderField(
+        http_names::kAttributionReportingRegisterTrigger,
+        AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
+
+    EXPECT_EQ(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+                  request, response, resource),
+              is_keep_alive ? false : true);
+  }
+}
+
+TEST_F(
+    AttributionSrcLoaderInBrowserMigrationEnabledTest,
+    MaybeRegisterAttributionHeadersNonKeepAlive_ResponseViaServiceWorkerProcessed) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   ResourceRequest request(test_url);
@@ -792,37 +815,10 @@ TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
       AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
+  response.SetWasFetchedViaServiceWorker(true);
 
-  EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
-      request, response, resource));
-}
-
-TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
-       MaybeRegisterAttributionHeadersNonKeepAlive_ResponseProcessed) {
-  KURL test_url = ToKURL("https://example1.com/foo.html");
-
-  ResourceRequest request(test_url);
-  request.SetKeepalive(false);
-  request.SetAttributionReportingEligibility(
-      AttributionReportingEligibility::kTrigger);
-  auto* resource = MakeGarbageCollected<MockResource>(test_url);
-  ResourceResponse response(test_url);
-  response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(
-      http_names::kAttributionReportingRegisterTrigger,
-      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
-
-  MockAttributionHost host(
-      GetFrame().GetRemoteNavigationAssociatedInterfaces());
   EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
       request, response, resource));
-  host.WaitUntilBoundAndFlush();
-
-  auto* mock_data_host = host.mock_data_host();
-  ASSERT_TRUE(mock_data_host);
-
-  mock_data_host->Flush();
-  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
 }
 
 }  // namespace

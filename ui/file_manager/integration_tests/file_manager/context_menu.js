@@ -571,8 +571,6 @@ testcase.checkContextMenuForRenameInput = async () => {
   // Check: The rename input should be still be visible and with the same
   // content.
   const inputElement = await remoteCall.waitForElement(appId, textInput);
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('NEW NAME', inputElement.value);
 
   // Check: The rename input should be the focused element.

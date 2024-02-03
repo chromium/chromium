@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_SERVICES_MOJO_DEMUXER_STREAM_ADAPTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_decoder_config.h"
@@ -15,7 +16,6 @@
 #include "media/mojo/services/media_mojo_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -53,20 +53,20 @@ class MEDIA_MOJO_EXPORT MojoDemuxerStreamAdapter : public DemuxerStream {
  private:
   void OnStreamReady(Type type,
                      mojo::ScopedDataPipeConsumerHandle consumer_handle,
-                     const absl::optional<AudioDecoderConfig>& audio_config,
-                     const absl::optional<VideoDecoderConfig>& video_config);
+                     const std::optional<AudioDecoderConfig>& audio_config,
+                     const std::optional<VideoDecoderConfig>& video_config);
 
   // The callback from |demuxer_stream_| that a read operation has completed.
   // |read_cb| is a callback from the client who invoked Read() on |this|.
   void OnBufferReady(Status status,
                      std::vector<mojom::DecoderBufferPtr> batch_buffers,
-                     const absl::optional<AudioDecoderConfig>& audio_config,
-                     const absl::optional<VideoDecoderConfig>& video_config);
+                     const std::optional<AudioDecoderConfig>& audio_config,
+                     const std::optional<VideoDecoderConfig>& video_config);
 
   void OnBufferRead(scoped_refptr<DecoderBuffer> buffer);
 
-  void UpdateConfig(const absl::optional<AudioDecoderConfig>& audio_config,
-                    const absl::optional<VideoDecoderConfig>& video_config);
+  void UpdateConfig(const std::optional<AudioDecoderConfig>& audio_config,
+                    const std::optional<VideoDecoderConfig>& video_config);
 
   // See constructor for descriptions.
   mojo::Remote<mojom::DemuxerStream> demuxer_stream_;

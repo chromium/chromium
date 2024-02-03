@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/platform_window/platform_window_delegate.h"
 
 namespace base {
 class TimeDelta;
@@ -24,6 +25,9 @@ namespace ui {
 
 class WaylandConnection;
 
+PlatformWindowOcclusionState
+WaylandOcclusionStateToPlatformWindowOcclusionState(uint32_t mode);
+
 // Wrapper class for an instance of the zaura_surface client-side wayland
 // object.
 class WaylandZAuraSurface {
@@ -36,7 +40,8 @@ class WaylandZAuraSurface {
                                   uint32_t occlusion_reason) {}
     virtual void LockFrame() {}
     virtual void UnlockFrame() {}
-    virtual void OcclusionStateChanged(uint32_t mode) {}
+    virtual void OcclusionStateChanged(
+        PlatformWindowOcclusionState occlusion_state) {}
     virtual void DeskChanged(int state) {}
     virtual void StartThrottle() {}
     virtual void EndThrottle() {}

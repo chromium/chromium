@@ -551,56 +551,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 new BrowserControlsManager(this, BrowserControlsManager.ControlsPosition.TOP));
     }
 
-    protected RootUiCoordinator createRootUiCoordinator() {
-        // TODO(https://crbug.com/931496): Remove dependency on ChromeActivity in favor of passing
-        // in direct dependencies on needed classes. While migrating code from Chrome*Activity
-        // to the RootUiCoordinator, passing the activity is an easy way to get access to a
-        // number of objects that will ultimately be owned by the RootUiCoordinator. This is not
-        // a recommended pattern.
-        return new RootUiCoordinator(
-                this,
-                null,
-                getShareDelegateSupplier(),
-                getActivityTabProvider(),
-                mTabModelProfileSupplier,
-                mBookmarkModelSupplier,
-                mTabBookmarkerSupplier,
-                getContextualSearchManagerSupplier(),
-                getTabModelSelectorSupplier(),
-                new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(),
-                () -> null,
-                mBrowserControlsManagerSupplier.get(),
-                getWindowAndroid(),
-                getLifecycleDispatcher(),
-                getLayoutManagerSupplier(),
-                /* menuOrKeyboardActionController= */ this,
-                this::getActivityThemeColor,
-                getModalDialogManagerSupplier(),
-                /* appMenuBlocker= */ this,
-                this::supportsAppMenu,
-                this::supportsFindInPage,
-                mTabCreatorManagerSupplier,
-                getFullscreenManager(),
-                mCompositorViewHolderSupplier,
-                getTabContentManagerSupplier(),
-                this::getSnackbarManager,
-                getEdgeToEdgeSupplier(),
-                getActivityType(),
-                this::isInOverviewMode,
-                this::isWarmOnResume,
-                /* appMenuDelegate= */ this,
-                /* statusBarColorProvider= */ this,
-                getIntentRequestTracker(),
-                mTabReparentingControllerSupplier,
-                /* ephemeralTabCoordinatorSupplier= */ new ObservableSupplierImpl<>(),
-                false,
-                mBackPressManager,
-                null);
-    }
+    /** Subclasses must create a {@link RootUiCoordinator}. */
+    protected abstract RootUiCoordinator createRootUiCoordinator();
 
     private NotificationManagerProxy getNotificationManagerProxy() {
         return new NotificationManagerProxyImpl(getApplicationContext());
@@ -2455,6 +2407,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     private void initializeBackPressHandling() {
+        mBackPressManager.setIsGestureNavEnabledSupplier(
+                () -> BackPressManager.isGestureNavigationMode(getWindow()));
         mBackPressManager.setIsFirstVisibleContentDrawnSupplier(
                 () -> {
                     if (mActivityTabStartupMetricsTracker == null) return false;

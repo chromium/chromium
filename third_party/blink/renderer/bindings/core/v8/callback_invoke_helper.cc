@@ -112,7 +112,7 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
       // b) Callbacks which don't do the above, split into two groups:
       //   1) If there's a current running task, no need to create a new scope.
       //   2) If there is no current running task, set the parent to
-      //   absl::nullopt, making the current callback a root task.
+      //   std::nullopt, making the current callback a root task.
       scheduler::TaskAttributionInfo* parent_task = nullptr;
       if constexpr (std::is_same<
                         CallbackBase,

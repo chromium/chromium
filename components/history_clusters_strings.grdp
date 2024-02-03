@@ -38,6 +38,9 @@
   <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_MULTIPLE_HOSTNAMES" desc="The header used for Journeys that are anchored by multiple host names.">
     <ph name="HOST_NAME">$1<ex>google.com</ex></ph> and more
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_OTHER_MATCHING_VISITS" desc="The header used for history clusters that contain ungrouped visits that match a user's search query. These ungrouped visits are normally not shown, except when the user query matches them directly.">
+    Other results found
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_HIDE_PAGE" desc="Label of the item in drop-down menu that allows the user to hide a history item.">
     Hide item
   </message>

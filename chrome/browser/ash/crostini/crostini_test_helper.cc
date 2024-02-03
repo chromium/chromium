@@ -38,7 +38,7 @@ CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
   ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   auto account = AccountId::FromUserEmailGaiaId("test@example.com", "12345");
   fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      account, false, user_manager::USER_TYPE_REGULAR, profile);
+      account, false, user_manager::UserType::kRegular, profile);
   fake_user_manager_->LoginUser(account);
 
   if (enable_crostini) {

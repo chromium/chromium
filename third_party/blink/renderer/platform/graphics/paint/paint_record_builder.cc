@@ -7,7 +7,7 @@
 namespace blink {
 
 PaintRecordBuilder::PaintRecordBuilder()
-    : own_paint_controller_(absl::in_place, PaintController::kTransient),
+    : own_paint_controller_(std::in_place, PaintController::kTransient),
       paint_controller_(&own_paint_controller_.value()),
       context_(*paint_controller_) {
   paint_controller_->UpdateCurrentPaintChunkProperties(

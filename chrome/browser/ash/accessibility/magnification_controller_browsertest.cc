@@ -179,14 +179,14 @@ IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
   helper()->LoadMagnifier(GetProfile());
 
   // Press keyboard shortcut to zoom in. Default zoom is 2.0.
-  generator()->PressAndReleaseKey(ui::VKEY_BRIGHTNESS_UP,
-                                  ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  generator()->PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_BRIGHTNESS_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
   float scale = GetFullscreenMagnifierController()->GetScale();
   EXPECT_LT(2.0f, scale);
 
   // Keyboard shortcut to zoom out.
-  generator()->PressAndReleaseKey(ui::VKEY_BRIGHTNESS_DOWN,
-                                  ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  generator()->PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_BRIGHTNESS_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
   // Note the scale might not be 2.0 again.
   EXPECT_GT(scale, GetFullscreenMagnifierController()->GetScale());
 }

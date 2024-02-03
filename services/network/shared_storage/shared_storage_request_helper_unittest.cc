@@ -5,6 +5,7 @@
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "services/network/shared_storage/shared_storage_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -456,19 +456,18 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest,
   EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
   EXPECT_THAT(
       observer_->headers_received().front().second,
-      ElementsAre(
-          std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                          /*key=*/absl::nullopt, /*value=*/absl::nullopt,
-                          /*ignore_if_present=*/absl::nullopt),
-          std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                          /*key=*/"a", /*value=*/"val",
-                          /*ignore_if_present=*/true),
-          std::make_tuple(mojom::SharedStorageOperationType::kAppend,
-                          /*key=*/"a", /*value=*/"hello",
-                          /*ignore_if_present=*/absl::nullopt),
-          std::make_tuple(mojom::SharedStorageOperationType::kDelete,
-                          /*key=*/"a", /*value=*/absl::nullopt,
-                          /*ignore_if_present=*/absl::nullopt)));
+      ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kClear,
+                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
+                                  /*ignore_if_present=*/std::nullopt),
+                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
+                                  /*key=*/"a", /*value=*/"val",
+                                  /*ignore_if_present=*/true),
+                  std::make_tuple(mojom::SharedStorageOperationType::kAppend,
+                                  /*key=*/"a", /*value=*/"hello",
+                                  /*ignore_if_present=*/std::nullopt),
+                  std::make_tuple(mojom::SharedStorageOperationType::kDelete,
+                                  /*key=*/"a", /*value=*/std::nullopt,
+                                  /*ignore_if_present=*/std::nullopt)));
 }
 
 TEST_F(SharedStorageRequestHelperProcessHeaderTest,
@@ -492,29 +491,28 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest,
   EXPECT_EQ(observer_->headers_received().size(), 1u);
   EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
 
-  EXPECT_THAT(
-      observer_->headers_received().front().second,
-      ElementsAre(
-          // Recognized but superfluous parameters are included in the mojom
-          // struct, e.g. `key` for the first call to `clear`. They will be
-          // ignored in the browser process.
-          std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                          /*key=*/"b", /*value=*/absl::nullopt,
-                          /*ignore_if_present=*/absl::nullopt),
-          // The unrecognized parameter `unknown` is omitted.
-          std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                          /*key=*/"a", /*value=*/"new value",
-                          /*ignore_if_present=*/true),
-          // The second instance of `key` parameter is used.
-          std::make_tuple(mojom::SharedStorageOperationType::kAppend,
-                          /*key=*/"extra/key", /*value=*/"hello",
-                          /*ignore_if_present=*/absl::nullopt),
-          std::make_tuple(mojom::SharedStorageOperationType::kDelete,
-                          /*key=*/"a", /*value=*/absl::nullopt,
-                          /*ignore_if_present=*/false),
-          std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                          /*key=*/absl::nullopt, /*value=*/absl::nullopt,
-                          /*ignore_if_present=*/absl::nullopt)));
+  EXPECT_THAT(observer_->headers_received().front().second,
+              ElementsAre(
+                  // Recognized but superfluous parameters are included in the
+                  // mojom struct, e.g. `key` for the first call to `clear`.
+                  // They will be ignored in the browser process.
+                  std::make_tuple(mojom::SharedStorageOperationType::kClear,
+                                  /*key=*/"b", /*value=*/std::nullopt,
+                                  /*ignore_if_present=*/std::nullopt),
+                  // The unrecognized parameter `unknown` is omitted.
+                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
+                                  /*key=*/"a", /*value=*/"new value",
+                                  /*ignore_if_present=*/true),
+                  // The second instance of `key` parameter is used.
+                  std::make_tuple(mojom::SharedStorageOperationType::kAppend,
+                                  /*key=*/"extra/key", /*value=*/"hello",
+                                  /*ignore_if_present=*/std::nullopt),
+                  std::make_tuple(mojom::SharedStorageOperationType::kDelete,
+                                  /*key=*/"a", /*value=*/std::nullopt,
+                                  /*ignore_if_present=*/false),
+                  std::make_tuple(mojom::SharedStorageOperationType::kClear,
+                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
+                                  /*ignore_if_present=*/std::nullopt)));
 }
 
 namespace {
@@ -586,10 +584,10 @@ TEST_F(SharedStorageRequestHelperProcessHeaderMultiConnectionTest,
         observer_->headers_received()[i].second,
         ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kSet,
                                     /*key=*/"x", /*value=*/"y",
-                                    /*ignore_if_present=*/absl::nullopt),
+                                    /*ignore_if_present=*/std::nullopt),
                     std::make_tuple(mojom::SharedStorageOperationType::kDelete,
-                                    /*key=*/"z", /*value=*/absl::nullopt,
-                                    /*ignore_if_present=*/absl::nullopt)));
+                                    /*key=*/"z", /*value=*/std::nullopt,
+                                    /*ignore_if_present=*/std::nullopt)));
   }
 }
 

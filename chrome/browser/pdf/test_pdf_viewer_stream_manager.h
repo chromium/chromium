@@ -11,6 +11,7 @@
 
 namespace content {
 class NavigationHandle;
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -33,9 +34,14 @@ class TestPdfViewerStreamManager : public PdfViewerStreamManager {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // Deprecated. Do not add any additional uses. Wait until the PDF has finished
-  // loading.
-  void DeprecatedWaitUntilPdfLoaded();
+  // Wait until the PDF has finished loading. `embedder_host` must be a PDF
+  // embedder host, otherwise this will hang the test.
+  void WaitUntilPdfLoaded(content::RenderFrameHost* embedder_host);
+
+  // Same as `WaitUntilPdfLoaded()`, but the first child of the primary main
+  // frame should be the embedder. This is a common case where an HTML page only
+  // embeds a single PDF.
+  void WaitUntilPdfLoadedInFirstChild();
 
  private:
   base::OnceClosure on_pdf_loaded_;

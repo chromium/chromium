@@ -170,7 +170,7 @@ base::TimeDelta GetQueuedRequestsDispatchPeriodicity() {
 
 // static
 ResourceScheduler::ClientId ResourceScheduler::ClientId::Create(
-    const absl::optional<base::UnguessableToken>& token) {
+    const std::optional<base::UnguessableToken>& token) {
   static uint64_t next_client_id = 0;
   return ClientId(next_client_id++, token);
 }
@@ -714,7 +714,7 @@ class ResourceScheduler::Client
 
     if (p2p_connections_count_ == 0 &&
         p2p_connections_count_active_timestamp_.has_value()) {
-      p2p_connections_count_active_timestamp_ = absl::nullopt;
+      p2p_connections_count_active_timestamp_ = std::nullopt;
     }
 
     LoadAnyStartablePendingRequests(
@@ -949,7 +949,7 @@ class ResourceScheduler::Client
           tick_clock_->NowTicks() -
           p2p_connections_count_active_timestamp_.value();
 
-      absl::optional<base::TimeDelta> max_wait_time_p2p_connections =
+      std::optional<base::TimeDelta> max_wait_time_p2p_connections =
           resource_scheduler_->resource_scheduler_params_manager_
               .max_wait_time_p2p_connections();
 
@@ -1087,7 +1087,7 @@ class ResourceScheduler::Client
 
   // Returns true if a non-delayable request is expected to arrive soon.
   bool IsNonDelayableRequestAnticipated() const {
-    absl::optional<double> http_rtt_multiplier =
+    std::optional<double> http_rtt_multiplier =
         params_for_network_quality_
             .http_rtt_multiplier_for_proactive_throttling;
 
@@ -1103,7 +1103,7 @@ class ResourceScheduler::Client
     if (!last_non_delayable_request_start_.has_value())
       return false;
 
-    absl::optional<base::TimeDelta> http_rtt =
+    std::optional<base::TimeDelta> http_rtt =
         network_quality_estimator_->GetHttpRTT();
     if (!http_rtt.has_value())
       return false;
@@ -1216,10 +1216,10 @@ class ResourceScheduler::Client
   raw_ptr<const base::TickClock> tick_clock_;
 
   // Time when the last non-delayble request started in this client.
-  absl::optional<base::TimeTicks> last_non_delayable_request_start_;
+  std::optional<base::TimeTicks> last_non_delayable_request_start_;
 
   // Time when the last non-delayble request ended in this client.
-  absl::optional<base::TimeTicks> last_non_delayable_request_end_;
+  std::optional<base::TimeTicks> last_non_delayable_request_end_;
 
   // Current estimated value of the effective connection type.
   net::EffectiveConnectionType effective_connection_type_ =
@@ -1232,12 +1232,12 @@ class ResourceScheduler::Client
   // connection. Set to current timestamp when |p2p_connections_count_|
   // changes from 0 to a non-zero value. Reset to null when
   // |p2p_connections_count_| becomes 0.
-  absl::optional<base::TimeTicks> p2p_connections_count_active_timestamp_;
+  std::optional<base::TimeTicks> p2p_connections_count_active_timestamp_;
 
   // Earliest timestamp since when the count of active peer to peer
   // connection counts dropped from a non-zero value to zero. Set to current
   // timestamp when |p2p_connections_count_| changes from a non-zero value to 0.
-  absl::optional<base::TimeTicks> p2p_connections_count_end_timestamp_;
+  std::optional<base::TimeTicks> p2p_connections_count_end_timestamp_;
 
   base::OneShotTimer p2p_connections_count_ended_timer_;
 

@@ -37,7 +37,7 @@ class CodeCacheTestLoaderFactory : public ResourceFetcher::LoaderFactory {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
-      const absl::optional<base::UnguessableToken>&
+      const std::optional<base::UnguessableToken>&
           service_worker_race_network_request_token,
       bool is_from_origin_dirty_style_sheet) override {
     return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
@@ -111,7 +111,7 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
 
   std::vector<uint8_t> MakeSerializedCodeCacheDataWithHash(
       base::span<uint8_t> data,
-      absl::optional<String> source_text = {}) {
+      std::optional<String> source_text = {}) {
     const size_t kSerializedDataSize = sizeof(CachedMetadataHeaderWithHash) +
                                        sizeof(CachedMetadataHeader) +
                                        data.size();
@@ -153,7 +153,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheEmptyCachedMetadataInfo) {
 
   loader_->DidReceiveResponse(WrappedResourceResponse(response_),
                               /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-                              /*cached_metadata=*/absl::nullopt);
+                              /*cached_metadata=*/std::nullopt);
 
   // No code cache data was present.
   EXPECT_FALSE(resource_->CodeCacheSize());

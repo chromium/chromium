@@ -719,7 +719,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   }
 
   const LayoutResult* result = nullptr;
-  absl::optional<BreakAppeal> min_break_appeal;
+  std::optional<BreakAppeal> min_break_appeal;
   LayoutUnit intrinsic_block_size_contribution;
 
   do {
@@ -737,7 +737,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     // balancing).
     LayoutUnit minimal_space_shortage = kIndefiniteSize;
 
-    min_break_appeal = absl::nullopt;
+    min_break_appeal = std::nullopt;
     intrinsic_block_size_contribution = LayoutUnit();
 
     do {
@@ -794,8 +794,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       LogicalOffset logical_offset(column_inline_offset, row_offset);
       new_columns.emplace_back(result, logical_offset);
 
-      absl::optional<LayoutUnit> space_shortage =
-          result->MinimalSpaceShortage();
+      std::optional<LayoutUnit> space_shortage = result->MinimalSpaceShortage();
       UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage);
       actual_column_count++;
 

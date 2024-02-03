@@ -13,4 +13,7 @@ BOOL CanUseOmniboxLayoutGuide();
 /// Returns whether the omnibox layout guide should be applied.
 BOOL ShouldApplyOmniboxLayoutGuide(UITraitCollection* traitCollection);
 
+/// Returns whether the omnibox popout layout should be applied.
+BOOL ShouldApplyOmniboxPopoutLayout(UITraitCollection* traitCollection);
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_ROW_OMNIBOX_POPUP_ROW_UTIL_H_

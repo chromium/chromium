@@ -44,7 +44,7 @@
         "port_name": "win-win11",
         "specifiers": ["Win11", "Release"]
     },
-    "fuchsia-x64-rel": {
+    "fuchsia-x64-cast-receiver-rel": {
         "main": "tryserver.chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"],
@@ -192,9 +192,6 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Release"],
         "steps": {
-            "chrome_wpt_tests (with patch)": {
-                "product": "chrome"
-            },
             "blink_web_tests (with patch)": {},
             "blink_wpt_tests (with patch)": {},
             "high_dpi_blink_web_tests (with patch)": {

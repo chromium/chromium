@@ -490,7 +490,7 @@ void FindBarHost::MoveWindowIfNecessaryWithRect(
   SetDialogPosition(new_pos);
 
   // May need to redraw our frame to accommodate bookmark bar styles.
-  view()->Layout();  // Bounds may have changed.
+  view()->DeprecatedLayoutImmediately();  // Bounds may have changed.
   view()->SchedulePaint();
 }
 

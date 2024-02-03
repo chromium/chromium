@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <limits>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -40,7 +41,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace {
@@ -496,9 +496,8 @@ mojom::GeopositionPtr CreateGeoposition(const base::Value::Dict& response_body,
   }
 
   // latitude and longitude fields are always required.
-  absl::optional<double> latitude =
-      location_object->FindDouble(kLatitudeString);
-  absl::optional<double> longitude =
+  std::optional<double> latitude = location_object->FindDouble(kLatitudeString);
+  std::optional<double> longitude =
       location_object->FindDouble(kLongitudeString);
   if (!latitude || !longitude) {
     VLOG(1) << "CreateGeoposition() : location lacks lat and/or long.";
@@ -511,7 +510,7 @@ mojom::GeopositionPtr CreateGeoposition(const base::Value::Dict& response_body,
   position->timestamp = wifi_timestamp;
 
   // Other fields are optional.
-  absl::optional<double> accuracy = response_body.FindDouble(kAccuracyString);
+  std::optional<double> accuracy = response_body.FindDouble(kAccuracyString);
   if (accuracy) {
     position->accuracy = *accuracy;
   }

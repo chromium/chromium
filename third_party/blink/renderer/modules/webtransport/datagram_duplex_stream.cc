@@ -6,13 +6,13 @@
 
 namespace blink {
 
-void DatagramDuplexStream::setIncomingMaxAge(absl::optional<double> max_age) {
+void DatagramDuplexStream::setIncomingMaxAge(std::optional<double> max_age) {
   if (!max_age.has_value() || max_age.value() > 0) {
     incoming_max_age_ = max_age;
   }
 }
 
-void DatagramDuplexStream::setOutgoingMaxAge(absl::optional<double> max_age) {
+void DatagramDuplexStream::setOutgoingMaxAge(std::optional<double> max_age) {
   if (!max_age.has_value() || max_age.value() > 0) {
     outgoing_max_age_ = max_age;
 

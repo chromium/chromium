@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SMART_CARD_SMART_CARD_CONTEXT_H_
 
 #include "services/device/public/mojom/smart_card.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -19,7 +21,6 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
 class SmartCardReaderStateIn;
 
 class SmartCardGetStatusChangeOptions;
@@ -35,8 +36,9 @@ class SmartCardContext final : public ScriptWrappable,
                    ExecutionContext*);
 
   // SmartCardContext idl
-  ScriptPromise listReaders(ScriptState* script_state,
-                            ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<IDLString>> listReaders(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
 
   ScriptPromise getStatusChange(
       ScriptState* script_state,
@@ -77,8 +79,9 @@ class SmartCardContext final : public ScriptWrappable,
 
   void CloseMojoConnection();
   bool EnsureMojoConnection(ExceptionState& exception_state) const;
-  void OnListReadersDone(ScriptPromiseResolver* resolver,
-                         device::mojom::blink::SmartCardListReadersResultPtr);
+  void OnListReadersDone(
+      ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+      device::mojom::blink::SmartCardListReadersResultPtr);
   void OnGetStatusChangeDone(
       ScriptPromiseResolver* resolver,
       AbortSignal* signal,

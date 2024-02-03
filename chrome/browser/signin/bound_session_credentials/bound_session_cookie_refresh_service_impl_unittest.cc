@@ -39,12 +39,15 @@
 namespace {
 using SessionTerminationTrigger =
     BoundSessionCookieRefreshServiceImpl::SessionTerminationTrigger;
+using chrome::mojom::ResumeBlockedRequestsTrigger;
 
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 const char kSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 constexpr char kWrappedKey[] = "wrapped_key";
 constexpr char kTestSessionId[] = "test_session_id";
+constexpr ResumeBlockedRequestsTrigger kRefreshCompletedTrigger =
+    ResumeBlockedRequestsTrigger::kObservedFreshCookies;
 
 // Matches a cookie name against a `bound_session_credentials::Credential`.
 // `arg` type is std::tuple<std::string, bound_session_credentials::Credential>
@@ -82,7 +85,9 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
   const std::vector<uint8_t>& wrapped_key() { return wrapped_key_; }
 
   void HandleRequestBlockedOnCookie(
-      base::OnceClosure resume_blocked_request) override {
+      chrome::mojom::BoundSessionRequestThrottledHandler::
+          HandleRequestBlockedOnCookieCallback resume_blocked_request)
+      override {
     resume_blocked_requests_.push_back(std::move(resume_blocked_request));
   }
 
@@ -106,16 +111,20 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
 
   void SimulateRefreshBoundSessionCompleted() {
     EXPECT_FALSE(resume_blocked_requests_.empty());
-    std::vector<base::OnceClosure> callbacks;
+    std::vector<chrome::mojom::BoundSessionRequestThrottledHandler::
+                    HandleRequestBlockedOnCookieCallback>
+        callbacks;
     std::swap(resume_blocked_requests_, callbacks);
     for (auto& callback : callbacks) {
-      std::move(callback).Run();
+      std::move(callback).Run(kRefreshCompletedTrigger);
     }
   }
 
  private:
   base::OnceCallback<void()> on_destroy_callback_;
-  std::vector<base::OnceClosure> resume_blocked_requests_;
+  std::vector<chrome::mojom::BoundSessionRequestThrottledHandler::
+                  HandleRequestBlockedOnCookieCallback>
+      resume_blocked_requests_;
   std::vector<uint8_t> wrapped_key_;
 };
 
@@ -339,12 +348,13 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_TRUE(cookie_controller());
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   service->HandleRequestBlockedOnCookie(future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
   cookie_controller()->SimulateRefreshBoundSessionCompleted();
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), kRefreshCompletedTrigger);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -353,9 +363,11 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_FALSE(cookie_controller());
 
   // Unbound session, the callback should be called immediately.
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   service->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -537,8 +549,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   service->AddBoundSessionRequestThrottledHandlerReceiver(
       listener_2.BindNewPipeAndPassReceiver());
 
-  base::test::TestFuture<void> future_1;
-  base::test::TestFuture<void> future_2;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future_1;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future_2;
   listener_1->HandleRequestBlockedOnCookie(future_1.GetCallback());
   listener_2->HandleRequestBlockedOnCookie(future_2.GetCallback());
   RunUntilIdle();
@@ -549,6 +561,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   cookie_controller()->SimulateRefreshBoundSessionCompleted();
   EXPECT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_2.Wait());
+  EXPECT_EQ(future_1.Get(), kRefreshCompletedTrigger);
+  EXPECT_EQ(future_2.Get(), kRefreshCompletedTrigger);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest, RegisterNewBoundSession) {

@@ -19,6 +19,11 @@ bool IsDeviceEnterpriseManaged();
 // for guest users, child users, and managed users.
 bool IsPowerwashAllowed();
 
+// Determines whether Sanitize is allowed for the user. Managed users, guest
+// users, and child users cannot use the sanitize feature. Also Sanitize is
+// initially only enabled through a flag.
+bool IsSanitizeAllowed();
+
 // Determines whether the Parental Controls section of People settings should be
 // shown for `profile`.
 bool ShouldShowParentalControlSettings(const Profile* profile);
@@ -31,6 +36,9 @@ bool IsAppRestoreAvailableForProfile(const Profile* profile);
 
 // Determines if per-app language settings are available for `profile`.
 bool IsPerAppLanguageEnabled(const Profile* profile);
+
+// Determines if multitasking section of System Preferences is allowed.
+bool ShouldShowMultitasking();
 
 }  // namespace ash::settings
 

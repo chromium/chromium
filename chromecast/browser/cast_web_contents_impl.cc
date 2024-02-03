@@ -4,9 +4,10 @@
 
 #include "chromecast/browser/cast_web_contents_impl.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -383,7 +384,7 @@ void CastWebContentsImpl::SetGroupInfo(const std::string& session_id,
 }
 
 void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,
-                                                  base::StringPiece script) {
+                                                  std::string_view script) {
   script_injector_.AddScriptForAllOrigins(id, std::string(script));
 }
 
@@ -617,7 +618,7 @@ void CastWebContentsImpl::OnBindingsReceived(
 }
 
 bool CastWebContentsImpl::OnPortConnected(
-    base::StringPiece port_name,
+    std::string_view port_name,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   DCHECK(api_bindings_);
 

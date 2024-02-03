@@ -115,8 +115,8 @@ class TestScrollTimeline : public ScrollTimeline {
   void UpdateSnapshotForTesting() { UpdateSnapshot(); }
 
   AnimationTimeDelta CalculateIntrinsicIterationDurationForTest(
-      const absl::optional<TimelineOffset>& range_start,
-      const absl::optional<TimelineOffset>& range_end) {
+      const std::optional<TimelineOffset>& range_start,
+      const std::optional<TimelineOffset>& range_end) {
     Timing timing;
     timing.iteration_count = 1;
     TimelineRange timeline_range = GetTimelineRange();
@@ -879,7 +879,7 @@ TEST_F(ScrollTimelineTest, ScrollTimelineOffsetZoom) {
   {
     auto* timeline = MakeGarbageCollected<TestScrollTimeline>(
         &GetDocument(), GetElementById("scroller"));
-    absl::optional<ScrollOffsets> scroll_offsets =
+    std::optional<ScrollOffsets> scroll_offsets =
         timeline->GetResolvedScrollOffsets();
     ASSERT_TRUE(scroll_offsets.has_value());
     EXPECT_EQ(0.0, scroll_offsets->start);
@@ -893,7 +893,7 @@ TEST_F(ScrollTimelineTest, ScrollTimelineOffsetZoom) {
   {
     auto* timeline = MakeGarbageCollected<TestScrollTimeline>(
         &GetDocument(), GetElementById("scroller"));
-    absl::optional<ScrollOffsets> scroll_offsets =
+    std::optional<ScrollOffsets> scroll_offsets =
         timeline->GetResolvedScrollOffsets();
     ASSERT_TRUE(scroll_offsets.has_value());
     EXPECT_EQ(0.0, scroll_offsets->start);
@@ -931,7 +931,7 @@ TEST_F(ScrollTimelineTest, ViewTimelineOffsetZoom) {
   {
     auto* timeline = MakeGarbageCollected<TestViewTimeline>(
         &GetDocument(), GetElementById("subject"));
-    absl::optional<ScrollOffsets> scroll_offsets =
+    std::optional<ScrollOffsets> scroll_offsets =
         timeline->GetResolvedScrollOffsets();
     ASSERT_TRUE(scroll_offsets.has_value());
     EXPECT_EQ(100.0, scroll_offsets->start);
@@ -950,7 +950,7 @@ TEST_F(ScrollTimelineTest, ViewTimelineOffsetZoom) {
   {
     auto* timeline = MakeGarbageCollected<TestViewTimeline>(
         &GetDocument(), GetElementById("subject"));
-    absl::optional<ScrollOffsets> scroll_offsets =
+    std::optional<ScrollOffsets> scroll_offsets =
         timeline->GetResolvedScrollOffsets();
     ASSERT_TRUE(scroll_offsets.has_value());
     EXPECT_EQ(200.0, scroll_offsets->start);
@@ -1058,8 +1058,8 @@ TEST_F(ScrollTimelineTest, ScrollTimelineCalculateIntrinsicIterationDuration) {
   // [0, 300]
   EXPECT_TRUE(TimingCalculations::IsWithinAnimationTimeTolerance(
       duration, timeline->CalculateIntrinsicIterationDurationForTest(
-                    /* range_start */ absl::optional<TimelineOffset>(),
-                    /* range_end */ absl::optional<TimelineOffset>())));
+                    /* range_start */ std::optional<TimelineOffset>(),
+                    /* range_end */ std::optional<TimelineOffset>())));
 
   // [0, 300] (explicit)
   EXPECT_TRUE(TimingCalculations::IsWithinAnimationTimeTolerance(

@@ -44,6 +44,7 @@ namespace gpu {
 class ClientSharedImage;
 class GpuMemoryBufferManager;
 struct SharedImageCapabilities;
+class SharedImageInterfaceHolder;
 
 // An interface to create shared images and swap chains that can be imported
 // into other APIs. This interface is thread-safe and (essentially) stateless.
@@ -53,6 +54,8 @@ struct SharedImageCapabilities;
 class GPU_EXPORT SharedImageInterface
     : public base::RefCountedThreadSafe<SharedImageInterface> {
  public:
+  SharedImageInterface();
+
   // Creates a shared image of requested |format|, |size| and |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which
   // API(s) the image will be used with.
@@ -361,9 +364,33 @@ class GPU_EXPORT SharedImageInterface
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 
+  void Release() const;
+
  protected:
   friend class base::RefCountedThreadSafe<SharedImageInterface>;
-  virtual ~SharedImageInterface() = default;
+  virtual ~SharedImageInterface();
+
+  scoped_refptr<SharedImageInterfaceHolder> holder_;
+};
+
+// |SharedImageInterfaceHolder| provides thread-safe access to
+// |SharedImageInterface| via a weak reference.
+class GPU_EXPORT SharedImageInterfaceHolder
+    : public base::RefCountedThreadSafe<SharedImageInterfaceHolder> {
+ public:
+  SharedImageInterfaceHolder(SharedImageInterface* sii);
+
+  scoped_refptr<SharedImageInterface> Get();
+
+ private:
+  friend base::RefCountedThreadSafe<SharedImageInterfaceHolder>;
+  friend SharedImageInterface;
+  ~SharedImageInterfaceHolder();
+
+  void OnDestroy();
+
+  mutable base::Lock lock_;
+  raw_ptr<SharedImageInterface> sii_ GUARDED_BY(lock_);
 };
 
 }  // namespace gpu

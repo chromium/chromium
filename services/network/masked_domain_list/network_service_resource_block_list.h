@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceResourceBlockList {
   // the IsolationInfo is not a first party domain (first parties have bypass
   // rules).
   bool Matches(const GURL& request_url,
-               const absl::optional<net::IsolationInfo>& isolation_info);
+               const std::optional<net::IsolationInfo>& isolation_info);
 
   // Use the Masked Domain List to generate the block list and the 1P bypass
   // rules.

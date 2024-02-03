@@ -6,6 +6,7 @@
 #define MEDIA_GPU_TEST_RAW_VIDEO_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -96,7 +96,7 @@ class RawVideo final {
 
     uint32_t frame_rate;
     size_t num_frames;
-    absl::optional<VideoFrameLayout> frame_layout;
+    std::optional<VideoFrameLayout> frame_layout;
     gfx::Rect visible_rect;
   };
   class VP9Decoder;

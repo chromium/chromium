@@ -57,7 +57,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
 
   bool IsKeyFrame() const override { return is_key_frame_; }
 
-  absl::optional<gfx::ColorSpace> ColorSpace() const override {
+  std::optional<gfx::ColorSpace> ColorSpace() const override {
     return color_space_;
   }
 
@@ -67,7 +67,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
   rtc::scoped_refptr<const webrtc::EncodedImageBufferInterface> buffer_;
   media::VideoCodec codec_;
   bool is_key_frame_;
-  absl::optional<gfx::ColorSpace> color_space_;
+  std::optional<gfx::ColorSpace> color_space_;
   gfx::Size resolution_;
 };
 
@@ -118,7 +118,7 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
   VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback_;
 
   // Timestamp of the first received frame.
-  absl::optional<base::TimeTicks> start_timestamp_;
+  std::optional<base::TimeTicks> start_timestamp_;
 
   // WebRTC real time clock, needed to determine NTP offset.
   raw_ptr<webrtc::Clock, ExperimentalRenderer> clock_;

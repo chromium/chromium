@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DARK_MODE_IMAGE_CLASSIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DARK_MODE_IMAGE_CLASSIFIER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -51,8 +51,8 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
 
   enum class ColorMode { kColor = 0, kGrayscale = 1 };
 
-  absl::optional<Features> GetFeatures(const SkPixmap& pixmap,
-                                       const SkIRect& src) const;
+  std::optional<Features> GetFeatures(const SkPixmap& pixmap,
+                                      const SkIRect& src) const;
   // Extracts a sample set of pixels (|sampled_pixels|), |transparency_ratio|,
   // and |background_ratio|.
   void GetSamples(const SkPixmap& pixmap,

@@ -7,10 +7,14 @@ package org.chromium.components.autofill;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -56,13 +60,14 @@ public class AutofillProviderUMA {
     public static final int USER_NOT_SELECT_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED = 11;
     public static final int USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED = 12;
     public static final int USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED = 13;
-    public static final int NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_NO_FORM_SUBMITTED = 14;
-    public static final int NO_STRUCTURE_PROVIDED_USER_NOT_CHANGE_FORM_FORM_SUBMITTED = 15;
-    public static final int NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_FORM_SUBMITTED = 16;
-    public static final int NO_STRUCTURE_PROVIDED_SUGGESTION_PROVIDED = 17; // Error state.
-    public static final int NO_STRUCTURE_PROVIDED_FORM_AUTOFILLED = 18; // Error state.
     public static final int NO_SUGGESTION_FORM_AUTOFILLED = 19; // Error state.
-    public static final int AUTOFILL_SESSION_HISTOGRAM_COUNT = 20;
+    public static final int NO_SUGGESTION_FORM_AUTOFILLED_AWG = 20; // Error state.
+    public static final int NO_SUGGESTION_FORM_AUTOFILLED_SAMSUNG = 21; // Error state.
+    public static final int NO_SUGGESTION_FORM_AUTOFILLED_LAST_PASS = 22; // Error state.
+    public static final int NO_SUGGESTION_FORM_AUTOFILLED_DASHLANE = 23; // Error state.
+    public static final int NO_SUGGESTION_FORM_AUTOFILLED_1PASSWORD = 24; // Error state.
+    public static final int NO_SUGGESTION_FORM_AUTOFILLED_BITWARDEN = 25; // Error state.
+    public static final int AUTOFILL_SESSION_HISTOGRAM_COUNT = 26;
 
     // The possible values for the server prediction availability.
     public static final String UMA_AUTOFILL_SERVER_PREDICTION_AVAILABILITY =
@@ -97,11 +102,10 @@ public class AutofillProviderUMA {
     // public static final int DEPRECATED_DOM_MUTATION_AFTER_XHR = 3;
     public static final int PROBABLY_FORM_SUBMITTED = 4;
     public static final int FORM_SUBMISSION = 5;
+    // This bucket is not recorded at the moment because it can only be recorded in relation with
+    // password manager (which doesn't exist in web view).
     public static final int DOM_MUTATION_AFTER_AUTOFILL = 6;
     public static final int SUBMISSION_SOURCE_HISTOGRAM_COUNT = 7;
-
-    // The million seconds from user touched the field to the autofill session starting.
-    public static final String UMA_AUTOFILL_TRIGGERING_TIME = "Autofill.WebView.TriggeringTime";
 
     // The million seconds from the autofill session starting to the suggestion being displayed.
     public static final String UMA_AUTOFILL_SUGGESTION_TIME = "Autofill.WebView.SuggestionTime";
@@ -114,27 +118,42 @@ public class AutofillProviderUMA {
     private static final long MAX_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
     private static final int NUM_OF_BUCKETS = 50;
 
-    // The package name of the autofill provider.
-    // To add a new provider, add a String for the provider's package name and an int equal to
-    // AUTOFILL_PROVIDER_MAX for the provider then increment AUTOFILL_PROVIDER_MAX.
-    // Make sure to update tools/metrics/histograms/enums.xml with the new entry. Lastly, add a case
-    // to the switch statement in logCurrentProvider for that provider.
+    // The package name of the autofill provider. To add a new provider:
+    // 1) Add a String for the provider's package name
+    // 2) Add an int equal to Provider.MAX_VALUE for the provider in the Provider interface.
+    // 3) Increment Provider.MAX_VALUE.
+    // 4) Update tools/metrics/histograms/enums.xml with the new entry.
+    // 5) Look for switch statements that uses those values and update them accordingly.
     private static final String UMA_AUTOFILL_PROVIDER = "Autofill.WebView.Provider.PackageName";
-    private static final int AUTOFILL_PROVIDER_UNKNOWN = 0;
     private static final String AWG_PACKAGE_NAME = "com.google.android.gms";
-    private static final int AUTOFILL_PROVIDER_AWG = 1;
     private static final String SAMSUNG_PASS_PACKAGE_NAME =
             "com.samsung.android.samsungpassautofill";
-    private static final int AUTOFILL_PROVIDER_SAMSUNG_PASS = 2;
     private static final String LASTPASS_PACKAGE_NAME = "com.lastpass.lpandroid";
-    private static final int AUTOFILL_PROVIDER_LAST_PASS = 3;
     private static final String DASHLANE_PACKAGE_NAME = "com.dashlane";
-    private static final int AUTOFILL_PROVIDER_DASHLANE = 4;
     private static final String ONE_PASSWORD_PACKAGE_NAME = "com.onepassword.android";
-    private static final int AUTOFILL_PROVIDER_1PASSWORD = 5;
     private static final String BITWARDEN_PACKAGE_NAME = "com.x8bit.bitwarden";
-    private static final int AUTOFILL_PROVIDER_BITWARDEN = 6;
-    private static final int AUTOFILL_PROVIDER_MAX = 7;
+
+    @IntDef({
+        Provider.UNKNOWN,
+        Provider.AWG,
+        Provider.SAMSUNG_PASS,
+        Provider.LAST_PASS,
+        Provider.DASHLANE,
+        Provider.ONE_PASSWORD,
+        Provider.BITWARDEN,
+        Provider.MAX_VALUE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface Provider {
+        int UNKNOWN = 0;
+        int AWG = 1;
+        int SAMSUNG_PASS = 2;
+        int LAST_PASS = 3;
+        int DASHLANE = 4;
+        int ONE_PASSWORD = 5;
+        int BITWARDEN = 6;
+        int MAX_VALUE = 7;
+    }
 
     private static void recordTimesHistogram(String name, long durationMillis) {
         RecordHistogram.recordCustomTimesHistogram(
@@ -181,8 +200,8 @@ public class AutofillProviderUMA {
             }
         }
 
-        public void recordHistogram(boolean autofillDisabled) {
-            final int sessionValue = toUMAAutofillSessionValue();
+        public void recordHistogram(boolean autofillDisabled, @Provider int currentProvider) {
+            final int sessionValue = toUMAAutofillSessionValue(currentProvider);
             RecordHistogram.recordEnumeratedHistogram(
                     UMA_AUTOFILL_AUTOFILL_SESSION, sessionValue, AUTOFILL_SESSION_HISTOGRAM_COUNT);
             // If a bottom sheet was shown, we record an additional, separate metric for it.
@@ -234,45 +253,39 @@ public class AutofillProviderUMA {
             }
         }
 
-        private int toUMAAutofillSessionValue() {
-            // Only the below five events are considered for translating the events to
+        private int toUMAAutofillSessionValue(@Provider int currentProvider) {
+            // No other events are recorded until EVENT_VIRTUAL_STRUCTURE_PROVIDED is recorded.
+            if ((mState & EVENT_VIRTUAL_STRUCTURE_PROVIDED) == 0) {
+                return NO_STRUCTURE_PROVIDED;
+            }
+            // We know that the structure is provided from here on.
+            // Only the below four events are considered for translating the events to
             // an AUTOFILL_SESSION record.
             int state =
                     mState
-                            & (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                                    | EVENT_SUGGESTION_DISPLAYED
+                            & (EVENT_SUGGESTION_DISPLAYED
                                     | EVENT_FORM_AUTOFILLED
                                     | EVENT_USER_CHANGED_FIELD_VALUE
                                     | EVENT_FORM_SUBMITTED);
-            if ((state & EVENT_VIRTUAL_STRUCTURE_PROVIDED) == 0) {
-                // No suggestions can be shown if the structure was not provided, which also means
-                // one cannot autofill.
-                if ((state & EVENT_SUGGESTION_DISPLAYED) != 0) { // 8 states
-                    return NO_STRUCTURE_PROVIDED_SUGGESTION_PROVIDED; // Error state.
-                }
-                if ((state & EVENT_FORM_AUTOFILLED) != 0) { // 4 states
-                    return NO_STRUCTURE_PROVIDED_FORM_AUTOFILLED; // Error state.
-                }
-                if (state == 0) { // 1 state
-                    return NO_STRUCTURE_PROVIDED;
-                }
-                if (state == EVENT_USER_CHANGED_FIELD_VALUE) { // 1 state
-                    return NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
-                }
-                if (state == EVENT_FORM_SUBMITTED) { // 1 state
-                    return NO_STRUCTURE_PROVIDED_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
-                }
-                if (state == (EVENT_USER_CHANGED_FIELD_VALUE | EVENT_FORM_SUBMITTED)) { // 1 state
-                    return NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_FORM_SUBMITTED;
-                }
-                return SESSION_UNKNOWN; // Shouldn't reach this state.
-            }
-            // We know that below the structure is provided.
-            state ^= EVENT_VIRTUAL_STRUCTURE_PROVIDED;
             if ((state & EVENT_SUGGESTION_DISPLAYED) == 0) {
                 // No suggestions were shown and hence one cannot autofill.
                 if ((state & EVENT_FORM_AUTOFILLED) != 0) { // 4 states
-                    return NO_SUGGESTION_FORM_AUTOFILLED; // Error state.
+                    switch (currentProvider) {
+                        case Provider.AWG:
+                            return NO_SUGGESTION_FORM_AUTOFILLED_AWG; // Error state.
+                        case Provider.SAMSUNG_PASS:
+                            return NO_SUGGESTION_FORM_AUTOFILLED_SAMSUNG; // Error state.
+                        case Provider.LAST_PASS:
+                            return NO_SUGGESTION_FORM_AUTOFILLED_LAST_PASS; // Error state.
+                        case Provider.DASHLANE:
+                            return NO_SUGGESTION_FORM_AUTOFILLED_DASHLANE; // Error state.
+                        case Provider.ONE_PASSWORD:
+                            return NO_SUGGESTION_FORM_AUTOFILLED_1PASSWORD; // Error state.
+                        case Provider.BITWARDEN:
+                            return NO_SUGGESTION_FORM_AUTOFILLED_BITWARDEN; // Error state.
+                        default:
+                            return NO_SUGGESTION_FORM_AUTOFILLED; // Error state.
+                    }
                 }
                 if (state == 0) { // 1 state
                     return NO_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED;
@@ -370,7 +383,11 @@ public class AutofillProviderUMA {
     private final boolean mIsAwGCurrentAutofillService;
     private ServerPredictionRecorder mServerPredictionRecorder;
 
-    public AutofillProviderUMA(Context context, boolean isAwGCurrentAutofillService) {
+    private final @Provider int mCurrentProvider;
+
+    public AutofillProviderUMA(
+            Context context, boolean isAwGCurrentAutofillService, String packageName) {
+        mCurrentProvider = getCurrentProvider(packageName);
         RecordHistogram.recordBooleanHistogram(
                 UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT,
                 ContextUtils.activityFromContext(context) != null);
@@ -460,30 +477,27 @@ public class AutofillProviderUMA {
         mRecorder.onServerTypeAvailable(formData, afterSessionStarted);
     }
 
-    static void logCurrentProvider(String packageName) {
+    private static @Provider int getCurrentProvider(String packageName) {
         switch (packageName) {
             case AWG_PACKAGE_NAME:
-                recordUmaAutofillProvider(AUTOFILL_PROVIDER_AWG);
-                break;
+                return Provider.AWG;
             case SAMSUNG_PASS_PACKAGE_NAME:
-                recordUmaAutofillProvider(AUTOFILL_PROVIDER_SAMSUNG_PASS);
-                break;
+                return Provider.SAMSUNG_PASS;
             case LASTPASS_PACKAGE_NAME:
-                recordUmaAutofillProvider(AUTOFILL_PROVIDER_LAST_PASS);
-                break;
+                return Provider.LAST_PASS;
             case DASHLANE_PACKAGE_NAME:
-                recordUmaAutofillProvider(AUTOFILL_PROVIDER_DASHLANE);
-                break;
+                return Provider.DASHLANE;
             case ONE_PASSWORD_PACKAGE_NAME:
-                recordUmaAutofillProvider(AUTOFILL_PROVIDER_1PASSWORD);
-                break;
+                return Provider.ONE_PASSWORD;
             case BITWARDEN_PACKAGE_NAME:
-                recordUmaAutofillProvider(AUTOFILL_PROVIDER_BITWARDEN);
-                break;
+                return Provider.BITWARDEN;
             default:
-                recordUmaAutofillProvider(AUTOFILL_PROVIDER_UNKNOWN);
-                break;
+                return Provider.UNKNOWN;
         }
+    }
+
+    static void logCurrentProvider(String packageName) {
+        recordUmaAutofillProvider(getCurrentProvider(packageName));
     }
 
     /**
@@ -497,14 +511,14 @@ public class AutofillProviderUMA {
         if (mAutofillDisabledOnSessionStart != null
                 && !mAutofillDisabledOnSessionStart.booleanValue()
                 && mRecorder != null) {
-            mRecorder.recordHistogram(autofillDisabled);
+            mRecorder.recordHistogram(autofillDisabled, mCurrentProvider);
         }
         mRecorder = null;
     }
 
-    private static void recordUmaAutofillProvider(int autofillProvider) {
+    private static void recordUmaAutofillProvider(@Provider int autofillProvider) {
         RecordHistogram.recordEnumeratedHistogram(
-                UMA_AUTOFILL_PROVIDER, autofillProvider, AUTOFILL_PROVIDER_MAX);
+                UMA_AUTOFILL_PROVIDER, autofillProvider, Provider.MAX_VALUE);
     }
 
     private int toUMASubmissionSource(int source) {

@@ -27,6 +27,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/api/alarms.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -49,7 +50,7 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
       : browser_context_(context) {}
   ~DefaultAlarmDelegate() override {}
 
-  void OnAlarm(const std::string& extension_id, const Alarm& alarm) override {
+  void OnAlarm(const ExtensionId& extension_id, const Alarm& alarm) override {
     base::Value::List args;
     args.Append(alarm.js_alarm->ToValue());
     auto event = std::make_unique<Event>(events::ALARMS_ON_ALARM,
@@ -69,7 +70,7 @@ base::TimeDelta TimeDeltaFromDelay(double delay_in_minutes) {
                             base::Time::kMicrosecondsPerMinute);
 }
 
-AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
+AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
                                         base::TimeDelta min_delay,
                                         const base::Value::List& list) {
   AlarmManager::AlarmList alarms;
@@ -130,7 +131,7 @@ int AlarmManager::GetCountForExtension(const ExtensionId& extension_id) const {
   return it == alarms_.end() ? 0 : it->second.size();
 }
 
-void AlarmManager::AddAlarm(const std::string& extension_id,
+void AlarmManager::AddAlarm(const ExtensionId& extension_id,
                             Alarm alarm,
                             AddAlarmCallback callback) {
   RunWhenReady(extension_id,
@@ -139,7 +140,7 @@ void AlarmManager::AddAlarm(const std::string& extension_id,
                               std::move(callback)));
 }
 
-void AlarmManager::GetAlarm(const std::string& extension_id,
+void AlarmManager::GetAlarm(const ExtensionId& extension_id,
                             const std::string& name,
                             GetAlarmCallback callback) {
   RunWhenReady(extension_id, base::BindOnce(&AlarmManager::GetAlarmWhenReady,
@@ -147,7 +148,7 @@ void AlarmManager::GetAlarm(const std::string& extension_id,
                                             name, std::move(callback)));
 }
 
-void AlarmManager::GetAllAlarms(const std::string& extension_id,
+void AlarmManager::GetAllAlarms(const ExtensionId& extension_id,
                                 GetAllAlarmsCallback callback) {
   RunWhenReady(
       extension_id,
@@ -155,7 +156,7 @@ void AlarmManager::GetAllAlarms(const std::string& extension_id,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AlarmManager::RemoveAlarm(const std::string& extension_id,
+void AlarmManager::RemoveAlarm(const ExtensionId& extension_id,
                                const std::string& name,
                                RemoveAlarmCallback callback) {
   RunWhenReady(extension_id, base::BindOnce(&AlarmManager::RemoveAlarmWhenReady,
@@ -163,7 +164,7 @@ void AlarmManager::RemoveAlarm(const std::string& extension_id,
                                             name, std::move(callback)));
 }
 
-void AlarmManager::RemoveAllAlarms(const std::string& extension_id,
+void AlarmManager::RemoveAllAlarms(const ExtensionId& extension_id,
                                    RemoveAllAlarmsCallback callback) {
   RunWhenReady(
       extension_id,
@@ -173,7 +174,7 @@ void AlarmManager::RemoveAllAlarms(const std::string& extension_id,
 
 void AlarmManager::AddAlarmWhenReady(Alarm alarm,
                                      AddAlarmCallback callback,
-                                     const std::string& extension_id) {
+                                     const ExtensionId& extension_id) {
   AddAlarmImpl(extension_id, std::move(alarm));
   WriteToStorage(extension_id);
   std::move(callback).Run();
@@ -181,20 +182,20 @@ void AlarmManager::AddAlarmWhenReady(Alarm alarm,
 
 void AlarmManager::GetAlarmWhenReady(const std::string& name,
                                      GetAlarmCallback callback,
-                                     const std::string& extension_id) {
+                                     const ExtensionId& extension_id) {
   AlarmIterator it = GetAlarmIterator(extension_id, name);
   std::move(callback).Run(it.first != alarms_.end() ? &*it.second : nullptr);
 }
 
 void AlarmManager::GetAllAlarmsWhenReady(GetAllAlarmsCallback callback,
-                                         const std::string& extension_id) {
+                                         const ExtensionId& extension_id) {
   auto list = alarms_.find(extension_id);
   std::move(callback).Run(list != alarms_.end() ? &list->second : nullptr);
 }
 
 void AlarmManager::RemoveAlarmWhenReady(const std::string& name,
                                         RemoveAlarmCallback callback,
-                                        const std::string& extension_id) {
+                                        const ExtensionId& extension_id) {
   AlarmIterator it = GetAlarmIterator(extension_id, name);
   if (it.first == alarms_.end()) {
     std::move(callback).Run(false);
@@ -207,7 +208,7 @@ void AlarmManager::RemoveAlarmWhenReady(const std::string& name,
 }
 
 void AlarmManager::RemoveAllAlarmsWhenReady(RemoveAllAlarmsCallback callback,
-                                            const std::string& extension_id) {
+                                            const ExtensionId& extension_id) {
   auto list = alarms_.find(extension_id);
   if (list != alarms_.end()) {
     // Note: I'm using indices rather than iterators here because
@@ -222,7 +223,7 @@ void AlarmManager::RemoveAllAlarmsWhenReady(RemoveAllAlarmsCallback callback,
 }
 
 AlarmManager::AlarmIterator AlarmManager::GetAlarmIterator(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& name) {
   auto list = alarms_.find(extension_id);
   if (list == alarms_.end())
@@ -303,7 +304,7 @@ void AlarmManager::OnAlarm(AlarmIterator it) {
   WriteToStorage(extension_id_copy);
 }
 
-void AlarmManager::AddAlarmImpl(const std::string& extension_id, Alarm alarm) {
+void AlarmManager::AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm) {
   // Override any old alarm with the same name.
   AlarmIterator old_alarm =
       GetAlarmIterator(extension_id, alarm.js_alarm->name);
@@ -317,7 +318,7 @@ void AlarmManager::AddAlarmImpl(const std::string& extension_id, Alarm alarm) {
     SetNextPollTime(alarm_time);
 }
 
-void AlarmManager::WriteToStorage(const std::string& extension_id) {
+void AlarmManager::WriteToStorage(const ExtensionId& extension_id) {
   StateStore* storage = ExtensionSystem::Get(browser_context_)->state_store();
   if (!storage)
     return;
@@ -332,7 +333,7 @@ void AlarmManager::WriteToStorage(const std::string& extension_id) {
                              std::move(alarms));
 }
 
-void AlarmManager::ReadFromStorage(const std::string& extension_id,
+void AlarmManager::ReadFromStorage(const ExtensionId& extension_id,
                                    base::TimeDelta min_delay,
                                    std::optional<base::Value> value) {
   if (value && value->is_list()) {
@@ -352,8 +353,7 @@ void AlarmManager::ReadFromStorage(const std::string& extension_id,
 
 void AlarmManager::SetNextPollTime(const base::Time& time) {
   next_poll_time_ = time;
-  timer_.Start(FROM_HERE, std::max(base::Seconds(0), time - clock_->Now()),
-               this, &AlarmManager::PollAlarms);
+  timer_.Start(FROM_HERE, time, this, &AlarmManager::PollAlarms);
 }
 
 void AlarmManager::ScheduleNextPoll() {
@@ -428,7 +428,7 @@ void AlarmManager::PollAlarms() {
 static void RemoveAllOnUninstallCallback() {
 }
 
-void AlarmManager::RunWhenReady(const std::string& extension_id,
+void AlarmManager::RunWhenReady(const ExtensionId& extension_id,
                                 ReadyAction action) {
   auto it = ready_actions_.find(extension_id);
 

@@ -93,7 +93,7 @@ MLOperand* BuildConstant(
     const Vector<uint32_t>& dimensions,
     V8MLOperandDataType::Enum data_type,
     ExceptionState& exception_state,
-    absl::optional<NotShared<DOMArrayBufferView>> user_buffer_view) {
+    std::optional<NotShared<DOMArrayBufferView>> user_buffer_view) {
   auto* desc = MLOperandDescriptor::Create();
   desc->setDimensions(dimensions);
   desc->setDataType(data_type);

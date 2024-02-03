@@ -1891,8 +1891,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxDenyInstall) {
   // Check that the CRX is not installed.
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
-  ASSERT_FALSE(extension_registry->GetExtensionById(
-      kGoodCrxId, extensions::ExtensionRegistry::ENABLED));
+  ASSERT_FALSE(extension_registry->enabled_extensions().Contains(kGoodCrxId));
 }
 
 // Download an extension.  Expect a dangerous download warning.
@@ -1931,8 +1930,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxInstallDenysPermissions) {
   // Check that the extension was not installed.
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
-  ASSERT_FALSE(extension_registry->GetExtensionById(
-      kGoodCrxId, extensions::ExtensionRegistry::ENABLED));
+  ASSERT_FALSE(extension_registry->enabled_extensions().Contains(kGoodCrxId));
 }
 
 // Download an extension.  Expect a dangerous download warning.
@@ -1974,8 +1972,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxInstallAcceptPermissions) {
   // Check that the extension was installed.
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
-  ASSERT_TRUE(extension_registry->GetExtensionById(
-      kGoodCrxId, extensions::ExtensionRegistry::ENABLED));
+  ASSERT_TRUE(extension_registry->enabled_extensions().Contains(kGoodCrxId));
 }
 
 // Test installing a CRX that fails integrity checks.
@@ -2002,8 +1999,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxInvalid) {
   // Check that the extension was not installed.
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
-  ASSERT_FALSE(extension_registry->GetExtensionById(
-      kGoodCrxId, extensions::ExtensionRegistry::ENABLED));
+  ASSERT_FALSE(extension_registry->enabled_extensions().Contains(kGoodCrxId));
 }
 
 // Install a large (100kb) theme.
@@ -2044,8 +2040,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxLargeTheme) {
   // Check that the extension was installed.
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
-  ASSERT_TRUE(extension_registry->GetExtensionById(
-      kLargeThemeCrxId, extensions::ExtensionRegistry::ENABLED));
+  ASSERT_TRUE(
+      extension_registry->enabled_extensions().Contains(kLargeThemeCrxId));
 }
 
 // Tests for download initiation functions.
@@ -2339,7 +2335,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
     content::BeginNavigateIframeToURL(web_contents,
                                       /*iframe_id=*/"test", subframe_url);
-    test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
+    test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
 
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
@@ -2527,7 +2523,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
     content::BeginNavigateIframeToURL(web_contents,
                                       /*iframe_id=*/"test", subframe_url);
-    test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
+    test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
 
     target_frame = pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
     ASSERT_TRUE(target_frame);
@@ -2722,13 +2718,13 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_SaveLargeImage) {
   base::FilePath data_file = ui_test_utils::GetTestFilePath(
       base::FilePath().AppendASCII("downloads"),
       base::FilePath().AppendASCII("large_image.png"));
-  std::string png_data, data_url;
+  std::string png_data;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     CHECK(base::ReadFileToString(data_file, &png_data));
   }
 
-  base::Base64Encode(png_data, &data_url);
+  std::string data_url = base::Base64Encode(png_data);
   data_url.insert(0, "data:image/png;base64,");
 
   ASSERT_GE(data_url.size(), url::kMaxURLChars);

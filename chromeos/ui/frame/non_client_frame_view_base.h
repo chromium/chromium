@@ -37,7 +37,7 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
   void SizeConstraintsChanged() override;
   views::View::Views GetChildrenInZOrder() override;
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
@@ -88,7 +88,7 @@ class NonClientFrameViewBase::OverlayView : public views::View,
   ~OverlayView() override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   // views::ViewTargeterDelegate:

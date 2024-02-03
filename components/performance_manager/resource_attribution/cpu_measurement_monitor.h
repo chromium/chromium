@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -114,7 +115,7 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
     // Returns the most recent measurement that was taken during
     // MeasureAndDistributeCPUUsage().
-    base::TimeDelta most_recent_measurement() const {
+    std::optional<base::TimeDelta> most_recent_measurement() const {
       return most_recent_measurement_;
     }
 
@@ -133,7 +134,7 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
     std::unique_ptr<CPUMeasurementDelegate> delegate_;
 
     // The most recent CPU measurement that was taken.
-    base::TimeDelta most_recent_measurement_;
+    std::optional<base::TimeDelta> most_recent_measurement_;
 
     // Last time CPU measurements were taken (for calculating the total length
     // of a measurement interval).

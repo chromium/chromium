@@ -29,6 +29,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/log/net_log_source.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
@@ -178,13 +179,11 @@ struct CastSocketOpenParams {
 // code.
 class CastSocketImpl : public CastSocket {
  public:
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
-  CastSocketImpl(NetworkContextGetter network_context_getter,
+  CastSocketImpl(network::NetworkContextGetter network_context_getter,
                  const CastSocketOpenParams& open_params,
                  const scoped_refptr<Logger>& logger);
 
-  CastSocketImpl(NetworkContextGetter network_context_getter,
+  CastSocketImpl(network::NetworkContextGetter network_context_getter,
                  const CastSocketOpenParams& open_params,
                  const scoped_refptr<Logger>& logger,
                  const AuthContext& auth_context);
@@ -352,7 +351,7 @@ class CastSocketImpl : public CastSocket {
   // Shared logging object, used to log CastSocket events for diagnostics.
   scoped_refptr<Logger> logger_;
 
-  NetworkContextGetter network_context_getter_;
+  network::NetworkContextGetter network_context_getter_;
 
   // Owned remote to the underlying TCP socket.
   mojo::Remote<network::mojom::TCPConnectedSocket> tcp_socket_;

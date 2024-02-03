@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -38,6 +37,7 @@
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/ash/components/dbus/featured/featured_client.h"
@@ -75,7 +75,6 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
@@ -257,7 +256,6 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<RmadClient>(bus);
   }
   InitializeDBusClient<RgbkbdClient>(bus);
-  InitializeDBusClient<WilcoDtcSupportdClient>(bus);
 
   if (features::IsSnoopingProtectionEnabled() ||
       features::IsQuickDimEnabled()) {
@@ -288,7 +286,6 @@ void ShutdownDBus() {
       features::IsQuickDimEnabled()) {
     HumanPresenceDBusClient::Shutdown();
   }
-  WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(cfm::features::kMojoServices)) {
     CfmHotlineClient::Shutdown();

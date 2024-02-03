@@ -59,7 +59,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   static ViewTransition* CreateFromScript(
       Document*,
       V8ViewTransitionCallback*,
-      const absl::optional<Vector<String>>& types,
+      const std::optional<Vector<String>>& types,
       Delegate*);
 
   // Creates a ViewTransition to cache the state of a Document before a
@@ -83,7 +83,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   ViewTransition(PassKey,
                  Document*,
                  V8ViewTransitionCallback*,
-                 const absl::optional<Vector<String>>& types,
+                 const std::optional<Vector<String>>& types,
                  Delegate*);
   // Navigation-initiated for-snapshot constructor.
   ViewTransition(PassKey, Document*, ViewTransitionStateCallback, Delegate*);
@@ -348,7 +348,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
    private:
     std::unique_ptr<cc::ScopedPauseRendering> cc_paused_;
   };
-  absl::optional<ScopedPauseRendering> rendering_paused_scope_;
+  std::optional<ScopedPauseRendering> rendering_paused_scope_;
 
   ViewTransitionStateCallback transition_state_callback_;
 
@@ -363,7 +363,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool first_animating_frame_ = true;
   bool context_destroyed_ = false;
 
-  absl::optional<Vector<String>> types_;
+  std::optional<Vector<String>> types_;
 };
 
 }  // namespace blink

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/interest_group/auction_config_mojom_traits.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -311,13 +311,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   out->expects_direct_from_seller_signals_header_ad_slot =
       data.expects_direct_from_seller_signals_header_ad_slot();
 
-  if (data.has_seller_experiment_group_id()) {
-    out->seller_experiment_group_id = data.seller_experiment_group_id();
-  }
-
-  if (data.has_all_buyer_experiment_group_id()) {
-    out->all_buyer_experiment_group_id = data.all_buyer_experiment_group_id();
-  }
+  out->seller_experiment_group_id = data.seller_experiment_group_id();
+  out->all_buyer_experiment_group_id = data.all_buyer_experiment_group_id();
 
   // Seller must be HTTPS. This also excludes opaque origins, for which scheme()
   // returns an empty string.
@@ -362,7 +357,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   }
 
   if ((out->direct_from_seller_signals.is_promise() ||
-       out->direct_from_seller_signals.value() != absl::nullopt) &&
+       out->direct_from_seller_signals.value() != std::nullopt) &&
       out->expects_direct_from_seller_signals_header_ad_slot) {
     // `direct_from_seller_signals` and
     // `expects_direct_from_seller_signals_header_ad_slot` may not be both used

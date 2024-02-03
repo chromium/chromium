@@ -4,12 +4,12 @@
 
 #include "services/network/websocket_throttler.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/test/task_environment.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -260,7 +260,7 @@ TEST(WebSocketPerProcessThrottlerTest, CalculateDelay_16Failure) {
 TEST(WebSocketPerProcessThrottlerTest, MoveTracker) {
   WebSocketPerProcessThrottler throttler;
 
-  absl::optional<WebSocketThrottler::PendingConnection> tracker_holder;
+  std::optional<WebSocketThrottler::PendingConnection> tracker_holder;
   {
     WebSocketThrottler::PendingConnection tracker =
         throttler.IssuePendingConnectionTracker();
@@ -295,7 +295,7 @@ TEST(WebSocketPerProcessThrottlerTest, MoveTracker) {
   EXPECT_EQ(0, throttler.num_current_failed_connections());
   EXPECT_EQ(0, throttler.num_previous_failed_connections());
 
-  tracker_holder = absl::nullopt;
+  tracker_holder = std::nullopt;
 
   EXPECT_EQ(0, throttler.num_pending_connections());
   EXPECT_EQ(0, throttler.num_current_succeeded_connections());

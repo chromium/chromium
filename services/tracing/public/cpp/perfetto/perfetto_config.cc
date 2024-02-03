@@ -190,7 +190,7 @@ size_t GetDefaultTraceBufferSize() {
   }
 }
 
-absl::optional<base::trace_event::TraceConfig> GetChromeTraceConfig(
+std::optional<base::trace_event::TraceConfig> GetChromeTraceConfig(
     const perfetto::TraceConfig& perfetto_config) {
   // The caller must ensure a valid buffer config for chrome.
   DCHECK_GE(perfetto_config.buffers_size(), 1);
@@ -220,12 +220,12 @@ absl::optional<base::trace_event::TraceConfig> GetChromeTraceConfig(
       perfetto::protos::gen::TrackEventConfig track_event_config;
       if (!track_event_config.ParseFromString(
               data_source_config.config().track_event_config_raw())) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       // tags aren't supported in chrome TraceConfig.
       if (!track_event_config.disabled_tags().empty() ||
           !track_event_config.enabled_tags().empty()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       for (const auto& cat : track_event_config.enabled_categories()) {
         if (cat == "__metadata") {

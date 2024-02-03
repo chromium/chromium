@@ -606,8 +606,8 @@ PointerId PointerEventFactory::AddOrUpdateIdAndActiveButtons(
   pointer_id_to_attributes_.insert(
       mapped_id,
       PointerAttributes(p, is_active_buttons, hovering, unique_touch_event_id,
-                        /* last_position */ absl::nullopt,
-                        /* last_rawupdate_position */ absl::nullopt));
+                        /* last_position */ std::nullopt,
+                        /* last_rawupdate_position */ std::nullopt));
   return mapped_id;
 }
 

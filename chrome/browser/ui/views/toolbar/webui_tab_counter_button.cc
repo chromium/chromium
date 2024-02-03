@@ -98,8 +98,9 @@ std::u16string GetTabCounterLabelText(int num_tabs) {
 // Label to display a number of tabs. Because there is limited space within the
 // tab counter border, the font shrinks when the count is 10 or higher.
 class NumberLabel : public views::Label {
+  METADATA_HEADER(NumberLabel, views::Label)
+
  public:
-  METADATA_HEADER(NumberLabel);
   NumberLabel() : Label(std::u16string(), CONTEXT_TAB_COUNTER) {
     single_digit_font_ = font_list();
     double_digit_font_ = views::TypographyProvider::Get().GetFont(
@@ -118,7 +119,7 @@ class NumberLabel : public views::Label {
   gfx::FontList double_digit_font_;
 };
 
-BEGIN_METADATA(NumberLabel, views::Label)
+BEGIN_METADATA(NumberLabel)
 END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -458,7 +459,7 @@ class WebUITabCounterButton : public views::Button,
                         views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -620,7 +621,7 @@ void WebUITabCounterButton::OnThemeChanged() {
   UpdateColors();
 }
 
-void WebUITabCounterButton::Layout() {
+void WebUITabCounterButton::Layout(PassKey) {
   const gfx::Rect view_bounds = GetLocalBounds();
 
   ink_drop_container_->SetBoundsRect(view_bounds);

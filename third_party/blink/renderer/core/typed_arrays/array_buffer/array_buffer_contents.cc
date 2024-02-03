@@ -48,7 +48,7 @@ ArrayBufferContents::ArrayBufferContents(
   uint64_t real_offset = offset - offset_rounding;
   size_t real_length = length + offset_rounding;
 
-  absl::optional<base::span<uint8_t>> result = region.MapAt(
+  std::optional<base::span<uint8_t>> result = region.MapAt(
       real_offset, real_length, gin::GetSharedMemoryMapperForArrayBuffers());
   if (!result.has_value()) {
     return;
@@ -69,7 +69,7 @@ ArrayBufferContents::ArrayBufferContents(
 
 ArrayBufferContents::ArrayBufferContents(
     size_t num_elements,
-    absl::optional<size_t> max_num_elements,
+    std::optional<size_t> max_num_elements,
     size_t element_byte_size,
     SharingType is_shared,
     ArrayBufferContents::InitializationPolicy policy) {

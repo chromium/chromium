@@ -17,7 +17,7 @@ ScriptValue Metadata::modificationTime(ScriptState* script_state) const {
       platform_metadata_.modification_time.value_or(base::Time::Max());
   return ScriptValue(script_state->GetIsolate(),
                      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-                         script_state, absl::optional<base::Time>(time)));
+                         script_state, std::optional<base::Time>(time)));
 }
 
 }  // namespace blink

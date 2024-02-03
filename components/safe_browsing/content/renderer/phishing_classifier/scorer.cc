@@ -14,6 +14,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -158,6 +159,13 @@ std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
   SkBitmap downsampled = skia::ImageOperations::Resize(
       bitmap, skia::ImageOperations::RESIZE_GOOD, static_cast<int>(width),
       static_cast<int>(height));
+
+  if (downsampled.drawsNothing()) {
+    return std::string();
+  }
+
+  CHECK_EQ(downsampled.width(), width, base::NotFatalUntil::M125);
+  CHECK_EQ(downsampled.height(), height, base::NotFatalUntil::M125);
 
   // Format as an RGB buffer for input into the model
   std::string data;
@@ -616,8 +624,9 @@ int Scorer::image_embedding_tflite_model_version() const {
 
 void ScorerStorage::SetScorer(std::unique_ptr<Scorer> scorer) {
   scorer_ = std::move(scorer);
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnScorerChanged();
+  }
 }
 
 void ScorerStorage::ClearScorer() {

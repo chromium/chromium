@@ -1083,7 +1083,7 @@ TEST_F(PowerButtonControllerTest, PartiallyShownMenuInTabletMode) {
 
 TEST_F(PowerButtonControllerTest, PowerMenuItemsInTabletKiosk) {
   ClearLogin();
-  SimulateKioskMode(user_manager::USER_TYPE_WEB_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kWebKioskApp);
   SetCanLockScreen(false);
 
   EnableTabletMode(true);
@@ -1099,7 +1099,7 @@ TEST_F(PowerButtonControllerTest, PowerMenuItemsInTabletKiosk) {
 
 TEST_F(PowerButtonControllerTest, PowerMenuItemsInLaptopKiosk) {
   ClearLogin();
-  SimulateKioskMode(user_manager::USER_TYPE_WEB_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kWebKioskApp);
   SetCanLockScreen(false);
 
   EnableTabletMode(false);

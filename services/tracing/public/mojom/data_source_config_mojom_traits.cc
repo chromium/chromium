@@ -16,7 +16,7 @@ bool StructTraits<tracing::mojom::DataSourceConfigDataView,
          perfetto::DataSourceConfig* out) {
   std::string name, legacy_config, track_event_config_raw;
   perfetto::ChromeConfig chrome_config;
-  absl::optional<perfetto::protos::gen::InterceptorConfig> interceptor_config;
+  std::optional<perfetto::protos::gen::InterceptorConfig> interceptor_config;
   if (!data.ReadName(&name) || !data.ReadChromeConfig(&chrome_config) ||
       !data.ReadLegacyConfig(&legacy_config) ||
       !data.ReadTrackEventConfigRaw(&track_event_config_raw) ||

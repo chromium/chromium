@@ -293,15 +293,6 @@ Node* AXLayoutObject::GetNodeOrContainingBlockNode() const {
     return list_marker->ListItem(*layout_object_)->GetNode();
   }
 
-  if (!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled() &&
-      layout_object_->IsAnonymous()) {
-    if (LayoutBlock* layout_block =
-            LayoutObject::FindNonAnonymousContainingBlock(layout_object_)) {
-      return layout_block->GetNode();
-    }
-    return nullptr;
-  }
-
   return GetNode();
 }
 
@@ -682,9 +673,9 @@ AXObject* AXLayoutObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
     AXObject* ax_object = start_object->AXObjectCache().Get(current_node);
     if (ax_object && ax_object->AccessibilityIsIncludedInTree() &&
         !current_node->IsMarkerPseudoElement()) {
-      if (start_object->GetLayoutObject() &&
-          start_object->GetLayoutObject()->IsInline() &&
-          start_object->GetLayoutObject()->IsAtomicInlineLevel()) {
+      if (ax_object->GetLayoutObject() &&
+          ax_object->GetLayoutObject()->IsInline() &&
+          ax_object->GetLayoutObject()->IsAtomicInlineLevel()) {
         return ax_object;
       }
     }
@@ -775,17 +766,22 @@ AXObject* AXLayoutObject::NextOnLine() const {
       DCHECK(runner_layout_object);
       AXObject* result = AXObjectCache().Get(runner_layout_object);
 
-      bool is_inert = result ? result->IsInert() : false;
+      // We want to continue searching for the next inline leaf if the
+      // current one is inert or aria-hidden.
+      // We don't necessarily want to keep searching in the case of any ignored
+      // node, because we anticipate that there might be scenarios where a
+      // descendant of the ignored node is not ignored and would be returned by
+      // the call to `GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree`
+      bool should_keep_looking =
+          result ? result->IsInert() || result->IsAriaHidden() : false;
 
       result =
           GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(result, true);
-      if (result) {
+      if (result && !should_keep_looking) {
         return result;
       }
 
-      // We want to continue searching for the next inline leaf if the
-      // current one is inert.
-      if (!is_inert) {
+      if (!should_keep_looking) {
         break;
       }
       cursor.MoveToNextInlineLeafOnLine();
@@ -872,17 +868,24 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
       DCHECK(runner_layout_object);
       AXObject* result = AXObjectCache().Get(runner_layout_object);
 
-      bool is_inert = result ? result->IsInert() : false;
+      // We want to continue searching for the next inline leaf if the
+      // current one is inert or aria-hidden.
+      // We don't necessarily want to keep searching in the case of any ignored
+      // node, because we anticipate that there might be scenarios where a
+      // descendant of the ignored node is not ignored and would be returned by
+      // the call to `GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree`
+      bool should_keep_looking =
+          result ? result->IsInert() || result->IsAriaHidden() : false;
 
       result =
           GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(result, false);
-      if (result) {
+      if (result && !should_keep_looking) {
         return result;
       }
 
       // We want to continue searching for the previous inline leaf if the
       // current one is inert.
-      if (!is_inert) {
+      if (!should_keep_looking) {
         break;
       }
       cursor.MoveToPreviousInlineLeafOnLine();

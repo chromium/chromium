@@ -146,7 +146,10 @@ bool AccountConsistencyModeManager::IsDiceEnabledForProfile(Profile* profile) {
 bool AccountConsistencyModeManager::IsDiceSignInAllowed(
     ProfileAttributesEntry* entry) {
   return CanEnableDiceForBuild() && IsBrowserSigninAllowedByCommandLine() &&
-         (!entry || entry->GetProfileManagementEnrollmentToken().empty());
+         (!entry ||
+          (entry->GetProfileManagementEnrollmentToken().empty() &&
+           // TODO(b/319477219): Add full sign in support for OIDC profiles
+           entry->GetProfileManagementOidcTokens().id_token.empty()));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

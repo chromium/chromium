@@ -44,7 +44,8 @@ Profile* GetUserProfile() {
 
 }  // namespace
 
-DnsResolutionRoutine::DnsResolutionRoutine() {
+DnsResolutionRoutine::DnsResolutionRoutine(mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source) {
   profile_ = GetUserProfile();
   DCHECK(profile_);
   network_context_ =

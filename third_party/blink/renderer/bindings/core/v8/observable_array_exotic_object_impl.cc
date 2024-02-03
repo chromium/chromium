@@ -64,7 +64,7 @@ ObservableArrayExoticObjectImpl::ObservableArrayExoticObjectImpl(
 v8::Local<v8::Value> ObservableArrayExoticObjectImpl::Wrap(
     ScriptState* script_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
-  DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
+  DCHECK(!DOMDataStore::ContainsWrapper(isolate, this));
 
   // The proxy target object must be a JS Array (v8::Array) by definition.
   // Especially it's important that IsArray(proxy) evaluates to true.

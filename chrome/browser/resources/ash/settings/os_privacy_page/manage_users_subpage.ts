@@ -8,15 +8,15 @@
  * accounts on the device.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/action_link.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/action_link.css.js';
 import 'chrome://resources/js/action_link.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import '../os_people_page/user_list.js';
 import '../os_people_page/add_user_dialog.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

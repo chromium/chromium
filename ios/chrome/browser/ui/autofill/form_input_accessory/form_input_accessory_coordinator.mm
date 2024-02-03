@@ -231,12 +231,7 @@ const CGFloat kIPHVerticalOffset = -5;
 
 - (void)reset {
   [self stopChildren];
-
-  [self.formInputAccessoryMediator enableSuggestions];
-  [self.formInputAccessoryViewController reset];
-
-  self.formInputViewController = nil;
-  [GetFirstResponder() reloadInputViews];
+  [self resetInputViews];
 }
 
 #pragma mark - Presenting Children
@@ -388,7 +383,9 @@ const CGFloat kIPHVerticalOffset = -5;
 
 - (void)formInputAccessoryViewControllerReset:
     (FormInputAccessoryViewController*)formInputAccessoryViewController {
-  [self reset];
+  CHECK_EQ(self.formInputAccessoryViewController,
+           formInputAccessoryViewController);
+  [self resetInputViews];
 }
 
 #pragma mark - FallbackCoordinatorDelegate
@@ -434,6 +431,13 @@ const CGFloat kIPHVerticalOffset = -5;
       PasswordTabHelper::FromWebState(active_web_state)
           ->GetPasswordGenerationProvider();
   [generationProvider triggerPasswordGeneration];
+}
+
+#pragma mark - ManualFillAllPasswordCoordinatorDelegate
+
+- (void)manualFillAllPasswordCoordinatorWantsToBeDismissed:
+    (ManualFillAllPasswordCoordinator*)coordinator {
+  [self stopManualFillAllPasswordCoordinator];
 }
 
 #pragma mark - CardCoordinatorDelegate
@@ -665,11 +669,14 @@ const CGFloat kIPHVerticalOffset = -5;
                                     anchorPoint:anchorPoint];
 }
 
-#pragma mark - ManualFillAllPasswordCoordinatorDelegate
+// Resets `formInputAccessoryViewController` and `formInputViewController` to
+// their initial state.
+- (void)resetInputViews {
+  [self.formInputAccessoryMediator enableSuggestions];
+  [self.formInputAccessoryViewController reset];
 
-- (void)manualFillAllPasswordCoordinatorWantsToBeDismissed:
-    (ManualFillAllPasswordCoordinator*)coordinator {
-  [self stopManualFillAllPasswordCoordinator];
+  self.formInputViewController = nil;
+  [GetFirstResponder() reloadInputViews];
 }
 
 @end

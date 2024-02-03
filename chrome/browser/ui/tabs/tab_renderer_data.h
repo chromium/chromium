@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/process/kill.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
@@ -63,9 +63,7 @@ struct TabRendererData {
   // Amount of memory saved through discarding the tab
   uint64_t discarded_memory_savings_in_bytes = 0;
   // Contains information about how much resource a tab is using
-  scoped_refptr<const performance_manager::user_tuning::
-                    UserPerformanceTuningManager::TabResourceUsage>
-      tab_resource_usage;
+  scoped_refptr<const TabResourceUsage> tab_resource_usage;
   bool is_monochrome_favicon = false;
 };
 

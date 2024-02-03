@@ -411,8 +411,14 @@ class WebHidExtensionFeatureDisabledBrowserTest
   }
 };
 
+// TODO(crbug.com/1521554): Re-enable on linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
+#else
+#define MAYBE_FeatureDisabled FeatureDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
-                       FeatureDisabled) {
+                       MAYBE_FeatureDisabled) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -596,8 +602,16 @@ IN_PROC_BROWSER_TEST_F(
   SimulateClickOnSystemTrayIconButton(browser(), extension);
 }
 
+// TODO(crbug.com/1521554): Re-enable on linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
+  DISABLED_EventListenerAddedAfterServiceWorkerIsActivated
+#else
+#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
+  EventListenerAddedAfterServiceWorkerIsActivated
+#endif
 IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
-                       EventListenerAddedAfterServiceWorkerIsActivated) {
+                       MAYBE_EventListenerAddedAfterServiceWorkerIsActivated) {
   const char kWarningMessage[] =
       "Event handler of '%s' event must be added on the initial evaluation "
       "of worker script. More info: "

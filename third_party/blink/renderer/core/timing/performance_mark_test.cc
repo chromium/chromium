@@ -15,11 +15,17 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
-TEST(PerformanceMarkTest, CreateWithOptions) {
+class PerformanceMarkTest : public testing::Test {
+ protected:
+  test::TaskEnvironment task_environment_;
+};
+
+TEST_F(PerformanceMarkTest, CreateWithOptions) {
   V8TestingScope scope;
 
   ExceptionState& exception_state = scope.GetExceptionState();
@@ -40,7 +46,7 @@ TEST(PerformanceMarkTest, CreateWithOptions) {
             pm->detail(script_state).V8Value());
 }
 
-TEST(PerformanceMarkTest, Construction) {
+TEST_F(PerformanceMarkTest, Construction) {
   V8TestingScope scope;
 
   ExceptionState& exception_state = scope.GetExceptionState();
@@ -59,7 +65,7 @@ TEST(PerformanceMarkTest, Construction) {
   ASSERT_TRUE(WTF::IsValidUUID(pm->navigationId()));
 }
 
-TEST(PerformanceMarkTest, ConstructionWithDetail) {
+TEST_F(PerformanceMarkTest, ConstructionWithDetail) {
   V8TestingScope scope;
 
   ExceptionState& exception_state = scope.GetExceptionState();
@@ -78,7 +84,7 @@ TEST(PerformanceMarkTest, ConstructionWithDetail) {
             pm->detail(script_state).V8Value());
 }
 
-TEST(PerformanceMarkTest, BuildJSONValue) {
+TEST_F(PerformanceMarkTest, BuildJSONValue) {
   V8TestingScope scope;
 
   ExceptionState& exception_state = scope.GetExceptionState();
@@ -117,7 +123,7 @@ TEST(PerformanceMarkTest, BuildJSONValue) {
   EXPECT_EQ(5ul, parsed_json->GetDict().size());
 }
 
-TEST(PerformanceMarkTest, UserFeatureNamesHaveCorrespondingWebFeature) {
+TEST_F(PerformanceMarkTest, UserFeatureNamesHaveCorrespondingWebFeature) {
   const PerformanceMark::UserFeatureNameToWebFeatureMap& map =
       PerformanceMark::GetUseCounterMappingForTesting();
   const UseCounterMetricsRecorder::UkmFeatureList& allowed_features =

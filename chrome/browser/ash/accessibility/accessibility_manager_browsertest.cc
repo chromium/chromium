@@ -1805,9 +1805,9 @@ class AccessibilityManagerUserTypeTest
       public WithParamInterface<user_manager::UserType> {
  protected:
   AccessibilityManagerUserTypeTest() {
-    if (GetParam() == user_manager::USER_TYPE_GUEST) {
+    if (GetParam() == user_manager::UserType::kGuest) {
       guest_session_ = std::make_unique<GuestSessionMixin>(&mixin_host_);
-    } else if (GetParam() == user_manager::USER_TYPE_CHILD) {
+    } else if (GetParam() == user_manager::UserType::kChild) {
       logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
           &mixin_host_, LoggedInUserMixin::LogInType::kChild,
           embedded_test_server(), this);
@@ -1846,13 +1846,14 @@ class AccessibilityManagerUserTypeTest
 
 INSTANTIATE_TEST_SUITE_P(UserTypeInstantiation,
                          AccessibilityManagerUserTypeTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_GUEST,
-                                           user_manager::USER_TYPE_CHILD));
+                         ::testing::Values(user_manager::UserType::kRegular,
+                                           user_manager::UserType::kGuest,
+                                           user_manager::UserType::kChild));
 
 IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
-  if (GetParam() == user_manager::USER_TYPE_CHILD)
+  if (GetParam() == user_manager::UserType::kChild) {
     logged_in_user_mixin_->LogInUser();
+  }
 
   // This object watches for IME preference changes and reflects those in
   // the IME framework state.

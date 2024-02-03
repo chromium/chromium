@@ -1501,7 +1501,6 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   base::win::ScopedHandle shared_handle;
@@ -1983,8 +1982,6 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
   constexpr uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
   std::vector<std::unique_ptr<SharedImageBacking>> shared_image_backings;
   for (size_t i = 0; i < kNumPlanes; i++) {
@@ -2147,7 +2144,6 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
   constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
   constexpr gfx::ColorSpace color_space;
   constexpr uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                              gpu::SHARED_IMAGE_USAGE_SCANOUT |
                              gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;

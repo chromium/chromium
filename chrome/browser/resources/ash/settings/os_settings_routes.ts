@@ -551,6 +551,8 @@ export function createRoutes(): OsSettingsRoutes {
         r.OFFICE = createSubpage(
             r.SYSTEM_PREFERENCES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
             Subpage.kOfficeFiles);
+      }
+      if (loadTimeData.getBoolean('showOneDriveSettings')) {
         r.ONE_DRIVE = createSubpage(
             r.SYSTEM_PREFERENCES, routesMojom.ONE_DRIVE_SUBPAGE_PATH,
             Subpage.kOneDrive);
@@ -636,12 +638,14 @@ export function createRoutes(): OsSettingsRoutes {
           r.ADVANCED, routesMojom.FILES_SECTION_PATH, Section.kFiles);
       r.GOOGLE_DRIVE = createSubpage(
           r.FILES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH, Subpage.kGoogleDrive);
+      if (loadTimeData.getBoolean('showOneDriveSettings')) {
+        r.ONE_DRIVE = createSubpage(
+            r.FILES, routesMojom.ONE_DRIVE_SUBPAGE_PATH, Subpage.kOneDrive);
+      }
       if (loadTimeData.getBoolean('showOfficeSettings')) {
         r.OFFICE = createSubpage(
             r.FILES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
             Subpage.kOfficeFiles);
-        r.ONE_DRIVE = createSubpage(
-            r.FILES, routesMojom.ONE_DRIVE_SUBPAGE_PATH, Subpage.kOneDrive);
       }
       r.SMB_SHARES = createSubpage(
           r.FILES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,

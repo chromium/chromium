@@ -299,6 +299,7 @@ void OpenXrRenderLoop::CleanUp() {
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
   overlay_receiver_.reset();
+  environment_receiver_.reset();
   StopRuntime();
 }
 
@@ -953,13 +954,19 @@ void OpenXrRenderLoop::SubscribeToHitTest(
     return;
   }
 
-  HitTestSubscriptionId subscription_id =
+  std::optional<HitTestSubscriptionId> maybe_subscription_id =
       scene_understanding_manager->SubscribeToHitTest(
           std::move(native_origin_information), entity_types, std::move(ray));
 
-  DVLOG(2) << __func__ << ": subscription_id=" << subscription_id;
+  if (!maybe_subscription_id) {
+    std::move(callback).Run(
+        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
+    return;
+  }
+
+  DVLOG(2) << __func__ << ": subscription_id=" << *maybe_subscription_id;
   std::move(callback).Run(device::mojom::SubscribeToHitTestResult::SUCCESS,
-                          subscription_id.GetUnsafeValue());
+                          maybe_subscription_id->GetUnsafeValue());
 }
 
 void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
@@ -980,13 +987,19 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
     return;
   }
 
-  HitTestSubscriptionId subscription_id =
+  std::optional<HitTestSubscriptionId> maybe_subscription_id =
       scene_understanding_manager->SubscribeToHitTestForTransientInput(
           profile_name, entity_types, std::move(ray));
 
-  DVLOG(2) << __func__ << ": subscription_id=" << subscription_id;
+  if (!maybe_subscription_id) {
+    std::move(callback).Run(
+        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
+    return;
+  }
+
+  DVLOG(2) << __func__ << ": subscription_id=" << *maybe_subscription_id;
   std::move(callback).Run(device::mojom::SubscribeToHitTestResult::SUCCESS,
-                          subscription_id.GetUnsafeValue());
+                          maybe_subscription_id->GetUnsafeValue());
 }
 
 void OpenXrRenderLoop::UnsubscribeFromHitTest(uint64_t subscription_id) {

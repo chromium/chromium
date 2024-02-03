@@ -6,7 +6,7 @@
  * @fileoverview Oobe signin screen implementation.
  */
 
-import '//resources/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/security_token_pin.js';
 import '../../components/oobe_icons.html.js';

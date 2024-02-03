@@ -298,10 +298,16 @@ class CalendarClientTestImpl : public CalendarClient {
   ~CalendarClientTestImpl() override;
 
   // CalendarClient:
+  base::OnceClosure GetCalendarList(
+      google_apis::calendar::CalendarListCallback callback) override;
   base::OnceClosure GetEventList(
       google_apis::calendar::CalendarEventListCallback callback,
       const base::Time& start_time,
       const base::Time& end_time) override;
+
+  // Sets `calendars` as the fetched calendar list.
+  void SetCalendarList(
+      std::unique_ptr<google_apis::calendar::CalendarList> calendars);
 
   // Sets `events` as the fetched event list.
   void SetEventList(std::unique_ptr<google_apis::calendar::EventList> events);
@@ -318,7 +324,8 @@ class CalendarClientTestImpl : public CalendarClient {
 
  private:
   google_apis::ApiErrorCode error_ = google_apis::HTTP_SUCCESS;
-  std::unique_ptr<google_apis::calendar::EventList> events_ = nullptr;
+  std::unique_ptr<google_apis::calendar::CalendarList> calendars_;
+  std::unique_ptr<google_apis::calendar::EventList> events_;
   base::TimeDelta task_delay_ = kAnimationSettleDownDuration + base::Seconds(2);
 };
 

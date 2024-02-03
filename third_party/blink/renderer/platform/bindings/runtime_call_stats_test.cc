@@ -301,7 +301,7 @@ TEST_F(RuntimeCallStatsTest, TestScopeWithOptionalMacroWithCallStatsDisabled) {
   RuntimeCallCounter* counter = stats.GetCounter(test_counter_1_id);
 
   {
-    absl::optional<RuntimeCallTimerScope> scope;
+    std::optional<RuntimeCallTimerScope> scope;
     RUNTIME_CALL_TIMER_SCOPE_WITH_OPTIONAL_RCS(scope, &stats,
                                                test_counter_1_id);
     AdvanceClock(25);
@@ -317,7 +317,7 @@ TEST_F(RuntimeCallStatsTest, TestScopeWithOptionalMacroWithCallStatsEnabled) {
   RuntimeCallCounter* counter = stats.GetCounter(test_counter_1_id);
 
   {
-    absl::optional<RuntimeCallTimerScope> scope;
+    std::optional<RuntimeCallTimerScope> scope;
     RUNTIME_CALL_TIMER_SCOPE_WITH_OPTIONAL_RCS(scope, &stats,
                                                test_counter_1_id);
     AdvanceClock(25);

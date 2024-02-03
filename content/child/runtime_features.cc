@@ -325,7 +325,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebNFC, raw_ref(features::kWebNfc), kSetOnlyIfOverridden},
 #endif
           {wf::EnableWebIdentityDigitalCredentials,
-           raw_ref(features::kWebIdentityDigitalCredentials), kDefault},
+           raw_ref(features::kWebIdentityDigitalCredentials),
+           kSetOnlyIfOverridden},
           {wf::EnableMachineLearningNeuralNetwork,
            raw_ref(webnn::mojom::features::kWebMachineLearningNeuralNetwork),
            kDefault},

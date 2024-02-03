@@ -37,29 +37,3 @@ TEST_F(URLOpenerParamsTest, MAYBE_initWithUIOpenURLContext) {
   EXPECT_NSEQ(url, params.URL);
   EXPECT_NSEQ(source, params.sourceApplication);
 }
-
-// Simple test for initWithLaunchOptions:.
-TEST_F(URLOpenerParamsTest, initWithLaunchOptions) {
-  NSURL* url = [NSURL URLWithString:@"https://url.test"];
-  NSString* source = @"source";
-  NSDictionary* options = @{
-    UIApplicationLaunchOptionsURLKey : url,
-    UIApplicationLaunchOptionsSourceApplicationKey : source
-  };
-  URLOpenerParams* params =
-      [[URLOpenerParams alloc] initWithLaunchOptions:options];
-  EXPECT_NSEQ(url, params.URL);
-  EXPECT_NSEQ(source, params.sourceApplication);
-}
-
-// Simple test for toLaunchOptions.
-TEST_F(URLOpenerParamsTest, toLaunchOptions) {
-  NSURL* url = [NSURL URLWithString:@"https://url.test"];
-  NSString* source = @"source";
-  URLOpenerParams* params = [[URLOpenerParams alloc] initWithURL:url
-                                               sourceApplication:source];
-  NSDictionary* launchOptions = [params toLaunchOptions];
-  EXPECT_NSEQ(url, launchOptions[UIApplicationLaunchOptionsURLKey]);
-  EXPECT_NSEQ(source,
-              launchOptions[UIApplicationLaunchOptionsSourceApplicationKey]);
-}

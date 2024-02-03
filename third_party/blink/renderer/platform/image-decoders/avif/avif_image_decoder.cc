@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/bits.h"
@@ -24,7 +25,6 @@
 #include "cc/base/math_util.h"
 #include "media/base/video_color_space.h"
 #include "skia/ext/cicp.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
@@ -408,7 +408,7 @@ uint8_t AVIFImageDecoder::GetYUVBitDepth() const {
   return bit_depth_;
 }
 
-absl::optional<gfx::HDRMetadata> AVIFImageDecoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> AVIFImageDecoder::GetHDRMetadata() const {
   return hdr_metadata_;
 }
 
@@ -545,11 +545,11 @@ bool AVIFImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
          data_extent.offset + data_extent.size <= data_->size();
 }
 
-absl::optional<base::TimeDelta> AVIFImageDecoder::FrameTimestampAtIndex(
+std::optional<base::TimeDelta> AVIFImageDecoder::FrameTimestampAtIndex(
     wtf_size_t index) const {
   return index < frame_buffer_cache_.size()
              ? frame_buffer_cache_[index].Timestamp()
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {

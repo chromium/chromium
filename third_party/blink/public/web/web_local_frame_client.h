@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_LOCAL_FRAME_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/function_ref.h"
@@ -43,7 +44,6 @@
 #include "media/mojo/mojom/audio_processing.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -519,7 +519,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Update a context menu data for testing.
   virtual void UpdateContextMenuDataForTesting(
       const ContextMenuData&,
-      const absl::optional<gfx::Point>&) {}
+      const std::optional<gfx::Point>&) {}
 
   // Called when a new element gets focused. |from_element| is the previously
   // focused element, |to_element| is the newly focused one. Either can be null.
@@ -666,8 +666,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Asks the embedder what values to send for User Agent client hints
   // (or nullopt if none).  Used only when UserAgentOverride() is non-empty;
   // Platform::current()->UserAgentMetadata() is used otherwise.
-  virtual absl::optional<UserAgentMetadata> UserAgentMetadataOverride() {
-    return absl::nullopt;
+  virtual std::optional<UserAgentMetadata> UserAgentMetadataOverride() {
+    return std::nullopt;
   }
 
   //
@@ -848,8 +848,8 @@ class BLINK_EXPORT WebLocalFrameClient {
       network::mojom::WebSandboxFlags,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       bool& consumed_user_gesture,
-      const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>& pip_options,
+      const std::optional<Impression>&,
+      const std::optional<WebPictureInPictureWindowOptions>& pip_options,
       const WebURL& base_url) {
     return nullptr;
   }

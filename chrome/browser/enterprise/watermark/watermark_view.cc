@@ -62,7 +62,7 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
   sk_canvas->drawTextBlob(blob, x, y, flags);
 }
 
-BEGIN_METADATA(WatermarkView, views::View)
+BEGIN_METADATA(WatermarkView)
 END_METADATA
 
 }  // namespace enterprise_watermark

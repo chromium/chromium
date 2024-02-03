@@ -666,7 +666,7 @@ void CameraDeviceDelegate::ReconfigureStreams(
   if (request_manager_) {
     request_manager_->StopPreview(
         base::BindOnce(&CameraDeviceDelegate::OnFlushed, GetWeakPtr(),
-                       ShouldUseBlobVideoSnapshot(), absl::nullopt));
+                       ShouldUseBlobVideoSnapshot(), std::nullopt));
   }
 }
 
@@ -701,7 +701,7 @@ bool CameraDeviceDelegate::MaybeReconfigureForPhotoStream(
                        std::move(new_blob_resolution)));
   } else {
     request_manager_->StopPreview(base::BindOnce(
-        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, absl::nullopt));
+        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, std::nullopt));
   }
   return true;
 }
@@ -740,7 +740,7 @@ void CameraDeviceDelegate::TakePhotoImpl(cros::mojom::Effect effect) {
   if (current_blob_resolution_.IsEmpty() &&
       on_reconfigured_callbacks_.empty()) {
     request_manager_->StopPreview(base::BindOnce(
-        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, absl::nullopt));
+        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, std::nullopt));
   }
   auto on_reconfigured_callback = base::BindOnce(
       [](base::WeakPtr<Camera3AController> controller,
@@ -777,7 +777,7 @@ void CameraDeviceDelegate::OnMojoConnectionError() {
 
 void CameraDeviceDelegate::OnFlushed(
     bool require_photo,
-    absl::optional<gfx::Size> new_blob_resolution,
+    std::optional<gfx::Size> new_blob_resolution,
     int32_t result) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   if (result) {
@@ -956,12 +956,12 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
         return false;
     }
   }();
-  ConfigureStreams(require_photo, absl::nullopt);
+  ConfigureStreams(require_photo, std::nullopt);
 }
 
 void CameraDeviceDelegate::ConfigureStreams(
     bool require_photo,
-    absl::optional<gfx::Size> new_blob_resolution) {
+    std::optional<gfx::Size> new_blob_resolution) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(device_context_->GetState(),
             CameraDeviceContext::State::kInitialized);
@@ -1268,7 +1268,7 @@ void CameraDeviceDelegate::OnConstructedDefaultPortraitModeRequestSettings(
 }
 
 gfx::Size CameraDeviceDelegate::GetBlobResolution(
-    absl::optional<gfx::Size> new_blob_resolution) {
+    std::optional<gfx::Size> new_blob_resolution) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
   std::vector<gfx::Size> blob_resolutions;
@@ -1331,7 +1331,7 @@ void CameraDeviceDelegate::ProcessCaptureRequest(
           device_descriptor_.device_id);
   auto take_portrait_photo_callbacks =
       camera_app_device ? camera_app_device->ConsumePortraitModeCallbacks()
-                        : absl::nullopt;
+                        : std::nullopt;
   if (take_portrait_photo_callbacks.has_value()) {
     take_portrait_photo_callbacks_ = std::move(take_portrait_photo_callbacks);
     TakePhotoImpl(cros::mojom::Effect::kPortraitMode);
@@ -1400,7 +1400,7 @@ bool CameraDeviceDelegate::SetPointsOfInterest(
 
 mojom::RangePtr CameraDeviceDelegate::GetControlRangeByVendorTagName(
     const std::string& range_name,
-    const absl::optional<int32_t>& current) {
+    const std::optional<int32_t>& current) {
   const VendorTagInfo* info =
       camera_hal_delegate_->GetVendorTagInfoByName(range_name);
   if (info == nullptr) {
@@ -1444,7 +1444,7 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
   auto get_vendor_int =
       [&](const std::string& name,
           const cros::mojom::CameraMetadataPtr& result_metadata,
-          absl::optional<int32_t>* returned_value) {
+          std::optional<int32_t>* returned_value) {
         returned_value->reset();
         const VendorTagInfo* info =
             camera_hal_delegate_->GetVendorTagInfoByName(name);
@@ -1842,7 +1842,7 @@ std::pair<int32_t, int32_t> CameraDeviceDelegate::GetFrameRateRange() {
       CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
           device_descriptor_.device_id);
   auto specified_fps_range =
-      camera_app_device ? camera_app_device->GetFpsRange() : absl::nullopt;
+      camera_app_device ? camera_app_device->GetFpsRange() : std::nullopt;
   if (specified_fps_range) {
     return std::make_pair(specified_fps_range->GetMin(),
                           specified_fps_range->GetMax());

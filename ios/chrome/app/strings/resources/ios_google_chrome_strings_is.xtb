@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1021782183249308751">Ýttu á og haltu inni Chrome-tákninu og smelltu á „Breyta heimaskjá“</translation>
 <translation id="1066101356081285416">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Rakningarnúmer pakkans og heiti vefsvæðisins verða send til Google í því skyni að veita þennan eiginleika og bæta verslunareiginleika Google fyrir alla. Þú getur uppfært þetta hvenær sem er í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Nota Chrome sjálfgefið</translation>
 <translation id="1105362920864247682">Hreinsa vefskoðunargögn í Chrome.</translation>
@@ -96,6 +97,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3345341804167540816">Notaðu Chrome alls staðar</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}one{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}other{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}}</translation>
 <translation id="3399930248910934354">Opna stillingar Chrome</translation>
+<translation id="344736123700721678">Opnaðu Chrome hraðar úr heimaskjásdokkunni þinni</translation>
 <translation id="3472587960215700950">Chrome notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="3503014945441706099">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chrome-prófíl líka</translation>
 <translation id="3522659714780527202">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
@@ -177,12 +179,15 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="6054613632208573261">Notaðu Chrome sjálfgefið</translation>
 <translation id="6063091872902370735">Leyfa innskráningu í Chrome</translation>
 <translation id="6110625574506755980">Tilteknir Chrome eiginleikar verða ekki í boði lengur.</translation>
+<translation id="6132149203299792222">Skráðu þig inn á Google-reikninginn þinn til að samstilla aðgangsorð, bókamerki og fleira.</translation>
 <translation id="6177442314419606057">Leita í Chrome</translation>
 <translation id="6181930887571472871">Skipta yfir í Chrome</translation>
 <translation id="6238746320622508509">Leyfa Chrome að læsa huliðsflipunum þínum.</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
+<translation id="6272822675004864999">Til að fá tilkynningar frá Chrome skaltu kveikja á tilkynningum í iOS stillingum.</translation>
 <translation id="630693926528731525">Aðgangsorðinu var ekki deilt. Athugaðu nettenginguna og gakktu úr skugga um að hafa skráð þig inn á Chrome. Reyndu svo aftur.</translation>
 <translation id="6348855835728304880">Nálgastu Chrome-aðgangsorðin þín og fleira í öðrum forritum í tækinu.</translation>
+<translation id="6389317667633680932">Kannaðu nýja eiginleika sem hjálpa þér að fá sem mest út úr Chrome.</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="6427126399757991875">Fyrirtækið þitt er að setja upp Chrome...</translation>
 <translation id="6484712497741564393">Skráð(ur) inn sem <ph name="EMAIL" />.
@@ -214,8 +219,10 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="7124339256045485976">Haltu Chrome uppfærðu</translation>
 <translation id="7161390184744336561">Google Chrome er úrelt</translation>
 <translation id="7165736900384873061">Byrjaðu að nota QR-skanna Google Chrome</translation>
+<translation id="7175129790242719365">Chrome-ráð: Skráðu þig inn í Chrome</translation>
 <translation id="7187993566681480880">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="7200524487407690471">Chrome keyrir öryggisathugun sjálfkrafa daglega til að verja þig gegn öryggisbrotum, ótraustum vefsvæðum og fleiru. Þú færð frekari upplýsingar um öryggisathugun í stillingunum.</translation>
+<translation id="7203324561587388418">Fylgstu með efni og gagnlegum ábendingum fyrir Chrome.</translation>
 <translation id="72119412072970160">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun Google í öðrum forritum í iPad.</translation>
 <translation id="723787869754590019">Notaðu Chrome fyrir sjálfvirka útfyllingu</translation>
 <translation id="7254380941803999489">Stilla Chrome sem sjálfgefinn vafra</translation>
@@ -244,6 +251,8 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="7897703007638178753">Sjá nýlega flipa Chrome</translation>
 <translation id="7925119591961387184">Veldu „Chrome“.</translation>
 <translation id="7933491483529363150">Opna nýjasta flipann minn í Chrome.</translation>
+<translation id="7948283758957877064">Nýjungar í Chrome</translation>
+<translation id="8006014511203279255">Notaðu Chrome þegar þú ýtir á tengla í skilaboðum eða öðrum forritum.</translation>
 <translation id="8022947259858476807">Notaðu Chrome sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
 <translation id="804638182476029347">Leyfa Chrome-tilkynningar til að fá tilkynningar um verðlækkanir</translation>
 <translation id="8065292699993359127">Opna vefslóðir í Chrome í huliðsstillingu</translation>
@@ -280,6 +289,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="8765470054473112089">Þegar þú skrifar í veffangastiku eða leitarreit sendir Chrome það sem þú skrifar á sjálfgefna leitarvél til að fá betri tillögur. Slökkt er á þessu í huliðsstillingu.</translation>
 <translation id="8772179140489533211">Sýna innskráningartilkynningar í Chrome.</translation>
 <translation id="8788269841521769222">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Chrome-ráð: Notaðu Chrome sjálfkrafa</translation>
 <translation id="8808828119384186784">Stillingar Chrome</translation>
 <translation id="8855781063981781621">Til að slökkva á Lockdown Mode í Chrome þarftu að slökkva á því í iPad-tækinu þínu.</translation>
 <translation id="8856877214925961642">Dulkóðun aðgangsorða felur ekki í sér greiðslumáta og vefföng.

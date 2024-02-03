@@ -93,7 +93,8 @@ class UrlCheckerOnSB final {
       std::string url_lookup_service_metric_suffix,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+      bool is_async_check);
 
   ~UrlCheckerOnSB();
 
@@ -115,6 +116,8 @@ class UrlCheckerOnSB final {
   std::optional<int64_t> navigation_id() { return navigation_id_; }
 
   bool IsRealTimeCheckForTesting();
+
+  bool IsAsyncCheckForTesting();
 
   void AddUrlInRedirectChainForTesting(const GURL& url);
 
@@ -164,6 +167,7 @@ class UrlCheckerOnSB final {
   hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
       hash_realtime_utils::HashRealTimeSelection::kNone;
   base::TimeTicks creation_time_;
+  bool is_async_check_ = false;
   base::WeakPtrFactory<UrlCheckerOnSB> weak_factory_{this};
 };
 

@@ -27,7 +27,7 @@ class VideoFrameHandlerProxyLacros : public crosapi::mojom::VideoFrameHandler {
  public:
   VideoFrameHandlerProxyLacros(
       mojo::PendingReceiver<crosapi::mojom::VideoFrameHandler> proxy_receiver,
-      absl::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
+      std::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
           handler_remote,
       base::WeakPtr<media::VideoFrameReceiver> handler_remote_in_process);
   VideoFrameHandlerProxyLacros(const VideoFrameHandlerProxyLacros&) = delete;

@@ -25,6 +25,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -42,6 +44,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -57,6 +61,7 @@ import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -69,6 +74,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -159,6 +165,36 @@ public class SyncConsentFragmentTest {
     @Before
     public void setUp() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+
+        OneshotSupplier<ProfileProvider> profileProviderSupplier =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            OneshotSupplierImpl<ProfileProvider> supplierImpl =
+                                    new OneshotSupplierImpl<>();
+                            supplierImpl.set(
+                                    new ProfileProvider() {
+                                        @NonNull
+                                        @Override
+                                        public Profile getOriginalProfile() {
+                                            return Profile.getLastUsedRegularProfile();
+                                        }
+
+                                        @Nullable
+                                        @Override
+                                        public Profile getOffTheRecordProfile(
+                                                boolean createIfNeeded) {
+                                            return null;
+                                        }
+
+                                        @Override
+                                        public boolean hasOffTheRecordProfile() {
+                                            return false;
+                                        }
+                                    });
+                            return supplierImpl;
+                        });
+        when(mFirstRunPageDelegateMock.getProfileProviderSupplier())
+                .thenReturn(profileProviderSupplier);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         mActivityTestRule.setFinishActivity(true);
     }
@@ -218,6 +254,33 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "tangible_sync_consent_fragment_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testSyncConsentFragmentDefaultAccountWithUnweightedButtons() throws IOException {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.START_PAGE,
+                                            accountInfo.getEmail());
+                        });
+
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "sync_consent_fragment_with_equally_weighted_buttons");
     }
 
     @Test

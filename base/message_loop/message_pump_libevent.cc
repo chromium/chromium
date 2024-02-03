@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/time/time.h"
@@ -276,7 +277,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
 #endif
 
   RunState run_state(delegate);
-  AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
+  AutoReset<raw_ptr<RunState>> auto_reset_run_state(&run_state_, &run_state);
 
   // event_base_loopexit() + EVLOOP_ONCE is leaky, see http://crbug.com/25641.
   // Instead, make our own timer and reuse it on each call to event_base_loop().

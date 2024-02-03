@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
@@ -68,10 +69,10 @@ using metrics::OmniboxEventProto;
 
 namespace {
 
-// Increments the appropriate value in the histogram by one.
-void LogOmniboxSuggestRequest(RemoteRequestHistogramValue request_value) {
-  base::UmaHistogramEnumeration("Omnibox.SuggestRequests", request_value,
-                                RemoteRequestHistogramValue::kMaxValue);
+// Increments the appropriate event in the histogram by one.
+void LogOmniboxSuggestRequest(RemoteRequestEvent request_event) {
+  base::UmaHistogramEnumeration("Omnibox.SearchSuggest.Requests",
+                                request_event);
 }
 
 bool HasMultipleWords(const std::u16string& text) {
@@ -513,8 +514,7 @@ void SearchProvider::SortResults(bool is_keyword,
 }
 
 void SearchProvider::LogLoadComplete(bool success, bool is_keyword) {
-  LogOmniboxSuggestRequest(
-      RemoteRequestHistogramValue::kRemoteResponseReceived);
+  LogOmniboxSuggestRequest(RemoteRequestEvent::kResponseReceived);
   // Record response time for suggest requests sent to Google.  We care
   // only about the common case: the Google default provider used in
   // non-keyword mode.
@@ -761,7 +761,7 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
 void SearchProvider::CancelLoader(
     std::unique_ptr<network::SimpleURLLoader>* loader) {
   if (*loader) {
-    LogOmniboxSuggestRequest(RemoteRequestHistogramValue::kRequestInvalidated);
+    LogOmniboxSuggestRequest(RemoteRequestEvent::kRequestInvalidated);
     loader->reset();
   }
 }
@@ -923,7 +923,7 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     search_term_args.current_page_url = input.current_url().spec();
   }
 
-  LogOmniboxSuggestRequest(RemoteRequestHistogramValue::kRequestSent);
+  LogOmniboxSuggestRequest(RemoteRequestEvent::kRequestSent);
 
   // If the request is from omnibox focus, send empty search term args. The
   // purpose of such a request is to signal the server to warm up; no info
@@ -931,6 +931,8 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   return client()
       ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->StartSuggestionsRequest(
+          input.IsZeroSuggest() ? RemoteRequestType::kSearchWarmup
+                                : RemoteRequestType::kSearch,
           template_url,
           input.IsZeroSuggest() ? TemplateURLRef::SearchTermsArgs()
                                 : search_term_args,
@@ -1342,12 +1344,16 @@ int SearchProvider::GetVerbatimRelevance(bool* relevance_from_server) const {
 }
 
 bool SearchProvider::ShouldCurbDefaultSuggestions() const {
-  // Only curb if we're in keyword mode and we believe the user selected the
-  // mode explicitly.
+  // Only curb if we're in keyword mode for stater pack, or
+  // LimitKeywordModeSuggestions flag is enabled.
   if (providers_.has_keyword_provider()) {
     const TemplateURL* turl = providers_.GetKeywordProviderURL();
     DCHECK(turl);
-    return turl->starter_pack_id() > 0;
+    return (omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                .enabled &&
+            omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                .limit_dse_suggestions) ||
+           turl->starter_pack_id() > 0;
   } else {
     return false;
   }

@@ -688,8 +688,7 @@ void ClipboardAndroid::WriteText(base::StringPiece text) {
 
 void ClipboardAndroid::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> /* source_url */,
-    ClipboardContentType /* content_type */) {
+    absl::optional<base::StringPiece> /* source_url */) {
   g_map.Get().Set(ClipboardFormatType::HtmlType(), markup);
 }
 

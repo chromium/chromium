@@ -107,9 +107,15 @@ UIView* BubbleBackgroundView() {
 
 // Returns an arrow view for BubbleView.
 UIView* BubbleArrowViewWithDirection(BubbleArrowDirection arrowDirection) {
+  // Extra padding to the base of the arrow. The padding is usually covered by
+  // the background, but will bridge the gap between the background and the
+  // arrow that happens at the end of an animation, when the bubble oscillates
+  // during a spring effect.
+  const CGFloat oscillationBuffer = 1;
+
   CGSize arrowSize = GetArrowSize(arrowDirection);
-  CGFloat width = arrowSize.width;
-  CGFloat height = arrowSize.height;
+  CGFloat width = arrowSize.width + oscillationBuffer;
+  CGFloat height = arrowSize.height + oscillationBuffer;
   UIView* arrow =
       [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, width, height)];
   UIBezierPath* path = UIBezierPath.bezierPath;

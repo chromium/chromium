@@ -32,8 +32,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -67,8 +68,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     EventData(PerformanceEventTiming* event_timing,
               uint64_t presentation_index,
               base::TimeTicks event_timestamp,
-              absl::optional<int> key_code,
-              absl::optional<PointerId> pointer_id)
+              std::optional<int> key_code,
+              std::optional<PointerId> pointer_id)
         : event_timing_(event_timing),
           presentation_index_(presentation_index),
           event_timestamp_(event_timestamp),
@@ -78,8 +79,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     static EventData* Create(PerformanceEventTiming* event_timing,
                              uint64_t presentation_index,
                              base::TimeTicks event_timestamp,
-                             absl::optional<int> key_code,
-                             absl::optional<PointerId> pointer_id) {
+                             std::optional<int> key_code,
+                             std::optional<PointerId> pointer_id) {
       return MakeGarbageCollected<EventData>(event_timing, presentation_index,
                                              event_timestamp, key_code,
                                              pointer_id);
@@ -91,8 +92,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     }
     uint64_t GetPresentationIndex() const { return presentation_index_; }
     base::TimeTicks GetEventTimestamp() const { return event_timestamp_; }
-    absl::optional<int> GetKeyCode() const { return key_code_; }
-    absl::optional<PointerId> GetPointerId() const { return pointer_id_; }
+    std::optional<int> GetKeyCode() const { return key_code_; }
+    std::optional<PointerId> GetPointerId() const { return pointer_id_; }
 
    private:
     // Event PerformanceEventTiming entry that has not been sent to observers
@@ -106,10 +107,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     base::TimeTicks event_timestamp_;
     // Keycode for the event. If the event is not a keyboard event, the keycode
     // wouldn't be set.
-    absl::optional<int> key_code_;
+    std::optional<int> key_code_;
     // PointerId for the event. If the event is not a pointer event, the
     // PointerId wouldn't be set.
-    absl::optional<PointerId> pointer_id_;
+    std::optional<PointerId> pointer_id_;
   };
 
  public:
@@ -133,6 +134,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // presentation promise to calculate the |duration| attribute when such
   // promise is resolved.
   void RegisterEventTiming(const Event& event,
+                           EventTarget* event_target,
                            base::TimeTicks start_time,
                            base::TimeTicks processing_start,
                            base::TimeTicks processing_end);
@@ -216,8 +218,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // in PerformanceObservers and the Performance Timeline
   bool SetInteractionIdAndRecordLatency(
       PerformanceEventTiming* entry,
-      absl::optional<int> key_code,
-      absl::optional<PointerId> pointer_id,
+      std::optional<int> key_code,
+      std::optional<PointerId> pointer_id,
       ResponsivenessMetrics::EventTimestamps event_timestamps);
 
   // Notify observer that an event timing entry is ready and add it to the event
@@ -246,8 +248,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   mutable Member<PerformanceTiming> timing_;
   mutable Member<PerformanceTimingForReporting> timing_for_reporting_;
   DOMHighResTimeStamp pending_pointer_down_start_time_;
-  absl::optional<base::TimeDelta> pending_pointer_down_processing_time_;
-  absl::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
+  std::optional<base::TimeDelta> pending_pointer_down_processing_time_;
+  std::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
 
   // Calculate responsiveness metrics and record UKM for them.
   Member<ResponsivenessMetrics> responsiveness_metrics_;

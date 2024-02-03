@@ -1816,7 +1816,7 @@ TEST_F(WindowCycleControllerTest, RasterScaleNotSetForVisibleWindows) {
 }
 
 // Tests the UAF issue reported in https://crbug.com/1350558. `OnFlingStep()`
-// triggers a `Layout()` which may trigger an `OnFlingEnd()` where the
+// triggers layout, which may trigger an `OnFlingEnd()` where the
 // `WmFlingHandler` is destroyed while still in the middle of its
 // `WmFlingHandler::OnAnimationStep()`. This test simulates the use case when we
 // initiate an alt + tab session, start a fling, trigger another alt + tab and
@@ -3193,12 +3193,12 @@ class MultiUserWindowCycleControllerTest
     RegisterUserProfilePrefs(user_2_prefs_->registry(), /*country=*/"",
                              /*for_test=*/true);
     session_controller->AddUserSession(kUser1Email,
-                                       user_manager::USER_TYPE_REGULAR,
+                                       user_manager::UserType::kRegular,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(GetUser1AccountId(),
                                            std::move(user_1_prefs));
     session_controller->AddUserSession(kUser2Email,
-                                       user_manager::USER_TYPE_REGULAR,
+                                       user_manager::UserType::kRegular,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(GetUser2AccountId(),
                                            std::move(user_2_prefs));

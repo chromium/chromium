@@ -59,7 +59,7 @@ size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
 bool NetworkServiceProxyAllowList::Matches(
     const GURL& request_url,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
-  absl::optional<net::SchemefulSite> top_frame_site =
+  std::optional<net::SchemefulSite> top_frame_site =
       network_anonymization_key.GetTopFrameSite();
   switch (proxy_bypass_policy_) {
     case network::mojom::IpProtectionProxyBypassPolicy::kNone: {

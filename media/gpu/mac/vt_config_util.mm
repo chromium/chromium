@@ -136,7 +136,7 @@ CFStringRef GetMatrix(media::VideoColorSpace::MatrixID matrix_id) {
 
 void SetContentLightLevelInfo(
     NSMutableDictionary<NSString*, id>* extensions,
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
   SetDictionaryValue(
       extensions, kCMFormatDescriptionExtension_ContentLightLevelInfo,
       base::apple::CFToNSPtrCast(
@@ -145,7 +145,7 @@ void SetContentLightLevelInfo(
 
 void SetColorVolumeMetadata(
     NSMutableDictionary<NSString*, id>* extensions,
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
   SetDictionaryValue(
       extensions, kCMFormatDescriptionExtension_MasteringDisplayColorVolume,
       base::apple::CFToNSPtrCast(
@@ -214,8 +214,8 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
     VideoCodecProfile profile,
     int bit_depth,
     const VideoColorSpace& color_space,
-    absl::optional<gfx::HDRMetadata> hdr_metadata,
-    absl::optional<base::span<const uint8_t>> csd_box) {
+    std::optional<gfx::HDRMetadata> hdr_metadata,
+    std::optional<base::span<const uint8_t>> csd_box) {
   NSMutableDictionary* extensions = [[NSMutableDictionary alloc] init];
 
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_FormatName,

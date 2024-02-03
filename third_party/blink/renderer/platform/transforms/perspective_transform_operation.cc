@@ -42,7 +42,7 @@ scoped_refptr<TransformOperation> PerspectiveTransformOperation::Accumulate(
   //
   // This can be rewritten as:
   //   p'' == (p * p') / (p + p')
-  absl::optional<double> result;
+  std::optional<double> result;
   if (!Perspective()) {
     // In the special case of 'none', p is conceptually infinite, which
     // means p'' equals p' (including if it's also 'none').
@@ -84,7 +84,7 @@ scoped_refptr<TransformOperation> PerspectiveTransformOperation::Blend(
     to_p_inverse = InverseUsedPerspective();
   }
   double p_inverse = blink::Blend(from_p_inverse, to_p_inverse, progress);
-  absl::optional<double> p;
+  std::optional<double> p;
   if (p_inverse > 0.0 && std::isnormal(p_inverse)) {
     p = 1.0 / p_inverse;
   }

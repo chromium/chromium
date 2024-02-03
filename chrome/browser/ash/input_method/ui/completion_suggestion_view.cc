@@ -192,7 +192,7 @@ void CompletionSuggestionView::OnThemeChanged() {
   views::View::OnThemeChanged();
 }
 
-void CompletionSuggestionView::Layout() {
+void CompletionSuggestionView::Layout(PassKey) {
   int left = kPadding;
 
   suggestion_label_->SetBounds(left, 0, suggestion_width_, height());
@@ -239,7 +239,7 @@ CompletionSuggestionView::suggestion_label_for_testing() const {
   return suggestion_label_;
 }
 
-BEGIN_METADATA(CompletionSuggestionView, views::Button)
+BEGIN_METADATA(CompletionSuggestionView)
 END_METADATA
 
 }  // namespace ime

@@ -20,8 +20,9 @@ inline constexpr char kAssistPredictiveWritingEnabled[] =
     "assistive_input.predictive_writing_enabled";
 
 // A boolean pref of whether Google Calendar Integration is enabled.
-// Disabling this pref would stop the user from getting their
-// Google Calendar events from the system tray - Calendar widget.
+// Disabling this pref disables calendar list and event list fetches from
+// the user's Google Calendar, preventing them from viewing their Google
+// Calendar events in the system tray - Calendar widget.
 inline constexpr char kCalendarIntegrationEnabled[] =
     "ash.calendar_integration_enabled";
 
@@ -632,8 +633,30 @@ inline constexpr char kAccessibilitySelectToSpeakVoiceSwitching[] =
 inline constexpr char kAccessibilitySelectToSpeakWordHighlight[] =
     "settings.a11y.select_to_speak_word_highlight";
 
+// A boolean pref which determines whether FaceGaze is enabled.
 inline constexpr char kAccessibilityFaceGazeEnabled[] =
     "settings.a11y.face_gaze.enabled";
+// An integer pref which scales the cursor speed when moving up.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedUp[] =
+    "settings.a11y.face_gaze.cursor_speed_up";
+// An integer pref which scales the cursor speed when moving down.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedDown[] =
+    "settings.a11y.face_gaze.cursor_speed_down";
+// An integer pref which scales the cursor speed when moving left.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedLeft[] =
+    "settings.a11y.face_gaze.cursor_speed_left";
+// An integer pref which scales the cursor speed when moving right.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedRight[] =
+    "settings.a11y.face_gaze.cursor_speed_right";
+// An integer pref which determines how much FaceGaze should smooth cursor
+// movements.
+inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
+    "settings.a11y.face_gaze.cursor_smoothing";
+// A boolean pref which determines whether FaceGaze should use cursor
+// acceleration, which makes the cursor move faster when the tracked point moves
+// quickly.
+inline constexpr char kAccessibilityFaceGazeCursorUseAcceleration[] =
+    "settings.a11y.face_gaze.cursor_use_acceleration";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
@@ -1979,6 +2002,11 @@ inline constexpr char kDeleteKeyModifier[] = "ash.settings.delete_key_modifier";
 // remapping a key event to the Insert "six pack" key. This setting can be
 // controlled through policy InsertKeyModifier.
 inline constexpr char kInsertKeyModifier[] = "ash.settings.insert_key_modifier";
+
+// An integer pref to define whether restore apps and web pages on startup.
+// Refer to `ash::full_restore::RestoreOption`.
+inline constexpr char kRestoreAppsAndPagesPrefName[] =
+    "settings.restore_apps_and_pages";
 
 //-----------------------------------------------------------------------------
 // Language related Prefs

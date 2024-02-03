@@ -16,7 +16,6 @@ import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojo
 import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom";
 import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
 import "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom";
-import "chromeos/ash/services/cros_healthd/public/mojom/wilco_ec.mojom";
 import "chromeos/services/network_health/public/mojom/network_diagnostics.mojom";
 import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
@@ -935,40 +934,4 @@ struct ServiceStatus {
 interface CrosHealthdSystemService {
   // Returns the status of the cros_healthd service and external mojo remotes.
   GetServiceStatus@0() => (ServiceStatus response);
-};
-
-// Wilco EC (embedded controller) interface exposed by the cros_healthd daemon.
-// This is to be used by the wilco_dtc and wilco_dtc_supportd processes to
-// interact with the cros_healthd ec_service, observe EC events, and request
-// telemetry information.
-// ChromeOS wilco_dtc_supportd will use this to capture EC events and telemetry
-// to be communicated to the sandboxed wilco_dtc which uses external,
-// proprietary code to communicate with Dell enterprise telemetry services
-// through the browser.
-// See go/wilco-ec for more information
-//
-// NextMinVersion: 1, NextIndex: 4
-[Stable]
-interface WilcoEcServiceController {
-  // Adds an observer to be notified on EC events. The caller can remove the
-  // observer created by this call by closing their end of the message pipe.
-  //
-  // The request:
-  // * |observer| - EC observer to be added to cros_healthd.
-  AddEcObserver@0(pending_remote<WilcoEcObserver> observer);
-
-  // Returns EC telemetry
-  //
-  // The request:
-  // * |payload_string| - a byte string produced by the wilco_dtc VM.
-  //
-  // The response:
-  // * |response| - a structure containing a byte string and a status code.
-  GetEcTelemetry@1(string payload_string) => (GetEcTelemetryResponse response);
-
-  // Starts the Service.
-  StartEcService@2();
-
-  // Shuts down the Service.
-  ShutdownEcService@3();
 };

@@ -51,6 +51,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Browser;
 import android.util.DisplayMetrics;
@@ -151,6 +152,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -355,7 +357,10 @@ public class CustomTabActivityTest {
                     tab.addObserver(
                             new EmptyTabObserver() {
                                 @Override
-                                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                                public void onLoadUrl(
+                                        Tab tab,
+                                        LoadUrlParams params,
+                                        LoadUrlResult loadUrlResult) {
                                     assertTrue(
                                             params.getVerbatimHeaders()
                                                     .contains("bearer-token: Some token"));
@@ -958,7 +963,10 @@ public class CustomTabActivityTest {
                     tab.addObserver(
                             new EmptyTabObserver() {
                                 @Override
-                                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                                public void onLoadUrl(
+                                        Tab tab,
+                                        LoadUrlParams params,
+                                        LoadUrlResult loadUrlResult) {
                                     assertEquals(referrer, params.getReferrer().getUrl());
                                 }
 
@@ -1004,7 +1012,10 @@ public class CustomTabActivityTest {
                     tab.addObserver(
                             new EmptyTabObserver() {
                                 @Override
-                                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                                public void onLoadUrl(
+                                        Tab tab,
+                                        LoadUrlParams params,
+                                        LoadUrlResult loadUrlResult) {
                                     assertEquals(referrer, params.getReferrer().getUrl());
                                 }
 
@@ -2639,6 +2650,11 @@ public class CustomTabActivityTest {
 
                     ComponentName component = new ComponentName("com.foo.bar", "className");
                     when(activity.getCallingActivity()).thenReturn(component);
+                    PowerManager powerManager =
+                            (PowerManager)
+                                    ContextUtils.getApplicationContext()
+                                            .getSystemService(Context.POWER_SERVICE);
+                    when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
 
                     LaunchIntentDispatcher.dispatch(activity, intent);
                     verify(activity, times(1)).startActivity(mIntentCaptor.capture(), any());
@@ -2660,6 +2676,11 @@ public class CustomTabActivityTest {
                     Intent intent = createMinimalCustomTabIntent();
                     intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "spoofed");
                     Activity activity = Mockito.mock(Activity.class);
+                    PowerManager powerManager =
+                            (PowerManager)
+                                    ContextUtils.getApplicationContext()
+                                            .getSystemService(Context.POWER_SERVICE);
+                    when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
 
                     LaunchIntentDispatcher.dispatch(activity, intent);
                     verify(activity, times(1)).startActivity(mIntentCaptor.capture(), any());

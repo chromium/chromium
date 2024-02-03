@@ -18,9 +18,7 @@
 
 namespace ash {
 
-class AutoSnapController;
-
-// Defines two ways to get the split overview session:
+// Defines two ways to get the split overview session in clamshell mode:
 // 1. Snap a window and partial overview will automatically show on the other
 // side of the screen. Currently behind the feature flag of `kSnapGroup` arm 1
 // or `kFasterSplitScreenSetup`;
@@ -44,12 +42,11 @@ enum class SplitViewOverviewSessionExitPoint {
 };
 
 // Encapsulates the split view state with a single snapped window and
-// overview, also known as intermediate split view or the snap group creation
-// session.
+// overview in **clamshell**, also known as intermediate split view or the snap
+// group creation session.
 //
-// While `this` is alive, both split view and overview will be active;
-// however, the converse is not always true. `this` will automatically be
-// destroyed upon split view or overview ending.
+// While `this` is alive, both split view and overview will be active. `this`
+// will automatically be destroyed upon split view or overview ending.
 //
 // There may be at most one SplitViewOverviewSession per root window. Consumers
 // should create and manage this via the
@@ -66,6 +63,10 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   SplitViewOverviewSession& operator=(const SplitViewOverviewSession&) = delete;
   ~SplitViewOverviewSession() override;
 
+  aura::Window* window() { return window_; }
+  SplitViewOverviewSetupType setup_type() const { return setup_type_; }
+  chromeos::WindowStateType GetWindowStateType() const;
+
   // Initializes the session by starting overview. This must be called after the
   // constructor, as consumers may check if `this` exists.
   void Init(std::optional<OverviewStartAction> action,
@@ -74,13 +75,6 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   // Records the `SplitViewOverviewSessionExitPoint` in uma metrics.
   void RecordSplitViewOverviewSessionExitPointMetrics(
       SplitViewOverviewSessionExitPoint user_action);
-
-  aura::Window* window() { return window_; }
-  SplitViewOverviewSetupType setup_type() const { return setup_type_; }
-  chromeos::WindowStateType GetWindowStateType() const;
-  AutoSnapController* auto_snap_controller() {
-    return auto_snap_controller_.get();
-  }
 
   // Called by `OverviewSession` on a key or mouse event that isn't processed by
   // overview session.
@@ -115,9 +109,6 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   // Records the presentation time of resize operation in clamshell split view
   // mode.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
-
-  // Observes windows and performs auto snapping if needed in clamshell mode.
-  std::unique_ptr<AutoSnapController> auto_snap_controller_;
 
   // The single snapped window in intermediate split view, with overview on
   // the opposite side.

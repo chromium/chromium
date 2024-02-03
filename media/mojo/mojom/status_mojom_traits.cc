@@ -29,7 +29,7 @@ bool StructTraits<
   if (!data.ReadData(&output->data))
     return false;
 
-  absl::optional<media::internal::StatusData> cause;
+  std::optional<media::internal::StatusData> cause;
   if (!data.ReadCause(&cause))
     return false;
 

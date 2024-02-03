@@ -315,8 +315,8 @@ class DeclarativeNetRequestBrowserTest
   }
 
   const Extension* last_loaded_extension() {
-    return extension_registry()->GetExtensionById(last_loaded_extension_id(),
-                                                  ExtensionRegistry::ENABLED);
+    return extension_registry()->enabled_extensions().GetByID(
+        last_loaded_extension_id());
   }
 
   content::PageType GetPageType() const { return GetPageType(browser()); }
@@ -1613,7 +1613,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   rule.condition->url_filter = std::string("static.example");
   rule.condition->resource_types = std::vector<std::string>({"main_frame"});
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
 
   // Add dynamic rule to block requests to "dynamic.example".
   rule.condition->url_filter = std::string("dynamic.example");
@@ -2037,7 +2037,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   rule.condition->resource_types = std::vector<std::string>({"main_frame"});
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
 
-  ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
   GURL url = embedded_test_server()->GetURL("example.com",
                                             "/pages_with_script/page.html");
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -2217,7 +2217,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   rule.condition->url_filter = std::string("static.com");
   rule.condition->resource_types = std::vector<std::string>({"main_frame"});
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}, "extension", {}));
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
 
   // Add dynamic rule to block main-frame requests to "dynamic.com".
   rule.condition->url_filter = std::string("dynamic.com");
@@ -2290,7 +2290,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, ZeroRulesets) {
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
       {} /* rulesets */, "extension_directory", {} /* hosts */));
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
 
   const GURL url = embedded_test_server()->GetURL(
       "example.com", "/pages_with_script/page.html");
@@ -2362,7 +2362,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, MultipleRulesets) {
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
       rulesets, "extension_directory", {} /* hosts */));
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
 
   // Also add a dynamic rule blocking pages with string "dynamic".
   const char* kDynamicFilter = "dynamic";
@@ -2485,11 +2485,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       rules_1, "extension_1", {URLPattern::kAllUrlsPattern}));
-  const ExtensionId extension_id_1 = last_loaded_extension_id();
+  const ExtensionId& extension_id_1 = last_loaded_extension_id();
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       rules_2, "extension_2", {URLPattern::kAllUrlsPattern}));
-  const ExtensionId extension_id_2 = last_loaded_extension_id();
+  const ExtensionId& extension_id_2 = last_loaded_extension_id();
 
   auto get_manifest_url = [](const ExtensionId& extension_id) {
     return GURL(base::StringPrintf("%s://%s/manifest.json",
@@ -2636,7 +2636,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   rule.condition->resource_types = std::vector<std::string>({"main_frame"});
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
 
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
 
   // Add a dynamic rule to block main-frame requests to "example.com".
   rule.condition->url_filter = std::string("||example.com");
@@ -2766,7 +2766,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
       rulesets, "extension_directory", {} /* hosts */));
 
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
   EXPECT_TRUE(ruleset_manager()->GetMatcherForExtension(extension_id));
 
   const Extension* extension = last_loaded_extension();
@@ -2853,7 +2853,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
       rulesets, "extension_directory", {} /* hosts */));
 
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
   EXPECT_TRUE(ruleset_manager()->GetMatcherForExtension(extension_id));
 
   // Add a dynamic rule.
@@ -2921,7 +2921,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        RulesetPrefsDeletedOnUninstall) {
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({} /* rules */));
 
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
   const Extension* extension = last_loaded_extension();
 
   std::vector<FileBackedRulesetSource> static_sources =
@@ -3953,7 +3953,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       {rules}, "test_extension", {URLPattern::kAllUrlsPattern}));
 
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
   util::SetIsIncognitoEnabled(extension_id, profile(), true /*enabled*/);
 
   ExtensionPrefs::Get(profile())->SetDNRUseActionCountAsBadgeText(extension_id,
@@ -4137,14 +4137,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
        ext1_add_custom_response_header_rule},
       "extension_1", {URLPattern::kAllUrlsPattern}));
 
-  const ExtensionId extension_1_id = last_loaded_extension_id();
+  const ExtensionId& extension_1_id = last_loaded_extension_id();
   ExtensionPrefs::Get(profile())->SetDNRUseActionCountAsBadgeText(
       extension_1_id, true);
 
   ExtensionAction* extension_1_action =
       ExtensionActionManager::Get(web_contents()->GetBrowserContext())
-          ->GetExtensionAction(*extension_registry()->GetExtensionById(
-              extension_1_id, extensions::ExtensionRegistry::ENABLED));
+          ->GetExtensionAction(
+              *extension_registry()->enabled_extensions().GetByID(
+                  extension_1_id));
 
   // Create another extension which removes the referer header from example.com
   // and get the ExtensionAction for it.
@@ -4169,14 +4170,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
        ext2_add_custom_response_header_rule},
       "extension_2", {URLPattern::kAllUrlsPattern}));
 
-  const ExtensionId extension_2_id = last_loaded_extension_id();
+  const ExtensionId& extension_2_id = last_loaded_extension_id();
   ExtensionPrefs::Get(profile())->SetDNRUseActionCountAsBadgeText(
       extension_2_id, true);
 
   ExtensionAction* extension_2_action =
       ExtensionActionManager::Get(web_contents()->GetBrowserContext())
-          ->GetExtensionAction(*extension_registry()->GetExtensionById(
-              extension_2_id, extensions::ExtensionRegistry::ENABLED));
+          ->GetExtensionAction(
+              *extension_registry()->enabled_extensions().GetByID(
+                  extension_2_id));
 
   struct {
     GURL url;
@@ -4902,7 +4904,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   constexpr char kDirectory1[] = "dir1";
   ASSERT_NO_FATAL_FAILURE(
       LoadExtensionWithRulesets(rulesets, kDirectory1, {} /* hosts */));
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
   const Extension* extension = last_loaded_extension();
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
@@ -4969,8 +4971,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
       new_rulesets, kDirectory2, {} /* hosts */,
       0 /* expected_extensions_with_rulesets_count_change */,
       true /* has_dynamic_ruleset */));
-  extension = extension_registry()->GetExtensionById(
-      extension_id, extensions::ExtensionRegistry::ENABLED);
+  extension = extension_registry()->enabled_extensions().GetByID(extension_id);
 
   composite_matcher = ruleset_manager()->GetMatcherForExtension(extension_id);
   ASSERT_TRUE(composite_matcher);
@@ -5014,7 +5015,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   const char* kDirectory1 = "dir1";
   ASSERT_NO_FATAL_FAILURE(
       LoadExtensionWithRulesets(rulesets, kDirectory1, {} /* hosts */));
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
   const Extension* extension = last_loaded_extension();
 
   CompositeMatcher* composite_matcher =
@@ -5040,8 +5041,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
       {} /* new_rulesets */, kDirectory2, {} /* hosts */,
       -1 /* expected_extensions_with_rulesets_count_change */,
       false /* has_dynamic_ruleset */));
-  extension = extension_registry()->GetExtensionById(
-      extension_id, extensions::ExtensionRegistry::ENABLED);
+  extension = extension_registry()->enabled_extensions().GetByID(extension_id);
 
   composite_matcher = ruleset_manager()->GetMatcherForExtension(extension_id);
   EXPECT_FALSE(composite_matcher);
@@ -5093,8 +5093,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
       rulesets, kDirectory2, {} /* hosts */,
       0 /* expected_extensions_with_rulesets_count_change */,
       false /* has_dynamic_ruleset */));
-  extension = extension_registry()->GetExtensionById(
-      last_loaded_extension_id(), extensions::ExtensionRegistry::ENABLED);
+  extension = last_loaded_extension();
 
   composite_matcher =
       ruleset_manager()->GetMatcherForExtension(last_loaded_extension_id());
@@ -5335,7 +5334,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   // Load an extension with no rulesets and add a dynamic rule.
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
       {} /* rulesets */, "ext" /* directory */, {} /* hosts */));
-  ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
   AddDynamicRules(extension_id, {CreateGenericRule()});
 
   VerifyPublicRulesetIds(last_loaded_extension(),
@@ -6880,7 +6879,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
 
   auto bfcache_render_frame_host_delete_observer =
       NavigateForBackForwardCache();
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
 
   // Add dynamic rule.
   rule.condition->url_filter = std::string("dynamic.com");
@@ -6903,7 +6902,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
 
   auto bfcache_render_frame_host_delete_observer =
       NavigateForBackForwardCache();
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
 
   // Add session-scoped rule to block requests to "session.example".
   rule.condition->url_filter = std::string("session.example");
@@ -6929,11 +6928,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
 
   auto bfcache_render_frame_host_delete_observer =
       NavigateForBackForwardCache();
-  const ExtensionId extension_id = last_loaded_extension_id();
+  const ExtensionId& extension_id = last_loaded_extension_id();
 
   // Enable |ruleset_2|.
   ASSERT_NO_FATAL_FAILURE(
-      UpdateEnabledRulesets(last_loaded_extension_id(), {}, {"ruleset_2"}));
+      UpdateEnabledRulesets(extension_id, {}, {"ruleset_2"}));
 
   // Expect that |render_frame_host_a| is destroyed as the cache would get
   // cleared due to addition of new ruleset.

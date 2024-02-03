@@ -25,9 +25,8 @@ void InitializeFonts() {
   // the long delay the user would have seen on first rendering.
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Ensures the config is created on this thread.
-  FcConfig* config = GetGlobalFontConfig();
-  DCHECK(config);
+  // Early initialize FontConfig.
+  InitializeGlobalFontConfigAsync();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)

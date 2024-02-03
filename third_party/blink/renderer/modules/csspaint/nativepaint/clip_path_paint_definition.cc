@@ -51,13 +51,13 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
       const Vector<scoped_refptr<BasicShape>>& animated_shapes,
       const Vector<double>& offsets,
       Vector<std::unique_ptr<gfx::TimingFunction>> timing_functions,
-      const absl::optional<double>& progress,
+      const std::optional<double>& progress,
       cc::PaintWorkletInput::PropertyKeys property_keys)
       : PaintWorkletInput(clip_area_size, worklet_id, std::move(property_keys)),
         offsets_(offsets),
         timing_functions_(std::move(timing_functions)),
         progress_(progress) {
-    absl::optional<BasicShape::ShapeType> prev_type = absl::nullopt;
+    std::optional<BasicShape::ShapeType> prev_type = std::nullopt;
     for (const auto& basic_shape : animated_shapes) {
       Path path;
       basic_shape.get()->GetPath(path, reference_box, zoom);
@@ -71,7 +71,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
 
   ~ClipPathPaintWorkletInput() override = default;
 
-  const absl::optional<double>& MainThreadProgress() const { return progress_; }
+  const std::optional<double>& MainThreadProgress() const { return progress_; }
   const Vector<SkPath>& Paths() const { return paths_; }
 
   // Returns TRUE if the BasicShape::ShapeType of the keyframe and its following
@@ -134,7 +134,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
   // animations. This class should be refactored so that the necessary
   // properties exist in both this and Background Color paint worklet input
   Vector<std::unique_ptr<gfx::TimingFunction>> timing_functions_;
-  absl::optional<double> progress_;
+  std::optional<double> progress_;
 };
 
 scoped_refptr<BasicShape> CreateBasicShape(
@@ -325,7 +325,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
 
   Vector<scoped_refptr<BasicShape>> animated_shapes;
   Vector<double> offsets;
-  absl::optional<double> progress;
+  std::optional<double> progress;
 
   Animation* animation = GetAnimationIfCompositable(element);
   // If we are here the animation must be compositable.

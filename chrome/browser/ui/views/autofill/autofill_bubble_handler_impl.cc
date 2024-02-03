@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_bubble_handler_impl.h"
 
+#include "base/functional/callback_forward.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
@@ -307,6 +309,21 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
   }
 }
 
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCardConfirmationBubble(
+    content::WebContents* web_contents,
+    SaveCardBubbleController* controller) {
+  views::View* anchor_view =
+      toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
+  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+      controller->GetOnBubbleClosedCallback();
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kSaveCard);
+
+  return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
+      anchor_view, web_contents, std::move(callback), icon_view);
+}
+
 void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
   if (should_show_sign_in_promo_if_applicable_) {
     should_show_sign_in_promo_if_applicable_ = false;
@@ -339,6 +356,24 @@ void AutofillBubbleHandlerImpl::ShowAvatarHighlightAnimation() {
       toolbar_button_provider_->GetAvatarToolbarButton();
   if (avatar)
     avatar->ShowAvatarHighlightAnimation();
+}
+
+AutofillBubbleBase*
+AutofillBubbleHandlerImpl::ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
+    views::View* anchor_view,
+    content::WebContents* web_contents,
+    base::OnceCallback<void(PaymentsBubbleClosedReason)>
+        controller_hide_callback,
+    PageActionIconView* icon_view) {
+  SaveCardAndVirtualCardEnrollConfirmationBubbleViews* bubble =
+      new SaveCardAndVirtualCardEnrollConfirmationBubbleViews(
+          anchor_view, web_contents, std::move(controller_hide_callback));
+
+  bubble->SetHighlightedButton(icon_view);
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(LocationBarBubbleDelegateView::AUTOMATIC);
+
+  return bubble;
 }
 
 }  // namespace autofill

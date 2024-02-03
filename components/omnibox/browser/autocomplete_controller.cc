@@ -16,6 +16,7 @@
 #include <queue>
 #include <set>
 #include <string>
+#include <tuple>
 #include <unordered_set>
 #include <utility>
 
@@ -44,6 +45,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/bookmark_provider.h"
@@ -830,7 +832,7 @@ GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
     TemplateURL* template_url,
     const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
   if (!template_url) {
-    return GURL::EmptyGURL();
+    return GURL();
   }
   return GURL(template_url->url_ref().ReplaceSearchTerms(
       search_terms_args, template_url_service_->search_terms_data()));
@@ -1684,6 +1686,7 @@ bool AutocompleteController::ShouldRunProvider(
     const TemplateURL* keyword_turl =
         KeywordProvider::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
+
     if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
       switch (provider->type()) {
         // Search provider and keyword provider are still run because we would
@@ -1714,6 +1717,29 @@ bool AutocompleteController::ShouldRunProvider(
         // No other providers should run when in a starter pack scope.
         default:
           return false;
+      }
+    }
+
+    // Outside of the starter pack scopes, keyword mode should still restrict
+    // certain providers (when LimitKeywordModeSuggestions is enabled).
+    if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get().enabled) {
+      switch (provider->type()) {
+        // Don't run history cluster provider.
+        case AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER:
+          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                       .limit_history_cluster_suggestions);
+
+        // Don't run document provider, except for Google Drive.
+        case AutocompleteProvider::TYPE_DOCUMENT:
+          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                       .limit_document_suggestions) ||
+                 base::StartsWith(keyword_turl->url(),
+                                  "https://drive.google.com",
+                                  base::CompareCase::INSENSITIVE_ASCII);
+
+        // Otherwise, all other providers should still run.
+        default:
+          return true;
       }
     }
   }
@@ -1781,10 +1807,14 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
   }
 
   // The goal is to redistribute the existing relevance scores among the
-  // eligible matches according to the model prediction scores. Construct two
-  // max heaps for the (legacy) relevance score and the model prediction scores.
+  // eligible matches according to the model prediction scores.
+  // `relevance_heap` is a max heap containing the (legacy) relevance scores,
+  // while `prediction_and_match_itr_heap` is a max heap containing tuples of
+  // the form (ml_score, legacy_score, match_itr). If two matches have the same
+  // ML score (e.g. two remote document suggestions w/o local scoring signals),
+  // then the legacy score will be used to break ties.
   std::priority_queue<int> relevance_heap;
-  std::priority_queue<std::pair<float, AutocompleteResult::iterator>>
+  std::priority_queue<std::tuple<float, int, AutocompleteResult::iterator>>
       prediction_and_match_itr_heap;
   // Likewise, keep the same number of shortcut boosted suggestions but reassign
   // them to the highest scoring suggestions.
@@ -1797,7 +1827,8 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
 
     auto match_itr = eligible_match_itrs[index];
     relevance_heap.emplace(match_itr->relevance);
-    prediction_and_match_itr_heap.emplace(prediction.value(), match_itr);
+    prediction_and_match_itr_heap.emplace(prediction.value(),
+                                          match_itr->relevance, match_itr);
     if (match_itr->shortcut_boosted)
       boosted_shortcut_count++;
   }
@@ -1820,11 +1851,11 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
     // If not in the counterfactual treatment, assign the highest relevance
     // score to the match with the highest respective model prediction score.
     if (!OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
-      auto match_itr = prediction_and_match_itr_heap.top().second;
+      auto match_itr = std::get<2>(prediction_and_match_itr_heap.top());
       match_itr->RecordAdditionalInfo("ml legacy relevance",
                                       match_itr->relevance);
       match_itr->RecordAdditionalInfo(
-          "ml model output", prediction_and_match_itr_heap.top().first);
+          "ml model output", std::get<0>(prediction_and_match_itr_heap.top()));
       match_itr->relevance = relevance_heap.top();
       if (boosted_shortcut_count) {
         match_itr->RecordAdditionalInfo("ML shortcut boosted", "true");
@@ -1909,8 +1940,8 @@ void AutocompleteController::RunBatchUrlScoringModelWithStableSearches(
     match.RecordAdditionalInfo("ml model output", *results[i]);
     prediction_and_position_heap.push_back({*results[i], scored_positions[i]});
   }
-  base::ranges::sort(prediction_and_position_heap, std::greater<>(),
-                     [](const auto& pair) { return pair.first; });
+  base::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
+                            [](const auto& pair) { return pair.first; });
 
   if (internal_result_.matches_[0].IsUrlScoringEligible()) {
     const auto& new_default = base::ranges::find_if(

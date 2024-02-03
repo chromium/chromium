@@ -38,9 +38,9 @@ uint32_t RTCRtpSource::Source() const {
   return source_.source_id();
 }
 
-absl::optional<double> RTCRtpSource::AudioLevel() const {
+std::optional<double> RTCRtpSource::AudioLevel() const {
   if (!source_.audio_level())
-    return absl::nullopt;
+    return std::nullopt;
   // Converted according to equation defined here:
   // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-audiolevel
   uint8_t rfc_level = *source_.audio_level();
@@ -55,19 +55,19 @@ uint32_t RTCRtpSource::RtpTimestamp() const {
   return source_.rtp_timestamp();
 }
 
-absl::optional<int64_t> RTCRtpSource::CaptureTimestamp() const {
+std::optional<int64_t> RTCRtpSource::CaptureTimestamp() const {
   if (!source_.absolute_capture_time().has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return webrtc::UQ32x32ToInt64Ms(
       source_.absolute_capture_time()->absolute_capture_timestamp);
 }
 
-absl::optional<int64_t> RTCRtpSource::SenderCaptureTimeOffset() const {
+std::optional<int64_t> RTCRtpSource::SenderCaptureTimeOffset() const {
   if (!source_.absolute_capture_time().has_value() ||
       !source_.absolute_capture_time()
            ->estimated_capture_clock_offset.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return webrtc::UQ32x32ToInt64Ms(
       source_.absolute_capture_time()->estimated_capture_clock_offset.value());

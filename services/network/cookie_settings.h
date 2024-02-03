@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_COOKIE_SETTINGS_H_
 #define SERVICES_NETWORK_COOKIE_SETTINGS_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   net::NetworkDelegate::PrivacySetting IsPrivacyModeEnabled(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       net::CookieSettingOverrides overrides) const;
 
   // Returns true and maybe update `cookie_inclusion_status` to include reason
@@ -129,7 +129,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const net::CanonicalCookie& cookie,
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieSettingOverrides overrides,
       net::CookieInclusionStatus* cookie_inclusion_status) const;
@@ -204,6 +204,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin,
       net::CookieSettingOverrides overrides) const;
+
+  // Forwards to FirstPartyURL in most cases, except when the top-level
+  // document is sandboxed (such as due to Content-Security-Policy). We do this
+  // to allow searching for explicit content settings which may re-enable
+  // SameSite=None cookies on those pages.
+  static GURL FirstPartyURLForMetadata(
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin* top_frame_origin);
 
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;

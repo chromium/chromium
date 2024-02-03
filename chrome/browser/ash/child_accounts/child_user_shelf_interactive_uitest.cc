@@ -8,6 +8,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "base/test/gtest_tags.h"
+#include "chrome/browser/ash/child_accounts/child_user_interactive_base_test.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
@@ -17,20 +18,11 @@ namespace ash {
 
 // Interactive test that uses a supervised user mixin to test shelf behavior for
 // child users.
-class ChildUserShelfInteractiveTest : public InteractiveAshTest {
- private:
-  supervised_user::SupervisionMixin mixin_{
-      mixin_host_,
-      this,
-      {.sign_in_mode =
-           supervised_user::SupervisionMixin::SignInMode::kSupervised}};
-};
+using ChildUserShelfInteractiveTest = ChildUserInteractiveBaseTest;
 
 IN_PROC_BROWSER_TEST_F(ChildUserShelfInteractiveTest, CheckIncognitoDisabled) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-5e1a3142-c3a8-4367-ba99-292837fe8185");
-  SetupContextWidget();
-  InstallSystemApps();
 
   // Get the primary display's shelf view.
   Shelf* shelf = Shell::GetPrimaryRootWindowController()->shelf();

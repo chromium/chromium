@@ -43,10 +43,11 @@
 #ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
 #include "media/gpu/v4l2/mt21/mt21_decompressor.h"
 #endif
+#include <optional>
+
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence_egl.h"
@@ -552,7 +553,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // thread manipulates them.
   //
 
-  absl::optional<V4L2WritableBufferRef> current_input_buffer_;
+  std::optional<V4L2WritableBufferRef> current_input_buffer_;
 
   scoped_refptr<V4L2Queue> input_queue_;
   scoped_refptr<V4L2Queue> output_queue_;
@@ -614,7 +615,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // Chosen input format for the video profile we are decoding from.
   uint32_t input_format_fourcc_;
   // Chosen output format.
-  absl::optional<Fourcc> output_format_fourcc_;
+  std::optional<Fourcc> output_format_fourcc_;
 
   // Image processor device, if one is in use.
   scoped_refptr<V4L2Device> image_processor_device_;
@@ -626,7 +627,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
 #endif
 
   // The format of EGLImage.
-  absl::optional<Fourcc> egl_image_format_fourcc_;
+  std::optional<Fourcc> egl_image_format_fourcc_;
   // The logical dimensions of EGLImage buffer in pixels.
   gfx::Size egl_image_size_;
 

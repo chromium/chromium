@@ -10,7 +10,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/path_service.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/autofill/core/browser/ui/popup_types.h"
+#import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -32,8 +32,8 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using autofill::FieldRendererId;
+using autofill::FillingProduct;
 using autofill::FormRendererId;
-using autofill::PopupType;
 
 // Test provider that records invocations of its interface methods.
 @interface TestSuggestionProvider : NSObject<FormSuggestionProvider>
@@ -46,7 +46,7 @@ using autofill::PopupType;
 @property(nonatomic, assign) BOOL askedIfSuggestionsAvailable;
 @property(nonatomic, assign) BOOL askedForSuggestions;
 @property(nonatomic, assign) SuggestionProviderType type;
-@property(nonatomic, readonly) PopupType suggestionType;
+@property(nonatomic, readonly) FillingProduct mainFillingProduct;
 
 // Creates a test provider with default suggesstions.
 + (instancetype)providerWithSuggestions;

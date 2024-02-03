@@ -20,6 +20,10 @@ namespace scheduler {
 class WebThreadScheduler;
 }  // namespace scheduler
 
+namespace test {
+class TaskEnvironment;
+}  // namespace test
+
 class RAILModeObserver;
 
 // This class is used to submit tasks and pass other information from Blink to
@@ -90,6 +94,7 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
 
   // For `Isolate`.
   friend class ScopedMainThreadOverrider;
+  friend class test::TaskEnvironment;
 
   // Get the isolate previously set with `SetV8Isolate`. This method is scoped
   // private so only friends can use it. Other users should use

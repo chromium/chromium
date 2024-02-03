@@ -19,7 +19,7 @@
  * when the property is data-bound to a function which sometimes returns a
  * string with a link and sometimes returns a normal string.
  *
- * Forked from ui/webui/resources/cr_components/localized_link/localized_link.ts
+ * Forked from ui/webui/resources/ash/common/cr_elements/localized_link/localized_link.ts
  */
 
 import '../cr_shared_vars.css.js';

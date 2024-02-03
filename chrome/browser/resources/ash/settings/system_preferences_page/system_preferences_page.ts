@@ -16,15 +16,16 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../os_reset_page/reset_settings_card.js';
 import '../os_search_page/search_and_assistant_settings_card.js';
 import '../settings_shared.css.js';
+import './multitasking_settings_card.js';
 import './startup_settings_card.js';
 import './storage_and_power_settings_card.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings, shouldShowStartup} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isQuickAnswersSupported, isRevampWayfindingEnabled, shouldShowMultitasking, shouldShowStartup} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
@@ -83,6 +84,13 @@ export class SettingsSystemPreferencesPageElement extends
         },
       },
 
+      shouldShowMultitaskingCard_: {
+        type: Boolean,
+        value: () => {
+          return shouldShowMultitasking();
+        },
+      },
+
       shouldShowResetSettingsCard_: {
         type: Boolean,
         value: () => {
@@ -90,10 +98,10 @@ export class SettingsSystemPreferencesPageElement extends
         },
       },
 
-      shouldShowQuickAnswersSettings_: {
+      isQuickAnswersSupported_: {
         type: Boolean,
         value: () => {
-          return shouldShowQuickAnswersSettings();
+          return isQuickAnswersSupported();
         },
       },
 
@@ -154,11 +162,14 @@ export class SettingsSystemPreferencesPageElement extends
   private shouldStampGoogleDriveSubpage_: boolean;
   private shouldStampOfficeSubpage_: boolean;
 
+  // Multitasking subsection
+  private shouldShowMultitaskingCard_: boolean;
+
   // Reset subsection
   private shouldShowResetSettingsCard_: boolean;
 
   // Search and Assistant subsection
-  private shouldShowQuickAnswersSettings_: boolean;
+  private isQuickAnswersSupported_: boolean;
   private isAssistantAllowed_: boolean;
 
   // Startup subsection

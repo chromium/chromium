@@ -5,7 +5,6 @@
 module device.mojom;
 
 import "services/device/public/mojom/battery_monitor.mojom";
-import "services/device/public/mojom/device_posture_provider.mojom";
 import "services/device/public/mojom/fingerprint.mojom";
 import "services/device/public/mojom/geolocation_config.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
@@ -38,9 +37,6 @@ import "services/device/public/mojom/input_service.mojom";
 // The main interface to the Device Service. This is bound only by the browser
 // process and is used to broker connections to more specific device APIs.
 interface DeviceService {
-
-  // Binds a DevicePostureProvider endpoint.
-  BindDevicePostureProvider(pending_receiver<DevicePostureProvider> receiver);
 
   // Binds a Fingerprint endpoint.
   BindFingerprint(pending_receiver<Fingerprint> receiver);

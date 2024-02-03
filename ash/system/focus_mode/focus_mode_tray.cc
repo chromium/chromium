@@ -339,8 +339,8 @@ void FocusModeTray::OnActiveSessionDurationChanged(
   MaybeUpdateCountdownViewUI(session_snapshot);
 }
 
-void FocusModeTray::Layout() {
-  views::View::Layout();
+void FocusModeTray::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   // Position the progress indicator based on the position of the image view.
   // The centered position inside of the tray container changes based on shelf

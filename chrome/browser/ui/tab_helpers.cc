@@ -31,6 +31,7 @@
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/history/history_tab_helper.h"
@@ -51,7 +52,6 @@
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -523,7 +524,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
       web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
+  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) ||
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
     OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
   }
 
@@ -554,8 +557,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
   if (base::FeatureList::IsEnabled(
           payments::facilitated::kEnablePixDetection)) {
-    payments::facilitated::ContentFacilitatedPaymentsDriverFactory::
-        CreateForWebContents(web_contents);
+    if (auto* optimization_guide_decider =
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+      payments::facilitated::ContentFacilitatedPaymentsDriverFactory::
+          CreateForWebContents(web_contents, optimization_guide_decider);
+    }
   }
 #else  // BUILDFLAG(IS_ANDROID)
   if (web_app::AreWebAppsUserInstallable(profile)) {
@@ -597,8 +603,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   MemorySaverChipTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kMemoryUsageInHovercards)) {
-    performance_manager::user_tuning::UserPerformanceTuningManager::
-        ResourceUsageTabHelper::CreateForWebContents(web_contents);
+    TabResourceUsageTabHelper::CreateForWebContents(web_contents);
   }
   if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
       base::FeatureList::IsEnabled(features::kWebUITabStrip)) {

@@ -545,10 +545,10 @@ void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {
   handshake_client_.reset();
   client_.reset();
 
-  absl::optional<net::WebTransportCloseInfo> close_info_to_pass;
+  std::optional<net::WebTransportCloseInfo> close_info_to_pass;
   if (close_info) {
     close_info_to_pass =
-        absl::make_optional<net::WebTransportCloseInfo>(close_info->code, "");
+        std::make_optional<net::WebTransportCloseInfo>(close_info->code, "");
 
     // As described at
     // https://w3c.github.io/webtransport/#dom-webtransport-close,
@@ -601,7 +601,7 @@ void WebTransport::OnConnectionFailed(const net::WebTransportError& error) {
 }
 
 void WebTransport::OnClosed(
-    const absl::optional<net::WebTransportCloseInfo>& close_info) {
+    const std::optional<net::WebTransportCloseInfo>& close_info) {
   if (torn_down_) {
     return;
   }
@@ -743,7 +743,7 @@ void WebTransport::OnCanCreateNewOutgoingUnidirectionalStream() {
 }
 
 void WebTransport::OnDatagramProcessed(
-    absl::optional<quic::MessageStatus> status) {
+    std::optional<quic::MessageStatus> status) {
   DCHECK(!datagram_callbacks_.empty());
 
   std::move(datagram_callbacks_.front())

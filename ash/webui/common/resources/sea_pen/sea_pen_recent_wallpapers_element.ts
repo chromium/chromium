@@ -11,15 +11,14 @@ import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-
-import {WallpaperGridItemSelectedEvent} from '../personalization/wallpaper_grid_item_element.js';
 
 import {RecentSeaPenData} from './constants.js';
 import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
@@ -232,7 +231,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     if (id !== undefined) {
       const index = parseInt(id, 10);
       const menuElement =
-          this.shadowRoot!.querySelectorAll('cr-action-menu')![index];
+          this.shadowRoot!.querySelectorAll('cr-action-menu')[index];
       menuElement!.showAtPosition(config);
     }
   }

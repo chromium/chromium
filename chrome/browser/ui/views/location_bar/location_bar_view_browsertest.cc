@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest,
   GetLocationBarView()->SetImeInlineAutocompletion(u"歌");
   EXPECT_TRUE(ime_inline_autocomplete_view->GetVisible());
 
-  GetLocationBarView()->Layout();
+  GetLocationBarView()->DeprecatedLayoutImmediately();
 
   // Make sure the IME inline autocomplete view starts at the end of
   // |omnibox_view_views|.

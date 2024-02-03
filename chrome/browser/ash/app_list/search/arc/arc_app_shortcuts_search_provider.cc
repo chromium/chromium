@@ -27,7 +27,7 @@ ArcAppShortcutsSearchProvider::ArcAppShortcutsSearchProvider(
     int max_results,
     Profile* profile,
     AppListControllerDelegate* list_controller)
-    : SearchProvider(ControlCategory::kAppShortcuts),
+    : SearchProvider(SearchCategory::kAppShortcuts),
       max_results_(max_results),
       profile_(profile),
       list_controller_(list_controller) {}

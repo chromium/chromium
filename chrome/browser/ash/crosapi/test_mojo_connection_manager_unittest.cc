@@ -90,7 +90,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
                            NewFullscreenWindowCallback callback) override {}
   void NewGuestWindow(int64_t target_display_id,
                       NewGuestWindowCallback callback) override {}
-  void NewTab(NewTabCallback callback) override {}
+  void NewTab(std::optional<uint64_t> profile_id,
+              NewTabCallback callback) override {}
   void Launch(int64_t target_display_id,
               std::optional<uint64_t> profile_id,
               LaunchCallback callback) override {}

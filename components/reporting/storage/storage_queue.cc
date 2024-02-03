@@ -74,10 +74,6 @@ BASE_FEATURE(kReportingStorageDegradationFeature,
 
 namespace {
 
-// Storage queue generation id reset UMA metric name.
-constexpr char kStorageQueueGenerationIdResetUma[] =
-    "Browser.ERP.StorageQueueGenerationIdReset";
-
 // Metadata file name prefix.
 const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 
@@ -280,7 +276,6 @@ Status StorageQueue::Init() {
       // earlier.
       if (generation_id_ <= 0) {
         LOG(ERROR) << "Unable to retrieve generation id, performing full reset";
-        base::UmaHistogramBoolean(kStorageQueueGenerationIdResetUma, true);
         next_sequencing_id_ = 0;
         first_sequencing_id_ = 0;
         first_unconfirmed_sequencing_id_ = std::nullopt;

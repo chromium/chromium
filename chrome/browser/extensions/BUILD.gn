@@ -988,10 +988,7 @@ static_library("extensions") {
   ]
 
   if (enable_supervised_users) {
-    deps += [
-      "//components/supervised_user/core/browser",
-      "//components/supervised_user/core/browser:supervised_user_preferences",
-    ]
+    deps += [ "//components/supervised_user/core/browser" ]
   }
 
   if (is_linux || is_mac || is_win) {

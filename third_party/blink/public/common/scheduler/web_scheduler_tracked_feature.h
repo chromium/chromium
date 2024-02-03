@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SCHEDULER_WEB_SCHEDULER_TRACKED_FEATURE_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
+
 #include "base/containers/enum_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -151,10 +153,11 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // There is a "live" MediaStreamTrack.
   kLiveMediaStreamTrack = 66,
 
-  // Originally kUnloadHandlerExistsInMain/SubFrame were not blocklisted
-  // features but captured in the browser side. By making them blocklisted
-  // features, the source location of the unload handlers will be captured. See
-  // https://crbug.com/1513120 for details.
+  // Originally kUnloadHandlerExistsInMain/SubFrame were not recorded in the
+  // renderer side, but recorded in the browser side, making it impossible to
+  // track the source location. Here we make them a WebSchedulerTrackedFeature,
+  // so that the source location can be tracked. See https://crbug.com/1513120
+  // for details.
   kUnloadHandler = 67,
 
   // Please keep in sync with WebSchedulerTrackedFeature in
@@ -173,7 +176,7 @@ BLINK_COMMON_EXPORT std::string FeatureToHumanReadableString(
 BLINK_COMMON_EXPORT std::string FeatureToShortString(
     WebSchedulerTrackedFeature feature);
 
-BLINK_COMMON_EXPORT absl::optional<WebSchedulerTrackedFeature> StringToFeature(
+BLINK_COMMON_EXPORT std::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str);
 // Returns true if there was previously a feature by this name.
 // It is not comprehensive, just enough to cover what was used in finch,

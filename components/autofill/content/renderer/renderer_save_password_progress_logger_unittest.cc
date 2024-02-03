@@ -57,14 +57,8 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
   void PasswordFormCleared(const autofill::FormData& form_data) override {}
 
-  void ShowPasswordSuggestions(autofill::FieldRendererId element_id,
-                               const autofill::FormData& form,
-                               uint64_t username_field_index,
-                               uint64_t password_field_index,
-                               base::i18n::TextDirection text_direction,
-                               const std::u16string& typed_username,
-                               int options,
-                               const gfx::RectF& bounds) override {}
+  void ShowPasswordSuggestions(
+      const autofill::PasswordSuggestionRequest& request) override {}
 #if BUILDFLAG(IS_ANDROID)
   void ShowKeyboardReplacingSurface(
       autofill::mojom::SubmissionReadinessState submission_readiness,

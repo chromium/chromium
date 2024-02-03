@@ -116,7 +116,7 @@ void HelpAppZeroStateResult::Open(int event_flags) {
 HelpAppZeroStateProvider::HelpAppZeroStateProvider(
     Profile* profile,
     ash::AppListNotifier* notifier)
-    : profile_(profile) {
+    : SearchProvider(SearchCategory::kHelp), profile_(profile) {
   DCHECK(profile_);
 
   app_registry_cache_observer_.Observe(

@@ -6,6 +6,8 @@
 #define MEDIA_GPU_VAAPI_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
 #include <va/va.h>
+
+#include <optional>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -17,7 +19,6 @@
 #include "media/base/video_codecs.h"
 #include "media/video/video_encode_accelerator.h"
 #include "media/video/video_encoder_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -170,9 +171,9 @@ class VaapiVideoEncoderDelegate {
   bool Encode(EncodeJob& encode_job);
 
   // Creates and returns the encode result for specified EncodeJob by
-  // synchronizing the corresponding encode operation. absl::nullopt is returned
+  // synchronizing the corresponding encode operation. std::nullopt is returned
   // on failure.
-  absl::optional<EncodeResult> GetEncodeResult(
+  std::optional<EncodeResult> GetEncodeResult(
       std::unique_ptr<EncodeJob> encode_job);
 
   // Gets the active spatial layer resolutions for K-SVC encoding, VaapiVEA

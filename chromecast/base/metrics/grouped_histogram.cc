@@ -7,11 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -142,7 +143,7 @@ void PreregisterHistogram(const char* name,
                           GroupedHistogram::Sample maximum,
                           size_t bucket_count,
                           int32_t flags) {
-  base::StringPiece name_piece(name);
+  std::string_view name_piece(name);
 
   DCHECK(base::Histogram::InspectConstructionArguments(
       name_piece, &minimum, &maximum, &bucket_count));

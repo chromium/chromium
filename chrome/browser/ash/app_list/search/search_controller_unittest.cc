@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -16,6 +17,7 @@
 #include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/common/types_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -31,6 +33,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
 
 namespace app_list::test {
@@ -683,7 +686,7 @@ TEST_F(SearchControllerTest, ZeroStateResultsGetTimedOut) {
 TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
-      std::make_unique<RankerManager>(&profile_, search_controller_.get()));
+      std::make_unique<RankerManager>(&profile_));
 
   auto drive_provider = std::make_unique<TestSearchProvider>(
       Result::kZeroStateDrive, base::Seconds(0));
@@ -711,7 +714,7 @@ TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
 TEST_F(SearchControllerTest, ContinueRanksAdminTemplateAboveHelpAppAndDrive) {
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
-      std::make_unique<RankerManager>(&profile_, search_controller_.get()));
+      std::make_unique<RankerManager>(&profile_));
 
   auto desks_admin_template = std::make_unique<TestSearchProvider>(
       Result::kDesksAdminTemplate, base::Seconds(0));
@@ -862,65 +865,79 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
   scoped_feature_list_.InitAndEnableFeature(
       ash::features::kLauncherSearchControl);
 
-  // Create a fake provider, and we do not care about the result type.
-  auto provider = std::make_unique<TestSearchProvider>(Result::kInstalledApp,
-                                                       base::Milliseconds(20));
-  auto* provider_ptr = provider.get();
-  search_controller_->AddProvider(std::move(provider));
-
-  // `kCannotToggle` is excluded as its always enabled.
-  static const ControlCategory toggleable_categories[] = {
-      ControlCategory::kApps,      ControlCategory::kAppShortcuts,
-      ControlCategory::kFiles,     ControlCategory::kGames,
-      ControlCategory::kHelp,      ControlCategory::kImages,
-      ControlCategory::kPlayStore, ControlCategory::kWeb,
+  const Result result_categories[] = {
+      Result::kAnswerCard, Result::kDriveSearch,    Result::kAppShortcutV2,
+      Result::kFileSearch, Result::kArcAppShortcut, Result::kImageSearch,
+      Result::kGames,      Result::kAssistantText,  Result::kArcAppShortcut,
   };
+
+  const SearchCategory search_categories[] = {
+      SearchCategory::kTest /*always returns results*/,
+      SearchCategory::kApps,
+      SearchCategory::kAppShortcuts,
+      SearchCategory::kFiles,
+      SearchCategory::kGames,
+      SearchCategory::kHelp,
+      SearchCategory::kImages,
+      SearchCategory::kPlayStore,
+      SearchCategory::kWeb,
+  };
+
+  std::vector<TestSearchProvider*> provider_ptrs;
+  for (int i = 0; i < 9; ++i) {
+    // The result type needs to be unique.
+    auto provider = std::make_unique<TestSearchProvider>(
+        result_categories[i], base::Milliseconds(20), search_categories[i]);
+    provider_ptrs.push_back(provider.get());
+    search_controller_->AddProvider(std::move(provider));
+  }
+
+  ASSERT_EQ(provider_ptrs.size(), 9u);
 
   ScopedDictPrefUpdate pref_update(
       profile_.GetPrefs(), ash::prefs::kLauncherSearchCategoryControlStatus);
 
-  // Sets all toggleable categories to be disabled.
+  const auto toggleable_categories =
+      search_controller_->GetToggleableCategories();
+
+  // Disable the toggleable categories.
   for (const ControlCategory control_category : toggleable_categories) {
     pref_update->Set(ash::GetAppListControlCategoryName(control_category),
                      false);
   }
 
-  // Cannot toggle provider should always return results.
-  provider_ptr->SetNextResults(
-      MakeListResults({"AAA"}, {Category::kApps}, {-1}, {0.1}));
+  for (size_t i = 0; i < provider_ptrs.size(); ++i) {
+    provider_ptrs[i]->SetNextResults(MakeListResults(
+        {base::StringPrintf("AAA%zu", i)}, {Category::kApps}, {-1}, {0.1}));
+  }
   search_controller_->StartSearch(u"A");
   WaitInMilliseconds();
-  ExpectIdOrder({"AAA"});
+  ExpectIdOrder({"AAA0"});
 
-  provider_ptr->SetNextResults({});
   search_controller_->ClearSearch();
 
-  for (const ControlCategory control_category : toggleable_categories) {
-    // Sets the provider to the associated category.
-    provider_ptr->SetControlCategoryForTest(control_category);
-
-    provider_ptr->SetNextResults(
-        MakeListResults({"BBB"}, {Category::kApps}, {-1}, {0.1}));
-    search_controller_->StartSearch(u"B");
-    WaitInMilliseconds();
-    // No result should be returned as the associated category has been set
-    // disabled.
-    ExpectIdOrder({});
-
-    provider_ptr->SetNextResults({});
-    search_controller_->ClearSearch();
+  for (size_t i = 1; i < provider_ptrs.size(); ++i) {
+    for (size_t j = 0; j < provider_ptrs.size(); ++j) {
+      provider_ptrs[j]->SetNextResults(MakeListResults(
+          {base::StringPrintf("AAA%zu", j)}, {Category::kApps}, {-1}, {0.1}));
+    }
 
     // Starts search with control enabled.
-    pref_update->Set(ash::GetAppListControlCategoryName(control_category),
-                     true);
-    provider_ptr->SetNextResults(
-        MakeListResults({"CCC"}, {Category::kApps}, {-1}, {0.1}));
-    search_controller_->StartSearch(u"C");
-    WaitInMilliseconds();
-    // Result should be returned.
-    ExpectIdOrder({"CCC"});
+    pref_update->Set(
+        ash::GetAppListControlCategoryName(MapSearchCategoryToControlCategory(
+            provider_ptrs[i]->search_category())),
+        true);
 
-    provider_ptr->SetNextResults({});
+    search_controller_->StartSearch(u"A");
+    WaitInMilliseconds();
+
+    ExpectIdOrder({"AAA0", base::StringPrintf("AAA%zu", i)});
+
+    pref_update->Set(
+        ash::GetAppListControlCategoryName(MapSearchCategoryToControlCategory(
+            provider_ptrs[i]->search_category())),
+        false);
+
     search_controller_->ClearSearch();
   }
 }

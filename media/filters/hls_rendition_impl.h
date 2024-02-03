@@ -27,7 +27,7 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
                    GURL media_playlist_uri);
 
   // `HlsRendition` implementation
-  absl::optional<base::TimeDelta> GetDuration() override;
+  std::optional<base::TimeDelta> GetDuration() override;
   void CheckState(base::TimeDelta media_time,
                   double playback_rate,
                   ManifestDemuxer::DelayCallback time_remaining_cb) override;

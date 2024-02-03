@@ -159,8 +159,7 @@ void ClipboardImageModelRequest::Start(Params&& params) {
       " </body>"
       "</html");
 
-  std::string encoded_html;
-  base::Base64Encode(html_document, &encoded_html);
+  std::string encoded_html = base::Base64Encode(html_document);
   constexpr char kDataURIPrefix[] = "data:text/html;base64,";
   web_contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(

@@ -118,7 +118,7 @@ class LayoutTestView : public views::View {
   }
 
   // views::View:
-  void Layout() override { ++layout_count_; }
+  void Layout(PassKey) override { ++layout_count_; }
 
  private:
   int layout_count_ = 0;
@@ -688,8 +688,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
-  event_generator.PressKey(ui::VKEY_L, ui::EF_CONTROL_DOWN);
-  event_generator.ReleaseKey(ui::VKEY_L, ui::EF_CONTROL_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_L,
+                                                    ui::EF_CONTROL_DOWN);
   waiter.WaitForRatio(1.f);
   EXPECT_TRUE(browser_view()->GetLocationBarView()->omnibox_view()->HasFocus());
 }
@@ -1082,9 +1082,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestDropDowns) {
   // `top_controls_shown_ratio_` (which is initialized to 0.f) will be sent to
   // the browser when a new compositor frame gets generated. If this shown ratio
   // value is not ignored, top-chrome will immediately hide, which will result
-  // in a BrowserView's Layout() and the immediate closure of the drop-down
-  // menu.
-  // We verify below that this doesn't happen, the menu remains open, and it's
+  // in a BrowserView layout and the immediate closure of the drop-down menu. We
+  // verify below that this doesn't happen, the menu remains open, and it's
   // possible to select another option in the drop-down menu.
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1341,8 +1340,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
         // Trigger the keyboard shrotcut for changing the device scale factor.
         // This should result in a display metric change.
         constexpr int kFlags = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
-        generator->PressKey(ui::VKEY_OEM_PLUS, kFlags);
-        generator->ReleaseKey(ui::VKEY_OEM_PLUS, kFlags);
+        generator->PressAndReleaseKeyAndModifierKeys(ui::VKEY_OEM_PLUS, kFlags);
 
         // Test that as result of the above, sliding has been temporarily
         // disabled, and that the top controls are fully shown.
@@ -1514,8 +1512,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
     SynchronizeBrowserWithRenderer(active_contents);
   }
   constexpr int kFlags = ui::EF_CONTROL_DOWN;
-  event_generator.PressKey(ui::VKEY_T, kFlags);
-  event_generator.ReleaseKey(ui::VKEY_T, kFlags);
+  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_T, kFlags);
   event_generator.ReleaseTouch();
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 }

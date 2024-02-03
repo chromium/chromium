@@ -116,10 +116,10 @@ class OutsideSettingsCSPDelegate final
     return nullptr;
   }
 
-  absl::optional<uint16_t> GetStatusCode() override {
+  std::optional<uint16_t> GetStatusCode() override {
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // TODO(crbug/928965): Plumb the status code of the parent Document if any.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   String GetDocumentReferrer() override {
@@ -203,7 +203,8 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
     std::unique_ptr<WebContentSettingsClient> content_settings_client,
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     WorkerReportingProxy& reporting_proxy,
-    bool is_worker_loaded_from_data_url)
+    bool is_worker_loaded_from_data_url,
+    bool is_default_world_of_isolate)
     : ExecutionContext(isolate, agent),
       is_creator_secure_context_(is_creator_secure_context),
       name_(name),
@@ -211,8 +212,10 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
       worker_clients_(worker_clients),
       content_settings_client_(std::move(content_settings_client)),
       web_worker_fetch_context_(std::move(web_worker_fetch_context)),
-      script_controller_(
-          MakeGarbageCollected<WorkerOrWorkletScriptController>(this, isolate)),
+      script_controller_(MakeGarbageCollected<WorkerOrWorkletScriptController>(
+          this,
+          isolate,
+          /*is_default_world_of_isolate=*/is_default_world_of_isolate)),
       v8_cache_options_(v8_cache_options),
       reporting_proxy_(reporting_proxy) {
   GetSecurityContext().SetIsWorkerLoadedFromDataURL(

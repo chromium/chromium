@@ -24,8 +24,7 @@
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "url/gurl.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -553,5 +552,4 @@ bool ConvertRuleset(const std::vector<base::FilePath>& filter_list_inputs,
 }
 
 }  // namespace filter_list_converter
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

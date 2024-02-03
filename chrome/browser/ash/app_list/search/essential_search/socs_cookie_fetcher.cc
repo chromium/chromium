@@ -8,7 +8,9 @@
 #include "base/json/json_writer.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/credentials_mode.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -25,6 +27,7 @@ const char kChromeVersionKey[] = "chromeos_version";
 const char kEssentialSearchURL[] =
     "https://chromeoscompliance-pa.googleapis.com/v1/essentialsearch/"
     "socscookieheader";
+const char kApiKeyParameter[] = "key";
 const char kContentTypeJSON[] = "application/json";
 const char kAcceptValue[] =
     "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
@@ -83,7 +86,8 @@ void SocsCookieFetcher::StartFetching() {
       })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kEssentialSearchURL);
+  resource_request->url = net::AppendQueryParameter(
+      GURL(kEssentialSearchURL), kApiKeyParameter, google_apis::GetAPIKey());
   resource_request->load_flags =
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
   resource_request->credentials_mode =

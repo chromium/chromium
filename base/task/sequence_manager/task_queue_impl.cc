@@ -29,6 +29,7 @@
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/wake_up_queue.h"
 #include "base/task/sequence_manager/work_queue.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_features.h"
 #include "base/task/task_observer.h"
 #include "base/threading/thread_restrictions.h"
@@ -44,6 +45,23 @@ namespace sequence_manager {
 
 namespace internal {
 
+// This class outside the anonymous namespace exists to allow being a friend of
+// `SingleThreadTaskRunner::CurrentDefaultHandle` in order to access
+// `SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist`.
+class CurrentDefaultHandleOverrideForRunOrPostTask {
+ public:
+  explicit CurrentDefaultHandleOverrideForRunOrPostTask(
+      scoped_refptr<SequencedTaskRunner> task_runner)
+      : sttr_override_(
+            nullptr,
+            SingleThreadTaskRunner::CurrentDefaultHandle::MayAlreadyExist{}),
+        str_override_(std::move(task_runner)) {}
+
+ private:
+  SingleThreadTaskRunner::CurrentDefaultHandle sttr_override_;
+  SequencedTaskRunner::CurrentDefaultHandle str_override_;
+};
+
 namespace {
 
 // An atomic is used here because the value is queried from other threads when
@@ -56,10 +74,13 @@ std::atomic_bool g_explicit_high_resolution_timer_win{true};
 #endif  // BUILDFLAG(IS_WIN)
 
 void RunTaskSynchronously(const AssociatedThreadId* associated_thread,
+                          scoped_refptr<SingleThreadTaskRunner> task_runner,
                           OnceClosure closure) {
   base::internal::TaskScope sequence_scope(
       associated_thread->GetBoundSequenceToken(),
       /* is_thread_bound=*/false);
+  CurrentDefaultHandleOverrideForRunOrPostTask task_runner_override(
+      std::move(task_runner));
   std::move(closure).Run();
 }
 
@@ -114,6 +135,7 @@ bool TaskQueueImpl::GuardedTaskPoster::RunOrPostTask(PostedTask task) {
   // `IsQueueEnabledFromAnyThread()`. That won't prevent the task from running.
   if (sync_work_auth.IsValid() && outer_->IsQueueEnabledFromAnyThread()) {
     RunTaskSynchronously(outer_->associated_thread_.get(),
+                         outer_->sequence_manager_->GetTaskRunner(),
                          std::move(task.callback));
     return true;
   }
@@ -188,8 +210,26 @@ bool TaskQueueImpl::TaskRunner::RunOrPostTask(subtle::RunOrPostTaskPassKey,
                  Nestable::kNestable, task_type_));
 }
 
-bool TaskQueueImpl::TaskRunner::RunsTasksInCurrentSequence() const {
+bool TaskQueueImpl::TaskRunner::BelongsToCurrentThread() const {
   return associated_thread_->IsBoundToCurrentThread();
+}
+
+bool TaskQueueImpl::TaskRunner::RunsTasksInCurrentSequence() const {
+  // Return true on the bound thread. This works even after `thread_local`
+  // destruction.
+  if (BelongsToCurrentThread()) {
+    return true;
+  }
+
+  // Return true in a `RunOrPostTask` callback running synchronously on a
+  // different thread.
+  if (associated_thread_->IsBound() &&
+      associated_thread_->GetBoundSequenceToken() ==
+          base::internal::SequenceToken::GetForCurrentThread()) {
+    return true;
+  }
+
+  return false;
 }
 
 // static

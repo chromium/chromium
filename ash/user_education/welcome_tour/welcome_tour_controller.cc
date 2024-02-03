@@ -349,7 +349,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     // Welcome Tour is supported for regular users only.
     const auto* const session_controller = Shell::Get()->session_controller();
     if (const auto user_type = session_controller->GetUserType();
-        user_type != user_manager::UserType::USER_TYPE_REGULAR) {
+        user_type != user_manager::UserType::kRegular) {
       welcome_tour_metrics::RecordTourPrevented(
           welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
       return;

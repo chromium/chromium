@@ -19,7 +19,7 @@ MainThreadIsolate::MainThreadIsolate() {
 MainThreadIsolate::~MainThreadIsolate() {
   CHECK_NE(nullptr, isolate_);
   isolate()->ClearCachesForTesting();
-  V8PerIsolateData::From(isolate())->ClearUtilityScriptState();
+  V8PerIsolateData::From(isolate())->ClearScriptRegexpContext();
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   ThreadScheduler::Current()->SetV8Isolate(nullptr);

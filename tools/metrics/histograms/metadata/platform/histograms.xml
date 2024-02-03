@@ -1614,20 +1614,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Missive.StorageQueueGenerationIdReset" enum="Boolean"
-    expires_after="2024-01-31">
-  <owner>vshenvi@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
-  <summary>
-    Would only be true. Recorded whenever the generation id is reset in the
-    storage queue. The generation id is set up once during storage queue
-    initialization using the metadata file that matches the last sequencing id
-    used to track, deduplicate and confirm delivery by the server. The
-    generation id is reset when this file is missing or corrupted and the
-    sequencing is irreparably broken.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Missive.StorageQueueParsingFailure" enum="Boolean"
     expires_after="2024-09-30">
   <owner>lbaraz@google.com</owner>
@@ -1693,7 +1679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.CheckForWedgedModemResult"
-    enum="ModemfwdCheckForWedgedModemResult" expires_after="2024-05-26">
+    enum="ModemfwdCheckForWedgedModemResult" expires_after="2024-07-28">
   <owner>andrewlassalle@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>

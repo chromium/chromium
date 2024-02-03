@@ -164,50 +164,50 @@ TextDirection SelectionModifier::DirectionOfEnclosingBlock() const {
 
 namespace {
 
-absl::optional<TextDirection> DirectionAt(
+std::optional<TextDirection> DirectionAt(
     const PositionInFlatTreeWithAffinity& position) {
   if (position.IsNull())
-    return absl::nullopt;
+    return std::nullopt;
   const PositionInFlatTreeWithAffinity adjusted =
       ComputeInlineAdjustedPosition(position);
   if (adjusted.IsNull())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
     const InlineCursor& cursor = ComputeInlineCaretPosition(adjusted).cursor;
     if (cursor)
       return cursor.Current().ResolvedDirection();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // TODO(xiaochengh): Deduplicate code with |DirectionAt()|.
-absl::optional<TextDirection> LineDirectionAt(
+std::optional<TextDirection> LineDirectionAt(
     const PositionInFlatTreeWithAffinity& position) {
   if (position.IsNull())
-    return absl::nullopt;
+    return std::nullopt;
   const PositionInFlatTreeWithAffinity adjusted =
       ComputeInlineAdjustedPosition(position);
   if (adjusted.IsNull())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
     InlineCursor line = ComputeInlineCaretPosition(adjusted).cursor;
     if (!line)
-      return absl::nullopt;
+      return std::nullopt;
     line.MoveToContainingLine();
     return line.Current().BaseDirection();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 TextDirection DirectionOf(const VisibleSelectionInFlatTree& visible_selection) {
-  absl::optional<TextDirection> maybe_start_direction =
+  std::optional<TextDirection> maybe_start_direction =
       DirectionAt(visible_selection.VisibleStart().ToPositionWithAffinity());
-  absl::optional<TextDirection> maybe_end_direction =
+  std::optional<TextDirection> maybe_end_direction =
       DirectionAt(visible_selection.VisibleEnd().ToPositionWithAffinity());
   if (maybe_start_direction.has_value() && maybe_end_direction.has_value() &&
       maybe_start_direction.value() == maybe_end_direction.value())

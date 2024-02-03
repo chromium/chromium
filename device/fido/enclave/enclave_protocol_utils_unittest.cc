@@ -94,6 +94,7 @@ constexpr char kGetAssertionHexResponse[] =
 constexpr char kMakeCredentialHexResponse[] =
     "81A1626F6BA3677075625F6B657944050607086776657273696F6E0169656E637279707465"
     "644401020304";
+constexpr int32_t kWrappedSecretVersion = 952;
 
 struct BadResponseTestCase {
   std::string name;
@@ -134,7 +135,7 @@ sync_pb::WebauthnCredentialSpecifics PasskeyEntity() {
 
 enclave::ClientSignature FakeSigningCallback(
     base::span<const uint8_t> to_be_signed) {
-  EXPECT_EQ(fido_parsing_utils::Materialize(to_be_signed.first(32)),
+  EXPECT_EQ(fido_parsing_utils::Materialize(to_be_signed.first(32u)),
             fido_parsing_utils::Materialize(kHandshakeHash));
 
   enclave::ClientSignature ret;
@@ -227,7 +228,10 @@ class EnclaveProtocolUtilsTest : public testing::Test {
     return wrapped_secrets_;
   }
 
+  const std::vector<uint8_t>& wrapped_secret() { return wrapped_secret_; }
+
  private:
+  const std::vector<uint8_t> wrapped_secret_ = {1, 2, 3, 4, 5};
   std::vector<uint8_t> device_id_;
   std::vector<uint8_t> user_id_;
   std::vector<uint8_t> encrypted_passkey_;
@@ -293,7 +297,7 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
   BuildCommandRequestBody(
-      BuildMakeCredentialCommand(json_request),
+      BuildMakeCredentialCommand(json_request, wrapped_secret()),
       base::BindRepeating(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -364,14 +368,14 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
   absl::optional<AuthenticatorMakeCredentialResponse> response;
   absl::optional<sync_pb::WebauthnCredentialSpecifics> entity;
   std::string error_string;
-  std::tie(response, entity, error_string) =
-      ParseMakeCredentialResponse(std::move(response_cbor), ctap_request);
+  std::tie(response, entity, error_string) = ParseMakeCredentialResponse(
+      std::move(response_cbor), ctap_request, kWrappedSecretVersion);
   bool pass = (response != absl::nullopt) && (entity != absl::nullopt) &&
               (error_string.empty());
   EXPECT_TRUE(pass) << error_string;
   EXPECT_EQ(entity->rp_id(), std::string(kRpId));
   EXPECT_EQ(entity->user_id(), std::string(user_id().begin(), user_id().end()));
-  EXPECT_EQ(entity->key_version(), 1);
+  EXPECT_EQ(entity->key_version(), kWrappedSecretVersion);
   EXPECT_EQ(entity->encrypted(), std::string(encrypted_passkey().begin(),
                                              encrypted_passkey().end()));
   auto response_cred_id =
@@ -398,8 +402,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponseFailures) {
     std::vector<uint8_t> response_serialized;
     CHECK(base::HexStringToBytes(test_case.hex_cbor, &response_serialized));
     cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
-    std::tie(response, entity, error_string) =
-        ParseMakeCredentialResponse(std::move(response_cbor), ctap_request);
+    std::tie(response, entity, error_string) = ParseMakeCredentialResponse(
+        std::move(response_cbor), ctap_request, kWrappedSecretVersion);
     bool pass = (response == absl::nullopt) && (entity == absl::nullopt) &&
                 (!error_string.empty());
     EXPECT_TRUE(pass) << "Failed MakeCredential response parsing for: "

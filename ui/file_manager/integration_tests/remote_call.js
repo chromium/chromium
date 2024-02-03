@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ElementObject} from './element_object.js';
-import {KeyModifiers} from './key_modifiers.js';
+import {VolumeType} from './prod/file_manager/shared_types.js';
 import {getCaller, pending, repeatUntil, sendTestMessage} from './test_util.js';
-import {VolumeManagerCommonVolumeType} from './volume_manager_common_volume_type.js';
 
 /**
  * When step by step tests are enabled, turns on automatic step() calls. Note
@@ -231,8 +229,8 @@ export class RemoteCall {
    *     If query is an array, |query[0]| specifies the first
    *     element(s), |query[1]| specifies elements inside the shadow DOM of
    *     the first element, and so on.
-   * @return {!Promise<!ElementObject>} Promise to be fulfilled when the element
-   *     appears.
+   * @return {!Promise<!import('./prod/file_manager/shared_types.js').ElementObject>}
+   *     Promise to be fulfilled when the element appears.
    */
   async waitForElement(appId, query) {
     return this.waitForElementStyles(appId, query, []);
@@ -247,8 +245,8 @@ export class RemoteCall {
    *     the first element, and so on.
    * @param {!Array<string>} styleNames List of CSS property name to be
    *     obtained. NOTE: Causes element style re-calculation.
-   * @return {!Promise<!ElementObject>} Promise to be fulfilled when the element
-   *     appears.
+   * @return {!Promise<!import('./prod/file_manager/shared_types.js').ElementObject>}
+   *     Promise to be fulfilled when the element appears.
    */
   async waitForElementStyles(appId, query, styleNames) {
     const caller = getCaller();
@@ -258,7 +256,8 @@ export class RemoteCall {
       const elements = await this.callRemoteTestUtil(
           'deepQueryAllElements', appId, [query, styleNames]);
       if (elements && elements.length > 0) {
-        return /** @type {ElementObject} */ (elements[0]);
+        return /** @type {import('./prod/file_manager/shared_types.js').ElementObject} */ (
+            elements[0]);
       }
       return pending(caller, 'Element %s is not found.', query);
     });
@@ -385,7 +384,7 @@ export class RemoteCall {
   /**
    * Gets file entries just under the volume.
    *
-   * @param {VolumeManagerCommonVolumeType} volumeType Volume type.
+   * @param {VolumeType} volumeType Volume type.
    * @param {Array<string>} names File name list.
    * @return {Promise<void>} Promise to be fulfilled with file entries or
    *     rejected depending on the result.
@@ -397,7 +396,7 @@ export class RemoteCall {
 
   /**
    * Waits for a single file.
-   * @param {VolumeManagerCommonVolumeType} volumeType Volume type.
+   * @param {VolumeType} volumeType Volume type.
    * @param {string} name File name.
    * @return {!Promise<void>} Promise to be fulfilled when the file had found.
    */
@@ -422,9 +421,10 @@ export class RemoteCall {
    *     If query is an array, |query[0]| specifies the first
    *     element(s), |query[1]| specifies elements inside the shadow DOM of
    *     the first element, and so on.
-   * @param {KeyModifiers=} opt_keyModifiers Object
-   * @return {!Promise<ElementObject>} Promise to be fulfilled with the clicked
-   *     element.
+   * @param {import('./prod/file_manager/shared_types.js').KeyModifiers=}
+   *     opt_keyModifiers Object
+   * @return {!Promise<import('./prod/file_manager/shared_types.js').ElementObject>}
+   *     Promise to be fulfilled with the clicked element.
    */
   async waitAndClickElement(appId, query, opt_keyModifiers) {
     const element = await this.waitForElement(appId, query);
@@ -441,17 +441,16 @@ export class RemoteCall {
    *     If query is an array, |query[0]| specifies the first
    *     element(s), |query[1]| specifies elements inside the shadow DOM of
    *     the first element, and so on.
-   * @param {KeyModifiers=} opt_keyModifiers Object
-   * @return {Promise<boolean>} Promise to be fulfilled with the clicked
-   *     element.
+   * @param {import('./prod/file_manager/shared_types.js').KeyModifiers=}
+   *     opt_keyModifiers Object
+   * @return {Promise<?import('./prod/file_manager/shared_types.js').ElementObject>}
+   *     Promise to be fulfilled with the clicked element.
    */
   async waitAndRightClick(appId, query, opt_keyModifiers) {
     const element = await this.waitForElement(appId, query);
     const result = await this.callRemoteTestUtil(
         'fakeMouseRightClick', appId, [query, opt_keyModifiers]);
     chrome.test.assertTrue(result, 'mouse right-click failed.');
-    // @ts-ignore: error TS2322: Type 'ElementObject' is not assignable to type
-    // 'void'.
     return element;
   }
 
@@ -459,14 +458,13 @@ export class RemoteCall {
    * Shorthand for focusing an element.
    * @param {string} appId App window Id.
    * @param {!Array<string>} query Query to specify the element to be focused.
-   * @return {Promise<void>} Promise to be fulfilled with the focused element.
+   * @return {Promise<?import('./prod/file_manager/shared_types.js').ElementObject>}
+   *     Promise to be fulfilled with the focused element.
    */
   async focus(appId, query) {
     const element = await this.waitForElement(appId, query);
     const result = await this.callRemoteTestUtil('focus', appId, query);
     chrome.test.assertTrue(result, 'focus failed.');
-    // @ts-ignore: error TS2322: Type 'ElementObject' is not assignable to type
-    // 'void'.
     return element;
   }
 
@@ -1017,8 +1015,8 @@ export class RemoteCallFilesApp extends RemoteCall {
   /**
    * @param {string} appId App window Id.
    * @param {string|!Array<string>} query Query to find the elements.
-   * @return {!Promise<!Array<!ElementObject>>} Promise to be fulfilled with the
-   *     elements.
+   * @return {!Promise<!Array<!import('./prod/file_manager/shared_types.js').ElementObject>>}
+   *     Promise to be fulfilled with the elements.
    * @private
    */
   async queryElements_(appId, query) {
@@ -1033,8 +1031,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * in the `items` property.
    * @param {string} appId App window Id.
    * @param {string|!Array<string>} menu The name of the menu.
-   * @return {!Promise<undefined|!ElementObject>} Promise to be fulfilled with
-   *     the menu.
+   * @return {!Promise<undefined|!import('./prod/file_manager/shared_types.js').ElementObject>}
+   *     Promise to be fulfilled with the menu.
    */
   async getMenu(appId, menu) {
     let menuId = '';
@@ -1301,8 +1299,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    *     used. See `waitForElement` for details.
    * @param {string|!Array<string>} query_old Used when cros_components are not
    *     used. See `waitForElement` for details.
-   * @returns {Promise<ElementObject>} Promise to be fulfilled when the
-   *     element appears.
+   * @returns {Promise<import('./prod/file_manager/shared_types.js').ElementObject>}
+   *     Promise to be fulfilled when the element appears.
    */
   waitForElementJelly(appId, query_jelly, query_old) {
     return this.isCrosComponents(appId).then(
@@ -1318,9 +1316,10 @@ export class RemoteCallFilesApp extends RemoteCall {
    *     cros_components. See `waitAndClickElement` for details.
    * @param {string|!Array<string>} query_old The query when not using
    *     cros_components. See `waitAndClickElement` for details.
-   * @param {KeyModifiers=} opt_keyModifiers Object
-   * @return {Promise<ElementObject>} Promise to be fulfilled with the clicked
-   *     element.
+   * @param {import('./prod/file_manager/shared_types.js').KeyModifiers=}
+   *     opt_keyModifiers Object
+   * @return {Promise<import('./prod/file_manager/shared_types.js').ElementObject>}
+   *     Promise to be fulfilled with the clicked element.
    */
   async waitAndClickElementJelly(
       appId, query_jelly, query_old, opt_keyModifiers) {

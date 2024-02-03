@@ -11,6 +11,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,6 +23,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -933,7 +935,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusLostOnDeletedNode) {
       "\"></iframe>");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   auto FocusNodeAndReload = [this, &url](const std::string& node_name,
                                          const std::string& focus_node_script) {
@@ -975,7 +978,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       "<iframe></iframe>");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
   // Make sure we have an initial accessibility tree before continuing the test
   // setup, otherwise the wait for button 3 below seems to flake on linux.
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "1");
@@ -991,7 +995,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       "\"></iframe>");
   auto* inner_contents =
       static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(child.get()));
-  EnableAccessibilityForWebContents(inner_contents);
+  content::ScopedAccessibilityModeOverride inner_scoped_accessibility_mode(
+      inner_contents, ui::kAXModeComplete);
 
   EXPECT_TRUE(NavigateToURL(inner_contents, inner_url));
 
@@ -1014,14 +1019,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // WaitForAccessibilityTreeToContainNodeWithName seems to flake when waiting
   // for button 3, so we poll instead.
   BrowserAccessibility* node_button_3 = FindNode(ax::mojom::Role::kButton, "3");
-  while (!node_button_3) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-
+  EXPECT_TRUE(base::test::RunUntil([&]() {
     node_button_3 = FindNode(ax::mojom::Role::kButton, "3");
-  }
+    return node_button_3 != nullptr;
+  }));
+
   while (GetFocusedAccessibilityNodeInfo(shell()->web_contents()).id !=
          node_button_3->GetId()) {
     WaitForAccessibilityFocusChange();
@@ -1061,7 +1063,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 
   auto* inner_contents =
       static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(child.get()));
-  EnableAccessibilityForWebContents(inner_contents);
+  content::ScopedAccessibilityModeOverride inner_scoped_accessibility_mode(
+      inner_contents, ui::kAXModeComplete);
 
   // Simulate focusing the placeholder for the inner contents. This involves
   // multiple steps of setting the focused frame within a frame tree and setting

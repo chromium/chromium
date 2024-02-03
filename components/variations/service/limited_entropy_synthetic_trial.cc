@@ -41,6 +41,10 @@ LimitedEntropySyntheticTrial::LimitedEntropySyntheticTrial(
     PrefService* local_state)
     : group_name_(SelectGroup(local_state)) {}
 
+LimitedEntropySyntheticTrial::LimitedEntropySyntheticTrial(
+    std::string_view group_name)
+    : group_name_(group_name) {}
+
 LimitedEntropySyntheticTrial::~LimitedEntropySyntheticTrial() = default;
 
 // static

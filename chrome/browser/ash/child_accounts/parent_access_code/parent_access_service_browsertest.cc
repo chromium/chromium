@@ -28,29 +28,6 @@
 namespace ash {
 namespace parent_access {
 
-namespace {
-
-// Dictionary keys for ParentAccessCodeConfig policy.
-constexpr char kFutureConfigDictKey[] = "future_config";
-constexpr char kCurrentConfigDictKey[] = "current_config";
-constexpr char kOldConfigsDictKey[] = "old_configs";
-
-base::Value PolicyFromConfigs(
-    const AccessCodeConfig& future_config,
-    const AccessCodeConfig& current_config,
-    const std::vector<AccessCodeConfig>& old_configs) {
-  base::Value::Dict dict;
-  dict.Set(kFutureConfigDictKey, future_config.ToDictionary());
-  dict.Set(kCurrentConfigDictKey, current_config.ToDictionary());
-  base::Value::List old_configs_value;
-  for (const auto& config : old_configs)
-    old_configs_value.Append(config.ToDictionary());
-  dict.Set(kOldConfigsDictKey, std::move(old_configs_value));
-  return base::Value(std::move(dict));
-}
-
-}  // namespace
-
 // Stores information about results of the access code validation.
 struct CodeValidationResults {
   // Number of successful access code validations.

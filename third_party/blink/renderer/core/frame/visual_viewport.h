@@ -197,7 +197,6 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
                            mojom::blink::ScrollBehavior::kInstant) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
-      const PhysicalBoxStrut& scroll_margin,
       const mojom::blink::ScrollIntoViewParamsPtr&) override;
   bool IsThrottled() const override {
     // VisualViewport is always in the main frame, so the frame does not get
@@ -311,7 +310,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
     overscroll_type_ = type;
     SetNeedsPaintPropertyUpdate();
   }
-  absl::optional<blink::Color> CSSScrollbarThumbColor() const;
+  std::optional<blink::Color> CSSScrollbarThumbColor() const;
 
  private:
   bool DidSetScaleOrLocation(float scale,

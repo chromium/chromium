@@ -1164,7 +1164,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 
   // Set policy managed wallpaper for the user. Banner should be hidden.
   wallpaper_controller->SetPolicyWallpaper(kFakeTestAccountId,
-                                           user_manager::USER_TYPE_REGULAR,
+                                           user_manager::UserType::kRegular,
                                            std::string() /*data=*/);
   ASSERT_TRUE(
       wallpaper_controller->IsWallpaperControlledByPolicy(kFakeTestAccountId));

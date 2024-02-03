@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1384959399684842514">डाउनलोडला विराम दिला</translation>
 <translation id="1415402041810619267">URL कापली गेली</translation>
-<translation id="1426410128494586442">होय</translation>
 <translation id="1434873037477293673">किमतीमधील घट दाखवणारे कार्ड</translation>
 <translation id="1448064542941920355">झूम कमी करते</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइट}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ला तुमचा कॅमेरा ॲक्सेस करू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील कॅमेरा सुरू करा.</translation>
 <translation id="2235344399760031203">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="2238944249568001759">तुमच्या मागील टॅबनुसार सुचवलेले शोध</translation>
+<translation id="2241587408274973373">नवीन टॅब पेज कार्ड</translation>
 <translation id="2241634353105152135">फक्त एकदाच</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> काढून टाका</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{१ साइट ब्लॉक केली आहे}other{# साइट ब्लॉक केल्या आहेत}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">साइट ओळखीच्या सेवांकडून मिळणाऱ्या साइन इन सूचना दाखवू शकतात.</translation>
 <translation id="2790501146643349491">सुरू असताना, अलीकडे बंद केलेल्या साइट डेटा पाठवण्याची आणि मिळवण्याची प्रक्रिया पूर्ण करू शकतात. बंद असताना, अलीकडे बंद केलेल्या साइट डेटा पाठवण्याची आणि मिळवण्याची प्रक्रिया पूर्ण करू शकत नाहीत.</translation>
 <translation id="2822354292072154809">तुम्हाला नक्की <ph name="CHOSEN_OBJECT_NAME" /> साठी सर्व साइट परवानग्या रीसेट करायच्या आहेत का?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">मोबाइल दृश्याची विनंती करा</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">सर्टिफिकेट दर्शक</translation>
 <translation id="2979365474350987274">तृतीय पक्ष कुकी मर्यादित आहेत</translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
-<translation id="3013291976881901233">MIDI डिव्हाइस</translation>
 <translation id="301521992641321250">आपोआप ब्लॉक केलेले</translation>
 <translation id="3069226013421428034">विशिष्ट साइटसाठी तृतीय पक्ष साइन-इनला अनुमती द्या.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{उद्या एक्स्पायर होईल}other{# दिवसांमध्ये एक्स्पायर होईल}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB डिव्हाइसशी कनेक्ट केले आहे</translation>
 <translation id="4194328954146351878">साइटना NFC डिव्हाइसवरील माहिती पाहू देण्याची किंवा बदलण्याची अनुमती देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
 <translation id="4200726100658658164">स्थान सेटिंग्ज उघडा</translation>
-<translation id="4212246570487010370">ब्राउझ करणे सुरू ठेवा</translation>
 <translation id="4226663524361240545">सूचनांमुळे डिव्हाइसचे कंपन होऊ शकते</translation>
 <translation id="4259722352634471385">नेव्हिगेशन ब्लॉक केले आहे: <ph name="URL" /></translation>
 <translation id="4278390842282768270">अनुमत</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">खाली हलवा</translation>
 <translation id="6749077623962119521">परवानग्या रीसेट करायच्या आहेत का?</translation>
 <translation id="6766622839693428701">बंद करण्यासाठी खाली स्वाइप करा.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> वरून</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> साठी एखादा पर्याय निवडा</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6818926723028410516">आयटम निवडा</translation>

@@ -97,6 +97,8 @@ class TestTrayBackgroundView : public TrayBackgroundView,
 
   TrayBubbleWrapper* bubble() { return bubble_.get(); }
 
+  TrayBubbleView* bubble_view() { return bubble_->bubble_view(); }
+
   bool show_bubble_called() const { return show_bubble_called_; }
 
  private:
@@ -599,6 +601,122 @@ TEST_F(TrayBackgroundViewTest, CleanUpOnIndependentBubbleDestruction) {
 
   EXPECT_FALSE(test_tray_background_view()->is_active());
   ASSERT_FALSE(test_tray_background_view()->bubble());
+}
+
+// Tests that the tray bubble is repositioned when the device scale factor
+// changes.
+TEST_F(TrayBackgroundViewTest, UpdateScaleFactor) {
+  test_tray_background_view()->ShowBubble();
+  EXPECT_TRUE(test_tray_background_view()->bubble());
+
+  // Since no zoom factor has been set on the display, it should be 1.
+  const display::ManagedDisplayInfo& display =
+      display_manager()->GetDisplayInfo(GetPrimaryDisplay().id());
+  EXPECT_EQ(
+      display_manager()->GetDisplayForId(display.id()).device_scale_factor(),
+      1.f);
+
+  const gfx::Rect& tablet_mode_bounds =
+      test_tray_background_view()->bubble_view()->GetBoundsInScreen();
+
+  // Set the device scale factor to 2.
+  constexpr float zoom_factor = 2.0f;
+  display_manager()->UpdateZoomFactor(display.id(), zoom_factor);
+  EXPECT_EQ(
+      display_manager()->GetDisplayForId(display.id()).device_scale_factor(),
+      zoom_factor);
+
+  const gfx::Rect& clamshell_mode_bounds =
+      test_tray_background_view()->bubble_view()->GetBoundsInScreen();
+
+  // The bubble should have been repositioned due to the scale factor changing,
+  // so the bounds should be different than when there was a scale factor of 1.
+  EXPECT_NE(tablet_mode_bounds, clamshell_mode_bounds);
+
+  // Close and reopen the bubble, and verify that the bounds when exiting out of
+  // tablet mode is the same as the initial bounds calculation when showing the
+  // bubble.
+  test_tray_background_view()->CloseBubble();
+  test_tray_background_view()->ShowBubble();
+  EXPECT_EQ(clamshell_mode_bounds,
+            test_tray_background_view()->bubble_view()->GetBoundsInScreen());
+}
+
+// Tests that the tray bubble is positioned correctly when the device switches
+// from tablet to clamshell mode.
+TEST_F(TrayBackgroundViewTest, TabletModeTransitionBase) {
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+
+  // With no windows open, switching into tablet mode should show the home
+  // launcher with the hotseat extended.
+  tablet_mode_controller->SetEnabledForTest(true);
+  EXPECT_EQ(HotseatState::kShownHomeLauncher,
+            GetPrimaryShelf()->hotseat_widget()->state());
+
+  // Show the bubble.
+  test_tray_background_view()->ShowBubble();
+  EXPECT_TRUE(test_tray_background_view()->bubble());
+  const gfx::Insets& tablet_mode_insets =
+      test_tray_background_view()->bubble_view()->GetBorderInsets();
+
+  // Switch back to clamshell mode.
+  tablet_mode_controller->SetEnabledForTest(false);
+  const gfx::Insets& clamshell_mode_insets =
+      test_tray_background_view()->bubble_view()->GetBorderInsets();
+
+  // The bubble should have been repositioned due to switching out of tablet
+  // mode, so the bottom inset should be updated with the inset hotseat
+  // compensation calculated from `GetBubbleInsetHotseatCompensation` removed.
+  EXPECT_LT(clamshell_mode_insets.bottom(), tablet_mode_insets.bottom());
+
+  // Close and reopen the bubble, and verify that the insets when exiting out of
+  // tablet mode is the same as the initial inset calculation when showing the
+  // bubble.
+  test_tray_background_view()->CloseBubble();
+  test_tray_background_view()->ShowBubble();
+  EXPECT_EQ(clamshell_mode_insets,
+            test_tray_background_view()->bubble_view()->GetBorderInsets());
+}
+
+// Tests the the tray bubble positions itself correctly even when the shelf
+// alignments change when transitioning out of tablet mode. This happens when
+// the shelf is aligned to either the left or the right.
+TEST_F(TrayBackgroundViewTest, TabletModeTransitionForAlignments) {
+  Shelf* shelf = GetPrimaryShelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+
+  const struct {
+    ShelfAlignment alignment;
+  } kTestCases[] = {{ShelfAlignment::kLeft}, {ShelfAlignment::kRight}};
+  for (auto& test : kTestCases) {
+    shelf->SetAlignment(test.alignment);
+    tablet_mode_controller->SetEnabledForTest(true);
+
+    // Show the bubble.
+    test_tray_background_view()->ShowBubble();
+    EXPECT_TRUE(test_tray_background_view()->bubble());
+    const gfx::Rect& tablet_mode_bounds =
+        test_tray_background_view()->bubble_view()->GetBoundsInScreen();
+
+    // Switch back to clamshell mode.
+    tablet_mode_controller->SetEnabledForTest(false);
+    const gfx::Rect& clamshell_mode_bounds =
+        test_tray_background_view()->bubble_view()->GetBoundsInScreen();
+
+    // The bubble should have been repositioned due to switching out of tablet
+    // mode.
+    EXPECT_NE(tablet_mode_bounds, clamshell_mode_bounds);
+
+    // Close and reopen the bubble, and verify that the bounds when exiting out
+    // of tablet mode is the same as the initial bounds calculation when showing
+    // the bubble.
+    test_tray_background_view()->CloseBubble();
+    test_tray_background_view()->ShowBubble();
+    EXPECT_EQ(clamshell_mode_bounds,
+              test_tray_background_view()->bubble_view()->GetBoundsInScreen());
+  }
 }
 
 }  // namespace ash

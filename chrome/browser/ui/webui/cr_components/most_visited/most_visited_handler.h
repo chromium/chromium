@@ -65,6 +65,8 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
                              UpdateMostVisitedTileCallback callback) override;
   void PrerenderMostVisitedTile(most_visited::mojom::MostVisitedTilePtr tile,
                                 bool is_hover_trigger) override;
+  void PreconnectMostVisitedTile(
+      most_visited::mojom::MostVisitedTilePtr tile) override;
   void CancelPrerender() override;
   void OnMostVisitedTilesRendered(
       std::vector<most_visited::mojom::MostVisitedTilePtr> tiles,

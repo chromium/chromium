@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_AUDIO_STREAM_MIXER_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -71,7 +71,7 @@ class AudioStreamMixer {
   // audio frames from all audio capturers managed by this mixer. The mixed
   // output will be provided to the client via the `callback` given to the
   // constructor.
-  void AddAudioCapturer(base::StringPiece device_id,
+  void AddAudioCapturer(std::string_view device_id,
                         mojo::PendingRemote<media::mojom::AudioStreamFactory>
                             audio_stream_factory,
                         bool use_automatic_gain_control,

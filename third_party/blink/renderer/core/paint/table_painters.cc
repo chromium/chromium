@@ -546,7 +546,7 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
   // We paint collapsed-borders section-by-section for fragmentation purposes.
   // This means that we need to track the final row we've painted in each
   // section to avoid double painting.
-  absl::optional<wtf_size_t> previous_painted_row_index;
+  std::optional<wtf_size_t> previous_painted_row_index;
 
   for (const auto& child : fragment_.Children()) {
     if (!child->IsTableSection()) {
@@ -554,7 +554,7 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     }
 
     const auto& section = To<PhysicalBoxFragment>(*child);
-    const absl::optional<wtf_size_t> section_start_row_index =
+    const std::optional<wtf_size_t> section_start_row_index =
         section.TableSectionStartRowIndex();
     if (!section_start_row_index)
       continue;
@@ -590,7 +590,7 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
       if (fragment_table_row >= section_row_offsets.size()) {
         // Store the final row which we painted (if it wasn't fragmented).
         if (is_end_row_fragmented)
-          previous_painted_row_index = absl::nullopt;
+          previous_painted_row_index = std::nullopt;
         else
           previous_painted_row_index = table_row - 1;
         break;

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_RTP_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_RTP_SOURCE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/rtp_receiver_interface.h"
 
@@ -34,10 +35,10 @@ class PLATFORM_EXPORT RTCRtpSource {
   Type SourceType() const;
   base::TimeTicks Timestamp() const;
   uint32_t Source() const;
-  absl::optional<double> AudioLevel() const;
+  std::optional<double> AudioLevel() const;
   uint32_t RtpTimestamp() const;
-  absl::optional<int64_t> CaptureTimestamp() const;
-  absl::optional<int64_t> SenderCaptureTimeOffset() const;
+  std::optional<int64_t> CaptureTimestamp() const;
+  std::optional<int64_t> SenderCaptureTimeOffset() const;
 
  private:
   const webrtc::RtpSource source_;

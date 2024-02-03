@@ -175,7 +175,14 @@ void FromVolatileArrayDisallowed() {
 void FixedSizeCopyTooSmall() {
   const int src[] = {1, 2, 3};
   int dst[2];
-  base::make_span(dst).copy_from(base::make_span(src));  // expected-error@*:* {{span size mismatch}}
+  base::span(dst).copy_from(base::make_span(src));  // expected-error@*:* {{no viable conversion}}
+
+  base::span(dst).copy_from(src);  // expected-error@*:* {{no viable conversion}}
+}
+
+void FixedSizeSplitAtOutOfBounds() {
+  const int arr[] = {1, 2, 3};
+  base::span(arr).split_at<4u>();  // expected-error@*:* {{no matching member function for call to 'split_at'}}
 }
 
 void FromRefNoSuchFunctionForIntLiteral() {

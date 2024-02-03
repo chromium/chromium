@@ -103,7 +103,7 @@ ValueStore* LockScreenStorageHelper::GetValueStoreForOrigin(
   std::string serialized_origin = origin.Serialize();
   uint8_t hash[crypto::kSHA256Length];
   crypto::SHA256HashString(serialized_origin, hash, sizeof(hash));
-  std::string filename = base::HexEncode(hash, crypto::kSHA256Length);
+  std::string filename = base::HexEncode(hash);
 
   auto iter = storage_map_.find(filename);
   if (iter != storage_map_.end())

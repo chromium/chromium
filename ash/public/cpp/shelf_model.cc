@@ -64,7 +64,7 @@ void ShelfModel::AddAndPinAppWithFactoryConstructedDelegate(
       shelf_item_factory_->CreateShelfItemDelegateForAppId(app_id);
   std::unique_ptr<ShelfItem> item = shelf_item_factory_->CreateShelfItemForApp(
       ash::ShelfID(app_id), STATUS_CLOSED, TYPE_PINNED_APP,
-      /*title=*/base::EmptyString16());
+      /*title=*/std::u16string());
 
   Add(*item, std::move(delegate));
 }

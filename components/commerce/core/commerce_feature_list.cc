@@ -40,15 +40,16 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
   static const base::NoDestructor<CountryLocaleMap> allowed_map([] {
     CountryLocaleMap map;
 
-    map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
-    map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
-    map[&ntp_features::kNtpChromeCartModule] = {{"us", {"en-us"}}};
     map[&kCommerceMerchantViewerRegionLaunched] = {{"us", {"en-us"}}};
     map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
-    map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kEnableDiscountInfoApiRegionLaunched] = {{"us", {"en-us"}}};
-    map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
+    map[&ntp_features::kNtpChromeCartModule] = {{"us", {"en-us"}}};
     map[&kParcelTrackingRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kProductSpecificationsRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
 
     return map;
   }());
@@ -194,6 +195,13 @@ const base::FeatureParam<bool> kPriceInsightsUseCache{
 // Tonal colors for the expanded state of the price tracking chip on desktop.
 BASE_FEATURE(kPriceTrackingIconColors,
              "PriceTrackingIconColors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kProductSpecifications,
+             "ProductSpecifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProductSpecificationsRegionLaunched,
+             "ProductSpecificationsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingIconColorVariant,

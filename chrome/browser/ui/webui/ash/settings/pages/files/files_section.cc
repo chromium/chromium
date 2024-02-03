@@ -11,6 +11,8 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
@@ -261,6 +263,12 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "googleDriveFileSyncLearnMoreLink",
       GetHelpUrlWithBoard(chrome::kGoogleDriveOfflineLearnMoreURL));
+
+  html_source->AddBoolean(
+      "showOneDriveSettings",
+      ash::cloud_upload::
+          IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
+              profile()));
 
   html_source->AddBoolean(
       "showOfficeSettings",

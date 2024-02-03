@@ -81,13 +81,7 @@ void OpenerHeuristicTabHelper::InitPopup(
 }
 
 void OpenerHeuristicTabHelper::GotPopupDipsState(const DIPSState& state) {
-  if (!state.user_interaction_times().has_value()) {
-    // No previous interaction.
-    return;
-  }
-
-  popup_observer_->SetPastInteractionTime(
-      state.user_interaction_times().value().second);
+  popup_observer_->SetPastInteractionTime(state.user_interaction_times());
 }
 
 void OpenerHeuristicTabHelper::PrimaryPageChanged(content::Page& page) {
@@ -178,12 +172,19 @@ OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
 OpenerHeuristicTabHelper::PopupObserver::~PopupObserver() = default;
 
 void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTime(
-    base::Time time) {
-  CHECK(!time_since_interaction_.has_value())
+    TimestampRange interaction_times) {
+  CHECK(absl::holds_alternative<FieldNotSet>(time_since_interaction_))
       << "SetPastInteractionTime() called more than once";
-  // Technically we should use the time when the pop-up first opened. But since
-  // we only report this metric at hourly granularity, it shouldn't matter.
-  time_since_interaction_ = GetClock()->Now() - time;
+
+  if (interaction_times.has_value()) {
+    // Technically we should use the time when the pop-up first opened. But
+    // since we only report this metric at hourly granularity, it shouldn't
+    // matter.
+    time_since_interaction_ =
+        GetClock()->Now() - interaction_times.value().second;
+  } else {
+    time_since_interaction_ = NoInteraction();
+  }
 
   // TODO(rtarpine): consider ignoring interactions that are too old. (This
   // shouldn't happen since DIPS already discards old timestamps.)
@@ -192,27 +193,35 @@ void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTime(
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
-  if (!time_since_interaction_.has_value() || !initial_source_id_.has_value()) {
+  if (absl::holds_alternative<FieldNotSet>(time_since_interaction_) ||
+      !initial_source_id_.has_value()) {
     // Not enough information to emit event yet.
     return;
   }
 
-  MaybeCreateOpenerHeuristicGrant(
-      initial_url_,
-      tpcd::experiment::kTpcdWritePopupPastInteractionHeuristicsGrants.Get());
-
   auto has_iframe = GetOpenerHasSameSiteIframe(initial_url_);
+  int32_t bucketized_time = -1;
+  if (auto* time = absl::get_if<base::TimeDelta>(&time_since_interaction_)) {
+    bucketized_time = Bucketize3PCDHeuristicTimeDelta(
+        *time, base::Days(30),
+        base::BindRepeating(&base::TimeDelta::InHours)
+            .Then(base::BindRepeating([](int64_t t) { return t; })));
+  }
+
+  // Record past interaction in UKM.
   ukm::builders::OpenerHeuristic_PopupPastInteraction(
       initial_source_id_.value())
-      .SetHoursSinceLastInteraction(Bucketize3PCDHeuristicTimeDelta(
-          time_since_interaction_.value(), base::Days(30),
-          base::BindRepeating(&base::TimeDelta::InHours)
-              .Then(base::BindRepeating([](int64_t t) { return t; }))))
+      .SetHoursSinceLastInteraction(bucketized_time)
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_iframe))
       .SetPopupId(popup_id_)
       .Record(ukm::UkmRecorder::Get());
 
-  EmitTopLevel(initial_url_, has_iframe, /*is_current_interaction=*/false);
+  EmitTopLevelAndCreateGrant(
+      initial_url_, has_iframe, /*is_current_interaction=*/false,
+      /*should_record_popup_and_maybe_grant=*/
+      absl::holds_alternative<base::TimeDelta>(time_since_interaction_),
+      /*grant_duration=*/
+      tpcd::experiment::kTpcdWritePopupPastInteractionHeuristicsGrants.Get());
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
@@ -267,13 +276,9 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
   }
 
   const GURL& interaction_url = render_frame_host->GetLastCommittedURL();
-  MaybeCreateOpenerHeuristicGrant(
-      interaction_url,
-      tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrants
-          .Get());
-
   auto time_since_committed = GetClock()->Now() - *commit_time_;
   auto has_iframe = GetOpenerHasSameSiteIframe(interaction_url);
+
   ukm::builders::OpenerHeuristic_PopupInteraction(
       render_frame_host->GetPageUkmSourceId())
       .SetSecondsSinceCommitted(Bucketize3PCDHeuristicTimeDelta(
@@ -286,8 +291,13 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
 
   interaction_reported_ = true;
 
-  EmitTopLevel(interaction_url, has_iframe,
-               /*is_current_interaction=*/true);
+  EmitTopLevelAndCreateGrant(
+      interaction_url, has_iframe,
+      /*is_current_interaction=*/true,
+      /*should_record_popup_and_maybe_grant=*/true,
+      /*grant_duration=*/
+      tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrants
+          .Get());
 }
 
 void OpenerHeuristicTabHelper::OnCookiesAccessed(
@@ -348,33 +358,38 @@ void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
       .Record(ukm::UkmRecorder::Get());
 }
 
-void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
+void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
     const GURL& popup_url,
     OptionalBool has_iframe,
-    bool is_current_interaction) {
+    bool is_current_interaction,
+    bool should_record_popup_and_maybe_grant,
+    base::TimeDelta grant_duration) {
   uint64_t access_id = base::RandUint64();
 
-  if (DIPSService* dips =
-          DIPSService::Get(web_contents()->GetBrowserContext())) {
-    dips->storage()
-        ->AsyncCall(&DIPSStorage::WritePopup)
-        .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
-                  access_id,
-                  /*popup_time=*/GetClock()->Now(), is_current_interaction)
-        .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
+  if (should_record_popup_and_maybe_grant) {
+    if (DIPSService* dips =
+            DIPSService::Get(web_contents()->GetBrowserContext())) {
+      dips->storage()
+          ->AsyncCall(&DIPSStorage::WritePopup)
+          .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
+                    access_id,
+                    /*popup_time=*/GetClock()->Now(), is_current_interaction)
+          .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
+    }
+
+    MaybeCreateOpenerHeuristicGrant(popup_url, grant_duration);
   }
 
-  if (toplevel_reported_) {
-    return;
+  // Don't record multiple interaction UKM events for the same top level.
+  if (!toplevel_reported_) {
+    ukm::builders::OpenerHeuristic_TopLevel(opener_source_id_)
+        .SetAccessId(access_id)
+        .SetHasSameSiteIframe(static_cast<int64_t>(has_iframe))
+        .SetPopupProvider(static_cast<int64_t>(GetPopupProvider(initial_url_)))
+        .SetPopupId(popup_id_)
+        .SetIsAdTaggedPopupClick(is_last_navigation_ad_tagged_)
+        .Record(ukm::UkmRecorder::Get());
   }
-
-  ukm::builders::OpenerHeuristic_TopLevel(opener_source_id_)
-      .SetAccessId(access_id)
-      .SetHasSameSiteIframe(static_cast<int64_t>(has_iframe))
-      .SetPopupProvider(static_cast<int64_t>(GetPopupProvider(initial_url_)))
-      .SetPopupId(popup_id_)
-      .SetIsAdTaggedPopupClick(is_last_navigation_ad_tagged_)
-      .Record(ukm::UkmRecorder::Get());
 
   toplevel_reported_ = true;
 }

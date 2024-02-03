@@ -118,11 +118,11 @@ WebString WebDocument::GetReferrer() const {
   return ConstUnwrap<Document>()->referrer();
 }
 
-absl::optional<SkColor> WebDocument::ThemeColor() {
-  absl::optional<Color> color = Unwrap<Document>()->ThemeColor();
+std::optional<SkColor> WebDocument::ThemeColor() {
+  std::optional<Color> color = Unwrap<Document>()->ThemeColor();
   if (color)
     return color->Rgb();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 WebURL WebDocument::OpenSearchDescriptionURL() const {

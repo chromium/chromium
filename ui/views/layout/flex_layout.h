@@ -66,8 +66,8 @@ class View;
 // take up its preferred size in the layout.
 //
 // The core function of this class is contained in
-// GetPreferredSize(maximum_size) and Layout(). In both cases, a layout will
-// be cached and typically not recalculated as long as none of the layout's
+// GetPreferredSize(maximum_size) and Layout(). In both cases, a layout will be
+// cached and typically not recalculated as long as none of the layout's
 // properties or the preferred size or visibility of any of its children has
 // changed.
 class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {

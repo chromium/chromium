@@ -45,7 +45,7 @@ bool StyleRecalcRoot::IsDirty(const Node& node) const {
 
 namespace {
 
-absl::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
+std::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
     ContainerNode& parent) {
   if (!parent.IsElementNode()) {
     // The flat tree does not contain shadow roots or the document node. The
@@ -57,7 +57,7 @@ absl::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
     return To<Element>(&parent);
   }
   if (!root->HasSlotAssignment()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // The child has already been removed, so we cannot look up its slot
   // assignment directly. Find the slot which was part of the ancestor chain
@@ -70,7 +70,7 @@ absl::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
   }
   // The slot has also been removed. Fall back to using the light tree parent as
   // the new recalc root.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool IsFlatTreeConnected(const Node& root) {

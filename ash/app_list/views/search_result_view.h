@@ -118,6 +118,8 @@ class SearchResultPageDialogController;
 
 class ASH_EXPORT SearchResultView : public SearchResultBaseView,
                                     public SearchResultActionsViewDelegate {
+  METADATA_HEADER(SearchResultView, SearchResultBaseView)
+
  public:
   class LabelAndTag {
    public:
@@ -152,7 +154,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     kKeyboardShortcut,
   };
 
-  METADATA_HEADER(SearchResultView);
   SearchResultView(SearchResultListView* list_view,
                    AppListViewDelegate* view_delegate,
                    SearchResultPageDialogController* dialog_controller,
@@ -260,7 +261,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   // views::View overrides:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;

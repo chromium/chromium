@@ -316,14 +316,19 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual Color GetCurrentColor() const = 0;
 
   virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
-  const cc::PaintCanvas* GetPaintCanvas() const {
-    return const_cast<BaseRenderingContext2D*>(this)->GetPaintCanvas();
+  virtual const cc::PaintCanvas* GetPaintCanvas() const = 0;
+  cc::PaintCanvas* GetPaintCanvas() {
+    return const_cast<cc::PaintCanvas*>(
+        const_cast<const BaseRenderingContext2D*>(this)->GetPaintCanvas());
   }
-  virtual cc::PaintCanvas* GetPaintCanvas() = 0;
 
   // Returns the paint ops recorder this context uses. Can be `nullptr` if no
   // recorder is available.
-  virtual MemoryManagedPaintRecorder* Recorder() = 0;
+  virtual const MemoryManagedPaintRecorder* Recorder() const = 0;
+  MemoryManagedPaintRecorder* Recorder() {
+    return const_cast<MemoryManagedPaintRecorder*>(
+        const_cast<const BaseRenderingContext2D*>(this)->Recorder());
+  }
 
   // Called when about to draw. When this is called GetPaintCanvas() has already
   // been called and returned a non-null value.
@@ -631,12 +636,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   CanvasRenderingContext2DState::SaveType SaveLayerForState(
       const CanvasRenderingContext2DState& state,
+      sk_sp<PaintFilter> filter,
       cc::PaintCanvas& canvas) const;
 
   // Pops from the top of the state stack, inverts transform, restores the
   // PaintCanvas, and validates the state stack. Helper for Restore and
   // EndLayer.
-  void PopAndRestore();
+  void PopAndRestore(cc::PaintCanvas& canvas);
 
   void ValidateStateStackImpl(const cc::PaintCanvas* canvas = nullptr) const;
 
@@ -745,7 +751,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return false;
   }
 
-  virtual absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
+  virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
 
   // Only call if identifiability_study_helper_.ShouldUpdateBuilder() returns
   // true.
@@ -862,6 +868,12 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
   cc::PaintCanvas* c = GetPaintCanvas();
   if (UNLIKELY(!c))
     return;
+
+  // Overdraw in layers is not currently supported. We would need to be able to
+  // drop draw ops in the current layer only, which is not currently possible.
+  if (layer_count_ != 0) {
+    return;
+  }
 
   if (overdraw_op == OverdrawOp::kDrawImage) {  // static branch
     if (UNLIKELY(flags->getBlendMode() != SkBlendMode::kSrcOver) ||

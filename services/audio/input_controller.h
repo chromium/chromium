@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -28,7 +29,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/stream_monitor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AecdumpRecordingManager;
@@ -306,7 +306,7 @@ class InputController final : public StreamMonitor {
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,
                              base::TimeTicks audio_capture_time,
-                             absl::optional<double> new_volume,
+                             std::optional<double> new_volume,
                              const media::AudioGlitchInfo& glitch_info);
 #endif
 

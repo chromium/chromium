@@ -16,7 +16,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,13 +34,6 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   void SetUp() override {
     GetGraphFeatures().EnableV8ContextTracker();
     Super::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Force site-per-process so the number of internal utility v8 contexts is
-    // stable.
-    content::IsolateAllSitesForTesting(command_line);
-    PerformanceManagerBrowserTestHarness::SetUpCommandLine(command_line);
   }
 
   void ExpectCounts(size_t v8_context_count,
@@ -139,18 +131,13 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameSiteNavigation) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
   ASSERT_TRUE(
       NavigateAndWaitForConsoleMessage(contents, urla, "b.html loaded"));
+  ExpectCounts(2, 2, 0, 0);
 
   // Get pointers to the RFHs for each frame.
   content::RenderFrameHost* rfha = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* rfhb = ChildFrameAt(rfha, 0);
   bool rfh_should_change =
       rfhb->ShouldChangeRenderFrameHostOnSameSiteNavigation();
-
-  // In addition to a context corresponding to each window, an internal utility
-  // context is created for each isolate.
-  ASSERT_NE(rfha->GetProcess(), rfhb->GetProcess());
-  constexpr size_t kNumUtilityContexts = 2;
-  ExpectCounts(2 + kNumUtilityContexts, 2, 0, 0);
 
   // Execute a same site navigation in the child frame. This causes a
   // v8 context to be detached, and new context attached to the execution
@@ -164,16 +151,14 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameSiteNavigation) {
     // When RenderDocument is enabled, a new RenderFrameHost will be created for
     // the navigation to `urlb`. Both a new V8 context and ExecutionContext are
     // created, and the old ExecutionContext is destroyed.
-    ExpectCounts(/*v8_context_count=*/3 + kNumUtilityContexts,
-                 /*execution_context_count=*/3,
+    ExpectCounts(/*v8_context_count=*/3, /*execution_context_count=*/3,
                  /*detached_v8_context_count=*/1,
                  /*destroyed_execution_context_count=*/1);
   } else {
     // When RenderDocument is disabled, the same RenderFrameHost will be reused
     // for the navigation to `urlb`. So only a new V8 context will be created,
     // not a new ExecutionContext.
-    ExpectCounts(/*v8_context_count=*/3 + kNumUtilityContexts,
-                 /*execution_context_count=*/2,
+    ExpectCounts(/*v8_context_count=*/3, /*execution_context_count=*/2,
                  /*detached_v8_context_count=*/1,
                  /*destroyed_execution_context_count=*/0);
   }
@@ -185,9 +170,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_a.html"));
   ASSERT_TRUE(
       NavigateAndWaitForConsoleMessage(contents, urla, "a.html loaded"));
-  // In addition to a context corresponding to each window, an internal utility
-  // context is for the isolate.
-  ExpectCounts(3, 2, 0, 0);
+  ExpectCounts(2, 2, 0, 0);
 
   // Get pointers to the RFHs for each frame.
   content::RenderFrameHost* rfha = contents->GetPrimaryMainFrame();
@@ -200,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
                      "iframe.parentNode.removeChild(iframe); "
                      "console.log('detached and leaked iframe');"));
 
-  ExpectCounts(3, 2, 1, 1);
+  ExpectCounts(2, 2, 1, 1);
 }
 
 }  // namespace v8_memory

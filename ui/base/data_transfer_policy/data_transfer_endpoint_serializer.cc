@@ -22,6 +22,7 @@ namespace {
 // JSON Keys
 constexpr char kEndpointTypeKey[] = "endpoint_type";
 constexpr char kUrlKey[] = "url";
+constexpr char kOffTheRecord[] = "off_the_record";
 
 // Endpoint Type Strings
 constexpr char kDefaultString[] = "default";
@@ -96,8 +97,10 @@ std::string ConvertDataTransferEndpointToJson(const DataTransferEndpoint& dte) {
 
   const GURL* url = dte.GetURL();
 
-  if (url && url->is_valid())
+  if (url && url->is_valid()) {
     encoded_dte.Set(kUrlKey, url->spec());
+    encoded_dte.Set(kOffTheRecord, dte.off_the_record());
+  }
 
   std::string json;
   base::JSONWriter::Write(encoded_dte, &json);
@@ -118,7 +121,8 @@ std::unique_ptr<DataTransferEndpoint> ConvertJsonToDataTransferEndpoint(
   if (url_string) {
     GURL url = GURL(*url_string);
 
-    return std::make_unique<DataTransferEndpoint>(url);
+    return std::make_unique<DataTransferEndpoint>(
+        url, dte_dictionary->GetDict().FindBool(kOffTheRecord).value_or(false));
   }
 
   if (endpoint_type && *endpoint_type != kUrlString) {

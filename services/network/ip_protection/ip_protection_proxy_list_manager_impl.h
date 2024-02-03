@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/proxy_chain.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -28,7 +29,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
 
   // IpProtectionProxyListManager implementation.
   bool IsProxyListAvailable() override;
-  const std::vector<std::vector<std::string>>& ProxyList() override;
+  const std::vector<net::ProxyChain>& ProxyList() override;
   void RequestRefreshProxyList() override;
 
   // Set a callback to occur when the proxy list has been refreshed.
@@ -45,11 +46,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
 
  private:
   void RefreshProxyList();
-  void OnGotProxyList(
-      const absl::optional<std::vector<std::vector<std::string>>>&);
+  void OnGotProxyList(const std::optional<std::vector<net::ProxyChain>>&);
 
   // Latest fetched proxy list.
-  std::vector<std::vector<std::string>> proxy_list_;
+  std::vector<net::ProxyChain> proxy_list_;
 
   // True if an invocation of `config_getter_.GetProxyList()` is
   // outstanding.

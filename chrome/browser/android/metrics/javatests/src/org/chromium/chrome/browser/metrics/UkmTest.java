@@ -73,12 +73,12 @@ public class UkmTest {
                         .longValue();
         Assert.assertFalse("Non-zero client id: " + originalClientId, originalClientId == 0);
 
-        // Record some dummy UKM data (adding a Source).
+        // Record some placeholder UKM data (adding a Source).
         final long sourceId = 0x54321;
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Write data under a dummy sourceId and verify it is there.
+                    // Write data under a placeholder sourceId and verify it is there.
                     UkmUtilsForTest.recordSourceWithId(sourceId);
                     Assert.assertTrue(UkmUtilsForTest.hasSourceWithId(sourceId));
                 });
@@ -87,7 +87,7 @@ public class UkmTest {
         // Clear all browsing history.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     new OnClearBrowsingDataListener() {
                                         @Override

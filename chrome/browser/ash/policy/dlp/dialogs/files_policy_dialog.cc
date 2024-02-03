@@ -313,7 +313,7 @@ void FilesPolicyDialog::AddConfidentialRow(const gfx::ImageSkia& icon,
           ash::TypographyToken::kCrosBody1));
 }
 
-BEGIN_METADATA(FilesPolicyDialog, PolicyDialogBase)
+BEGIN_METADATA(FilesPolicyDialog)
 END_METADATA
 
 }  // namespace policy

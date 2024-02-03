@@ -119,7 +119,8 @@ class SkiaOutputSurfaceImplOnGpu
       ContextLostCallback context_lost_callback,
       ScheduleGpuTaskCallback schedule_gpu_task,
       GpuVSyncCallback gpu_vsync_callback,
-      AddChildWindowToBrowserCallback parent_child_Window_to_browser_callback);
+      AddChildWindowToBrowserCallback parent_child_Window_to_browser_callback,
+      SkiaOutputDevice::ReleaseOverlaysCallback release_overlays_callback);
 
   SkiaOutputSurfaceImplOnGpu(
       base::PassKey<SkiaOutputSurfaceImplOnGpu> pass_key,
@@ -133,7 +134,8 @@ class SkiaOutputSurfaceImplOnGpu
       ContextLostCallback context_lost_callback,
       ScheduleGpuTaskCallback schedule_gpu_task,
       GpuVSyncCallback gpu_vsync_callback,
-      AddChildWindowToBrowserCallback parent_child_window_to_browser_callback);
+      AddChildWindowToBrowserCallback parent_child_window_to_browser_callback,
+      SkiaOutputDevice::ReleaseOverlaysCallback release_overlays_callback);
 
   SkiaOutputSurfaceImplOnGpu(const SkiaOutputSurfaceImplOnGpu&) = delete;
   SkiaOutputSurfaceImplOnGpu& operator=(const SkiaOutputSurfaceImplOnGpu&) =
@@ -323,8 +325,10 @@ class SkiaOutputSurfaceImplOnGpu
   void DidSwapBuffersCompleteInternal(gpu::SwapBuffersCompleteParams params,
                                       const gfx::Size& pixel_size,
                                       gfx::GpuFenceHandle release_fence);
+  void ReleaseOverlays(const std::vector<gpu::Mailbox> overlays);
 
   DidSwapBufferCompleteCallback GetDidSwapBuffersCompleteCallback();
+  SkiaOutputDevice::ReleaseOverlaysCallback GetReleaseOverlaysCallback();
 
   void MarkContextLost(ContextLostReason reason);
 
@@ -518,6 +522,7 @@ class SkiaOutputSurfaceImplOnGpu
   ScheduleGpuTaskCallback schedule_gpu_task_;
   GpuVSyncCallback gpu_vsync_callback_;
   AddChildWindowToBrowserCallback add_child_window_to_browser_callback_;
+  SkiaOutputDevice::ReleaseOverlaysCallback release_overlays_callback_;
 
   // ImplOnGpu::CopyOutput can create SharedImages via ImplOnGpu's
   // SharedImageFactory. Clients can use these images via CopyOutputResult and

@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PRESET_OPTIONS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PRESET_OPTIONS_H_
 
+#include <optional>
+
 #include "printing/mojom/print.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -23,7 +24,7 @@ struct WebPrintPresetOptions {
       printing::mojom::DuplexMode::kUnknownDuplexMode;
 
   // Only valid if the page sizes are uniform. The page size in points.
-  absl::optional<gfx::Size> uniform_page_size;
+  std::optional<gfx::Size> uniform_page_size;
 };
 
 }  // namespace blink

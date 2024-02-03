@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -34,7 +35,7 @@ class MODULES_EXPORT WebTransportError : public DOMException {
   // For creating a WebTransportError from C++. Typically this will be
   // immediately passed to ScriptPromiseResolver::Reject.
   static v8::Local<v8::Value> Create(v8::Isolate*,
-                                     absl::optional<uint32_t> stream_error_code,
+                                     std::optional<uint32_t> stream_error_code,
                                      String message,
                                      Source);
 
@@ -42,19 +43,17 @@ class MODULES_EXPORT WebTransportError : public DOMException {
   // so that it can be used with MakeGarbageCollected<> inside the Create
   // methods.
   WebTransportError(PassKey,
-                    absl::optional<uint32_t> stream_error_code,
+                    std::optional<uint32_t> stream_error_code,
                     String message,
                     Source);
   ~WebTransportError() override;
 
-  absl::optional<uint32_t> streamErrorCode() const {
-    return stream_error_code_;
-  }
+  std::optional<uint32_t> streamErrorCode() const { return stream_error_code_; }
 
   String source() const;
 
  private:
-  const absl::optional<uint32_t> stream_error_code_;
+  const std::optional<uint32_t> stream_error_code_;
   const Source source_;
 };
 

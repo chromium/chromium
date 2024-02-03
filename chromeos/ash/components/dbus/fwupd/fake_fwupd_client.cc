@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
-
-#include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
-
 #include <string>
+
+#include "base/files/file_path.h"
+#include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 
 namespace {
 
@@ -21,21 +22,30 @@ FakeFwupdClient::~FakeFwupdClient() = default;
 void FakeFwupdClient::Init(dbus::Bus* bus) {}
 
 void FakeFwupdClient::RequestDevices() {
-  // TODO(swifton): This is a stub.
   FwupdDeviceList devices;
+
+  // Add a fake device.
+  devices.emplace_back(/*id=*/kFakeDeviceIdForTesting,
+                       /*device_name=*/"fake_device");
+
   for (auto& observer : observers_)
     observer.OnDeviceListResponse(&devices);
 }
 
 void FakeFwupdClient::RequestUpdates(const std::string& device_id) {
-  // TODO(swifton): This is a stub.
-
   // This matches the behavior of the real class. I.e. if you send an unknown
   // id, nothing happens.
   if (device_id != kFakeDeviceIdForTesting)
     return;
 
   FwupdUpdateList updates;
+
+  // Add a fake update.
+  updates.emplace_back(
+      /*version=*/"1.2.3", /*description=*/"Fake update description.",
+      /*priority=*/1, /*filepath=*/base::FilePath("/fake/filepath"),
+      /*checksum=*/"fake-checksum");
+
   for (auto& observer : observers_)
     observer.OnUpdateListResponse(device_id, &updates);
 }

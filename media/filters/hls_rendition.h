@@ -78,7 +78,7 @@ class MEDIA_EXPORT HlsRendition {
   virtual void StartWaitingForSeek() = 0;
 
   // Live renditions should return a nullopt for duration.
-  virtual absl::optional<base::TimeDelta> GetDuration() = 0;
+  virtual std::optional<base::TimeDelta> GetDuration() = 0;
 
   // Stop the rendition, including canceling pending seeks. After stopping,
   // `CheckState` and `Seek` should be no-ops.

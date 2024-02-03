@@ -47,7 +47,7 @@
     'cros-highlight-color-hover' : '$cros.sys.hover-on-subtle',
     'cros-highlight-color-focus' : '$cros.sys.ripple-neutral-on-subtle',
     'cros-highlight-color-error' : '$cros.sys.error-container',
-    'cros-highlight-color-green' : '$cros.sys.positive-container',
+    'cros-highlight-color-green' : '$cros.sys.success-container',
     'cros-highlight-color-red' : '$cros.sys.error-container',
     'cros-highlight-color-yellow' : '$cros.sys.warning-container',
     'cros-text-highlight-color' : '$cros.sys.highlight-text',
@@ -75,7 +75,7 @@
     'cros-menu-icon-color' : '$cros.sys.on-surface',
     'cros-menu-shortcut-color' : '$cros.sys.secondary',
     'cros-menu-item-background-hover' : '$cros.sys.hover-on-subtle',
-    'cros-color-positive' : '$cros.sys.positive',
+    'cros-color-positive' : '$cros.sys.success',
     'cros-color-warning' : '$cros.sys.warning',
     'cros-color-alert' : '$cros.sys.error',
   },
@@ -332,15 +332,15 @@
     'system-on-primary-container-disabled': 'rgba($cros.sys.system-on-primary-container.rgb, 0.38)',
 
     /* Harmonized colors */
-    'on-positive-container': {
+    'on-success-container': {
       light: '$cros.ref.green30',
       dark: '$cros.ref.green90',
     },
-    'positive-container': {
+    'success-container': {
       light: '$cros.ref.green95',
       dark: 'blend(rgba($cros.ref.green95.rgb, 0.20), $black)',
     },
-    'positive': {
+    'success': {
       light: '$cros.ref.green50',
       dark: '$cros.ref.green80',
     },
@@ -382,6 +382,14 @@
       light: '$cros.ref.red50',
       dark: '$cros.ref.red80',
     },
+    'system-on-error-container': {
+      light: '$cros.ref.red10',
+      dark: '$cros.ref.red10',
+    },
+    'system-error-container': {
+      light: '$cros.ref.red80',
+      dark: '$cros.ref.red80',
+    },
 
     'on-progress-container': {
       light: '$cros.ref.blue30',
@@ -396,14 +404,13 @@
       dark: '$cros.ref.blue80',
     },
 
-    'system-on-negative-container': {
-      light: '$cros.ref.red10',
-      dark: '$cros.ref.red10',
-    },
-    'system-negative-container': {
-      light: '$cros.ref.red80',
-      dark: '$cros.ref.red80',
-    },
+    /* TODO(b/322857277): Delete after migrated. Deprecated harmonized colors */
+    'on-positive-container': '$cros.sys.on-success-container',
+    'positive-container': '$cros.sys.success-container',
+    'positive': '$cros.sys.success',
+
+    'system-on-negative-container': '$cros.sys.system-on-error-container',
+    'system-negative-container': '$cros.sys.system-error-container',
 
     /* Text and icons */
     'on-surface': {
@@ -515,6 +522,37 @@
     'pressed-on-prominent': 'blend($cros.sys.hover-on-prominent, $cros.sys.ripple-neutral-on-prominent)',
     'pressed-on-subtle': 'blend($cros.sys.hover-on-subtle, $cros.sys.ripple-neutral-on-subtle)',
 
+    /* Sparkle tokens */
+    'analog': {
+      light: '$cros.ref.sparkle-analog70',
+      dark: '$cros.ref.sparkle-analog30',
+    },
+
+    'analog-variant': {
+      light: '$cros.ref.sparkle-analog80',
+      dark: '$cros.ref.sparkle-analog40',
+    },
+
+    'muted': {
+      light: '$cros.ref.sparkle-muted80',
+      dark: '$cros.ref.sparkle-muted30',
+    },
+
+    'muted-variant': {
+      light: '$cros.ref.sparkle-muted90',
+      dark: '$cros.ref.sparkle-muted40',
+    },
+
+    'complement': {
+      light: '$cros.ref.sparkle-complement90',
+      dark: '$cros.ref.sparkle-complement20',
+    },
+
+    'complement-variant': {
+      light: '$cros.ref.sparkle-complement95',
+      dark: '$cros.ref.sparkle-complement30',
+    },
+
     /* Illustration colors. */
     'illo.color1': {
       light: '$cros.ref.primary30',
@@ -616,6 +654,10 @@
       dark: '#d7aefb',
       generate_per_mode: true,
     },
+    'illo.analog': '$cros.ref.sparkle-analog70',
+    'illo.muted': '$cros.ref.sparkle-muted80',
+    'illo.complement': '$cros.ref.sparkle-complement90',
+    'illo.on-gradient': '$cros.ref.neutral10',
 
     /*
      * Some GM2 assets are "elevated" meaning they have slightly different

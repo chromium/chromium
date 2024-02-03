@@ -50,7 +50,7 @@ TargetDeviceBootstrapController::TargetDeviceBootstrapController(
       accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)),
       quick_start_connectivity_service_(quick_start_connectivity_service) {
   connection_broker_ = TargetDeviceConnectionBrokerFactory::Create(
-      session_context_, quick_start_connectivity_service_);
+      &session_context_, quick_start_connectivity_service_);
 }
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() {
@@ -157,6 +157,12 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
                                      Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
   authenticated_connection_ = authenticated_connection;
+
+  if (session_context_.is_resume_after_update()) {
+    UpdateStatus(/*step=*/Step::CONNECTED, /*payload=*/absl::monostate());
+    return;
+  }
+
   WaitForUserVerification();
 }
 
@@ -174,10 +180,14 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
             WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
   }
 
-  // UI observer will automatically exit the QuickStartScreen if there's an
-  // error. We want the user to manually exit the Quick Start screen when the
-  // setup is complete, so don't update the status to Step::Error in this case.
-  if (status_.step != Step::SETUP_COMPLETE) {
+  if (reason == ConnectionClosedReason::kUserAborted) {
+    UpdateStatus(/*step=*/Step::FLOW_ABORTED,
+                 /*payload=*/absl::monostate());
+  } else if (status_.step != Step::SETUP_COMPLETE) {
+    // UI observer will automatically exit the QuickStartScreen if there's an
+    // error. We want the user to manually exit the Quick Start screen when the
+    // setup is complete, so don't update the status to Step::Error in this
+    // case.
     UpdateStatus(/*step=*/Step::ERROR,
                  /*payload=*/ErrorCode::CONNECTION_CLOSED);
   }
@@ -332,6 +342,7 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
 
 void TargetDeviceBootstrapController::Cleanup() {
   status_ = Status();
+  session_context_.ResetSession();
   CleanupIfNeeded();
 }
 
@@ -507,6 +518,9 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case TargetDeviceBootstrapController::Step::SETUP_COMPLETE:
       stream << "[setup complete]";
+      break;
+    case TargetDeviceBootstrapController::Step::FLOW_ABORTED:
+      stream << "[flow aborted]";
       break;
   }
 

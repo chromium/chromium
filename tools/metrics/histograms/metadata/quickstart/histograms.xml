@@ -60,6 +60,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.ChallengeBytes.FailureReason"
+    enum="GoogleServiceAuthError" expires_after="2024-12-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the (failure) reason of fetching challenge bytes from Gaia. Recorded
+    when we get a response from Gaia (or the request times out) - regardless of
+    the overall status of the response. Successful requests are logged in the
+    `NONE` enum bucket.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.ChallengeBytes.FetchDuration" units="ms"
+    expires_after="2024-12-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Time elapsed from attempting to fetch challenge bytes (from Gaia) to
+    receiving challenge bytes or an error. It is recorded when the request for
+    challenge bytes finishes (or times out).
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.ChallengeBytes.FetchResult" enum="BooleanSuccess"
     expires_after="2024-12-01">
   <owner>sinhak@chromium.org</owner>

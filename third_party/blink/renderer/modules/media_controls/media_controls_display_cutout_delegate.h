@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_DISPLAY_CUTOUT_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_DISPLAY_CUTOUT_DELEGATE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -65,7 +66,7 @@ class MODULES_EXPORT MediaControlsDisplayCutoutDelegate final
   // Pair storing the previous result. |first| is the distance between the two
   // points stored as a double. |second| is the Direction.
   using ResultPair = std::pair<double, Direction>;
-  absl::optional<ResultPair> previous_;
+  std::optional<ResultPair> previous_;
 
   Member<HTMLVideoElement> video_element_;
 };

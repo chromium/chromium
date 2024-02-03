@@ -104,7 +104,7 @@ class AXTreeSourceAndroid
 
   // Notify automation of result to getTextLocation.
   void NotifyGetTextLocationDataResult(const ui::AXActionData& data,
-                                       const absl::optional<gfx::Rect>& rect);
+                                       const std::optional<gfx::Rect>& rect);
 
   // Invalidates the tree serializer.
   void InvalidateTree();
@@ -147,9 +147,9 @@ class AXTreeSourceAndroid
   bool is_input_method_window() { return is_input_method_window_; }
 
   // The window id of this tree.
-  absl::optional<int32_t> window_id() const { return window_id_; }
+  std::optional<int32_t> window_id() const { return window_id_; }
   // The root id of this tree.
-  absl::optional<int32_t> root_id() const { return root_id_; }
+  std::optional<int32_t> root_id() const { return root_id_; }
 
   void set_automation_event_router_for_test(
       extensions::AutomationEventRouterInterface* router) {
@@ -239,14 +239,14 @@ class AXTreeSourceAndroid
   std::map<int32_t, int32_t> parent_map_;
 
   std::unique_ptr<AXTreeAndroidSerializer> current_tree_serializer_;
-  absl::optional<int32_t> root_id_;
-  absl::optional<int32_t> window_id_;
-  absl::optional<int32_t> android_focused_id_;
+  std::optional<int32_t> root_id_;
+  std::optional<int32_t> window_id_;
+  std::optional<int32_t> android_focused_id_;
 
   bool is_notification_;
   bool is_input_method_window_;
 
-  absl::optional<std::string> notification_key_;
+  std::optional<std::string> notification_key_;
 
   // Window corresponding this tree.
   raw_ptr<aura::Window, DanglingUntriaged> window_;

@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -704,11 +705,10 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
                              bool lhs_backgrounded,
                              const base::Process& rhs,
                              bool rhs_backgrounded) {
-    while (IsProcessBackgrounded(lhs) != lhs_backgrounded ||
-           IsProcessBackgrounded(rhs) != rhs_backgrounded) {
-      base::RunLoop().RunUntilIdle();
-      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-    }
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return IsProcessBackgrounded(lhs) == lhs_backgrounded &&
+             IsProcessBackgrounded(rhs) == rhs_backgrounded;
+    }));
   }
 
   GURL audio_url_;

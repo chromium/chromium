@@ -125,29 +125,26 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
           To<BlockNode>(child), BorderScrollbarPadding().StartOffset());
       continue;
     }
-    ConstraintSpace child_constraint_space;
+
+    std::optional<ConstraintSpace::MathTargetStretchBlockSizes>
+        target_stretch_block_sizes;
+    std::optional<LayoutUnit> target_stretch_inline_size;
     if (inherits_block_stretch_size_constraint &&
         IsBlockAxisStretchyOperator(To<BlockNode>(child))) {
-      child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), constraint_space, child,
-          LayoutResultCacheSlot::kLayout,
-          *constraint_space.TargetStretchBlockSizes());
+      target_stretch_block_sizes = *constraint_space.TargetStretchBlockSizes();
     } else if (inherits_inline_stretch_size_constraint &&
                IsInlineAxisStretchyOperator(To<BlockNode>(child))) {
-      child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), constraint_space, child,
-          LayoutResultCacheSlot::kLayout, absl::nullopt,
-          constraint_space.TargetStretchInlineSize());
+      target_stretch_inline_size = constraint_space.TargetStretchInlineSize();
     } else if (!inherits_block_stretch_size_constraint &&
                !inherits_inline_stretch_size_constraint &&
                IsBlockAxisStretchyOperator(To<BlockNode>(child))) {
-      child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), constraint_space, child,
-          LayoutResultCacheSlot::kLayout, stretch_sizes);
-    } else {
-      child_constraint_space = CreateConstraintSpaceForMathChild(
-          Node(), ChildAvailableSize(), constraint_space, child);
+      target_stretch_block_sizes = stretch_sizes;
     }
+    ConstraintSpace child_constraint_space = CreateConstraintSpaceForMathChild(
+        Node(), ChildAvailableSize(), constraint_space, child,
+        LayoutResultCacheSlot::kLayout, target_stretch_block_sizes,
+        target_stretch_inline_size);
+
     const auto* child_layout_result = To<BlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
     LayoutUnit lspace, rspace;

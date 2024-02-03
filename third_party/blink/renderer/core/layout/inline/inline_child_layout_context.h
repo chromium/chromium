@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CHILD_LAYOUT_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CHILD_LAYOUT_CONTEXT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
@@ -68,10 +69,10 @@ class CORE_EXPORT InlineChildLayoutContext {
   void ClearParallelFlowBreakTokens();
   void PropagateParallelFlowBreakToken(const BreakToken*);
 
-  const absl::optional<LayoutUnit>& BalancedAvailableWidth() const {
+  const std::optional<LayoutUnit>& BalancedAvailableWidth() const {
     return balanced_available_width_;
   }
-  void SetBalancedAvailableWidth(absl::optional<LayoutUnit> value) {
+  void SetBalancedAvailableWidth(std::optional<LayoutUnit> value) {
     balanced_available_width_ = value;
   }
 
@@ -92,7 +93,7 @@ class CORE_EXPORT InlineChildLayoutContext {
 
   LogicalLineItems* temp_logical_line_items_ = nullptr;
 
-  absl::optional<InlineLayoutStateStack> box_states_;
+  std::optional<InlineLayoutStateStack> box_states_;
 
   // The items and its index this context is set up for.
   const HeapVector<InlineItem>* items_ = nullptr;
@@ -101,7 +102,7 @@ class CORE_EXPORT InlineChildLayoutContext {
   HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
 
   // Used by `ParagraphLineBreaker`.
-  absl::optional<LayoutUnit> balanced_available_width_;
+  std::optional<LayoutUnit> balanced_available_width_;
 };
 
 // A subclass of `InlineChildLayoutContext` for when the algorithm requires

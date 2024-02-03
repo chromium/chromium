@@ -552,6 +552,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.dispatchEvent(new Event('back-click'));
   }
 
+  private onButtonKeydown_(e: KeyboardEvent) {
+    if (['Enter', ' '].includes(e.key)) {
+      e.preventDefault();
+      e.stopPropagation();
+      (e.target as HTMLElement).click();
+    }
+  }
+
   private onComboboxCategoryClick_(e: DomRepeatEvent<DescriptorA>) {
     const index = e.model.index;
     this.set(`expandedCategories_.${index}`, !this.expandedCategories_[index]);
@@ -628,14 +636,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private onInspirationGroupTitleClick_(e: DomRepeatEvent<InspirationGroup>) {
     this.selectDescriptorsFromInspirationGroup_(e.model.item);
-  }
-
-  private onInspirationGroupTitleKeydown_(e: KeyboardEvent) {
-    if (['Enter', ' '].includes(e.key)) {
-      e.preventDefault();
-      e.stopPropagation();
-      (e.target as HTMLElement).click();
-    }
   }
 
   private onInspirationToggleClick_() {

@@ -459,7 +459,7 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
       std::make_unique<ui::LayerTreeOwner>(
           std::move(mirrored_content_root_layer));
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void DeskPreviewView::Close(bool primary_action) {
@@ -523,7 +523,7 @@ void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                 extra_tip);
 }
 
-void DeskPreviewView::Layout() {
+void DeskPreviewView::Layout(PassKey) {
   const gfx::Rect bounds = GetContentsBounds();
   wallpaper_preview_->SetBoundsRect(bounds);
   desk_mirrored_contents_view_->SetBoundsRect(bounds);
@@ -544,7 +544,7 @@ void DeskPreviewView::Layout() {
   DCHECK(desk_mirrored_contents_layer);
   desk_mirrored_contents_layer->SetTransform(transform);
 
-  Button::Layout();
+  LayoutSuperclass<Button>(this);
 }
 
 bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
@@ -623,7 +623,7 @@ void DeskPreviewView::OnBlur() {
 
 void DeskPreviewView::AboutToRequestFocusFromTabTraversal(bool reverse) {
   if (reverse) {
-    mini_view_->OnPreviewAboutToBeFocusedByReverseTab();
+    mini_view_->OnPreviewOrProfileAboutToBeFocusedByReverseTab();
   }
 }
 

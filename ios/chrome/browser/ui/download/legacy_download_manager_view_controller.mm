@@ -406,6 +406,11 @@ NSString* GetSizeString(long long size_in_bytes) {
                    }];
 }
 
+- (void)setFullscreenController:(FullscreenController*)fullscreenController {
+  // Unsupported by this version of the DownloadManagerViewController.
+  // This method will still be called, but do nothing.
+}
+
 #pragma mark - UI elements
 
 - (UIImageView*)background {

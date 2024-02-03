@@ -41,12 +41,6 @@ size_t NumberOfPossibleFieldTypesInGroup(const AutofillField& field,
 // Returns true if the type of `field` is a possible type.
 bool TypeOfFieldIsPossibleType(const AutofillField& field);
 
-// Returns true whenever type is ADDRESS_HOME_STREET_NAME or
-// ADDRESS_HOME_HOUSE_NUMBER.
-// TODO(crbug/1410438): Remove when cleaning up feature
-// `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete`.
-bool IsStreetNameOrHouseNumberType(const FieldType type);
-
 // Returns true if `type` is address-related.
 bool IsAddressType(FieldType type);
 

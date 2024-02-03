@@ -5,6 +5,7 @@
 #ifndef SERVICES_DATA_DECODER_PUBLIC_CPP_DATA_DECODER_H_
 #define SERVICES_DATA_DECODER_PUBLIC_CPP_DATA_DECODER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -18,7 +19,6 @@
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo_base {
 class BigBuffer;

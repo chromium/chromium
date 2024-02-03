@@ -63,7 +63,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
@@ -1121,7 +1120,7 @@ void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
 }
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(48 == syncer::GetNumModelTypes(),
+  static_assert(49 == syncer::GetNumModelTypes(),
                 "Add new types below if they can run in transport mode");
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
@@ -1145,7 +1144,7 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
+          syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)) {
     allowed_types.Put(syncer::PASSWORDS);
   }
   if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
@@ -1158,6 +1157,11 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
     allowed_types.Put(syncer::READING_LIST);
   }
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncSharedTabGroupDataInTransportMode)) {
+    allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros, Apps-related types may run in transport mode.
   allowed_types.PutAll({syncer::APPS, syncer::APP_SETTINGS, syncer::WEB_APPS});

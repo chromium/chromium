@@ -6,9 +6,10 @@
 #define REMOTING_PROTO_INTERNAL_STUBS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
+#include "remoting/proto/session_authz_service.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 // This file defines proto and function stubs for internal-only implementations.
@@ -38,6 +39,12 @@ using ProvisionCorpMachineResponse = DoNothingProto;
 using RemoteAccessHostV1Proto = DoNothingProto;
 using ReportProvisioningErrorRequest = DoNothingProto;
 using SendHeartbeatRequest = DoNothingProto;
+using GenerateHostTokenRequest = DoNothingProto;
+using GenerateHostTokenResponse = DoNothingProto;
+using VerifySessionTokenRequest = DoNothingProto;
+using VerifySessionTokenResponse = DoNothingProto;
+using ReauthorizeHostRequest = DoNothingProto;
+using ReauthorizeHostResponse = DoNothingProto;
 
 // RemoteAccessHost helpers.
 extern const std::string& GetAuthorizationCode(
@@ -61,6 +68,25 @@ extern std::unique_ptr<ReportProvisioningErrorRequest>
 GetReportProvisioningErrorRequest(const std::string& host_id,
                                   const std::string& error_message,
                                   const std::string& version);
+
+// SessionAuthzService helpers.
+extern std::string GetGenerateHostTokenRequestPath();
+extern std::string GetVerifySessionTokenRequestPath();
+extern std::string GetReauthorizeHostRequestPath();
+
+extern std::unique_ptr<GenerateHostTokenRequest> GetGenerateHostTokenRequest(
+    const GenerateHostTokenRequestStruct&);
+extern std::unique_ptr<VerifySessionTokenRequest> GetVerifySessionTokenRequest(
+    const VerifySessionTokenRequestStruct&);
+extern std::unique_ptr<ReauthorizeHostRequest> GetReauthorizeHostRequest(
+    const ReauthorizeHostRequestStruct&);
+
+extern std::unique_ptr<GenerateHostTokenResponseStruct>
+GetGenerateHostTokenResponseStruct(const GenerateHostTokenResponse&);
+extern std::unique_ptr<VerifySessionTokenResponseStruct>
+GetVerifySessionTokenResponseStruct(const VerifySessionTokenResponse&);
+extern std::unique_ptr<ReauthorizeHostResponseStruct>
+GetReauthorizeHostResponseStruct(const ReauthorizeHostResponse&);
 
 extern std::string GetSendHeartbeatRequestPath();
 extern std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(

@@ -23,7 +23,7 @@ class SidePanelRoundedCorner : public views::View {
   explicit SidePanelRoundedCorner(BrowserView* browser_view);
 
  private:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 

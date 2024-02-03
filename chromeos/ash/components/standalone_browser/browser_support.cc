@@ -35,19 +35,19 @@ bool IsLacrosDisallowedByCommand() {
 // See https://crbug.com/1080693
 bool IsUserTypeAllowed(const user_manager::User& user) {
   switch (user.GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kPublicAccount:
     // Note: Lacros will not be enabled for Guest users unless LacrosOnly
     // flag is passed in --enable-features. See https://crbug.com/1294051#c25.
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return true;
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return base::FeatureList::IsEnabled(features::kLacrosForSupervisedUsers);
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kWebKioskApp:
       return base::FeatureList::IsEnabled(features::kWebKioskEnableLacros);
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       return base::FeatureList::IsEnabled(features::kChromeKioskEnableLacros);
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       return false;
   }
 }

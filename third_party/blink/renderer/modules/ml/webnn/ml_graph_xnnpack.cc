@@ -522,14 +522,14 @@ xnn_status DefineStaticXnnValue(xnn_subgraph_t subgraph,
 // XNNPACK requires input and static data buffers to have `XNN_EXTRA_BYTES`
 // bytes at the end. This method allocates a buffer with `XNN_EXTRA_BYTES` bytes
 // and copies the content of array buffer into the new buffer.
-absl::optional<DataBuffer> MakeBufferWithExtraBytes(
+std::optional<DataBuffer> MakeBufferWithExtraBytes(
     const DOMArrayBufferView* array_buffer_view) {
   CHECK(!array_buffer_view->IsDetached());
   // Allocate an initialized buffer with `XNN_EXTRA_BYTES` extra bytes.
   auto buffer_size =
       base::MakeCheckedNum(array_buffer_view->byteLength()) + XNN_EXTRA_BYTES;
   if (!buffer_size.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto buffer = DataBuffer::WithSize(buffer_size.ValueOrDie());
   memcpy(buffer.data(), array_buffer_view->BaseAddress(),
@@ -1155,6 +1155,49 @@ xnn_status DefineXnnNodeForHardSwish(
   const uint32_t flags = 0;
   XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
       xnn_define_hardswish(subgraph, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
+xnn_status DefineXnnNodeForMatmul(xnn_subgraph_t subgraph,
+                                  const MLOperator* matmul,
+                                  const OperandValueIdMap& operand_value_id_map,
+                                  String& error_message) {
+  // Set up the Value ID of input1, input2 and output tensors for XNNPACK
+  // Batch Matrix Multiply Node.
+  const uint32_t input1_id =
+      GetOperatorInputValueId(matmul, operand_value_id_map, 0);
+  const uint32_t input2_id =
+      GetOperatorInputValueId(matmul, operand_value_id_map, 1);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(matmul, operand_value_id_map);
+
+  const auto* input1 = matmul->Inputs()[0].Get();
+  CHECK(input1);
+  const auto input1_rank = input1->Dimensions().size();
+  const auto* input2 = matmul->Inputs()[1].Get();
+  CHECK(input2);
+  const auto input2_rank = input1->Dimensions().size();
+
+  if (input1_rank != input2_rank) {
+    error_message = "The rank of two inputs must be the same.";
+    return xnn_status_unsupported_parameter;
+  }
+
+  if (input1_rank < 3) {
+    error_message = "The rank of the input must be equal to or greater than 3.";
+    return xnn_status_unsupported_parameter;
+  }
+
+  for (wtf_size_t i = 0; i < input1_rank - 2; i++) {
+    if (input1->Dimensions()[i] != input2->Dimensions()[i]) {
+      error_message = "XNNPACK can't support broadcasting for matrix multiply.";
+      return xnn_status_unsupported_parameter;
+    }
+  }
+
+  uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_batch_matrix_multiply(
+      subgraph, input1_id, input2_id, output_id, flags));
   return xnn_status_success;
 }
 
@@ -1814,6 +1857,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       XNN_CHECK_STATUS(DefineXnnNodeForHardSwish(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
+    case MLOperator::OperatorKind::kMatmul:
+      XNN_CHECK_STATUS(DefineXnnNodeForMatmul(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
     case MLOperator::OperatorKind::kPad:
       XNN_CHECK_STATUS(DefineXnnNodeForPad(
           subgraph, ml_operator, operand_value_id_map, error_message));
@@ -2343,7 +2390,7 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
   return xnn_status_success;
 }
 
-absl::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
+std::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
 MLGraphXnnpack::CreateExternalValues(
     const MLNamedArrayBufferViews& inputs,
     const MLNamedArrayBufferViews& outputs) const {
@@ -2354,7 +2401,7 @@ MLGraphXnnpack::CreateExternalValues(
   for (const auto& [name, array_buffer_view] : inputs) {
     auto buffer = MakeBufferWithExtraBytes(array_buffer_view.Get());
     if (!buffer) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     external_values->emplace_back(
         xnn_external_value{.id = input_external_value_id_map_.at(name),

@@ -500,6 +500,18 @@ int SoapByDefaultVirtualBrowsingContextGroup(WebContents* wc) {
       ->soap_by_default_virtual_browsing_context_group();
 }
 
+class ProcessReuseOnPrerenderCOOPSwapBrowserTest
+    : public CrossOriginOpenerPolicyBrowserTest {
+ public:
+  ProcessReuseOnPrerenderCOOPSwapBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kProcessReuseOnPrerenderCOOPSwap);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -4710,7 +4722,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 // Tests the behavior around COOP BrowsingInstance swap when prerendering a COOP
 // page.
 // Regression test for crbug.com/1519131.
-IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
                        COOPSwapForPrerenderingCOOPPage) {
   GURL initial_page(https_server()->GetURL("a.test", "/empty.html"));
   GURL prerender_page(https_server()->GetURL(
@@ -4746,13 +4758,12 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   ASSERT_NE(bi_token_1, bi_token_2);
   ASSERT_NE(rph_id_1, rph_id_2);
 
-  // After receiving a response, BrowsingInstance swap occurs by COOP, resulting
-  // in the force recreation of another new RenderFrameHost in a new
-  // SiteInstance and renderer process.
-  // TODO(crbug.com/1519131): Avoid swapping these twice by reusing an
-  // unlocked renderer process or unassigned SiteInstance, which are
-  // guaranteed to always be newly created during PrerenderHost creation as
-  // mentioned above.
+  // After receiving a response, BrowsingInstance swap occurs by COOP and it
+  // will result in the forced recreation of another new RenderFrameHost in a
+  // new SiteInstance and renderer process.
+  // With the current short-term fix under kProcessReuseOnPrerenderCOOPSwap, we
+  // try to reuse the unlocked renderer process for the SiteInstance that was
+  // recreated.
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   ASSERT_TRUE(navigation_manager.was_successful());
   RenderFrameHostImpl* rfh_3 =
@@ -4765,7 +4776,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_NE(rfh_2, rfh_3);
   EXPECT_NE(si_2, si_3);
   EXPECT_NE(bi_token_2, bi_token_3);
-  EXPECT_NE(rph_id_2, rph_id_3);
+  // Renderer process is reused.
+  EXPECT_EQ(rph_id_2, rph_id_3);
 }
 
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
@@ -4814,6 +4826,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          CoopRestrictPropertiesReportingBrowserTest,
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProcessReuseOnPrerenderCOOPSwapBrowserTest,
                          kTestParams,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 

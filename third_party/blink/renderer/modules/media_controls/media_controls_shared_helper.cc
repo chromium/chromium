@@ -70,8 +70,7 @@ void MediaControlsSharedHelpers::TransitionEventListener::Trace(
   visitor->Trace(element_);
 }
 
-absl::optional<unsigned>
-MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(
+std::optional<unsigned> MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(
     HTMLMediaElement& media_element) {
   double current_time = media_element.currentTime();
   double duration = media_element.duration();
@@ -80,7 +79,7 @@ MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(
   DCHECK(buffered_time_ranges);
 
   if (!std::isfinite(duration) || !duration || std::isnan(current_time)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Calculate the size of the after segment (i.e. what has been buffered).
@@ -101,7 +100,7 @@ MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 String MediaControlsSharedHelpers::FormatTime(double time) {

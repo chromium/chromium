@@ -47,6 +47,7 @@ class TargetDeviceBootstrapController
     TRANSFERRING_GOOGLE_ACCOUNT_DETAILS,
     TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
     SETUP_COMPLETE,
+    FLOW_ABORTED,
   };
 
   enum class ErrorCode {

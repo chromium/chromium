@@ -13,7 +13,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
@@ -21,10 +20,6 @@ class AssistantBrowserDelegateImpl;
 class AssistantStateClient;
 class ChromeKeyboardControllerClient;
 class ImageDownloaderImpl;
-
-namespace app_list {
-class EssentialSearchManager;
-}
 
 namespace arc {
 class ArcServiceLauncher;
@@ -271,7 +266,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<SigninProfileHandler> signin_profile_handler_;
 
   std::unique_ptr<policy::LockToSingleUserManager> lock_to_single_user_manager_;
-  std::unique_ptr<WilcoDtcSupportdManager> wilco_dtc_supportd_manager_;
   std::unique_ptr<LoginScreenExtensionsStorageCleaner>
       login_screen_extensions_storage_cleaner_;
 
@@ -306,8 +300,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       video_conference_manager_client_;
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
-
-  std::unique_ptr<::app_list::EssentialSearchManager> essential_search_manager_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

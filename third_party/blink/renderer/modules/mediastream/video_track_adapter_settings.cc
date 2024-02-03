@@ -13,21 +13,21 @@
 namespace blink {
 
 VideoTrackAdapterSettings::VideoTrackAdapterSettings()
-    : VideoTrackAdapterSettings(absl::nullopt,
+    : VideoTrackAdapterSettings(std::nullopt,
                                 0.0,
                                 std::numeric_limits<double>::max(),
-                                absl::nullopt) {}
+                                std::nullopt) {}
 
 VideoTrackAdapterSettings::VideoTrackAdapterSettings(
     const gfx::Size& target_size,
-    absl::optional<double> max_frame_rate)
+    std::optional<double> max_frame_rate)
     : VideoTrackAdapterSettings(target_size, 0.0, HUGE_VAL, max_frame_rate) {}
 
 VideoTrackAdapterSettings::VideoTrackAdapterSettings(
-    absl::optional<gfx::Size> target_size,
+    std::optional<gfx::Size> target_size,
     double min_aspect_ratio,
     double max_aspect_ratio,
-    absl::optional<double> max_frame_rate)
+    std::optional<double> max_frame_rate)
     : target_size_(std::move(target_size)),
       min_aspect_ratio_(min_aspect_ratio),
       max_aspect_ratio_(max_aspect_ratio),

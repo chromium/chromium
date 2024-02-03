@@ -480,7 +480,7 @@ void SampleBufferTransformer::Reconfigure(
     OSType destination_pixel_format,
     const gfx::Size& destination_size,
     int rotation_angle,
-    absl::optional<size_t> buffer_pool_size) {
+    std::optional<size_t> buffer_pool_size) {
   DCHECK(transformer != Transformer::kLibyuv ||
          destination_pixel_format == kPixelFormatI420 ||
          destination_pixel_format == kPixelFormatNv12)

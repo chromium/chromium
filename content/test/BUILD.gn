@@ -1042,6 +1042,13 @@ static_library("browsertest_support") {
     deps += [ "//ui/views" ]
   }
 
+  if (use_aura) {
+    sources += [
+      "../browser/accessibility/accessibility_browsertest.cc",
+      "../browser/accessibility/accessibility_browsertest.h",
+    ]
+  }
+
   if (is_mac) {
     sources += [ "../public/test/content_browser_test_utils_mac.mm" ]
     deps += [ "//ui/base/mojom" ]
@@ -1305,7 +1312,6 @@ test("content_browsertests") {
     "../browser/accessibility/scoped_accessibility_mode_browsertest.cc",
     "../browser/accessibility/site_per_process_accessibility_browsertest.cc",
     "../browser/accessibility/snapshot_ax_tree_browsertest.cc",
-    "../browser/accessibility/touch_accessibility_aura_browsertest.cc",
     "../browser/attribution_reporting/attribution_internals_browsertest.cc",
     "../browser/attribution_reporting/attribution_src_browsertest.cc",
     "../browser/attribution_reporting/attributions_browsertest.cc",
@@ -1482,7 +1488,6 @@ test("content_browsertests") {
     "../browser/renderer_host/input/composited_scrolling_browsertest.cc",
     "../browser/renderer_host/input/compositor_event_ack_browsertest.cc",
     "../browser/renderer_host/input/double_tap_to_zoom_browsertest.cc",
-    "../browser/renderer_host/input/event_latency_aura_browsertest.cc",
     "../browser/renderer_host/input/fling_browsertest.cc",
     "../browser/renderer_host/input/input_event_browsertest.cc",
     "../browser/renderer_host/input/interaction_mq_dynamic_browsertest.cc",
@@ -1493,7 +1498,6 @@ test("content_browsertests") {
     "../browser/renderer_host/input/synthetic_input_browsertest.cc",
     "../browser/renderer_host/input/touch_action_browsertest.cc",
     "../browser/renderer_host/input/touch_input_browsertest.cc",
-    "../browser/renderer_host/input/touch_selection_controller_client_aura_browsertest.cc",
     "../browser/renderer_host/input/touchpad_pinch_browsertest.cc",
     "../browser/renderer_host/input/wheel_event_listener_browsertest.cc",
     "../browser/renderer_host/input/wheel_scroll_latching_browsertest.cc",
@@ -1519,8 +1523,6 @@ test("content_browsertests") {
     "../browser/renderer_host/render_process_host_browsertest.cc",
     "../browser/renderer_host/render_view_host_browsertest.cc",
     "../browser/renderer_host/render_widget_host_browsertest.cc",
-    "../browser/renderer_host/render_widget_host_view_aura_browsertest.cc",
-    "../browser/renderer_host/render_widget_host_view_aura_vk_browsertest.cc",
     "../browser/renderer_host/render_widget_host_view_browsertest.cc",
     "../browser/renderer_host/render_widget_host_view_child_frame_browsertest.cc",
     "../browser/renderer_host/scroll_into_view_browsertest.cc",
@@ -1574,7 +1576,6 @@ test("content_browsertests") {
     "../browser/web_contents/opened_by_dom_browsertest.cc",
     "../browser/web_contents/web_contents_impl_browsertest.cc",
     "../browser/web_contents/web_contents_observer_browsertest.cc",
-    "../browser/web_contents/web_contents_view_aura_browsertest.cc",
     "../browser/web_package/signed_exchange_request_handler_browsertest.cc",
     "../browser/web_package/signed_exchange_subresource_prefetch_browsertest.cc",
     "../browser/webid/test/mock_digital_credential_provider.cc",
@@ -1929,8 +1930,6 @@ test("content_browsertests") {
 
   if (is_win) {
     sources += [
-      "../browser/accessibility/accessibility_browsertest.cc",
-      "../browser/accessibility/accessibility_browsertest.h",
       "../browser/accessibility/accessibility_win_browsertest.cc",
       "../browser/accessibility/ax_platform_node_textprovider_win_browsertest.cc",
       "../browser/accessibility/ax_platform_node_textrangeprovider_win_browsertest.cc",
@@ -1978,11 +1977,8 @@ test("content_browsertests") {
     ]
 
     if (use_atk) {
-      sources += [
-        "../browser/accessibility/accessibility_auralinux_browsertest.cc",
-        "../browser/accessibility/accessibility_browsertest.cc",
-        "../browser/accessibility/accessibility_browsertest.h",
-      ]
+      sources +=
+          [ "../browser/accessibility/accessibility_auralinux_browsertest.cc" ]
       configs += [ "//build/config/linux/atk" ]
     }
   }
@@ -2176,21 +2172,21 @@ test("content_browsertests") {
   }
 
   if (use_aura) {
-    deps += [
-      "//ui/aura",
-      "//ui/aura:test_support",
-      "//ui/base/dragdrop:types",
-      "//ui/touch_selection:test_support",
-      "//ui/touch_selection:touch_selection",
-    ]
-  } else {
-    sources -= [
+    sources += [
+      "../browser/accessibility/accessibility_metrics_browsertest.cc",
       "../browser/accessibility/touch_accessibility_aura_browsertest.cc",
       "../browser/renderer_host/input/event_latency_aura_browsertest.cc",
       "../browser/renderer_host/input/touch_selection_controller_client_aura_browsertest.cc",
       "../browser/renderer_host/render_widget_host_view_aura_browsertest.cc",
       "../browser/renderer_host/render_widget_host_view_aura_vk_browsertest.cc",
       "../browser/web_contents/web_contents_view_aura_browsertest.cc",
+    ]
+    deps += [
+      "//ui/aura",
+      "//ui/aura:test_support",
+      "//ui/base/dragdrop:types",
+      "//ui/touch_selection:test_support",
+      "//ui/touch_selection:touch_selection",
     ]
   }
 
@@ -3196,6 +3192,7 @@ test("content_unittests") {
     sources += [
       "../browser/accessibility/browser_accessibility_manager_win_unittest.cc",
       "../browser/accessibility/browser_accessibility_win_unittest.cc",
+      "../browser/device_posture/device_posture_platform_provider_win_unittest.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.h",
       "../browser/renderer_host/direct_manipulation_win_unittest.cc",

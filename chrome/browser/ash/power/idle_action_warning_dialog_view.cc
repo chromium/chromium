@@ -82,7 +82,7 @@ void IdleActionWarningDialogView::UpdateTitle() {
   GetWidget()->UpdateWindowTitle();
 }
 
-BEGIN_METADATA(IdleActionWarningDialogView, views::DialogDelegateView)
+BEGIN_METADATA(IdleActionWarningDialogView)
 END_METADATA
 
 }  // namespace ash

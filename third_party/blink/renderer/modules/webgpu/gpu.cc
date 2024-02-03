@@ -93,13 +93,21 @@ WGPURequestAdapterOptions AsDawnType(
 //     ExecutionContextToken.
 WebGPUExecutionContextToken GetExecutionContextToken(
     const ExecutionContext* execution_context) {
-  // WebGPU only supports 2 types of context tokens, DocumentTokens and
-  // DedicatedWorkerTokens. The token is sent to the GPU process so that it can
-  // be cross-referenced against the browser process to get an isolation key for
-  // caching purposes.
+  // WebGPU only supports the following types of context tokens: DocumentTokens,
+  // DedicatedWorkerTokens, SharedWorkerTokens, and ServiceWorkerTokens. The
+  // token is sent to the GPU process so that it can be cross-referenced against
+  // the browser process to get an isolation key for caching purposes.
   if (execution_context->IsDedicatedWorkerGlobalScope()) {
     return execution_context->GetExecutionContextToken()
         .GetAs<DedicatedWorkerToken>();
+  }
+  if (execution_context->IsSharedWorkerGlobalScope()) {
+    return execution_context->GetExecutionContextToken()
+        .GetAs<SharedWorkerToken>();
+  }
+  if (execution_context->IsServiceWorkerGlobalScope()) {
+    return execution_context->GetExecutionContextToken()
+        .GetAs<ServiceWorkerToken>();
   }
   if (execution_context->IsWindow()) {
     return To<LocalDOMWindow>(execution_context)->document()->Token();

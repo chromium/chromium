@@ -35,7 +35,7 @@ class MODULES_EXPORT BackgroundFetchRecord final : public ScriptWrappable {
   ~BackgroundFetchRecord() override;
 
   Request* request() const;
-  ScriptPromise responseReady(ScriptState* script_state);
+  ScriptPromiseTyped<Response> responseReady(ScriptState* script_state);
 
   // Updates |record_state_| from kPending to kAborted or kSettled. Must be
   // called when |record_state_| is kPending.

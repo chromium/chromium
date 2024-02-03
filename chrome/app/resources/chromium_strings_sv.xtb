@@ -282,6 +282,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6144416395842701622">Logga in så att du får ut mesta möjliga av Chromium</translation>
 <translation id="6145820983052037069">Du kan byta mellan Chromium-profiler här</translation>
 <translation id="615103374448673771">Om du tillåter cookies kan Chromium använda dem när innehåll läses in i förväg</translation>
+<translation id="6174920971222007286">Den här filen kan vara farlig<ph name="LINE_BREAK" />Chromium kan kontrollera den här nedladdningen åt dig om du anger lösenordet. Information om filen skickas till Google Säker webbsökning, men filinnehållet och lösenordet lämnar inte enheten.</translation>
 <translation id="6175304430031192654">Beroende på dina inställningar kan Chromium även skicka cookies och din nuvarande webbadress</translation>
 <translation id="6182736845697986886">Installationen misslyckades på grund av ett internt fel på uppdateringsservern.</translation>
 <translation id="6183079672144801177">Se till att du är inloggad i Chromium på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>

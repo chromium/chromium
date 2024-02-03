@@ -101,6 +101,7 @@ class SkiaOutputDeviceDComp::OverlayData {
 SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
     gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
     gpu::SharedContextState* context_state,
+    scoped_refptr<gl::Presenter> presenter,
     scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
@@ -109,7 +110,8 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
                        memory_tracker,
                        std::move(did_swap_buffer_complete_callback)),
       shared_image_representation_factory_(shared_image_representation_factory),
-      context_state_(context_state) {
+      context_state_(context_state),
+      presenter_(std::move(presenter)) {
   DCHECK(!feature_info->workarounds()
               .disable_post_sub_buffers_for_onscreen_surfaces);
   capabilities_.uses_default_gl_framebuffer = true;
@@ -128,10 +130,17 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   }
   capabilities_.supports_gpu_vsync = true;
   capabilities_.supports_dc_layers = true;
+  capabilities_.supports_post_sub_buffer = true;
+  capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
+  capabilities_.pending_swap_params.max_pending_swaps = 1;
+  capabilities_.renderer_allocates_images = true;
+  capabilities_.supports_viewporter = presenter_->SupportsViewporter();
 
   DCHECK(context_state_);
   DCHECK(context_state_->gr_context() || context_state_->graphite_context());
   DCHECK(context_state_->context());
+  DCHECK(presenter_);
+  DCHECK(presenter_->SupportsGpuVSync());
 
   // SRGB
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
@@ -158,8 +167,9 @@ void SkiaOutputDeviceDComp::Present(const std::optional<gfx::Rect>& update_rect,
                                     OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
-  DoPresent(
-      update_rect.value_or(gfx::Rect(size_)),
+  // The |update_rect| is ignored because SetDrawRectangle specified the area to
+  // be swapped.
+  presenter_->Present(
       base::BindOnce(&SkiaOutputDeviceDComp::OnPresentFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(frame), size_),
       std::move(feedback), frame.data);
@@ -219,7 +229,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
         dc_layer.possible_video_fullscreen_letterboxing;
 
     // Schedule DC layer overlay to be presented at next SwapBuffers().
-    if (!ScheduleDCLayer(std::move(params))) {
+    if (!presenter_->ScheduleDCLayer(std::move(params))) {
       DLOG(ERROR) << "ScheduleDCLayer failed";
       continue;
     }
@@ -241,189 +251,11 @@ SkiaOutputDeviceDComp::BeginOverlayAccess(const gpu::Mailbox& mailbox) {
   return it->second.BeginOverlayAccess();
 }
 
-SkiaOutputDeviceDCompGLSurface::SkiaOutputDeviceDCompGLSurface(
-    gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
-    gpu::SharedContextState* context_state,
-    scoped_refptr<gl::GLSurface> gl_surface,
-    scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
-    gpu::MemoryTracker* memory_tracker,
-    DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
-    : SkiaOutputDeviceDComp(shared_image_representation_factory,
-                            context_state,
-                            std::move(feature_info),
-                            memory_tracker,
-                            std::move(did_swap_buffer_complete_callback)),
-      gl_surface_(std::move(gl_surface)) {
-  DCHECK(gl_surface_);
-
-  DCHECK(!gl_surface_->SupportsAsyncSwap());
-
-  DCHECK(gl_surface_->SupportsDCLayers());
-  DCHECK_EQ(gl_surface_->GetOrigin(), gfx::SurfaceOrigin::kTopLeft);
-  DCHECK(gl_surface_->SupportsGpuVSync());
-
-  capabilities_.supports_post_sub_buffer = gl_surface_->SupportsPostSubBuffer();
-  capabilities_.supports_delegated_ink = gl_surface_->SupportsDelegatedInk();
-  capabilities_.pending_swap_params.max_pending_swaps =
-      gl_surface_->GetBufferCount() - 1;
-}
-
-SkiaOutputDeviceDCompGLSurface::~SkiaOutputDeviceDCompGLSurface() {
-  // gl_surface_ will be destructed soon.
-  memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
-}
-
-bool SkiaOutputDeviceDCompGLSurface::Reshape(const SkImageInfo& image_info,
-                                             const gfx::ColorSpace& color_space,
-                                             int sample_count,
-                                             float device_scale_factor,
-                                             gfx::OverlayTransform transform) {
-  DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
-
-  const gfx::Size size = gfx::SkISizeToSize(image_info.dimensions());
-  const SkColorType color_type = image_info.colorType();
-  const bool has_alpha = !image_info.isOpaque();
-
-  if (!gl_surface_->Resize(size, device_scale_factor, color_space, has_alpha)) {
-    CheckForLoopFailures();
-    // To prevent tail call, so we can see the stack.
-    base::debug::Alias(nullptr);
-    return false;
-  }
-  SkSurfaceProps surface_props;
-
-  GrGLFramebufferInfo framebuffer_info = {0};
-  DCHECK_EQ(gl_surface_->GetBackingFramebufferObject(), 0u);
-
-  switch (color_type) {
-    case kRGBA_8888_SkColorType:
-      framebuffer_info.fFormat = GL_RGBA8;
-      break;
-    case kRGB_888x_SkColorType:
-      framebuffer_info.fFormat = GL_RGB8;
-      break;
-    case kRGB_565_SkColorType:
-      framebuffer_info.fFormat = GL_RGB565;
-      break;
-    case kRGBA_1010102_SkColorType:
-      framebuffer_info.fFormat = GL_RGB10_A2_EXT;
-      break;
-    case kRGBA_F16_SkColorType:
-      framebuffer_info.fFormat = GL_RGBA16F;
-      break;
-    default:
-      NOTREACHED() << "color_type: " << color_type;
-  }
-
-  auto render_target =
-      GrBackendRenderTargets::MakeGL(size.width(), size.height(), sample_count,
-                                     /*stencilBits=*/0, framebuffer_info);
-  auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
-                    ? kTopLeft_GrSurfaceOrigin
-                    : kBottomLeft_GrSurfaceOrigin;
-  sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
-      context_state_->gr_context(), render_target, origin, color_type,
-      image_info.refColorSpace(), &surface_props);
-  if (!sk_surface_) {
-    LOG(ERROR) << "Couldn't create surface:"
-               << "\n  abandoned()="
-               << context_state_->gr_context()->abandoned()
-               << "\n  color_type=" << color_type
-               << "\n  framebuffer_info.fFBOID=" << framebuffer_info.fFBOID
-               << "\n  framebuffer_info.fFormat=" << framebuffer_info.fFormat
-               << "\n  color_space=" << color_space.ToString()
-               << "\n  size=" << size.ToString();
-    CheckForLoopFailures();
-    // To prevent tail call, so we can see the stack.
-    base::debug::Alias(nullptr);
-  }
-
-  memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
-  GLenum format = gpu::gles2::TextureManager::ExtractFormatFromStorageFormat(
-      framebuffer_info.fFormat);
-  GLenum type = gpu::gles2::TextureManager::ExtractTypeFromStorageFormat(
-      framebuffer_info.fFormat);
-  uint32_t estimated_size;
-  gpu::gles2::GLES2Util::ComputeImageDataSizes(
-      size.width(), size.height(), 1 /* depth */, format, type,
-      4 /* alignment */, &estimated_size, nullptr, nullptr);
-  backbuffer_estimated_size_ = estimated_size * gl_surface_->GetBufferCount();
-  memory_type_tracker_->TrackMemAlloc(backbuffer_estimated_size_);
-
-  size_ = size;
-
-  return !!sk_surface_;
-}
-
-bool SkiaOutputDeviceDCompGLSurface::SetDrawRectangle(
-    const gfx::Rect& draw_rectangle) {
-  return gl_surface_->SetDrawRectangle(draw_rectangle);
-}
-
-void SkiaOutputDeviceDCompGLSurface::SetEnableDCLayers(bool enable) {
-  gl_surface_->SetEnableDCLayers(enable);
-}
-
-void SkiaOutputDeviceDCompGLSurface::SetGpuVSyncEnabled(bool enabled) {
-  gl_surface_->SetGpuVSyncEnabled(enabled);
-}
-
-SkSurface* SkiaOutputDeviceDCompGLSurface::BeginPaint(
-    std::vector<GrBackendSemaphore>* end_semaphores) {
-  DCHECK(sk_surface_);
-  return sk_surface_.get();
-}
-
-void SkiaOutputDeviceDCompGLSurface::EndPaint() {}
-
-bool SkiaOutputDeviceDCompGLSurface::ScheduleDCLayer(
-    std::unique_ptr<gl::DCLayerOverlayParams> params) {
-  return gl_surface_->ScheduleDCLayer(std::move(params));
-}
-
-void SkiaOutputDeviceDCompGLSurface::DoPresent(
-    const gfx::Rect& rect,
-    gl::GLSurface::SwapCompletionCallback completed_callback,
-    BufferPresentedCallback feedback,
-    gfx::FrameData data) {
-  gfx::SwapResult result =
-      gl_surface_->PostSubBuffer(rect.x(), rect.y(), rect.width(),
-                                 rect.height(), std::move(feedback), data);
-
-  // Implement "async" swap synchronously.
-  std::move(completed_callback).Run(gfx::SwapCompletionResult(result));
-}
-
-SkiaOutputDeviceDCompPresenter::SkiaOutputDeviceDCompPresenter(
-    gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
-    gpu::SharedContextState* context_state,
-    scoped_refptr<gl::Presenter> presenter,
-    scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
-    gpu::MemoryTracker* memory_tracker,
-    DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
-    : SkiaOutputDeviceDComp(shared_image_representation_factory,
-                            context_state,
-                            std::move(feature_info),
-                            memory_tracker,
-                            std::move(did_swap_buffer_complete_callback)),
-      presenter_(std::move(presenter)) {
-  DCHECK(presenter_);
-  DCHECK(presenter_->SupportsGpuVSync());
-
-  capabilities_.supports_post_sub_buffer = true;
-  capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
-  capabilities_.pending_swap_params.max_pending_swaps = 1;
-  capabilities_.renderer_allocates_images = true;
-  capabilities_.supports_viewporter = presenter_->SupportsViewporter();
-}
-
-SkiaOutputDeviceDCompPresenter::~SkiaOutputDeviceDCompPresenter() = default;
-
-bool SkiaOutputDeviceDCompPresenter::Reshape(const SkImageInfo& image_info,
-                                             const gfx::ColorSpace& color_space,
-                                             int sample_count,
-                                             float device_scale_factor,
-                                             gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceDComp::Reshape(const SkImageInfo& image_info,
+                                    const gfx::ColorSpace& color_space,
+                                    int sample_count,
+                                    float device_scale_factor,
+                                    gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 
   auto size = gfx::SkISizeToSize(image_info.dimensions());
@@ -444,43 +276,26 @@ bool SkiaOutputDeviceDCompPresenter::Reshape(const SkImageInfo& image_info,
   return true;
 }
 
-bool SkiaOutputDeviceDCompPresenter::SetDrawRectangle(
-    const gfx::Rect& draw_rectangle) {
+bool SkiaOutputDeviceDComp::SetDrawRectangle(const gfx::Rect& draw_rectangle) {
   return presenter_->SetDrawRectangle(draw_rectangle);
 }
 
-void SkiaOutputDeviceDCompPresenter::SetGpuVSyncEnabled(bool enabled) {
+void SkiaOutputDeviceDComp::SetGpuVSyncEnabled(bool enabled) {
   presenter_->SetGpuVSyncEnabled(enabled);
 }
 
-SkSurface* SkiaOutputDeviceDCompPresenter::BeginPaint(
+SkSurface* SkiaOutputDeviceDComp::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-void SkiaOutputDeviceDCompPresenter::EndPaint() {
+void SkiaOutputDeviceDComp::EndPaint() {
   NOTIMPLEMENTED();
 }
 
-bool SkiaOutputDeviceDCompPresenter::ScheduleDCLayer(
-    std::unique_ptr<gl::DCLayerOverlayParams> params) {
-  return presenter_->ScheduleDCLayer(std::move(params));
-}
-
-bool SkiaOutputDeviceDCompPresenter::IsPrimaryPlaneOverlay() const {
+bool SkiaOutputDeviceDComp::IsPrimaryPlaneOverlay() const {
   return true;
-}
-
-void SkiaOutputDeviceDCompPresenter::DoPresent(
-    const gfx::Rect& rect,
-    gl::Presenter::SwapCompletionCallback completion_callback,
-    BufferPresentedCallback feedback,
-    gfx::FrameData data) {
-  // The |rect| is ignored because SetDrawRectangle specified the area to be
-  // swapped.
-  presenter_->Present(std::move(completion_callback), std::move(feedback),
-                      data);
 }
 
 }  // namespace viz

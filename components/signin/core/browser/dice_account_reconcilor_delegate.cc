@@ -21,7 +21,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "components/supervised_user/core/common/features.h"
 
 namespace signin {
 
@@ -210,14 +209,13 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   // A supervised user regardless of consent should not be signed out in certain
   // cases such as clearing browsing data. In this instance the account
   // reconciler should not remove the primary account.
-  if (IsAccountSupervised(identity_manager_) &&
-      base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+  if (IsAccountSupervised(identity_manager_)) {
     return ConsentLevel::kSignin;
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)) {
     return ConsentLevel::kSignin;
   }
 
@@ -360,15 +358,14 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
 
   // In the UNO model the primary account should not be signed out if the
   // account cookie is deleted by user action.
-  if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental) &&
       !identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
     return;
   }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (IsAccountSupervised(identity_manager_) &&
-      base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+  if (IsAccountSupervised(identity_manager_)) {
     return;
   }
 #endif

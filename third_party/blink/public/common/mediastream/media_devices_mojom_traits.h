@@ -39,7 +39,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaDeviceInfoDataView,
     return info.video_facing;
   }
 
-  static const absl::optional<media::CameraAvailability>& availability(
+  static const std::optional<media::CameraAvailability>& availability(
       const blink::WebMediaDeviceInfo& info) {
     return info.availability;
   }

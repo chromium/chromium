@@ -10,8 +10,7 @@
 namespace supervised_user {
 
 std::string GetChildAccountOAuthIdToken() {
-  std::string encoded;
-  base::Base64Encode(R"({ "services": ["uca"] })", &encoded);
+  std::string encoded = base::Base64Encode(R"({ "services": ["uca"] })");
   return base::StringPrintf("dummy-header.%s.dummy-signature", encoded.c_str());
 }
 

@@ -35,7 +35,7 @@ bool IsGuestSession() {
   const UserIndex user_index = 0;
   const UserSession* const user_session =
       Shell::Get()->session_controller()->GetUserSession(user_index);
-  return user_session->user_info.type == user_manager::USER_TYPE_GUEST;
+  return user_session->user_info.type == user_manager::UserType::kGuest;
 }
 
 // Returns true if all windows have bounds.

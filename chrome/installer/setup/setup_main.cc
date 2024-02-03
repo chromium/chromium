@@ -48,6 +48,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/win/current_module.h"
@@ -84,6 +85,7 @@
 #include "chrome/installer/setup/setup_singleton.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/setup/uninstall.h"
+#include "chrome/installer/setup/unpack_archive.h"
 #include "chrome/installer/util/app_command.h"
 #include "chrome/installer/util/conditional_work_item_list.h"
 #include "chrome/installer/util/delete_after_reboot_helper.h"
@@ -336,47 +338,6 @@ LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
   return result;
 }
 
-// Returns nullptr if no compressed archive is available for processing,
-// otherwise returns a patch helper configured to uncompress and patch.
-std::unique_ptr<installer::ArchivePatchHelper> CreateChromeArchiveHelper(
-    const base::FilePath& setup_exe,
-    const base::CommandLine& command_line,
-    const installer::InstallerState& installer_state,
-    const base::FilePath& working_directory,
-    installer::UnPackConsumer consumer) {
-  // A compressed archive is ordinarily given on the command line by the mini
-  // installer. If one was not given, look for chrome.packed.7z next to the
-  // running program.
-  base::FilePath compressed_archive(
-      command_line.GetSwitchValuePath(installer::switches::kInstallArchive));
-  bool compressed_archive_specified = !compressed_archive.empty();
-  if (!compressed_archive_specified) {
-    compressed_archive =
-        setup_exe.DirName().Append(installer::kChromeCompressedArchive);
-  }
-
-  // Fail if no compressed archive is found.
-  if (!base::PathExists(compressed_archive)) {
-    if (compressed_archive_specified) {
-      LOG(ERROR) << installer::switches::kInstallArchive << "="
-                 << compressed_archive.value() << " not found.";
-    }
-    return nullptr;
-  }
-
-  // chrome.7z is either extracted directly from the compressed archive into the
-  // working dir or is the target of patching in the working dir.
-  base::FilePath target(working_directory.Append(installer::kChromeArchive));
-  DCHECK(!base::PathExists(target));
-
-  // Specify an empty path for the patch source since it isn't yet known that
-  // one is needed. It will be supplied in UncompressAndPatchChromeArchive if it
-  // is.
-  return std::make_unique<installer::ArchivePatchHelper>(
-      working_directory, compressed_archive, base::FilePath(), target,
-      consumer);
-}
-
 // Returns the MSI product ID from the ClientState key that is populated for MSI
 // installs.  This property is encoded in a value name whose format is
 // "EnterpriseProduct<GUID>" where <GUID> is the MSI product id.  <GUID> is in
@@ -399,91 +360,6 @@ std::wstring FindMsiProductId(const InstallerState& installer_state) {
     }
   }
   return std::wstring();
-}
-
-// Workhorse for producing an uncompressed archive (chrome.7z) given a
-// chrome.packed.7z containing either a patch file based on the version of
-// chrome being updated or the full uncompressed archive. Returns true on
-// success, in which case |archive_type| is populated based on what was found.
-// Returns false on failure, in which case |install_status| contains the error
-// code and the result is written to the registry (via WriteInstallerResult).
-bool UncompressAndPatchChromeArchive(
-    const installer::InstallationState& original_state,
-    const installer::InstallerState& installer_state,
-    installer::ArchivePatchHelper* archive_helper,
-    installer::ArchiveType* archive_type,
-    installer::InstallStatus* install_status,
-    const base::Version& previous_version) {
-  installer_state.SetStage(installer::UNCOMPRESSING);
-
-  // UMA tells us the following about the time required for uncompression as of
-  // M75:
-  // --- Foreground (<10%) ---
-  //   Full archive: 7.5s (50%ile) / 52s (99%ile)
-  //   Archive patch: <2s (50%ile) / 10-20s (99%ile)
-  // --- Background (>90%) ---
-  //   Full archive: 22s (50%ile) / >3m (99%ile)
-  //   Archive patch: ~2s (50%ile) / 1.5m - >3m (99%ile)
-  //
-  // The top unpack failure result with 28 days aggregation (>=0.01%)
-  // Setup.Install.LzmaUnPackResult_CompressedChromeArchive
-  // 13.50% DISK_FULL
-  // 0.67% ERROR_NO_SYSTEM_RESOURCES
-  // 0.12% ERROR_IO_DEVICE
-  // 0.05% INVALID_HANDLE
-  // 0.01% INVALID_LEVEL
-  // 0.01% FILE_NOT_FOUND
-  // 0.01% LOCK_VIOLATION
-  // 0.01% ACCESS_DENIED
-  //
-  // Setup.Install.LzmaUnPackResult_ChromeArchivePatch
-  // 0.09% DISK_FULL
-  // 0.01% FILE_NOT_FOUND
-  //
-  // More information can also be found with metrics:
-  // Setup.Install.LzmaUnPackNTSTATUS_CompressedChromeArchive
-  // Setup.Install.LzmaUnPackNTSTATUS_ChromeArchivePatch
-  if (!archive_helper->Uncompress(nullptr)) {
-    *install_status = installer::UNCOMPRESSION_FAILED;
-    installer_state.WriteInstallerResult(
-        *install_status, IDS_INSTALL_UNCOMPRESSION_FAILED_BASE, nullptr);
-    return false;
-  }
-
-  // Short-circuit if uncompression produced the uncompressed archive rather
-  // than a patch file.
-  if (base::PathExists(archive_helper->target())) {
-    *archive_type = installer::FULL_ARCHIVE_TYPE;
-    return true;
-  }
-
-  // Find the installed version's archive to serve as the source for patching.
-  base::FilePath patch_source(installer::FindArchiveToPatch(
-      original_state, installer_state, previous_version));
-  if (patch_source.empty()) {
-    LOG(ERROR) << "Failed to find archive to patch.";
-    *install_status = installer::DIFF_PATCH_SOURCE_MISSING;
-    installer_state.WriteInstallerResult(
-        *install_status, IDS_INSTALL_UNCOMPRESSION_FAILED_BASE, nullptr);
-    return false;
-  }
-  archive_helper->set_patch_source(patch_source);
-
-  // UMA tells us the following about the time required for patching as of M75:
-  // --- Foreground ---
-  //   12s (50%ile) / 3-6m (99%ile)
-  // --- Background ---
-  //   1m (50%ile) / >60m (99%ile)
-  installer_state.SetStage(installer::PATCHING);
-  if (!archive_helper->ApplyPatch()) {
-    *install_status = installer::APPLY_DIFF_PATCH_FAILED;
-    installer_state.WriteInstallerResult(
-        *install_status, IDS_INSTALL_UNCOMPRESSION_FAILED_BASE, nullptr);
-    return false;
-  }
-
-  *archive_type = installer::INCREMENTAL_ARCHIVE_TYPE;
-  return true;
 }
 
 // Repetitively attempts to delete all files that belong to old versions of
@@ -1301,7 +1177,6 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
                                     ArchiveType* archive_type) {
   DCHECK(archive_type);
   const bool system_install = installer_state.system_install();
-  InstallStatus install_status = UNKNOWN_STATUS;
 
   // Create a temp folder where we will unpack Chrome archive. If it fails,
   // then we are doomed, so return immediately and no cleanup is required.
@@ -1314,82 +1189,14 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
     return TEMP_DIR_FAILED;
   }
 
-  // Uncompress and optionally patch the archive if a compressed archive is
-  // found.
-  *archive_type = UNKNOWN_ARCHIVE_TYPE;
-  base::Version previous_version;
-  if (cmd_line.HasSwitch(installer::switches::kPreviousVersion)) {
-    previous_version = base::Version(
-        cmd_line.GetSwitchValueASCII(installer::switches::kPreviousVersion));
-  }
-
-  std::unique_ptr<ArchivePatchHelper> archive_helper(CreateChromeArchiveHelper(
-      setup_exe, cmd_line, installer_state, unpack_path,
-      (previous_version.IsValid()
-           ? UnPackConsumer::CHROME_ARCHIVE_PATCH
-           : UnPackConsumer::COMPRESSED_CHROME_ARCHIVE)));
   base::FilePath uncompressed_archive;
-  if (archive_helper) {
-    VLOG(1) << "Installing Chrome from compressed archive "
-            << archive_helper->compressed_archive().value();
-    if (!UncompressAndPatchChromeArchive(original_state, installer_state,
-                                         archive_helper.get(), archive_type,
-                                         &install_status, previous_version)) {
-      DCHECK_NE(install_status, UNKNOWN_STATUS);
-      return install_status;
-    }
-    uncompressed_archive = archive_helper->target();
-    DCHECK(!uncompressed_archive.empty());
-  }
-
-  // Check for an uncompressed archive alongside the current executable if one
-  // was not given or generated.
-  if (uncompressed_archive.empty()) {
-    uncompressed_archive = setup_exe.DirName().Append(kChromeArchive);
-  }
-
-  if (*archive_type == UNKNOWN_ARCHIVE_TYPE) {
-    // An archive was not uncompressed or patched above.
-    if (uncompressed_archive.empty() ||
-        !base::PathExists(uncompressed_archive)) {
-      LOG(ERROR) << "Cannot install Chrome without an uncompressed archive.";
-      installer_state.WriteInstallerResult(
-          INVALID_ARCHIVE, IDS_INSTALL_INVALID_ARCHIVE_BASE, nullptr);
-      return INVALID_ARCHIVE;
-    }
-    *archive_type = FULL_ARCHIVE_TYPE;
-  }
-
-  // Unpack the uncompressed archive.
-  // UMA tells us the following about the time required to unpack as of M75:
-  // --- Foreground ---
-  //   <2.7s (50%ile) / 45s (99%ile)
-  // --- Background ---
-  //   ~14s (50%ile) / >3m (99%ile)
-  //
-  // The top unpack failure result with 28 days aggregation (>=0.01%)
-  // Setup.Install.LzmaUnPackResult_UncompressedChromeArchive
-  // 0.66% DISK_FULL
-  // 0.04% ACCESS_DENIED
-  // 0.01% INVALID_HANDLE
-  // 0.01% ERROR_NO_SYSTEM_RESOURCES
-  // 0.01% PATH_NOT_FOUND
-  // 0.01% ERROR_IO_DEVICE
-  //
-  // More information can also be found with metric:
-  // Setup.Install.LzmaUnPackNTSTATUS_UncompressedChromeArchive
-  installer_state.SetStage(UNPACKING);
-  UnPackStatus unpack_status = UnPackArchive(uncompressed_archive, unpack_path,
-                                             /*output_file=*/nullptr);
-  RecordUnPackMetrics(unpack_status,
-                      UnPackConsumer::UNCOMPRESSED_CHROME_ARCHIVE);
-  if (unpack_status != UNPACK_NO_ERROR) {
-    installer_state.WriteInstallerResult(
-        UNPACKING_FAILED, IDS_INSTALL_UNCOMPRESSION_FAILED_BASE, nullptr);
-    return UNPACKING_FAILED;
-  }
+  RETURN_IF_ERROR(UnpackAndMaybePatchChromeArchive(
+      unpack_path, original_state, setup_exe, cmd_line, installer_state,
+      archive_type, uncompressed_archive));
 
   VLOG(1) << "unpacked to " << unpack_path.value();
+
+  InstallStatus install_status = UNKNOWN_STATUS;
   base::FilePath src_path(unpack_path.Append(kInstallSourceChromeDir));
   std::unique_ptr<base::Version> installer_version(
       GetMaxVersionFromArchiveDir(src_path));

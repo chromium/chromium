@@ -32,8 +32,8 @@ void GeometryMapperTransformCache::Update(
     DCHECK(node.IsIdentity());
     to_2d_translation_root_ = gfx::Vector2dF();
     root_of_2d_translation_ = &node;
-    plane_root_transform_ = absl::nullopt;
-    screen_transform_ = absl::nullopt;
+    plane_root_transform_ = std::nullopt;
+    screen_transform_ = std::nullopt;
     screen_transform_updated_ = true;
 
     DCHECK(node.ScrollNode());
@@ -85,7 +85,7 @@ void GeometryMapperTransformCache::Update(
       // plane root is the same as the 2d translation root, so this node
       // which is a 2d translation also doesn't need plane root transform
       // because the plane root is still the same as the 2d translation root.
-      plane_root_transform_ = absl::nullopt;
+      plane_root_transform_ = std::nullopt;
     }
   } else {
     root_of_2d_translation_ = &node;
@@ -96,7 +96,7 @@ void GeometryMapperTransformCache::Update(
     if (is_plane_root) {
       // We don't need plane root transform because the plane root is the same
       // as the 2d translation root.
-      plane_root_transform_ = absl::nullopt;
+      plane_root_transform_ = std::nullopt;
     } else {
       plane_root_transform_.emplace();
       plane_root_transform_->plane_root = parent.plane_root();
@@ -114,7 +114,7 @@ void GeometryMapperTransformCache::Update(
   // screen_transform_ will be updated only when needed.
   if (plane_root()->IsRoot()) {
     // We won't need screen_transform_.
-    screen_transform_ = absl::nullopt;
+    screen_transform_ = std::nullopt;
     screen_transform_updated_ = true;
   } else {
     screen_transform_updated_ = false;

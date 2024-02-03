@@ -4,6 +4,8 @@
 
 #include "services/network/cookie_access_delegate_impl.h"
 
+#include <optional>
+
 #include "base/test/task_environment.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -13,7 +15,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {

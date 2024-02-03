@@ -476,9 +476,9 @@ void ClipboardMac::WriteText(base::StringPiece text) {
                      forType:NSPasteboardTypeString];
 }
 
-void ClipboardMac::WriteHTML(base::StringPiece markup,
-                             absl::optional<base::StringPiece> /* source_url */,
-                             ClipboardContentType /* content_type */) {
+void ClipboardMac::WriteHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> /* source_url */) {
   // We need to mark it as utf-8. (see crbug.com/11957)
   std::string html_fragment_str("<meta charset='utf-8'>");
   html_fragment_str.append(markup);

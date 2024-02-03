@@ -81,7 +81,7 @@ class ExtensionError {
 
 class ManifestError : public ExtensionError {
  public:
-  ManifestError(const std::string& extension_id,
+  ManifestError(const ExtensionId& extension_id,
                 const std::u16string& message,
                 const std::string& manifest_key,
                 const std::u16string& manifest_specific);
@@ -109,7 +109,7 @@ class ManifestError : public ExtensionError {
 
 class RuntimeError : public ExtensionError {
  public:
-  RuntimeError(const std::string& extension_id,  // optional, sometimes unknown.
+  RuntimeError(const ExtensionId& extension_id,  // optional, sometimes unknown.
                bool from_incognito,
                const std::u16string& source,
                const std::u16string& message,
@@ -150,7 +150,7 @@ class RuntimeError : public ExtensionError {
 
 class InternalError : public ExtensionError {
  public:
-  InternalError(const std::string& extension_id,
+  InternalError(const ExtensionId& extension_id,
                 const std::u16string& message,
                 logging::LogSeverity level);
 

@@ -263,7 +263,7 @@ class CORE_EXPORT StyleResolverState {
   Document* document_;
 
   // The primary output for each element's style resolve.
-  absl::optional<ComputedStyleBuilder> style_builder_;
+  std::optional<ComputedStyleBuilder> style_builder_;
 
   CSSToLengthConversionData::Flags length_conversion_flags_ = 0;
   CSSToLengthConversionData css_to_length_conversion_data_;
@@ -301,8 +301,8 @@ class CORE_EXPORT StyleResolverState {
   // a ComputedStyle until pretty late in the process, keep it here until
   // we have one.
   //
-  // This is computed only once, lazily (thus the absl::optional).
-  mutable absl::optional<EInsideLink> inside_link_;
+  // This is computed only once, lazily (thus the std::optional).
+  mutable std::optional<EInsideLink> inside_link_;
 
   const ComputedStyle* originating_element_style_;
   // True if we are resolving styles for a highlight pseudo-element.

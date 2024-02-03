@@ -174,7 +174,7 @@ TEST_F(LookalikeUrlBlockingPageTest,
   ASSERT_EQ(1, navigation_manager_->GetLastCommittedItemIndex());
   ASSERT_TRUE(navigation_manager_->CanGoBack());
 
-  page_ = CreateBlockingPage(&web_state_, GURL::EmptyGURL(), url_);
+  page_ = CreateBlockingPage(&web_state_, GURL(), url_);
 
   // Send the don't proceed command.
   SendCommand(security_interstitials::CMD_DONT_PROCEED);
@@ -203,7 +203,7 @@ TEST_F(LookalikeUrlBlockingPageTest,
 TEST_F(LookalikeUrlBlockingPageTest,
        HandleDontProceedCommandWithoutSafeUrlClose) {
   test_ukm_recorder_.Purge();
-  page_ = CreateBlockingPage(&web_state_, GURL::EmptyGURL(), url_);
+  page_ = CreateBlockingPage(&web_state_, GURL(), url_);
   ASSERT_FALSE(navigation_manager_->CanGoBack());
 
   // Send the don't proceed command.

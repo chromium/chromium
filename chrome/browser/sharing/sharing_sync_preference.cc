@@ -38,9 +38,8 @@ const char kSharingInfoEnabledFeatures[] = "enabled_features";
 
 base::Value::Dict TargetInfoToValue(
     const syncer::DeviceInfo::SharingTargetInfo& target_info) {
-  std::string base64_p256dh, base64_auth_secret;
-  base::Base64Encode(target_info.p256dh, &base64_p256dh);
-  base::Base64Encode(target_info.auth_secret, &base64_auth_secret);
+  std::string base64_p256dh = base::Base64Encode(target_info.p256dh);
+  std::string base64_auth_secret = base::Base64Encode(target_info.auth_secret);
 
   base::Value::Dict result;
   result.Set(kDeviceFcmToken, target_info.fcm_token);
@@ -129,10 +128,7 @@ std::optional<std::vector<uint8_t>> SharingSyncPreference::GetVapidKey() const {
 void SharingSyncPreference::SetVapidKey(
     const std::vector<uint8_t>& vapid_key) const {
   base::Time creation_timestamp = base::Time::Now();
-  std::string base64_vapid_key;
-  base::Base64Encode(std::string(vapid_key.begin(), vapid_key.end()),
-                     &base64_vapid_key);
-
+  std::string base64_vapid_key = base::Base64Encode(vapid_key);
   ScopedDictPrefUpdate update(prefs_, prefs::kSharingVapidKey);
   update->Set(kVapidECPrivateKey, base64_vapid_key);
   update->Set(kVapidCreationTimestamp, base::TimeToValue(creation_timestamp));

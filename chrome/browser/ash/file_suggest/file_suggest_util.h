@@ -45,6 +45,7 @@ struct FileSuggestData {
                   const base::FilePath& new_file_path,
                   const std::optional<std::u16string>& new_prediction_reason,
                   const std::optional<base::Time>& timestamp,
+                  const std::optional<base::Time>& secondary_timestamp,
                   std::optional<float> new_score);
   FileSuggestData(FileSuggestData&&);
   FileSuggestData(const FileSuggestData&);
@@ -65,6 +66,10 @@ struct FileSuggestData {
 
   // Timestamp of when the file was last modified, or viewed.
   std::optional<base::Time> timestamp;
+
+  // Timestamp to be used to compare suggestion recency for suggestions whose
+  // `timestamp`s match.
+  std::optional<base::Time> secondary_timestamp;
 
   // Only has a value when `type` == `FileSuggestionType::kLocalFile`.
   std::optional<float> score;

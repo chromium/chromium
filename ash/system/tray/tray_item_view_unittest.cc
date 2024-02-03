@@ -248,7 +248,8 @@ TEST_F(TrayItemViewTest, DISABLED_SmoothnessMetricRecordedForShowAnimation) {
 }
 
 // Tests that a smoothness metric is recorded for the "hide" animation.
-TEST_F(TrayItemViewTest, SmoothnessMetricRecordedForHideAnimation) {
+// TODO(crbug.com/1523924): Fix and re-enable flaky test.
+TEST_F(TrayItemViewTest, DISABLED_SmoothnessMetricRecordedForHideAnimation) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 0);
 

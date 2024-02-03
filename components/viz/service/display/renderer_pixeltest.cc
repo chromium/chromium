@@ -1735,7 +1735,8 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperatureNonRootRenderPass) {
 
 TEST_P(GPURendererPixelTest,
        PremultipliedTextureWithBackgroundAndVertexOpacity) {
-  // TODO(b/238763010): Skia Graphite needs mask filter support.
+  // TODO(b/323204379): Skia Graphite needs shader mask filter support through
+  // `SkCanvas::clipShader()`.
   if (is_skia_graphite()) {
     GTEST_SKIP();
   }
@@ -2159,9 +2160,7 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
   cc::PaintFlags green_flags;
   green_flags.setColor(SkColors::kGreen);
 
-  std::unique_ptr<cc::FakeRecordingSource> blue_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(
-          this->quad_rect_.size());
+  auto blue_recording = cc::FakeRecordingSource::Create(quad_rect_.size());
   blue_recording->add_draw_rect_with_flags(outer_rect, black_flags);
   blue_recording->add_draw_rect_with_flags(inner_rect, blue_flags);
   blue_recording->Rerecord();
@@ -2176,9 +2175,7 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
                     this->quad_rect_.size(), false, this->quad_rect_, 1.f, {},
                     blue_raster_source->GetDisplayItemList());
 
-  std::unique_ptr<cc::FakeRecordingSource> green_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(
-          this->quad_rect_.size());
+  auto green_recording = cc::FakeRecordingSource::Create(quad_rect_.size());
   green_recording->add_draw_rect_with_flags(outer_rect, green_flags);
   green_recording->add_draw_rect_with_flags(inner_rect, black_flags);
   green_recording->Rerecord();
@@ -2273,9 +2270,11 @@ TEST_P(IntersectingMultiplanarVideoQuadPixelTest, YUVVideoQuads) {
     baseline = baseline.InsertBeforeExtensionASCII(kANGLEMetalStr);
   }
 
+  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // upload support lands for Windows for multiplanar SI.
   this->AppendBackgroundAndRunTest(cc::FuzzyPixelComparator()
                                        .DiscardAlpha()
-                                       .SetErrorPixelsPercentageLimit(0.50f)
+                                       .SetErrorPixelsPercentageLimit(50.0f)
                                        .SetAvgAbsErrorLimit(1.2f)
                                        .SetAbsErrorLimit(2),
                                    baseline);
@@ -2482,9 +2481,15 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
+  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes.png")),
-      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+      cc::FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(100.f)
+          .SetAvgAbsErrorLimit(1.2f)
+          .SetAbsErrorLimit(2)));
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -2517,9 +2522,15 @@ TEST_P(VideoRendererPixelHiLoTest, MAYBE_ClippedYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
+  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_clipped.png")),
-      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+      cc::FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(100.f)
+          .SetAvgAbsErrorLimit(1.2f)
+          .SetAbsErrorLimit(2)));
 }
 #endif  // #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 
@@ -2568,9 +2579,15 @@ TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
+  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_offset.png")),
-      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+      cc::FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(100.f)
+          .SetAvgAbsErrorLimit(1.2f)
+          .SetAbsErrorLimit(2)));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleYUVRectBlack) {
@@ -4261,8 +4278,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
   gfx::Rect blue_rect(gfx::Size(100, 100));
   gfx::Rect blue_clip_rect(gfx::Point(50, 50), gfx::Size(50, 50));
 
-  std::unique_ptr<cc::FakeRecordingSource> blue_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(blue_rect.size());
+  auto blue_recording = cc::FakeRecordingSource::Create(blue_rect.size());
   cc::PaintFlags red_flags;
   red_flags.setColor(SkColors::kRed);
   blue_recording->add_draw_rect_with_flags(blue_rect, red_flags);
@@ -4293,8 +4309,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
                     blue_raster_source->GetDisplayItemList());
 
   // One viewport-filling green quad.
-  std::unique_ptr<cc::FakeRecordingSource> green_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto green_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags green_flags;
   green_flags.setColor(SkColors::kGreen);
   green_recording->add_draw_rect_with_flags(viewport, green_flags);
@@ -4332,8 +4347,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
   auto pass = CreateTestRenderPass(id, viewport, transform_to_root);
 
   // One viewport-filling 0.5-opacity green quad.
-  std::unique_ptr<cc::FakeRecordingSource> green_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto green_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags green_flags;
   green_flags.setColor(SkColors::kGreen);
   green_recording->add_draw_rect_with_flags(viewport, green_flags);
@@ -4353,8 +4367,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
                      green_raster_source->GetDisplayItemList());
 
   // One viewport-filling white quad.
-  std::unique_ptr<cc::FakeRecordingSource> white_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto white_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags white_flags;
   white_flags.setColor(SkColors::kWhite);
   white_recording->add_draw_rect_with_flags(viewport, white_flags);
@@ -4390,8 +4403,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
   auto pass = CreateTestRenderPass(id, viewport, transform_to_root);
 
   // One viewport-filling 0.5-opacity transparent quad.
-  std::unique_ptr<cc::FakeRecordingSource> transparent_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto transparent_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags transparent_flags;
   transparent_flags.setColor(SkColors::kTransparent);
   transparent_recording->add_draw_rect_with_flags(viewport, transparent_flags);
@@ -4411,8 +4423,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
                            transparent_raster_source->GetDisplayItemList());
 
   // One viewport-filling white quad.
-  std::unique_ptr<cc::FakeRecordingSource> white_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto white_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags white_flags;
   white_flags.setColor(SkColors::kWhite);
   white_recording->add_draw_rect_with_flags(viewport, white_flags);
@@ -4467,8 +4478,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadDisableImageFiltering) {
   draw_point_color(canvas, 1, 0, SkColors::kBlue);
   draw_point_color(canvas, 1, 1, SkColors::kGreen);
 
-  std::unique_ptr<cc::FakeRecordingSource> recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto recording = cc::FakeRecordingSource::Create(viewport.size());
   recording->add_draw_image_with_flags(
       surface->makeImageSnapshot(), gfx::Point(),
       SkSamplingOptions(SkFilterMode::kLinear), cc::PaintFlags());
@@ -4517,8 +4527,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNearestNeighbor) {
   draw_point_color(canvas, 1, 0, SkColors::kBlue);
   draw_point_color(canvas, 1, 1, SkColors::kGreen);
 
-  std::unique_ptr<cc::FakeRecordingSource> recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto recording = cc::FakeRecordingSource::Create(viewport.size());
   recording->add_draw_image_with_flags(
       surface->makeImageSnapshot(), gfx::Point(),
       SkSamplingOptions(SkFilterMode::kLinear), cc::PaintFlags());
@@ -4733,8 +4742,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   gfx::Rect green_rect1(gfx::Point(80, 0), gfx::Size(20, 100));
   gfx::Rect green_rect2(gfx::Point(0, 80), gfx::Size(100, 20));
 
-  std::unique_ptr<cc::FakeRecordingSource> green_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto green_recording = cc::FakeRecordingSource::Create(viewport.size());
 
   cc::PaintFlags red_flags;
   red_flags.setColor(SkColors::kRed);
@@ -4795,8 +4803,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   blue_layer_rect1.Inset(inset);
   blue_layer_rect2.Inset(inset);
 
-  std::unique_ptr<cc::FakeRecordingSource> recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(layer_rect.size());
+  auto recording = cc::FakeRecordingSource::Create(layer_rect.size());
 
   cc::Region outside(layer_rect);
   outside.Subtract(gfx::ToEnclosingRect(union_layer_rect));

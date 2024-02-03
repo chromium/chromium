@@ -44,8 +44,9 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
                             int target_index,
                             std::string* error) {
   // A group can always be moved to the end of the tabstrip.
-  if (target_index >= tab_strip->count() || target_index < 0)
+  if (target_index >= tab_strip->count() || target_index < 0) {
     return true;
+  }
 
   if (tab_strip->IsTabPinned(target_index)) {
     *error = tab_groups_constants::kCannotMoveGroupIntoMiddleOfPinnedTabsError;
@@ -224,8 +225,11 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
 
   tab_groups::TabGroupId group = tab_groups::TabGroupId::CreateEmpty();
   std::string error;
-  if (!MoveGroup(group_id, new_index, window_id, &group, &error))
+  const bool group_moved =
+      MoveGroup(group_id, new_index, window_id, &group, &error);
+  if (!group_moved) {
     return RespondNow(Error(std::move(error)));
+  }
 
   if (!has_callback())
     return RespondNow(NoArguments());
@@ -261,8 +265,9 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
 
   gfx::Range tabs =
       source_tab_strip->group_model()->GetTabGroup(*group)->ListTabs();
-  if (tabs.length() == 0)
+  if (tabs.length() == 0) {
     return false;
+  }
 
   if (window_id) {
     Browser* target_browser = nullptr;
@@ -302,11 +307,13 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
       return false;
     }
 
-    if (new_index > target_tab_strip->count() || new_index < 0)
+    if (new_index > target_tab_strip->count() || new_index < 0) {
       new_index = target_tab_strip->count();
+    }
 
-    if (!IndexSupportsGroupMove(target_tab_strip, new_index, error))
+    if (!IndexSupportsGroupMove(target_tab_strip, new_index, error)) {
       return false;
+    }
 
     target_tab_strip->group_model()->AddTabGroup(*group, *visual_data);
 
@@ -330,25 +337,27 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   // When moving to the right, adjust the target index for the size of the
   // group, since the group itself may occupy several indices to the right.
   const int start_index = tabs.start();
-  if (new_index > start_index)
-    new_index += tabs.length() - 1;
+  const int new_index_before_group_is_removed =
+      new_index > start_index ? new_index + tabs.length() : new_index;
 
-  // Unlike when moving between windows, IndexSupportsGroupMove should be called
-  // before clamping the index to count()-1 instead of after. Since the current
-  // group being moved could occupy index count()-1, IndexSupportsGroupMove
-  // could return a false negative for the current group.
-  if (!IndexSupportsGroupMove(source_tab_strip, new_index, error))
+  if (!IndexSupportsGroupMove(source_tab_strip,
+                              new_index_before_group_is_removed, error)) {
     return false;
+  }
 
   // Unlike when moving between windows, the index should be clamped to
-  // count()-1 instead of count(). Since the current tab(s) being moved are
-  // within the same tabstrip, they can't be added beyond the end of the
-  // occupied indices, but rather just shifted among them.
-  if (new_index >= source_tab_strip->count() || new_index < 0)
-    new_index = source_tab_strip->count() - 1;
+  // count() - (#num of tabs in group being moved). Since the current tab(s)
+  // being moved are within the same tabstrip, they can't be added beyond the
+  // end of the occupied indices, but rather just shifted among them.
+  const int size_after_group_removed =
+      source_tab_strip->count() - tabs.length();
+  if (new_index >= size_after_group_removed || new_index < 0) {
+    new_index = size_after_group_removed;
+  }
 
-  if (new_index == start_index)
+  if (new_index == start_index) {
     return true;
+  }
 
   source_tab_strip->MoveGroupTo(*group, new_index);
 

@@ -341,17 +341,14 @@ SharedImageFactory::SharedImageFactory(
 #endif  // defined(USE_EGL)
 
 #if BUILDFLAG(IS_ANDROID)
-  bool is_ahb_supported =
-      base::AndroidHardwareBufferCompat::IsSupportAvailable();
+  bool is_ahb_supported = true;
   if (gr_context_type_ == GrContextType::kVulkan) {
     const auto& enabled_extensions = context_state->vk_context_provider()
                                          ->GetDeviceQueue()
                                          ->enabled_extensions();
-    is_ahb_supported =
-        is_ahb_supported &&
-        gfx::HasExtension(
-            enabled_extensions,
-            VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME);
+    is_ahb_supported = gfx::HasExtension(
+        enabled_extensions,
+        VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME);
   }
   if (is_ahb_supported) {
     auto ahb_factory = std::make_unique<AHardwareBufferImageBackingFactory>(

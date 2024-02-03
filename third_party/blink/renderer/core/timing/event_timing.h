@@ -30,11 +30,15 @@ class CORE_EXPORT EventTiming final {
   // This object should be constructed before the event is dispatched and
   // destructed after dispatch so that we can calculate the input delay and
   // other latency values correctly.
-  static std::unique_ptr<EventTiming> Create(LocalDOMWindow*, const Event&);
+  static std::unique_ptr<EventTiming> Create(
+      LocalDOMWindow* window,
+      const Event& event,
+      EventTarget* original_event_target);
 
   explicit EventTiming(base::TimeTicks processing_start,
                        WindowPerformance* performance,
-                       const Event& event);
+                       const Event& event,
+                       EventTarget* original_event_target);
   ~EventTiming();
   EventTiming(const EventTiming&) = delete;
   EventTiming& operator=(const EventTiming&) = delete;
@@ -57,6 +61,8 @@ class CORE_EXPORT EventTiming final {
   Persistent<WindowPerformance> performance_;
 
   Persistent<const Event> event_;
+
+  Persistent<EventTarget> original_event_target_;
 };
 
 }  // namespace blink

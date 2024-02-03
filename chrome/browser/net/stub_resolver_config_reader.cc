@@ -31,6 +31,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
+#include "net/base/features.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
@@ -92,13 +93,13 @@ bool ShouldDisableDohForWindowsParentalControls() {
 bool ShouldEnableAsyncDns() {
   bool feature_can_be_enabled = true;
 #if BUILDFLAG(IS_ANDROID)
-  int min_sdk =
-      base::GetFieldTrialParamByFeatureAsInt(features::kAsyncDns, "min_sdk", 0);
+  int min_sdk = base::GetFieldTrialParamByFeatureAsInt(net::features::kAsyncDns,
+                                                       "min_sdk", 0);
   if (base::android::BuildInfo::GetInstance()->sdk_int() < min_sdk)
     feature_can_be_enabled = false;
 #endif
   return feature_can_be_enabled &&
-         base::FeatureList::IsEnabled(features::kAsyncDns);
+         base::FeatureList::IsEnabled(net::features::kAsyncDns);
 }
 
 }  // namespace

@@ -23,6 +23,38 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+#if !BUILDFLAG(CHROME_FOR_TESTING)
+void SetUserSelectedDefaultSearchProvider(
+    TemplateURLService* template_url_service,
+    bool created_by_policy) {
+  constexpr char kCustomSearchEngineDomain[] = "bar.com";
+  constexpr char16_t kCustomSearchEngineKeyword[] = u"bar.com";
+
+  TemplateURLData data;
+  data.SetShortName(kCustomSearchEngineKeyword);
+  data.SetKeyword(kCustomSearchEngineKeyword);
+  data.SetURL(base::StringPrintf("https://%s/url?bar={searchTerms}",
+                                 kCustomSearchEngineDomain));
+  data.new_tab_url =
+      base::StringPrintf("https://%s/newtab", kCustomSearchEngineDomain);
+  data.alternate_urls.push_back(base::StringPrintf(
+      "https://%s/alt#quux={searchTerms}", kCustomSearchEngineDomain));
+
+  if (created_by_policy) {
+    data.created_by_policy =
+        TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+  }
+
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+}
+#endif
+
+}  // namespace
+
 class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
  public:
   SearchEngineChoiceDialogServiceTest() {
@@ -159,6 +191,77 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
           kProfileCreationDefaultWasSet,
       1);
 }
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       DoNotDisplayDialogIfPolicyIsSetDynamically) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(search_engine_choice_dialog_service);
+
+  SetUserSelectedDefaultSearchProvider(
+      TemplateURLServiceFactory::GetForProfile(profile()),
+      /*created_by_policy=*/true);
+  EXPECT_FALSE(search_engine_choice_dialog_service->CanShowDialog(*browser()));
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest, DoNotCreateServiceIfPolicyIsSet) {
+  SetUserSelectedDefaultSearchProvider(
+      TemplateURLServiceFactory::GetForProfile(profile()),
+      /*created_by_policy=*/true);
+
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  EXPECT_FALSE(search_engine_choice_dialog_service);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       SearchEngineChoicePropagatesFromParentProfileToIncognito) {
+  SearchEngineChoiceDialogService* parent_profile_choice_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(parent_profile_choice_service);
+
+  int prepopulate_id =
+      parent_profile_choice_service->GetSearchEngines().at(0)->prepopulate_id();
+  parent_profile_choice_service->NotifyChoiceMade(
+      prepopulate_id, SearchEngineChoiceDialogService::EntryPoint::kDialog);
+
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(profile())
+                ->GetDefaultSearchProvider()
+                ->prepopulate_id(),
+            prepopulate_id);
+
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(incognito_profile)
+                ->GetDefaultSearchProvider()
+                ->prepopulate_id(),
+            prepopulate_id);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       SearchEngineChoicePropagatesFromIncognitoToParentProfile) {
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  SearchEngineChoiceDialogService* incognito_profile_choice_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(incognito_profile);
+  ASSERT_TRUE(incognito_profile_choice_service);
+
+  int prepopulate_id = incognito_profile_choice_service->GetSearchEngines()
+                           .at(0)
+                           ->prepopulate_id();
+  incognito_profile_choice_service->NotifyChoiceMade(
+      prepopulate_id, SearchEngineChoiceDialogService::EntryPoint::kDialog);
+
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(incognito_profile)
+                ->GetDefaultSearchProvider()
+                ->prepopulate_id(),
+            prepopulate_id);
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(profile())
+                ->GetDefaultSearchProvider()
+                ->prepopulate_id(),
+            prepopulate_id);
+}
+
 #else
 TEST_F(SearchEngineChoiceDialogServiceTest,
        ServiceNotInitializedInChromeForTesting) {

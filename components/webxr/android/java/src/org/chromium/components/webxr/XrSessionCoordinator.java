@@ -23,6 +23,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 
 /**
  * Provides static methods called by the XrDelegateImpl as well as JNI methods to the C/C++ code
@@ -68,6 +69,8 @@ public class XrSessionCoordinator {
 
     // The WebContents that triggered the currently active session.
     private WebContents mWebContents;
+
+    private WeakReference<Activity> mXrHostActivity;
 
     // Helper, obtains android Activity out of passed in WebContents instance.
     // Equivalent to ChromeActivity.fromWebContents(), but does not require that
@@ -187,6 +190,17 @@ public class XrSessionCoordinator {
         getApplicationContext().startActivity(intent);
     }
 
+    private void endSessionFromXrHost() {
+        if (DEBUG_LOGS) Log.i(TAG, "endSessionFromXrHost");
+
+        if (sActiveSessionInstance == null) return;
+        assert (sActiveSessionInstance == this);
+
+        // Since the XrHostActivity is removing us we don't need to clean it up, so null it out now.
+        mXrHostActivity = null;
+        endSession();
+    }
+
     @CalledByNative
     private void endSession() {
         if (DEBUG_LOGS) Log.i(TAG, "endSession");
@@ -205,6 +219,10 @@ public class XrSessionCoordinator {
         mWebContents = null;
         sActiveSessionInstance = null;
         sActiveSessionAvailableSupplier.set(SessionType.NONE);
+        if (mXrHostActivity != null && mXrHostActivity.get() != null) {
+            mXrHostActivity.get().finish();
+            mXrHostActivity = null;
+        }
     }
 
     // Called from XrDelegateImpl and XRHostActivity
@@ -214,6 +232,18 @@ public class XrSessionCoordinator {
         // can take appropriate action, such as consuming a back gesture.
         if (sActiveSessionInstance != null) {
             sActiveSessionInstance.endSession();
+            return true;
+        }
+        return false;
+    }
+
+    // Called from XrDelegateImpl and XRHostActivity
+    public static boolean endActiveSessionFromXrHost() {
+        if (DEBUG_LOGS) Log.i(TAG, "endActiveSessionFromXrHost");
+        // If there's an active immersive session shut it down and return true so that the caller
+        // can take appropriate action, such as consuming a back gesture.
+        if (sActiveSessionInstance != null) {
+            sActiveSessionInstance.endSessionFromXrHost();
             return true;
         }
         return false;
@@ -305,6 +335,7 @@ public class XrSessionCoordinator {
 
     private void handleXrHostActivityReady(Activity activity) {
         if (mNativeXrSessionCoordinator == 0) return;
+        mXrHostActivity = new WeakReference(activity);
         XrSessionCoordinatorJni.get()
                 .onXrHostActivityReady(
                         mNativeXrSessionCoordinator, XrSessionCoordinator.this, activity);

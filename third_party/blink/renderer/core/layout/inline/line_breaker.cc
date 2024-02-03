@@ -187,7 +187,7 @@ inline bool IsAllBreakableSpaces(const String& string,
 inline LayoutUnit HyphenAdvance(const ComputedStyle& style,
                                 bool is_ltr,
                                 const HyphenResult& hyphen_result,
-                                absl::optional<LayoutUnit>& cache) {
+                                std::optional<LayoutUnit>& cache) {
   if (cache) {
     return *cache;
   }
@@ -1610,7 +1610,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   if (fast_min_content_item_ == &item)
     return false;
 
-  absl::optional<LineBreakType> saved_line_break_type;
+  std::optional<LineBreakType> saved_line_break_type;
   if (break_anywhere_if_overflow_ && !override_break_anywhere_) {
     saved_line_break_type = break_iterator_.BreakType();
     break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
@@ -1625,7 +1625,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   float min_width = 0;
   unsigned last_end_offset = 0;
   unsigned end_offset = start_offset + 1;
-  absl::optional<LayoutUnit> hyphen_inline_size;
+  std::optional<LayoutUnit> hyphen_inline_size;
   while (start_offset < item.EndOffset()) {
     end_offset =
         break_iterator_.NextBreakOpportunity(end_offset, item.EndOffset());
@@ -1876,7 +1876,7 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
   SetCurrentStyle(*item.Style());
 
   // Find all break opportunities in `item_result`.
-  absl::optional<LayoutUnit> hyphen_advance_cache;
+  std::optional<LayoutUnit> hyphen_advance_cache;
   for (;;) {
     // Compute the offset of the next break opportunity.
     wtf_size_t next_offset;
@@ -2958,13 +2958,17 @@ void LineBreaker::UpdateLineOpportunity() {
 // Restore the states changed by `HandleFloat` to before
 // `item_results[new_end]`.
 void LineBreaker::RewindFloats(unsigned new_end,
+                               LineInfo& line_info,
                                InlineItemResults& item_results) {
   for (const InlineItemResult& item_result :
        base::make_span(item_results).subspan(new_end)) {
     if (item_result.positioned_float) {
+      const unsigned item_index = item_result.item_index;
+      line_info.RemoveParallelFlowBreakToken(item_index);
+
       // Adjust `leading_floats_index_` if this is a leading float. See
       // `HandleFloat` and `PositionLeadingFloats`.
-      if (item_result.item_index < leading_floats_.handled_index) {
+      if (item_index < leading_floats_.handled_index) {
         for (unsigned i = 0; i < leading_floats_.floats.size(); ++i) {
           if (leading_floats_.floats[i].layout_result ==
               item_result.positioned_float->layout_result) {
@@ -3160,7 +3164,7 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
 
   // Save the hyphenation states before we may make changes.
   InlineItemResults* item_results = line_info->MutableResults();
-  absl::optional<wtf_size_t> hyphen_index_before = hyphen_index_;
+  std::optional<wtf_size_t> hyphen_index_before = hyphen_index_;
   if (UNLIKELY(HasHyphen()))
     position_ -= RemoveHyphen(item_results);
 
@@ -3457,7 +3461,7 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
 
   // Check if floats are being rewound.
   if (RuntimeEnabledFeatures::RewindFloatsEnabled()) {
-    RewindFloats(new_end, item_results);
+    RewindFloats(new_end, *line_info, item_results);
   } else {
     // The code and comments in this `else` block is obsolete when
     // `RewindFloatsEnabled` is enabled, and will be removed when the flag

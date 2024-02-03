@@ -153,7 +153,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void OnPaint(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;

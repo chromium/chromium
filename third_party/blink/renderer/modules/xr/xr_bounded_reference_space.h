@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_BOUNDED_REFERENCE_SPACE_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "ui/gfx/geometry/transform.h"
@@ -25,7 +25,7 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
   XRBoundedReferenceSpace(XRSession*, XRRigidTransform*);
   ~XRBoundedReferenceSpace() override;
 
-  absl::optional<gfx::Transform> MojoFromNative() const override;
+  std::optional<gfx::Transform> MojoFromNative() const override;
 
   const FrozenArray<DOMPointReadOnly>& boundsGeometry() const;
 

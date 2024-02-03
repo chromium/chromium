@@ -166,7 +166,7 @@ void SendTabToSelfIconView::UpdateOpacity() {
                       static_cast<float>(kLargeNumber));
 }
 
-BEGIN_METADATA(SendTabToSelfIconView, PageActionIconView)
+BEGIN_METADATA(SendTabToSelfIconView)
 END_METADATA
 
 }  // namespace send_tab_to_self

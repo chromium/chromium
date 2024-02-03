@@ -232,13 +232,13 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
 
 namespace {
 
-absl::optional<ScrollTimeline::ScrollAxis> GetTimelineAxis(
+std::optional<ScrollTimeline::ScrollAxis> GetTimelineAxis(
     const Animation& animation) {
   if (auto* scroll_timeline =
           DynamicTo<ScrollTimeline>(animation.TimelineInternal())) {
     return scroll_timeline->GetAxis();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
+import java.util.List;
+
 /** Interface for the Tab Switcher. */
 public interface TabSwitcher {
     /** Defines an interface to pass out tab selecting event. */
@@ -245,6 +247,8 @@ public interface TabSwitcher {
      * Show the Quick Delete animation on the tab list.
      *
      * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     * @param tabs The tabs to fade with the animation. These tabs will get closed after the
+     *     animation is complete.
      */
-    void showQuickDeleteAnimation(Runnable onAnimationEnd);
+    void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs);
 }

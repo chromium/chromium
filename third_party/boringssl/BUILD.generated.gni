@@ -332,17 +332,6 @@ crypto_sources_asm = [
   "apple-aarch64/crypto/fipsmodule/sha512-armv8-apple.S",
   "apple-aarch64/crypto/fipsmodule/vpaes-armv8-apple.S",
   "apple-aarch64/crypto/test/trampoline-armv8-apple.S",
-  "apple-arm/crypto/chacha/chacha-armv4-apple.S",
-  "apple-arm/crypto/fipsmodule/aesv8-armv7-apple.S",
-  "apple-arm/crypto/fipsmodule/armv4-mont-apple.S",
-  "apple-arm/crypto/fipsmodule/bsaes-armv7-apple.S",
-  "apple-arm/crypto/fipsmodule/ghash-armv4-apple.S",
-  "apple-arm/crypto/fipsmodule/ghashv8-armv7-apple.S",
-  "apple-arm/crypto/fipsmodule/sha1-armv4-large-apple.S",
-  "apple-arm/crypto/fipsmodule/sha256-armv4-apple.S",
-  "apple-arm/crypto/fipsmodule/sha512-armv4-apple.S",
-  "apple-arm/crypto/fipsmodule/vpaes-armv7-apple.S",
-  "apple-arm/crypto/test/trampoline-armv4-apple.S",
   "apple-x86/crypto/chacha/chacha-x86-apple.S",
   "apple-x86/crypto/fipsmodule/aesni-x86-apple.S",
   "apple-x86/crypto/fipsmodule/bn-586-apple.S",
@@ -556,6 +545,7 @@ crypto_headers = [
   "src/include/openssl/pkcs8.h",
   "src/include/openssl/poly1305.h",
   "src/include/openssl/pool.h",
+  "src/include/openssl/posix_time.h",
   "src/include/openssl/rand.h",
   "src/include/openssl/rc4.h",
   "src/include/openssl/ripemd.h",
@@ -577,9 +567,7 @@ crypto_headers = [
   "src/include/openssl/x509v3_errors.h",
 ]
 
-rust_bssl_sys = [
-  "src/rust/bssl-sys/src/lib.rs",
-]
+rust_bssl_sys = [ "src/rust/bssl-sys/src/lib.rs" ]
 
 rust_bssl_crypto = [
   "src/rust/bssl-crypto/src/aead.rs",
@@ -690,15 +678,12 @@ pki_sources = [
 ]
 
 pki_internal_headers = [
-  "src/pki/asn1_util.h",
   "src/pki/cert_error_id.h",
   "src/pki/cert_error_params.h",
   "src/pki/cert_errors.h",
   "src/pki/cert_issuer_source.h",
   "src/pki/cert_issuer_source_static.h",
   "src/pki/cert_issuer_source_sync_unittest.h",
-  "src/pki/cert_status_flags.h",
-  "src/pki/cert_status_flags_list.h",
   "src/pki/certificate_policies.h",
   "src/pki/common_cert_errors.h",
   "src/pki/crl.h",

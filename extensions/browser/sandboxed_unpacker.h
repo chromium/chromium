@@ -155,7 +155,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // requires the id and base64-encoded public key (for insertion into the
   // 'key' field of the manifest.json file).
   void StartWithCrx(const CRXFileInfo& crx_info);
-  void StartWithDirectory(const std::string& extension_id,
+  void StartWithDirectory(const ExtensionId& extension_id,
                           const std::string& public_key_base64,
                           const base::FilePath& directory);
 

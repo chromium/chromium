@@ -31,7 +31,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_selection_actions.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -175,11 +177,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   SetUpListItemView* _setUpListSyncItemView;
   SetUpListItemView* _setUpListDefaultBrowserItemView;
   SetUpListItemView* _setUpListAutofillItemView;
-  SetUpListItemView* _setUpListContentNotificationItemView;
+  SetUpListItemView* _setUpListNotificationsItemView;
   MagicStackModuleContainer* _setUpListSyncModule;
   MagicStackModuleContainer* _setUpListDefaultBrowserModule;
   MagicStackModuleContainer* _setUpListAutofillModule;
-  MagicStackModuleContainer* _setUpListContentNotificationModule;
+  MagicStackModuleContainer* _setUpListNotificationsModule;
   MagicStackModuleContainer* _setUpListCompactedModule;
   MagicStackModuleContainer* _setUpListAllSetModule;
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
@@ -254,7 +256,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   if (_mostVisitedTileConfig) {
     if (!IsMagicStackEnabled()) {
       [self createAndInsertMostVisitedModule];
-      [self populateMostVisitedModule];
+      [self addMostVisitedTilesToStackView];
     } else if (!ShouldPutMostVisitedSitesInMagicStack()) {
       [self createAndInsertMostVisitedModule];
     }
@@ -446,7 +448,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       ContentSuggestionsMostVisitedTileView* view =
           [[ContentSuggestionsMostVisitedTileView alloc]
               initWithConfiguration:item];
-      view.menuProvider = self.menuProvider;
+      view.menuProvider = item.menuProvider;
       view.accessibilityIdentifier = [NSString
           stringWithFormat:
               @"%@%li",
@@ -466,7 +468,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
             strongItem.attributes = attributes;
             [strongView.faviconView configureWithAttributes:attributes];
           };
-      [self.imageDataSource fetchFaviconForURL:item.URL completion:completion];
+      [config.imageDataSource fetchFaviconForURL:item.URL
+                                      completion:completion];
       [self.contentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
                                                                  atIndex:index];
       [self.mostVisitedViews addObject:view];
@@ -477,7 +480,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     if (self.verticalStackView && !self.mostVisitedStackView) {
       [self createAndInsertMostVisitedModule];
     }
-    [self populateMostVisitedModule];
+    [self addMostVisitedTilesToStackView];
   }
 
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
@@ -534,8 +537,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
               @"%@%li",
               kContentSuggestionsShortcutsAccessibilityIdentifierPrefix, index];
       UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(contentSuggestionsElementTapped:)];
+          initWithTarget:config.commandHandler
+                  action:@selector(shortcutsTapped:)];
       [view addGestureRecognizer:tapRecognizer];
       [self.mostVisitedTapRecognizers addObject:tapRecognizer];
       [self.shortcutsStackView addArrangedSubview:view];
@@ -630,8 +633,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         case ContentSuggestionsModuleType::kSetUpListAutofill:
           _setUpListAutofillModule = setUpListModule;
           break;
-        case ContentSuggestionsModuleType::kSetUpListContentNotification:
-          _setUpListContentNotificationModule = setUpListModule;
+        case ContentSuggestionsModuleType::kSetUpListNotifications:
+          _setUpListNotificationsModule = setUpListModule;
           break;
         case ContentSuggestionsModuleType::kSetUpListAllSet:
           _setUpListAllSetModule = setUpListModule;
@@ -695,9 +698,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       case SetUpListItemType::kAutofill:
         [_setUpListAutofillItemView markCompleteWithCompletion:completion];
         break;
-      case SetUpListItemType::kContentNotification:
-        [_setUpListContentNotificationItemView
-            markCompleteWithCompletion:completion];
+      case SetUpListItemType::kNotifications:
+        [_setUpListNotificationsItemView markCompleteWithCompletion:completion];
         break;
       default:
         break;
@@ -884,21 +886,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)contentSuggestionsElementTapped:(UIGestureRecognizer*)sender {
   if ([sender.view
-          isKindOfClass:[ContentSuggestionsMostVisitedTileView class]]) {
-    ContentSuggestionsMostVisitedTileView* mostVisitedView =
-        static_cast<ContentSuggestionsMostVisitedTileView*>(sender.view);
-    [self.suggestionCommandHandler
-        openMostVisitedItem:mostVisitedView.config
-                    atIndex:mostVisitedView.config.index];
-  } else if ([sender.view
-                 isKindOfClass:[ContentSuggestionsShortcutTileView class]]) {
-    ContentSuggestionsShortcutTileView* shortcutView =
-        static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
-    int index = static_cast<int>(shortcutView.config.index);
-    [self.suggestionCommandHandler openMostVisitedItem:shortcutView.config
-                                               atIndex:index];
-  } else if ([sender.view isKindOfClass:[ContentSuggestionsReturnToRecentTabView
-                                            class]]) {
+          isKindOfClass:[ContentSuggestionsReturnToRecentTabView class]]) {
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabView =
         static_cast<ContentSuggestionsReturnToRecentTabView*>(sender.view);
     __weak ContentSuggestionsReturnToRecentTabView* weakRecentTabView =
@@ -1107,12 +1095,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 // Add the elements in `mostVisitedViews` into `verticalStackView`.
-- (void)populateMostVisitedModule {
+- (void)addMostVisitedTilesToStackView {
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
-    view.menuProvider = self.menuProvider;
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(contentSuggestionsElementTapped:)];
+        initWithTarget:_mostVisitedTileConfig.commandHandler
+                action:@selector(mostVisitedTileTapped:)];
     [view addGestureRecognizer:tapRecognizer];
     tapRecognizer.enabled = YES;
     [self.mostVisitedTapRecognizers addObject:tapRecognizer];
@@ -1235,8 +1222,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         moduleContainer = _setUpListAutofillModule;
         break;
       }
-      case ContentSuggestionsModuleType::kSetUpListContentNotification: {
-        moduleContainer = _setUpListContentNotificationModule;
+      case ContentSuggestionsModuleType::kSetUpListNotifications: {
+        moduleContainer = _setUpListNotificationsModule;
         break;
       }
       case ContentSuggestionsModuleType::kCompactedSetUpList: {
@@ -1419,7 +1406,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       case ContentSuggestionsModuleType::kSetUpListSync:
       case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
       case ContentSuggestionsModuleType::kSetUpListAutofill:
-      case ContentSuggestionsModuleType::kSetUpListContentNotification:
+      case ContentSuggestionsModuleType::kSetUpListNotifications:
       case ContentSuggestionsModuleType::kCompactedSetUpList:
         [viewIndicesToRemove addObject:@(index)];
         break;

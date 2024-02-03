@@ -34,6 +34,7 @@
 #include "ash/system/notification_center/notification_style_utils.h"
 #include "ash/system/notification_center/views/ash_notification_expand_button.h"
 #include "ash/system/notification_center/views/ash_notification_input_container.h"
+#include "ash/system/notification_center/views/timestamp_view.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/base64.h"
 #include "base/check.h"
@@ -143,9 +144,6 @@ constexpr auto kRightContentExpandedPadding = gfx::Insets::TLBR(20, 16, 0, 0);
 constexpr auto kTimeStampInCollapsedStatePadding =
     gfx::Insets::TLBR(0, 0, 0, 16);
 
-// Bullet character. The divider symbol between the title and the timestamp.
-constexpr char16_t kTitleRowDivider[] = u"\u2022";
-
 constexpr char kGoogleSansFont[] = "Google Sans";
 
 constexpr int kTitleCharacterLimit =
@@ -153,18 +151,19 @@ constexpr int kTitleCharacterLimit =
     message_center::kMinPixelsPerTitleCharacter;
 constexpr int kTitleLabelExpandedMaxLines = 2;
 constexpr int kTitleLabelCollapsedMaxLines = 1;
-constexpr int kTimestampInCollapsedViewSize = 12;
 
 // The size for `icon_view_`, which is the icon within right content (between
 // title/message view and expand button).
 constexpr int kIconViewSize = 48;
 
+// The size for `icon_view_` with RenderArcNotificationsInChrome enabled. UX
+// requires reducing the size of the icons but changing it without this feature
+// would require updating it for both ash and arc notifications.
+constexpr int kIconViewSizeRenderArcInChromeEnabled = 36;
+
 // If the image displayed in `icon_view()` is smaller in either width or height
 // than this value, we draw a background around the image.
 constexpr int kSmallImageBackgroundThreshold = 6;
-
-// The horizontal spacing between control button icons.
-constexpr int kControlButtonsHorizontalSpacing = 6;
 
 // The size of an icon within a control button. Note that this is not the size
 // of a control button itself.
@@ -303,12 +302,12 @@ void AshNotificationView::AddedToWidget() {
   }
 }
 
-void AshNotificationView::Layout() {
+void AshNotificationView::Layout(PassKey) {
   if (is_animating_) {
     return;
   }
 
-  message_center::NotificationViewBase::Layout();
+  LayoutSuperclass<message_center::NotificationViewBase>(this);
 }
 
 void AshNotificationView::GroupedNotificationsContainer::
@@ -331,10 +330,10 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
     const std::u16string& title)
     : title_view_(AddChildView(GenerateTitleView(title))),
       title_row_divider_(AddChildView(std::make_unique<views::Label>(
-          kTitleRowDivider,
+          kNotificationTitleRowDivider,
           views::style::CONTEXT_DIALOG_BODY_TEXT))),
       timestamp_in_collapsed_view_(
-          AddChildView(std::make_unique<views::Label>())) {
+          AddChildView(std::make_unique<TimestampView>())) {
   SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(views::LayoutAlignment::kStart,
                   views::LayoutAlignment::kCenter, 1.0,
@@ -363,11 +362,11 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
   title_view_->SetMaxLines(kTitleLabelExpandedMaxLines);
 
   notification_style_utils::ConfigureLabelStyle(title_row_divider_,
-                                                kTimestampInCollapsedViewSize,
+                                                kNotificationSecondaryLabelSize,
                                                 /*is_color_primary=*/false);
   message_center_utils::InitLayerForAnimations(title_row_divider_);
   notification_style_utils::ConfigureLabelStyle(timestamp_in_collapsed_view_,
-                                                kTimestampInCollapsedViewSize,
+                                                kNotificationSecondaryLabelSize,
                                                 /*is_color_primary=*/false);
   message_center_utils::InitLayerForAnimations(timestamp_in_collapsed_view_);
   notification_style_utils::ConfigureLabelStyle(
@@ -384,9 +383,7 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
       ash::TypographyToken::kCrosAnnotation1, *timestamp_in_collapsed_view_);
 }
 
-AshNotificationView::NotificationTitleRow::~NotificationTitleRow() {
-  timestamp_update_timer_.Stop();
-}
+AshNotificationView::NotificationTitleRow::~NotificationTitleRow() = default;
 
 void AshNotificationView::NotificationTitleRow::UpdateTitle(
     const std::u16string& title) {
@@ -395,19 +392,7 @@ void AshNotificationView::NotificationTitleRow::UpdateTitle(
 
 void AshNotificationView::NotificationTitleRow::UpdateTimestamp(
     base::Time timestamp) {
-  std::u16string relative_time;
-  base::TimeDelta next_update;
-  message_center::GetRelativeTimeStringAndNextUpdateTime(
-      timestamp - base::Time::Now(), &relative_time, &next_update);
-
-  timestamp_ = timestamp;
-  timestamp_in_collapsed_view_->SetText(relative_time);
-
-  // Unretained is safe as the timer cancels the task on destruction.
-  timestamp_update_timer_.Start(
-      FROM_HERE, next_update,
-      base::BindOnce(&NotificationTitleRow::UpdateTimestamp,
-                     base::Unretained(this), timestamp));
+  timestamp_in_collapsed_view_->SetTimestamp(timestamp);
 }
 
 void AshNotificationView::NotificationTitleRow::UpdateVisibility(
@@ -528,7 +513,7 @@ AshNotificationView::AshNotificationView(
                                       CreateControlButtonsBuilder()
                                           .CopyAddressTo(&control_buttons_view_)
                                           .SetBetweenButtonSpacing(
-                                              kControlButtonsHorizontalSpacing)
+                                              kNotificationControlButtonsHorizontalSpacing)
                                           .SetCloseButtonIcon(
                                               kNotificationCloseControlButtonIcon)
                                           .SetSettingsButtonIcon(
@@ -873,7 +858,7 @@ void AshNotificationView::AnimateSingleToGroup(
         parent->AnimateSingleToGroupFadeIn();
 
         expand_button->set_previous_bounds(expand_button->GetContentsBounds());
-        parent->Layout();
+        parent->DeprecatedLayoutImmediately();
         expand_button->AnimateSingleToGroupNotification();
       },
       weak_factory_.GetWeakPtr(), left_content_, right_content(),
@@ -1146,6 +1131,13 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
                               use_expanded_padding ? kAppIconExpandedPadding
                                                    : kAppIconCollapsedPadding);
 
+  if (features::IsRenderArcNotificationsByChromeEnabled()) {
+    right_content()->SetProperty(views::kCrossAxisAlignmentKey,
+                                 use_expanded_padding
+                                     ? views::LayoutAlignment::kStart
+                                     : views::LayoutAlignment::kCenter);
+  }
+
   right_content()->SetProperty(
       views::kMarginsKey, use_expanded_padding ? kRightContentExpandedPadding
                                                : kRightContentCollapsedPadding);
@@ -1318,7 +1310,7 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
   }
 
   auto turn_off_notifications_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_INLINE_SETTINGS_TURN_OFF_BUTTON_TEXT));
@@ -1343,7 +1335,7 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
   }
 
   auto snooze_notification_1_hour_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_1_HOUR_TEXT));
@@ -1351,7 +1343,7 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
       std::move(snooze_notification_1_hour_button));
 
   auto snooze_notification_15_minutes_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_15_MINUTES_TEXT));
@@ -1359,7 +1351,7 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
       std::move(snooze_notification_15_minutes_button));
 
   auto snooze_notification_30_minutes_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_30_MINUTES_TEXT));
@@ -1367,7 +1359,7 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
       std::move(snooze_notification_30_minutes_button));
 
   auto snooze_notification_2_hours_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_2_HOURS_TEXT));
@@ -1509,7 +1501,10 @@ AshNotificationView::GenerateNotificationLabelButton(
 }
 
 gfx::Size AshNotificationView::GetIconViewSize() const {
-  return gfx::Size(kIconViewSize, kIconViewSize);
+  int icon_size = features::IsRenderArcNotificationsByChromeEnabled()
+                      ? kIconViewSizeRenderArcInChromeEnabled
+                      : kIconViewSize;
+  return gfx::Size(icon_size, icon_size);
 }
 
 int AshNotificationView::GetLargeImageViewMaxWidth() const {
@@ -1721,10 +1716,6 @@ int AshNotificationView::GetExpandedMessageLabelWidth() {
          kMessageLabelInExpandedStatePadding.width();
 }
 
-void AshNotificationView::DisableNotification() {
-  message_center::MessageCenter::Get()->DisableNotification(notification_id());
-}
-
 void AshNotificationView::UpdateAppIconView(
     const message_center::Notification* notification) {
   // Grouped child notification use notification's icon for the app icon view,
@@ -1772,7 +1763,8 @@ void AshNotificationView::AnimateResizeAfterRemoval(
         self->set_is_animating(false);
 
         if (self->shown_in_popup_) {
-          self->grouped_notifications_scroll_view_->Layout();
+          self->grouped_notifications_scroll_view_
+              ->DeprecatedLayoutImmediately();
         }
       },
       weak_factory_.GetWeakPtr());
@@ -1791,9 +1783,9 @@ void AshNotificationView::AnimateResizeAfterRemoval(
   }
 
   if (shown_in_popup_) {
-    grouped_notifications_scroll_view_->Layout();
+    grouped_notifications_scroll_view_->DeprecatedLayoutImmediately();
   } else {
-    Layout();
+    DeprecatedLayoutImmediately();
     PreferredSizeChanged();
   }
 
@@ -1876,7 +1868,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     // Ensure layout is up-to-date before animating expand button. This is used
     // for its bounds animation.
     if (needs_layout()) {
-      Layout();
+      DeprecatedLayoutImmediately();
     }
     DCHECK(!needs_layout());
 

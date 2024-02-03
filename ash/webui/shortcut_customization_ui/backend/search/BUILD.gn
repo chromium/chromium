@@ -13,7 +13,7 @@ mojom("mojo_bindings") {
 
   sources = [ "search.mojom" ]
 
-  webui_module_path = "/ash/webui/shortcut_customization_ui/backend/search"
+  webui_module_path = "/"
 
   public_deps = [
     "//ash/public/mojom:accelerator_info",

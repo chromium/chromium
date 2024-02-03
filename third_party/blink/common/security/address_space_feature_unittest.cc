@@ -115,7 +115,7 @@ std::vector<Input> AllInputs() {
 }
 
 // Convenience: calls AddressSpaceFeatureForSubresource() on input's components.
-absl::optional<Feature> AddressSpaceFeatureForInput(const Input& input) {
+std::optional<Feature> AddressSpaceFeatureForInput(const Input& input) {
   return AddressSpaceFeature(input.fetch_type, input.client_address_space,
                              input.client_is_secure_context,
                              input.resource_address_space);

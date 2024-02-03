@@ -123,7 +123,7 @@ class IndexedDBTransactionTest : public testing::Test {
         base::DoNothing(),
         std::make_unique<IndexedDBDatabaseCallbacks>(
             mojo::NullAssociatedRemote()),
-        std::move(remote));
+        std::move(remote), base::UnguessableToken::Create());
     db_->AddConnectionForTesting(connection.get());
     return connection;
   }
@@ -629,7 +629,7 @@ TEST_F(IndexedDBTransactionTest, PostedStartTaskRunAfterAbort) {
   // RunTasksForDatabase task.
 }
 
-TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
+TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOtherClients) {
   const int64_t id = 0;
   const int64_t object_store_id = 1ll;
   const std::set<int64_t> scope = {object_store_id};
@@ -643,7 +643,7 @@ TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
   // Register a transaction with ReadWrite mode to object store 1.
   // The transaction should be started and it's not blocking any others.
   EXPECT_EQ(transaction->state(), IndexedDBTransaction::STARTED);
-  EXPECT_FALSE(db_->IsTransactionBlockingOthers(transaction));
+  EXPECT_FALSE(transaction->IsTransactionBlockingOtherClients());
 
   const int64_t id2 = 1;
   IndexedDBTransaction* transaction2 = connection->CreateTransaction(
@@ -653,21 +653,30 @@ TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
   db_->RegisterAndScheduleTransaction(transaction2);
 
   // Register another transaction with ReadWrite mode to the same object store.
-  // The transaction should be blocked in `CREATED` state and the previous
-  // transaction is now blocking others.
+  // The transaction should be blocked in `CREATED` state, but the previous
+  // transaction is *not* blocking other clients because it's the same client.
   EXPECT_EQ(transaction2->state(), IndexedDBTransaction::CREATED);
-  EXPECT_TRUE(db_->IsTransactionBlockingOthers(transaction));
+  EXPECT_FALSE(transaction->IsTransactionBlockingOtherClients());
+
+  // Register a very similar connection, but with a *different* client. Now this
+  // one is blocking and `IsTransactionBlockingOtherClients` should be true.
+  const int64_t id3 = 1;
+  auto connection2 = CreateConnection();
+  IndexedDBTransaction* transaction3 = connection2->CreateTransaction(
+      mojo::NullAssociatedReceiver(), id3, scope,
+      blink::mojom::IDBTransactionMode::ReadWrite,
+      new IndexedDBFakeBackingStore::FakeTransaction(leveldb::Status::OK()));
+  db_->RegisterAndScheduleTransaction(transaction3);
 
   RunPostedTasks();
-
-  transaction2->Abort(
-      IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError));
 
   // Abort the blocked transaction, and the previous transaction should not be
   // blocking others anymore.
-  EXPECT_EQ(transaction2->state(), IndexedDBTransaction::FINISHED);
+  transaction3->Abort(
+      IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError));
+  EXPECT_EQ(transaction3->state(), IndexedDBTransaction::FINISHED);
   RunPostedTasks();
-  EXPECT_FALSE(db_->IsTransactionBlockingOthers(transaction));
+  EXPECT_FALSE(transaction->IsTransactionBlockingOtherClients());
 }
 
 }  // namespace content

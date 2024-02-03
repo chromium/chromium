@@ -64,6 +64,7 @@ drivefs::mojom::QueryParametersPtr CreateSharedWithMeQuery() {
   query->page_size = 10;
   query->query_source =
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+  query->shared_with_me = true;
   query->sort_direction =
       drivefs::mojom::QueryParameters::SortDirection::kDescending;
   query->sort_field = drivefs::mojom::QueryParameters::SortField::kSharedWithMe;
@@ -75,12 +76,24 @@ FileSuggestData CreateFileSuggestionWithJustification(
     app_list::JustificationType justification_type,
     const base::Time& timestamp,
     const drivefs::mojom::UserInfo* user_info) {
+  // Use secondary timestamp for files suggested because they were shared with
+  // the user, so they are ordered after suggestions for viewed/modified files.
+  const bool shared_with_me_suggestion =
+      justification_type == app_list::JustificationType::kShared;
+  std::optional<base::Time> primary_timestamp;
+  std::optional<base::Time> secondary_timestamp;
+  if (shared_with_me_suggestion) {
+    secondary_timestamp = timestamp;
+  } else {
+    primary_timestamp = timestamp;
+  }
+
   return FileSuggestData(
       FileSuggestionType::kDriveFile, path,
       app_list::GetJustificationString(
           justification_type, timestamp,
-          user_info ? user_info->display_name : base::EmptyString()),
-      timestamp, /*new_score=*/std::nullopt);
+          user_info ? user_info->display_name : std::string()),
+      primary_timestamp, secondary_timestamp, /*new_score=*/std::nullopt);
 }
 
 FileSuggestData CreateFileSuggestion(
@@ -219,9 +232,14 @@ void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
 
   query_result_files_by_path_.clear();
 
-  base::ranges::sort(results, base::ranges::greater(),
-                     &FileSuggestData::timestamp);
-
+  base::ranges::sort(results, [](const auto& lhs, const auto& rhs) {
+    if (lhs.timestamp == rhs.timestamp) {
+      return lhs.secondary_timestamp.value_or(base::Time()) >
+             rhs.secondary_timestamp.value_or(base::Time());
+    }
+    return lhs.timestamp.value_or(base::Time()) >
+           rhs.timestamp.value_or(base::Time());
+  });
   on_drive_results_ready_callback_list_.Notify(results);
 }
 

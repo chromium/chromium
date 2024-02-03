@@ -49,17 +49,17 @@ String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
   return value;
 }
 
-// Converts a {absl::optional<base::Time>} into a
-// {absl::optional<base::DOMTimeStamp>} object.
+// Converts a {std::optional<base::Time>} into a
+// {std::optional<base::DOMTimeStamp>} object.
 // base::Time is in milliseconds from Windows epoch (1601-01-01 00:00:00 UTC)
 // while blink::DOMTimeStamp is in milliseconds from UNIX epoch (1970-01-01
 // 00:00:00 UTC)
-absl::optional<blink::DOMTimeStamp> ToDOMTimeStamp(
-    const absl::optional<base::Time>& time) {
+std::optional<blink::DOMTimeStamp> ToDOMTimeStamp(
+    const std::optional<base::Time>& time) {
   if (time)
     return ConvertSecondsToDOMTimeStamp(time->InSecondsFSinceUnixEpoch());
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -81,7 +81,7 @@ PushSubscription::PushSubscription(
     const WTF::Vector<uint8_t>& application_server_key,
     const WTF::Vector<unsigned char>& p256dh,
     const WTF::Vector<unsigned char>& auth,
-    const absl::optional<DOMTimeStamp>& expiration_time,
+    const std::optional<DOMTimeStamp>& expiration_time,
     ServiceWorkerRegistration* service_worker_registration)
     : endpoint_(endpoint),
       options_(MakeGarbageCollected<PushSubscriptionOptions>(
@@ -97,7 +97,7 @@ PushSubscription::PushSubscription(
 
 PushSubscription::~PushSubscription() = default;
 
-absl::optional<DOMTimeStamp> PushSubscription::expirationTime() const {
+std::optional<DOMTimeStamp> PushSubscription::expirationTime() const {
   // This attribute reflects the time at which the subscription will expire,
   // which is not relevant to this implementation yet as subscription refreshes
   // are not supported.
@@ -113,9 +113,11 @@ DOMArrayBuffer* PushSubscription::getKey(const AtomicString& name) const {
   return nullptr;
 }
 
-ScriptPromise PushSubscription::unsubscribe(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLBoolean> PushSubscription::unsubscribe(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   PushProvider* push_provider =
       PushProvider::From(service_worker_registration_);

@@ -2797,7 +2797,7 @@ ScriptPromise HTMLMediaElement::playForBindings(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
   play_promise_resolvers_.push_back(resolver);
 
-  absl::optional<DOMExceptionCode> code = Play();
+  std::optional<DOMExceptionCode> code = Play();
   if (code) {
     DCHECK(!play_promise_resolvers_.empty());
     play_promise_resolvers_.pop_back();
@@ -2820,10 +2820,10 @@ ScriptPromise HTMLMediaElement::playForBindings(ScriptState* script_state) {
   return promise;
 }
 
-absl::optional<DOMExceptionCode> HTMLMediaElement::Play() {
+std::optional<DOMExceptionCode> HTMLMediaElement::Play() {
   DVLOG(2) << "play(" << *this << ")";
 
-  absl::optional<DOMExceptionCode> exception_code =
+  std::optional<DOMExceptionCode> exception_code =
       autoplay_policy_->RequestPlay();
 
   if (exception_code == DOMExceptionCode::kNotAllowedError) {
@@ -2831,7 +2831,7 @@ absl::optional<DOMExceptionCode> HTMLMediaElement::Play() {
     // Call playInternal to handle scheduling the promise resolution.
     if (!paused_) {
       PlayInternal();
-      return absl::nullopt;
+      return std::nullopt;
     }
     return exception_code;
   }
@@ -2845,7 +2845,7 @@ absl::optional<DOMExceptionCode> HTMLMediaElement::Play() {
 
   PlayInternal();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void HTMLMediaElement::PlayInternal() {
@@ -4743,8 +4743,8 @@ void HTMLMediaElement::DidMediaMetadataChange(
     observer->OnMediaMetadataChanged(has_audio, has_video, media_content_type);
   }
 
-  video_codec_ = has_video ? absl::make_optional(video_codec) : absl::nullopt;
-  audio_codec_ = has_audio ? absl::make_optional(audio_codec) : absl::nullopt;
+  video_codec_ = has_video ? std::make_optional(video_codec) : std::nullopt;
+  audio_codec_ = has_audio ? std::make_optional(audio_codec) : std::nullopt;
 
   is_encrypted_media_ = is_encrypted_media;
   OnRemotePlaybackMetadataChange();

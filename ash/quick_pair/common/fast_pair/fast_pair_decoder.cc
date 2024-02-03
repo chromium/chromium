@@ -57,31 +57,33 @@ bool HasModelId(const std::vector<uint8_t>* service_data) {
 
 std::optional<std::string> GetHexModelIdFromServiceData(
     const std::vector<uint8_t>* service_data) {
-  if (service_data == nullptr || service_data->size() < kMinModelIdLength)
+  if (service_data == nullptr || service_data->size() < kMinModelIdLength) {
     return std::nullopt;
-  else if (service_data->size() == kMinModelIdLength)
-    // If the size is 3, all the bytes are the ID,
-    return base::HexEncode(service_data->data(), kMinModelIdLength);
-  else {
-    // Otherwise, the first byte is a header which contains the length of the
-    // big-endian model ID that follows. The model ID will be trimmed if it
-    // contains leading zeros.
-    int id_index = 1;
-    int end = id_index + GetIdLength(service_data);
-
-    // Ignore leading zeros.
-    while ((*service_data)[id_index] == 0 && end - id_index > kMinModelIdLength)
-      id_index++;
-
-    // Copy appropriate bytes to new array.
-    int bytes_size = end - id_index;
-    uint8_t bytes[bytes_size];
-
-    for (int i = 0; i < bytes_size; i++)
-      bytes[i] = (*service_data)[i + id_index];
-
-    return base::HexEncode(bytes, bytes_size);
   }
+  if (service_data->size() == kMinModelIdLength) {
+    // If the size is 3, all the bytes are the ID,
+    return base::HexEncode(*service_data);
+  }
+  // Otherwise, the first byte is a header which contains the length of the
+  // big-endian model ID that follows. The model ID will be trimmed if it
+  // contains leading zeros.
+  int id_index = 1;
+  int end = id_index + GetIdLength(service_data);
+
+  // Ignore leading zeros.
+  while ((*service_data)[id_index] == 0 && end - id_index > kMinModelIdLength) {
+    id_index++;
+  }
+
+  // Copy appropriate bytes to new array.
+  int bytes_size = end - id_index;
+  uint8_t bytes[bytes_size];
+
+  for (int i = 0; i < bytes_size; i++) {
+    bytes[i] = (*service_data)[i + id_index];
+  }
+
+  return base::HexEncode(bytes, bytes_size);
 }
 
 }  // namespace fast_pair_decoder

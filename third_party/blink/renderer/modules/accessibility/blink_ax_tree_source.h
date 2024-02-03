@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -114,7 +114,7 @@ class MODULES_EXPORT BlinkAXTreeSource
   //
   // Used to ensure that the tutor message that explains to screen reader users
   // how to turn on automatic image labels is provided only once.
-  mutable absl::optional<int32_t> first_unlabeled_image_id_ = absl::nullopt;
+  mutable std::optional<int32_t> first_unlabeled_image_id_ = std::nullopt;
 
   const bool truncate_inline_textboxes_;
 };

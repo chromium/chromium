@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1384959399684842514">ההורדה הושהתה</translation>
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
-<translation id="1426410128494586442">כן</translation>
 <translation id="1434873037477293673">כרטיס לגבי ירידה במחיר</translation>
 <translation id="1448064542941920355">הקטנת הזום</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{באתר אחד (<ph name="SITE_COUNT" />)}one{ב-<ph name="SITE_COUNT" /> אתרים}two{ב-<ph name="SITE_COUNT" /> אתרים}other{ב-<ph name="SITE_COUNT" /> אתרים}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המצלמה, צריך להפעיל אותה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2238944249568001759">הצעות לחיפושים על סמך הכרטיסייה האחרונה שלך</translation>
+<translation id="2241587408274973373">כרטיסים בדף 'כרטיסייה חדשה'</translation>
 <translation id="2241634353105152135">פעם אחת בלבד</translation>
 <translation id="2253414712144136228">הסרה של <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{אתר אחד חסום}one{# אתרים חסומים}two{# אתרים חסומים}other{# אתרים חסומים}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">אתרים יכולים להציג בקשות כניסה משירותי זיהוי</translation>
 <translation id="2790501146643349491">כשהאפשרות מופעלת, אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים. כשהאפשרות מושבתת, אתרים שנסגרו לאחרונה לא יכולים לסיים שליחה או קבלה של נתונים.</translation>
 <translation id="2822354292072154809">לאפס את כל הרשאות האתר בשביל <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">בקשה לתצוגה לנייד</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">מציג האישורים</translation>
 <translation id="2979365474350987274">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
-<translation id="3013291976881901233">‏התקני MIDI</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">‏מחובר להתקן USB</translation>
 <translation id="4194328954146351878">‏הצגת שאלה לפני מתן הרשאה לאתרים לראות ולשנות מידע במכשירי NFC (מומלץ).</translation>
 <translation id="4200726100658658164">פתיחת הגדרות המיקום</translation>
-<translation id="4212246570487010370">המשך הגלישה</translation>
 <translation id="4226663524361240545">רטט של המכשיר אפשרי כשמתקבלת הודעה</translation>
 <translation id="4259722352634471385">הניווט חסום: <ph name="URL" /></translation>
 <translation id="4278390842282768270">מותר</translation>
@@ -341,7 +338,7 @@
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="6561560012278703671">הצגת התראות שקטה יותר (למניעת הקפצה של חלוניות מפריעות)</translation>
 <translation id="6593061639179217415">לגרסה במחשב</translation>
-<translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
+<translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
 <translation id="662080504995468778">להמשיך במצב אנונימי</translation>
 <translation id="6653342741369270081">כדי לצאת ממסך מלא, צריך ללחוץ על לחצן 'הקודם'.</translation>
@@ -351,7 +348,6 @@
 <translation id="6746124502594467657">העברה למטה</translation>
 <translation id="6749077623962119521">לאפס את ההרשאות?</translation>
 <translation id="6766622839693428701">החלקה מטה סוגרת.</translation>
-<translation id="6785959295338971061">‫<ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> המקור: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">יש לבחור אפשרות עבור <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>

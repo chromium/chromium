@@ -4027,7 +4027,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
-      GetScopedUserManager(user_manager::USER_TYPE_REGULAR);
+      GetScopedUserManager(user_manager::UserType::kRegular);
 #endif
 
   auto browser_context =
@@ -4058,7 +4058,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   const bool allow_remote_logging = false;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
-      GetScopedUserManager(user_manager::USER_TYPE_CHILD);
+      GetScopedUserManager(user_manager::UserType::kChild);
 
   auto browser_context = CreateBrowserContextWithCustomSupervision(
       "name", true /* is_managed_profile */,

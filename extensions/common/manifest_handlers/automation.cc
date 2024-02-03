@@ -17,21 +17,12 @@
 #include "extensions/common/permissions/manifest_permission.h"
 #include "extensions/common/permissions/permission_message_util.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/url_pattern.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
-
-namespace automation_errors {
-const char kErrorDesktopTrueMatchesSpecified[] =
-    "Cannot specify matches for Automation if desktop=true is specified; "
-    "matches will be ignored.";
-const char kErrorInvalidMatch[] = "Invalid match pattern '*': *";
-const char kErrorNoMatchesProvided[] = "No valid match patterns provided.";
-}  // namespace automation_errors
 
 namespace errors = manifest_errors;
 namespace keys = extensions::manifest_keys;
@@ -82,18 +73,6 @@ PermissionIDSet AutomationManifestPermission::GetPermissions() const {
   PermissionIDSet permissions;
   if (automation_info_->desktop) {
     permissions.insert(APIPermissionID::kFullAccess);
-  } else if (automation_info_->matches.MatchesAllURLs()) {
-    permissions.insert(APIPermissionID::kHostsAll);
-  } else {
-    // Check if we get any additional permissions from FilterHostPermissions.
-    URLPatternSet regular_hosts;
-    ExtensionsClient::Get()->FilterHostPermissions(
-        automation_info_->matches, &regular_hosts, &permissions);
-    std::set<std::string> hosts =
-        permission_message_util::GetDistinctHosts(regular_hosts, true, true);
-    for (const auto& host : hosts)
-      permissions.insert(APIPermissionID::kHostReadOnly,
-                         base::UTF8ToUTF16(host));
   }
   return permissions;
 }
@@ -116,10 +95,8 @@ std::unique_ptr<ManifestPermission> AutomationManifestPermission::Diff(
       static_cast<const AutomationManifestPermission*>(rhs);
 
   bool desktop = automation_info_->desktop && !other->automation_info_->desktop;
-  URLPatternSet matches = URLPatternSet::CreateDifference(
-      automation_info_->matches, other->automation_info_->matches);
   return std::make_unique<AutomationManifestPermission>(
-      base::WrapUnique(new const AutomationInfo(desktop, matches)));
+      base::WrapUnique(new const AutomationInfo(desktop)));
 }
 
 std::unique_ptr<ManifestPermission> AutomationManifestPermission::Union(
@@ -128,10 +105,8 @@ std::unique_ptr<ManifestPermission> AutomationManifestPermission::Union(
       static_cast<const AutomationManifestPermission*>(rhs);
 
   bool desktop = automation_info_->desktop || other->automation_info_->desktop;
-  URLPatternSet matches = URLPatternSet::CreateUnion(
-      automation_info_->matches, other->automation_info_->matches);
   return std::make_unique<AutomationManifestPermission>(
-      base::WrapUnique(new const AutomationInfo(desktop, matches)));
+      base::WrapUnique(new const AutomationInfo(desktop)));
 }
 
 std::unique_ptr<ManifestPermission> AutomationManifestPermission::Intersect(
@@ -140,15 +115,12 @@ std::unique_ptr<ManifestPermission> AutomationManifestPermission::Intersect(
       static_cast<const AutomationManifestPermission*>(rhs);
 
   bool desktop = automation_info_->desktop && other->automation_info_->desktop;
-  URLPatternSet matches = URLPatternSet::CreateIntersection(
-      automation_info_->matches, other->automation_info_->matches,
-      URLPatternSet::IntersectionBehavior::kStringComparison);
   return std::make_unique<AutomationManifestPermission>(
-      base::WrapUnique(new const AutomationInfo(desktop, matches)));
+      base::WrapUnique(new const AutomationInfo(desktop)));
 }
 
 bool AutomationManifestPermission::RequiresManagementUIWarning() const {
-  return automation_info_->desktop || !automation_info_->matches.is_empty();
+  return automation_info_->desktop;
 }
 
 AutomationHandler::AutomationHandler() = default;
@@ -188,8 +160,8 @@ ManifestPermission* AutomationHandler::CreateInitialRequiredPermission(
     const Extension* extension) {
   const AutomationInfo* info = AutomationInfo::Get(extension);
   if (info) {
-    return new AutomationManifestPermission(base::WrapUnique(
-        new const AutomationInfo(info->desktop, info->matches)));
+    return new AutomationManifestPermission(
+        base::WrapUnique(new const AutomationInfo(info->desktop)));
   }
   return nullptr;
 }
@@ -223,39 +195,7 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
     desktop = true;
   }
 
-  URLPatternSet matches;
-  bool specified_matches = false;
-  if (automation_object.matches) {
-    if (desktop) {
-      install_warnings->emplace_back(
-          automation_errors::kErrorDesktopTrueMatchesSpecified);
-    } else {
-      specified_matches = true;
-
-      for (const auto& match : *automation_object.matches) {
-        // TODO(aboxhall): Refactor common logic from content_scripts_handler,
-        // manifest_url_handler and user_script.cc into a single location and
-        // re-use here.
-        URLPattern pattern(URLPattern::SCHEME_ALL &
-                           ~URLPattern::SCHEME_CHROMEUI);
-        URLPattern::ParseResult parse_result = pattern.Parse(match);
-
-        if (parse_result != URLPattern::ParseResult::kSuccess) {
-          install_warnings->emplace_back(ErrorUtils::FormatErrorMessage(
-              automation_errors::kErrorInvalidMatch, match,
-              URLPattern::GetParseResultString(parse_result)));
-          continue;
-        }
-
-        matches.AddPattern(pattern);
-      }
-    }
-  }
-  if (specified_matches && matches.is_empty()) {
-    install_warnings->emplace_back(automation_errors::kErrorNoMatchesProvided);
-  }
-
-  return base::WrapUnique(new AutomationInfo(desktop, matches));
+  return base::WrapUnique(new AutomationInfo(desktop));
 }
 
 // static
@@ -268,23 +208,20 @@ std::unique_ptr<base::Value> AutomationInfo::ToValue(
 std::unique_ptr<Automation> AutomationInfo::AsManifestType(
     const AutomationInfo& info) {
   std::unique_ptr<Automation> automation(new Automation);
-  if (!info.desktop && info.matches.size() == 0) {
+  if (!info.desktop) {
     automation->as_boolean = true;
     return automation;
   }
 
   automation->as_object.emplace();
   automation->as_object->desktop = info.desktop;
-  if (info.matches.size() > 0)
-    automation->as_object->matches = info.matches.ToStringVector();
 
   return automation;
 }
 
 AutomationInfo::AutomationInfo() : desktop(false) {}
 
-AutomationInfo::AutomationInfo(bool desktop, const URLPatternSet& matches)
-    : desktop(desktop), matches(matches.Clone()) {}
+AutomationInfo::AutomationInfo(bool desktop) : desktop(desktop) {}
 
 AutomationInfo::~AutomationInfo() = default;
 

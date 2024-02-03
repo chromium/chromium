@@ -45,6 +45,7 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/api/lock_screen_data.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -95,7 +96,7 @@ class TestEventRouter : public extensions::EventRouter {
 
   ~TestEventRouter() override = default;
 
-  bool ExtensionHasEventListener(const std::string& extension_id,
+  bool ExtensionHasEventListener(const ExtensionId& extension_id,
                                  const std::string& event_name) const override {
     return event_name ==
            extensions::api::lock_screen_data::OnDataItemsAvailable::kEventName;
@@ -104,7 +105,7 @@ class TestEventRouter : public extensions::EventRouter {
   void BroadcastEvent(std::unique_ptr<extensions::Event> event) override {}
 
   void DispatchEventToExtension(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       std::unique_ptr<extensions::Event> event) override {
     if (event->event_name !=
         extensions::api::lock_screen_data::OnDataItemsAvailable::kEventName) {
@@ -138,7 +139,7 @@ std::unique_ptr<KeyedService> TestEventRouterFactoryFunction(
 // Keeps track of all fake data items registered during a test.
 class ItemRegistry {
  public:
-  explicit ItemRegistry(const std::string& extension_id)
+  explicit ItemRegistry(const ExtensionId& extension_id)
       : extension_id_(extension_id) {}
 
   ItemRegistry(const ItemRegistry&) = delete;
@@ -362,7 +363,7 @@ class TestDataItem : public DataItem {
   // |operations| - Operation queue used by this data item - not owned by this,
   // and expected to outlive this object.
   TestDataItem(const std::string& id,
-               const std::string& extension_id,
+               const ExtensionId& extension_id,
                const std::string& crypto_key,
                OperationQueue* operations)
       : DataItem(id, extension_id, nullptr, nullptr, nullptr, crypto_key),
@@ -747,7 +748,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   // Callback for creating test data items - this is the callback passed to
   // LockScreenItemStorage via SetItemFactoryForTesting.
   std::unique_ptr<DataItem> CreateItem(const std::string& id,
-                                       const std::string& extension_id,
+                                       const ExtensionId& extension_id,
                                        const std::string& crypto_key) {
     EXPECT_EQ(extension()->id(), extension_id);
     EXPECT_EQ(kTestSymmetricKey, crypto_key);
@@ -759,7 +760,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
                                           operation_queue);
   }
 
-  void GetRegisteredItems(const std::string& extension_id,
+  void GetRegisteredItems(const ExtensionId& extension_id,
                           DataItem::RegisteredValuesCallback callback) {
     if (extension()->id() != extension_id) {
       std::move(callback).Run(OperationResult::kUnknownExtension,
@@ -769,7 +770,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
     item_registry_->HandleGetRequest(std::move(callback));
   }
 
-  void RemoveAllItems(const std::string& extension_id,
+  void RemoveAllItems(const ExtensionId& extension_id,
                       base::OnceClosure callback) {
     ASSERT_EQ(extension()->id(), extension_id);
     item_registry_->RemoveAll();

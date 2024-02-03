@@ -189,13 +189,6 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   if (is_backdrop_filter_mask_)
     return;
 
-  // The bounds and the pile size may differ if the pile wasn't updated (ie.
-  // PictureLayer::Update didn't happen). In that case the pile will be empty.
-  DCHECK(raster_source_->GetSize().IsEmpty() ||
-         bounds() == raster_source_->GetSize())
-      << " bounds " << bounds().ToString() << " pile "
-      << raster_source_->GetSize().ToString();
-
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
@@ -281,10 +274,10 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
     // The raster source may not be valid over the entire visible rect,
     // and rastering outside of that may cause incorrect pixels.
-    gfx::Rect scaled_recorded_viewport = gfx::ScaleToEnclosingRect(
-        raster_source_->RecordedViewport(), max_contents_scale);
-    geometry_rect.Intersect(scaled_recorded_viewport);
-    visible_geometry_rect.Intersect(scaled_recorded_viewport);
+    gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
+        raster_source_->recorded_bounds(), max_contents_scale);
+    geometry_rect.Intersect(scaled_recorded_bounds);
+    visible_geometry_rect.Intersect(scaled_recorded_bounds);
 
     if (visible_geometry_rect.IsEmpty())
       return;
@@ -403,8 +396,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   size_t missing_tile_count = 0u;
   size_t on_demand_missing_tile_count = 0u;
   only_used_low_res_last_append_quads_ = true;
-  gfx::Rect scaled_recorded_viewport = gfx::ScaleToEnclosingRect(
-      raster_source_->RecordedViewport(), max_contents_scale);
+  gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
+      raster_source_->recorded_bounds(), max_contents_scale);
   for (PictureLayerTilingSet::CoverageIterator iter(
            tilings_.get(), max_contents_scale,
            shared_quad_state->visible_quad_layer_rect,
@@ -507,7 +500,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       // recording is not necessarily a Rect, and its area is calculated using
       // subtraction.
       gfx::Rect visible_rect_has_recording = visible_geometry_rect;
-      visible_rect_has_recording.Intersect(scaled_recorded_viewport);
+      visible_rect_has_recording.Intersect(scaled_recorded_bounds);
       int64_t checkerboarded_has_recording_area =
           static_cast<int64_t>(visible_rect_has_recording.width()) *
           visible_rect_has_recording.height();
@@ -698,15 +691,17 @@ void PictureLayerImpl::UpdateRasterSource(
     Region* new_invalidation,
     const PictureLayerTilingSet* pending_set,
     const PaintWorkletRecordMap* pending_paint_worklet_records) {
-  // The bounds and the pile size may differ if the pile wasn't updated (ie.
-  // PictureLayer::Update didn't happen). In that case the pile will be empty.
-  DCHECK(raster_source->GetSize().IsEmpty() ||
-         bounds() == raster_source->GetSize())
-      << " bounds " << bounds().ToString() << " pile "
-      << raster_source->GetSize().ToString();
+  CHECK(raster_source);
+  // The layer bounds and the raster source size may differ if the raster source
+  // wasn't updated (ie. PictureLayer::Update didn't happen). In that case the
+  // raster source should be empty.
+  DCHECK(raster_source->size().IsEmpty() || bounds() == raster_source->size())
+      << " layer bounds " << bounds().ToString() << " raster_source size "
+      << raster_source->size().ToString();
 
-  if (!raster_source_ || raster_source_->GetSize() != raster_source->GetSize())
+  if (!raster_source_ || raster_source_->size() != raster_source->size()) {
     raster_source_size_changed_ = true;
+  }
 
   // We have an updated recording if the DisplayItemList in the new RasterSource
   // is different.
@@ -752,7 +747,7 @@ void PictureLayerImpl::UpdateRasterSource(
                 new_display_item_list->discardable_image_map()
                     .content_color_usage());
         if (needs_full_invalidation)
-          new_invalidation->Union(gfx::Rect(raster_source->GetSize()));
+          new_invalidation->Union(gfx::Rect(raster_source->size()));
       }
     }
   }
@@ -1054,12 +1049,6 @@ void PictureLayerImpl::GetContentsResourceId(
     return;
   }
 
-  // The bounds and the pile size may differ if the pile wasn't updated (ie.
-  // PictureLayer::Update didn't happen). In that case the pile will be empty.
-  DCHECK(raster_source_->GetSize().IsEmpty() ||
-         bounds() == raster_source_->GetSize())
-      << " bounds " << bounds().ToString() << " pile "
-      << raster_source_->GetSize().ToString();
   float dest_scale = MaximumTilingContentsScale();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), dest_scale);
@@ -1583,9 +1572,9 @@ void PictureLayerImpl::RecalculateRasterScales() {
 
   // If this layer would create zero or one tiles at this content scale,
   // don't create a low res tiling.
-  gfx::Size raster_bounds = gfx::ScaleToCeiledSize(raster_source_->GetSize(),
-                                                   raster_contents_scale_.x(),
-                                                   raster_contents_scale_.y());
+  gfx::Size raster_bounds = gfx::ScaleToCeiledSize(
+      raster_source_->recorded_bounds().size(), raster_contents_scale_.x(),
+      raster_contents_scale_.y());
   gfx::Size tile_size = CalculateTileSize(raster_bounds);
   bool tile_covers_bounds = tile_size.width() >= raster_bounds.width() &&
                             tile_size.height() >= raster_bounds.height();
@@ -1631,13 +1620,12 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   // Use square to compensate for viewports with different aspect ratios.
   float squared_viewport_area = max_viewport_dimension * max_viewport_dimension;
 
-  gfx::SizeF raster_source_size(raster_source_->GetSize());
-  // Clamp raster_source_size by max_viewport_dimension to avoid too small
+  gfx::SizeF max_visible_bounds(raster_source_->recorded_bounds().size());
+  // Clamp max_visible_bounds by max_viewport_dimension to avoid too small
   // scale for huge layers for which the far from viewport area won't be
   // rasterized and out of viewport area is rasterized in low priority.
-  gfx::SizeF max_visible_bounds(
-      std::min(raster_source_size.width(), max_viewport_dimension),
-      std::min(raster_source_size.height(), max_viewport_dimension));
+  max_visible_bounds.SetToMin(
+      gfx::SizeF(max_viewport_dimension, max_viewport_dimension));
   gfx::SizeF max_visible_bounds_at_max_scale =
       gfx::ScaleSize(max_visible_bounds, raster_contents_scale_.x(),
                      raster_contents_scale_.y());
@@ -1767,8 +1755,8 @@ float PictureLayerImpl::MinimumContentsScale() const {
   // then it will end up having less than one pixel of content in that
   // dimension.  Bump the minimum contents scale up in this case to prevent
   // this from happening.
-  int min_dimension = std::min(raster_source_->GetSize().width(),
-                               raster_source_->GetSize().height());
+  gfx::Size recorded_size = raster_source_->recorded_bounds().size();
+  int min_dimension = std::min(recorded_size.width(), recorded_size.height());
   return min_dimension ? 1.f / min_dimension : 1.f;
 }
 
@@ -1813,7 +1801,7 @@ bool PictureLayerImpl::CanHaveTilings() const {
   if (!raster_source_->HasRecordings())
     return false;
   // If the |raster_source_| has a recording it should have non-empty bounds.
-  DCHECK(!raster_source_->GetSize().IsEmpty());
+  DCHECK(!raster_source_->size().IsEmpty());
   if (MaximumContentsScale() < MinimumContentsScale())
     return false;
   return true;
@@ -1943,8 +1931,8 @@ void PictureLayerImpl::AsValueInto(
 
   state->BeginArray("coverage_tiles");
   for (PictureLayerTilingSet::CoverageIterator iter(
-           tilings_.get(), MaximumTilingContentsScale(),
-           gfx::Rect(raster_source_->GetSize()), ideal_contents_scale_key());
+           tilings_.get(), MaximumTilingContentsScale(), gfx::Rect(bounds()),
+           ideal_contents_scale_key());
        iter; ++iter) {
     state->BeginDictionary();
 

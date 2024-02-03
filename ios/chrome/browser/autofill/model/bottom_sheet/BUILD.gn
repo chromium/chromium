@@ -16,6 +16,7 @@ source_set("bottom_sheet") {
   ]
   deps = [
     ":bottom_sheet_ts",
+    ":virtual_card_enrollment_callbacks",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -54,4 +55,12 @@ optimize_ts("bottom_sheet_ts") {
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
+}
+
+source_set("virtual_card_enrollment_callbacks") {
+  sources = [
+    "virtual_card_enrollment_callbacks.cc",
+    "virtual_card_enrollment_callbacks.h",
+  ]
+  deps = [ "//base" ]
 }

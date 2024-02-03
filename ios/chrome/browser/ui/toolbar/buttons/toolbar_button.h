@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_component_options.h"
 
@@ -14,7 +15,7 @@
 @class ToolbarConfiguration;
 
 // UIButton subclass used as a Toolbar component.
-@interface ToolbarButton : UIButton
+@interface ToolbarButton : CustomHighlightableButton
 
 // Configuration object used to get colors.
 @property(nonatomic, weak) ToolbarConfiguration* toolbarConfiguration;

@@ -1322,6 +1322,12 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kRelative ||
              value_id == CSSValueID::kAbsolute ||
              value_id == CSSValueID::kFixed || value_id == CSSValueID::kSticky;
+    case CSSPropertyID::kPositionTryOrder:
+      return value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kMostWidth ||
+             value_id == CSSValueID::kMostHeight ||
+             value_id == CSSValueID::kMostBlockSize ||
+             value_id == CSSValueID::kMostInlineSize;
     case CSSPropertyID::kResize:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kBoth ||
              value_id == CSSValueID::kHorizontal ||
@@ -1722,6 +1728,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kPageOrientation,
     CSSPropertyID::kPointerEvents,
     CSSPropertyID::kPosition,
+    CSSPropertyID::kPositionTryOrder,
     CSSPropertyID::kResize,
     CSSPropertyID::kScrollBehavior,
     CSSPropertyID::kOverscrollBehaviorInline,

@@ -16,6 +16,17 @@ namespace blink {
 namespace {
 
 class AbsoluteUtilsTest : public RenderingTest {
+ public:
+  AbsoluteUtilsTest()
+      : ltr_space_(CreateConstraintSpace(
+            {WritingMode::kHorizontalTb, TextDirection::kLtr})),
+        rtl_space_(CreateConstraintSpace(
+            {WritingMode::kHorizontalTb, TextDirection::kRtl})),
+        vlr_space_(CreateConstraintSpace(
+            {WritingMode::kVerticalLr, TextDirection::kLtr})),
+        vrl_space_(CreateConstraintSpace(
+            {WritingMode::kVerticalRl, TextDirection::kLtr})) {}
+
  protected:
   ConstraintSpace CreateConstraintSpace(
       WritingDirectionMode writing_direction) {
@@ -47,14 +58,6 @@ class AbsoluteUtilsTest : public RenderingTest {
     RunDocumentLifecycle();
 
     element_ = GetDocument().getElementById(AtomicString("target"));
-    ltr_space_ = CreateConstraintSpace(
-        {WritingMode::kHorizontalTb, TextDirection::kLtr});
-    rtl_space_ = CreateConstraintSpace(
-        {WritingMode::kHorizontalTb, TextDirection::kRtl});
-    vlr_space_ =
-        CreateConstraintSpace({WritingMode::kVerticalLr, TextDirection::kLtr});
-    vrl_space_ =
-        CreateConstraintSpace({WritingMode::kVerticalRl, TextDirection::kLtr});
   }
 
   void SetHorizontalStyle(const String& left,
@@ -114,7 +117,9 @@ class AbsoluteUtilsTest : public RenderingTest {
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
-        PhysicalOffset());
+        PhysicalOffset(),
+        /* available_size */
+        PhysicalSize());
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
     const LogicalOofInsets insets = ComputeOutOfFlowInsets(
@@ -126,8 +131,8 @@ class AbsoluteUtilsTest : public RenderingTest {
             static_position, LogicalAnchorCenterPosition(),
             container_writing_direction, node.Style().GetWritingDirection());
     ComputeOofInlineDimensions(node, node.Style(), space, imcb,
-                               LogicalAlignment(), border_padding,
-                               absl::nullopt, container_writing_direction,
+                               LogicalAlignment(), border_padding, std::nullopt,
+                               container_writing_direction,
                                /* anchor_evaluator */ nullptr, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
@@ -155,7 +160,9 @@ class AbsoluteUtilsTest : public RenderingTest {
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
-        PhysicalOffset());
+        PhysicalOffset(),
+        /* available_size */
+        PhysicalSize());
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
     const LogicalOofInsets insets = ComputeOutOfFlowInsets(
@@ -167,7 +174,7 @@ class AbsoluteUtilsTest : public RenderingTest {
             static_position, LogicalAnchorCenterPosition(),
             container_writing_direction, node.Style().GetWritingDirection());
     ComputeOofBlockDimensions(node, node.Style(), space, imcb,
-                              LogicalAlignment(), border_padding, absl::nullopt,
+                              LogicalAlignment(), border_padding, std::nullopt,
                               container_writing_direction,
                               /* anchor_evaluator */ nullptr, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);

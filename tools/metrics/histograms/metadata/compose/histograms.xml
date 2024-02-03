@@ -192,18 +192,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Compose.Session.EventCounts" enum="ComposeSessionEventTypes"
-    expires_after="2024-06-09">
-  <owner>perrier@chromium.org</owner>
+<histogram name="Compose.Session.EvalLocation"
+    enum="ComposeSessionEvalLocation" expires_after="2024-06-29">
+  <owner>harringtond@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Enumerated histogram that records counts for events that happen during a
-    Compose Session. This histogram answers the question: How many sessions had
-    each event type. Even if an event occurs multiple times in a session only
-    one event is recorded Dialog Shown will be the number of sessions and should
-    be used as the denominator for all values.
-
-    All buckets are emitted once at the end of each Compose Session.
+    Reports the location where the compose response was evaluated. Logged at the
+    end of each Compose session.
   </summary>
 </histogram>
 
@@ -320,6 +315,25 @@ chromium-metrics-reviews@google.com.
     <variant name="Accepted" summary="the Compose response was inserted"/>
     <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram name="Compose.{ComposeEvalLocation}Session.EventCounts"
+    enum="ComposeSessionEventTypes" expires_after="2024-06-09">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Enumerated histogram that records counts for events that happen during a
+    Compose Session. This histogram answers the question: How many sessions had
+    each event type. Even if an event occurs multiple times in a session only
+    one event is recorded Dialog Shown will be the number of sessions and should
+    be used as the denominator for all values.
+
+    All buckets are emitted once at the end of each Compose Session.
+
+    {ComposeEvalLocation}, if a mix of Server and OnDevice requests were used
+    for this session, neither Server or OnDevice variants are recorded.
+  </summary>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
 </histogram>
 

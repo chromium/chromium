@@ -4,6 +4,7 @@
 
 #include "services/device/compute_pressure/pressure_manager_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -13,8 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "services/device/compute_pressure/cpu_probe.h"
-#include "services/device/compute_pressure/pressure_test_support.h"
+#include "components/system_cpu/pressure_test_support.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
@@ -96,11 +96,16 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
     DeviceServiceTestBase::SetUp();
 
     manager_impl_ = PressureManagerImpl::Create();
-    manager_impl_->SetCpuProbeForTesting(std::make_unique<FakeCpuProbe>(
-        kDefaultSamplingIntervalForTesting,
-        base::BindRepeating(&PressureManagerImpl::UpdateClients,
-                            base::Unretained(manager_impl_.get()),
-                            mojom::PressureSource::kCpu)));
+    std::unique_ptr<CpuProbeManager> cpu_probe_manager =
+        std::make_unique<CpuProbeManager>(
+            kDefaultSamplingIntervalForTesting,
+            base::BindRepeating(&PressureManagerImpl::UpdateClients,
+                                base::Unretained(manager_impl_.get()),
+                                mojom::PressureSource::kCpu));
+    auto fake_cpu_probe = std::make_unique<system_cpu::FakeCpuProbe>();
+    fake_cpu_probe->SetLastSample(system_cpu::PressureSample{0.42});
+    cpu_probe_manager->SetCpuProbeForTesting(std::move(fake_cpu_probe));
+    manager_impl_->SetCpuProbeManagerForTesting(std::move(cpu_probe_manager));
     manager_.reset();
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
   }
@@ -157,7 +162,7 @@ TEST_F(PressureManagerImplTest, ThreeClients) {
 }
 
 TEST_F(PressureManagerImplTest, AddClientNoProbe) {
-  manager_impl_->SetCpuProbeForTesting(nullptr);
+  manager_impl_->SetCpuProbeManagerForTesting(nullptr);
 
   FakePressureClient client;
   ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),

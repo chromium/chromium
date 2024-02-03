@@ -770,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Install.Result" enum="BooleanSuccess"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1485,9 +1485,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.IconsAreHealthyInSession"
-    enum="BooleanSuccess" expires_after="2024-05-19">
+    enum="BooleanSuccess" expires_after="2024-07-28">
   <owner>qjw@chromium.org</owner>
-  <owner>dominicschulz@chromium.org</owner>
+  <owner>cros-web-apps-infra-team@google.com</owner>
   <summary>
     Records whether system web app icons are healthy for each user session that
     has system web apps installed. Failure indicates that at least one app has
@@ -1496,10 +1496,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.IconsFixedOnReinstall" enum="BooleanSuccess"
-    expires_after="2024-05-19">
+    expires_after="2024-07-28">
   <owner>qjw@chromium.org</owner>
   <owner>clamclamyan@google.com</owner>
-  <owner>dominicschulz@chromium.org</owner>
+  <owner>cros-web-apps-infra-team@google.com</owner>
   <summary>
     Records whether a reinstall fixes previously broken system web app icons.
     This is recorded during icon check after a reinstall (when icons were broken

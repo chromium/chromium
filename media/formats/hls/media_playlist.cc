@@ -5,6 +5,7 @@
 #include "media/formats/hls/media_playlist.h"
 
 #include <cmath>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variable_dictionary.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -32,18 +32,18 @@ struct MediaPlaylist::CtorArgs {
   types::DecimalInteger version;
   bool independent_segments;
   base::TimeDelta target_duration;
-  absl::optional<PartialSegmentInfo> partial_segment_info;
+  std::optional<PartialSegmentInfo> partial_segment_info;
   std::vector<scoped_refptr<MediaSegment>> segments;
   base::TimeDelta total_duration;
-  absl::optional<PlaylistType> playlist_type;
+  std::optional<PlaylistType> playlist_type;
   bool end_list;
   bool i_frames_only;
   bool has_media_sequence_tag;
   bool can_skip_dateranges;
   bool can_block_reload;
-  absl::optional<base::TimeDelta> skip_boundary;
+  std::optional<base::TimeDelta> skip_boundary;
   base::TimeDelta hold_back_distance;
-  absl::optional<base::TimeDelta> part_hold_back_distance;
+  std::optional<base::TimeDelta> part_hold_back_distance;
 };
 
 MediaPlaylist::~MediaPlaylist() = default;
@@ -80,19 +80,19 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
 
   CommonParserState common_state;
   VariableDictionary::SubstitutionBuffer sub_buffer;
-  absl::optional<XTargetDurationTag> target_duration_tag;
-  absl::optional<InfTag> inf_tag;
-  absl::optional<XGapTag> gap_tag;
-  absl::optional<XDiscontinuityTag> discontinuity_tag;
-  absl::optional<XByteRangeTag> byterange_tag;
-  absl::optional<XBitrateTag> bitrate_tag;
-  absl::optional<XPlaylistTypeTag> playlist_type_tag;
-  absl::optional<XEndListTag> end_list_tag;
-  absl::optional<XIFramesOnlyTag> i_frames_only_tag;
-  absl::optional<XPartInfTag> part_inf_tag;
-  absl::optional<XServerControlTag> server_control_tag;
-  absl::optional<XMediaSequenceTag> media_sequence_tag;
-  absl::optional<XDiscontinuitySequenceTag> discontinuity_sequence_tag;
+  std::optional<XTargetDurationTag> target_duration_tag;
+  std::optional<InfTag> inf_tag;
+  std::optional<XGapTag> gap_tag;
+  std::optional<XDiscontinuityTag> discontinuity_tag;
+  std::optional<XByteRangeTag> byterange_tag;
+  std::optional<XBitrateTag> bitrate_tag;
+  std::optional<XPlaylistTypeTag> playlist_type_tag;
+  std::optional<XEndListTag> end_list_tag;
+  std::optional<XIFramesOnlyTag> i_frames_only_tag;
+  std::optional<XPartInfTag> part_inf_tag;
+  std::optional<XServerControlTag> server_control_tag;
+  std::optional<XMediaSequenceTag> media_sequence_tag;
+  std::optional<XDiscontinuitySequenceTag> discontinuity_sequence_tag;
   std::vector<scoped_refptr<MediaSegment>> segments;
   scoped_refptr<MediaSegment::InitializationSegment> initialization_segment;
   bool new_init_segment = false;
@@ -247,7 +247,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           }
 
           // Extract the byte range
-          absl::optional<types::ByteRange> byte_range;
+          std::optional<types::ByteRange> byte_range;
           if (value.byte_range.has_value()) {
             // Safari defaults byte range offset to 0, do that here as well.
             byte_range = types::ByteRange::Validate(
@@ -354,7 +354,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     const types::DecimalInteger media_sequence_number =
         (media_sequence_tag ? media_sequence_tag->number : 0) + segments.size();
 
-    absl::optional<types::ByteRange> byterange;
+    std::optional<types::ByteRange> byterange;
     if (byterange_tag.has_value()) {
       auto range = byterange_tag->range;
 
@@ -383,7 +383,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
 
     // The previous occurrence of the EXT-X-BITRATE tag applies to this segment
     // only if this segment is not a byterange of its resource.
-    absl::optional<types::DecimalInteger> bitrate;
+    std::optional<types::DecimalInteger> bitrate;
     if (bitrate_tag.has_value() && !byterange.has_value()) {
       // The value in the tag is expressed in kilobits per-second, but we wish
       // to normalize all bitrates to bits-per-second. The spec specifically
@@ -420,7 +420,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     return ParseStatusCode::kTargetDurationExceedsMax;
   }
 
-  absl::optional<PartialSegmentInfo> partial_segment_info;
+  std::optional<PartialSegmentInfo> partial_segment_info;
   if (part_inf_tag.has_value()) {
     partial_segment_info = MediaPlaylist::PartialSegmentInfo{
         .target_duration = part_inf_tag->target_duration};
@@ -435,9 +435,9 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
 
   bool can_skip_dateranges = false;
   bool can_block_reload = false;
-  absl::optional<base::TimeDelta> skip_boundary;
+  std::optional<base::TimeDelta> skip_boundary;
   base::TimeDelta hold_back_distance = target_duration * 3;
-  absl::optional<base::TimeDelta> part_hold_back_distance;
+  std::optional<base::TimeDelta> part_hold_back_distance;
   if (server_control_tag.has_value()) {
     can_skip_dateranges = server_control_tag->can_skip_dateranges;
     can_block_reload = server_control_tag->can_block_reload;
@@ -512,7 +512,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
       common_state.independent_segments_tag.has_value() ||
       (parent_playlist && parent_playlist->AreSegmentsIndependent());
 
-  absl::optional<PlaylistType> playlist_type;
+  std::optional<PlaylistType> playlist_type;
   if (playlist_type_tag) {
     playlist_type = playlist_type_tag->type;
   }

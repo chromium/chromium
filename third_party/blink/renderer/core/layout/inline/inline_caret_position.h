@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CARET_POSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CARET_POSITION_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -40,7 +41,7 @@ struct InlineCaretPosition {
 
   InlineCursor cursor;
   InlineCaretPositionType position_type;
-  absl::optional<unsigned> text_offset;
+  std::optional<unsigned> text_offset;
 };
 
 // Given an inline formatting context, a text offset in the context and a text

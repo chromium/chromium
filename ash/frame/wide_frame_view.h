@@ -64,7 +64,7 @@ class ASH_EXPORT WideFrameView
   static gfx::Rect GetFrameBounds(views::Widget* target);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
   // aura::WindowObserver:

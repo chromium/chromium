@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "media/webrtc/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
@@ -48,7 +48,7 @@ namespace {
 using MockProcessedCaptureCallback =
     base::MockRepeatingCallback<void(const media::AudioBus& audio_bus,
                                      base::TimeTicks audio_capture_time,
-                                     absl::optional<double> new_volume)>;
+                                     std::optional<double> new_volume)>;
 
 // The number of packets used for testing.
 const int kNumberOfPacketsForTest = 100;
@@ -117,7 +117,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       EXPECT_CALL(mock_capture_callback, Run(_, _, _))
           .WillRepeatedly([&](const media::AudioBus& processed_audio,
                               base::TimeTicks audio_capture_time,
-                              absl::optional<double> new_volume) {
+                              std::optional<double> new_volume) {
             EXPECT_EQ(audio_capture_time, input_capture_time);
           });
       audio_processor.ProcessCapturedAudio(*data_bus, input_capture_time,
@@ -416,7 +416,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
       EXPECT_CALL(mock_capture_callback_, Run(_, _, _))
           .WillRepeatedly([&](const media::AudioBus& processed_audio,
                               base::TimeTicks audio_capture_time,
-                              absl::optional<double> new_volume) {
+                              std::optional<double> new_volume) {
             EXPECT_EQ(audio_capture_time, pushed_capture_time);
             if (!use_apm) {
               EXPECT_FALSE(new_volume.has_value());
@@ -506,7 +506,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
   data_bus->Zero();
 
   auto check_audio_length = [&](const media::AudioBus& processed_audio,
-                                base::TimeTicks, absl::optional<double>) {
+                                base::TimeTicks, std::optional<double>) {
     EXPECT_EQ(processed_audio.frames(), output_sample_rate * 10 / 1000);
   };
 
@@ -565,7 +565,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
   data_bus->Zero();
 
   auto check_audio_length = [&](const media::AudioBus& processed_audio,
-                                base::TimeTicks, absl::optional<double>) {
+                                base::TimeTicks, std::optional<double>) {
     EXPECT_EQ(processed_audio.frames(), output_sample_rate * 10 / 1000);
   };
 
@@ -614,7 +614,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
   data_bus->Zero();
 
   auto check_audio_length = [&](const media::AudioBus& processed_audio,
-                                base::TimeTicks, absl::optional<double>) {
+                                base::TimeTicks, std::optional<double>) {
     EXPECT_EQ(processed_audio.frames(), output_sample_rate * 4 / 1000);
   };
 
@@ -660,7 +660,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
   data_bus->Zero();
 
   auto check_audio_length = [&](const media::AudioBus& processed_audio,
-                                base::TimeTicks, absl::optional<double>) {
+                                base::TimeTicks, std::optional<double>) {
     EXPECT_EQ(processed_audio.frames(), output_sample_rate * 10 / 1000);
   };
 

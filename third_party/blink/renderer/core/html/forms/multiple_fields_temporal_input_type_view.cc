@@ -407,6 +407,8 @@ void MultipleFieldsTemporalInputTypeView::CreateShadowSubtree() {
     auto* container_div = MakeGarbageCollected<HTMLDivElement>(document);
     container_div->SetShadowPseudoId(
         shadow_element_names::kPseudoInternalDatetimeContainer);
+    container_div->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                                          CSSValueID::kNormal);
     GetElement().UserAgentShadowRoot()->AppendChild(container_div);
     container = container_div;
   }

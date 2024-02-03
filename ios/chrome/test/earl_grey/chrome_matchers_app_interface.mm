@@ -1350,13 +1350,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_buttonTitle(kMaskedPasswordTitle);
 }
 
-+ (id<GREYMatcher>)manualFallbackPasswordTableViewWindowMatcher {
-  id<GREYMatcher> classMatcher = grey_kindOfClass([UIWindow class]);
-  id<GREYMatcher> parentMatcher =
-      grey_descendant([self manualFallbackPasswordTableViewMatcher]);
-  return grey_allOf(classMatcher, parentMatcher, nil);
-}
-
 + (id<GREYMatcher>)manualFallbackProfilesIconMatcher {
   return grey_accessibilityID(
       manual_fill::AccessoryAddressAccessibilityIdentifier);

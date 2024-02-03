@@ -55,7 +55,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       WorkerThread*,
       const KURL&,
       const String& global_scope_name,
-      const absl::optional<const DedicatedWorkerToken>& token);
+      const std::optional<const DedicatedWorkerToken>& token);
   static void WorkerThreadTerminated(ExecutionContext* parent_context,
                                      WorkerThread*);
 
@@ -105,8 +105,6 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
   void ReportChildTargets(bool report,
                           bool wait_for_debugger,
                           base::OnceClosure callback) override;
-  void GetUniqueFormControlId(int nodeId,
-                              GetUniqueFormControlIdCallback callback) override;
 
   void ReportChildTargetsPostCallbackToIO(bool report,
                                           bool wait_for_debugger,

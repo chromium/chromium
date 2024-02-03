@@ -469,7 +469,7 @@ blink::mojom::PRFValuesPtr PRFResultsToValues(
   auto prf_values = blink::mojom::PRFValues::New();
   DCHECK(results.size() == 32 || results.size() == 64);
   prf_values->first =
-      device::fido_parsing_utils::Materialize(results.first(32));
+      device::fido_parsing_utils::Materialize(results.first(32u));
   if (results.size() == 64) {
     prf_values->second =
         device::fido_parsing_utils::Materialize(results.subspan(32, 32));
@@ -1477,6 +1477,12 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
               kHybridTransportError,
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
+    case device::MakeCredentialStatus::kEnclaveError:
+      SignalFailureToRequestDelegate(
+          AuthenticatorRequestClientDelegate::InterestingFailureReason::
+              kEnclaveError,
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
     case device::MakeCredentialStatus::kUserConsentDenied:
       SignalFailureToRequestDelegate(
           AuthenticatorRequestClientDelegate::InterestingFailureReason::
@@ -1787,6 +1793,12 @@ void AuthenticatorCommonImpl::OnSignResponse(
       SignalFailureToRequestDelegate(
           AuthenticatorRequestClientDelegate::InterestingFailureReason::
               kNoPasskeys,
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
+    case device::GetAssertionStatus::kEnclaveError:
+      SignalFailureToRequestDelegate(
+          AuthenticatorRequestClientDelegate::InterestingFailureReason::
+              kEnclaveError,
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
     case device::GetAssertionStatus::kSuccess:

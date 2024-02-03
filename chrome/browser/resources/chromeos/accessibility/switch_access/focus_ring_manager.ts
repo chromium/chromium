@@ -67,7 +67,8 @@ export class FocusRingManager {
     // If the primary node is a group, show its first child as the "preview"
     // focus.
     if (node.isGroup()) {
-      const firstChild = node.asRootNode().firstChild;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      const firstChild = node.asRootNode()!.firstChild;
       FocusRingManager.instance.setFocusedNodeGroup_(node, firstChild);
       return;
     }
@@ -174,7 +175,8 @@ export class FocusRingManager {
     // Show the preview focus ring unless the menu is open (it has a custom exit
     // button).
     if (!MenuManager.isMenuOpen()) {
-      this.rings_[RingId.PREVIEW].rects = [node.group.location];
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      this.rings_[RingId.PREVIEW].rects = [node.group!.location];
     }
     this.updateNodesForTesting_(node, node.group);
     this.updateFocusRings_();

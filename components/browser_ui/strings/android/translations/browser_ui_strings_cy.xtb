@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1384959399684842514">Wedi seibio lawrlwytho</translation>
 <translation id="1415402041810619267">Mae'r URL wedi'i gwtogi</translation>
-<translation id="1426410128494586442">Iawn</translation>
 <translation id="1434873037477293673">cerdyn gostyngiad pris</translation>
 <translation id="1448064542941920355">Pellhau</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> wefan}zero{<ph name="SITE_COUNT" /> gwefannau}two{<ph name="SITE_COUNT" /> wefan}few{<ph name="SITE_COUNT" /> gwefan}many{<ph name="SITE_COUNT" /> gwefan}other{<ph name="SITE_COUNT" /> gwefan}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">I adael i <ph name="APP_NAME" /> gael mynediad at eich camera, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="2235344399760031203">Mae cwcis trydydd parti yn cael eu rhwystro</translation>
 <translation id="2238944249568001759">Chwiliadau a awgrymir yn seiliedig ar eich tab diwethaf</translation>
+<translation id="2241587408274973373">Cardiau tudalen tab newydd</translation>
 <translation id="2241634353105152135">Unwaith yn unig</translation>
 <translation id="2253414712144136228">Tynnu <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 wefan wedi'i rhwystro}zero{# gwefan wedi'u rhwystro}two{# wefan wedi'u rhwystro}few{# gwefan wedi'u rhwystro}many{# gwefan wedi'u rhwystro}other{# gwefan wedi'u rhwystro}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
 <translation id="2790501146643349491">Pan fydd wedi'i droi ymlaen, gall gwefannau a gaewyd yn ddiweddar orffen anfon a derbyn data. Pan fydd wedi'i ddiffodd, ni all gwefannau a gaewyd yn ddiweddar orffen anfon a derbyn data.</translation>
 <translation id="2822354292072154809">Ydych yn siŵr eich bod am ailosod yr holl ganiatadau gwefan ar gyfer <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Gofyn am wedd symudol</translation>
 <translation id="2870560284913253234">Gwefan</translation>
 <translation id="2874939134665556319">Trac blaenorol</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Gwyliwr tystysgrifau</translation>
 <translation id="2979365474350987274">Mae cwcis trydydd parti yn gyfyngedig</translation>
 <translation id="3008272652534848354">Ailosod caniatadau</translation>
-<translation id="3013291976881901233">Dyfeisiau MIDI</translation>
 <translation id="301521992641321250">Rhwystrwyd yn awtomatig</translation>
 <translation id="3069226013421428034">Caniatáu mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Yn darfod yfory}zero{Yn darfod mewn # diwrnod}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Wedi'i gysylltu â dyfais USB</translation>
 <translation id="4194328954146351878">Gofyn cyn caniatáu i wefannau weld a newid gwybodaeth ar ddyfeisiau NFC (argymhellir)</translation>
 <translation id="4200726100658658164">Agor Gosodiadau Lleoliad</translation>
-<translation id="4212246570487010370">Parhau i bori</translation>
 <translation id="4226663524361240545">Mae'n bosib y bydd hysbysiadau ddirgrynu’r ddyfais</translation>
 <translation id="4259722352634471385">Llywio wedi'i rwystro: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Caniateir</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Symud i lawr</translation>
 <translation id="6749077623962119521">Ailosod caniatadau?</translation>
 <translation id="6766622839693428701">Sweipiwch i lawr i gau.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> O <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Dewiswch opsiwn ar gyfer <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Chwarae</translation>
 <translation id="6818926723028410516">Dewis eitemau</translation>

@@ -53,11 +53,10 @@ class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
   // Stops observing the windows when the `SnapGroup` gets destructed.
   void StopObservingWindows();
 
-  // Restores the windows bounds on snap group removed as the windows bounds are
-  // shrunk either horizontally or vertically to make room for the split view
-  // divider during `UpdateSnappedWindowsAndDividerBounds()` in
-  // `SplitViewController`.
-  void RestoreWindowsBoundsOnSnapGroupRemoved();
+  // Shrinks the bounds of both windows in snap group `on_snap_group_added` or
+  // expands the bounds of both windows in snap group when `on_snap_group_added`
+  // is false, i.e. on snap group removed.
+  void RefreshWindowBoundsInSnapGroup(bool on_snap_group_added);
 
   // True while we are updating the windows during a swap.
   bool is_swapping_ = false;

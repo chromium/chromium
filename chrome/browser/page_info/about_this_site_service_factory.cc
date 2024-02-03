@@ -10,7 +10,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/page_info/chrome_about_this_site_service_client.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -55,9 +54,8 @@ AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   return std::make_unique<page_info::AboutThisSiteService>(
-      std::make_unique<ChromeAboutThisSiteServiceClient>(
-          OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-          profile->IsOffTheRecord(), profile->GetPrefs()),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      profile->IsOffTheRecord(), profile->GetPrefs(),
       TemplateURLServiceFactory::GetForProfile(profile));
 }
 

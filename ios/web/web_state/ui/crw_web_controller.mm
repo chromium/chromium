@@ -520,7 +520,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
     }
     return item->GetVirtualURL();
   }
-  return GURL::EmptyGURL();
+  return GURL();
 }
 
 - (void)reloadWithRendererInitiatedNavigation:(BOOL)rendererInitiated {
@@ -679,9 +679,9 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK),
           type == web::NavigationInitiationType::RENDERER_INITIATED);
   context->SetNavigationItemUniqueID(item->GetUniqueID());
-  if (!navigation) {
-    // goToBackForwardListItem: returns nil for same-document back forward
-    // navigations.
+  bool isSameDocument = web::GURLByRemovingRefFromGURL(URL) ==
+                        web::GURLByRemovingRefFromGURL(_documentURL);
+  if (isSameDocument) {
     context->SetIsSameDocument(true);
   } else {
     self.navigationHandler.navigationState = web::WKNavigationState::REQUESTED;
@@ -1087,8 +1087,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
     GURL documentOrigin = newURL.DeprecatedGetOriginAsURL();
     web::NavigationItem* committedItem =
         self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
-    GURL committedURL =
-        committedItem ? committedItem->GetURL() : GURL::EmptyGURL();
+    GURL committedURL = committedItem ? committedItem->GetURL() : GURL();
     GURL committedOrigin = committedURL.DeprecatedGetOriginAsURL();
 
     DCHECK_EQ(documentOrigin, committedOrigin)

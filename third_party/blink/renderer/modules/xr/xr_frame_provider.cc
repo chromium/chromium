@@ -156,8 +156,8 @@ void XRFrameProvider::OnSessionEnded(XRSession* session) {
     immersive_data_provider_.reset();
     immersive_frame_viewer_pose_ = nullptr;
     is_immersive_frame_position_emulated_ = false;
-    first_immersive_frame_time_ = absl::nullopt;
-    first_immersive_frame_time_delta_ = absl::nullopt;
+    first_immersive_frame_time_ = std::nullopt;
+    first_immersive_frame_time_delta_ = std::nullopt;
 
     frame_transport_ = MakeGarbageCollected<XRFrameTransport>(
         session->GetExecutionContext(),
@@ -578,7 +578,7 @@ void XRFrameProvider::ProcessScheduledFrame(
                      WTF::BindOnce(&XRFrameProvider::OnPreDispatchInlineFrame,
                                    WrapWeakPersistent(this),
                                    WrapWeakPersistent(session), high_res_now_ms,
-                                   absl::nullopt, absl::nullopt));
+                                   std::nullopt, std::nullopt));
     }
   }
 }
@@ -586,8 +586,8 @@ void XRFrameProvider::ProcessScheduledFrame(
 void XRFrameProvider::OnPreDispatchInlineFrame(
     XRSession* session,
     double timestamp,
-    const absl::optional<gpu::MailboxHolder>& output_mailbox_holder,
-    const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
+    const std::optional<gpu::MailboxHolder>& output_mailbox_holder,
+    const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
   // Do nothing if the session was cleaned up or ended before we were schedueld.
   if (!session || session->ended())
     return;

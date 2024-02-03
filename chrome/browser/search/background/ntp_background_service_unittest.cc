@@ -777,7 +777,7 @@ TEST_P(NtpBackgroundServiceTest, GetThumbnailUrl) {
                                                         kValidThumbnailUrl);
 
   EXPECT_EQ(kValidThumbnailUrl, service()->GetThumbnailUrl(kValidUrl));
-  EXPECT_EQ(GURL::EmptyGURL(), service()->GetThumbnailUrl(kInvalidUrl));
+  EXPECT_EQ(GURL(), service()->GetThumbnailUrl(kInvalidUrl));
 }
 
 TEST_P(NtpBackgroundServiceTest, OverrideBaseUrl) {

@@ -121,15 +121,19 @@ constexpr char kDeviceAttestationCertificateKey[] =
     "deviceAttestationCertificate";
 constexpr char kChromeOS[] = "CHROME_OS";
 
-constexpr const char kChallengeBytesFetchResultHistogramName[] =
+constexpr char kChallengeBytesFetchDurationHistogramName[] =
+    "QuickStart.ChallengeBytes.FetchDuration";
+constexpr char kChallengeBytesFailureReasonHistogramName[] =
+    "QuickStart.ChallengeBytes.FailureReason";
+constexpr char kChallengeBytesFetchResultHistogramName[] =
     "QuickStart.ChallengeBytes.FetchResult";
-constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
+constexpr char kAttestationCertificateFailureReasonHistogramName[] =
     "QuickStart.AttestationCertificate.FailureReason";
-constexpr const char kAttestationCertificateFetchResultHistogramName[] =
+constexpr char kAttestationCertificateFetchResultHistogramName[] =
     "QuickStart.AttestationCertificate.FetchResult";
-constexpr const char kAttestationCertificateFetchDurationHistogramName[] =
+constexpr char kAttestationCertificateFetchDurationHistogramName[] =
     "QuickStart.AttestationCertificate.FetchDuration";
-constexpr const char kGaiaAuthenticationDurationHistogramName[] =
+constexpr char kGaiaAuthenticationDurationHistogramName[] =
     "QuickStart.GaiaAuthentication.Duration";
 constexpr char kGaiaAuthenticationResultHistogramName[] =
     "QuickStart.GaiaAuthentication.Result";
@@ -519,6 +523,12 @@ TEST_F(SecondDeviceAuthBrokerTest,
   auto challenge_bytes = FetchChallengeBytes();
   histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
                                      /*sample=*/false, 1);
+  histogram_tester.ExpectBucketCount(
+      kChallengeBytesFailureReasonHistogramName,
+      /*sample=*/GoogleServiceAuthError::State::SERVICE_ERROR, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kChallengeBytesFetchDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -558,6 +568,13 @@ TEST_F(SecondDeviceAuthBrokerTest,
     auto challenge_bytes = FetchChallengeBytes();
     histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
                                        /*sample=*/false, 1);
+    histogram_tester.ExpectBucketCount(
+        kChallengeBytesFailureReasonHistogramName,
+        /*sample=*/GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE,
+        1);
+    histogram_tester.ExpectUniqueTimeSample(
+        kChallengeBytesFetchDurationHistogramName,
+        base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
   }
 }
 
@@ -574,6 +591,12 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesLogsMetricsForSuccess) {
   auto challenge_bytes = FetchChallengeBytes();
   histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
                                      /*sample=*/true, 1);
+  histogram_tester.ExpectBucketCount(
+      kChallengeBytesFailureReasonHistogramName,
+      /*sample=*/GoogleServiceAuthError::State::NONE, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kChallengeBytesFetchDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(
@@ -1118,11 +1141,11 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForNetworkTimeouts) {
   ASSERT_THAT(response, VariantWith<AuthCodeParsingErrorResponse>(_));
 
   histogram_tester.ExpectBucketCount(
-      "QuickStart.GaiaAuthentication.Result",
+      kGaiaAuthenticationResultHistogramName,
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.GaiaAuthentication.Duration",
+      kGaiaAuthenticationDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 

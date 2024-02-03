@@ -4,6 +4,7 @@
     "is_component_build": false,
     "is_debug": false,
     "symbol_level": 0,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

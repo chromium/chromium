@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -17,7 +18,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -70,14 +70,14 @@ constexpr base::TimeDelta kDefaultDelayForTrackingIPCsPostedToCachedFrames =
 
 // Values coming from the field trial config are interpreted as follows:
 //   -1 is "not set". Scheduler should use a reasonable default.
-//   0 corresponds to absl::nullopt.
+//   0 corresponds to std::nullopt.
 //   Other values are left without changes.
 
 struct BackgroundThrottlingSettings {
   double budget_recovery_rate;
-  absl::optional<base::TimeDelta> max_budget_level;
-  absl::optional<base::TimeDelta> max_throttling_delay;
-  absl::optional<base::TimeDelta> initial_budget;
+  std::optional<base::TimeDelta> max_budget_level;
+  std::optional<base::TimeDelta> max_throttling_delay;
+  std::optional<base::TimeDelta> initial_budget;
 };
 
 double GetDoubleParameterFromMap(const base::FieldTrialParams& settings,
@@ -94,9 +94,9 @@ double GetDoubleParameterFromMap(const base::FieldTrialParams& settings,
   return parsed_value;
 }
 
-absl::optional<base::TimeDelta> DoubleToOptionalTime(double value) {
+std::optional<base::TimeDelta> DoubleToOptionalTime(double value) {
   if (value == 0)
-    return absl::nullopt;
+    return std::nullopt;
   return base::Seconds(value);
 }
 

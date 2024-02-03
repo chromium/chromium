@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
-#include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/memory/raw_ptr.h"
@@ -29,6 +28,8 @@ enum class TabletState;
 }  // namespace display
 
 namespace ash {
+
+class DeskButtonContainer;
 
 // Controller for the desk bars that is responsible for creating, destroying,
 // and managing all desk bars. At this point, it supports only desk button desk
@@ -121,8 +122,8 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // hide the bar.
   void OnMaybePressOffBar(ui::LocatedEvent& event);
 
-  // Returns desk button for `root`.
-  DeskButton* GetDeskButton(aura::Window* root);
+  // Returns desk button container for `root`.
+  DeskButtonContainer* GetDeskButtonContainer(aura::Window* root);
 
   // Updates desk button activation.
   void SetDeskButtonActivation(aura::Window* root, bool is_activated);

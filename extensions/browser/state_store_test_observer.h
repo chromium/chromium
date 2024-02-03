@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -32,7 +33,7 @@ class StateStoreTestObserver final : public StateStore::TestObserver {
                               const std::string& key);
 
   // StateStore::TestObserver
-  void WillSetExtensionValue(const std::string& extension_id,
+  void WillSetExtensionValue(const ExtensionId& extension_id,
                              const std::string& key) override;
 
  private:

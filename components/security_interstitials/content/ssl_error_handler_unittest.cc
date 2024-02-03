@@ -692,7 +692,7 @@ class SSLErrorHandlerDateInvalidTest
     tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(clock_),
         std::unique_ptr<base::TickClock>(tick_clock_), &pref_service_,
-        shared_url_loader_factory_);
+        shared_url_loader_factory_, std::nullopt);
     // Do this to be sure that |is_null| returns false.
     clock_->Advance(base::Days(111));
     tick_clock_->Advance(base::Days(222));

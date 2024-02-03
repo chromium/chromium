@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_METRICS_HELPER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_METRICS_HELPER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/task/cancelable_task_tracker.h"

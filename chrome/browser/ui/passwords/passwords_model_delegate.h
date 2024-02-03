@@ -125,12 +125,16 @@ class PasswordsModelDelegate {
   virtual void DiscardUnsyncedCredentials() = 0;
 
   // Called from the dialog controller when a user confirms moving the recently
-  // used credential to their account store.
+  // used or selected credential to their account store.
   virtual void MovePasswordToAccountStore() = 0;
 
   // Called from the dialog controller when a user rejects moving the recently
   // used credential to their account store.
   virtual void BlockMovingPasswordToAccountStore() = 0;
+
+  // Called from the dialog controller when the user acknowledges that their
+  // default password store setting changed.
+  virtual void PromptSaveBubbleAfterDefaultStoreChanged() = 0;
 
   // Called from the dialog controller when the user chooses a credential.
   // Controller can be destroyed inside the method.
@@ -141,6 +145,11 @@ class PasswordsModelDelegate {
   // Open a new tab, pointing to the password manager settings page.
   virtual void NavigateToPasswordManagerSettingsPage(
       password_manager::ManagePasswordsReferrer referrer) = 0;
+
+  // Opens password manager settings page and focuses account store toggle.
+  virtual void NavigateToPasswordManagerSettingsAccountStoreToggle(
+      password_manager::ManagePasswordsReferrer referrer) = 0;
+
   // Open a new tab, pointing to the password check in the settings page.
   virtual void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) = 0;
@@ -178,6 +187,11 @@ class PasswordsModelDelegate {
   // Called from Biometric Authentication promo dialog when the feature is
   // enabled.
   virtual void ShowBiometricActivationConfirmation() = 0;
+
+  // Called from the Management bubble when user wants to save local password in
+  // the account. It opens the Move bubble for the selected password.
+  virtual void ShowMovePasswordBubble(
+      const password_manager::PasswordForm& form) = 0;
 
   // Called when user clicked "No thanks" button on Biometric Authentication
   // before filling promo dialog.

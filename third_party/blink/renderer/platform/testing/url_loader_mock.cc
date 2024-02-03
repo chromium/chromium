@@ -34,7 +34,7 @@ void URLLoaderMock::ServeAsynchronousRequest(
     URLLoaderTestDelegate* delegate,
     const WebURLResponse& response,
     const scoped_refptr<SharedBuffer>& data,
-    const absl::optional<WebURLError>& error) {
+    const std::optional<WebURLError>& error) {
   if (!client_) {
     return;
   }
@@ -111,7 +111,7 @@ void URLLoaderMock::LoadSynchronously(
     base::TimeDelta timeout_interval,
     URLLoaderClient* client,
     WebURLResponse& response,
-    absl::optional<WebURLError>& error,
+    std::optional<WebURLError>& error,
     scoped_refptr<SharedBuffer>& data,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,

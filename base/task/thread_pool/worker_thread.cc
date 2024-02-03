@@ -204,7 +204,6 @@ void WorkerThread::Destroy() {
 
   // If |thread_handle_| wasn't joined, detach it.
   if (!thread_handle_.is_null()) {
-    DCHECK(!join_called_for_testing());
     PlatformThread::Detach(thread_handle_);
   }
 }

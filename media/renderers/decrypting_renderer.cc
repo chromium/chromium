@@ -108,7 +108,7 @@ void DecryptingRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void DecryptingRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   renderer_->SetLatencyHint(latency_hint);
 }
 

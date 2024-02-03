@@ -98,13 +98,18 @@ class MODULES_EXPORT CodecLogger final {
   // Since |status| can come from platform codecs, its contents won't be
   // surfaced to JS, since we could leak important information.
   DOMException* MakeOperationError(std::string error_msg, StatusImpl status) {
-    media_log_->NotifyError(status);
+    return MakeAndLogException(DOMExceptionCode::kOperationError,
+                               std::move(error_msg), status,
+                               /*can_log_status_message=*/false);
+  }
 
-    if (!status_code_)
-      status_code_ = status.code();
-
-    return MakeGarbageCollected<DOMException>(DOMExceptionCode::kOperationError,
-                                              error_msg.c_str());
+  // Similar to MakeOperationError(), but since the error comes from a bundled
+  // software codec the error message can include the status message.
+  DOMException* MakeSoftwareCodecOperationError(std::string error_msg,
+                                                StatusImpl status) {
+    return MakeAndLogException(DOMExceptionCode::kOperationError,
+                               std::move(error_msg), status,
+                               /*can_log_status_message=*/true);
   }
 
   // Convenience wrapper for MakeOperationError(), where |error_msg| is shared
@@ -121,14 +126,9 @@ class MODULES_EXPORT CodecLogger final {
   // Since |status| can come from platform codecs, its contents won't be
   // surfaced to JS, since we could leak important information.
   DOMException* MakeEncodingError(std::string error_msg, StatusImpl status) {
-    media_log_->NotifyError(status);
-
-    if (!status_code_) {
-      status_code_ = status.code();
-    }
-
-    return MakeGarbageCollected<DOMException>(DOMExceptionCode::kEncodingError,
-                                              error_msg.c_str());
+    return MakeAndLogException(DOMExceptionCode::kEncodingError,
+                               std::move(error_msg), status,
+                               /*can_log_status_message=*/false);
   }
 
   // Convenience wrapper for MakeEncodingError(), where |error_msg| is shared
@@ -138,6 +138,15 @@ class MODULES_EXPORT CodecLogger final {
       typename StatusImpl::Codes code,
       const base::Location& location = base::Location::Current()) {
     return MakeEncodingError(error_msg, StatusImpl(code, error_msg, location));
+  }
+
+  // Similar to MakeEncodingError(), but since the error comes from a bundled
+  // software codec the error message can include the status message.
+  DOMException* MakeSoftwareCodecEncodingError(std::string error_msg,
+                                               StatusImpl status) {
+    return MakeAndLogException(DOMExceptionCode::kEncodingError,
+                               std::move(error_msg), status,
+                               /*can_log_status_message=*/true);
   }
 
   // Safe to use on any thread. |this| should still outlive users of log().
@@ -158,7 +167,33 @@ class MODULES_EXPORT CodecLogger final {
   }
 
  private:
-  absl::optional<typename StatusImpl::Codes> status_code_;
+  DOMException* MakeAndLogException(DOMExceptionCode code,
+                                    std::string error_msg,
+                                    StatusImpl status,
+                                    bool can_log_status_message) {
+    media_log_->NotifyError(status);
+    if (!status_code_) {
+      status_code_ = status.code();
+    }
+
+    if (status.message().empty()) {
+      return MakeGarbageCollected<DOMException>(code, error_msg.c_str());
+    }
+
+    // If the message comes from a bundled codec we can log it to JS.
+    auto detailed_message =
+        String::Format("%s (%s)", error_msg.c_str(), status.message().c_str());
+    if (can_log_status_message) {
+      return MakeGarbageCollected<DOMException>(code, detailed_message);
+    }
+
+    // If not we can only set it as the unsanitized message which the console
+    // will show in some circumstances.
+    return MakeGarbageCollected<DOMException>(code, error_msg.c_str(),
+                                              detailed_message);
+  }
+
+  std::optional<typename StatusImpl::Codes> status_code_;
 
   // |parent_media_log_| must be destroyed if ever the ExecutionContext is
   // destroyed, since the blink::MediaInspectorContext* pointer given to

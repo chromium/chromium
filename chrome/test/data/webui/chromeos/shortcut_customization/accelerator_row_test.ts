@@ -7,7 +7,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -248,44 +248,6 @@ suite('acceleratorRowTest', function() {
     assertEquals(2, keys2.length);
   });
 
-  test('ElementFocusableWhenCustomizationEnabled', async () => {
-    loadTimeData.overrideValues({isCustomizationAllowed: true});
-    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
-
-    const acceleratorInfo = createUserAcceleratorInfo(
-        Modifier.CONTROL,
-        /*key=*/ 67,
-        /*keyDisplay=*/ 'c');
-    acceleratorInfo.state = AcceleratorState.kEnabled;
-
-    rowElement.acceleratorInfos = [acceleratorInfo];
-    rowElement.description = 'test shortcut';
-    await flush();
-
-    const containerElement =
-        strictQuery('#container', rowElement.shadowRoot, HTMLTableRowElement);
-    assertEquals(0, containerElement.tabIndex);
-  });
-
-  test('ElementFocusableWhenCustomizationDisabled', async () => {
-    loadTimeData.overrideValues({isCustomizationAllowed: false});
-    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
-
-    const acceleratorInfo = createUserAcceleratorInfo(
-        Modifier.CONTROL,
-        /*key=*/ 67,
-        /*keyDisplay=*/ 'c');
-    acceleratorInfo.state = AcceleratorState.kEnabled;
-
-    rowElement.acceleratorInfos = [acceleratorInfo];
-    rowElement.description = 'test shortcut';
-    await flush();
-
-    const containerElement =
-        strictQuery('#container', rowElement.shadowRoot, HTMLTableRowElement);
-    assertEquals(-1, containerElement.tabIndex);
-  });
-
   test('GetAriaLabelForStandardRow', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
     rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
@@ -300,7 +262,7 @@ suite('acceleratorRowTest', function() {
 
     await flush();
     assertEquals(
-        'Open notifications, ctrl c.',
+        'Open notifications, ctrl c, editable.',
         rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });
@@ -325,7 +287,7 @@ suite('acceleratorRowTest', function() {
 
     await flush();
     assertEquals(
-        'Open Calculator app, ctrl c or ctrl d.',
+        'Open Calculator app, ctrl c or ctrl d, editable.',
         rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });
@@ -364,7 +326,7 @@ suite('acceleratorRowTest', function() {
     rowElement.description = description;
     await flush();
     assertEquals(
-        'Go through tabs 1 to 8, ctrl + 1 through 8.',
+        'Go through tabs 1 to 8, ctrl + 1 through 8, locked.',
         rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });

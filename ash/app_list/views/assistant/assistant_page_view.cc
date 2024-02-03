@@ -441,7 +441,7 @@ void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
     layer()->SetColor(SK_ColorWHITE);
 }
 
-BEGIN_METADATA(AssistantPageView, views::View)
+BEGIN_METADATA(AssistantPageView)
 END_METADATA
 
 }  // namespace ash

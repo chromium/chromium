@@ -144,7 +144,7 @@ class BulkIwaInstaller {
   std::unique_ptr<UpdateManifestFetcher> current_update_manifest_fetcher_;
   std::unique_ptr<IsolatedWebAppDownloader> current_bundle_downloader_;
 
-  const base::FilePath installation_dir_;
+  base::FilePath installation_dir_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -174,14 +174,20 @@ class IsolatedWebAppPolicyManager {
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
  private:
-  void RefreshPolicyInstalledIsolatedWebApps();
+  void ProcessPolicy();
+  void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
+  void OnPolicyProcessed(
+      std::vector<
+          web_app::internal::BulkIwaInstaller::EphemeralAppInstallResult>
+          result);
 
   raw_ptr<Profile> profile_ = nullptr;
-  raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<WebAppProvider> provider_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<internal::BulkIwaInstaller> bulk_installer_;
   base::OnceClosure on_started_callback_;
+  bool reprocess_policy_needed_ = false;
+  bool policy_is_being_processed_ = false;
 
   base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_ptr_factory_{this};
 };

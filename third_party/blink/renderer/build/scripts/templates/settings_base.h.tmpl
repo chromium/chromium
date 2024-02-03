@@ -1,0 +1,51 @@
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
+{{ license() }}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/settings_delegate.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+{% for path in include_paths %}
+#include "{{path}}"
+{% endfor %}
+
+namespace blink {
+
+class CORE_EXPORT SettingsBase {
+  DISALLOW_NEW();
+
+ public:
+{% for setting in settings %}
+  {{setting.type|to_passing_type}} Get{{setting.name.to_upper_camel_case()}}() const { return {{setting.name.to_class_data_member()}}; }
+{% endfor %}
+
+{% for setting in settings %}
+  void Set{{setting.name.to_upper_camel_case()}}({{setting.type|to_passing_type}} {{setting.name.to_snake_case()}});
+{% endfor %}
+
+  void SetFromStrings(const String& name, const String& value);
+  void SetDelegate(SettingsDelegate* delegate);
+
+ protected:
+  SettingsBase();
+
+  void Invalidate(SettingsDelegate::ChangeType);
+
+ private:
+  SettingsDelegate* delegate_;
+
+{% for setting in settings if setting.type != 'bool' %}
+  {{setting.type}} {{setting.name.to_class_data_member()}};
+{% endfor %}
+{% for setting in settings if setting.type == 'bool' %}
+  bool {{setting.name.to_class_data_member()}} : 1;
+{% endfor %}
+};
+
+}  // namespace blink
+
+#endif  // {{header_guard}}

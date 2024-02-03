@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -133,10 +133,6 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
         `String ID ${ariaLabelStringId} should exist, but it doesn't.`);
 
     return this.i18n(ariaLabelStringId);
-  }
-
-  private getAriaHidden(): boolean {
-    return this.keyState === KeyInputState.NOT_SELECTED;
   }
 
   private onKeyChanged(): void {

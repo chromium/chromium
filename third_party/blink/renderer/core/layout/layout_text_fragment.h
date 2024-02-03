@@ -60,7 +60,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   void Trace(Visitor*) const override;
 
   Position PositionForCaretOffset(unsigned) const override;
-  absl::optional<unsigned> CaretOffsetForPosition(
+  std::optional<unsigned> CaretOffsetForPosition(
       const Position&) const override;
 
   unsigned Start() const {

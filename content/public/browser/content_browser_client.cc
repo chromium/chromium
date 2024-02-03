@@ -23,7 +23,6 @@
 #include "content/browser/webid/digital_credentials/digital_credential_provider.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -427,6 +426,7 @@ bool ContentBrowserClient::AllowSharedWorker(
     const std::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
     BrowserContext* context,
     int render_process_id,
     int render_frame_id) {
@@ -958,7 +958,7 @@ ContentBrowserClient::CreateURLLoaderThrottles(
     const base::RepeatingCallback<WebContents*()>& wc_getter,
     NavigationUIData* navigation_ui_data,
     int frame_tree_node_id,
-    absl::optional<int64_t> navigation_id) {
+    std::optional<int64_t> navigation_id) {
   return std::vector<std::unique_ptr<blink::URLLoaderThrottle>>();
 }
 
@@ -1318,11 +1318,6 @@ ContentBrowserClient::GetSpareRendererDelayForSiteURL(const GURL& site_url) {
   return std::nullopt;
 }
 
-ui::AXMode ContentBrowserClient::GetAXModeForBrowserContext(
-    BrowserContext* browser_context) {
-  return BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-}
-
 #if BUILDFLAG(IS_ANDROID)
 ContentBrowserClient::WideColorGamutHeuristic
 ContentBrowserClient::GetWideColorGamutHeuristic() {
@@ -1420,12 +1415,12 @@ void ContentBrowserClient::IsClipboardPasteAllowedByPolicy(
   std::move(callback).Run(std::move(clipboard_paste_data));
 }
 
-bool ContentBrowserClient::IsClipboardCopyAllowed(
+void ContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     content::BrowserContext* browser_context,
     const GURL& url,
     size_t data_size_in_bytes,
-    std::u16string& replacement_data) {
-  return true;
+    IsClipboardCopyAllowedCallback callback) {
+  std::move(callback).Run(std::move(std::nullopt));
 }
 
 #if BUILDFLAG(ENABLE_VR)

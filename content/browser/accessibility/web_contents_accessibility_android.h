@@ -144,6 +144,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       jint unique_id);
 
+  // This block of methods is experimental.
+  jboolean UpdateCachedAccessibilityNodeInfo_exp(JNIEnv* env, jint id);
+  jboolean PopulateAccessibilityNodeInfo_exp(JNIEnv* env, jint id);
+  void UpdateAccessibilityNodeInfoBoundsRect_exp(
+      JNIEnv* env,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      jint id,
+      BrowserAccessibilityAndroid* node);
+
   // Populate Java accessibility data structures with info about a node.
   jboolean UpdateCachedAccessibilityNodeInfo(
       JNIEnv* env,

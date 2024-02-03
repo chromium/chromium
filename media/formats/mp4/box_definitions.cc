@@ -23,10 +23,11 @@
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include <optional>
+
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/dolby_vision.h"
 #include "media/video/h264_parser.h"  // nogncheck
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #include "media/formats/mp4/hevc.h"
@@ -44,10 +45,10 @@ const size_t kFlacMetadataBlockStreaminfoSize = 34;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 // Try to parse dvcC or dvvC box if exists, return `video_info` and an optional
 // `dv_info` based on the configuration.
-std::tuple<CodecProfileLevel, absl::optional<CodecProfileLevel>> MaybeParseDOVI(
+std::tuple<CodecProfileLevel, std::optional<CodecProfileLevel>> MaybeParseDOVI(
     BoxReader* reader,
     CodecProfileLevel video_info) {
-  absl::optional<DOVIDecoderConfigurationRecord> dovi_config;
+  std::optional<DOVIDecoderConfigurationRecord> dovi_config;
 
   {
     DolbyVisionConfiguration dvcc;
@@ -68,7 +69,7 @@ std::tuple<CodecProfileLevel, absl::optional<CodecProfileLevel>> MaybeParseDOVI(
   }
 
   if (!dovi_config.has_value()) {
-    return {video_info, absl::nullopt};
+    return {video_info, std::nullopt};
   }
 
   constexpr int kHDR10CompatibilityId = 1;
@@ -83,7 +84,7 @@ std::tuple<CodecProfileLevel, absl::optional<CodecProfileLevel>> MaybeParseDOVI(
     return {video_info, dv_info};
   }
   // If the buffer is not backward compatible, always treat it as Dolby Vision.
-  return {dv_info, absl::nullopt};
+  return {dv_info, std::nullopt};
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 

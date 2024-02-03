@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_CORS_CORS_URL_LOADER_H_
 #define SERVICES_NETWORK_CORS_CORS_URL_LOADER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -25,7 +27,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -96,7 +97,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -107,7 +108,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   void OnReceiveResponse(
       mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -119,16 +120,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   static network::mojom::FetchResponseType CalculateResponseTaintingForTesting(
       const GURL& url,
       mojom::RequestMode request_mode,
-      const absl::optional<url::Origin>& origin,
-      const absl::optional<url::Origin>& isolated_world_origin,
+      const std::optional<url::Origin>& origin,
+      const std::optional<url::Origin>& isolated_world_origin,
       bool cors_flag,
       bool tainted_origin,
       const OriginAccessList& origin_access_list);
 
-  static absl::optional<CorsErrorStatus> CheckRedirectLocationForTesting(
+  static std::optional<CorsErrorStatus> CheckRedirectLocationForTesting(
       const GURL& url,
       mojom::RequestMode request_mode,
-      const absl::optional<url::Origin>& origin,
+      const std::optional<url::Origin>& origin,
       bool cors_flag,
       bool tainted);
 
@@ -136,12 +137,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   void StartRequest();
 
   // Helper for `OnPreflightRequestComplete()`.
-  absl::optional<URLLoaderCompletionStatus> ConvertPreflightResult(
+  std::optional<URLLoaderCompletionStatus> ConvertPreflightResult(
       int net_error,
-      absl::optional<CorsErrorStatus> status);
+      std::optional<CorsErrorStatus> status);
 
   void OnPreflightRequestComplete(int net_error,
-                                  absl::optional<CorsErrorStatus> status,
+                                  std::optional<CorsErrorStatus> status,
                                   bool has_authorization_covered_by_wildcard);
   void StartNetworkRequest();
 
@@ -216,7 +217,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   mojom::PrivateNetworkAccessPreflightResult
   TakePrivateNetworkAccessPreflightResult();
 
-  static absl::optional<std::string> GetHeaderString(
+  static std::optional<std::string> GetHeaderString(
       const mojom::URLResponseHead& response,
       const std::string& header_name);
 
@@ -321,6 +322,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   bool has_authorization_covered_by_wildcard_ = false;
 
+  PreflightController::PreflightMode preflight_mode_;
+
   // Whether the current preflight request is 1) solely sent for PNA, not for
   // CORS and PNA at the same time, and 2) in warning mode.
   //
@@ -359,7 +362,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer_;
   std::unique_ptr<SharedDictionaryDataPipeWriter>
       shared_dictionary_data_pipe_writer_;
-  absl::optional<URLLoaderCompletionStatus> deferred_completion_status_;
+  std::optional<URLLoaderCompletionStatus> deferred_completion_status_;
 
   // Used to provide weak pointers of this class for synchronously calling
   // URLLoaderClient methods. This should be reset any time

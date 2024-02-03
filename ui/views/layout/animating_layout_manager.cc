@@ -305,7 +305,7 @@ void AnimatingLayoutManager::FadeOut(View* child_view) {
   }
 
   // This handles a case where we are in the middle of an animation where we
-  // would have hidden the target view, but haven't hit Layout() yet, so haven't
+  // would have hidden the target view, but haven't laid out yet, so haven't
   // actually hidden it yet. Because we plan fade-outs off of the current layout
   // if the view the child view is visible it will not get a proper fade-out and
   // will remain visible but not properly laid out. We remedy this by hiding the
@@ -512,7 +512,7 @@ bool AnimatingLayoutManager::OnViewAdded(View* host, View* view) {
   // Handle a case where we add a visible view that shouldn't be visible in the
   // layout. In this case, there is no animation, no invalidation, and we just
   // set the view to not be visible.
-  if (view->GetVisible() && cached_layout_size() && !is_animating_) {
+  if (IsChildIncludedInLayout(view) && cached_layout_size() && !is_animating_) {
     const gfx::Size target_size = GetAvailableTargetLayoutSize();
     ProposedLayout proposed_layout =
         target_layout_manager()->GetProposedLayout(target_size);
@@ -523,7 +523,7 @@ bool AnimatingLayoutManager::OnViewAdded(View* host, View* view) {
     }
   }
 
-  return RecalculateTarget();
+  return LayoutManagerBase::OnViewAdded(host, view);
 }
 
 void AnimatingLayoutManager::OnLayoutChanged() {

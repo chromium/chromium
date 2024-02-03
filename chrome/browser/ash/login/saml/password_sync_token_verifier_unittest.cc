@@ -83,7 +83,7 @@ void PasswordSyncTokenVerifierTest::SetUp() {
 
   user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       saml_login_account_id_, /* is_affiliated = */ false,
-      user_manager::UserType::USER_TYPE_REGULAR, primary_profile_);
+      user_manager::UserType::kRegular, primary_profile_);
   user_manager_->LoginUser(saml_login_account_id_);
   // ActiveUser in FakeChromeUserManager needs to be set explicitly.
   user_manager_->SwitchActiveUser(saml_login_account_id_);

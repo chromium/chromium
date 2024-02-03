@@ -94,7 +94,7 @@
       // Only some of auctionConfig fields are kept so this doesn't have to be
       // changed every time something new is added that shows up by default.
       const keepConfigFields =
-          new Set(['decisionLogicUrl', 'seller', 'interestGroupBuyers']);
+          new Set(['decisionLogicURL', 'seller', 'interestGroupBuyers']);
       for (let fieldName of Object.getOwnPropertyNames(event.auctionConfig)) {
         if (!keepConfigFields.has(fieldName)) {
           delete event.auctionConfig[fieldName];

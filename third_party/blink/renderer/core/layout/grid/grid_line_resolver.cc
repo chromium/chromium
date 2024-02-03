@@ -362,7 +362,7 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
                       subgrid_area);
   }
 
-  absl::optional<NamedGridAreaMap> parent_areas =
+  std::optional<NamedGridAreaMap> parent_areas =
       parent_line_resolver.NamedAreasMap();
   if (parent_line_resolver.NamedAreasMap()) {
     // If the subgrid doesn't have any grid areas defined, emplace an empty one.
@@ -650,14 +650,14 @@ const NamedGridLinesMap& GridLineResolver::ExplicitNamedLinesMap(
              : ComputedGridTrackList(track_direction).named_grid_lines;
 }
 
-absl::optional<NamedGridAreaMap> GridLineResolver::NamedAreasMap() const {
+std::optional<NamedGridAreaMap> GridLineResolver::NamedAreasMap() const {
   if (subgrid_merged_named_areas_) {
     return *subgrid_merged_named_areas_;
   }
   if (auto& areas = style_->GridTemplateAreas()) {
     return areas->named_areas;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const NamedGridLinesMap& GridLineResolver::AutoRepeatLineNamesMap(

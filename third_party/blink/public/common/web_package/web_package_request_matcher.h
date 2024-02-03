@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PACKAGE_WEB_PACKAGE_REQUEST_MATCHER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -43,7 +43,7 @@ class BLINK_COMMON_EXPORT WebPackageRequestMatcher {
 
   // Returns the index of best matching variant key within the all possible
   // key for |variants|, in lexicographic (row-major) order.
-  absl::optional<size_t> FindBestMatchingIndex(
+  std::optional<size_t> FindBestMatchingIndex(
       const std::string& variants) const;
 
  private:
@@ -61,7 +61,7 @@ class BLINK_COMMON_EXPORT WebPackageRequestMatcher {
       const std::string& variants,
       const std::vector<std::string>& variant_key_list);
 
-  static absl::optional<size_t> FindBestMatchingIndex(
+  static std::optional<size_t> FindBestMatchingIndex(
       const net::HttpRequestHeaders& request_headers,
       const std::string& variants);
 

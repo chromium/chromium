@@ -32,6 +32,7 @@ BirchKeyedService::~BirchKeyedService() {
 void BirchKeyedService::RequestBirchDataFetch() {
   // TODO(b/305093932): Begin data fetching requests.
   recent_tabs_provider_->GetRecentTabs();
+  file_suggest_provider_->RequestDataFetch();
 }
 
 }  // namespace ash

@@ -7,3 +7,8 @@
 DriveFileUploader::DriveFileUploader() = default;
 
 DriveFileUploader::~DriveFileUploader() = default;
+
+// TODO(crbug.com/1495354): Remove this implementation once all subclasses
+// provide their own.
+void DriveFileUploader::FetchStorageQuota(
+    DriveStorageQuotaCompletionCallback completion_callback) {}

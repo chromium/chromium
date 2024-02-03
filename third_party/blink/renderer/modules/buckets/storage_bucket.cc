@@ -131,9 +131,12 @@ ScriptPromise StorageBucket::setExpires(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise StorageBucket::expires(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLNullable<IDLDOMHighResTimeStamp>> StorageBucket::expires(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -308,9 +311,10 @@ void StorageBucket::DidSetExpires(ScriptPromiseResolver* resolver,
   }
 }
 
-void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
-                                  const absl::optional<base::Time> expires,
-                                  bool success) {
+void StorageBucket::DidGetExpires(
+    ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
+    const std::optional<base::Time> expires,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -321,7 +325,7 @@ void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
         DOMExceptionCode::kUnknownError,
         "Unknown error occurred while getting expires."));
   } else {
-    resolver->Resolve<IDLNullable<IDLDOMHighResTimeStamp>>(expires);
+    resolver->Resolve(expires);
   }
 }
 

@@ -215,7 +215,7 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
     uint64_t image_paint_size,
     ImageRecord* image_record,
     double image_bpp,
-    absl::optional<WebURLRequest::Priority> priority) {
+    std::optional<WebURLRequest::Priority> priority) {
   // (Experimental) Images with insufficient entropy are not considered
   // candidates for LCP
   if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {

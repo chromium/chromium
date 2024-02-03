@@ -357,6 +357,14 @@ class ShoppingService : public KeyedService,
   // |bookmark_update_manager_|.
   virtual void ScheduleSavedProductUpdate();
 
+  // Returns whether a feature that is restricted to a specific region and
+  // locale is enabled. This method is a proxy for the utility method by the
+  // same name in commerce_feature_list but provides the country and locale as
+  // determined by this service at startup.
+  bool IsRegionLockedFeatureEnabled(
+      const base::Feature& feature,
+      const base::Feature& region_specific_feature);
+
   // This is a feature check for the "shopping list". This will only return true
   // if the user has the feature flag enabled, is signed-in, has MSBB enabled,
   // has webapp activity enabled, is allowed by enterprise policy, and (if

@@ -20,7 +20,7 @@ void TabSlotAnimationDelegate::AnimationProgressed(
 void TabSlotAnimationDelegate::AnimationEnded(const gfx::Animation* animation) {
   slot_view_->set_animating(false);
   AnimationProgressed(animation);
-  slot_view_->Layout();
+  slot_view_->DeprecatedLayoutImmediately();
 }
 
 void TabSlotAnimationDelegate::AnimationCanceled(

@@ -143,6 +143,15 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   gfx::RoundedCornersF GetRoundedCorners() const override;
   void SetSelectedWindowForFocus(aura::Window* window) override;
   void ClearFocusSelection() override;
+  void Layout(PassKey) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
+  void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowTitleChanged(aura::Window* window) override;
 
  protected:
   explicit WindowMiniView(aura::Window* source_window);
@@ -155,17 +164,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Subclasses can override this function to provide customization for margins
   // and layouts of the preview view.
   virtual gfx::Size GetPreviewViewSize() const;
-
-  // views::View:
-  void Layout() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // aura::WindowObserver:
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override;
-  void OnWindowDestroying(aura::Window* window) override;
-  void OnWindowTitleChanged(aura::Window* window) override;
 
  private:
   void InstallFocusRing();

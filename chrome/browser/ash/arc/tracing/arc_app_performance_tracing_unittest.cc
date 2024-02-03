@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/uma_perf_reporting.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -143,6 +144,25 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+    AccountId account_id = AccountId::FromUserEmail(email);
+    user_manager()->AddUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
+    auto* user = user_manager()->FindUserAndModify(
+        AccountId::FromUserEmail(profile_name));
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
+    return profile;
+  }
+
  protected:
   int64_t task_id = 1;
   std::unique_ptr<exo::Surface> shell_root_surface_;
@@ -188,7 +208,8 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     auto* arc_widget = PrepareArcAppTracing(package_name, activity_name);
     tracing_helper().GetTracingSession()->FireTimerForTesting();
     DCHECK(tracing_helper().GetTracingSession());
-    DCHECK(tracing_helper().GetTracingSession()->TracingActive());
+    DCHECK(tracing_helper().GetTracingSession()->tracing_active());
+    DCHECK(tracing_helper().GetTracingSession()->HasPresentFrames());
     return arc_widget;
   }
 
@@ -210,7 +231,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
  private:
   ArcAppPerformanceTracingTestHelper tracing_helper_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
 };
 
 TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
@@ -243,7 +264,8 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
       arc_widget1->GetNativeWindow(), nullptr /* lost_active */);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   // Scheduled but not started.
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->HasPresentFrames());
 
   // Test reverse order, create window first.
   exo::Surface shell_root_surface2;
@@ -266,7 +288,8 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
       0 /* session_id */);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   // Scheduled but not started.
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->HasPresentFrames());
   arc_widget1->Close();
   arc_widget2->Close();
 }
@@ -303,19 +326,22 @@ TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdle) {
   tracing_helper().AdvanceTickCount(kNormalInterval);
   tracing_helper().Commit(shell_root_surface_.get(), PresentType::kSuccessful);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_TRUE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->HasPresentFrames());
 
   tracing_helper().AdvanceTickCount(kNormalInterval * 5);
   tracing_helper().Commit(shell_root_surface_.get(), PresentType::kSuccessful);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_TRUE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->HasPresentFrames());
 
   // Ten or more missed frames is considered a timeout.
   tracing_helper().AdvanceTickCount(kNormalInterval * 10);
   tracing_helper().Commit(shell_root_surface_.get(), PresentType::kSuccessful);
   // Tracing is rescheduled and no longer active.
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->HasPresentFrames());
   arc_widget->Close();
 }
 
@@ -324,7 +350,8 @@ TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdleBeforeFirstFrame) {
   tracing_helper().GetTracingSession()->FireTimerForTesting();
 
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_TRUE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->HasPresentFrames());
 
   // Ten or more missed frames is considered a timeout.
   tracing_helper().AdvanceTickCount(kNormalInterval * 10);
@@ -332,7 +359,8 @@ TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdleBeforeFirstFrame) {
 
   // Tracing is rescheduled and no longer active.
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->HasPresentFrames());
 
   // Later commits (at normal intervals) will be ignored and not cause problems.
   // We do more than one commit just to be reasonably sure we have given a buggy
@@ -345,7 +373,8 @@ TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdleBeforeFirstFrame) {
 
   // Tracing still not active.
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->HasPresentFrames());
 
   arc_widget->Close();
 }
@@ -358,7 +387,7 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
 
   tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
   tracing_helper().FireTimerForTesting();
-  EXPECT_EQ(48L, ReadFocusStatistics("FPS2"));
+  EXPECT_EQ(45L, ReadFocusStatistics("FPS2"));
   EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation2"));
   EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality2"));
   arc_widget->Close();
@@ -399,7 +428,7 @@ TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
 
     tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
     tracing_helper().FireTimerForTesting();
-    EXPECT_EQ(48L, ReadStatistics("FPS2", application.name));
+    EXPECT_EQ(45L, ReadStatistics("FPS2", application.name));
     EXPECT_EQ(216L, ReadStatistics("CommitDeviation2", application.name));
     EXPECT_EQ(48L, ReadStatistics("RenderQuality2", application.name));
     arc_widget->Close();
@@ -482,11 +511,13 @@ TEST_F(ArcAppPerformanceTracingTest, DestroySurface) {
   tracing_helper().GetTracingSession()->FireTimerForTesting();
 
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_TRUE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->HasPresentFrames());
   exo::SetShellRootSurface(arc_widget->GetNativeWindow(), nullptr);
   shell_root_surface_.reset();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->HasPresentFrames());
 
   // Try to re-active window without surface
   tracing_helper().GetTracing()->OnWindowActivated(

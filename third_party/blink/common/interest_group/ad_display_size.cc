@@ -47,7 +47,7 @@ AdSize::~AdSize() = default;
 
 AdDescriptor::AdDescriptor() = default;
 
-AdDescriptor::AdDescriptor(GURL url, absl::optional<AdSize> size)
+AdDescriptor::AdDescriptor(GURL url, std::optional<AdSize> size)
     : url(url), size(size) {}
 
 AdDescriptor::AdDescriptor(const AdDescriptor&) = default;

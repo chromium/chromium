@@ -9,7 +9,6 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/quick_action_item.h"
 #include "ash/system/phonehub/silence_phone_quick_action_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -59,9 +58,6 @@ void QuickActionsView::InitQuickActionItems() {
 
 void QuickActionsView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    return;
-  }
   for (auto& controller : quick_action_controllers_) {
     controller->UpdateQuickActionItemUi();
   }

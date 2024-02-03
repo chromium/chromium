@@ -92,8 +92,7 @@ std::vector<BeaconSeed> FromCryptAuthV2SeedRepeatedPtrField(
 }
 
 std::ostream& operator<<(std::ostream& stream, const BeaconSeed& beacon_seed) {
-  std::string base_64_data;
-  base::Base64Encode(beacon_seed.data(), &base_64_data);
+  std::string base_64_data = base::Base64Encode(beacon_seed.data());
 
   stream << "{base_64_data: \"" << base_64_data << "\", start_time: \""
          << base::TimeFormatShortDateAndTimeWithTimeZone(

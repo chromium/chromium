@@ -45,6 +45,8 @@ class AppPermissionHandler
   void GetSystemAppsThatUseMicrophone(
       base::OnceCallback<void(std::vector<app_permission::mojom::AppPtr>)>
           callback) override;
+  void OpenBrowserPermissionSettings(
+      apps::PermissionType permission_type) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;

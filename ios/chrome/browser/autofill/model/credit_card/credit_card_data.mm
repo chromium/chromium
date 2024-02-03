@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -27,6 +27,10 @@
                   /* with_prefix=*/false));
     _accessibleCardName = [self accessibleCardName:creditCard];
     _backendIdentifier = base::SysUTF8ToNSString(creditCard->guid());
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableVirtualCards)) {
+      _recordType = creditCard->record_type();
+    }
 
     if (icon.size.width > 0.0 && icon.size.width < 40.0 && icon.scale > 1.0) {
       // If the icon is smaller than desired, but is scaled, reduce the scale

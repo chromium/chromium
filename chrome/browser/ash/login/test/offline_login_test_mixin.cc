@@ -43,8 +43,7 @@ const test::UIPath kOnlineRequiredDialog = {kOfflineLoginDialog,
 
 void SetExpectedCredentials(const AccountId& test_account_id,
                             const std::string& password) {
-  UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
-                           test_account_id);
+  UserContext user_context(user_manager::UserType::kRegular, test_account_id);
   user_context.SetKey(Key(password));
   user_context.SetIsUsingOAuth(false);
   test::UserSessionManagerTestApi session_manager_test_api(

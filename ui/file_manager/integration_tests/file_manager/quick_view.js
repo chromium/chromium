@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType} from '../dialog_type.js';
+import {DialogType} from '../prod/file_manager/shared_types.js';
 import {ExecuteScriptError} from '../remote_call.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
@@ -272,7 +272,7 @@ async function getQuickViewMetadataBoxField(appId, name, hidden = '') {
   if (name === 'Date modified') {
     return sanitizeDate(element.text || '');
   } else {
-    return element.text;
+    return element.text ?? '';
   }
 }
 

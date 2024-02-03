@@ -357,9 +357,9 @@ void DropDownCheckbox::RemovedFromWidget() {
   widget_observer_.Reset();
 }
 
-void DropDownCheckbox::Layout() {
-  views::Button::Layout();
-  views::FocusRing::Get(this)->Layout();
+void DropDownCheckbox::Layout(PassKey) {
+  LayoutSuperclass<views::Button>(this);
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }
 
 void DropDownCheckbox::OnWidgetBoundsChanged(views::Widget* widget,

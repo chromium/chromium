@@ -32,6 +32,7 @@ class EditorMetricsRecorder {
   void LogNumberOfCharactersInserted(int number_of_characters);
   void LogNumberOfCharactersSelectedForInsert(int number_of_characters);
   void LogNumberOfResponsesFromServer(int number_of_responses);
+  void LogLengthOfLongestResponseFromServer(int number_of_characters);
 
  private:
   EditorOpportunityMode mode_;

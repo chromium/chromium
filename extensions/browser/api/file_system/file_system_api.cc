@@ -49,6 +49,7 @@
 #include "extensions/browser/granted_file_entry.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/common/api/file_system.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/mime_util.h"
@@ -244,7 +245,7 @@ base::FilePath GenerateUniqueSavePath(const base::FilePath& path) {
 namespace file_system_api {
 
 base::FilePath GetLastChooseEntryDirectory(const ExtensionPrefs* prefs,
-                                           const std::string& extension_id) {
+                                           const ExtensionId& extension_id) {
   base::FilePath path;
   std::string string_path;
   if (prefs->ReadPrefAsString(extension_id, kLastChooseEntryDirectory,
@@ -255,7 +256,7 @@ base::FilePath GetLastChooseEntryDirectory(const ExtensionPrefs* prefs,
 }
 
 void SetLastChooseEntryDirectory(ExtensionPrefs* prefs,
-                                 const std::string& extension_id,
+                                 const ExtensionId& extension_id,
                                  const base::FilePath& path) {
   prefs->UpdateExtensionPref(extension_id, kLastChooseEntryDirectory,
                              ::base::FilePathToValue(path));

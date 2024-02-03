@@ -113,7 +113,8 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
     assertEquals(null, reassignDialog);
     items[2]!.click();
     flush();
-    reassignDialog = page.shadowRoot!.querySelector('#reassignDialog');
+    reassignDialog =
+        page.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog');
     assert(reassignDialog);
     assertTrue(reassignDialog.open);
 
@@ -127,7 +128,8 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
     // to the native <dialog> element.
     items[2]!.click();
     flush();
-    reassignDialog = page.shadowRoot!.querySelector('#reassignDialog');
+    reassignDialog =
+        page.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog');
     assert(reassignDialog);
     assertTrue(reassignDialog.open);
 
@@ -135,7 +137,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
     page.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog')!
         .getNative()
         .dispatchEvent(e);
-    flush();
+    await flushTasks();
     assertEquals(null, page.shadowRoot!.querySelector('#reassignDialog'));
 
     // Clicking continue will call the proxy and close the dialog.

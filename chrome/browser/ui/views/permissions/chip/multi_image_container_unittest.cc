@@ -8,8 +8,9 @@
 #include "ui/views/view.h"
 
 TEST(MultiImageContainerTest, SetImages) {
+  std::unique_ptr<views::View> images;
   MultiImageContainer container;
-  std::unique_ptr<views::View> images = container.CreateView();
+  images = container.CreateView();
   EXPECT_EQ(images->children().size(), 1u);
 
   size_t number_of_images = 5;  // some arbitrary number.

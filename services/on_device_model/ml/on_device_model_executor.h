@@ -5,9 +5,13 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ML_ON_DEVICE_MODEL_EXECUTOR_H_
 #define SERVICES_ON_DEVICE_MODEL_ML_ON_DEVICE_MODEL_EXECUTOR_H_
 
+#include <functional>
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/native_library.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
@@ -17,9 +21,10 @@
 #include "services/on_device_model/public/cpp/on_device_model.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ml {
+
+class LanguageDetector;
 
 // Uses the ChromeML API to create a model based on the params passed to
 // |Create()|. This is the main interface for interacting with the model.
@@ -56,6 +61,7 @@ class OnDeviceModelExecutor
   std::unique_ptr<base::MemoryMappedFile> weights_;
   base::MemoryMappedFile ts_data_;
   base::MemoryMappedFile ts_sp_model_;
+  scoped_refptr<LanguageDetector> language_detector_;
 
   ChromeMLModel model_ = 0;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -13,7 +13,7 @@ namespace network {
 // static
 std::unique_ptr<ScopedThrottlingToken> ScopedThrottlingToken::MaybeCreate(
     uint32_t net_log_source_id,
-    const absl::optional<base::UnguessableToken>& throttling_profile_id) {
+    const std::optional<base::UnguessableToken>& throttling_profile_id) {
   if (!throttling_profile_id)
     return nullptr;
   return base::WrapUnique(

@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="DisplaySettingsBoolean">
+  <int value="0" label="Off"/>
+  <int value="1" label="On"/>
+</enum>
+
+<enum name="DisplaySettingsNightLightScheduleOption">
+  <int value="0" label="Never"/>
+  <int value="1" label="Sunset to sunrise"/>
+  <int value="2" label="Custom"/>
+</enum>
+
 <enum name="DisplaySettingsOrientationOption">
   <int value="0" label="Auto"/>
   <int value="1" label="0 degree"/>
@@ -315,6 +326,7 @@ chromium-metrics-reviews@google.com.
   <int value="1535" label="Color correction: Filter type"/>
   <int value="1536" label="Color correction: Filter amount"/>
   <int value="1600" label="Powerwash"/>
+  <int value="1601" label="Sanitize ChromeOS"/>
   <int value="1700" label="Change Chrome Channel"/>
   <int value="1701" label="Copy Detailed Build Info"/>
   <int value="1702" label="Check for OS Update"/>
@@ -328,6 +340,7 @@ chromium-metrics-reviews@google.com.
   <int value="1800" label="Add Kerberos Ticket V2"/>
   <int value="1801" label="Remove Kerberos Ticket V2"/>
   <int value="1802" label="Set Active Kerberos Ticket V2"/>
+  <int value="1900" label="Show snap window suggestions"/>
 </enum>
 
 <enum name="OsSettingSearchBoxUserAction">
@@ -376,6 +389,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Reset"/>
   <int value="17" label="About Chrome OS"/>
   <int value="18" label="Kerberos"/>
+  <int value="19" label="System Preferences"/>
 </enum>
 
 <enum name="OsSettingsSubpage">

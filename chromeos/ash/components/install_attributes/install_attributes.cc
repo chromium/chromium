@@ -19,9 +19,9 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
+#include "chromeos/ash/components/dbus/device_management/device_management_interface.pb.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -173,14 +173,14 @@ void InstallAttributes::ReadImmutableAttributes(base::OnceClosure callback) {
 
   // Get Install Attributes Status to know if it's ready.
   install_attributes_client_->InstallAttributesGetStatus(
-      user_data_auth::InstallAttributesGetStatusRequest(),
+      device_management::InstallAttributesGetStatusRequest(),
       base::BindOnce(&InstallAttributes::ReadAttributesIfReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void InstallAttributes::ReadAttributesIfReady(
     base::OnceClosure callback,
-    std::optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
+    std::optional<device_management::InstallAttributesGetStatusReply> reply) {
   base::ScopedClosureRunner callback_runner(std::move(callback));
 
   // Can't proceed if the call failed.
@@ -189,9 +189,9 @@ void InstallAttributes::ReadAttributesIfReady(
   }
 
   // Can't proceed if not ready.
-  if (reply->state() == ::user_data_auth::InstallAttributesState::UNKNOWN ||
+  if (reply->state() == ::device_management::InstallAttributesState::UNKNOWN ||
       reply->state() ==
-          ::user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
+          ::device_management::InstallAttributesState::TPM_NOT_OWNED) {
     return;
   }
 
@@ -222,11 +222,11 @@ void InstallAttributes::ReadAttributesIfReady(
 void InstallAttributes::SetBlockDevmodeInTpm(
     bool block_devmode,
     chromeos::DBusMethodCallback<
-        user_data_auth::SetFirmwareManagementParametersReply> callback) {
+        device_management::SetFirmwareManagementParametersReply> callback) {
   DCHECK(!callback.is_null());
   DCHECK(!device_locked_);
 
-  user_data_auth::SetFirmwareManagementParametersRequest request;
+  device_management::SetFirmwareManagementParametersRequest request;
   // Set the flags, according to enum FirmwareManagementParametersFlags from
   // rpc.proto if devmode is blocked.
   if (block_devmode) {
@@ -289,7 +289,7 @@ void InstallAttributes::LockDevice(policy::DeviceMode device_mode,
   device_lock_running_ = true;
   // Get Install Attributes Status to know if it's ready.
   install_attributes_client_->InstallAttributesGetStatus(
-      user_data_auth::InstallAttributesGetStatusRequest(),
+      device_management::InstallAttributesGetStatusRequest(),
       base::BindOnce(&InstallAttributes::LockDeviceIfAttributesIsReady,
                      weak_ptr_factory_.GetWeakPtr(), device_mode, domain, realm,
                      device_id, std::move(callback)));
@@ -301,11 +301,11 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
     const std::string& realm,
     const std::string& device_id,
     LockResultCallback callback,
-    std::optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
+    std::optional<device_management::InstallAttributesGetStatusReply> reply) {
   if (!reply.has_value() ||
-      reply->state() == ::user_data_auth::InstallAttributesState::UNKNOWN ||
+      reply->state() == ::device_management::InstallAttributesState::UNKNOWN ||
       reply->state() ==
-          ::user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
+          ::device_management::InstallAttributesState::TPM_NOT_OWNED) {
     device_lock_running_ = false;
     std::move(callback).Run(LOCK_NOT_READY);
     return;

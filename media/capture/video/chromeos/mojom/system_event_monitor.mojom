@@ -1,0 +1,89 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 1
+
+module cros.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+enum LidState {
+  kOpen,                   // Lid is open.
+  kClosed,                 // Lid is closed.
+  kNotPresent,             // No lid is present
+};
+
+enum DeviceType {
+  kAudio,         // Audio device, e.g., microphone.
+  kVideoCapture,  // Video capture device, e.g., webcam.
+  kUnkown,        // Other devices.
+};
+
+enum ClockwiseRotation {
+  kRotate0,
+  kRotate90,
+  kRotate180,
+  kRotate270,
+};
+
+// CrosDisplayObserver is an interface for CrosSystemEventMonitor to notify
+// observers for the rotation changes on the internal display.
+//
+// Next method ID: 1
+interface CrosDisplayObserver {
+  // Fired when `CrosSystemEventMonitor::AddDisplayObserver` is called or the
+  // rotation of the internal display is changed.
+  OnDisplayRotationChanged@0(ClockwiseRotation rotation);
+};
+
+// CrosLidObserver is an interface for CrosSystemEventMonitor to notify
+// observers for the changes of the lid state.
+//
+// Next method ID: 1
+interface CrosLidObserver {
+  // Fired when `CrosSystemEventMonitor::AddLidObserver` is called or the
+  // state of the lid is changed.
+  OnLidStateChanged@0(LidState new_state);
+};
+
+// CrosPowerObserver is an interface for CrosSystemEventMonitor to notify
+// observers that the system is suspending/resuming.
+//
+// Next method ID: 2
+interface CrosPowerObserver {
+  // Fired when the system is entering suspend mode. When the client finishes
+  // the corresponding operations, the client 'must' invokes the callback of
+  // this function in 5 seconds to inform `chromeos::PowerManagerClient` to
+  // unblock the suspend.
+  // `OnSystemSuspend` and `OnSystemResume` will be invoked alternately.
+  // However, `OnSystemResume` may be invoked before the observer invokes
+  // the callback if the user immediately opens the lid right after closing it.
+  // In this case, the observer still have to invoke the callback.
+  OnSystemSuspend@0() => ();
+
+  // Fired when the system resumes from the suspend.
+  OnSystemResume@1();
+};
+
+// CrosSystemEventMonitor is an interface that helps observers outside of
+// Ash to observe system events.
+//
+// Next method ID: 4
+interface CrosSystemEventMonitor {
+  // Add an observer which observes the display rotation.
+  AddDisplayObserver@0(pending_remote<CrosDisplayObserver> observer);
+
+  // Add an observer which observes the lid changes.
+  AddLidObserver@1(pending_remote<CrosLidObserver> observer);
+
+  // Add an observer which observes the power events. `client_name` is for
+  // power manager to know who is observing.
+  AddPowerObserver@2(string client_name,
+                     pending_remote<CrosPowerObserver> observer);
+
+  // When the device is changing, the client can invoke the function to notify
+  // CrosSystemEventMonitor. CrosSystemEventMonitor will forward the
+  // notification to `base::SystemMonitor`.
+  NotifyDeviceChanged@3(DeviceType type);
+};

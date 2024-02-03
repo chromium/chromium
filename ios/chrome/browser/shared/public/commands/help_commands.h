@@ -40,8 +40,8 @@
 // Optionally presents a gesture IPH associated with
 // the pull-to-refresh feature. If the feature engagement tracker determines the
 // pull-to-refresh tip should be shown, then it initializes
-// `pullToRefreshGesturalIPH` and presents a GestureInProductHelpView,
-// otherwise it sets `pullToRefreshGesturalIPH` to `nil` and no gestural tip
+// `pullToRefreshGestureIPH` and presents a GestureInProductHelpView,
+// otherwise it sets `pullToRefreshGestureIPH` to `nil` and no gestural tip
 // is shown.
 - (void)presentPullToRefreshGestureInProductHelp;
 

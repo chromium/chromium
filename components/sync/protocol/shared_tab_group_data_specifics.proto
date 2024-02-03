@@ -1,0 +1,67 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for shared tab groups and tabs.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "components/sync/protocol/unique_position.proto";
+
+message SharedTabGroupDataSpecifics {
+  // Unique identifier for this entity.
+  optional string guid = 1;
+
+  optional string collaboration_id = 2;
+  optional string last_modification_author = 3;
+
+  oneof entity {
+    SharedTabGroup tab_group = 4;
+    SharedTab tab = 5;
+  }
+}
+
+message SharedTabGroup {
+  // The displayed title of the group, shown on the tab group.
+  optional string title = 1;
+
+  // These colors map to tab_groups::TabGroupColorId. They DO NOT match the enum
+  // integer values due to "kGrey" being in the "Unspecified" field.
+  enum Color {
+    UNSPECIFIED = 0;
+    GREY = 1;
+    BLUE = 2;
+    RED = 3;
+    YELLOW = 4;
+    GREEN = 5;
+    PINK = 6;
+    PURPLE = 7;
+    CYAN = 8;
+    ORANGE = 9;
+  }
+  // The color of the tab group, mapped to tab_groups::TabGroupColorId.
+  optional Color color = 2;
+}
+
+message SharedTab {
+  // The URL of the page.
+  optional string url = 1;
+  // The title of the page.
+  optional string title = 2;
+  // The URL to the favicon of the page.
+  optional string favicon_url = 3;
+  // The GUID of the SharedTabGroup this is a member of.
+  optional string shared_tab_group_guid = 4;
+  // The UniquePosition within a SharedTabGroup.
+  optional UniquePosition unique_position = 5;
+}

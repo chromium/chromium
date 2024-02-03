@@ -110,11 +110,11 @@ class ShowAllDownloadsButton : public RichHoverButton {
                      views::style::STYLE_PRIMARY));
 
     // TODO(pkasting): This class should subclass Button, not HoverButton.
-    table_layout->SetChildViewIgnoredByLayout(image(), true);
+    table_layout->SetChildViewIgnoredByLayout(image_container_view(), true);
     table_layout->SetChildViewIgnoredByLayout(label(), true);
     table_layout->SetChildViewIgnoredByLayout(ink_drop_container(), true);
 
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 };
 

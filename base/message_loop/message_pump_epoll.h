@@ -125,7 +125,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   void UpdateEpollEvent(EpollEventEntry& entry);
   void StopEpollEvent(EpollEventEntry& entry);
   void UnregisterInterest(const scoped_refptr<Interest>& interest);
-  bool WaitForEpollEvents(TimeDelta timeout, Delegate* delegate);
+  bool WaitForEpollEvents(TimeDelta timeout);
   void OnEpollEvent(EpollEventEntry& entry, uint32_t events);
   void HandleEvent(int fd,
                    bool can_read,
@@ -133,14 +133,18 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
                    FdWatchController* controller);
   void HandleWakeUp();
 
+  void BeginNativeWorkBatch();
+
   // Null if Run() is not currently executing. Otherwise it's a pointer into the
   // stack of the innermost nested Run() invocation.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
+  raw_ptr<RunState> run_state_ = nullptr;
 
   // This flag is set if epoll has processed I/O events.
   bool processed_io_events_ = false;
+
+  // This flag is set when starting to process native work; reset after every
+  // `DoWork()` call. See crbug.com/1500295.
+  bool native_work_started_ = false;
 
   // Mapping of all file descriptors currently watched by this message pump.
   // std::map was chosen because (1) the number of elements can vary widely,

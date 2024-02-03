@@ -264,7 +264,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
     ExceptionCode code_;
     bool had_exception_ = false;
   };
-  absl::optional<ExceptionCopy> exception_copy_;
+  std::optional<ExceptionCopy> exception_copy_;
 };
 
 xmlDocPtr XmlDocPtrForString(Document*,

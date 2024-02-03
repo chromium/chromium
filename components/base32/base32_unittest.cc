@@ -56,7 +56,7 @@ TEST(Base32Test, EncodesSha256HashCorrectly) {
   constexpr uint8_t hash[] =
       "\x1f\x25\xe1\xca\xba\x4f\xf9\xb8\x27\x24\x83\x0f\xca\x60\xe4\xc2\xbe\xa8"
       "\xc3\xa9\x44\x1c\x27\xb0\xb4\x3e\x6a\x96\x94\xc7\xb8\x04";
-  base::span<const uint8_t> test_span = base::make_span(hash).first(32);
+  base::span<const uint8_t> test_span = base::make_span(hash).first(32u);
   std::string encoded_output =
       Base32Encode(test_span, Base32EncodePolicy::OMIT_PADDING);
   EXPECT_EQ("D4S6DSV2J743QJZEQMH4UYHEYK7KRQ5JIQOCPMFUHZVJNFGHXACA",

@@ -20,7 +20,7 @@
 - (void)openPrimaryAccountReauthDialog;
 
 // Opens the passphrase dialog.
-- (void)openPassphraseDialog;
+- (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally;
 
 // Opens the trusted vault reauthentication dialog for fetch keys.
 - (void)openTrustedVaultReauthForFetchKeys;

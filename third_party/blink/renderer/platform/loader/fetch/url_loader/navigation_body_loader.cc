@@ -362,7 +362,7 @@ void NavigationBodyLoader::OnReceiveEarlyHints(
 void NavigationBodyLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
   NOTREACHED();
 }
@@ -528,7 +528,7 @@ void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
 
   handle_watcher_.Cancel();
 
-  absl::optional<WebURLError> error;
+  std::optional<WebURLError> error;
   if (status_.error_code != net::OK) {
     error = WebURLError::Create(status_, original_url_);
   }

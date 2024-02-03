@@ -5,6 +5,8 @@
 #include "services/webnn/webnn_graph_impl.h"
 
 #include <math.h>
+
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -13,7 +15,6 @@
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -230,7 +231,7 @@ template <typename Conv2dAttributesType>
 Conv2dAttributesType ConvertToConv2dAttributes(
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2dPtr& conv2d,
-    absl::optional<Operand> bias_operand) {
+    std::optional<Operand> bias_operand) {
   Conv2dAttributesType attributes_base;
   // Convert padding, strides, dilations.
   auto& mojo_padding = conv2d->padding;
@@ -257,7 +258,7 @@ Conv2dAttributesType ConvertToConv2dAttributes(
 webnn::Conv2dAttributes ConvertToConv2dAttributes(
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2dPtr& conv2d,
-    absl::optional<Operand> bias_operand) {
+    std::optional<Operand> bias_operand) {
   return ConvertToConv2dAttributes<webnn::Conv2dAttributes>(
       id_to_operand_map, conv2d, std::move(bias_operand));
 }
@@ -265,7 +266,7 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
 webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2dPtr& conv2d,
-    absl::optional<Operand> bias_operand) {
+    std::optional<Operand> bias_operand) {
   auto component_attributes =
       ConvertToConv2dAttributes<webnn::ConvTranspose2dAttributes>(
           id_to_operand_map, conv2d, std::move(bias_operand));
@@ -575,7 +576,7 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  absl::optional<webnn::Operand> bias_operand;
+  std::optional<webnn::Operand> bias_operand;
   auto& bias_operand_id = conv2d->bias_operand_id;
   if (bias_operand_id) {
     const auto bias_operand_iterator =
@@ -595,7 +596,7 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  absl::optional<base::expected<Operand, std::string>> validated_output;
+  std::optional<base::expected<Operand, std::string>> validated_output;
   switch (conv2d->type) {
     case mojom::Conv2d_Type::kDirect: {
       validated_output = ValidateConv2dAndInferOutput(
@@ -1306,6 +1307,10 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kHardSigmoid:
       return ValidateHardSigmoid(id_to_operand_map,
                                  operation->get_hard_sigmoid());
+    case mojom::Operation::Tag::kHardSwish:
+      return ValidateUnaryOperation(id_to_operand_map,
+                                    operation->get_hard_swish(),
+                                    DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kLayerNormalization:
       return ValidateLayerNormalization(id_to_operand_map,
                                         operation->get_layer_normalization());
@@ -1419,7 +1424,7 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
       return false;
     }
 
-    const absl::optional<std::string>& name = operand->name;
+    const std::optional<std::string>& name = operand->name;
     switch (operand->kind) {
       case mojom::Operand::Kind::kInput: {
         if (!name || name.value().empty()) {

@@ -87,12 +87,16 @@ bool AllowedToUsePaymentFeatures(ScriptState* script_state) {
       ->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kPayment);
 }
 
-ScriptPromise RejectNotAllowedToUsePaymentFeatures(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+void ThrowNotAllowedToUsePaymentFeatures(ExceptionState& exception_state) {
   exception_state.ThrowSecurityError(
       "Must be in a top-level browsing context or an iframe needs to specify "
       "allow=\"payment\" explicitly");
+}
+
+ScriptPromise RejectNotAllowedToUsePaymentFeatures(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  ThrowNotAllowedToUsePaymentFeatures(exception_state);
   return ScriptPromise();
 }
 
@@ -150,20 +154,24 @@ ScriptPromise PaymentInstruments::get(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise PaymentInstruments::keys(ScriptState* script_state,
-                                       ExceptionState& exception_state) {
-  if (!AllowedToUsePaymentFeatures(script_state))
-    return RejectNotAllowedToUsePaymentFeatures(script_state, exception_state);
+ScriptPromiseTyped<IDLSequence<IDLString>> PaymentInstruments::keys(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!AllowedToUsePaymentFeatures(script_state)) {
+    ThrowNotAllowedToUsePaymentFeatures(exception_state);
+    return ScriptPromiseTyped<IDLSequence<IDLString>>();
+  }
 
   if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<IDLString>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   (*manager_)->KeysOfPaymentInstruments(
       WTF::BindOnce(&PaymentInstruments::onKeysOfPaymentInstruments,
@@ -377,13 +385,13 @@ void PaymentInstruments::onGetPaymentInstrument(
 }
 
 void PaymentInstruments::onKeysOfPaymentInstruments(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
     const Vector<String>& keys,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
   if (rejectError(resolver, status))
     return;
-  resolver->Resolve<IDLSequence<IDLString>>(keys);
+  resolver->Resolve(keys);
 }
 
 void PaymentInstruments::onHasPaymentInstrument(

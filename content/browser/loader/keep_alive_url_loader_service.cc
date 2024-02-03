@@ -10,6 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/typed_macros.h"
+#include "content/browser/attribution_reporting/attribution_suitable_context.h"
+#include "content/browser/loader/keep_alive_attribution_request_helper.h"
+#include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -40,7 +43,8 @@ KeepAliveURLLoaderService::FactoryContext::FactoryContext(
     const std::unique_ptr<FactoryContext>& other)
     : factory(other->factory),
       weak_document_ptr(other->weak_document_ptr),
-      policy_container_host(other->policy_container_host) {}
+      policy_container_host(other->policy_container_host),
+      attribution_context(other->attribution_context) {}
 
 KeepAliveURLLoaderService::FactoryContext::~FactoryContext() = default;
 
@@ -49,9 +53,11 @@ void KeepAliveURLLoaderService::FactoryContext::OnDidCommitNavigation(
   weak_document_ptr = committed_document;
 
   CHECK(weak_document_ptr.AsRenderFrameHostIfValid());
-  policy_container_host = static_cast<RenderFrameHostImpl*>(
-                              weak_document_ptr.AsRenderFrameHostIfValid())
-                              ->policy_container_host();
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      weak_document_ptr.AsRenderFrameHostIfValid());
+  policy_container_host = rfh->policy_container_host();
+  attribution_context = AttributionSuitableContext::Create(rfh->GetGlobalId());
+
   CHECK(policy_container_host);
 }
 
@@ -159,7 +165,19 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
         // hold another refptr to ensure `PolicyContainerHost` alive.
         context->policy_container_host, context->weak_document_ptr,
         service_->browser_context_, CreateThrottles(resource_request),
-        base::PassKey<KeepAliveURLLoaderService>());
+        base::PassKey<KeepAliveURLLoaderService>(),
+        // TODO(https://crbug.com/1519211): Determine whether to integrate ARA
+        // in fetch later requests.
+        (!resource_request.is_fetch_later_api &&
+         context->attribution_context.has_value())
+            ? KeepAliveAttributionRequestHelper::CreateIfNeeded(
+                  resource_request.attribution_reporting_eligibility,
+                  resource_request.url,
+                  resource_request.attribution_reporting_src_token,
+                  resource_request.devtools_request_id,
+                  resource_request.attribution_reporting_runtime_features,
+                  context->attribution_context.value())
+            : nullptr);
     // Adds a new loader receiver to the set held by `this`, binding the pending
     // `receiver` from a renderer to `raw_loader` with `loader` as its context.
     // The set will keep `loader` alive.

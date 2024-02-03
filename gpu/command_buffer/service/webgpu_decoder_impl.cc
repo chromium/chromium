@@ -186,22 +186,18 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void PerformPollingWork() override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "WebGPUDecoderImpl::PerformPollingWork");
-    has_polling_work_ = false;
     if (known_device_metadata_.empty()) {
       wire_serializer_->Flush();
       return;
     }
 
-    // Call DeviceTick() on all known devices, and prune any that are no longer
-    // on the wire and do not need a tick.
+    has_polling_work_ =
+        dawn::native::InstanceProcessEvents(dawn_instance_->Get());
+
     for (auto it = known_device_metadata_.begin();
          it != known_device_metadata_.end();) {
       auto& device = it->first;
       const bool known = wire_server_->IsDeviceKnown(device.Get());
-      const bool needs_tick = dawn::native::DeviceTick(device.Get());
-      if (needs_tick) {
-        has_polling_work_ = true;
-      }
       if (!known) {
         // The client has dropped all references and the device has been
         // removed from the wire.
@@ -1443,7 +1439,7 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
 
         if (device) {
           // Intercept the response so we can add a device ref to the list of
-          // known devices that we may need to call DeviceTick on.
+          // known devices on.
           wgpu::AdapterProperties properties;
           adapter.GetProperties(&properties);
           decoder->known_device_metadata_.emplace(
@@ -2191,6 +2187,18 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
         blink::DedicatedWorkerToken>(): {
       execution_context_token = blink::WebGPUExecutionContextToken(
           blink::DedicatedWorkerToken(unguessable_token.value()));
+      break;
+    }
+    case blink::WebGPUExecutionContextToken::IndexOf<
+        blink::SharedWorkerToken>(): {
+      execution_context_token = blink::WebGPUExecutionContextToken(
+          blink::SharedWorkerToken(unguessable_token.value()));
+      break;
+    }
+    case blink::WebGPUExecutionContextToken::IndexOf<
+        blink::ServiceWorkerToken>(): {
+      execution_context_token = blink::WebGPUExecutionContextToken(
+          blink::ServiceWorkerToken(unguessable_token.value()));
       break;
     }
     default:

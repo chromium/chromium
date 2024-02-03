@@ -11,14 +11,17 @@
 
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/picker_asset_fetcher.h"
+#include "ash/picker/views/picker_emoji_item_view.h"
+#include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_gif_view.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_symbol_item_view.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -26,12 +29,6 @@
 #include "ui/views/layout/layout_manager.h"
 
 namespace ash {
-namespace {
-
-// TODO: b/316935667 - Get a relevant icon for each search result.
-const gfx::VectorIcon& kPlaceholderIcon = vector_icons::kGoogleColorIcon;
-
-}  // namespace
 
 PickerSearchResultsView::PickerSearchResultsView(
     SelectSearchResultCallback select_search_result_callback,
@@ -54,7 +51,7 @@ void PickerSearchResultsView::SetSearchResults(
     auto* section_view =
         AddChildView(std::make_unique<PickerSectionView>(section.heading()));
     for (const auto& result : section.results()) {
-      section_view->AddItem(CreateItemView(result));
+      AddResultToSection(result, section_view);
     }
     section_views_.push_back(section_view);
   }
@@ -67,42 +64,54 @@ void PickerSearchResultsView::SelectSearchResult(
   }
 }
 
-std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
-    const PickerSearchResult& result) {
-  return std::visit(
+void PickerSearchResultsView::AddResultToSection(
+    const PickerSearchResult& result,
+    PickerSectionView* section_view) {
+  // `base::Unretained` is safe here because `this` will own the item view which
+  // takes this callback.
+  auto select_result_callback =
+      base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
+                     base::Unretained(this), result);
+  std::visit(
       base::Overloaded{
-          [&, this](const PickerSearchResult::TextData& data) {
+          [&](const PickerSearchResult::TextData& data) {
             auto item_view = std::make_unique<PickerItemView>(
-                base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                               base::Unretained(this), result),
-                PickerItemView::ItemType::kListItem);
+                std::move(select_result_callback));
             item_view->SetPrimaryText(data.text);
-            item_view->SetLeadingIcon(kPlaceholderIcon);
-            return item_view;
+            section_view->AddListItem(std::move(item_view));
+          },
+          [&](const PickerSearchResult::EmojiData& data) {
+            auto emoji_item = std::make_unique<PickerEmojiItemView>(
+                std::move(select_result_callback), data.emoji);
+            section_view->AddEmojiItem(std::move(emoji_item));
+          },
+          [&](const PickerSearchResult::SymbolData& data) {
+            auto symbol_item = std::make_unique<PickerSymbolItemView>(
+                std::move(select_result_callback), data.symbol);
+            section_view->AddSymbolItem(std::move(symbol_item));
+          },
+          [&](const PickerSearchResult::EmoticonData& data) {
+            auto emoticon_item = std::make_unique<PickerEmoticonItemView>(
+                std::move(select_result_callback), data.emoticon);
+            section_view->AddEmoticonItem(std::move(emoticon_item));
           },
           [&, this](const PickerSearchResult::GifData& data) {
-            auto item_view = std::make_unique<PickerItemView>(
-                base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                               base::Unretained(this), result),
-                PickerItemView::ItemType::kLargeGridItem);
-            // TODO: b/316936418 - Get gif dimensions to determine size.
-            constexpr gfx::Size kPlaceholderGifSize(140, 140);
-            // `base::Unretained` is safe here because `this` owns the item
-            // views and `asset_fetcher_` outlives `this`.
-            item_view->SetPrimaryImage(std::make_unique<PickerGifView>(
+            // `base::Unretained` is safe here because `this` will own the gif
+            // view and `asset_fetcher_` outlives `this`.
+            auto gif_view = std::make_unique<PickerGifView>(
                 base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher_), data.url),
-                kPlaceholderGifSize));
-            return item_view;
+                data.dimensions);
+            auto gif_item_view = std::make_unique<PickerImageItemView>(
+                std::move(select_result_callback), std::move(gif_view));
+            section_view->AddImageItem(std::move(gif_item_view));
           },
-          [&, this](const PickerSearchResult::BrowsingHistoryData& data) {
-            // TODO: b/320787548 - Add the icon from `data`.
+          [&](const PickerSearchResult::BrowsingHistoryData& data) {
             auto item_view = std::make_unique<PickerItemView>(
-                base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                               base::Unretained(this), result),
-                PickerItemView::ItemType::kListItem);
+                std::move(select_result_callback));
             item_view->SetPrimaryText(base::UTF8ToUTF16(data.url.spec()));
-            return item_view;
+            item_view->SetLeadingIcon(data.icon);
+            section_view->AddListItem(std::move(item_view));
           },
       },
       result.data());

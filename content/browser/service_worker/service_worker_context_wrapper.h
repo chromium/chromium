@@ -408,11 +408,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Sets a callback to bind ServiceWorkerStorageControl for testing.
   void SetStorageControlBinderForTest(StorageControlBinder binder);
 
-  using URLLoaderFactoryInterceptor = base::RepeatingCallback<void(
-      network::URLLoaderFactoryBuilder& factory_builder)>;
-  static void SetURLLoaderFactoryInterceptorForTesting(
-      const URLLoaderFactoryInterceptor& interceptor);
-
   ServiceWorkerContextCore* GetContextCoreForTest() {
     return context_core_.get();
   }

@@ -37,9 +37,9 @@ struct UIMediaSink;
 class CastDialogView : public views::BubbleDialogDelegateView,
                        public CastDialogController::Observer,
                        public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(CastDialogView);
+  METADATA_HEADER(CastDialogView, views::BubbleDialogDelegateView)
 
+ public:
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnDialogModelUpdated(CastDialogView* dialog_view) = 0;

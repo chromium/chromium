@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Дотоод алдаа</translation>
 <translation id="1124772482545689468">Хэрэглэгч</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">үржүүлэх</translation>
 <translation id="1145018782460575098">Гадаад төхөөрөмжүүдийн жижиг программыг шинэчлэх цонх нээлттэй байна. <ph name="NUM_UPDATES" /> шинэчлэлт боломжтой байна.</translation>
 <translation id="1145516343487477149">Тусламжийн нийтлэл болон Chromebook-н нийтлэг асуултуудын хариултыг олно уу</translation>
 <translation id="1154390310959620237">Та зөвхөн 5 товчлол өөрчлөх боломжтой. Шинэ товчлол нэмэхийн тулд нэг товчлолыг устгана уу.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скан хийх хэсэгт тааруулах</translation>
 <translation id="1367951781824006909">Файлыг сонгоно уу</translation>
+<translation id="1371650399987522809">Google AI-аар дэмжигдсэн дэлгэцийн зургийн санал хүсэлт</translation>
 <translation id="1387854245479784695">Энэ нь бүх цөмийн хуримтлал юм</translation>
 <translation id="1394661041439318933">Төхөөрөмжийн гэрийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="1397738625398125236">Гэйтвэйд пин илгээх боломжтой</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Мэдрэгч самбар</translation>
 <translation id="1561927818299383735">арын гэрлийн өнгө</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />-г шинэчлэх боломжгүй</translation>
+<translation id="1566493343215789965">хуваах</translation>
 <translation id="1567064801249837505">Цомог</translation>
 <translation id="1572585716423026576">Дэлгэцийн зураг болгох</translation>
 <translation id="1578784163189013834">Дэлгэц амраагчийн арын дэвсгэрийг сонгох</translation>
 <translation id="160633243685262989">Зургийг урьдчилан үзэх</translation>
 <translation id="1611649489706141841">цааш</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
+<translation id="1615576200479539465">Зургууд үүсгэж байна...</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
 <translation id="1626590945318984973">Товчлол боломжгүй байна. Функц болон <ph name="META_KEY" /> товчнуудыг ашиглалгүйгээр шинэ товчлолыг дарна уу.</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэггүй болсон.</translation>
 <translation id="2880569433548999039">Үүл нүүхийг харуулсан дэлгэц амраагч</translation>
 <translation id="2926057806159140518">Хэрэглэгчийн нэр болон нууц үгээ оруулах эсвэл QR кодыг скан хийнэ үү</translation>
+<translation id="2938573842839598578">Барагцаалсан үр дүн авах бол <ph name="CATEGORY_TEXT" /> утгыг <ph name="CONVERSION_RATE" />-р <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">Төхөөрөмжийг турших боломжгүй байна. Туршихын тулд тагийг дахин нээнэ үү.</translation>
 <translation id="2941112035454246133">Бага</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS-н шинэчлэлт</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> орчим минут үлдсэн байна</translation>
+<translation id="3547264467365135390">Томьёо</translation>
 <translation id="3557205324756024651">Дотоод таниулбар (заавал биш)</translation>
 <translation id="3565064564551103223">Зөвшөөрсөн IP</translation>
 <translation id="3569407787324516067">Дэлгэц амраагч</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7180865173735832675">Хүссэнээр өөрчлөх</translation>
 <translation id="7184043045742675738">Товчоо өөрчлөхийн тулд дурын товчийг товшино уу. Хулгана эсвэл суман товчоор товчийг дахин байрлуулна уу.</translation>
+<translation id="7206979415662233817">Үйлчилгээний нөхцөл</translation>
 <translation id="7212547870105584639">Сүлжээний APN-н тохиргоог удирдана уу. APN үүрэн холбооны сүлжээ болон интернэтийн хооронд холболт тогтоодог. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Гадаад төхөөрөмжүүдийн жижиг программын шинэчлэлтүүд</translation>
 <translation id="7216409898977639127">Үүрэн холбооны үйлчилгээ үзүүлэгч</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">гарын өнгө</translation>
 <translation id="7317831949569936035">Сургуулийн элсэлт</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Та дор хаяж 18 настай байх ёстой бөгөөд таны ХОУ-аар үүсгэсэн дэлгэцийн зургуудын ашиглалт <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> болон <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Үүсгэгч ХОУ-ы үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> дагаж мөрдөхийг зөвшөөрч байна.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Та ХОУ-аар дэлгэцийн зургуудыг зөвхөн арилжааны бус, хувийн зорилгоор ашиглахаар үүсгэх боломжтой. Та дэлгэцийн зургийн тусламж авах үед <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-н нууцлалын бодлогын<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> дагуу дэлгэцийн зургийн зөвлөмжүүд үүсгэхийн тулд текстийг Google AI-н серверүүд рүү илгээдэг. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Хайлтад илэрц харахын тулд Search болон Space-г дарна уу.</translation>
 <translation id="7343649194310845056">Сүлжээний төхөөрөмжүүд</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" />-н <ph name="LIST_POSITION" />-р хайлтын илэрц: <ph name="SEARCH_RESULT_TEXT" />. Товчлол руу шилжихийн тулд Enter дарна уу.</translation>

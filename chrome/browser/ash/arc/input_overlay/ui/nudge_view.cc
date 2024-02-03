@@ -95,7 +95,6 @@ class ContentView : public views::LabelButton {
                                       IsDarkModeEnabled()),
             kIconSize));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-    image()->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
     SetImageLabelSpacing(kSpaceIconLabel);
     SetTextColor(
         views::Button::STATE_NORMAL,

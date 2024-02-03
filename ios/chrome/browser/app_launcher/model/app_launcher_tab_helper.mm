@@ -330,7 +330,7 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
   web::NavigationItem* pending_item =
       web_state_->GetNavigationManager()->GetPendingItem();
   GURL original_pending_url =
-      pending_item ? pending_item->GetOriginalRequestURL() : GURL::EmptyGURL();
+      pending_item ? pending_item->GetOriginalRequestURL() : GURL();
   bool is_link_transition = ui::PageTransitionCoreTypeIs(
       request_info.transition_type, ui::PAGE_TRANSITION_LINK);
 

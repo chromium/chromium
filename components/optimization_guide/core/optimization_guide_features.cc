@@ -277,7 +277,7 @@ BASE_FEATURE(kModelQualityLogging,
 // Enables fetching personalized metadata from Optimization Guide Service.
 BASE_FEATURE(kOptimizationGuidePersonalizedFetching,
              "OptimizationPersonalizedHintsFetching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables text embeddings to annotated on every page visit and later queried.
 BASE_FEATURE(kQueryInMemoryTextEmbeddings,
@@ -585,31 +585,28 @@ bool ShouldPersistHintsToDisk() {
                                            "persist_hints_to_disk", true);
 }
 
-bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context) {
+RequestContextSet GetAllowedContextsForPersonalizedMetadata() {
+  RequestContextSet allowed_contexts;
   if (!base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
-    return false;
+    return allowed_contexts;
   }
-  using RequestContextSet =
-      base::EnumSet<proto::RequestContext, proto::RequestContext_MIN,
-                    proto::RequestContext_MAX>;
-
-  static const RequestContextSet allowed_contexts = []() -> RequestContextSet {
-    DCHECK(
-        base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching));
-    std::string param = base::GetFieldTrialParamValueByFeature(
-        kOptimizationGuidePersonalizedFetching, "allowed_contexts");
-    RequestContextSet allowed_contexts;
+  base::FieldTrialParams params;
+  if (base::GetFieldTrialParamsByFeature(kOptimizationGuidePersonalizedFetching,
+                                         &params) &&
+      params.contains("allowed_contexts")) {
     for (const auto& context_str : base::SplitString(
-             param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+             base::GetFieldTrialParamValueByFeature(
+                 kOptimizationGuidePersonalizedFetching, "allowed_contexts"),
+             ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
       proto::RequestContext context;
       if (proto::RequestContext_Parse(context_str, &context)) {
         allowed_contexts.Put(context);
       }
     }
-    return allowed_contexts;
-  }();
-
-  return allowed_contexts.Has(request_context);
+  } else {
+    allowed_contexts.Put(proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB);
+  }
+  return allowed_contexts;
 }
 
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
@@ -905,6 +902,11 @@ GetPredictionModelVersionsInKillSwitch() {
   return killswitch_model_versions;
 }
 
+bool ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kOptimizationGuideOnDeviceModel, "ondevice_config_high_priority", true);
+}
+
 base::TimeDelta GetOnDeviceModelIdleTimeout() {
   static const base::FeatureParam<base::TimeDelta>
       kOnDeviceModelServiceIdleTimeout{&kOptimizationGuideOnDeviceModel,
@@ -1046,7 +1048,7 @@ bool GetOnDeviceModelMustUseSafetyModel() {
   return kOnDeviceModelMustUseSafetyModel.Get();
 }
 
-bool ShouldDownloadTextSafetyClassifierModel() {
+bool ShouldUseTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
 }
 
@@ -1055,6 +1057,14 @@ uint32_t GetOnDeviceModelTextSafetyTokenInterval() {
       kOnDeviceModelTextSafetyTokenInterval{
           &kTextSafetyClassifier, "on_device_text_safety_token_interval", 10};
   return static_cast<uint32_t>(kOnDeviceModelTextSafetyTokenInterval.Get());
+}
+
+double GetOnDeviceModelLanguageDetectionMinimumReliability() {
+  static const base::FeatureParam<double>
+      kOnDeviceModelLanguageDetectionMinimumReliability{
+          &kTextSafetyClassifier,
+          "on_device_language_detection_minimum_reliability", 0.8};
+  return kOnDeviceModelLanguageDetectionMinimumReliability.Get();
 }
 
 int GetOnDeviceModelNumRepeats() {

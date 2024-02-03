@@ -111,23 +111,23 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   void RequestEncodingParametersChangeWithLayers(
       const media::VideoBitrateAllocation& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override {
+      const std::optional<gfx::Size>& size) override {
     DoRequestEncodingParametersChangeWithLayers(bitrate, framerate, size);
   }
   MOCK_METHOD3(DoRequestEncodingParametersChangeWithLayers,
                void(const media::VideoBitrateAllocation&,
                     uint32_t,
-                    const absl::optional<gfx::Size>&));
+                    const std::optional<gfx::Size>&));
   void RequestEncodingParametersChangeWithBitrate(
       const media::Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override {
+      const std::optional<gfx::Size>& size) override {
     DoRequestEncodingParametersChangeWithBitrate(bitrate, framerate, size);
   }
   MOCK_METHOD3(DoRequestEncodingParametersChangeWithBitrate,
                void(const media::Bitrate&,
                     uint32_t,
-                    const absl::optional<gfx::Size>&));
+                    const std::optional<gfx::Size>&));
 
   void IsFlushSupported(IsFlushSupportedCallback callback) override {
     DoIsFlushSupported();
@@ -308,9 +308,9 @@ TEST_F(MojoVideoEncodeAcceleratorTest, EncodingParametersChange) {
 
   EXPECT_CALL(*mock_mojo_vea(),
               DoRequestEncodingParametersChangeWithBitrate(
-                  bitrate, kNewFramerate, testing::Eq(absl::nullopt)));
+                  bitrate, kNewFramerate, testing::Eq(std::nullopt)));
   mojo_vea()->RequestEncodingParametersChange(bitrate, kNewFramerate,
-                                              absl::nullopt);
+                                              std::nullopt);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -335,9 +335,9 @@ TEST_F(MojoVideoEncodeAcceleratorTest,
 
     EXPECT_CALL(*mock_mojo_vea(), DoRequestEncodingParametersChangeWithLayers(
                                       bitrate_allocation, kNewFramerate,
-                                      testing::Eq(absl::nullopt)));
+                                      testing::Eq(std::nullopt)));
     mojo_vea()->RequestEncodingParametersChange(bitrate_allocation,
-                                                kNewFramerate, absl::nullopt);
+                                                kNewFramerate, std::nullopt);
     base::RunLoop().RunUntilIdle();
   }
 }

@@ -28,11 +28,10 @@ namespace quick_answers {
 // including predicted intent information. Fallback to title without intent
 // information if any of these two strings are empty.
 class UserConsentView : public views::View {
+  METADATA_HEADER(UserConsentView, views::View)
+
  public:
-  METADATA_HEADER(UserConsentView);
-
   static constexpr char kWidgetName[] = "UserConsentViewWidget";
-
   UserConsentView(const gfx::Rect& anchor_view_bounds,
                   const std::u16string& intent_type,
                   const std::u16string& intent_text,

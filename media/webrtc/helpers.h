@@ -5,13 +5,14 @@
 #ifndef MEDIA_WEBRTC_HELPERS_H_
 #define MEDIA_WEBRTC_HELPERS_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 

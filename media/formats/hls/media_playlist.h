@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_HLS_MEDIA_PLAYLIST_H_
 #define MEDIA_FORMATS_HLS_MEDIA_PLAYLIST_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +15,6 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/tags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media::hls {
@@ -70,14 +70,12 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // If this property is absent, that implies that the server may append new
   // segments to the end or remove old segments from the beginning of this
   // playlist upon reloading.
-  absl::optional<PlaylistType> GetPlaylistType() const {
-    return playlist_type_;
-  }
+  std::optional<PlaylistType> GetPlaylistType() const { return playlist_type_; }
 
   // Returns information about partial segments in this playlist. This will be
   // non-empty if this playlist contains at least one partial segment, and may
   // be empty if this playlist contains no partial segments.
-  absl::optional<PartialSegmentInfo> GetPartialSegmentInfo() const {
+  std::optional<PartialSegmentInfo> GetPartialSegmentInfo() const {
     return partial_segment_info_;
   }
 
@@ -105,7 +103,7 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // playlist beyond which media segments and their associated tags can be
   // skipped.
   // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-6.2.5.1
-  absl::optional<base::TimeDelta> GetSkipBoundary() const {
+  std::optional<base::TimeDelta> GetSkipBoundary() const {
     return skip_boundary_;
   }
 
@@ -123,7 +121,7 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // of the playlist at which clients should begin live playback when playing in
   // low-latency mode.
   // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.8:~:text=any%20Media%20Playlist.-,PART%2DHOLD%2DBACK,-The%20value%20is
-  absl::optional<base::TimeDelta> GetPartHoldBackDistance() const {
+  std::optional<base::TimeDelta> GetPartHoldBackDistance() const {
     return part_hold_back_distance_;
   }
 
@@ -151,18 +149,18 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   ~MediaPlaylist() override;
 
   base::TimeDelta target_duration_;
-  absl::optional<PartialSegmentInfo> partial_segment_info_;
+  std::optional<PartialSegmentInfo> partial_segment_info_;
   std::vector<scoped_refptr<MediaSegment>> segments_;
   base::TimeDelta computed_duration_;
-  absl::optional<PlaylistType> playlist_type_;
+  std::optional<PlaylistType> playlist_type_;
   bool end_list_;
   bool i_frames_only_;
   bool has_media_sequence_tag_;
   bool can_skip_dateranges_;
   bool can_block_reload_;
-  absl::optional<base::TimeDelta> skip_boundary_;
+  std::optional<base::TimeDelta> skip_boundary_;
   base::TimeDelta hold_back_distance_;
-  absl::optional<base::TimeDelta> part_hold_back_distance_;
+  std::optional<base::TimeDelta> part_hold_back_distance_;
 };
 
 }  // namespace media::hls

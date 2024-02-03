@@ -22,8 +22,11 @@ class WorkletDevToolsAgentHost final : public WorkerOrWorkletDevToolsAgentHost {
  private:
   ~WorkletDevToolsAgentHost() override;
 
-  // DevTools agent host overrides
+  // DevToolsAgentHost overrides
   std::string GetType() override;
+
+  // DevToolsAgentHostImpl overrides
+  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
 };
 
 }  // namespace content

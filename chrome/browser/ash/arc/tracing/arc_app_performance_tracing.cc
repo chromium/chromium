@@ -192,14 +192,15 @@ void ArcAppPerformanceTracing::OnCustomTraceDone(
     const std::optional<PerfTraceResult>& result) {
   bool success = result.has_value();
 
-  // TODO(matvore): commitDeviation is still expected by Go clients; remove it
-  // once Go clients are expecting presentDeviation.
+  // TODO(b/318754606): commitDeviation is still used by tast-test clients, only
+  // switch from commitDeviation to presentDeviation (and fps to perceivedFps)
+  // once the it's fixed to not output 0 FPS on display-less Chromebox devices.
   custom_trace_result_.emplace(
       base::Value::Dict()
           .Set("success", success)
           .Set("fps", success ? result->fps : 0)
           .Set("perceivedFps", success ? result->perceived_fps : 0)
-          .Set("commitDeviation", success ? result->present_deviation : 0)
+          .Set("commitDeviation", success ? result->commit_deviation : 0)
           .Set("presentDeviation", success ? result->present_deviation : 0)
           .Set("renderQuality", success ? result->render_quality : 0));
 }
@@ -226,7 +227,7 @@ bool ArcAppPerformanceTracing::StartCustomTracing() {
 
 base::Value::Dict ArcAppPerformanceTracing::StopCustomTracing() {
   custom_trace_result_.reset();
-  if (session_ && session_->TracingActive()) {
+  if (session_ && session_->tracing_active()) {
     session_->Finish();
     DCHECK(custom_trace_result_.has_value());
   }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -17,7 +18,6 @@
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -361,6 +361,10 @@ INSTANTIATE_TEST_SUITE_P(
     VP9SVCLayersTest,
     ::testing::Values(std::make_tuple(1, 2, SVCInterLayerPredMode::kOff),
                       std::make_tuple(1, 3, SVCInterLayerPredMode::kOff),
+                      std::make_tuple(1, 2, SVCInterLayerPredMode::kOn),
+                      std::make_tuple(1, 3, SVCInterLayerPredMode::kOn),
+                      std::make_tuple(1, 2, SVCInterLayerPredMode::kOnKeyPic),
+                      std::make_tuple(1, 3, SVCInterLayerPredMode::kOnKeyPic),
                       std::make_tuple(2, 1, SVCInterLayerPredMode::kOnKeyPic),
                       std::make_tuple(2, 2, SVCInterLayerPredMode::kOnKeyPic),
                       std::make_tuple(2, 3, SVCInterLayerPredMode::kOnKeyPic),

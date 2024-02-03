@@ -25,9 +25,7 @@ const base::FilePath::CharType kFileName2[] = FILE_PATH_LITERAL("somefile2.pb");
 
 class TestObserver : public OptimizationHintsComponentObserver {
  public:
-  TestObserver()
-      : hints_component_notification_count_(0),
-        hints_component_version_("0.0.0.0") {}
+  TestObserver() : hints_component_version_("0.0.0.0") {}
 
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
@@ -51,7 +49,7 @@ class TestObserver : public OptimizationHintsComponentObserver {
   }
 
  private:
-  int hints_component_notification_count_;
+  int hints_component_notification_count_ = 0;
   base::Version hints_component_version_;
   base::FilePath hints_component_path_;
 };
@@ -121,7 +119,7 @@ TEST_F(OptimizationHintsComponentUpdateListenerTest,
   EXPECT_EQ(component_info.version, observer()->hints_component_version());
   EXPECT_EQ(component_info.path, observer()->hints_component_path());
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 1, 1);
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 1, 1);
 }
 
 TEST_F(OptimizationHintsComponentUpdateListenerTest,
@@ -141,13 +139,13 @@ TEST_F(OptimizationHintsComponentUpdateListenerTest,
   EXPECT_EQ(observer()->hints_component_notification_count(), 2);
   EXPECT_EQ(component_info_2.version, observer()->hints_component_version());
   EXPECT_EQ(component_info_2.path, observer()->hints_component_path());
-  // The histogram should be recorded twice - once for each update.
+  // The histogram should be recorded each time the component is loaded.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2);
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 2);
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 1, 1);
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 1, 1);
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 2, 1);
 }
 
 TEST_F(OptimizationHintsComponentUpdateListenerTest,
@@ -167,10 +165,12 @@ TEST_F(OptimizationHintsComponentUpdateListenerTest,
   EXPECT_EQ(observer()->hints_component_notification_count(), 1);
   EXPECT_EQ(component_info_1.version, observer()->hints_component_version());
   EXPECT_EQ(component_info_1.path, observer()->hints_component_path());
-  // The histogram should only be recorded once - for the version it actually
-  // updated to.
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 2);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 2, 1);
 }
 
 TEST_F(OptimizationHintsComponentUpdateListenerTest,
@@ -191,7 +191,7 @@ TEST_F(OptimizationHintsComponentUpdateListenerTest,
   EXPECT_EQ(component_info_1.version, observer()->hints_component_version());
   EXPECT_EQ(component_info_1.path, observer()->hints_component_path());
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 2, 2);
 }
 
 TEST_F(OptimizationHintsComponentUpdateListenerTest,
@@ -211,7 +211,7 @@ TEST_F(OptimizationHintsComponentUpdateListenerTest,
   // We should still log the histogram since that is what the component updater
   // storage has.
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 1, 1);
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 1, 1);
 }
 
 TEST_F(OptimizationHintsComponentUpdateListenerTest,
@@ -229,7 +229,7 @@ TEST_F(OptimizationHintsComponentUpdateListenerTest,
   EXPECT_EQ(component_info.version, observer()->hints_component_version());
   EXPECT_EQ(component_info.path, observer()->hints_component_path());
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 172, 1);
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2", 172, 1);
 }
 
 }  // namespace optimization_guide

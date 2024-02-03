@@ -6,21 +6,12 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
+#include "base/test/values_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/common/interest_group/auction_config_test_util.h"
 
 namespace blink {
 namespace {
-
-std::string Serialize(const base::Value::Dict& dict) {
-  // Basically base::Value::DebugString, but not relying on that to be stable.
-  std::string json;
-  base::JSONWriter::WriteWithOptions(
-      dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-  // ... and also don't use CR/LF on Windows.
-  base::ReplaceChars(json, "\r", "", &json);
-  return json;
-}
 
 TEST(AuctionConfigTest, SerializeComponents) {
   // Component auction serialization just includes the origins.
@@ -36,9 +27,10 @@ TEST(AuctionConfigTest, SerializeComponents) {
       "value": null
    },
    "componentAuctions": [ "https://example.org", "https://example.com" ],
-   "decisionLogicUrl": "https://seller.test/foo",
+   "decisionLogicURL": "https://seller.test/foo",
    "expectsAdditionalBids": false,
    "expectsDirectFromSellerSignalsHeaderAdSlot": false,
+   "maxTrustedScoringSignalsURLLength": 0,
    "perBuyerCumulativeTimeouts": {
       "pending": false,
       "value": {
@@ -74,7 +66,7 @@ TEST(AuctionConfigTest, SerializeComponents) {
 }
 )";
 
-  EXPECT_EQ(kExpected, Serialize(config.SerializeForDevtools()));
+  EXPECT_THAT(config.SerializeForDevtools(), base::test::IsJson(kExpected));
 }
 
 TEST(AuctionConfigTest, FullConfig) {
@@ -108,9 +100,14 @@ TEST(AuctionConfigTest, FullConfig) {
       "pending": false,
       "value": "[4]"
    },
-   "decisionLogicUrl": "https://seller.test/foo",
+   "auctionReportBuyerDebugModeConfig": {
+       "debugKey": "9223372036854775808",
+       "enabled": true
+   },
+   "decisionLogicURL": "https://seller.test/foo",
    "expectsAdditionalBids": true,
    "expectsDirectFromSellerSignalsHeaderAdSlot": false,
+   "maxTrustedScoringSignalsURLLength": 2560,
    "interestGroupBuyers": [ "https://buyer.test" ],
    "perBuyerCumulativeTimeouts": {
       "pending": false,
@@ -172,11 +169,11 @@ TEST(AuctionConfigTest, FullConfig) {
       "value": "[5]"
    },
    "sellerTimeout": 6000.0,
-   "trustedScoringSignalsUrl": "https://seller.test/bar"
+   "trustedScoringSignalsURL": "https://seller.test/bar"
 }
 )";
 
-  EXPECT_EQ(kExpected, Serialize(config.SerializeForDevtools()));
+  EXPECT_THAT(config.SerializeForDevtools(), base::test::IsJson(kExpected));
 }
 
 TEST(AuctionConfigTest, PendingPromise) {
@@ -192,7 +189,7 @@ TEST(AuctionConfigTest, PendingPromise) {
 }
 )";
 
-  EXPECT_EQ(kExpected, Serialize(*signal_dict));
+  EXPECT_THAT(*signal_dict, base::test::IsJson(kExpected));
 }
 
 TEST(AuctionConfigTest, ServerResponse) {
@@ -209,7 +206,7 @@ TEST(AuctionConfigTest, ServerResponse) {
 }
 )";
 
-  EXPECT_EQ(kExpected, Serialize(*server_dict));
+  EXPECT_THAT(*server_dict, base::test::IsJson(kExpected));
 }
 
 }  // namespace

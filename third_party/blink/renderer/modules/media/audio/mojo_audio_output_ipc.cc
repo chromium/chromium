@@ -120,7 +120,7 @@ void MojoAudioOutputIPC::CloseStream() {
   receiver_.reset();
   delegate_ = nullptr;
   expected_state_ = kPaused;
-  volume_ = absl::nullopt;
+  volume_ = std::nullopt;
 
   // Cancel any pending callbacks for this stream.
   weak_factory_.InvalidateWeakPtrs();
@@ -201,7 +201,7 @@ void MojoAudioOutputIPC::DoRequestDeviceAuthorization(
                 "sizeof(int) == sizeof(int32_t)");
   factory->RequestDeviceAuthorization(
       MakeProviderReceiver(),
-      session_id.is_empty() ? absl::optional<base::UnguessableToken>()
+      session_id.is_empty() ? std::optional<base::UnguessableToken>()
                             : session_id,
       String::FromUTF8(device_id), std::move(callback));
 }

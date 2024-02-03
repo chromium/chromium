@@ -37,6 +37,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   BaseViewBuilderT& operator=(BaseViewBuilderT&&) = default;
   ~BaseViewBuilderT() override = default;
 
+  // Schedule `after_build_callback` to run after View and its children have
+  // been constructed. Calling this multiple times will chain the callbacks.
   Builder& AfterBuild(AfterBuildCallback after_build_callback) & {
     // Allow multiple after build callbacks by chaining them.
     if (after_build_callback_) {
@@ -68,6 +70,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return std::move(this->CopyAddressTo(view_address));
   }
 
+  // Schedule `configure_callback` to run after the View is constructed and
+  // properties have been set. Calling this multiple times will chain the
+  // callbacks.
   Builder& CustomConfigure(ConfigureCallback configure_callback) & {
     // Allow multiple configure callbacks by chaining them.
     if (configure_callback_) {

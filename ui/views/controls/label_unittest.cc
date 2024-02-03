@@ -773,8 +773,8 @@ TEST_F(LabelTest, TextChangeWithoutLayout) {
   EXPECT_EQ(u"Example", label()->display_text_->GetDisplayText());
 
   label()->SetText(u"Altered");
-  // The altered text should be painted even though Layout() or SetBounds() are
-  // not called.
+  // The altered text should be painted even though
+  // DeprecatedLayoutImmediately() or SetBounds() are not called.
   label()->OnPaint(&canvas);
   EXPECT_TRUE(label()->display_text_);
   EXPECT_EQ(u"Altered", label()->display_text_->GetDisplayText());

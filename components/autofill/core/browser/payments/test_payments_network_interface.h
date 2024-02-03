@@ -46,7 +46,7 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               UnmaskResponseDetails&)> callback) override;
 
-  void GetUploadDetails(
+  void GetCardUploadDetails(
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
@@ -61,10 +61,12 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
           UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE) override;
 
   void UploadCard(
-      const payments::PaymentsNetworkInterface::UploadRequestDetails& request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const PaymentsNetworkInterface::UploadCardResponseDetails&)>
-          callback) override;
+      const payments::PaymentsNetworkInterface::UploadCardRequestDetails&
+          request_details,
+      base::OnceCallback<void(
+          AutofillClient::PaymentsRpcResult,
+          const PaymentsNetworkInterface::UploadCardResponseDetails&)> callback)
+      override;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void MigrateCards(

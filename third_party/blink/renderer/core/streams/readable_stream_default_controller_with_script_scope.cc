@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
@@ -45,7 +46,7 @@ double ReadableStreamDefaultControllerWithScriptScope::DesiredSize() const {
   if (!controller_)
     return 0.0;
 
-  absl::optional<double> desired_size = controller_->GetDesiredSize();
+  std::optional<double> desired_size = controller_->GetDesiredSize();
   DCHECK(desired_size.has_value());
   return desired_size.value();
 }

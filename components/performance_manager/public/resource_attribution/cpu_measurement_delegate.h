@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/time/time.h"
 
@@ -36,9 +37,11 @@ class CPUMeasurementDelegate {
   CPUMeasurementDelegate() = default;
   virtual ~CPUMeasurementDelegate() = default;
 
-  // Requests CPU usage for the process. This is [[nodiscard]] to match the
-  // semantics of ProcessMetrics::GetCumulativeCPUUsage().
-  [[nodiscard]] virtual base::TimeDelta GetCumulativeCPUUsage() = 0;
+  // Requests CPU usage for the process. Returns nullopt on error. This is
+  // [[nodiscard]] to match the semantics of
+  // ProcessMetrics::GetCumulativeCPUUsage().
+  [[nodiscard]] virtual std::optional<base::TimeDelta>
+  GetCumulativeCPUUsage() = 0;
 };
 
 class CPUMeasurementDelegate::Factory {

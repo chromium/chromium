@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 import("//third_party/protobuf/proto_library.gni")
 
-# coremltools is only used by //services/webnn/coreml on macOS.
-assert(is_mac)
+# coremltools is used to support webnn on macOS.
 
 proto_library("modelformat_proto") {
+  visibility = [ "//services/webnn/*" ]
   sources = [
     "mlmodel/format/ArrayFeatureExtractor.proto",
     "mlmodel/format/AudioFeaturePrint.proto",

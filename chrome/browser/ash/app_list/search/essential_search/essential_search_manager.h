@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
 
 class Profile;
@@ -44,13 +45,18 @@ class EssentialSearchManager : public ash::SessionObserver,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnChromeTerminating() override;
 
   // SocsCookieFetcher::Consumer
   void OnCookieFetched(const std::string& socs_cookie) override;
   void OnApiCallFailed(SocsCookieFetcher::Status status) override;
 
  private:
-  void FetchSocsCookie();
+  void MaybeFetchSocsCookie();
+
+  void RemoveSocsCookie();
+
+  void OnCookieDeleted(uint32_t number_of_cookies_deleted);
 
   // Refetch after given `delay`.
   void RefetchAfter(base::TimeDelta delay);
@@ -62,6 +68,9 @@ class EssentialSearchManager : public ash::SessionObserver,
   base::ScopedObservation<ash::SessionController, ash::SessionObserver>
       scoped_observation_{this};
 
+  // Observer for EssentialSearch-related prefs.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
   const raw_ptr<Profile> primary_profile_;
 
   std::unique_ptr<SocsCookieFetcher> socs_cookie_fetcher_;
@@ -69,6 +78,8 @@ class EssentialSearchManager : public ash::SessionObserver,
   net::BackoffEntry retry_backoff_;
 
   base::WeakPtrFactory<EssentialSearchManager> weak_ptr_factory_{this};
+
+  base::WeakPtrFactory<EssentialSearchManager> fetch_requests_weak_factory_{this};
 };
 
 }  // namespace app_list

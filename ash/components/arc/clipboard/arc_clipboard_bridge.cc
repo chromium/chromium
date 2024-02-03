@@ -114,8 +114,7 @@ void ProcessHTML(const mojom::ClipRepresentation* repr,
   DCHECK(repr->value->is_text());
   DCHECK(writer);
 
-  writer->WriteHTML(base::UTF8ToUTF16(repr->value->get_text()), std::string(),
-                    ui::ClipboardContentType::kSanitized);
+  writer->WriteHTML(base::UTF8ToUTF16(repr->value->get_text()), std::string());
 }
 
 void ProcessPlainText(const mojom::ClipRepresentation* repr,

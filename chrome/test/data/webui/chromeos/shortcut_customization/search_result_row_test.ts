@@ -122,7 +122,8 @@ suite('searchResultRowTest', function() {
         keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
         'show windows',
-        keys1[1]!.shadowRoot!.querySelector('#icon-description')!.textContent);
+        keys1[1]!.shadowRoot!.querySelector('#keyIcon')!.getAttribute(
+            'aria-label'));
 
     const keys2: NodeListOf<ShortcutInputKeyElement> =
         acceleratorElements[1]!.querySelectorAll('shortcut-input-key');
@@ -130,7 +131,8 @@ suite('searchResultRowTest', function() {
     assertEquals(1, keys2.length);
     assertEquals(
         'take screenshot',
-        keys2[0]!.shadowRoot!.querySelector('#icon-description')!.textContent);
+        keys2[0]!.shadowRoot!.querySelector('#keyIcon')!.getAttribute(
+            'aria-label'));
 
     // Select the row and verify that the keys are highlighted.
     assertFalse(keys1[0]!.highlighted);

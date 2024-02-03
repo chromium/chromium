@@ -99,6 +99,11 @@ public class ChromeActivityUnitTest {
         protected OneshotSupplier<ProfileProvider> createProfileProvider() {
             return null;
         }
+
+        @Override
+        protected RootUiCoordinator createRootUiCoordinator() {
+            return null;
+        }
     }
 
     @Before

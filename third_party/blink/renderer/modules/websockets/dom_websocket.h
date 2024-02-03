@@ -33,6 +33,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -218,7 +219,7 @@ class MODULES_EXPORT DOMWebSocket
   // Handle the JavaScript close method call. close() methods on this class
   // are just for determining if the optional code argument is supplied or
   // not.
-  void CloseInternal(int, const String&, ExceptionState&);
+  void CloseInternal(std::optional<uint16_t>, const String&, ExceptionState&);
 
   // Updates |buffered_amount_after_close_| given the amount of data passed to
   // send() method after the state changed to CLOSING or CLOSED.

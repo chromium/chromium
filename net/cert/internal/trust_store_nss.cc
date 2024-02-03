@@ -157,8 +157,8 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
   // Use the original issuer value instead of the normalized version. NSS does a
   // less extensive normalization in its Name comparisons, so our normalized
   // version may not match the unnormalized version.
-  name.len = cert->tbs().issuer_tlv.Length();
-  name.data = const_cast<uint8_t*>(cert->tbs().issuer_tlv.UnsafeData());
+  name.len = cert->tbs().issuer_tlv.size();
+  name.data = const_cast<uint8_t*>(cert->tbs().issuer_tlv.data());
 
   // |validOnly| in CERT_CreateSubjectCertList controls whether to return only
   // certs that are valid at |sorttime|. Expiration isn't meaningful for trust
@@ -278,8 +278,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrust(
   }
 
   SECItem der_cert;
-  der_cert.data = const_cast<uint8_t*>(cert->der_cert().UnsafeData());
-  der_cert.len = base::checked_cast<unsigned>(cert->der_cert().Length());
+  der_cert.data = const_cast<uint8_t*>(cert->der_cert().data());
+  der_cert.len = base::checked_cast<unsigned>(cert->der_cert().size());
   der_cert.type = siDERCertBuffer;
 
   // Find a matching NSS certificate object, if any. Note that NSS trust

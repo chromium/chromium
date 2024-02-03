@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1384959399684842514">Shkarkimi u ndërpre</translation>
 <translation id="1415402041810619267">URL e prerë</translation>
-<translation id="1426410128494586442">Po</translation>
 <translation id="1434873037477293673">karta e uljes së çmimit</translation>
 <translation id="1448064542941920355">Zvogëlo zmadhimin</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}other{<ph name="SITE_COUNT" /> sajte}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kukit e palëve të treta janë bllokuar</translation>
 <translation id="2238944249568001759">Kërkimet e sugjeruara bazuar në skedën tënde të fundit</translation>
+<translation id="2241587408274973373">Kartat në faqen e skedës së re</translation>
 <translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> - Hiq</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sajti i bllokuar}other{# sajte të bllokuara}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Sajtet mund të shfaqin kërkesat për identifikim nga shërbimet e identitetit.</translation>
 <translation id="2790501146643349491">Kur cilësimi është aktiv, sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave. Kur cilësimi është joaktiv, sajtet e mbyllura së fundi nuk mund të përfundojnë dërgimin ose marrjen e të dhënave.</translation>
 <translation id="2822354292072154809">Je i sigurt që dëshiron t'i rivendosësh të gjitha lejet e sajtit për <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Kërko pamjen për celular</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Shikuesi i certifikatave</translation>
 <translation id="2979365474350987274">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
-<translation id="3013291976881901233">Pajisjet MIDI</translation>
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
 <translation id="3069226013421428034">Lejo identifikimin e palëve të treta për një sajt specifik.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Skadon nesër}other{Skadon për # ditë}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">U lidh me një pajisje USB</translation>
 <translation id="4194328954146351878">Pyet përpara se të lejosh sajtet të shikojnë dhe ndryshojnë informacionin në pajisjet NFC (rekomandohet)</translation>
 <translation id="4200726100658658164">Hap "Cilësimet e vendndodhjes"</translation>
-<translation id="4212246570487010370">Vazhdo shfletimin</translation>
 <translation id="4226663524361240545">Njoftimet mund të bëjnë që pajisja të dridhet</translation>
 <translation id="4259722352634471385">Lundrimi është bllokuar: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Të lejuara</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Lëviz poshtë</translation>
 <translation id="6749077623962119521">Të rivendosen lejet?</translation>
 <translation id="6766622839693428701">Rrëshqit shpejt poshtë për ta mbyllur.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Nga <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Zgjidh një opsion për <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6818926723028410516">Zgjidh artikujt</translation>

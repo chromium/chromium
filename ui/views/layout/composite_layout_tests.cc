@@ -439,13 +439,13 @@ class CompositeLayoutTest : public testing::Test {
       avatar_test_api_->IncrementTime(delta);
     if (extensions()->layout()->is_animating())
       extensions_test_api_->IncrementTime(delta);
-    toolbar_->Layout();
+    toolbar_->DeprecatedLayoutImmediately();
   }
 
   void ResetAnimation() {
     avatar()->layout()->ResetLayout();
     extensions()->layout()->ResetLayout();
-    toolbar()->Layout();
+    toolbar()->DeprecatedLayoutImmediately();
   }
 
   bool IsAnimating() const {

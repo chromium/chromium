@@ -121,7 +121,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
 
   if (bounds_animator_.IsAnimating())
     bounds_animator_.Cancel();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SavedDeskGridView::AddOrUpdateEntries(
@@ -146,6 +146,11 @@ void SavedDeskGridView::AddOrUpdateEntries(
   }
 
   SortEntries(order_first_uuid);
+
+  // The preferred size of `SavedDeskGridView` is related to the number of
+  // items. Here our quantities may have changed which means the preferred size
+  // has period.
+  PreferredSizeChanged();
 
   if (animate)
     AnimateGridItems(new_grid_items);
@@ -221,7 +226,7 @@ gfx::Size SavedDeskGridView::CalculatePreferredSize() const {
                    rows * item_height + (rows - 1) * kSaveDeskPaddingDp);
 }
 
-void SavedDeskGridView::Layout() {
+void SavedDeskGridView::Layout(PassKey) {
   if (grid_items_.empty())
     return;
 

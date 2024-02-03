@@ -25,7 +25,7 @@ class LayoutResultCachingTest : public RenderingTest {
       LayoutBox* box,
       const ConstraintSpace& constraint_space,
       const BlockBreakToken* break_token) {
-    absl::optional<FragmentGeometry> fragment_geometry;
+    std::optional<FragmentGeometry> fragment_geometry;
     LayoutCacheStatus cache_status;
     return box->CachedLayoutResult(constraint_space, break_token, nullptr,
                                    nullptr, &fragment_geometry, &cache_status);
@@ -35,7 +35,7 @@ class LayoutResultCachingTest : public RenderingTest {
       LayoutBox* box,
       const ConstraintSpace& constraint_space,
       LayoutCacheStatus* out_cache_status = nullptr) {
-    absl::optional<FragmentGeometry> fragment_geometry;
+    std::optional<FragmentGeometry> fragment_geometry;
     LayoutCacheStatus cache_status;
     const LayoutResult* result =
         box->CachedLayoutResult(constraint_space, nullptr, nullptr, nullptr,
@@ -1075,7 +1075,7 @@ TEST_F(LayoutResultCachingTest, OptimisticFloatPlacementNoRelayout) {
   // We shouldn't have a "forced" BFC block-offset, as the "empty"
   // self-collapsing block should have its "expected" BFC block-offset at the
   // correct place.
-  EXPECT_EQ(space.ForcedBfcBlockOffset(), absl::nullopt);
+  EXPECT_EQ(space.ForcedBfcBlockOffset(), std::nullopt);
 }
 
 TEST_F(LayoutResultCachingTest, SelfCollapsingShifting) {

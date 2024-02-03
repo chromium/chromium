@@ -38,7 +38,7 @@ const WrapperTypeInfo& DOMSharedArrayBuffer::wrapper_type_info_ =
 #endif
 
 v8::Local<v8::Value> DOMSharedArrayBuffer::Wrap(ScriptState* script_state) {
-  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+  DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));
 
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
   v8::Local<v8::SharedArrayBuffer> wrapper;

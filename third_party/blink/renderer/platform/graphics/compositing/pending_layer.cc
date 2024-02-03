@@ -55,7 +55,7 @@ PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
   // true when !has_text to simplify code.
   DCHECK(has_text_ || text_known_to_be_on_opaque_background_);
-  if (const absl::optional<gfx::RectF>& visibility_limit =
+  if (const std::optional<gfx::RectF>& visibility_limit =
           GeometryMapper::VisibilityLimit(GetPropertyTreeState())) {
     bounds_.Intersect(*visibility_limit);
     if (bounds_.IsEmpty()) {
@@ -193,14 +193,14 @@ bool PendingLayer::CanMerge(
     bool& merged_text_known_to_be_on_opaque_background,
     wtf_size_t& merged_solid_color_chunk_index,
     cc::HitTestOpaqueness& merged_hit_test_opaqueness) const {
-  absl::optional<PropertyTreeState> optional_merged_state =
+  std::optional<PropertyTreeState> optional_merged_state =
       CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);
   if (!optional_merged_state) {
     return false;
   }
 
   merged_state = *optional_merged_state;
-  const absl::optional<gfx::RectF>& merged_visibility_limit =
+  const std::optional<gfx::RectF>& merged_visibility_limit =
       GeometryMapper::VisibilityLimit(merged_state);
   merged_solid_color_chunk_index = kNotFound;
 
@@ -354,16 +354,16 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   return true;
 }
 
-absl::optional<PropertyTreeState> PendingLayer::CanUpcastWith(
+std::optional<PropertyTreeState> PendingLayer::CanUpcastWith(
     const PendingLayer& guest,
     const PropertyTreeState& guest_state,
     IsCompositedScrollFunction is_composited_scroll) const {
   DCHECK_EQ(&Chunks().GetPaintArtifact(), &guest.Chunks().GetPaintArtifact());
   if (ChunkRequiresOwnLayer() || guest.ChunkRequiresOwnLayer()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (&GetPropertyTreeState().Effect() != &guest_state.Effect()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetPropertyTreeState().CanUpcastWith(guest_state,
                                               is_composited_scroll);

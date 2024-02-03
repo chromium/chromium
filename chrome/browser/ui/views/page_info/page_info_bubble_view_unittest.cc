@@ -979,8 +979,6 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   // Create a fake cookies info.
   PageInfoUI::CookiesNewInfo cookies;
   cookies.allowed_sites_count = 10;
-  cookies.allowed_third_party_sites_count = 8;
-  cookies.blocked_third_party_sites_count = 32;
   cookies.protections_on = true;
   cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
   cookies.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;

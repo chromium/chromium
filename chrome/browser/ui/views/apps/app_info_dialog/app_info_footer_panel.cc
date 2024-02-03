@@ -154,7 +154,7 @@ void AppInfoFooterPanel::SetPinnedToShelf(bool value) {
   }
 
   UpdatePinButtons(true);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 // static

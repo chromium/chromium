@@ -5,8 +5,8 @@
 /**
  * @fileoverview A polymer component that displays the feedback buttons.
  */
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
 import {getTemplate} from './sea_pen_feedback_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';

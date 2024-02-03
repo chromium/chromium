@@ -39,9 +39,7 @@ interface VoicesByLanguage {
 }
 
 // TODO(crbug.com/1465029): Remove colors defined here once the Views toolbar is
-// removed. Note: if crbug.com/1516972 still exists, these colors will need
-// to remain to provide a workaround when color ids are blocked from being
-// loaded on first launch.
+// removed.
 const style = getComputedStyle(document.body);
 const darkThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-900-rgb'));
@@ -49,10 +47,6 @@ const lightThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-50-rgb'));
 const yellowThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-yellow-100-rgb'));
-const blueThemeBackgroundSkColor =
-    rgbToSkColor(style.getPropertyValue('--google-blue-100-rgb'));
-const lightForegroundSkColor = rgbToSkColor('31,31,31');
-const darkForegroundSkColor = rgbToSkColor('227,227,227');
 const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
 const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
 const darkThemeLinkColors: LinkColor = {
@@ -203,10 +197,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   synth = window.speechSynthesis;
 
-  // State for speech synthesis needs to be tracked separately because there
-  // are bugs with window.speechSynthesis.paused and
+  private selectedVoice: SpeechSynthesisVoice|undefined;
+
+  private availableVoices: SpeechSynthesisVoice[];
+  // If a preview is playing, this is set to the voice the preview is playing.
+  // Otherwise, this is undefined.
+  private previewVoicePlaying: SpeechSynthesisVoice|null;
+
+  // State for speech synthesis paused/play state needs to be tracked explicitly
+  // because there are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
-  private voice: SpeechSynthesisVoice|undefined;
   paused = true;
   speechStarted = false;
   maxSpeechLength = 175;
@@ -216,15 +216,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   constructor() {
     super();
     if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
-      // TODO(crbug.com/1516972): This does not load stylesheets for
-      // chrome-untrusted when Chrome is first launched until a new tab is
-      // opened. #refreshColorsCss hangs and the Promise never resolves until
-      // a new tab is opened. #updateThemeWhenColorTokensAreUnavailable gives
-      // a workaround for Reading Mode to allow colors to work when this
-      // happens.
-      // Longer term, we should investigate if there's a way to force a
-      // stylesheet to load when we detect that we've entered the blocked
-      // state.
       ColorChangeUpdater.forDocument().start();
     }
   }
@@ -304,7 +295,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       htmlTag = 'div';
     }
 
-    if (!chrome.readingMode.linksEnabled && htmlTag === 'a') {
+    if (!this.shouldShowLinks() && htmlTag === 'a') {
       htmlTag = 'span';
     }
 
@@ -328,6 +319,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     this.appendChildSubtrees_(element, nodeId);
     return element;
+  }
+
+  // TODO(crbug.com/1442693): Potentially hide links during distillation.
+  private shouldShowLinks(): boolean {
+    // Links should only show when Read Aloud is paused.
+    return chrome.readingMode.linksEnabled && this.paused;
   }
 
   private appendChildSubtrees_(node: Node, nodeId: number) {
@@ -394,7 +391,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.hasContent_ = false;
     if (this.isReadAloudEnabled_) {
       this.synth.cancel();
-      this.onSpeechFinished();
+      this.clearReadAloudState();
     }
   }
 
@@ -470,10 +467,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   getSpeechSynthesisVoice(): SpeechSynthesisVoice|undefined {
-    if (!this.voice) {
-      this.voice = this.defaultVoice();
+    if (!this.selectedVoice) {
+      this.selectedVoice = this.defaultVoice();
     }
-    return this.voice;
+    return this.selectedVoice;
   }
 
   defaultVoice(): SpeechSynthesisVoice|undefined {
@@ -486,11 +483,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // TODO(crbug.com/1474951): Ensure various locales are handled such as
     // "en-US" vs. "en-UK." This should be fixed by using page language instead
     // of browser language.
-    const voices = this.synth.getVoices().filter(
-        voice => voice.lang.startsWith(languageCode));
+    const voices =
+        this.getVoices().filter(voice => voice.lang.startsWith(languageCode));
+
     if (!voices || (voices.length === 0)) {
       // If no voices in the given language are found, use the default voice.
-      return this.synth.getVoices().find(
+      return this.getVoices().find(
           ({default: isDefaultVoice}) => isDefaultVoice);
     }
 
@@ -504,10 +502,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return voice;
   }
 
-  getVoices(): VoicesByLanguage {
+  private getVoicesByLanguage(): VoicesByLanguage {
     // TODO(crbug.com/1474951): Filter by localService. Doing this now prevents
     // voices from loading on Linux, which slows down development.
-    return this.synth.getVoices().reduce(
+    return this.getVoices().reduce(
         (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
           (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
               .push(voice);
@@ -516,11 +514,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         {});
   }
 
-  setSpeechSynthesisVoice(voice: SpeechSynthesisVoice|undefined) {
-    this.voice = voice;
+  private getVoices(): SpeechSynthesisVoice[] {
+    if (!this.availableVoices) {
+      this.availableVoices = this.synth.getVoices();
+    }
+    return this.availableVoices;
   }
 
-  previewSpeechSynthesisVoice(voice: SpeechSynthesisVoice) {
+  private onPreviewVoice_(
+      event: CustomEvent<{previewVoice: SpeechSynthesisVoice}>) {
+    event.preventDefault();
+    event.stopPropagation();
+
+
     const defaultUtteranceSettings = this.defaultUtteranceSettings();
 
     // TODO(crbug.com/1474951): Finalize the default voice preview text.
@@ -528,6 +534,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // and reset the play icon.
     const utterance = new SpeechSynthesisUtterance(
         loadTimeData.getString('readingModeVoicePreviewText'));
+    const voice = event.detail.previewVoice;
     utterance.voice = voice;
     utterance.lang = defaultUtteranceSettings.lang;
     utterance.volume = defaultUtteranceSettings.volume;
@@ -536,11 +543,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(crbug.com/1474951): Add tests for pause button
     utterance.onstart = event => {
-      this.$.toolbar.showVoicePreviewPlaying(event.utterance.voice);
+      this.previewVoicePlaying = event.utterance.voice;
     };
 
     utterance.onend = () => {
-      this.$.toolbar.showVoicePreviewDone();
+      this.previewVoicePlaying = null;
     };
 
     this.synth.speak(utterance);
@@ -551,12 +558,20 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // word so that speech doesn't resume in the middle of the word?
     this.synth.pause();
     this.paused = true;
+
+    // Restore links if they're enabled when speech pauses.
+    if (chrome.readingMode.linksEnabled) {
+      this.updateContent();
+      this.highlightNodes(chrome.readingMode.getCurrentText());
+    }
   }
 
   playNextGranularity() {
     this.synth.cancel();
     this.resetPreviousHighlight();
-    if (!this.highlightAndPlayNextMessage()) {
+    chrome.readingMode.movePositionToNextGranularity();
+
+    if (!this.highlightAndPlayMessage()) {
       this.onSpeechFinished();
     }
   }
@@ -566,21 +581,44 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   playPreviousGranularity() {
     this.synth.cancel();
     this.resetPreviousHighlight();
-    this.highlightAndPlayPreviousMessage();
+    chrome.readingMode.movePositionToPreviousGranularity();
+
+    if (!this.highlightAndPlayMessage()) {
+      this.onSpeechFinished();
+    }
   }
 
   playSpeech() {
-    if (this.speechStarted && this.paused) {
-      this.synth.resume();
-      this.paused = false;
-      return;
-    }
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const container = shadowRoot.getElementById('container');
     assert(container);
+    if (this.speechStarted && this.paused) {
+      this.synth.resume();
+      this.paused = false;
+      // Hide links when speech resumes.
+      if (chrome.readingMode.linksEnabled) {
+        this.updateContent();
+      }
+
+      // If the current read highlight has been cleared from a call to
+      // updateContent, such as for links being toggled on or off via a Read
+      // Aloud play / pause or via a preference change, rehighlight the nodes
+      // after a pause.
+      if (!container.querySelector('.current-read-highlight')) {
+        // TODO(crbug.com/1474951): Investigate adding a mock voice in tests
+        // to make this testable.
+        this.highlightNodes(chrome.readingMode.getCurrentText());
+      }
+
+      return;
+    }
     if (container.textContent) {
       this.paused = false;
+      // Hide links when speech begins playing.
+      if (chrome.readingMode.linksEnabled) {
+        this.updateContent();
+      }
 
       // Gather all the messages that can be played. We need nodes, rather
       // than just text because we need to add a span to the current sentence
@@ -600,27 +638,20 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // that this step can be skipped.
       if (axNode) {
         chrome.readingMode.initAXPositionWithNode(axNode);
-        this.highlightAndPlayNextMessage();
+        this.highlightAndPlayMessage();
       }
     }
   }
 
-  highlightAndPlayNextMessage(): boolean {
-    const maxTextLength = this.maxSpeechLength;
-
-    // getNextText returns a list of triples of AXNodeIds and start / end text
-    // indices, represented as a double array.
-    const nextTextIds: number[] = chrome.readingMode.getNextText(maxTextLength);
+  highlightAndPlayMessage(): boolean {
+    // getCurrentText gets the AX Node IDs of text that should be spoken and
+    // highlighted.
+    const nextTextIds: number[] = chrome.readingMode.getCurrentText();
     return this.highlightAndPlayTextOf(nextTextIds);
   }
 
-  highlightAndPlayPreviousMessage(): boolean {
-    const previousTextIds: number[] = chrome.readingMode.getPreviousText();
-    return this.highlightAndPlayTextOf(previousTextIds);
-  }
-
-  // Play text of these axNodeIds. When finished, call
-  // highlightAndPlayNextMessage() to read the following text.
+  // Play text of these axNodeIds. When finished, read and highlight to read the
+  // following text.
   // TODO (crbug.com/1474951): Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
   private highlightAndPlayTextOf(axNodeIds: number[]): boolean {
@@ -635,8 +666,44 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return true;
   }
 
+  // Gets the accessible text boundary for the given string.
+  getAccessibleTextLength(utteranceText: string): number {
+    // Splicing on commas won't work for all locales, but since this is a
+    // simple strategy for splicing text in languages that do use commas
+    // that reduces the need for calling getAccessibleBoundary.
+    // TODO(crub.com/1474951): Investigate if we can utilize comma splices
+    // directly in the utils methods called by #getAccessibleBoundary.
+    const lastCommaIndex =
+        utteranceText.substring(0, this.maxSpeechLength).lastIndexOf(',');
+
+    if (lastCommaIndex >= 0) {
+      return lastCommaIndex;
+    }
+
+
+    // TODO(crbug.com/1474951): getAccessibleBoundary breaks on the nearest
+    // word boundary, but if there's some type of punctuation (such as a comma),
+    // it would be preferable to break on the punctuation so the pause in
+    // speech sounds more natural.
+    return chrome.readingMode.getAccessibleBoundary(
+        utteranceText, this.maxSpeechLength);
+  }
+
   private playText(utteranceText: string) {
-    const message = new SpeechSynthesisUtterance(utteranceText);
+    // This check is needed due limits of TTS audio for remote voices. See
+    // crbug.com/1176078 for more details.
+    // Since the TTS bug only impacts remote voices, no need to check for
+    // maximum text length if we're using a local voice. If we do somehow
+    // attempt to speak text that's too long, this will be able to be handled
+    // by listening for a text-too-long error in message.onerror.
+    const isTextTooLong = this.selectedVoice?.localService ?
+        false :
+        utteranceText.length > this.maxSpeechLength;
+    const endBoundary = isTextTooLong ?
+        this.getAccessibleTextLength(utteranceText) :
+        utteranceText.length;
+    const message =
+        new SpeechSynthesisUtterance(utteranceText.substring(0, endBoundary));
 
     message.onerror = (error) => {
       // TODO(crbug.com/1474951): Add more sophisticated error handling.
@@ -648,13 +715,24 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
 
     message.onend = () => {
+      if (isTextTooLong) {
+        // Since our previous utterance was too long, continue speaking pieces
+        // of the current utterance until the utterance is complete. The entire
+        // utterance is highlighted, so there's no need to update highlighting
+        // until the utterance substring is an acceptable size.
+        this.playText(utteranceText.substring(endBoundary));
+        return;
+      }
       // TODO(crbug.com/1474951): Handle already selected text.
       // TODO(crbug.com/1474951): Return text to its original style once
       // the document has finished.
       this.resetPreviousHighlight();
 
+      // Now that we've finiished reading this utterance, update the Granularity
+      // state to point to the next one
+      chrome.readingMode.movePositionToNextGranularity();
       // Continue speaking with the next block of text.
-      if (!this.highlightAndPlayNextMessage()) {
+      if (!this.highlightAndPlayMessage()) {
         this.onSpeechFinished();
       }
     };
@@ -684,8 +762,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     for (let i = 0; i < axNodeIds.length; i++) {
       assert(axNodeIds[i]);
       const nodeId = axNodeIds[i];
-      const startIndex = chrome.readingMode.getNextTextStartIndex(nodeId);
-      const endIndex = chrome.readingMode.getNextTextEndIndex(nodeId);
+      const startIndex = chrome.readingMode.getCurrentTextStartIndex(nodeId);
+      const endIndex = chrome.readingMode.getCurrentTextEndIndex(nodeId);
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
       if (!element || startIndex < 0 || endIndex < 0) {
         continue;
@@ -700,18 +778,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return utteranceText;
   }
 
-  // TODO(crbug.com/1474951): Handle previous highlighting.
   highlightNodes(nextTextIds: number[]) {
-    // implementation based off of #highlightCurrentText below
-    assert(nextTextIds.length > 0);
+    if (nextTextIds.length === 0) {
+      return;
+    }
+
     for (let i = 0; i < nextTextIds.length; i++) {
       const nodeId = nextTextIds[i];
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
       if (!element) {
         continue;
       }
-      const start = chrome.readingMode.getNextTextStartIndex(nodeId);
-      const end = chrome.readingMode.getNextTextEndIndex(nodeId);
+      const start = chrome.readingMode.getCurrentTextStartIndex(nodeId);
+      const end = chrome.readingMode.getCurrentTextEndIndex(nodeId);
       if ((start < 0) || (end < 0)) {
         // If the start or end index is invalid, don't use this node.
         continue;
@@ -794,9 +873,28 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private onSpeechFinished() {
+    this.clearReadAloudState();
+
+    // Hide links when speech finishes playing.
+    if (chrome.readingMode.linksEnabled) {
+      this.updateContent();
+    }
+  }
+
+  private clearReadAloudState() {
     this.speechStarted = false;
     this.paused = true;
     this.previousHighlight_ = [];
+  }
+
+  private onSelectVoice_(
+      event: CustomEvent<{selectedVoice: SpeechSynthesisVoice}>) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.selectedVoice = event.detail.selectedVoice;
+    chrome.readingMode.onVoiceChange(
+        this.selectedVoice.name, this.selectedVoice.lang.split('-')[0]);
   }
 
   // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
@@ -898,15 +996,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private restoreVoiceFromPrefs_() {
     const storedLang = chrome.readingMode.speechSynthesisLanguageCode;
     const storedVoice = chrome.readingMode.getStoredVoice(storedLang);
+
     if (!storedVoice) {
-      this.setSpeechSynthesisVoice(this.defaultVoice());
+      this.selectedVoice = this.defaultVoice();
       return;
     }
 
     // TODO(crbug.com/1474951): Ensure various locales are handled such as
     // "en-US" vs. "en-UK." This should be fixed by using page language instead
     // of browser language.
-    const voices: VoicesByLanguage = this.getVoices();
+    const voices: VoicesByLanguage = this.getVoicesByLanguage();
     const entry =
         Object.entries(voices).find(([key, _]) => key.startsWith(storedLang));
     let voice;
@@ -916,8 +1015,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         voice = voicesForLang.find(voice => voice.name === storedVoice);
       }
     }
-    this.setSpeechSynthesisVoice(
-        (voice === null) ? this.defaultVoice() : voice);
+    this.selectedVoice = (voice === null) ? this.defaultVoice() : voice;
   }
 
   updateLineSpacing(newLineHeight: number) {
@@ -957,26 +1055,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
-  areColorTokensUnavailable(): boolean {
-    // This check is arbitrarily for color-read-anything-text-selection-dark-
-    // checking for any color token defined in
-    // chrome/browser/ui/color/chrome_color_id.h will work.
-    return !window.getComputedStyle(document.documentElement)
-                .getPropertyValue('--color-read-anything-text-selection-dark');
-  }
-
   // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
   // and replace the one below once we've removed the Views toolbar.
   updateThemeFromWebUi(colorSuffix: string) {
     this.currentColorSuffix_ = colorSuffix;
-    // Check if some property is undefined. If it is, Reading Mode is in a
-    // state where stylesheets cannot be loaded without opening a new tab.
-    // When this happens, default to using predefined colors. If we do nothing,
-    // Reading Mode colors stop working and the overall experience feels broken.
-    if (this.areColorTokensUnavailable()) {
-      this.updateThemeWhenColorTokensAreUnavailable(colorSuffix);
-      return;
-    }
     const emptyStateBodyColor = colorSuffix ?
         this.getEmptyStateBodyColorFromWebUi_(colorSuffix) :
         'var(--color-side-panel-card-secondary-foreground)';
@@ -1048,68 +1130,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return `var(--google-grey-800)`;
   }
 
-  // When Chrome is first launched, it's possible for Reading Mode to be opened
-  // in a state when stylesheets haven't been loaded and will never be loaded
-  // until a new tab is opened and Reading Mode is reopened. When Reading Mode
-  // is in this state, color tokens defined in
-  // chrome/browser/ui/color/chrome_color_id.h appear as undefined until the
-  // new tab is opened. When in this state without a workaround, some colors
-  // like selection colors don't work and theme colors cannot be changed. This
-  // method serves as a workaround by using colors defined in this file,
-  // instead of in chrome_color_id.h.
-  // This means that Chrome Refresh colors won't work when the theme is set to
-  // default until a new tab is opened, but this is preferable to all colors
-  // being broken.
-  // This method should only be called in the buggy state. Otherwise,
-  // use updateTheme for the Views toolbar or updateThemeForWebUI for the WebUI
-  // toolbar.
-  // See b/293464821#comment4 or crbug.com/1516972 for more details.
-  updateThemeWhenColorTokensAreUnavailable(colorSuffix: string) {
-    const foregroundColor =
-        this.getForegroundColorForUnavailableColorTokens(colorSuffix);
-    const backgroundColor =
-        this.getBackgroundColorForUnavailableColorTokens(colorSuffix);
-    this.updateThemeWithColors(foregroundColor, backgroundColor);
-
-    // TODO(crbug.com/1474951): Also handle Read Aloud-specific colors, such
-    // as the Read Aloud highlights, when in this state.
-  }
-
-  getBackgroundColorForUnavailableColorTokens(colorSuffix: string): SkColor {
-    if (colorSuffix.includes('light')) {
-      return lightThemeBackgroundSkColor;
-    }
-
-    if (colorSuffix.includes('dark')) {
-      return darkThemeBackgroundSkColor;
-    }
-
-    if (colorSuffix.includes('yellow')) {
-      return yellowThemeBackgroundSkColor;
-    }
-    if (colorSuffix.includes('blue')) {
-      return blueThemeBackgroundSkColor;
-    }
-
-    return lightThemeBackgroundSkColor;
-  }
-
-  getForegroundColorForUnavailableColorTokens(colorSuffix: string): SkColor {
-    if (colorSuffix.includes('dark')) {
-      return darkForegroundSkColor;
-    }
-    return lightForegroundSkColor;
-  }
-
   updateTheme() {
     const foregroundColor:
         SkColor = {value: chrome.readingMode.foregroundColor};
     const backgroundColor:
         SkColor = {value: chrome.readingMode.backgroundColor};
-    this.updateThemeWithColors(foregroundColor, backgroundColor);
-  }
-
-  updateThemeWithColors(foregroundColor: SkColor, backgroundColor: SkColor) {
     const linkColor = this.getLinkColor_(backgroundColor);
 
     this.updateStyles({

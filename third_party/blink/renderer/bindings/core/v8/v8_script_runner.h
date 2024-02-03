@@ -26,7 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_SCRIPT_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_SCRIPT_RUNNER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -74,7 +75,7 @@ class CORE_EXPORT V8ScriptRunner final {
 
     // Rethrow errors flag is false.
     static RethrowErrorsOption DoNotRethrow() {
-      return RethrowErrorsOption(absl::nullopt);
+      return RethrowErrorsOption(std::nullopt);
     }
 
     // Rethrow errors flag is true.
@@ -99,11 +100,11 @@ class CORE_EXPORT V8ScriptRunner final {
     String Message() const { return *message_; }
 
    private:
-    explicit RethrowErrorsOption(absl::optional<String> message)
+    explicit RethrowErrorsOption(std::optional<String> message)
         : message_(std::move(message)) {}
 
     // `nullopt` <=> rethrow errors is false.
-    absl::optional<String> message_;
+    std::optional<String> message_;
   };
 
   // For the following methods, the caller sites have to hold

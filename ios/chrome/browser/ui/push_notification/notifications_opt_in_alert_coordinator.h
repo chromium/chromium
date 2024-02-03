@@ -42,6 +42,9 @@ enum class NotificationsOptInAlertResult {
 // enabled.
 @property(nonatomic, copy) NSString* confirmationMessage;
 
+// The message of the alert. If not set, default message will be used.
+@property(nonatomic, copy) NSString* alertMessage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PUSH_NOTIFICATION_NOTIFICATIONS_OPT_IN_ALERT_COORDINATOR_H_

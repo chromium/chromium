@@ -14,14 +14,17 @@ import './profile_picker_shared.css.js';
 import './strings.m.js';
 
 import {listenOnce} from '//resources/js/util.js';
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DragDropReorderTileListDelegate, DraggableTileListInterface} from './drag_drop_reorder_tile_list_delegate.js';
-import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
+import type {DraggableTileListInterface} from './drag_drop_reorder_tile_list_delegate.js';
+import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_delegate.js';
+import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
+import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 import {getTemplate} from './profile_picker_main_view.html.js';

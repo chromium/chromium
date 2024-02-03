@@ -209,7 +209,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
         PolicyBuilder::GetFakeAccountIdForTesting());
     policy_manager->Connect(
         g_browser_process->local_state(),
-        UserPolicySigninServiceBase::CreateCloudPolicyClient(
+        std::make_unique<CloudPolicyClient>(
             connector->device_management_service(),
             g_browser_process->shared_url_loader_factory()));
 

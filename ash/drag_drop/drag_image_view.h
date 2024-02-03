@@ -82,7 +82,7 @@ class ASH_EXPORT DragImageView : public views::ImageView {
   void OnPaint(gfx::Canvas* canvas) override;
 
   // Overridden from views::view
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Save the requested drag image size. We may need to display a drag hint
   // image, which potentially expands |widget_|'s size. That drag hint image

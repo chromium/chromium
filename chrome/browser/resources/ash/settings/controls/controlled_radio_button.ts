@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
-import {CrRadioButtonMixin} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
+import {CrRadioButtonMixin} from '//resources/ash/common/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';

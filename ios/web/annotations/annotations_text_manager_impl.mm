@@ -81,13 +81,19 @@ void AnnotationsTextManagerImpl::StartExtractingText() {
       web_state_, kMaxAnnotationsTextLength, seq_id_);
 }
 
+void AnnotationsTextManagerImpl::SetSupportedTypes(
+    NSTextCheckingType supported_types) {
+  supported_types_ = supported_types;
+}
+
 #pragma mark - WebStateObserver methods.
 
 void AnnotationsTextManagerImpl::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   DCHECK_EQ(web_state_, web_state);
-  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS &&
+      supported_types_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AnnotationsTextManagerImpl::StartExtractingText,

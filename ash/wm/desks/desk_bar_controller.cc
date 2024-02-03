@@ -15,6 +15,7 @@
 #include "ash/wm/desks/desk_bar_view.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desk_button/desk_button_container.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -497,14 +498,14 @@ void DeskBarController::OnMaybePressOffBar(ui::LocatedEvent& event) {
   // view. Otherwise, we should either commit the desk name changes or close the
   // bars.
   bool intersect_with_bar_view = false;
-  bool intersect_with_desk_button = false;
+  bool intersect_with_desk_button_container = false;
   bool desk_name_being_modified = false;
   for (auto& desk_bar : desk_bars_) {
     // Converts to screen coordinate.
     gfx::Point screen_location;
     gfx::Rect desk_bar_view_bounds = desk_bar.bar_view->GetBoundsInScreen();
-    gfx::Rect desk_button_bounds =
-        GetDeskButton(desk_bar.bar_view->root())->GetBoundsInScreen();
+    gfx::Rect desk_button_container_bounds =
+        GetDeskButtonContainer(desk_bar.bar_view->root())->GetBoundsInScreen();
     if (event.target()) {
       screen_location = event.target()->GetScreenLocation(event);
     } else {
@@ -521,19 +522,20 @@ void DeskBarController::OnMaybePressOffBar(ui::LocatedEvent& event) {
       event.StopPropagation();
     }
 
-    if (desk_button_bounds.Contains(screen_location)) {
-      intersect_with_desk_button = true;
+    if (desk_button_container_bounds.Contains(screen_location)) {
+      intersect_with_desk_button_container = true;
     }
   }
 
   if (!intersect_with_bar_view && !desk_name_being_modified &&
-      !intersect_with_desk_button) {
+      !intersect_with_desk_button_container) {
     CloseAllDeskBars();
   }
 }
 
-DeskButton* DeskBarController::GetDeskButton(aura::Window* root) {
-  return Shelf::ForWindow(root)->desk_button_widget()->GetDeskButton();
+DeskButtonContainer* DeskBarController::GetDeskButtonContainer(
+    aura::Window* root) {
+  return Shelf::ForWindow(root)->desk_button_widget()->GetDeskButtonContainer();
 }
 
 void DeskBarController::SetDeskButtonActivation(aura::Window* root,
@@ -543,7 +545,7 @@ void DeskBarController::SetDeskButtonActivation(aura::Window* root,
     Shelf::ForWindow(root)->desk_button_widget()->StoreDeskButtonFocus();
   }
 
-  GetDeskButton(root)->SetActivation(is_activated);
+  GetDeskButtonContainer(root)->desk_button()->SetActivation(is_activated);
 
   // Restore the desk button focus when closing the desk bar.
   if (should_desk_button_acquire_focus_ && desk_button_root_ == root &&

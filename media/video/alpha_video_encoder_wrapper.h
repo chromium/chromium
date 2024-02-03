@@ -46,16 +46,16 @@ class MEDIA_EXPORT AlphaVideoEncoderWrapper : public VideoEncoder {
 
  private:
   void YuvOutputCallback(VideoEncoderOutput output,
-                         absl::optional<CodecDescription> desc);
+                         std::optional<CodecDescription> desc);
   void AlphaOutputCallback(VideoEncoderOutput output,
-                           absl::optional<CodecDescription> desc);
+                           std::optional<CodecDescription> desc);
 
   std::unique_ptr<VideoEncoder> yuv_encoder_;
   std::unique_ptr<VideoEncoder> alpha_encoder_;
-  absl::optional<VideoEncoderOutput> yuv_output_;
-  absl::optional<VideoEncoderOutput> alpha_output_;
-  absl::optional<EncoderStatus> init_status_;
-  absl::optional<EncoderStatus> encode_status_;
+  std::optional<VideoEncoderOutput> yuv_output_;
+  std::optional<VideoEncoderOutput> alpha_output_;
+  std::optional<EncoderStatus> init_status_;
+  std::optional<EncoderStatus> encode_status_;
 
   std::vector<uint8_t> dummy_uv_planes_;
 

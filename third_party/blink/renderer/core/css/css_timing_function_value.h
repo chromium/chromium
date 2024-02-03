@@ -26,8 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TIMING_FUNCTION_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TIMING_FUNCTION_VALUE_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -38,8 +39,8 @@ namespace cssvalue {
 
 struct CSSLinearStop {
   double number;
-  absl::optional<double> length_a;
-  absl::optional<double> length_b;
+  std::optional<double> length_a;
+  std::optional<double> length_b;
 };
 
 class CSSLinearTimingFunctionValue : public CSSValue {

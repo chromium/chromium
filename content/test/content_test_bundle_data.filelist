@@ -2357,6 +2357,8 @@ data/accessibility/event/input-type-text-value-changed-expected-mac.txt
 data/accessibility/event/input-type-text-value-changed-expected-uia-win.txt
 data/accessibility/event/input-type-text-value-changed-expected-win.txt
 data/accessibility/event/input-type-text-value-changed.html
+data/accessibility/event/lang-changed-expected-auralinux.txt
+data/accessibility/event/lang-changed.html
 data/accessibility/event/listbox-focus-expected-auralinux.txt
 data/accessibility/event/listbox-focus-expected-mac.txt
 data/accessibility/event/listbox-focus-expected-uia-win.txt

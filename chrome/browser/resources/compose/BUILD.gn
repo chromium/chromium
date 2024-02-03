@@ -10,12 +10,14 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "textarea.ts",
+    "result_text.ts",
   ]
   non_web_component_files = [
     "animations/animator.ts",
     "animations/app_animator.ts",
     "animations/textarea_animator.ts",
     "compose_api_proxy.ts",
+    "word_streamer.ts",
   ]
   icons_html_files = [ "icons.html" ]
   ts_composite = true

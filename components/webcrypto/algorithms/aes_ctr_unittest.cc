@@ -178,8 +178,8 @@ TEST_F(WebCryptoAesCtrTest, OverflowAndRepeatCounter) {
 
   // 16 and 17 AES blocks worth of data respectively (AES blocks are 16 bytes
   // long).
-  auto input_16 = base::make_span(buffer).first(256);
-  auto input_17 = base::make_span(buffer).first(272);
+  auto input_16 = base::make_span(buffer).first(256u);
+  auto input_17 = base::make_span(buffer).first(272u);
 
   std::vector<uint8_t> output;
 

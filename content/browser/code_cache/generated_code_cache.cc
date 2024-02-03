@@ -473,7 +473,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     crypto::SHA256HashString(
         base::StringPiece(reinterpret_cast<char*>(copy.data()), copy.size()),
         result, std::size(result));
-    std::string checksum_key = base::HexEncode(result, std::size(result));
+    std::string checksum_key = base::HexEncode(result);
     small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
         kHeaderSizeInBytes + kSHAKeySizeInBytes);
     // Copy |checksum_key| into the small buffer.

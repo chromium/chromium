@@ -105,7 +105,7 @@ class VideoWakeLockMediaPlayer final : public EmptyWebMediaPlayer {
         viz::LocalSurfaceId(
             11, base::UnguessableToken::CreateForTesting(0x111111, 0)));
   }
-  absl::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
+  std::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
 
   bool HasAudio() const override { return has_audio_; }
   void SetHasAudio(bool has_audio) { has_audio_ = has_audio; }
@@ -120,7 +120,7 @@ class VideoWakeLockMediaPlayer final : public EmptyWebMediaPlayer {
   bool has_audio_ = true;
   bool has_video_ = true;
   gfx::Size size_ = kNormalVideoSize;
-  absl::optional<viz::SurfaceId> surface_id_;
+  std::optional<viz::SurfaceId> surface_id_;
 };
 
 class VideoWakeLockFrameClient : public test::MediaStubLocalFrameClient {

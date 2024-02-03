@@ -168,12 +168,12 @@ MockCdmContext::MockCdmContext() = default;
 
 MockCdmContext::~MockCdmContext() = default;
 
-absl::optional<base::UnguessableToken> MockCdmContext::GetCdmId() const {
+std::optional<base::UnguessableToken> MockCdmContext::GetCdmId() const {
   return cdm_id_;
 }
 
 void MockCdmContext::set_cdm_id(const base::UnguessableToken& cdm_id) {
-  cdm_id_ = absl::make_optional(cdm_id);
+  cdm_id_ = std::make_optional(cdm_id);
 }
 
 MockCdmPromise::MockCdmPromise(bool expect_success) {

@@ -106,7 +106,7 @@ class FakeBackForwardCacheLoaderHelper : public BackForwardCacheLoaderHelper {
     BackForwardCacheLoaderHelper::Trace(visitor);
   }
 
-  const absl::optional<mojom::blink::RendererEvictionReason>& evicted_reason()
+  const std::optional<mojom::blink::RendererEvictionReason>& evicted_reason()
       const {
     return evicted_reason_;
   }
@@ -115,7 +115,7 @@ class FakeBackForwardCacheLoaderHelper : public BackForwardCacheLoaderHelper {
   }
 
  private:
-  absl::optional<mojom::blink::RendererEvictionReason> evicted_reason_;
+  std::optional<mojom::blink::RendererEvictionReason> evicted_reason_;
   size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
 };
 
@@ -268,7 +268,7 @@ class FakeURLLoaderClient : public URLLoaderClient {
   void DidReceiveResponse(
       const WebURLResponse& response,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     DCHECK(unfreezable_task_runner_->BelongsToCurrentThread());
     DCHECK(!response_);
     DCHECK(!response_body_);
@@ -300,8 +300,8 @@ class FakeURLLoaderClient : public URLLoaderClient {
     error_ = error;
   }
 
-  const absl::optional<WebURLResponse>& response() const { return response_; }
-  const absl::optional<mojo_base::BigBuffer>& cached_metadata() const {
+  const std::optional<WebURLResponse>& response() const { return response_; }
+  const std::optional<mojo_base::BigBuffer>& cached_metadata() const {
     return cached_metadata_;
   }
   const mojo::ScopedDataPipeConsumerHandle& response_body() const {
@@ -311,19 +311,19 @@ class FakeURLLoaderClient : public URLLoaderClient {
     return transfer_size_diffs_;
   }
   bool did_finish() const { return did_finish_; }
-  const absl::optional<WebURLError>& error() const { return error_; }
+  const std::optional<WebURLError>& error() const { return error_; }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
 
   std::deque<WillFollowRedirectCallback> will_follow_callbacks_;
 
-  absl::optional<WebURLResponse> response_;
-  absl::optional<mojo_base::BigBuffer> cached_metadata_;
+  std::optional<WebURLResponse> response_;
+  std::optional<mojo_base::BigBuffer> cached_metadata_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   std::vector<int> transfer_size_diffs_;
   bool did_finish_ = false;
-  absl::optional<WebURLError> error_;
+  std::optional<WebURLError> error_;
 };
 
 struct PriorityInfo {
@@ -345,7 +345,7 @@ class FakeURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     follow_redirect_called_ = true;
   }
   void SetPriority(net::RequestPriority priority,
@@ -551,7 +551,7 @@ TEST_F(BackgroundResourceFecherTest, Redirect) {
 
   loader_client_remote->OnReceiveResponse(CreateTestResponse(),
                                           CreateTestBody(),
-                                          /*cached_metadata=*/absl::nullopt);
+                                          /*cached_metadata=*/std::nullopt);
   loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
   task_environment_.RunUntilIdle();
   unfreezable_task_runner_->RunUntilIdle();
@@ -737,7 +737,7 @@ TEST_F(BackgroundResourceFecherTest, CancelAfterReceiveResponse) {
 
   loader_client_remote->OnReceiveResponse(CreateTestResponse(),
                                           CreateTestBody(),
-                                          /*cached_metadata=*/absl::nullopt);
+                                          /*cached_metadata=*/std::nullopt);
 
   // Call RunUntilIdle() to call Mojo's disconnect handler.
   task_environment_.RunUntilIdle();
@@ -795,7 +795,7 @@ TEST_F(BackgroundResourceFecherTest, FreezeCancelThenUnfreeze) {
       std::move(loader_client_pending_remote_));
   loader_client_remote->OnReceiveResponse(CreateTestResponse(),
                                           CreateTestBody(),
-                                          /*cached_metadata=*/absl::nullopt);
+                                          /*cached_metadata=*/std::nullopt);
   loader_client_remote->OnTransferSizeUpdated(10);
   loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
 
@@ -833,7 +833,7 @@ TEST_F(BackgroundResourceFecherTest, BufferIncomingFreezeAndResume) {
       std::move(loader_client_pending_remote_));
   loader_client_remote->OnReceiveResponse(CreateTestResponse(),
                                           CreateTestBody(),
-                                          /*cached_metadata=*/absl::nullopt);
+                                          /*cached_metadata=*/std::nullopt);
   loader_client_remote->OnTransferSizeUpdated(10);
   loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
 
@@ -884,7 +884,7 @@ TEST_F(BackgroundResourceFecherTest,
   loader_client_remote->OnReceiveResponse(
       CreateTestResponse(),
       CreateDataPipeConsumerHandleFilledWithString(std::string(kBodySize, '*')),
-      /*cached_metadata=*/absl::nullopt);
+      /*cached_metadata=*/std::nullopt);
   loader_client_remote->OnTransferSizeUpdated(kBodySize);
   loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
 
@@ -928,7 +928,7 @@ TEST_F(BackgroundResourceFecherTest,
       std::move(loader_client_pending_remote_));
   loader_client_remote->OnReceiveResponse(CreateTestResponse(),
                                           CreateTestBody(),
-                                          /*cached_metadata=*/absl::nullopt);
+                                          /*cached_metadata=*/std::nullopt);
   loader_client_remote->OnTransferSizeUpdated(10);
   loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
 
@@ -981,7 +981,7 @@ TEST_F(BackgroundResourceFecherTest, ChangePriority) {
 
   loader_client_remote->OnReceiveResponse(CreateTestResponse(),
                                           CreateTestBody(),
-                                          /*cached_metadata=*/absl::nullopt);
+                                          /*cached_metadata=*/std::nullopt);
   loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
   task_environment_.RunUntilIdle();
   unfreezable_task_runner_->RunUntilIdle();

@@ -16,38 +16,34 @@
 namespace blink {
 
 class WorkerReportingProxy;
-class SharedStorageWorkletServiceImpl;
 
 // SharedStorageWorkletThread is a per-SharedStorageWorkletGlobalScope object
-// that has a reference count to the backing thread that performs
-// SharedStorageWorklet tasks.
-class MODULES_EXPORT SharedStorageWorkletThread final : public WorkerThread {
+// that performs SharedStorageWorklet tasks.
+class MODULES_EXPORT SharedStorageWorkletThread : public WorkerThread {
  public:
-  explicit SharedStorageWorkletThread(WorkerReportingProxy&);
-  ~SharedStorageWorkletThread() final;
+  static std::unique_ptr<SharedStorageWorkletThread> Create(
+      WorkerReportingProxy& worker_reporting_proxy);
 
-  void SharedStorageWorkletServiceConnectionError();
-
-  WorkerBackingThread& GetWorkerBackingThread() final {
-    return *worker_backing_thread_;
-  }
-
-  void ClearWorkerBackingThread() final;
+  ~SharedStorageWorkletThread() override;
 
   void InitializeSharedStorageWorkletService(
       mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService> receiver,
       base::OnceClosure disconnect_handler);
 
- private:
-  WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
-      std::unique_ptr<GlobalScopeCreationParams>) final;
+  static std::optional<WorkerBackingThreadStartupData>
+  CreateThreadStartupData();
+
+ protected:
+  explicit SharedStorageWorkletThread(WorkerReportingProxy&);
 
   ThreadType GetThreadType() const final {
     // TODO(crbug.com/1414951): Specify a correct type.
     return ThreadType::kUnspecifiedWorkerThread;
   }
 
-  std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
+ private:
+  WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
+      std::unique_ptr<GlobalScopeCreationParams>) final;
 };
 
 }  // namespace blink

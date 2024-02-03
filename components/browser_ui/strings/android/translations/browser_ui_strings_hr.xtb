@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1415402041810619267">URL je skraćen</translation>
-<translation id="1426410128494586442">Da</translation>
 <translation id="1434873037477293673">kartica o sniženju cijene</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web-lokacija}one{<ph name="SITE_COUNT" /> web-lokacija}few{<ph name="SITE_COUNT" /> web-lokacije}other{<ph name="SITE_COUNT" /> web-lokacija}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj kameri, uključite kameru i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Blokirani su kolačići treće strane</translation>
 <translation id="2238944249568001759">Predložena pretraživanja na temelju vaše posljednje kartice</translation>
+<translation id="2241587408274973373">Kartice na novoj kartici preglednika</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2253414712144136228">Ukloni <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Blokirana je jedna web-lokacija}one{Blokirana je # web-lokacija}few{Blokirane su # web-lokacije}other{Blokirano je # web-lokacija}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Web-lokacije mogu prikazivati upite za prijavu s usluga za provjeru identiteta.</translation>
 <translation id="2790501146643349491">Kad je ta postavka uključena, nedavno zatvorene web-lokacije mogu dovršiti slanje i primanje podataka. Kad je ta postavka isključena, nedavno zatvorene web-lokacije ne mogu dovršiti slanje ili primanje podataka.</translation>
 <translation id="2822354292072154809">Jeste li sigurni da želite poništiti sva dopuštenja za aplikaciju <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Zahtijevaj prikaz na mobilnom uređaju</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2874939134665556319">Prethodna pjesma</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Preglednik certifikata</translation>
 <translation id="2979365474350987274">Kolačići treće strane su ograničeni</translation>
 <translation id="3008272652534848354">Poništi dopuštenja</translation>
-<translation id="3013291976881901233">MIDI uređaji</translation>
 <translation id="301521992641321250">Automatski blokirano</translation>
 <translation id="3069226013421428034">Dopusti prijavu treće strane za određenu web-lokaciju.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Istječe sutra}one{Istječe za # dan}few{Istječe za # dana}other{Istječe za # dana}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
 <translation id="4194328954146351878">Pitaj prije omogućavanja web-lokacijama da vide i mijenjaju podatke na NFC uređajima (preporučeno)</translation>
 <translation id="4200726100658658164">Otvori postavke lokacije</translation>
-<translation id="4212246570487010370">Nastavite pregledavati</translation>
 <translation id="4226663524361240545">Obavijesti mogu uključiti vibriranje uređaja</translation>
 <translation id="4259722352634471385">Otvaranje je blokirano: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dopušteno</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Pomakni dolje</translation>
 <translation id="6749077623962119521">Poništiti dopuštenja?</translation>
 <translation id="6766622839693428701">Prijeđite prstom prema dolje da biste zatvorili.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> S uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Odaberite opciju za <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6818926723028410516">Odaberite stavke</translation>

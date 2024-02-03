@@ -157,14 +157,7 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   bool browser_prioritize_native_work_ = false;
   base::TimeDelta browser_prioritize_native_work_after_input_end_ms_;
 
-  // There five variables are used in the kBrowserPeriodicYieldingToNative finch
-  // experiment, |scroll_state_| should indicate the scroll state upton which
-  // the yielding to looper delay will depend.
   ScrollState scroll_state_ = ScrollState::kNone;
-  base::TimeDelta yield_to_native_for_normal_input_after_ms_;
-  base::TimeDelta yield_to_native_for_fling_input_after_ms_;
-  base::TimeDelta yield_to_native_for_default_after_ms_;
-
   Policy current_policy_;
 
   // This variable is used to control the kBrowserDeferUIThreadTasks finch

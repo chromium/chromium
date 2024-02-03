@@ -2524,33 +2524,45 @@ targets.legacy_basic_suite(
                 shards = 8,
             ),
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_dawn_webgpu_cts_dxc",
-    tests = {
-        "webgpu_cts_dxc_tests": targets.legacy_test_config(
+        "webgpu_cts_fxc_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
             args = [
-                "--use-dxc",
+                "--use-fxc",
+            ],
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_dawn_webgpu_cts_fxc",
+    tests = {
+        "webgpu_cts_fxc_tests": targets.legacy_test_config(
+            mixins = [
+                "webgpu_telemetry_cts",
+                "linux_vulkan",
+            ],
+            args = [
+                "--use-fxc",
             ],
             ci_only = True,
             swarming = targets.swarming(
                 shards = 14,
             ),
         ),
-        "webgpu_cts_dxc_with_validation_tests": targets.legacy_test_config(
+        "webgpu_cts_fxc_with_validation_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
             args = [
                 "--enable-dawn-backend-validation",
-                "--use-dxc",
+                "--use-fxc",
             ],
             ci_only = True,
             swarming = targets.swarming(
@@ -4250,7 +4262,7 @@ targets.legacy_basic_suite(
             ],
             swarming = targets.swarming(
                 dimensions = {
-                    "os": "Ubuntu-18.04",
+                    "os": "Ubuntu-22.04",
                     "cpu": "x86-64",
                     "device_os": None,
                     "device_os_flavor": None,
@@ -4403,23 +4415,19 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "optimization_guide_desktop_gtests",
+    name = "optimization_guide_nogpu_gtests",
     tests = {
         "chrome_ml_unittests": targets.legacy_test_config(),
         "optimization_guide_browser_tests": targets.legacy_test_config(),
         "optimization_guide_components_unittests": targets.legacy_test_config(),
-        "optimization_guide_gpu_unittests": targets.legacy_test_config(),
         "optimization_guide_unittests": targets.legacy_test_config(),
     },
 )
 
 targets.legacy_basic_suite(
-    name = "optimization_guide_desktop_gtests_nogpu",
+    name = "optimization_guide_gpu_gtests",
     tests = {
-        "chrome_ml_unittests": targets.legacy_test_config(),
-        "optimization_guide_browser_tests": targets.legacy_test_config(),
-        "optimization_guide_components_unittests": targets.legacy_test_config(),
-        "optimization_guide_unittests": targets.legacy_test_config(),
+        "optimization_guide_gpu_unittests": targets.legacy_test_config(),
     },
 )
 

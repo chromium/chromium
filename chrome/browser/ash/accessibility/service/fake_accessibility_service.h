@@ -169,6 +169,10 @@ class FakeAccessibilityService
   void RequestSendSyntheticKeyEventForShortcutOrNavigation(
       ax::mojom::SyntheticKeyEventPtr key_event);
 
+  // Sends a request to send a synthetic mouse event.
+  void RequestSendSyntheticMouseEvent(
+      ax::mojom::SyntheticMouseEventPtr mouse_event);
+
   //
   // Methods to pretend a UserInterface request came from the service.
   //

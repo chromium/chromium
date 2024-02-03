@@ -205,6 +205,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chrome_codeql_database_builder",
+)
+
+build_recipe(
     name = "recipe:chromium_codesearch",
 )
 

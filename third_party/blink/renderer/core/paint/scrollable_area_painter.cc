@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -205,7 +206,7 @@ bool ScrollableAreaPainter::PaintOverflowControls(
     }
   }
 
-  absl::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
+  std::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
   if (clip || transform) {
     PaintController& paint_controller = context.GetPaintController();
     PropertyTreeStateOrAlias modified_properties(
@@ -262,7 +263,7 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
   auto type = scrollbar.Orientation() == kHorizontalScrollbar
                   ? DisplayItem::kScrollbarHorizontal
                   : DisplayItem::kScrollbarVertical;
-  absl::optional<ScopedPaintChunkProperties> chunk_properties;
+  std::optional<ScopedPaintChunkProperties> chunk_properties;
   if (const auto* effect = scrollbar.Orientation() == kHorizontalScrollbar
                                ? properties->HorizontalScrollbarEffect()
                                : properties->VerticalScrollbarEffect()) {
@@ -343,7 +344,7 @@ void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
 
   const auto& client = GetScrollableArea().GetScrollCornerDisplayItemClient();
 
-  absl::optional<ScopedPaintChunkProperties> chunk_properties;
+  std::optional<ScopedPaintChunkProperties> chunk_properties;
   const auto* properties =
       GetScrollableArea().GetLayoutBox()->FirstFragment().PaintProperties();
   if (const auto* effect = properties->ScrollCornerEffect()) {

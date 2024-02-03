@@ -449,4 +449,26 @@ TEST(GaiaAuthUtilTest, ParseConsentResultInvalidProto) {
                                                  &gaia_id));
 }
 
+TEST(GaiaAuthUtilTest, CreateBoundOAuthToken) {
+  // base64url encoded serialized BoundOAuthToken message with the following
+  // fields:
+  // {
+  //  "gaiaId": "test_gaia_id",
+  //  "token": "test_token",
+  //  "tokenBindingAssertion": "test_assertion"
+  // }
+  const char kExpected[] =
+      "Cgx0ZXN0X2dhaWFfaWQSCnRlc3RfdG9rZW4aDnRlc3RfYXNzZXJ0aW9u";
+  std::string actual =
+      CreateBoundOAuthToken("test_gaia_id", "test_token", "test_assertion");
+  EXPECT_EQ(actual, kExpected);
+}
+
+TEST(GaiaAuthUtilTest, CreateBoundOAuthTokenEmpty) {
+  const char kExpected[] =
+      "CgASABoA";  // Encodes a proto with all fields being empty.
+  std::string actual = CreateBoundOAuthToken("", "", "");
+  EXPECT_EQ(actual, kExpected);
+}
+
 }  // namespace gaia

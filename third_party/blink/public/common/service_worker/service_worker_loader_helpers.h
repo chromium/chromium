@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
 
+#include <optional>
+
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
@@ -29,8 +30,8 @@ class BLINK_COMMON_EXPORT ServiceWorkerLoaderHelpers {
                                network::mojom::URLResponseHead* out_head);
 
   // Returns a redirect info if |response_head| is an redirect response.
-  // Otherwise returns absl::nullopt.
-  static absl::optional<net::RedirectInfo> ComputeRedirectInfo(
+  // Otherwise returns std::nullopt.
+  static std::optional<net::RedirectInfo> ComputeRedirectInfo(
       const network::ResourceRequest& original_request,
       const network::mojom::URLResponseHead& response_head);
 

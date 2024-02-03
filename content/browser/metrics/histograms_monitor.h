@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_METRICS_HISTOGRAMS_MONITOR_H_
 
 #include <map>
+#include <string_view>
 
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -14,8 +15,8 @@
 namespace content {
 
 // This class handles the monitoring feature of chrome://histograms page,
-// which allows the page to be updated with histograms logged since
-// the monitoring started.
+// which allows the page to be updated with histograms logged since the
+// monitoring started.
 //
 // Note that this class does not handle merging histograms from any
 // |HistogramProvider| instances. It also does not handle synchronizing
@@ -29,9 +30,9 @@ class CONTENT_EXPORT HistogramsMonitor {
   HistogramsMonitor(const HistogramsMonitor&) = delete;
   HistogramsMonitor& operator=(const HistogramsMonitor&) = delete;
 
-  // Fetches and records a snapshot of the current histograms,
-  // as the baseline to compare against in subsequent calls to GetDiff().
-  void StartMonitoring(const std::string& query);
+  // Fetches and records a snapshot of the current histograms, as the baseline
+  // to compare against in subsequent calls to GetDiff().
+  void StartMonitoring(std::string_view query);
 
   // Gets the histogram diffs between the current histograms and the snapshot
   // recorded in StartMonitoring().

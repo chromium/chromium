@@ -607,9 +607,11 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3526440770046466733">Bağlantıyı yeni sekmede açıp geçerli sekmede kal</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> cihaza bağlanıldı</translation>
 <translation id="3533126039236445965">Raftaki uygulamalar</translation>
+<translation id="3537350467437346467">Görüntülediniz</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot'u</translation>
 <translation id="3540893133818942399">Telefonunuzdaki son fotoğrafları ve medya içeriklerini görme seçeneğini ayarlamayı kapatın</translation>
 <translation id="3542066395059568317">Kaldığınız yerden devam edebilmeniz için öneriler gösterilir. Sağ tıklayarak önerileri kaldırabilirsiniz.</translation>
+<translation id="3547318469722231257">Değişiklik yaptınız</translation>
 <translation id="3552189655002856821">Kablosuz bağlantı kapalı</translation>
 <translation id="3554215588514239132">Geliştirici Araçları panelini göster veya gizle</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> sabitlendi</translation>
@@ -701,6 +703,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="385300504083504382">Başlangıç</translation>
 <translation id="3859364108019690">Uygulama yayınlanamıyor</translation>
 <translation id="3861651314799684201">Tam ekran kaydı için enter tuşuna basın</translation>
+<translation id="3882323608730650973">Değiştirildi</translation>
 <translation id="3886872229787704059">Bugün açıldı</translation>
 <translation id="3891340733213178823">Oturumu kapatmak için Ctrl+ÜstKrktr+Q tuşlarına iki defa basın.</translation>
 <translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>
@@ -894,6 +897,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4582666543382004902">Kablosuz bağlantının kullanılması için hotspot kapatıldı. Hotspot'u kullanmak için kablosuz bağlantıyı kapatın.</translation>
 <translation id="4585337515783392668">Bilinmeyen bir alıcıya yayını durdur</translation>
 <translation id="4596144739579517758">Koyu tema kapalı</translation>
+<translation id="4596442969149038771"><ph name="USER" /> paylaştı</translation>
 <translation id="4611292653554630842">Giriş yap</translation>
 <translation id="462160925400706389"><ph name="NAME" /> bağlandı</translation>
 <translation id="4623167406982293031">Hesabı doğrulama</translation>
@@ -1337,6 +1341,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="6298183524022479114">Bu cihazı uygulamada özelleştirin</translation>
 <translation id="6309219492973062892">Raf simgelerine (1-8) dokunun veya tıklayın</translation>
 <translation id="6315170314923504164">Ses</translation>
+<translation id="6319058840130157106">Sağ alt köşe, Başlatıcı, adres çubuğu, yer işareti çubuğu, açık web sitesi ve indirilenler arasında geriye doğru geçiş yapın</translation>
 <translation id="6324916366299863871">Kısayolu düzenleyin</translation>
 <translation id="6330012934079202188">Tüm masalardaki pencereler gösteriliyor, mevcut masadaki pencerelerin gösterilmesi için Yukarı ok tuşuna basın</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" />, <ph name="MANAGER" /> tarafından yönetilen bir oturumdur</translation>
@@ -1500,6 +1505,7 @@ Yeni yüklenmiş</translation>
 <translation id="6981291220124935078">Erişimi etkinleştir</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
 <translation id="698231206551913481">Bu kullanıcıyla ilişkilendirilen tüm dosyalar ve yerel veriler, bu kullanıcı kaldırıldıktan sonra kalıcı olarak silinir.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) çözünürlüğü desteklemiyor. Çözünürlük, <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="6989752354829085073">Chromebook'unuzu nasıl kullanacağınızı öğrenmek için kısa turumuza katılın. Cihazınızı 6 adımda kullanmaya başlayın.</translation>
 <translation id="7004910047186208204">Hücresel veri bağlantısı kurma</translation>
 <translation id="7005239792648594238">Başlamak için bir uygulama açın</translation>
@@ -1814,6 +1820,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8314772463905284467">Caps Lock açık</translation>
 <translation id="8315514906653279104">Açılıyor...</translation>
 <translation id="8331351032546853669">İndirme işlemi beklemede</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> penceresi seçildi</translation>
 <translation id="8349826889576450703">başlatıcı</translation>
@@ -1920,6 +1927,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="878215960996152260"><ph name="APP_NAME" />, Yüklü Uygulama, Engellendi</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> ağına bağlan</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Sağ alt köşe, Başlatıcı, adres çubuğu, yer işareti çubuğu, açık web sitesi ve indirilenler arasında ileriye doğru geçiş yapın</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> klasörü</translation>
@@ -2033,6 +2041,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="953431725143473984">Cihaz kapatılsın mı?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> için yeterli alan yok. Yer açın.</translation>
 <translation id="954520015070501466">30 dk.</translation>
+<translation id="954786879461589145"><ph name="USER" /> değişiklik yaptı</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> için <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
 <translation id="981011780479609956">Teslim tarihi yok</translation>
 <translation id="98120814841227350">Dokümanın sonuna gider</translation>

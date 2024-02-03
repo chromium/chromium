@@ -67,7 +67,8 @@ UrlCheckerOnSB::UrlCheckerOnSB(
     std::string url_lookup_service_metric_suffix,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
-    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection)
+    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+    bool is_async_check)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
       navigation_id_(navigation_id),
@@ -81,7 +82,8 @@ UrlCheckerOnSB::UrlCheckerOnSB(
       url_lookup_service_(url_lookup_service),
       hash_realtime_service_(hash_realtime_service),
       hash_realtime_selection_(hash_realtime_selection),
-      creation_time_(base::TimeTicks::Now()) {
+      creation_time_(base::TimeTicks::Now()),
+      is_async_check_(is_async_check) {
   content::WebContents* contents = web_contents_getter_.Run();
   if (!!contents) {
     last_committed_url_ = contents->GetLastCommittedURL();
@@ -117,7 +119,8 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
         can_urt_check_subresource_url_, can_check_db_,
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
         last_committed_url_, content::GetUIThreadTaskRunner({}),
-        url_lookup_service_, hash_realtime_service_, hash_realtime_selection_);
+        url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
+        is_async_check_);
   }
 
   CheckUrl(params.url, params.method);
@@ -153,6 +156,10 @@ bool UrlCheckerOnSB::IsRealTimeCheckForTesting() {
   return url_real_time_lookup_enabled_ ||
          hash_realtime_selection_ !=
              hash_realtime_utils::HashRealTimeSelection::kNone;
+}
+
+bool UrlCheckerOnSB::IsAsyncCheckForTesting() {
+  return is_async_check_;
 }
 
 void UrlCheckerOnSB::AddUrlInRedirectChainForTesting(const GURL& url) {

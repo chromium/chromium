@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,7 +34,6 @@
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -65,7 +65,7 @@ const char kMdnsNameGeneratorServiceInstanceName[] =
 std::string CreateMdnsQuery(uint16_t query_id,
                             const std::string& dotted_name,
                             uint16_t qtype = net::dns_protocol::kTypeA) {
-  absl::optional<std::vector<uint8_t>> qname =
+  std::optional<std::vector<uint8_t>> qname =
       net::dns_names_util::DottedNameToNetwork(dotted_name);
   CHECK(qname.has_value());
   net::DnsQuery query(query_id, qname.value(), qtype);
@@ -122,7 +122,7 @@ std::string CreateResponseToMdnsNameGeneratorServiceQueryWithCacheFlush(
   net::DnsResponse response_cache_flush(
       /*id=*/0, /*is_authoritative=*/true, answers, /*authority_records=*/{},
       /*additional_records=*/{},
-      /*query=*/absl::nullopt,
+      /*query=*/std::nullopt,
       /*rcode=*/net::dns_protocol::kRcodeNOERROR,
       /*validate_records=*/true,
       /*validate_names_as_internet_hostnames=*/false);

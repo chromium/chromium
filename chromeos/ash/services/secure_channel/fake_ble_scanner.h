@@ -31,6 +31,7 @@ class FakeBleScanner : public BleScanner {
       const std::string& remote_device_id);
 
   // Public for testing.
+  using BleScanner::NotifyBleDiscoverySessionFailed;
   using BleScanner::NotifyReceivedAdvertisementFromDevice;
   using BleScanner::scan_requests;
 

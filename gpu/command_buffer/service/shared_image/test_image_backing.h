@@ -59,6 +59,13 @@ class TestImageBacking : public SharedImageBacking {
   void set_can_access(bool can_access) { can_access_ = can_access; }
   bool can_access() const { return can_access_; }
 
+#if BUILDFLAG(IS_APPLE)
+  void set_in_use_by_window_server(bool in_use_by_window_server) {
+    in_use_by_window_server_ = in_use_by_window_server;
+  }
+  bool in_use_by_window_server() const { return in_use_by_window_server_; }
+#endif  // BUILDFLAG(IS_APPLE)
+
  protected:
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
@@ -95,11 +102,40 @@ class TestImageBacking : public SharedImageBacking {
   raw_ptr<gles2::Texture> texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   bool can_access_ = true;
+#if BUILDFLAG(IS_APPLE)
+  bool in_use_by_window_server_ = false;
+#endif
 
   bool upload_from_memory_called_ = false;
   bool readback_to_memory_called_ = true;
   PurgeableCallback set_purgeable_callback_;
   PurgeableCallback set_not_purgeable_callback_;
+};
+
+class TestOverlayImageRepresentation : public OverlayImageRepresentation {
+ public:
+  TestOverlayImageRepresentation(SharedImageManager* manager,
+                                 SharedImageBacking* backing,
+                                 MemoryTypeTracker* tracker)
+      : OverlayImageRepresentation(manager, backing, tracker) {}
+
+  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
+  void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+  GetAHardwareBufferFenceSync() override;
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+  void MarkBackingInUse(bool in_use) {
+    static_cast<TestImageBacking*>(backing())->set_in_use_by_window_server(
+        in_use);
+  }
+
+ private:
+  bool IsInUseByWindowServer() const override;
+#endif  // BUILDFLAG(IS_APPLE)
 };
 
 }  // namespace gpu

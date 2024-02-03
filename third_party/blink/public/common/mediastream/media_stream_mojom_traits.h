@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIASTREAM_MEDIA_STREAM_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIASTREAM_MEDIA_STREAM_MOJOM_TRAITS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -34,12 +35,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return device.video_facing;
   }
 
-  static const absl::optional<std::string>& group_id(
+  static const std::optional<std::string>& group_id(
       const blink::MediaStreamDevice& device) {
     return device.group_id;
   }
 
-  static const absl::optional<std::string>& matched_output_device_id(
+  static const std::optional<std::string>& matched_output_device_id(
       const blink::MediaStreamDevice& device) {
     return device.matched_output_device_id;
   }
@@ -53,7 +54,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return device.input;
   }
 
-  static const absl::optional<base::UnguessableToken>& session_id(
+  static const std::optional<base::UnguessableToken>& session_id(
       const blink::MediaStreamDevice& device) {
     return device.serializable_session_id();
   }
@@ -75,8 +76,9 @@ struct BLINK_COMMON_EXPORT
     return controls.stream_type;
   }
 
-  static const std::string& device_id(const blink::TrackControls& controls) {
-    return controls.device_id;
+  static const std::vector<std::string>& device_ids(
+      const blink::TrackControls& controls) {
+    return controls.device_ids;
   }
 
   static bool Read(blink::mojom::TrackControlsDataView input,

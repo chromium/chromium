@@ -242,7 +242,7 @@ void BodyReader::OnDataComplete() {
   data_complete_ = true;
   body_pipe_drainer_.reset();
   // TODO(caseq): only encode if necessary.
-  base::Base64Encode(body_->data(), &encoded_body_);
+  encoded_body_ = base::Base64Encode(body_->data());
   for (auto& cb : callbacks_)
     cb->sendSuccess(encoded_body_, true);
   callbacks_.clear();
@@ -736,7 +736,7 @@ void DevToolsURLLoaderInterceptor::TakeResponseBodyPipe(
   if (it == jobs_.end()) {
     std::move(callback).Run(
         protocol::Response::InvalidParams("Invalid InterceptionId."),
-        mojo::ScopedDataPipeConsumerHandle(), base::EmptyString());
+        mojo::ScopedDataPipeConsumerHandle(), std::string());
     return;
   }
   it->second->TakeResponseBodyPipe(std::move(callback));
@@ -944,7 +944,7 @@ void InterceptionJob::TakeResponseBodyPipe(
   if (!CanGetResponseBody(&error_reason)) {
     std::move(callback).Run(Response::ServerError(std::move(error_reason)),
                             mojo::ScopedDataPipeConsumerHandle(),
-                            base::EmptyString());
+                            std::string());
     return;
   }
   DCHECK_EQ(state_, State::kResponseReceived);

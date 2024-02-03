@@ -20,9 +20,9 @@ namespace ash {
 // A view that displays a modifier or a key as a rounded corner UI component,
 // which can contain a text label or an icon.
 class KeyItemView : public views::View {
- public:
-  METADATA_HEADER(KeyItemView);
+  METADATA_HEADER(KeyItemView, views::View)
 
+ public:
   explicit KeyItemView(ui::KeyboardCode key_code);
   KeyItemView(const KeyItemView&) = delete;
   KeyItemView& operator=(const KeyItemView&) = delete;
@@ -32,7 +32,7 @@ class KeyItemView : public views::View {
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
 
   void SetIcon(const gfx::VectorIcon& icon);

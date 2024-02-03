@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <set>
@@ -31,7 +30,6 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_isolation_key.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -43,14 +41,6 @@
 namespace blink {
 class StorageKey;
 }  // namespace blink
-
-namespace network {
-namespace mojom {
-
-class URLLoaderFactory;
-
-}  // namespace mojom
-}  // namespace network
 
 namespace content {
 
@@ -93,13 +83,6 @@ class MockRenderProcessHost : public RenderProcessHost {
 
   // Simulates async launch happening.
   void SimulateReady();
-
-  using CreateNetworkFactoryCallback = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      int process_id,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory)>;
-  static void SetNetworkFactory(
-      const CreateNetworkFactoryCallback& url_loader_factory_callback);
 
   // RenderProcessHost implementation (public portion).
   bool Init() override;
@@ -193,9 +176,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   void DecrementPendingReuseRefCount() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
-  void CreateURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      network::mojom::URLLoaderFactoryParamsPtr params) override;
 
   bool MayReuseHost() override;
   bool IsUnused() override;
@@ -361,7 +341,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   std::map<std::string, InterfaceBinder> binder_overrides_;
   bool is_renderer_locked_to_site_ = false;
   std::set<GlobalRenderFrameHostId> render_frame_host_id_set_;
-  std::unique_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   mojo::PendingReceiver<blink::mojom::CacheStorage> cache_storage_receiver_;
   mojo::PendingReceiver<blink::mojom::IDBFactory> idb_factory_receiver_;
   base::WeakPtrFactory<MockRenderProcessHost> weak_ptr_factory_{this};
@@ -395,10 +374,6 @@ class MockRenderProcessHostFactory : public RenderProcessHostFactory {
   // for deleting all MockRenderProcessHosts that have not deleted by a test in
   // the destructor and prevent them from being leaked.
   mutable std::vector<std::unique_ptr<MockRenderProcessHost>> processes_;
-
-  // A mock URLLoaderFactory which just fails to create a loader.
-  std::unique_ptr<network::mojom::URLLoaderFactory>
-      default_mock_url_loader_factory_;
 };
 
 }  // namespace content

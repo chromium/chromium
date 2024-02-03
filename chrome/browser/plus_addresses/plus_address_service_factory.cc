@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"

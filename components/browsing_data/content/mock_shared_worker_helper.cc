@@ -27,8 +27,9 @@ void MockSharedWorkerHelper::StartFetching(FetchCallback callback) {
 void MockSharedWorkerHelper::DeleteSharedWorker(
     const GURL& worker,
     const std::string& name,
-    const blink::StorageKey& storage_key) {
-  SharedWorkerInfo key(worker, name, storage_key);
+    const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
+  SharedWorkerInfo key(worker, name, storage_key, same_site_cookies);
   ASSERT_TRUE(base::Contains(workers_, key));
   workers_[key] = false;
 }
@@ -43,10 +44,14 @@ void MockSharedWorkerHelper::AddSharedWorkerSamples() {
   const blink::StorageKey storage_key2 =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(worker2));
 
-  response_.emplace_back(worker1, name1, storage_key1);
-  response_.emplace_back(worker2, name2, storage_key2);
-  workers_[{worker1, name1, storage_key1}] = true;
-  workers_[{worker2, name2, storage_key2}] = true;
+  response_.emplace_back(worker1, name1, storage_key1,
+                         blink::mojom::SharedWorkerSameSiteCookies::kAll);
+  response_.emplace_back(worker2, name2, storage_key2,
+                         blink::mojom::SharedWorkerSameSiteCookies::kAll);
+  workers_[{worker1, name1, storage_key1,
+            blink::mojom::SharedWorkerSameSiteCookies::kAll}] = true;
+  workers_[{worker2, name2, storage_key2,
+            blink::mojom::SharedWorkerSameSiteCookies::kAll}] = true;
 }
 
 void MockSharedWorkerHelper::Notify() {

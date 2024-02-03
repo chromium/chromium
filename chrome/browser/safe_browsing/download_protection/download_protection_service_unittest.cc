@@ -2901,7 +2901,7 @@ TEST_F(DownloadProtectionServiceTest,
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED));
   auto validate_report_contents = [this, token](bool show_download_in_folder) {
     ClientSafeBrowsingReportRequest expected_report;
-    expected_report.set_url(GURL::EmptyGURL().spec());
+    expected_report.set_url(std::string());
     expected_report.set_type(
         ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED);
     expected_report.set_download_verdict(ClientDownloadResponse::DANGEROUS);
@@ -3243,7 +3243,7 @@ TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   const auto captured_args =
       std::move(event_observer.PassEventArgs().GetList()[0].GetDict());
   EXPECT_EQ("http://example.com/a.exe", *captured_args.FindString("url"));
-  EXPECT_EQ(base::HexEncode(hash.data(), hash.size()),
+  EXPECT_EQ(base::HexEncode(hash),
             *captured_args.FindString("downloadDigestSha256"));
   EXPECT_EQ(target_path.MaybeAsASCII(), *captured_args.FindString("fileName"));
 

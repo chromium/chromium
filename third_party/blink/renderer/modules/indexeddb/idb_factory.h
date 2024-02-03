@@ -146,7 +146,7 @@ class MODULES_EXPORT IDBFactory final
   CreatePendingRemoteFeatureObserver();
 
   // Whether the context has permission to use IDB.
-  absl::optional<bool> allowed_;
+  std::optional<bool> allowed_;
   // Holds requests that were paused while `allowed_` is being fetched. These
   // will all be invoked in order when `allowed_` is decided.
   Vector<base::OnceClosure> callbacks_waiting_on_permission_decision_;

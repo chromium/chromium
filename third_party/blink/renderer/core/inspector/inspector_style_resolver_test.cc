@@ -50,8 +50,8 @@ TEST_F(InspectorStyleResolverTest, DirectlyMatchedRules) {
   InspectorStyleResolver resolver(grid, kPseudoIdNone, g_null_atom);
   RuleIndexList* matched_rules = resolver.MatchedRules();
   // Some rules are coming for UA.
-  EXPECT_EQ(2u, matched_rules->size());
-  auto rule = matched_rules->at(1);
+  EXPECT_EQ(matched_rules->size(), 3u);
+  auto rule = matched_rules->at(2);
   EXPECT_EQ(
       "#grid { display: grid; gap: 10px; grid-template-columns: 100px 1fr 20%; "
       "}",
@@ -83,16 +83,15 @@ TEST_F(InspectorStyleResolverTest, ParentRules) {
   Element* grid_container =
       GetDocument().getElementById(AtomicString("grid-container"));
   // Some rules are coming for UA.
-  EXPECT_EQ(3u, parent_rules.size());
+  EXPECT_EQ(parent_rules.size(), 3u);
   // grid_container is the first parent.
-  EXPECT_EQ(grid_container, parent_rules.at(0)->element);
+  EXPECT_EQ(parent_rules.at(0)->element, grid_container);
   // Some rules are coming from UA.
-  EXPECT_EQ(2u, parent_rules.at(0)->matched_rules->size());
-  auto rule = parent_rules.at(0)->matched_rules->at(1);
-  EXPECT_EQ(
-      "#grid-container { display: inline-grid; gap: 5px; "
-      "grid-template-columns: 50px 1fr 10%; }",
-      rule.first->cssText());
+  EXPECT_EQ(parent_rules.at(0)->matched_rules->size(), 3u);
+  auto rule = parent_rules.at(0)->matched_rules->at(2);
+  EXPECT_EQ(rule.first->cssText(),
+            "#grid-container { display: inline-grid; gap: 5px; "
+            "grid-template-columns: 50px 1fr 10%; }");
 }
 
 TEST_F(InspectorStyleResolverTest, HighlightPseudoInheritance) {

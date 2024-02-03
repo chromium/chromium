@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1384959399684842514">ຢຸດການດາວໂຫລດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
 <translation id="1415402041810619267">ຕັດ URL ໃຫ້ສັ້ນລົງແລ້ວ</translation>
-<translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
 <translation id="1434873037477293673">ບັດຫຼຸດລາຄາ</translation>
 <translation id="1448064542941920355">ຫຼຸດການຊູມ</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ເວັບໄຊ}other{<ph name="SITE_COUNT" /> ເວັບໄຊ}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານ, ກະລຸນາເປີດກ້ອງຖ່າຍຮູບໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="2235344399760031203">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໄວ້</translation>
 <translation id="2238944249568001759">ການຊອກຫາທີ່ແນະນຳໂດຍອ້າງອີງໃສ່ແຖບຫຼ້າສຸດຂອງທ່ານ</translation>
+<translation id="2241587408274973373">ບັດໜ້າແຖບໃໝ່</translation>
 <translation id="2241634353105152135">ຄັ້ງ​ດຽວ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ລຶບອອກ</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{ມີ 1 ເວັບໄຊທີ່ຖືກບລັອກ}other{ມີ # ເວັບໄຊທີ່ຖືກບລັອກ}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">ເວັບໄຊສາມາດສະແດງຂໍ້ຄວາມການເຂົ້າສູ່ລະບົບຈາກບໍລິການຕົວຕົນຕ່າງໆໄດ້.</translation>
 <translation id="2790501146643349491">ເມື່ອເປີດ, ເວັບໄຊທີ່ປິດຫຼ້າສຸດສາມາດສຳເລັດການສົ່ງ ແລະ ຮັບຂໍ້ມູນໄດ້. ເມື່ອປິດ, ເວັບໄຊທີ່ປິດຫຼ້າສຸດບໍ່ສາມາດສຳເລັດການສົ່ງ ແລະ ຮັບຂໍ້ມູນໄດ້.</translation>
 <translation id="2822354292072154809">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການຣີເຊັດການອະນຸຍາດເວັບໄຊທັງໝົດສຳລັບ <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ຮ້ອງຂໍມຸມມອງມືຖື</translation>
 <translation id="2870560284913253234">ເວັບ​ໄຊທ໌</translation>
 <translation id="2874939134665556319">ເພງກ່ອນນີ້</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">ຕົວເບິ່ງໃບຢັ້ງຢືນ</translation>
 <translation id="2979365474350987274">ຄຸກກີ້ພາກສ່ວນທີສາມຖືກຈຳກັດໄວ້</translation>
 <translation id="3008272652534848354">ຣີເຊັດການອະນຸຍາດ</translation>
-<translation id="3013291976881901233">ການບໍລິການ MIDI</translation>
 <translation id="301521992641321250">ບລັອກອັດຕະໂນມັດແລ້ວ</translation>
 <translation id="3069226013421428034">ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ໝົດອາຍຸມື້ອື່ນ}other{ໝົດອາຍຸໃນ # ມື້}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">ເຊື່ອມຕໍ່ຫາອຸປະກອນ USB ແລ້ວ</translation>
 <translation id="4194328954146351878">ຖາມກ່ອນການອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງເຫັນ ແລະ ປ່ຽນຂໍ້ມູນຢູ່ອຸປະກອນ NFC (ແນະນຳ)</translation>
 <translation id="4200726100658658164">ເປີດການຕັ້ງຄ່າສະຖານທີ່</translation>
-<translation id="4212246570487010370">ສືບຕໍ່ທ່ອງເວັບ</translation>
 <translation id="4226663524361240545">ການແຈ້ງເຕືອນອາດຈະເຮັດໃຫ້ອຸປະກອນສັ່ນ</translation>
 <translation id="4259722352634471385">ການນໍາທາງຖືກບລັອກໄວ້: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ອະນຸຍາດແລ້ວ</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">ຍ້າຍ​ລົງ</translation>
 <translation id="6749077623962119521">ຣີເຊັດການອະນຸຍາດບໍ?</translation>
 <translation id="6766622839693428701">ປັດລົງເພື່ອປິດ.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> ຈາກ <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">ເລືອກຕົວເລືອກສຳລັບ <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
 <translation id="6818926723028410516">ເລືອກລາຍການ</translation>

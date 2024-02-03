@@ -489,8 +489,8 @@ bool TestResultsTracker::SaveSummaryAsJSON(
         // JSON-serialized - there are no guarantees about character encoding
         // of the snippet). This can be very useful piece of information when
         // debugging a test failure related to character encoding.
-        std::string base64_output_snippet;
-        Base64Encode(test_result.output_snippet, &base64_output_snippet);
+        std::string base64_output_snippet =
+            base::Base64Encode(test_result.output_snippet);
         test_result_value.Set("output_snippet_base64", base64_output_snippet);
         if (!test_result.links.empty()) {
           Value::Dict links;
@@ -543,8 +543,7 @@ bool TestResultsTracker::SaveSummaryAsJSON(
           }
           result_part_value.Set("lossless_summary", lossless_summary);
 
-          std::string encoded_summary;
-          Base64Encode(result_part.summary, &encoded_summary);
+          std::string encoded_summary = base::Base64Encode(result_part.summary);
           result_part_value.Set("summary_base64", encoded_summary);
 
           bool lossless_message = IsStringUTF8(result_part.message);
@@ -556,8 +555,7 @@ bool TestResultsTracker::SaveSummaryAsJSON(
           }
           result_part_value.Set("lossless_message", lossless_message);
 
-          std::string encoded_message;
-          Base64Encode(result_part.message, &encoded_message);
+          std::string encoded_message = base::Base64Encode(result_part.message);
           result_part_value.Set("message_base64", encoded_message);
 
           test_result_parts.Append(std::move(result_part_value));

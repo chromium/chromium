@@ -19,7 +19,8 @@ using RoutineResultCallback = base::OnceCallback<void(
 // expected to be implemented by every network diagnostics routine.
 class NetworkDiagnosticsRoutine {
  public:
-  NetworkDiagnosticsRoutine();
+  explicit NetworkDiagnosticsRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   NetworkDiagnosticsRoutine(const NetworkDiagnosticsRoutine&) = delete;
   NetworkDiagnosticsRoutine& operator=(const NetworkDiagnosticsRoutine&) =
       delete;
@@ -58,6 +59,11 @@ class NetworkDiagnosticsRoutine {
       chromeos::network_diagnostics::mojom::RoutineResultValuePtr
           result_value) {
     result_.result_value = std::move(result_value);
+  }
+
+  void set_source_for_testing(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source) {
+    result_.source = source;
   }
 
  private:

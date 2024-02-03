@@ -30,9 +30,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_GLYPH_METRICS_MAP_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -48,7 +48,7 @@ class GlyphMetricsMap {
   GlyphMetricsMap() : filled_primary_page_(false) {}
   GlyphMetricsMap(const GlyphMetricsMap&) = delete;
   GlyphMetricsMap& operator=(const GlyphMetricsMap&) = delete;
-  absl::optional<T> MetricsForGlyph(Glyph glyph) {
+  std::optional<T> MetricsForGlyph(Glyph glyph) {
     return LocatePage(glyph / GlyphMetricsPage::kSize)->MetricsForGlyph(glyph);
   }
 
@@ -68,10 +68,10 @@ class GlyphMetricsMap {
         256;  // Usually covers Latin-1 in a single page.
     GlyphMetricsPage() {}
 
-    absl::optional<T> MetricsForGlyph(Glyph glyph) const {
+    std::optional<T> MetricsForGlyph(Glyph glyph) const {
       T value = metrics_[glyph % kSize];
       if (value == UnknownMetrics())
-        return absl::nullopt;
+        return std::nullopt;
       return value;
     }
     void SetMetricsForGlyph(Glyph glyph, const T& metrics) {

@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -405,7 +406,7 @@ bool SequenceInformationRecordMatcher::MatchAndExplainRecord(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (SequenceInformationDictionaryBuilder::GenerationGuidIsRequired()) {
+  if (EncryptedReportingClient::GenerationGuidIsRequired()) {
     const auto* generation_guid =
         sequence_information->FindString(json_keys::kGenerationGuid);
     if ((!generation_guid || generation_guid->empty())) {

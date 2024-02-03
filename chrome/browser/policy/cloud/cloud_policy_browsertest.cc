@@ -241,7 +241,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     ASSERT_TRUE(policy_manager);
     policy_manager->Connect(
         g_browser_process->local_state(),
-        UserPolicySigninServiceBase::CreateCloudPolicyClient(
+        std::make_unique<CloudPolicyClient>(
             connector->device_management_service(),
             g_browser_process->shared_url_loader_factory()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

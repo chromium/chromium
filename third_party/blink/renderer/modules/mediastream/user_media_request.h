@@ -210,10 +210,10 @@ class MODULES_EXPORT UserMediaRequest final
     transferred_track_transfer_id_ = transfer_id;
     transferred_track_ = track;
   }
-  absl::optional<base::UnguessableToken> GetSessionId() const {
+  std::optional<base::UnguessableToken> GetSessionId() const {
     return transferred_track_session_id_;
   }
-  absl::optional<base::UnguessableToken> GetTransferId() const {
+  std::optional<base::UnguessableToken> GetTransferId() const {
     return transferred_track_transfer_id_;
   }
   bool IsTransferredTrackRequest() const {
@@ -251,8 +251,8 @@ class MODULES_EXPORT UserMediaRequest final
   IdentifiableSurface surface_;
   bool is_resolved_ = false;
 
-  absl::optional<base::UnguessableToken> transferred_track_session_id_;
-  absl::optional<base::UnguessableToken> transferred_track_transfer_id_;
+  std::optional<base::UnguessableToken> transferred_track_session_id_;
+  std::optional<base::UnguessableToken> transferred_track_transfer_id_;
   Member<TransferredMediaStreamTrack> transferred_track_;
 };
 

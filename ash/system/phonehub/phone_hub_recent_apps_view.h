@@ -99,7 +99,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
     // views::View:
     gfx::Size CalculatePreferredSize() const override;
-    void Layout() override;
+    void Layout(PassKey) override;
 
     views::View* AddRecentAppButton(
         std::unique_ptr<views::View> recent_app_button);
@@ -122,7 +122,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
     // views::View:
     gfx::Size CalculatePreferredSize() const override;
-    void Layout() override;
+    void Layout(PassKey) override;
 
     void StartLoadingAnimation();
     void StopLoadingAnimation();

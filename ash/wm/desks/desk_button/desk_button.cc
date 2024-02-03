@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/desk_button_widget.h"
@@ -20,273 +22,133 @@
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_bar_controller.h"
+#include "ash/wm/desks/desk_button/desk_button_container.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/i18n/break_iterator.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/view_factory_internal.h"
 
 namespace ash {
 
 ////////////////////////////////////////////////////////////////////////////////
-// DeskSwitchButton:
-DeskSwitchButton::DeskSwitchButton(PressedCallback callback)
-    : ImageButton(std::move(callback)) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  SetSize(
-      gfx::Size(kDeskButtonSwitchButtonWidth, kDeskButtonSwitchButtonHeight));
-  SetImageHorizontalAlignment(
-      views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
-  SetImageVerticalAlignment(
-      views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
-  SetProperty(views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred));
-  SetShown(false);
-  SetVisible(true);
-}
-
-DeskSwitchButton::~DeskSwitchButton() = default;
-
-void DeskSwitchButton::SetShown(bool show) {
-  layer()->SetOpacity(show ? 1.0f : 0.0f);
-  SetEnabled(show);
-}
-
-bool DeskSwitchButton::GetShown() const {
-  return GetEnabled() && layer()->GetTargetOpacity() == 1.0f;
-}
-
-void DeskSwitchButton::OnMouseEntered(const ui::MouseEvent& event) {
-  if (hovered_) {
-    return;
-  }
-
-  hovered_ = true;
-  SchedulePaint();
-}
-
-void DeskSwitchButton::OnMouseExited(const ui::MouseEvent& event) {
-  if (!hovered_) {
-    return;
-  }
-
-  hovered_ = false;
-  SchedulePaint();
-}
-
-void DeskSwitchButton::OnPaintBackground(gfx::Canvas* canvas) {
-  if (hovered_) {
-    ImageButton::OnPaintBackground(canvas);
-  }
-}
-
-void DeskSwitchButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
-  Shelf::ForWindow(GetWidget()->GetNativeWindow())
-      ->desk_button_widget()
-      ->MaybeFocusOut(reverse);
-}
-
-void DeskSwitchButton::OnViewBlurred(views::View* observed_view) {
-  Shelf::ForWindow(GetWidget()->GetNativeWindow())
-      ->desk_button_widget()
-      ->GetDeskButton()
-      ->MaybeContract();
-}
-
-BEGIN_METADATA(DeskSwitchButton)
-END_METADATA
-
-////////////////////////////////////////////////////////////////////////////////
 // DeskButton:
-DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
-    : Button(
-          /*callback=*/base::BindRepeating(&DeskButton::OnButtonPressed,
-                                           base::Unretained(this))),
-      desk_button_widget_(desk_button_widget),
-      prev_desk_button_(AddChildView(std::make_unique<DeskSwitchButton>(
-          base::BindRepeating(&DeskButton::OnPreviousPressed,
-                              base::Unretained(this))))),
-      desk_name_label_(AddChildView(std::make_unique<views::Label>())),
-      next_desk_button_(AddChildView(std::make_unique<DeskSwitchButton>(
-          base::BindRepeating(&DeskButton::OnNextPressed,
-                              base::Unretained(this))))) {
-  SetPaintToLayer();
-  SetNotifyEnterExitOnChild(true);
-  layer()->SetFillsBoundsOpaquely(false);
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque, kDeskButtonCornerRadius));
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kPreferred));
+DeskButton::DeskButton()
+    : views::Button(base::BindRepeating(&DeskButton::OnButtonPressed,
+                                        base::Unretained(this))) {}
 
-  SetupFocus(this);
+DeskButton::~DeskButton() {}
 
-  // TODO(yongshun): Remove this when the desk button is re-structured with the
-  // new specs.
-  views::FocusRing::Get(this)->SetHasFocusPredicate(base::BindRepeating(
-      [](const views::View* view) { return view->HasFocus(); }));
-
-  // The previous desk button should always be on the left and the next desk
-  // button on the right even in RTL mode to respect the direction of the desk
-  // bar, which does not change in RTL either.
-  if (base::i18n::IsRTL()) {
-    ReorderChildView(prev_desk_button_, 3);
-    ReorderChildView(next_desk_button_, 1);
+gfx::Size DeskButton::CalculatePreferredSize() const {
+  int height;
+  int width;
+  if (desk_button_container_->IsHorizontalShelf()) {
+    if (desk_button_container_->ShouldShowDeskProfilesUi()) {
+      width = zero_state_ ? kDeskButtonWidthHorizontalZeroWithAvatar
+                          : kDeskButtonWidthHorizontalExpandedWithAvatar;
+    } else {
+      width = zero_state_ ? kDeskButtonWidthHorizontalZeroNoAvatar
+                          : kDeskButtonWidthHorizontalExpandedNoAvatar;
+    }
+    height = kDeskButtonHeightHorizontal;
+  } else {
+    width = kDeskButtonWidthVertical;
+    height = kDeskButtonHeightVertical;
   }
 
-  prev_desk_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kChevronSmallLeftIcon));
-  prev_desk_button_->SetAccessibleName(u"Previous desk:");
-  prev_desk_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysHoverOnSubtle,
-      gfx::RoundedCornersF{kDeskButtonCornerRadius, 0, 0,
-                           kDeskButtonCornerRadius},
-      /*for_border_thickness=*/0));
-  SetupFocus(prev_desk_button_);
-
-  next_desk_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kChevronSmallRightIcon));
-  next_desk_button_->SetAccessibleName(u"Next desk:");
-  next_desk_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysHoverOnSubtle,
-      gfx::RoundedCornersF{0, kDeskButtonCornerRadius, kDeskButtonCornerRadius,
-                           0},
-      /*for_border_thickness=*/0));
-  SetupFocus(next_desk_button_);
-
-  CalculateDisplayNames(DesksController::Get()->active_desk());
-  CHECK(!is_expanded_);
-
-  desk_name_label_->SetText(abbreviated_desk_name_);
-  desk_name_label_->SetHandlesTooltips(false);
-  desk_name_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_CENTER);
-  desk_name_label_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-
-  // Using color ID instead of the direct color guarantees that the label will
-  // automatically change color on a theme change (b/287129850).
-  desk_name_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-
-  // Labels automatically assume that they have an opaque background, and will
-  // try to contrast with this assumed background unless we tell it not to do
-  // that here.
-  desk_name_label_->SetAutoColorReadabilityEnabled(false);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
-                                        *desk_name_label_);
-
-  // Use shelf view as the context menu controller so that right click on the
-  // desk button shows the same context menu.
-  set_context_menu_controller(
-      desk_button_widget_->shelf()->hotseat_widget()->GetShelfView());
-
-  DesksController::Get()->AddObserver(this);
-  Shell::Get()->AddShellObserver(this);
+  return {width, height};
 }
 
-DeskButton::~DeskButton() {
-  Shell::Get()->RemoveShellObserver(this);
-  DesksController::Get()->RemoveObserver(this);
-}
-
-void DeskButton::OnExpandedStateUpdate(bool expanded) {
-  is_expanded_ = expanded;
-  desk_name_label_->SetText(is_expanded_ ? desk_name_ : abbreviated_desk_name_);
-
-  // In the shrunk desk button the desk switch buttons should not be used in the
-  // layout.
-  prev_desk_button_->SetVisible(expanded);
-  next_desk_button_->SetVisible(expanded);
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
-
-  // Re-layout the button to reflect desk switch button visibility changes.
-  Layout();
-}
-
-bool DeskButton::GetHovered() const {
-  return GetState() == ButtonState::STATE_HOVERED;
-}
-
-void DeskButton::SetActivation(bool is_activated) {
-  if (is_activated_ == is_activated) {
+void DeskButton::Layout(PassKey) {
+  if (!desk_button_container_) {
     return;
   }
 
-  is_activated_ = is_activated;
+  LayoutSuperclass<views::Button>(this);
 
-  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_activation_,
-                              !is_activated_);
+  gfx::Rect available_bounds = gfx::Rect(size());
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
-                    : cros_tokens::kCrosSysSystemOnBaseOpaque,
-      kDeskButtonCornerRadius));
-  desk_name_label_->SetEnabledColorId(
-      is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface);
-
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
-}
-
-void DeskButton::SetFocused(bool is_focused) {
-  if (is_focused_ == is_focused) {
+  // Layout when it's vertical shelf.
+  if (!desk_button_container_->IsHorizontalShelf()) {
+    available_bounds.Inset(kDeskButtonInsectVerticalNoAvatar);
+    desk_name_label_->SetBoundsRect(available_bounds);
     return;
   }
 
-  is_focused_ = is_focused;
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
-}
-
-void DeskButton::MaybeContract() {
-  SetFocused(HasFocus() || next_desk_button_->HasFocus() ||
-             prev_desk_button_->HasFocus());
-  if (!is_focused_ && !force_expanded_state_) {
-    desk_button_widget_->SetExpanded(false);
+  if (desk_avatar_view_ && desk_avatar_view_->GetVisible()) {
+    if (base::i18n::IsRTL()) {
+      // Layout when the desk avatar is visible and it's rtl.
+      gfx::Insets desk_button_insets =
+          zero_state_ ? kDeskButtonInsectHorizontalZeroWithAvatar
+                      : kDeskButtonInsectHorizontalExpandedWithAvatar;
+      desk_button_insets.set_left_right(desk_button_insets.right(),
+                                        desk_button_insets.left());
+      available_bounds.Inset(desk_button_insets);
+      gfx::Rect desk_avatar_view_bounds = gfx::Rect(
+          {available_bounds.right() - kDeskButtonAvatarSize.width(),
+           available_bounds.y() +
+               (available_bounds.height() - kDeskButtonAvatarSize.height()) /
+                   2},
+          kDeskButtonAvatarSize);
+      gfx::Insets insets_taken = gfx::Insets::TLBR(
+          0, 0, 0,
+          kDeskButtonAvatarSize.width() +
+              (zero_state_ ? kDeskButtonChildSpacingHorizontalZero
+                           : kDeskButtonChildSpacingHorizontalExpanded));
+      desk_avatar_view_->SetBoundsRect(desk_avatar_view_bounds);
+      available_bounds.Inset(insets_taken);
+      desk_name_label_->SetBoundsRect(available_bounds);
+    } else {
+      // Layout when the desk avatar is visible and it's *not* rtl.
+      gfx::Insets desk_button_insets =
+          zero_state_ ? kDeskButtonInsectHorizontalZeroWithAvatar
+                      : kDeskButtonInsectHorizontalExpandedWithAvatar;
+      available_bounds.Inset(desk_button_insets);
+      gfx::Rect desk_avatar_view_bounds = gfx::Rect(
+          {available_bounds.x(),
+           available_bounds.y() +
+               (available_bounds.height() - kDeskButtonAvatarSize.height()) /
+                   2},
+          kDeskButtonAvatarSize);
+      gfx::Insets insets_taken = gfx::Insets::TLBR(
+          0,
+          kDeskButtonAvatarSize.width() +
+              (zero_state_ ? kDeskButtonChildSpacingHorizontalZero
+                           : kDeskButtonChildSpacingHorizontalExpanded),
+          0, 0);
+      desk_avatar_view_->SetBoundsRect(desk_avatar_view_bounds);
+      available_bounds.Inset(insets_taken);
+      desk_name_label_->SetBoundsRect(available_bounds);
+    }
+  } else {
+    // Layout when the desk avatar is *not* visible.
+    available_bounds.Inset(zero_state_
+                               ? kDeskButtonInsectHorizontalZeroNoAvatar
+                               : kDeskButtonInsectHorizontalExpandedNoAvatar);
+    desk_name_label_->SetBoundsRect(available_bounds);
   }
-}
-
-std::u16string DeskButton::GetTitleForView(const views::View* view) {
-  if (view == this) {
-    return desk_name_;
-  }
-
-  DesksController* desks_controller = DesksController::Get();
-  Desk* target_desk =
-      view == prev_desk_button_   ? desks_controller->GetPreviousDesk()
-      : view == next_desk_button_ ? desks_controller->GetNextDesk()
-                                  : nullptr;
-  return target_desk ? target_desk->name() : std::u16string();
-}
-
-const std::u16string& DeskButton::GetTextForTest() const {
-  return desk_name_label_->GetText();
 }
 
 void DeskButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -306,7 +168,7 @@ void DeskButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED &&
       event->IsOnlyRightMouseButton()) {
-    MaybeShowContextMenuForEvent(event);
+    desk_button_container_->MaybeShowContextMenu(this, event);
     return;
   }
 
@@ -316,7 +178,7 @@ void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
 void DeskButton::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_LONG_PRESS ||
       event->type() == ui::ET_GESTURE_LONG_TAP) {
-    MaybeShowContextMenuForEvent(event);
+    desk_button_container_->MaybeShowContextMenu(this, event);
     return;
   }
 
@@ -324,23 +186,12 @@ void DeskButton::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void DeskButton::StateChanged(ButtonState old_state) {
-  // When shell is destroying, child views under desk button will be removed
-  // first, then it triggers `Button::ViewHierarchyChanged()`, as a result,
-  // button state will be set to normal. In such case, it should *not* do
-  // anything to the desk button widget or the chevron buttons.
-  if (is_shell_destroying_ || (GetState() != ButtonState::STATE_NORMAL &&
-                               GetState() != ButtonState::STATE_HOVERED)) {
+  if (GetState() != ButtonState::STATE_NORMAL &&
+      GetState() != ButtonState::STATE_HOVERED) {
     return;
   }
 
   UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !GetHovered());
-
-  if (is_activated_) {
-    return;
-  }
-
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
 }
 
 views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -351,62 +202,121 @@ views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
                                                           : this;
 }
 
-void DeskButton::OnDeskAdded(const Desk* desk, bool from_undo) {
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
+void DeskButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
+  desk_button_container_->desk_button_widget()->MaybeFocusOut(reverse);
 }
 
-void DeskButton::OnDeskRemoved(const Desk* desk) {
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
+void DeskButton::Init(DeskButtonContainer* desk_button_container) {
+  CHECK(desk_button_container);
+  desk_button_container_ = desk_button_container;
+
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  SetFlipCanvasOnPaintForRTLUI(false);
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase1, kDeskButtonCornerRadius));
+
+  SetInstallFocusRingOnFocus(true);
+  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+  views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(kDeskButtonFocusRingHaloInset),
+      kDeskButtonCornerRadius);
+
+  if (features::IsDeskButtonEnabled()) {
+    AddChildView(views::Builder<views::ImageView>()
+                     .CopyAddressTo(&desk_avatar_view_)
+                     .SetPaintToLayer()
+                     .Build());
+    desk_avatar_view_->layer()->SetFillsBoundsOpaquely(false);
+    desk_avatar_view_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kDeskButtonAvatarSize.width()));
+  }
+
+  AddChildView(
+      views::Builder<views::Label>()
+          .CopyAddressTo(&desk_name_label_)
+          .SetHandlesTooltips(false)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
+          .SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE)
+          .SetEnabled(cros_tokens::kCrosSysOnSurface)
+          .Build());
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                        *desk_name_label_);
+
+  UpdateLocaleSpecificSettings();
+
+  // Use shelf view as the context menu controller so that it shows the same
+  // context menu.
+  set_context_menu_controller(
+      desk_button_container_->shelf()->hotseat_widget()->GetShelfView());
 }
 
-void DeskButton::OnDeskReordered(int old_index, int new_index) {
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
+bool DeskButton::GetHovered() const {
+  return GetState() == ButtonState::STATE_HOVERED;
 }
 
-void DeskButton::OnDeskActivationChanged(const Desk* activated,
-                                         const Desk* deactivated) {
-  CalculateDisplayNames(activated);
-  desk_name_label_->SetText(is_expanded_ ? desk_name_ : abbreviated_desk_name_);
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kDeskButtonUpdate);
-}
-
-void DeskButton::OnDeskNameChanged(const Desk* desk,
-                                   const std::u16string& new_name) {
-  if (!desk->is_active()) {
+void DeskButton::SetActivation(bool is_activated) {
+  if (is_activated_ == is_activated) {
     return;
   }
 
-  CalculateDisplayNames(desk);
-  desk_name_label_->SetText(is_expanded_ ? desk_name_ : abbreviated_desk_name_);
+  is_activated_ = is_activated;
+
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                    : cros_tokens::kCrosSysSystemOnBase1,
+      kDeskButtonCornerRadius));
+  desk_name_label_->SetEnabledColorId(
+      is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                    : cros_tokens::kCrosSysOnSurface);
+
+  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_activation_,
+                              !is_activated_);
 }
 
-void DeskButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
-  Shelf::ForWindow(GetWidget()->GetNativeWindow())
-      ->desk_button_widget()
-      ->MaybeFocusOut(reverse);
+std::u16string DeskButton::GetTitle() const {
+  return DesksController::Get()->active_desk()->name();
 }
 
-// TODO(yongshun): Remove this when the desk button is re-structured with the
-// new specs.
-void DeskButton::OnViewFocused(views::View* observed_view) {
-  views::Button::OnViewFocused(observed_view);
-  views::FocusRing::Get(this)->SchedulePaint();
+void DeskButton::UpdateUi(const Desk* active_desk) {
+  desk_name_label_->SetText(GetDeskNameLabelText(active_desk));
+  UpdateAvatar(active_desk);
 }
 
-// TODO(yongshun): Remove this when the desk button is re-structured with the
-// new specs.
-void DeskButton::OnViewBlurred(views::View* observed_view) {
-  MaybeContract();
-  views::Button::OnViewBlurred(observed_view);
-  views::FocusRing::Get(this)->SchedulePaint();
+void DeskButton::UpdateAvatar(const Desk* active_desk) {
+  if (!desk_avatar_view_) {
+    return;
+  }
+
+  if (desk_button_container_->IsHorizontalShelf() &&
+      desk_button_container_->ShouldShowDeskProfilesUi()) {
+    if (auto* desk_profiles_delegate =
+            Shell::Get()->GetDeskProfilesDelegate()) {
+      if (auto* summary =
+              desk_profiles_delegate->GetProfilesSnapshotByProfileId(
+                  active_desk->lacros_profile_id())) {
+        desk_avatar_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
+            summary->icon, skia::ImageOperations::RESIZE_BEST,
+            kDeskButtonAvatarSize);
+
+        desk_avatar_view_->SetImage(desk_avatar_image_);
+        desk_avatar_view_->SetImageSize(kDeskButtonAvatarSize);
+        desk_avatar_view_->SetVisible(true);
+        return;
+      }
+    }
+  }
+
+  desk_avatar_view_->SetVisible(false);
 }
 
-void DeskButton::OnShellDestroying() {
-  is_shell_destroying_ = true;
+void DeskButton::UpdateLocaleSpecificSettings() {
+  const Desk* active_desk = DesksController::Get()->active_desk();
+  SetAccessibleName(l10n_util::GetStringFUTF16(IDS_SHELF_DESK_BUTTON_TITLE,
+                                               active_desk->name()));
+  desk_name_label_->SetText(GetDeskNameLabelText(active_desk));
 }
 
 void DeskButton::OnButtonPressed() {
@@ -418,7 +328,7 @@ void DeskButton::OnButtonPressed() {
 
   base::UmaHistogramBoolean(kDeskButtonPressesHistogramName, true);
 
-  aura::Window* root = desk_button_widget_->GetNativeWindow()->GetRootWindow();
+  aura::Window* root = GetWidget()->GetNativeWindow()->GetRootWindow();
   DeskBarController* desk_bar_controller =
       desk_controller->desk_bar_controller();
 
@@ -429,121 +339,25 @@ void DeskButton::OnButtonPressed() {
   }
 }
 
-void DeskButton::OnPreviousPressed() {
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kPreviousButtonPressed);
-  DesksController::Get()->ActivateAdjacentDesk(
-      /*going_left=*/true, DesksSwitchSource::kDeskButtonSwitchButton);
-}
-
-void DeskButton::OnNextPressed() {
-  MaybeUpdateDeskSwitchButtonVisibility(
-      SwitchButtonUpdateSource::kNextButtonPressed);
-  DesksController::Get()->ActivateAdjacentDesk(
-      /*going_left=*/false, DesksSwitchSource::kDeskButtonSwitchButton);
-}
-
-void DeskButton::CalculateDisplayNames(const Desk* desk) {
-  // Should not update desk name if desk name is empty.
-  if (desk->name().empty()) {
-    return;
+std::u16string DeskButton::GetDeskNameLabelText(const Desk* active_desk) const {
+  int active_desk_index = DesksController::Get()->GetDeskIndex(active_desk);
+  if (active_desk->name().empty() || active_desk_index < 0) {
+    return std::u16string();
   }
 
-  desk_name_ = desk->name();
-  base::i18n::BreakIterator iter(desk_name_,
-                                 base::i18n::BreakIterator::BREAK_CHARACTER);
-
-  if (!iter.Init()) {
-    return;
-  }
-
-  if (desk->is_name_set_by_user()) {
-    // For the customized desk name, it shows the first unicode for the
-    // `abbreviated_desk_name_`.
-    if (!iter.Advance()) {
-      return;
+  if (zero_state_) {
+    base::i18n::BreakIterator iter(active_desk->name(),
+                                   base::i18n::BreakIterator::BREAK_CHARACTER);
+    if (!iter.Init()) {
+      return std::u16string();
     }
-    abbreviated_desk_name_ = iter.GetString();
-  } else {
-    abbreviated_desk_name_ =
-        u"#" + base::NumberToString16(
-                   DesksController::Get()->GetActiveDeskIndex() + 1);
-  }
-
-  SetAccessibleName(
-      l10n_util::GetStringFUTF16(IDS_SHELF_DESK_BUTTON_TITLE, desk_name_));
-}
-
-void DeskButton::MaybeUpdateDeskSwitchButtonVisibility(
-    SwitchButtonUpdateSource source) {
-  // It has to meet all the following conditions for the switch button to show:
-  //   1) desk button is currently hovered or focused;
-  //   2) desk button is not activated;
-  //   3) desk button is expanded;
-  //   4) there is a desk available for the previous/next switch button;
-  DesksController* desk_controller = DesksController::Get();
-  const int target_desk_index =
-      desk_controller->GetActiveDeskIndex() + static_cast<int>(source);
-  const int prev_desk_index = target_desk_index - 1;
-  const int next_desk_index = target_desk_index + 1;
-  const bool show_desk_switch_buttons =
-      (GetHovered() || is_focused_) && !is_activated_ && is_expanded_;
-  auto is_valid_desk_index = [desk_controller](int index) {
-    return 0 <= index && index < desk_controller->GetNumberOfDesks();
-  };
-  const bool show_prev_desk_button =
-      show_desk_switch_buttons && is_valid_desk_index(prev_desk_index);
-  const bool show_next_desk_button =
-      show_desk_switch_buttons && is_valid_desk_index(next_desk_index);
-
-  prev_desk_button_->SetShown(show_prev_desk_button);
-  next_desk_button_->SetShown(show_next_desk_button);
-
-  if (show_prev_desk_button) {
-    if (prev_desk_index < kDeskBarMaxDeskShortcut) {
-      prev_desk_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE,
-          desk_controller->GetDeskName(prev_desk_index),
-          base::NumberToString16(prev_desk_index + 1)));
-    } else {
-      prev_desk_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE_16_DESKS,
-          desk_controller->GetDeskName(prev_desk_index)));
+    if (active_desk->is_name_set_by_user()) {
+      return iter.Advance() ? iter.GetString() : std::u16string();
     }
+    return u"#" + base::NumberToString16(active_desk_index + 1);
   }
 
-  if (show_next_desk_button) {
-    if (next_desk_index < kDeskBarMaxDeskShortcut) {
-      next_desk_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_SHELF_NEXT_DESK_BUTTON_TITLE,
-          desk_controller->GetDeskName(next_desk_index),
-          base::NumberToString16(next_desk_index + 1)));
-    } else {
-      next_desk_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_SHELF_NEXT_DESK_BUTTON_TITLE_16_DESKS,
-          desk_controller->GetDeskName(next_desk_index)));
-    }
-  }
-}
-
-void DeskButton::MaybeShowContextMenuForEvent(ui::LocatedEvent* event) {
-  if (!is_activated_) {
-    ui::MenuSourceType source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
-    if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_PRESS;
-    } else if (event->type() == ui::ET_GESTURE_LONG_TAP) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_TAP;
-    }
-    gfx::Point location_in_screen(event->location());
-    View::ConvertPointToScreen(this, &location_in_screen);
-    ShowContextMenu(location_in_screen, source_type);
-    MaybeUpdateDeskSwitchButtonVisibility(
-        SwitchButtonUpdateSource::kDeskButtonUpdate);
-    MaybeContract();
-  }
-
-  event->SetHandled();
-  event->StopPropagation();
+  return active_desk->name();
 }
 
 void DeskButton::UpdateShelfAutoHideDisabler(
@@ -552,19 +366,8 @@ void DeskButton::UpdateShelfAutoHideDisabler(
   if (should_enable_shelf_auto_hide) {
     disabler.reset();
   } else {
-    disabler.emplace(desk_button_widget_->shelf());
+    disabler.emplace(desk_button_container_->shelf());
   }
-}
-
-void DeskButton::SetupFocus(views::Button* view) {
-  view->SetInstallFocusRingOnFocus(true);
-  view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  views::FocusRing::Get(view)->SetOutsetFocusRingDisabled(true);
-  views::FocusRing::Get(view)->SetColorId(cros_tokens::kCrosSysFocusRing);
-  views::InstallRoundRectHighlightPathGenerator(
-      view, gfx::Insets(kDeskButtonFocusRingHaloInset),
-      kDeskButtonCornerRadius);
-  view->SetFlipCanvasOnPaintForRTLUI(false);
 }
 
 BEGIN_METADATA(DeskButton)

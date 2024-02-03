@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -17,8 +18,11 @@
 #include "chromeos/ash/services/secure_channel/fake_secure_channel_disconnector.h"
 #include "chromeos/ash/services/secure_channel/nearby_connection.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -172,6 +176,9 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
 
     manager_->AttemptNearbyInitiatorConnection(
         device_id_pair,
+        base::BindRepeating(&SecureChannelNearbyConnectionManagerImplTest::
+                                OnBleDiscoveryStateChanged,
+                            base::Unretained(this), device_id_pair),
         base::BindOnce(
             &SecureChannelNearbyConnectionManagerImplTest::OnConnectionSuccess,
             base::Unretained(this), device_id_pair),
@@ -194,6 +201,17 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
     EXPECT_FALSE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
         device_id_pair, ConnectionMedium::kNearbyConnections,
         ConnectionRole::kInitiatorRole)));
+  }
+
+  void SimulateBleDisvoceryFailed(const DeviceIdPair& device_id_pair) {
+    fake_ble_scanner_->NotifyBleDiscoverySessionFailed(
+        device_id_pair, mojom::DiscoveryResult::kFailure,
+        mojom::DiscoveryErrorCode::kTimeout);
+
+    // As a result of the connection, all ongoing connection attmepts should
+    // have been canceled, since a connection is in progress.
+    EXPECT_EQ(device_discovery_results_[device_id_pair],
+              mojom::DiscoveryResult::kFailure);
   }
 
   // Returns the SecureChannel created by this call.
@@ -334,6 +352,13 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
     CancelNearbyInitiatorConnectionAttempt(device_id_pair_copy);
   }
 
+  void OnBleDiscoveryStateChanged(
+      const DeviceIdPair& device_id_pair,
+      mojom::DiscoveryResult result,
+      absl::optional<mojom::DiscoveryErrorCode> error_code) {
+    device_discovery_results_[device_id_pair] = result;
+  }
+
   void SetInRemoteDeviceIdToMetadataMap(const DeviceIdPair& device_id_pair) {
     remote_device_id_to_id_pairs_map_[device_id_pair.remote_device_id()].insert(
         device_id_pair);
@@ -359,7 +384,8 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
 
   base::flat_map<std::string, base::flat_set<DeviceIdPair>>
       remote_device_id_to_id_pairs_map_;
-
+  base::flat_map<DeviceIdPair, mojom::DiscoveryResult>
+      device_discovery_results_;
   std::vector<std::pair<DeviceIdPair, std::unique_ptr<AuthenticatedChannel>>>
       successful_connections_;
   std::vector<std::pair<DeviceIdPair, NearbyInitiatorFailureType>>
@@ -387,6 +413,17 @@ TEST_F(SecureChannelNearbyConnectionManagerImplTest,
                                    /*expected_to_add_request=*/true,
                                    /*should_cancel_attempt_on_failure=*/false);
   CancelNearbyInitiatorConnectionAttempt(pair);
+}
+
+TEST_F(SecureChannelNearbyConnectionManagerImplTest,
+       AttemptAndDiscoveryFailed) {
+  DeviceIdPair pair(test_devices()[1].GetDeviceId(),
+                    test_devices()[0].GetDeviceId());
+
+  AttemptNearbyInitiatorConnection(pair,
+                                   /*expected_to_add_request=*/true,
+                                   /*should_cancel_attempt_on_failure=*/false);
+  SimulateBleDisvoceryFailed(pair);
 }
 
 TEST_F(SecureChannelNearbyConnectionManagerImplTest,

@@ -163,7 +163,7 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
   cc::Region invalidation_region;
   if (!g_simulate_raster_under_invalidations)
     invalidation_region = invalidation_region_since_last_paint_;
-  absl::optional<PaintRecord> old_record = std::move(last_painted_record_);
+  std::optional<PaintRecord> old_record = std::move(last_painted_record_);
 
   last_painted_record_ = new_record;
   last_interest_rect_ = new_interest_rect;

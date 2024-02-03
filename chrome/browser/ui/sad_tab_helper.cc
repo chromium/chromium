@@ -44,14 +44,13 @@ void SadTabHelper::ReinstallInWebView() {
 
 void SadTabHelper::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  // Ensure that any existing SadTab is cleared as soon as a new frame is
-  // created, so that a crash in the new frame in
-  // PrimaryMainFrameRenderProcessGone is not ignored due to an earlier hidden
-  // SadTab. We're checking for GetParent as we're intentionally clearing the
-  // SadTab for speculative RFHs, which are not inclded in IsInPrimaryMainFrame.
-  if (!render_frame_host->GetParent()) {
+  if (content::ShouldSkipEarlyCommitPendingForCrashedFrame())
     sad_tab_.reset();
-  }
+}
+
+void SadTabHelper::RenderViewReady() {
+  if (!content::ShouldSkipEarlyCommitPendingForCrashedFrame())
+    sad_tab_.reset();
 }
 
 void SadTabHelper::DidFinishNavigation(

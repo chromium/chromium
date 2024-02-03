@@ -4,11 +4,12 @@
 
 #include "services/network/shared_storage/shared_storage_header_utils.h"
 
+#include <optional>
+
 #include "base/containers/fixed_flat_map.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -30,23 +31,23 @@ constexpr auto kSharedStorageHeaderParamTypeMap =
 
 }  // namespace
 
-absl::optional<mojom::SharedStorageOperationType>
+std::optional<mojom::SharedStorageOperationType>
 StringToSharedStorageOperationType(std::string_view operation_str) {
   auto* operation_it =
       kSharedStorageOperationTypeMap.find(base::ToLowerASCII(operation_str));
   if (operation_it == kSharedStorageOperationTypeMap.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return operation_it->second;
 }
 
-absl::optional<SharedStorageHeaderParamType>
+std::optional<SharedStorageHeaderParamType>
 StringToSharedStorageHeaderParamType(std::string_view param_str) {
   auto* param_it =
       kSharedStorageHeaderParamTypeMap.find(base::ToLowerASCII(param_str));
   if (param_it == kSharedStorageHeaderParamTypeMap.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return param_it->second;
@@ -57,7 +58,7 @@ bool GetSecSharedStorageWritableHeader(const net::HttpRequestHeaders& headers) {
   if (!headers.GetHeader(kSecSharedStorageWritableHeader, &value)) {
     return false;
   }
-  absl::optional<net::structured_headers::Item> item =
+  std::optional<net::structured_headers::Item> item =
       net::structured_headers::ParseBareItem(value);
   if (!item || !item->is_boolean() || !item->GetBoolean()) {
     // We only expect the value "?1", which parses to boolean true.

@@ -26,6 +26,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -65,7 +66,7 @@ constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 16, 20);
 constexpr int kSettingsButtonSizeDip = 20;
 
 // Border corner radius.
-constexpr int kBorderCornerRadius = 12;
+constexpr int kRoundedCornerRadius = 12;
 
 // Google search link.
 constexpr auto kSearchLinkViewInsets = gfx::Insets::TLBR(0, 60, 20, 20);
@@ -135,14 +136,18 @@ views::UniqueWidgetPtr RichAnswersView::CreateWidget(
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.corner_radius = kBorderCornerRadius;
+  params.corner_radius = kRoundedCornerRadius;
   params.name = kWidgetName;
-
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
+
   RichAnswersView* rich_answers_view =
       widget->SetContentsView(std::move(child_view));
   rich_answers_view->UpdateBounds();
+  rich_answers_view->SetPaintToLayer();
+  rich_answers_view->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kRoundedCornerRadius));
+
   return widget;
 }
 
@@ -162,13 +167,6 @@ void RichAnswersView::OnFocus() {
 
 void RichAnswersView::OnThemeChanged() {
   views::View::OnThemeChanged();
-
-  SetBorder(views::CreateRoundedRectBorder(
-      /*thickness=*/2, kBorderCornerRadius,
-      GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
-  SetBackground(views::CreateRoundedRectBackground(
-      GetColorProvider()->GetColor(ui::kColorPrimaryBackground),
-      kBorderCornerRadius, /*for_border_thickness=*/2));
 
   search_link_label_->SetEnabledColor(
       GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
@@ -209,11 +207,16 @@ void RichAnswersView::InitLayout() {
 }
 
 void RichAnswersView::SetUpBaseView() {
-  auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->SetDrawOverflowIndicator(false);
-  scroll_view->ClipHeightTo(kMinimumRichCardHeight, kMaximumRichCardHeight);
+  views::ScrollView* scroll_view = AddChildView(
+      views::Builder<views::ScrollView>()
+          .ClipHeightTo(kMinimumRichCardHeight, kMaximumRichCardHeight)
+          .SetBackgroundThemeColorId(ui::kColorPrimaryBackground)
+          .SetHorizontalScrollBarMode(
+              views::ScrollView::ScrollBarMode::kDisabled)
+          .SetDrawOverflowIndicator(false)
+          .SetAllowKeyboardScrolling(true)
+          .Build());
+
   base_view_ = scroll_view->SetContents(std::make_unique<views::View>());
   auto* base_layout =
       base_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -361,7 +364,7 @@ views::View* RichAnswersView::GetContentView() {
   return content_view_;
 }
 
-BEGIN_METADATA(RichAnswersView, views::View)
+BEGIN_METADATA(RichAnswersView)
 END_METADATA
 
 }  // namespace quick_answers

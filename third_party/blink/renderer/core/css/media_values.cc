@@ -76,14 +76,14 @@ mojom::blink::PreferredContrast CSSValueIDToPreferredContrast(CSSValueID id) {
   }
 }
 
-absl::optional<double> MediaValues::InlineSize() const {
+std::optional<double> MediaValues::InlineSize() const {
   if (blink::IsHorizontalWritingMode(GetWritingMode())) {
     return Width();
   }
   return Height();
 }
 
-absl::optional<double> MediaValues::BlockSize() const {
+std::optional<double> MediaValues::BlockSize() const {
   if (blink::IsHorizontalWritingMode(GetWritingMode())) {
     return Height();
   }
@@ -377,8 +377,8 @@ ColorSpaceGamut MediaValues::CalculateColorGamut(LocalFrame* frame) {
   DCHECK(frame->GetPage());
   const MediaFeatureOverrides* overrides =
       frame->GetPage()->GetMediaFeatureOverrides();
-  absl::optional<ColorSpaceGamut> override_value =
-      overrides ? overrides->GetColorGamut() : absl::nullopt;
+  std::optional<ColorSpaceGamut> override_value =
+      overrides ? overrides->GetColorGamut() : std::nullopt;
   return override_value.value_or(color_space_utilities::GetColorSpaceGamut(
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame)));
 }
@@ -391,17 +391,17 @@ mojom::blink::PreferredColorScheme MediaValues::CalculatePreferredColorScheme(
   DCHECK(frame->GetPage());
   const MediaFeatureOverrides* overrides =
       frame->GetPage()->GetMediaFeatureOverrides();
-  absl::optional<mojom::blink::PreferredColorScheme> override_value =
-      overrides ? overrides->GetPreferredColorScheme() : absl::nullopt;
+  std::optional<mojom::blink::PreferredColorScheme> override_value =
+      overrides ? overrides->GetPreferredColorScheme() : std::nullopt;
   if (override_value.has_value()) {
     return override_value.value();
   }
 
   const PreferenceOverrides* preference_overrides =
       frame->GetPage()->GetPreferenceOverrides();
-  absl::optional<mojom::blink::PreferredColorScheme> preference_override_value =
+  std::optional<mojom::blink::PreferredColorScheme> preference_override_value =
       preference_overrides ? preference_overrides->GetPreferredColorScheme()
-                           : absl::nullopt;
+                           : std::nullopt;
   return preference_override_value.value_or(
       frame->GetDocument()->GetStyleEngine().GetPreferredColorScheme());
 }
@@ -413,17 +413,17 @@ mojom::blink::PreferredContrast MediaValues::CalculatePreferredContrast(
   DCHECK(frame->GetPage());
   const MediaFeatureOverrides* overrides =
       frame->GetPage()->GetMediaFeatureOverrides();
-  absl::optional<mojom::blink::PreferredContrast> override_value =
-      overrides ? overrides->GetPreferredContrast() : absl::nullopt;
+  std::optional<mojom::blink::PreferredContrast> override_value =
+      overrides ? overrides->GetPreferredContrast() : std::nullopt;
   if (override_value.has_value()) {
     return override_value.value();
   }
 
   const PreferenceOverrides* preference_overrides =
       frame->GetPage()->GetPreferenceOverrides();
-  absl::optional<mojom::blink::PreferredContrast> preference_override_value =
+  std::optional<mojom::blink::PreferredContrast> preference_override_value =
       preference_overrides ? preference_overrides->GetPreferredContrast()
-                           : absl::nullopt;
+                           : std::nullopt;
   return preference_override_value.value_or(
       frame->GetSettings()->GetPreferredContrast());
 }
@@ -433,17 +433,17 @@ bool MediaValues::CalculatePrefersReducedMotion(LocalFrame* frame) {
   DCHECK(frame->GetSettings());
   const MediaFeatureOverrides* overrides =
       frame->GetPage()->GetMediaFeatureOverrides();
-  absl::optional<bool> override_value =
-      overrides ? overrides->GetPrefersReducedMotion() : absl::nullopt;
+  std::optional<bool> override_value =
+      overrides ? overrides->GetPrefersReducedMotion() : std::nullopt;
   if (override_value.has_value()) {
     return override_value.value();
   }
 
   const PreferenceOverrides* preference_overrides =
       frame->GetPage()->GetPreferenceOverrides();
-  absl::optional<bool> preference_override_value =
+  std::optional<bool> preference_override_value =
       preference_overrides ? preference_overrides->GetPrefersReducedMotion()
-                           : absl::nullopt;
+                           : std::nullopt;
   return preference_override_value.value_or(
       frame->GetSettings()->GetPrefersReducedMotion());
 }
@@ -453,17 +453,17 @@ bool MediaValues::CalculatePrefersReducedData(LocalFrame* frame) {
   DCHECK(frame->GetSettings());
   const MediaFeatureOverrides* overrides =
       frame->GetPage()->GetMediaFeatureOverrides();
-  absl::optional<bool> override_value =
-      overrides ? overrides->GetPrefersReducedData() : absl::nullopt;
+  std::optional<bool> override_value =
+      overrides ? overrides->GetPrefersReducedData() : std::nullopt;
   if (override_value.has_value()) {
     return override_value.value();
   }
 
   const PreferenceOverrides* preference_overrides =
       frame->GetPage()->GetPreferenceOverrides();
-  absl::optional<bool> preference_override_value =
+  std::optional<bool> preference_override_value =
       preference_overrides ? preference_overrides->GetPrefersReducedData()
-                           : absl::nullopt;
+                           : std::nullopt;
   return preference_override_value.value_or(
       GetNetworkStateNotifier().SaveDataEnabled());
 }
@@ -473,18 +473,18 @@ bool MediaValues::CalculatePrefersReducedTransparency(LocalFrame* frame) {
   DCHECK(frame->GetSettings());
   const MediaFeatureOverrides* overrides =
       frame->GetPage()->GetMediaFeatureOverrides();
-  absl::optional<bool> override_value =
-      overrides ? overrides->GetPrefersReducedTransparency() : absl::nullopt;
+  std::optional<bool> override_value =
+      overrides ? overrides->GetPrefersReducedTransparency() : std::nullopt;
   if (override_value.has_value()) {
     return override_value.value();
   }
 
   const PreferenceOverrides* preference_overrides =
       frame->GetPage()->GetPreferenceOverrides();
-  absl::optional<bool> preference_override_value =
+  std::optional<bool> preference_override_value =
       preference_overrides
           ? preference_overrides->GetPrefersReducedTransparency()
-          : absl::nullopt;
+          : std::nullopt;
   return preference_override_value.value_or(
       frame->GetSettings()->GetPrefersReducedTransparency());
 }
@@ -494,8 +494,8 @@ ForcedColors MediaValues::CalculateForcedColors(LocalFrame* frame) {
   DCHECK(frame->GetSettings());
   const MediaFeatureOverrides* overrides =
       frame->GetPage()->GetMediaFeatureOverrides();
-  absl::optional<ForcedColors> override_value =
-      overrides ? overrides->GetForcedColors() : absl::nullopt;
+  std::optional<ForcedColors> override_value =
+      overrides ? overrides->GetForcedColors() : std::nullopt;
   return override_value.value_or(
       WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors());
 }
@@ -538,7 +538,7 @@ int MediaValues::CalculateVerticalViewportSegments(LocalFrame* frame) {
   return static_cast<int>(unique_y.size());
 }
 
-device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
+mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
     LocalFrame* frame) {
   return frame->GetDevicePosture();
 }

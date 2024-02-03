@@ -69,21 +69,6 @@ mojom("mojo_bindings") {
 build_webui("build") {
   grd_prefix = "cr_components_app_management"
 
-  web_component_files = [
-    "app_content_dialog.ts",
-    "app_content_item.ts",
-    "file_handling_item.ts",
-    "more_permissions_item.ts",
-    "permission_item.ts",
-    "run_on_os_login_item.ts",
-    "supported_links_dialog.ts",
-    "supported_links_item.ts",
-    "supported_links_overlapping_apps_dialog.ts",
-    "toggle_row.ts",
-    "uninstall_button.ts",
-    "window_mode_item.ts",
-  ]
-
   non_web_component_files = [
     "constants.ts",
     "permission_constants.ts",
@@ -92,23 +77,17 @@ build_webui("build") {
     "util.ts",
   ]
 
-  icons_html_files = [ "icons.html" ]
-
-  css_files = [
-    "app_management_shared_style.css",
-    "shared_vars.css",
-  ]
-
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
   mojo_files = [ "$target_gen_dir/app_management.mojom-webui.ts" ]
 
   ts_out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/app_management"
   ts_composite = true
+
+  # Do not add a dependency on //ui/webui/resources/cr_elements:build_ts here,
+  # since this target is also used by OS Settings.
   ts_deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_components/localized_link:build_ts",
-    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

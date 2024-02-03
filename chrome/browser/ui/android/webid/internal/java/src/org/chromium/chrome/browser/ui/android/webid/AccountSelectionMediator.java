@@ -666,7 +666,7 @@ class AccountSelectionMediator {
         // This method only has an Account to match the type of the event listener.
         assert account == null;
         if (!shouldInputBeProcessed()) return;
-        mDelegate.onLoginToIdP(mIdpMetadata.getLoginUrl());
+        mDelegate.onLoginToIdP(mIdpMetadata.getConfigUrl(), mIdpMetadata.getLoginUrl());
     }
 
     /** Event listener for when the user taps on the more details button of the bottomsheet. */

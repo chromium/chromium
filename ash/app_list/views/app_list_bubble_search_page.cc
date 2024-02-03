@@ -127,7 +127,7 @@ ui::Layer* AppListBubbleSearchPage::GetPageAnimationLayerForTest() {
   return search_view_->GetPageAnimationLayer();
 }
 
-BEGIN_METADATA(AppListBubbleSearchPage, views::View)
+BEGIN_METADATA(AppListBubbleSearchPage)
 END_METADATA
 
 }  // namespace ash

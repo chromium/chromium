@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PRE_PAINT_TREE_WALK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PRE_PAINT_TREE_WALK_H_
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
@@ -126,7 +127,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
           ;
     }
 
-    absl::optional<PaintPropertyTreeBuilderContext> tree_builder_context;
+    std::optional<PaintPropertyTreeBuilderContext> tree_builder_context;
   };
 
   static bool ContextRequiresChildPrePaint(const PrePaintTreeWalkContext&);

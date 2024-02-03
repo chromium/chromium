@@ -44,15 +44,6 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// By default, AutofillAgent and, if |kAutofillProbableFormSubmissionInBrowser|
-// is enabled, also ContentAutofillDriver omit duplicate form submissions, even
-// though the form's data may have changed substantially. If enabled, the
-// below feature allows duplicate form submissions.
-// TODO(crbug/1117451): Remove once the form-submission experiment is over.
-BASE_FEATURE(kAutofillAllowDuplicateFormSubmissions,
-             "AutofillAllowDuplicateFormSubmissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the two most recent address forms and the most recent credit card
 // forms, which were submitted on the same origin, are associated with each
 // other. The association only happens if at most `kAutofillAssociateFormsTTL`
@@ -222,13 +213,6 @@ BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
              "AutofillEnableSupportForApartmentNumbers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables parsing for birthdate fields. Filling is not supported and parsing
-// is meant to prevent false positive credit card expiration dates.
-// TODO(crbug.com/1306654): Remove once launched.
-BASE_FEATURE(kAutofillEnableBirthdateParsing,
-             "AutofillEnableBirthdateParsing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls if Autofill parses ADDRESS_HOME_DEPENDENT_LOCALITY.
 // TODO(crbug.com/1157405): Remove once launched.
 BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
@@ -332,6 +316,12 @@ BASE_FEATURE(kAutofillUseINAddressModel,
              "AutofillUseINAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill will issues votes for EMAIL_ADDRESS field types on
+// fields where the content matches a valid email format.
+BASE_FEATURE(kAutofillUploadVotesForFieldsWithEmail,
+             "AutofillUploadVotesForFieldsWithEmail",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Changes Autofill Clear Form into Undo Autofill.
 BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -343,10 +333,6 @@ BASE_FEATURE(kAutofillConvergeToExtremeLengthStreetAddress,
 
 const base::FeatureParam<bool> kAutofillConvergeToLonger{
     &kAutofillConvergeToExtremeLengthStreetAddress, "converge_to_longer", true};
-
-BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
-             "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, some local heuristic predictions will take precedence over the
 // autocomplete attribute and server predictions, when determining a field's
@@ -450,17 +436,23 @@ BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
              "AutofillPopupImprovedTimingChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If the feature is enabled, then the timing measurement of when the Autofill
+// popup is considered to have been shown only happens at a delay - 500 ms after
+// showing the popup. The same protection mechanisms as for
+// `kAutofillPopupImprovedTimingChecks` are used, but only after 500 ms have
+// passed. The intent is to ensure that events that the user triggered within
+// 500 ms of the popup are showing do not arrive delayed on the UI thread of the
+// browser process.
+// TODO(crbug.com/475902): If this feature proves effective, combine it with
+// `kAutofillPopupImprovedTimingChecks`.
+BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
+             "AutofillPopupImprovedTimingChecksV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the threshold for accepting Autofill popup suggestions
 // should take into account latency information of the user event.
 BASE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold,
              "AutofillPopupUseLatencyInformationForAcceptThreshold",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If the feature is enabled, FormTracker's probable-form-submission detection
-// is disabled and replaced with browser-side detection.
-// TODO(crbug/1117451): Remove once it works.
-BASE_FEATURE(kAutofillProbableFormSubmissionInBrowser,
-             "AutofillProbableFormSubmissionInBrowser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls non-default Autofill API predictions. See crbug.com/1331322.
@@ -501,7 +493,7 @@ BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
 // Autofill popup.
 BASE_FEATURE(kAutofillShowAutocompleteDeleteButton,
              "AutofillShowAutocompleteDeleteButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether granular filling will be available in the autofill popup.
 // TODO(crbug.com/1459990): Clean up when launched.
@@ -601,6 +593,15 @@ const base::FeatureParam<int> kAutofillAblationStudyAblationWeightPerMilleParam{
 // settled.
 BASE_FEATURE(kAutofillVoteForSelectOptionValues,
              "AutofillVoteForSelectOptionValues",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Improves the selection of phone country codes by also considering address
+// country codes / names.
+// See GetStreetAddressForInput() in field_filling_address_util.cc for a details
+// description.
+// TODO(crbug.com/1395740). Clean up when launched.
+BASE_FEATURE(kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes,
+             "AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls autofill popup style, if enabled it becomes more prominent,

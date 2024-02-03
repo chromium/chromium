@@ -4,6 +4,7 @@
 
 #include "net/cert/x509_util_apple.h"
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -145,16 +146,12 @@ TEST(X509UtilTest,
       x509_util::CryptoBufferAsStringPiece(certs[3]->cert_buffer()));
 
   base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert0(
-      CreateSecCertificateFromBytes(
-          reinterpret_cast<const uint8_t*>(bytes_cert0.data()),
-          bytes_cert0.length()));
+      CreateSecCertificateFromBytes(base::as_byte_span(bytes_cert0)));
   ASSERT_TRUE(sec_cert0);
   EXPECT_EQ(bytes_cert0, BytesForSecCert(sec_cert0.get()));
 
   base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert1(
-      CreateSecCertificateFromBytes(
-          reinterpret_cast<const uint8_t*>(bytes_cert1.data()),
-          bytes_cert1.length()));
+      CreateSecCertificateFromBytes(base::as_byte_span(bytes_cert1)));
   ASSERT_TRUE(sec_cert1);
   EXPECT_EQ(bytes_cert1, BytesForSecCert(sec_cert1.get()));
 

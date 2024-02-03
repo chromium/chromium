@@ -256,12 +256,9 @@ test.util.sync.overrideTasks =
 
 
       executedTasks = [];
-      (contentWindow as ChromeWindow).chrome.fileManagerPrivate.getFileTasks =
-          getFileTasks;
-      (contentWindow as ChromeWindow).chrome.fileManagerPrivate.executeTask =
-          executeTask;
-      (contentWindow as ChromeWindow).chrome.fileManagerPrivate.setDefaultTask =
-          setDefaultTask;
+      contentWindow.chrome.fileManagerPrivate.getFileTasks = getFileTasks;
+      contentWindow.chrome.fileManagerPrivate.executeTask = executeTask;
+      contentWindow.chrome.fileManagerPrivate.setDefaultTask = setDefaultTask;
       return true;
     };
 
@@ -374,7 +371,7 @@ test.util.async.getPreferences = (callback: (a: any) => void) => {
  * @param contentWindow Window to be affected.
  */
 test.util.sync.overrideFormat = (contentWindow: Window) => {
-  (contentWindow as ChromeWindow).chrome.fileManagerPrivate.formatVolume =
+  contentWindow.chrome.fileManagerPrivate.formatVolume =
       (_volumeId: string, _filesystem: string, _volumeLabel: string) => {};
   return true;
 };

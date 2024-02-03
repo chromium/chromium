@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CONTAINING_BLOCK_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CONTAINING_BLOCK_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -37,7 +38,7 @@ class InlineContainingBlockUtils {
   // It is safe to use Persistent here because this is used only on stack.
   using InlineContainingBlockMap =
       HashMap<Persistent<const LayoutObject>,
-              absl::optional<InlineContainingBlockGeometry>>;
+              std::optional<InlineContainingBlockGeometry>>;
 
   // Computes the geometry required for any inline containing blocks.
   // |inline_containing_block_map| is a map whose keys specify which objects we

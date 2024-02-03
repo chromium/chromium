@@ -690,6 +690,214 @@ static size_t ActualUnignoredChildCount(const ui::AXNode* node) {
   return count;
 }
 
+// -----------------------------------------------
+// [EXPERIMENTAL] These methods should only be called when the JNI experiment is
+// running. We unfortunately need to keep these separate since the JNI method
+// signatures do not align.
+
+void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect_exp(
+    JNIEnv* env,
+    const ScopedJavaLocalRef<jobject>& obj,
+    jint unique_id,
+    BrowserAccessibilityAndroid* node) {
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager) {
+    return;
+  }
+
+  ui::AXOffscreenResult offscreen_result = ui::AXOffscreenResult::kOnscreen;
+  float dip_scale = 1 / root_manager->device_scale_factor();
+  gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
+      node->GetUnclippedRootFrameBoundsRect(&offscreen_result), dip_scale,
+      dip_scale);
+  gfx::Rect parent_relative_rect = absolute_rect;
+  if (node->PlatformGetParent()) {
+    gfx::Rect parent_rect = gfx::ScaleToEnclosingRect(
+        node->PlatformGetParent()->GetUnclippedRootFrameBoundsRect(), dip_scale,
+        dip_scale);
+    parent_relative_rect.Offset(-parent_rect.OffsetFromOrigin());
+  }
+  bool is_offscreen = offscreen_result == ui::AXOffscreenResult::kOffscreen;
+
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoLocation_exp(
+      env, obj, unique_id, absolute_rect.x(), absolute_rect.y(),
+      parent_relative_rect.x(), parent_relative_rect.y(), absolute_rect.width(),
+      absolute_rect.height(), is_offscreen);
+}
+
+jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo_exp(
+    JNIEnv* env,
+    jint unique_id) {
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager) {
+    return false;
+  }
+
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return false;
+  }
+
+  ScopedJavaLocalRef<jobject> obj = java_anib_ref_.get(env);
+  if (obj.is_null()) {
+    return false;
+  }
+
+  // Update cached nodes by providing new enclosing Rects
+  UpdateAccessibilityNodeInfoBoundsRect_exp(env, obj, unique_id, node);
+
+  return true;
+}
+
+jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo_exp(
+    JNIEnv* env,
+    jint unique_id) {
+  if (!GetRootBrowserAccessibilityManager()) {
+    return false;
+  }
+
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return false;
+  }
+
+  ScopedJavaLocalRef<jobject> obj = java_anib_ref_.get(env);
+  if (obj.is_null()) {
+    return false;
+  }
+
+  int parent_id = ui::kAXAndroidInvalidViewId;
+  auto* parent_node =
+      static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
+  if (parent_node) {
+    parent_id = parent_node->unique_id();
+  }
+
+  // Build a vector of child ids
+  std::vector<int> child_ids;
+  for (const auto& child : node->PlatformChildren()) {
+    const auto& android_node =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    child_ids.push_back(android_node.unique_id());
+  }
+  if (child_ids.size()) {
+    Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoChildren_exp(
+        env, obj, unique_id, base::android::ToJavaIntArray(env, child_ids));
+  }
+
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBooleanAttributes_exp(
+      env, obj, unique_id, node->IsReportingCheckable(), node->IsChecked(),
+      node->IsClickable(), node->IsContentInvalid(), node->IsEnabled(),
+      node->IsFocusable(), node->IsFocused(), node->HasImage(),
+      node->IsPasswordField(), node->IsScrollable(), node->IsSelected(),
+      node->IsVisibleToUser(), node->HasCharacterLocations());
+
+  Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions_exp(
+      env, obj, unique_id, node->CanScrollForward(), node->CanScrollBackward(),
+      node->CanScrollUp(), node->CanScrollDown(), node->CanScrollLeft(),
+      node->CanScrollRight(), node->IsClickable(), node->IsTextField(),
+      node->IsEnabled(), node->IsFocusable(), node->IsFocused(),
+      node->IsCollapsed(), node->IsExpanded(), node->HasNonEmptyValue(),
+      !node->GetTextContentUTF16().empty(), node->IsSeekControl(),
+      node->IsFormDescendant());
+
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes_exp(
+      env, obj, unique_id, parent_id,
+      GetCanonicalJNIString(env, node->GetClassName()),
+      GetCanonicalJNIString(env, node->GetRoleString()),
+      GetCanonicalJNIString(env, node->GetRoleDescription()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
+      node->CanOpenPopup(), node->IsMultiLine(), node->AndroidInputType(),
+      node->AndroidLiveRegionType(),
+      GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()),
+      node->ClickableScore(), GetCanonicalJNIString(env, node->GetCSSDisplay()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
+      GetCanonicalJNIString(env, node->GetBrailleRoleDescription()));
+
+  ScopedJavaLocalRef<jintArray> suggestion_starts_java;
+  ScopedJavaLocalRef<jintArray> suggestion_ends_java;
+  ScopedJavaLocalRef<jobjectArray> suggestion_text_java;
+  std::vector<int> suggestion_starts;
+  std::vector<int> suggestion_ends;
+  node->GetSuggestions(&suggestion_starts, &suggestion_ends);
+  if (suggestion_starts.size() && suggestion_ends.size()) {
+    suggestion_starts_java = base::android::ToJavaIntArray(
+        env, suggestion_starts.data(), suggestion_starts.size());
+    suggestion_ends_java = base::android::ToJavaIntArray(
+        env, suggestion_ends.data(), suggestion_ends.size());
+
+    // Currently we don't retrieve the text of each suggestion, so
+    // store a blank string for now.
+    std::vector<std::string> suggestion_text(suggestion_starts.size());
+    suggestion_text_java =
+        base::android::ToJavaArrayOfStrings(env, suggestion_text);
+  }
+
+  bool is_link = ui::IsLink(node->GetRole());
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText_exp(
+      env, obj, unique_id,
+      base::android::ConvertUTF16ToJavaString(env, node->GetTextContentUTF16()),
+      is_link
+          ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
+          : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
+      is_link, node->IsTextField(),
+      GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
+                                     ax::mojom::StringAttribute::kLanguage)),
+      suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
+      base::android::ConvertUTF16ToJavaString(env,
+                                              node->GetStateDescription()));
+
+  std::u16string element_id;
+  if (node->GetHtmlAttribute("id", &element_id)) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoViewIdResourceName_exp(
+        env, obj, unique_id,
+        base::android::ConvertUTF16ToJavaString(env, element_id));
+  }
+
+  UpdateAccessibilityNodeInfoBoundsRect_exp(env, obj, unique_id, node);
+
+  if (node->IsCollection()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoCollectionInfo_exp(
+        env, obj, unique_id, node->RowCount(), node->ColumnCount(),
+        node->IsHierarchical());
+  }
+  if (node->IsCollectionItem() || node->IsTableHeader()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoCollectionItemInfo_exp(
+        env, obj, unique_id, node->RowIndex(), node->RowSpan(),
+        node->ColumnIndex(), node->ColumnSpan(), node->IsTableHeader());
+  }
+
+  // For sliders that are numeric, use the AccessibilityNodeInfo.RangeInfo
+  // object as expected. But for non-numeric ranges (e.g. "small", "medium",
+  // "large"), do not set the RangeInfo object and instead rely on announcing
+  // the aria-valuetext value, which will be included in the node's text value.
+  if (node->IsRangeControlWithoutAriaValueText()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoRangeInfo_exp(
+        env, obj, unique_id, node->AndroidRangeType(), node->RangeMin(),
+        node->RangeMax(), node->RangeCurrentValue());
+  }
+
+  if (ui::IsDialog(node->GetRole())) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoPaneTitle_exp(
+        env, obj, unique_id,
+        base::android::ConvertUTF16ToJavaString(
+            env, node->GetDialogModalMessageText()));
+  }
+
+  if (node->IsTextField()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoSelectionAttrs_exp(
+        env, obj, unique_id, node->GetSelectionStart(),
+        node->GetSelectionEnd());
+  }
+
+  return true;
+}
+
+// -----------------------------------------------
+
 void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
     JNIEnv* env,
     const ScopedJavaLocalRef<jobject>& obj,

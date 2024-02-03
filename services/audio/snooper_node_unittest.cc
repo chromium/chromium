@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "services/audio/test/fake_consumer.h"
 #include "services/audio/test/fake_loopback_group_member.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 namespace {
@@ -220,7 +220,7 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     // |bus|. Don't do this check if there is already a test failure, and this
     // would just keep spamming the test output.
     if (!HasFailure()) {
-      const absl::optional<base::TimeTicks> suggestion =
+      const std::optional<base::TimeTicks> suggestion =
           node_->SuggestLatestRenderTime(bus->frames());
       if (suggestion) {
         EXPECT_LE(output_time, *suggestion)
@@ -294,9 +294,9 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
   double max_relative_error_ = 0.0;
 
   // The pipeline from source to consumer.
-  absl::optional<FakeLoopbackGroupMember> group_member_;
-  absl::optional<SnooperNode> node_;
-  absl::optional<FakeConsumer> consumer_;
+  std::optional<FakeLoopbackGroupMember> group_member_;
+  std::optional<SnooperNode> node_;
+  std::optional<FakeConsumer> consumer_;
 };
 
 // The skew test here is generating 10 seconds of audio per iteration, with
@@ -571,7 +571,7 @@ TEST_P(SnooperNodeTest, SuggestsRenderTimes) {
   // further details.) The suggestion should also not be too far in the past.
   const base::TimeTicks first_input_time = task_runner()->NowTicks();
   group_member()->RenderMoreAudio(first_input_time);
-  const absl::optional<base::TimeTicks> first_suggestion =
+  const std::optional<base::TimeTicks> first_suggestion =
       node()->SuggestLatestRenderTime(output_params().frames_per_buffer());
   ASSERT_TRUE(first_suggestion);
   base::TimeTicks time_at_end_of_input =
@@ -599,7 +599,7 @@ TEST_P(SnooperNodeTest, SuggestsRenderTimes) {
         base::Seconds(i * input_params().frames_per_buffer() /
                       static_cast<double>(input_params().sample_rate()));
     group_member()->RenderMoreAudio(next_input_time);
-    const absl::optional<base::TimeTicks> next_suggestion =
+    const std::optional<base::TimeTicks> next_suggestion =
         node()->SuggestLatestRenderTime(output_params().frames_per_buffer());
     ASSERT_TRUE(next_suggestion);
     time_at_end_of_input = next_input_time + input_params().GetBufferDuration();

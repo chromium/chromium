@@ -30,10 +30,11 @@
 
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
 
+#include <optional>
+
 #include "base/test/scoped_command_line.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
@@ -187,7 +188,7 @@ TEST_F(BaseFetchContextTest, CanRequest) {
   EXPECT_EQ(ResourceRequestBlockedReason::kCSP,
             fetch_context_->CanRequest(
                 ResourceType::kScript, resource_request, url, options,
-                ReportingDisposition::kReport, absl::nullopt));
+                ReportingDisposition::kReport, std::nullopt));
   EXPECT_EQ(1u, policy->violation_reports_sent_.size());
 }
 
@@ -210,7 +211,7 @@ TEST_F(BaseFetchContextTest, CheckCSPForRequest) {
 
   ResourceLoaderOptions options(nullptr /* world */);
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CheckCSPForRequest(
                 mojom::blink::RequestContextType::SCRIPT,
                 network::mojom::RequestDestination::kScript, url, options,
@@ -228,28 +229,28 @@ TEST_F(BaseFetchContextTest, CanRequestWhenDetached) {
   keepalive_request.SetRequestorOrigin(GetSecurityOrigin());
   keepalive_request.SetKeepalive(true);
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, absl::nullopt));
+                ReportingDisposition::kSuppressReporting, std::nullopt));
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, keepalive_request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, absl::nullopt));
+                ReportingDisposition::kSuppressReporting, std::nullopt));
 
   ResourceRequest::RedirectInfo redirect_info(
       KURL(NullURL(), "http://www.redirecting.com/"),
       KURL(NullURL(), "http://www.redirecting.com/"));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, request, url,
                 ResourceLoaderOptions(nullptr /* world */),
                 ReportingDisposition::kSuppressReporting, redirect_info));
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, keepalive_request, url,
                 ResourceLoaderOptions(nullptr /* world */),
@@ -261,13 +262,13 @@ TEST_F(BaseFetchContextTest, CanRequestWhenDetached) {
             fetch_context_->CanRequest(
                 ResourceType::kRaw, request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, absl::nullopt));
+                ReportingDisposition::kSuppressReporting, std::nullopt));
 
   EXPECT_EQ(ResourceRequestBlockedReason::kOther,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, keepalive_request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, absl::nullopt));
+                ReportingDisposition::kSuppressReporting, std::nullopt));
 
   EXPECT_EQ(ResourceRequestBlockedReason::kOther,
             fetch_context_->CanRequest(
@@ -275,7 +276,7 @@ TEST_F(BaseFetchContextTest, CanRequestWhenDetached) {
                 ResourceLoaderOptions(nullptr /* world */),
                 ReportingDisposition::kSuppressReporting, redirect_info));
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, keepalive_request, url,
                 ResourceLoaderOptions(nullptr /* world */),
@@ -305,7 +306,7 @@ TEST_F(BaseFetchContextTest, UACSSTest) {
                 ResourceType::kImage, resource_request, test_url, options,
                 ReportingDisposition::kReport, redirect_info));
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, data_url, options,
                 ReportingDisposition::kReport, redirect_info));
@@ -330,7 +331,7 @@ TEST_F(BaseFetchContextTest, UACSSTest_BypassCSP) {
   ResourceRequest::RedirectInfo redirect_info(
       KURL(NullURL(), "http://www.redirecting.com/"),
       KURL(NullURL(), "http://www.redirecting.com/"));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, data_url, options,
                 ReportingDisposition::kReport, redirect_info));
@@ -355,14 +356,14 @@ TEST_F(BaseFetchContextTest, CanRequestSVGImage) {
   EXPECT_EQ(ResourceRequestBlockedReason::kOrigin,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, url, options,
-                ReportingDisposition::kReport, absl::nullopt));
+                ReportingDisposition::kReport, std::nullopt));
 
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       blink::switches::kDataUrlInSvgUseEnabled);
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, url, options,
-                ReportingDisposition::kReport, absl::nullopt));
+                ReportingDisposition::kReport, std::nullopt));
 }
 
 }  // namespace blink

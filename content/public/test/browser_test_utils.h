@@ -1007,9 +1007,6 @@ void SetFileSystemAccessPermissionContext(
 // Waits until all resources have loaded in the given RenderFrameHost.
 [[nodiscard]] bool WaitForRenderFrameReady(RenderFrameHost* rfh);
 
-// Enable accessibility support for all of the frames in this WebContents
-void EnableAccessibilityForWebContents(WebContents* web_contents);
-
 // Wait until the focused accessible node changes in any WebContents.
 void WaitForAccessibilityFocusChange();
 

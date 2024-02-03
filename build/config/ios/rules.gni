@@ -502,6 +502,10 @@ template("ios_info_plist") {
 #       if omitted. Will be used to set BUNDLE_IDENTIFIER when generating
 #       the application Info.plist
 #
+#   orderfile_path:
+#       (optional) string, path to an orderfile passed to the linker in order
+#       to improve application launch performance.
+#
 # For more information, see "gn help executable".
 template("ios_app_bundle") {
   _output_name = target_name
@@ -605,6 +609,22 @@ template("ios_app_bundle") {
     visibility = []
     foreach(_variant, _variants) {
       visibility += [ ":${_variant.target_name}" ]
+    }
+
+    if (defined(invoker.orderfile_path)) {
+      orderfile_path = invoker.orderfile_path
+      if (!defined(ldflags)) {
+        ldflags = []
+      }
+      ldflags += [
+        "-Wl,-order_file",
+        "-Wl," + rebase_path(orderfile_path, root_build_dir),
+      ]
+
+      if (!defined(inputs)) {
+        inputs = []
+      }
+      inputs += [ orderfile_path ]
     }
 
     if (target_environment == "simulator") {

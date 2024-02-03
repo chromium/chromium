@@ -402,7 +402,7 @@ gCrWeb.fill.webFormElementToFormData = function(
   form.id_attribute = formElement.getAttribute('id') || '';
 
   gCrWeb.fill.setUniqueIDIfNeeded(formElement);
-  form.unique_renderer_id = gCrWeb.fill.getUniqueID(formElement);
+  form.renderer_id = gCrWeb.fill.getUniqueID(formElement);
 
   form.frame_id = frame.__gCrWeb.message.getFrameId();
 
@@ -459,7 +459,7 @@ gCrWeb.fill.webFormControlElementToFormField = function(
   field.id_attribute = element.getAttribute('id') || '';
 
   gCrWeb.fill.setUniqueIDIfNeeded(element);
-  field.unique_renderer_id = gCrWeb.fill.getUniqueID(element);
+  field.renderer_id = gCrWeb.fill.getUniqueID(element);
 
   field.form_control_type = element.type;
   const autocompleteAttribute = element.getAttribute('autocomplete');

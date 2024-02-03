@@ -19,9 +19,9 @@ namespace {
 user_manager::UserType ConvertUserType(LoggedInUserMixin::LogInType type) {
   switch (type) {
     case LoggedInUserMixin::LogInType::kChild:
-      return user_manager::USER_TYPE_CHILD;
+      return user_manager::UserType::kChild;
     case LoggedInUserMixin::LogInType::kRegular:
-      return user_manager::USER_TYPE_REGULAR;
+      return user_manager::UserType::kRegular;
   }
 }
 
@@ -93,7 +93,7 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
 
   UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
-  if (user_.user_type == user_manager::USER_TYPE_CHILD) {
+  if (user_.user_type == user_manager::UserType::kChild) {
     fake_gaia_.SetupFakeGaiaForChildUser(
         user_.account_id.GetUserEmail(), user_.account_id.GetGaiaId(),
         FakeGaiaMixin::kFakeRefreshToken, issue_any_scope_token);

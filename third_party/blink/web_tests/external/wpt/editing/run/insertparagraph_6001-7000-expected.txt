@@ -1,0 +1,30 @@
+This is a testharness.js-based test.
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>[]foo</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p><p class=\\"b\\">foo</p></div>" but got "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p><p class=\\"b\\" id=\\"y\\">foo</p></div>"
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>[]foo</div>" queryCommandValue("defaultparagraphseparator") before
+  assert_equals: Wrong result returned expected "p" but got "div"
+[FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>[]foo</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p><p class=\\"b\\">foo</p></div>" but got "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p><p class=\\"b\\" id=\\"y\\">foo</p></div>"
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]bar</ol>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li><li class=\\"a\\"><p class=\\"b\\">bar</p></li></ol>" but got "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">bar</p></li></ol>"
+[FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]bar</ol>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li><li class=\\"a\\"><p class=\\"b\\">bar</p></li></ol>" but got "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">bar</p></li></ol>"
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]bar</div></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\">foo</div><div class=\\"b\\">bar</div></div>" but got "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\">foo</div><div class=\\"b\\" id=\\"y\\">bar</div></div>"
+[FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]bar</div></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\">foo</div><div class=\\"b\\">bar</div></div>" but got "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\">foo</div><div class=\\"b\\" id=\\"y\\">bar</div></div>"
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]bar</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p><p class=\\"b\\">bar</p></div>" but got "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p><p class=\\"b\\" id=\\"y\\">bar</p></div>"
+[FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]bar</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p><p class=\\"b\\">bar</p></div>" but got "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p><p class=\\"b\\" id=\\"y\\">bar</p></div>"
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div contenteditable=false><h1 contenteditable>ab[]cd</h1></div>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div contenteditable=\\"false\\"><h1 contenteditable=\\"\\">ab<div>cd</div></h1></div>" not in array ["<div contenteditable=\\"false\\"><h1 contenteditable=\\"\\">ab<br>cd</h1></div>", "<div contenteditable=\\"false\\"><h1 contenteditable=\\"\\">ab<br>cd<br></h1></div>"]
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol contenteditable=false><li contenteditable>ab[]cd</li></ol>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<ol contenteditable=\\"false\\"><li contenteditable=\\"\\">ab<div>cd</div></li></ol>" not in array ["<ol contenteditable=\\"false\\"><li contenteditable=\\"\\"><div>ab</div><div>cd</div></li></ol>", "<ol contenteditable=\\"false\\"><li contenteditable=\\"\\"><div>ab</div><div>cd<br></div></li></ol>"]
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<dl contenteditable=false><dt contenteditable>ab[]cd</dt></dl>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<dl contenteditable=\\"false\\"><dt contenteditable=\\"\\">ab<div>cd</div></dt></dl>" not in array ["<dl contenteditable=\\"false\\"><dt contenteditable=\\"\\">ab<br>cd</dt></dl>", "<dl contenteditable=\\"false\\"><dt contenteditable=\\"\\">ab<br>cd<br></dt></dl>"]
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<dl contenteditable=false><dd contenteditable>ab[]cd</dd></dl>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<dl contenteditable=\\"false\\"><dd contenteditable=\\"\\">ab<div>cd</div></dd></dl>" not in array ["<dl contenteditable=\\"false\\"><dd contenteditable=\\"\\"><div>ab</div><div>cd</div></dd></dl>", "<dl contenteditable=\\"false\\"><dd contenteditable=\\"\\"><div>ab</div><div>cd<br></div>/dd></dl>"]
+Harness: the test ran to completion.
+

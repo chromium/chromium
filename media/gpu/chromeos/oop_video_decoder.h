@@ -68,9 +68,9 @@ class OOPVideoDecoder : public VideoDecoderMixin,
           void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb);
 
   // Returns the cached supported configurations of the out-of-process video
-  // decoder if known (absl::nullopt otherwise). This method is thread- and
+  // decoder if known (std::nullopt otherwise). This method is thread- and
   // sequence-safe.
-  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
+  static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,

@@ -47,7 +47,7 @@ module.exports = {
                       // Exclude native DOM interfaces.
                       'UIEvent|UIEventInit|DOMError|' +
                       // Exclude the SACache and SACommands classes.
-                      'SACache|SACommands)$',
+                      'SACache|SACommands|SAChildNode|SANode|SARootNode)$',
                   match: false,
                 },
               },
@@ -61,8 +61,8 @@ module.exports = {
                 modifiers: ['public'],
                 filter: {
                   regex: '^(' +
-                      // Exclude initialism JSON
-                      'toJSON' +
+                      // Exclude initialisms such as JSON and IME
+                      'toJSON|describeTextChangedByIME' +
                       ')$',
                   match: false,
                 },

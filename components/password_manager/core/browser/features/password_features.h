@@ -39,10 +39,6 @@ BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 BASE_DECLARE_FEATURE(kRemoveUPMUnenrollment);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enables a second, Gaia-account-scoped password store for users who are signed
-// in but not syncing.
-BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables filling password on a website when there is saved password on
 // affiliated website.
@@ -114,6 +110,12 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 // feature once UPM starts to be rolled out to users who have saved local
 // passwords.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+
+// The min value of base::android::BuildInfo::gms_version_code() for the flag
+// above to take effect.
+// WARNING: this is a param of the NoMigration flag, not the WithMigration one!
+extern constinit const base::FeatureParam<int>
+    kUPMLocalPasswordsMinGmsVersionCode;
 
 // Enables use of Google Mobile services for non-synced password storage add for
 // users who have local passwords saved.

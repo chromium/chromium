@@ -599,7 +599,7 @@ void LocationBarView::OnKeywordFaviconFetched(const gfx::Image& icon) {
   selected_keyword_view_->SetCustomImage(icon);
 }
 
-void LocationBarView::Layout() {
+void LocationBarView::Layout(PassKey) {
   if (!IsInitialized())
     return;
 
@@ -890,7 +890,7 @@ void LocationBarView::Layout() {
     position_view(omnibox_additional_text_view_, omnibox_additional_text_width);
   }
 
-  View::Layout();
+  LayoutSuperclass<View>(this);
 }
 
 void LocationBarView::OnThemeChanged() {
@@ -914,7 +914,7 @@ void LocationBarView::OnThemeChanged() {
 }
 
 void LocationBarView::ChildPreferredSizeChanged(views::View* child) {
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -948,7 +948,7 @@ void LocationBarView::Update(WebContents* contents) {
   if (qr_generator_icon)
     qr_generator_icon->SetVisible(false);
 
-  OnChanged();  // NOTE: Calls Layout().
+  OnChanged();  // NOTE: Triggers layout.
 
   // A permission prompt may be suspended due to an invalid state (empty or
   // editing location bar). Restore the suspended prompt if possible.
@@ -1264,7 +1264,7 @@ void LocationBarView::FocusSearch() {
 
 void LocationBarView::UpdateContentSettingsIcons() {
   if (RefreshContentSettingViews()) {
-    Layout();
+    DeprecatedLayoutImmediately();
     SchedulePaint();
   }
 }
@@ -1439,7 +1439,7 @@ void LocationBarView::OnChanged() {
       omnibox_view_ && omnibox_view_->model()->user_input_in_progress() &&
       !omnibox_view_->GetText().empty() &&
       IsVirtualKeyboardVisible(GetWidget()));
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
   UpdateSendTabToSelfIcon();
   UpdateQRCodeGeneratorIcon();

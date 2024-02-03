@@ -77,7 +77,7 @@ void AppendValueAndShortTokens(
     std::u16string* field_data_value,
     base::flat_set<std::u16string>* field_data_short_tokens) {
   const std::u16string lowercase_value = base::i18n::ToLower(raw_value);
-  std::vector<base::StringPiece16> tokens =
+  std::vector<std::u16string_view> tokens =
       base::SplitStringPiece(lowercase_value, kDelimiters,
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -89,7 +89,7 @@ void AppendValueAndShortTokens(
 
   field_data_value->reserve(field_data_value->size() + lowercase_value.size());
   std::vector<std::u16string> short_tokens;
-  for (const base::StringPiece16& token : tokens) {
+  for (const std::u16string_view& token : tokens) {
     if (token.size() < kMinimumWordLength)
       short_tokens.emplace_back(token);
     field_data_value->append(token);

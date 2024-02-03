@@ -37,8 +37,6 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 
-BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -48,6 +46,10 @@ extern const char kBrowserCommandIdParam[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -112,6 +114,10 @@ const base::FeatureParam<int>
     kNewTabPagePrerenderStartDelayOnMouseHoverByMiliSeconds{
         &features::kNewTabPageTriggerForPrerender2,
         "prerender_start_delay_on_mouse_hover_ms", 300};
+const base::FeatureParam<int>
+    kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
+        &features::kNewTabPageTriggerForPrerender2,
+        "preconnect_start_delay_on_mouse_hover_ms", 100};
 
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result.

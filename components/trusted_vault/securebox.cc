@@ -251,9 +251,7 @@ std::vector<uint8_t> SecureBoxEncryptImpl(
   std::vector<uint8_t> secret = SecureBoxComputeSecret(
       our_key_pair, their_public_key, shared_secret, err_tracer);
 
-  std::vector<uint8_t> nonce(kNonceLength);
-  crypto::RandBytes(nonce.data(), kNonceLength);
-
+  std::vector<uint8_t> nonce = crypto::RandBytesAsVector(kNonceLength);
   std::vector<uint8_t> ciphertext =
       SecureBoxAesGcmEncrypt(secret, nonce, payload, header, err_tracer);
 

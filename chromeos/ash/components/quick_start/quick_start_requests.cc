@@ -127,8 +127,7 @@ std::unique_ptr<QuickStartMessage> BuildRequestWifiCredentialsMessage(
           QuickStartMessageType::kQuickStartPayload);
   message->GetPayload()->Set(kRequestWifiKey, true);
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
   message->GetPayload()->Set(kSessionIdKey, static_cast<int>(session_id));
 
@@ -172,8 +171,7 @@ std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
   message->GetPayload()->Set(kNotifySourceOfUpdateMessageKey, true);
 
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
   message->GetPayload()->Set(kSessionIdKey, static_cast<int>(session_id));
 

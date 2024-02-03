@@ -338,7 +338,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     return true;
   }
 
-  absl::optional<PhysicalOffset> FirstLineBoxTopLeftInternal() const;
+  std::optional<PhysicalOffset> FirstLineBoxTopLeftInternal() const;
   PhysicalOffset AnchorPhysicalLocation() const;
 
   LayoutObjectChildList children_;

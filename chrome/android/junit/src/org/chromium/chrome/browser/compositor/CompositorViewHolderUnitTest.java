@@ -24,7 +24,11 @@ import android.os.IBinder;
 import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
@@ -63,15 +67,19 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link CompositorViewHolder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
 public class CompositorViewHolderUnitTest {
     // Since these tests don't depend on the heights being pixels, we can use these as dpi directly.
     private static final int TOOLBAR_HEIGHT = 56;
@@ -85,6 +93,11 @@ public class CompositorViewHolderUnitTest {
 
     private static final MotionEvent MOTION_ACTION_HOVER_ENTER =
             MotionEvent.obtain(TOUCH_TIME, TOUCH_TIME, MotionEvent.ACTION_HOVER_ENTER, 1, 1, 0);
+
+    private static final WindowInsetsCompat VISIBLE_SYSTEM_BARS_WINDOW_INSETS =
+            new WindowInsetsCompat.Builder()
+                    .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 100, 0, 100))
+                    .build();
 
     enum EventSource {
         IN_MOTION,
@@ -107,6 +120,11 @@ public class CompositorViewHolderUnitTest {
     @Mock private ResourceManager mResourceManager;
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private KeyboardVisibilityDelegate mMockKeyboard;
+    @Mock private WindowInsets mRootWindowInsets;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Window mWindow;
+    @Mock private View mDecorView;
+    @Mock private DynamicResourceLoader mDynamicResourceLoader;
 
     private Context mContext;
     private MockTabModelSelector mTabModelSelector;
@@ -160,8 +178,10 @@ public class CompositorViewHolderUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
 
         when(mCompositorView.getResourceManager()).thenReturn(mResourceManager);
+        when(mResourceManager.getDynamicResourceLoader()).thenReturn(mDynamicResourceLoader);
 
         mCompositorViewHolder = spy(new CompositorViewHolder(mContext, null));
+
         mCompositorViewHolder.setLayoutManager(mLayoutManager);
         mCompositorViewHolder.setControlContainer(mControlContainer);
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
@@ -169,9 +189,15 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.setApplicationViewportInsetSupplier(mViewportInsets);
         mCompositorViewHolder.onFinishNativeInitialization(mTabModelSelector, null);
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
+        when(mCompositorViewHolder.getRootWindowInsets())
+                .thenReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getContentView()).thenReturn(mContentView);
         when(mTab.getView()).thenReturn(mContentView);
+
+        when(mActivity.getWindow()).thenReturn(mWindow);
+        when(mWindow.getDecorView()).thenReturn(mDecorView);
+        when(mDecorView.getFitsSystemWindows()).thenReturn(true);
 
         IBinder windowToken = mock(IBinder.class);
         when(mContainerView.getWindowToken()).thenReturn(windowToken);
@@ -269,6 +295,15 @@ public class CompositorViewHolderUnitTest {
         // ControlsResizeView is false, but it should be true when the controls are fully visible.
         verify(mCompositorView).onControlsResizeViewChanged(any(), eq(true));
         reset(mCompositorView);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    public void testHandleSystemUiVisibilityChangesWithUpdatedFullscreenApis() {
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
+        mCompositorViewHolder.onNativeLibraryReady(mWindowAndroid, null, null);
+        mCompositorViewHolder.handleSystemUiVisibilityChange();
     }
 
     @Test

@@ -39,8 +39,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.components.permissions.PermissionsAndroidFeatureList;
-import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.ArrayList;
@@ -149,8 +147,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 return "location_access_list";
             case ContentSettingsType.MEDIASTREAM_MIC:
                 return "microphone_permission_list";
-            case ContentSettingsType.MIDI:
-                return "midi_permission_list";
             case ContentSettingsType.MIDI_SYSEX:
                 return "midi_sysex_permission_list";
             case ContentSettingsType.NFC:
@@ -533,13 +529,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             }
         } else {
             removePreferenceSafely(PREF_PAGE_DESCRIPTION);
-        }
-
-        if (PermissionsAndroidFeatureMap.isEnabled(
-                PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)) {
-            removePreferenceSafely(getPreferenceKey(ContentSettingsType.MIDI_SYSEX));
-        } else {
-            removePreferenceSafely(getPreferenceKey(ContentSettingsType.MIDI));
         }
     }
 

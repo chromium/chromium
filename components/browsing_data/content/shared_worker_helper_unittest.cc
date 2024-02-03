@@ -33,7 +33,8 @@ TEST_F(CannedSharedWorkerHelperTest, Empty) {
       browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
-  helper->AddSharedWorker(worker, name, storage_key);
+  helper->AddSharedWorker(worker, name, storage_key,
+                          blink::mojom::SharedWorkerSameSiteCookies::kAll);
   EXPECT_FALSE(helper->empty());
   helper->Reset();
   EXPECT_TRUE(helper->empty());
@@ -53,10 +54,13 @@ TEST_F(CannedSharedWorkerHelperTest, Delete) {
       browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
-  helper->AddSharedWorker(worker1, name1, storage_key1);
-  helper->AddSharedWorker(worker2, name2, storage_key2);
+  helper->AddSharedWorker(worker1, name1, storage_key1,
+                          blink::mojom::SharedWorkerSameSiteCookies::kAll);
+  helper->AddSharedWorker(worker2, name2, storage_key2,
+                          blink::mojom::SharedWorkerSameSiteCookies::kAll);
   EXPECT_EQ(2u, helper->GetSharedWorkerCount());
-  helper->DeleteSharedWorker(worker2, name2, storage_key2);
+  helper->DeleteSharedWorker(worker2, name2, storage_key2,
+                             blink::mojom::SharedWorkerSameSiteCookies::kAll);
   EXPECT_EQ(1u, helper->GetSharedWorkerCount());
 }
 
@@ -73,9 +77,11 @@ TEST_F(CannedSharedWorkerHelperTest, IgnoreExtensionsAndDevTools) {
       browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
-  helper->AddSharedWorker(worker1, name, storage_key1);
+  helper->AddSharedWorker(worker1, name, storage_key1,
+                          blink::mojom::SharedWorkerSameSiteCookies::kAll);
   EXPECT_TRUE(helper->empty());
-  helper->AddSharedWorker(worker2, name, storage_key2);
+  helper->AddSharedWorker(worker2, name, storage_key2,
+                          blink::mojom::SharedWorkerSameSiteCookies::kAll);
   EXPECT_TRUE(helper->empty());
 }
 

@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="DriveFs interface not available"/>
   <int value="2" label="Timed out waiting for metadata"/>
   <int value="3" label="Metadata not available"/>
-  <int value="4" label="Empty or invalid alternate URL"/>
+  <int value="4" label="Invalid alternate URL"/>
   <int value="5" label="Alternate URL does not allow editing"/>
   <int value="6" label="Unexpected alternate URL"/>
   <int value="7" label="Success"/>
@@ -453,6 +453,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="No Drive service"/>
   <int value="10" label="Drive authentication not ready"/>
   <int value="11" label="Metered connection"/>
+  <int value="12" label="Empty alternate URL"/>
+  <int value="13" label="Local file waiting for upload"/>
 </enum>
 
 <enum name="OfficeFileHandler">

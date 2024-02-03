@@ -1,7 +1,6 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -25,7 +24,7 @@ export function testCancelImageOrientation() {
   canvas.width = 2;
   canvas.height = 1;
 
-  const context = canvas.getContext('2d');
+  const context = canvas.getContext('2d')!;
   const imageData = context.createImageData(2, 1);
   imageData.data[0] = 255;  // R
   imageData.data[1] = 0;    // G
@@ -40,7 +39,7 @@ export function testCancelImageOrientation() {
   const destinationCanvas = document.createElement('canvas');
   destinationCanvas.width = 1;
   destinationCanvas.height = 2;
-  const destinationContext = destinationCanvas.getContext('2d');
+  const destinationContext = destinationCanvas.getContext('2d')!;
   orientation.cancelImageOrientation(destinationContext, 2, 1);
   destinationContext.drawImage(canvas, 0, 0);
   const destinationImageData = destinationContext.getImageData(0, 0, 1, 2);
@@ -49,7 +48,8 @@ export function testCancelImageOrientation() {
       destinationImageData.data);
 }
 
-function assertImageOrientationEquals(expected, actual, message) {
+function assertImageOrientationEquals(
+    expected: ImageOrientation, actual: ImageOrientation, message: string) {
   assertEquals(expected.a, actual.a, message);
   assertEquals(expected.b, actual.b, message);
   assertEquals(expected.c, actual.c, message);

@@ -207,7 +207,7 @@ void SubtleNotificationView::UpdateContent(
     const std::u16string& instruction_text) {
   instruction_view_->SetText(instruction_text);
   instruction_view_->SetVisible(!instruction_text.empty());
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SubtleNotificationView::UpdateContent(
@@ -215,7 +215,7 @@ void SubtleNotificationView::UpdateContent(
     std::vector<std::unique_ptr<views::View>> key_images) {
   instruction_view_->SetTextAndImages(instruction_text, std::move(key_images));
   instruction_view_->SetVisible(!instruction_text.empty());
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 // static

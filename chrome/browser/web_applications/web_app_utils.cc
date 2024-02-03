@@ -88,11 +88,7 @@ bool g_skip_main_profile_check_for_testing = false;
 GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
-  std::string encoded;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(output.data()),
-                        output.size()),
-      &encoded);
+  std::string encoded = base::Base64Encode(output);
   return GURL("data:image/png;base64," + encoded);
 }
 

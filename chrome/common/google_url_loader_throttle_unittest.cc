@@ -14,6 +14,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,8 +40,9 @@ class FakeBoundSessionRequestThrottledHandler
   }
 
   void SimulateHandleRequestBlockedOnCookieCompleted(
-      UnblockAction unblock_action) {
-    std::move(callback_).Run(unblock_action);
+      UnblockAction unblock_action,
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
+    std::move(callback_).Run(unblock_action, resume_trigger);
   }
 
   bool IsRequestBlocked() { return !callback_.is_null(); }
@@ -118,7 +120,9 @@ class GoogleURLLoaderThrottleTest
 
   void UnblockRequestAndVerifyCallbackAction(
       BoundSessionRequestThrottledHandler::UnblockAction unblock_action,
-      bool is_expected_navigation = false) {
+      bool is_expected_navigation = false,
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger =
+          chrome::mojom::ResumeBlockedRequestsTrigger::kObservedFreshCookies) {
     switch (unblock_action) {
       case BoundSessionRequestThrottledHandler::UnblockAction::kResume:
         EXPECT_CALL(*delegate(), Resume());
@@ -129,7 +133,7 @@ class GoogleURLLoaderThrottleTest
     }
 
     bound_session_listener_->SimulateHandleRequestBlockedOnCookieCompleted(
-        unblock_action);
+        unblock_action, resume_trigger);
 
     RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(delegate());
@@ -359,6 +363,60 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptAndCancelRequest) {
       /*expect_defer=*/true, kGoogleSubdomainURL);
   UnblockRequestAndVerifyCallbackAction(
       BoundSessionRequestThrottledHandler::UnblockAction::kCancel);
+}
+
+TEST_P(GoogleURLLoaderThrottleTest,
+       RecordDeferredRequestUnblockTriggerSuccess) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Now());
+
+  CallThrottleAndVerifyDeferExpectation(
+      /*expect_defer=*/true, kGoogleSubdomainURL);
+  const auto kResumeTrigger =
+      chrome::mojom::ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure;
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume,
+      /*is_expected_navigation=*/false, kResumeTrigger);
+  base::HistogramTester histogram_tester;
+  throttle()->WillProcessResponse(kGoogleSubdomainURL, nullptr, nullptr);
+  histogram_tester.ExpectBucketCount(
+      "Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger.Success",
+      static_cast<int>(kResumeTrigger),
+      /*expected_count=*/1);
+}
+
+TEST_P(GoogleURLLoaderThrottleTest,
+       RecordDeferredRequestUnblockTriggerFailure) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Now());
+
+  CallThrottleAndVerifyDeferExpectation(
+      /*expect_defer=*/true, kGoogleSubdomainURL);
+  const auto kResumeTrigger =
+      chrome::mojom::ResumeBlockedRequestsTrigger::kNetworkConnectionOffline;
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume,
+      /*is_expected_navigation=*/false, kResumeTrigger);
+  base::HistogramTester histogram_tester;
+  throttle()->WillOnCompleteWithError(network::URLLoaderCompletionStatus(),
+                                      nullptr);
+  histogram_tester.ExpectBucketCount(
+      "Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger.Failure",
+      static_cast<int>(kResumeTrigger),
+      /*expected_count=*/1);
+}
+
+TEST_P(GoogleURLLoaderThrottleTest,
+       NoRecordDeferredRequestUnblockTriggerNotDeferred) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/",
+                                       base::Time::Now() + base::Minutes(10));
+
+  CallThrottleAndVerifyDeferExpectation(
+      /*expect_defer=*/false, kGoogleSubdomainURL);
+  base::HistogramTester histogram_tester;
+  throttle()->WillProcessResponse(kGoogleSubdomainURL, nullptr, nullptr);
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix(
+          "Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger."),
+      testing::IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(WillStartRequest,

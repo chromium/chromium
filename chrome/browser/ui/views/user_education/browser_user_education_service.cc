@@ -610,9 +610,11 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
 
   // kIPHTabSearchFeature:
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
-      &feature_engagement::kIPHTabSearchFeature, kTabSearchButtonElementId,
-      IDS_TAB_SEARCH_PROMO));
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &feature_engagement::kIPHTabSearchFeature, kTabSearchButtonElementId,
+          IDS_TAB_SEARCH_PROMO)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopLeft)));
 
   // Tracking Protection Offboarding IPH
   registry.RegisterFeature(std::move(
@@ -936,8 +938,8 @@ void MaybeRegisterChromeTutorials(
                 .SetBubbleBodyText(IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP)
                 .SetBubbleArrow(HelpBubbleArrow::kLeftCenter),
 
-            // Wait for save group sync to be toggled.
-            HiddenStep::WaitForActivated(kTabGroupEditorBubbleSaveToggleId),
+            // Wait for save group sync to be enabled.
+            EventStep(kTabGroupSavedCustomEventId).AbortIfVisibilityLost(true),
 
             // Point at editor bubble "Hide group" to save it for later in the
             // bookmarks bar.

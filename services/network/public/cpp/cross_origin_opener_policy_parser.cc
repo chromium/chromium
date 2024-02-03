@@ -34,7 +34,7 @@ constexpr char kReportTo[] = "report-to";
 void ParseHeader(std::string_view header_value,
                  mojom::CrossOriginOpenerPolicyValue* value,
                  mojom::CrossOriginOpenerPolicyValue* soap_by_default_value,
-                 absl::optional<std::string>* endpoint) {
+                 std::optional<std::string>* endpoint) {
   DCHECK(value);
   DCHECK(endpoint);
   using Item = net::structured_headers::Item;

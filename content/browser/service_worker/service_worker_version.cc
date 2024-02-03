@@ -662,6 +662,13 @@ bool ServiceWorkerVersion::OnRequestTermination() {
     }
   }
 
+  will_warm_up_on_stopped_ =
+      will_be_terminated &&
+      base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp) &&
+      blink::features::kSpeculativeServiceWorkerWarmUpOnIdleTimeout.Get() &&
+      scope_.SchemeIsHTTPOrHTTPS();
+
   if (will_be_terminated) {
     embedded_worker_->Stop();
   } else {
@@ -2815,6 +2822,11 @@ void ServiceWorkerVersion::OnStoppedInternal(
   } else if (!HasWorkInBrowser()) {
     OnNoWorkInBrowser();
   }
+
+  if (!should_restart && will_warm_up_on_stopped_ && context_) {
+    context_->wrapper()->WarmUpServiceWorker(scope_, key_, base::DoNothing());
+  }
+  will_warm_up_on_stopped_ = false;
 }
 
 void ServiceWorkerVersion::FinishStartWorker(
@@ -2825,6 +2837,12 @@ void ServiceWorkerVersion::FinishStartWorker(
   for (auto& callback : callbacks)
     std::move(callback).Run(status);
   is_running_start_callbacks_ = false;
+
+  std::vector<StatusCallback> warm_up_callbacks;
+  warm_up_callbacks.swap(warm_up_callbacks_);
+  for (auto& callback : warm_up_callbacks) {
+    std::move(callback).Run(status);
+  }
 }
 
 void ServiceWorkerVersion::CleanUpExternalRequest(
@@ -3072,6 +3090,28 @@ bool ServiceWorkerVersion::SetupRouterEvaluator(
   return true;
 }
 
+bool ServiceWorkerVersion::NeedRouterEvaluate() const {
+  // If there's no router, return false.
+  if (!router_evaluator_) {
+    return false;
+  }
+  // If the router has non fetch-event source e.g. cache, we can't skip the
+  // router evaluate.
+  if (router_evaluator_->has_non_fetch_event_source()) {
+    return true;
+  }
+  // In this case, there are router rules, but all sources are "fetch-event".
+  switch (fetch_handler_type()) {
+    case FetchHandlerType::kNoHandler:
+      // If there's no fetch handler, we can skip the router evaluate because
+      // the router evaluation will be no-op.
+      return false;
+    case FetchHandlerType::kEmptyFetchHandler:
+    case FetchHandlerType::kNotSkippable:
+      return true;
+  }
+}
+
 bool ServiceWorkerVersion::IsStaticRouterEnabled() {
   if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter)) {
     return true;
@@ -3081,13 +3121,6 @@ bool ServiceWorkerVersion::IsStaticRouterEnabled() {
     return true;
   }
   return false;
-}
-
-bool ServiceWorkerVersion::HasRouterWithNonFetchEventSource() const {
-  if (!router_evaluator_) {
-    return false;
-  }
-  return router_evaluator_->has_non_fetch_event_source();
 }
 
 void ServiceWorkerVersion::GetAssociatedInterface(

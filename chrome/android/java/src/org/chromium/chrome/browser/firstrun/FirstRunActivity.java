@@ -26,6 +26,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -148,7 +149,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         BooleanSupplier showSearchEnginePromo =
                 () -> mFreProperties.getBoolean(SHOW_SEARCH_ENGINE_PAGE);
-        BooleanSupplier showSyncConsent = () -> mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE);
 
         // An optional page to select a default search engine.
         if (showSearchEnginePromo.getAsBoolean()) {
@@ -160,7 +160,16 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         // An optional sync consent page, the visibility of this page will be decided on the fly
         // according to the situation.
-        mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            BooleanSupplier showHistorySync =
+                    () -> mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE);
+            mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
+        } else {
+            BooleanSupplier showSyncConsent =
+                    () -> mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE);
+            mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
+        }
         mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
 
         if (mPagerAdapter != null) {

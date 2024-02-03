@@ -5,13 +5,19 @@ owners:
 caption: Enable/disable Extended Automatic Updates
 
 desc: |-
-  If the policy is true, devices will opt in to Extended Automatic Updates.
+  Allow eligible devices that will lose Android support to be opted into
+  Extended Automatic Updates.
 
-  If the policy is set to false or unset, devices will stop receiving updates
-  after Auto Update Expiration.
+  If the policy is Enabled, devices will opt in to Extended Automatic Updates.
 
-  Extended Automatic Updates and Auto Updates are documented at
-  https://support.google.com/chrome/a?p=auto-update-policy.
+  If the policy is Disabled or unset, devices will stop receiving updates
+  after the original Auto Update Expiration date.
+
+  This policy is only relevant for older models not automatically receiving
+  extended updates.
+
+  For more details please see
+  https://support.google.com/chrome/a/?p=extended_updates_support.
 
 future_on:
 - chrome_os
@@ -28,9 +34,9 @@ schema:
   type: boolean
 
 items:
-- caption: Opt in to Extended Automatic Updates
+- caption: Allow extended automatic updates
   value: true
-- caption: Do not opt in to Extended Automatic Updates
+- caption: Do not allow extended automatic updates
   value: false
 
 default: false

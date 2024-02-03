@@ -113,12 +113,6 @@ constexpr PrefsForManagedContentSettingsMapEntry
         {prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
          ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
          CONTENT_SETTING_BLOCK},
-        {prefs::kManagedMidiAllowedForUrls, ContentSettingsType::MIDI,
-         CONTENT_SETTING_ALLOW},
-        {prefs::kManagedMidiBlockedForUrls, ContentSettingsType::MIDI,
-         CONTENT_SETTING_BLOCK},
-        {prefs::kManagedMidiBlockedForUrls, ContentSettingsType::MIDI_SYSEX,
-         CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -161,8 +155,6 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedLocalFontsAllowedForUrls,
     prefs::kManagedLocalFontsBlockedForUrls,
     prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
-    prefs::kManagedMidiAllowedForUrls,
-    prefs::kManagedMidiBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -194,31 +186,27 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWindowManagementSetting,
     prefs::kManagedDefaultLocalFontsSetting,
     prefs::kManagedDefaultThirdPartyStoragePartitioningSetting,
-    prefs::kManagedDefaultMidi,
 };
 
 void ReportCookiesAllowedForUrlsUsage(
     content_settings::OriginValueMap& value_map) {
-  base::AutoLock lock(value_map.GetLock());
-
   bool has_pattern_with_wildcard_primary = false;
   bool has_pattern_with_wildcard_secondary = false;
   bool has_pattern_with_no_wildcard = false;
 
-  auto it = value_map.find(ContentSettingsType::COOKIES);
-  if (it == value_map.end()) {
+  auto it = value_map.GetRuleIterator(ContentSettingsType::COOKIES);
+  if (!it) {
     return;
   }
-  for (const auto& jt : it->second) {
-    if (static_cast<ContentSetting>(jt.second.value.GetIfInt().value()) !=
+  while (it->HasNext()) {
+    auto rule = it->Next();
+    if (static_cast<ContentSetting>(rule->value.GetIfInt().value()) !=
         CONTENT_SETTING_ALLOW) {
       continue;
     }
-    const auto& pattern_pair = jt.first;
-    if (pattern_pair.primary_pattern == ContentSettingsPattern::Wildcard()) {
+    if (rule->primary_pattern == ContentSettingsPattern::Wildcard()) {
       has_pattern_with_wildcard_primary = true;
-    } else if (pattern_pair.secondary_pattern ==
-               ContentSettingsPattern::Wildcard()) {
+    } else if (rule->secondary_pattern == ContentSettingsPattern::Wildcard()) {
       has_pattern_with_wildcard_secondary = true;
     } else {
       has_pattern_with_no_wildcard = true;
@@ -303,8 +291,6 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultLocalFontsSetting},
         {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
          prefs::kManagedDefaultThirdPartyStoragePartitioningSetting},
-        {ContentSettingsType::MIDI, prefs::kManagedDefaultMidi},
-        {ContentSettingsType::MIDI_SYSEX, prefs::kManagedDefaultMidi},
 };
 
 // static

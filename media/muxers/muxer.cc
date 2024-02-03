@@ -4,9 +4,10 @@
 
 #include "media/muxers/muxer.h"
 
+#include <optional>
+
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -22,7 +23,7 @@ Muxer::VideoParameters::VideoParameters(
     gfx::Size visible_rect_size,
     double frame_rate,
     VideoCodec codec,
-    absl::optional<gfx::ColorSpace> color_space)
+    std::optional<gfx::ColorSpace> color_space)
     : visible_rect_size(visible_rect_size),
       frame_rate(frame_rate),
       codec(codec),
@@ -43,7 +44,7 @@ std::string Muxer::VideoParameters::AsHumanReadableString() const {
 Muxer::EncodedFrame::EncodedFrame() = default;
 Muxer::EncodedFrame::EncodedFrame(
     absl::variant<AudioParameters, VideoParameters> params,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+    std::optional<media::AudioEncoder::CodecDescription> codec_description,
     std::string data,
     std::string alpha_data,
     bool is_keyframe)

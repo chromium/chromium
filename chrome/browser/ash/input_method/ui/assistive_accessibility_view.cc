@@ -42,7 +42,7 @@ void AssistiveAccessibilityView::Announce(const std::u16string& message) {
   accessibility_label_->Announce(message);
 }
 
-BEGIN_METADATA(AssistiveAccessibilityView, views::View)
+BEGIN_METADATA(AssistiveAccessibilityView)
 END_METADATA
 
 }  // namespace ime

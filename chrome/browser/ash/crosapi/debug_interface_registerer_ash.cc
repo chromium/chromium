@@ -57,4 +57,16 @@ void DebugInterfaceRegistererAsh::PrintLayerHierarchy() {
   }
 }
 
+void DebugInterfaceRegistererAsh::PrintWindowHierarchy() {
+  for (const auto& interface : interfaces_) {
+    interface->PrintUiHierarchy(mojom::PrintTarget::kWindow);
+  }
+}
+
+void DebugInterfaceRegistererAsh::PrintViewHierarchy() {
+  for (const auto& interface : interfaces_) {
+    interface->PrintUiHierarchy(mojom::PrintTarget::kView);
+  }
+}
+
 }  // namespace crosapi

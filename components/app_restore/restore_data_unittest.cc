@@ -170,9 +170,10 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         MakeIntent(kIntentActionView, kMimeType, kShareText2));
-    app_launch_info2->app_type_browser = kAppTypeBrower2;
-    app_launch_info2->first_non_pinned_tab_index = kFirstNonPinnedTabIndex;
-    PopulateTestTabgroups(app_launch_info2->tab_group_infos);
+    app_launch_info2->browser_extra_info.app_type_browser = kAppTypeBrower2;
+    app_launch_info2->browser_extra_info.first_non_pinned_tab_index =
+        kFirstNonPinnedTabIndex;
+    PopulateTestTabgroups(app_launch_info2->browser_extra_info.tab_group_infos);
 
     auto app_launch_info3 = std::make_unique<AppLaunchInfo>(
         kAppId2, kWindowId3, apps::LaunchContainer::kLaunchContainerNone,
@@ -268,12 +269,14 @@ class RestoreDataTest : public testing::Test {
     EXPECT_EQ(intent->mime_type, data->intent->mime_type);
     EXPECT_EQ(intent->share_text, data->intent->share_text);
 
+    const BrowserExtraInfo browser_info = data->browser_extra_info;
     if (!app_type_browser) {
       // This field should only be written if it is true.
-      EXPECT_FALSE(data->app_type_browser.has_value());
+      EXPECT_FALSE(browser_info.app_type_browser.has_value());
     } else {
-      EXPECT_THAT(data->app_type_browser, testing::Optional(app_type_browser));
-      EXPECT_THAT(data->first_non_pinned_tab_index,
+      EXPECT_THAT(browser_info.app_type_browser,
+                  testing::Optional(app_type_browser));
+      EXPECT_THAT(browser_info.first_non_pinned_tab_index,
                   testing::Optional(first_non_pinned_tab_index));
     }
 
@@ -323,8 +326,8 @@ class RestoreDataTest : public testing::Test {
     if (expected_tab_group_infos.size() > 0 && test_tab_group_infos) {
       // If we're passing a non-empty expected vector then we expect the object
       // under test to have tab group infos.
-      EXPECT_FALSE(data->tab_group_infos.empty());
-      EXPECT_THAT(data->tab_group_infos,
+      EXPECT_FALSE(browser_info.tab_group_infos.empty());
+      EXPECT_THAT(browser_info.tab_group_infos,
                   testing::UnorderedElementsAreArray(expected_tab_group_infos));
     }
   }
@@ -610,7 +613,8 @@ TEST_F(RestoreDataTest, GetAppLaunchInfo) {
   EXPECT_EQ(kMimeType, app_launch_info->intent->mime_type);
   EXPECT_EQ(kShareText1, app_launch_info->intent->share_text);
 
-  EXPECT_FALSE(app_launch_info->app_type_browser.has_value());
+  EXPECT_FALSE(
+      app_launch_info->browser_extra_info.app_type_browser.has_value());
 }
 
 TEST_F(RestoreDataTest, GetWindowInfo) {
@@ -716,7 +720,7 @@ TEST_F(RestoreDataTest, HasAppTypeBrowser) {
 
   auto app_launch_info2 =
       std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId2);
-  app_launch_info2->app_type_browser = true;
+  app_launch_info2->browser_extra_info.app_type_browser = true;
   restore_data().AddAppLaunchInfo(std::move(app_launch_info2));
   EXPECT_TRUE(restore_data().HasAppTypeBrowser());
 }
@@ -724,7 +728,7 @@ TEST_F(RestoreDataTest, HasAppTypeBrowser) {
 TEST_F(RestoreDataTest, HasBrowser) {
   auto app_launch_info1 =
       std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId1);
-  app_launch_info1->app_type_browser = true;
+  app_launch_info1->browser_extra_info.app_type_browser = true;
   restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
   EXPECT_FALSE(restore_data().HasBrowser());
 
@@ -766,9 +770,10 @@ TEST_F(RestoreDataTest, CompareAppRestoreData) {
                                   base::FilePath(kFilePath2)},
       MakeIntent(kIntentActionSend, kMimeType, kShareText1));
 
-  app_launch_info_1->app_type_browser = kAppTypeBrower2;
-  app_launch_info_1->first_non_pinned_tab_index = kFirstNonPinnedTabIndex;
-  PopulateTestTabgroups(app_launch_info_1->tab_group_infos);
+  app_launch_info_1->browser_extra_info.app_type_browser = kAppTypeBrower2;
+  app_launch_info_1->browser_extra_info.first_non_pinned_tab_index =
+      kFirstNonPinnedTabIndex;
+  PopulateTestTabgroups(app_launch_info_1->browser_extra_info.tab_group_infos);
 
   // Same as `app_launch_info_1`.
   auto app_launch_info_2 = std::make_unique<AppLaunchInfo>(
@@ -778,9 +783,10 @@ TEST_F(RestoreDataTest, CompareAppRestoreData) {
                                   base::FilePath(kFilePath2)},
       MakeIntent(kIntentActionSend, kMimeType, kShareText1));
 
-  app_launch_info_2->app_type_browser = kAppTypeBrower2;
-  app_launch_info_2->first_non_pinned_tab_index = kFirstNonPinnedTabIndex;
-  PopulateTestTabgroups(app_launch_info_2->tab_group_infos);
+  app_launch_info_2->browser_extra_info.app_type_browser = kAppTypeBrower2;
+  app_launch_info_2->browser_extra_info.first_non_pinned_tab_index =
+      kFirstNonPinnedTabIndex;
+  PopulateTestTabgroups(app_launch_info_2->browser_extra_info.tab_group_infos);
 
   auto app_launch_info_3 = std::make_unique<AppLaunchInfo>(
       kAppId1, kWindowId2, apps::LaunchContainer::kLaunchContainerTab,
@@ -801,7 +807,7 @@ TEST_F(RestoreDataTest, CompareAppRestoreData) {
   EXPECT_TRUE(*app_restore_data_1 != *app_restore_data_3);
 
   // Modify tab groups of app_restore_data_2.
-  app_restore_data_2->tab_group_infos.push_back(
+  app_restore_data_2->browser_extra_info.tab_group_infos.push_back(
       MakeTestTabGroup(kTestTabGroupTitleThree, kTestTabGroupColorThree));
   EXPECT_TRUE(*app_restore_data_1 != *app_restore_data_2);
 }

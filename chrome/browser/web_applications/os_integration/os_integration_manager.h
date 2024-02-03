@@ -10,7 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -98,9 +97,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
    public:
     ScopedSuppressForTesting();
     ~ScopedSuppressForTesting();
-
-   private:
-    base::AutoReset<bool> scope_;
   };
 
   explicit OsIntegrationManager(

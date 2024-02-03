@@ -159,7 +159,7 @@ class MockRequestClient : public ResourceRequestClient {
   void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     last_load_timing_ = head->load_timing;
     cached_metadata_ = std::move(cached_metadata);
     received_response_ = true;
@@ -180,7 +180,7 @@ class MockRequestClient : public ResourceRequestClient {
   bool upload_progress_called() const { return upload_progress_called_; }
   bool redirected() const { return redirected_; }
   bool received_response() { return received_response_; }
-  const absl::optional<mojo_base::BigBuffer>& cached_metadata() const {
+  const std::optional<mojo_base::BigBuffer>& cached_metadata() const {
     return cached_metadata_;
   }
   bool transfer_size_updated_called() const {
@@ -209,7 +209,7 @@ class MockRequestClient : public ResourceRequestClient {
   bool redirected_ = false;
   bool transfer_size_updated_called_ = false;
   bool received_response_ = false;
-  absl::optional<mojo_base::BigBuffer> cached_metadata_;
+  std::optional<mojo_base::BigBuffer> cached_metadata_;
   bool complete_ = false;
   net::LoadTimingInfo last_load_timing_;
   network::URLLoaderCompletionStatus completion_status_;
@@ -234,7 +234,7 @@ class MockLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     if (follow_redirect_callback_) {
       follow_redirect_callback_.Run(removed_headers, modified_headers);
     }
@@ -417,8 +417,7 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncFollow) {
                             network::mojom::URLResponseHead::New());
   run_loop_for_redirect.Run();
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            absl::nullopt);
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
 }
@@ -463,8 +462,7 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncFollowWithRemovedHeaders) {
                             network::mojom::URLResponseHead::New());
   run_loop_for_redirect.Run();
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            absl::nullopt);
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
 }
@@ -513,8 +511,7 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncFollowWithModifiedHeaders) {
                             network::mojom::URLResponseHead::New());
   run_loop_for_redirect.Run();
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            absl::nullopt);
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
 }
@@ -575,7 +572,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollow) {
         run_loop_for_redirect.Quit();
       }));
 
-  absl::optional<net::RedirectInfo> received_redirect_info;
+  std::optional<net::RedirectInfo> received_redirect_info;
   ResourceRequestClient::FollowRedirectCallback follow_redirect_callback;
   mock_client_->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
       [&](const net::RedirectInfo& redirect_info,
@@ -597,8 +594,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollow) {
   std::move(follow_redirect_callback).Run({}, {});
   run_loop_for_redirect.Run();
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            absl::nullopt);
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
 }
@@ -626,7 +622,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowWithRemovedHeaders) {
         run_loop_for_redirect.Quit();
       }));
 
-  absl::optional<net::RedirectInfo> received_redirect_info;
+  std::optional<net::RedirectInfo> received_redirect_info;
   ResourceRequestClient::FollowRedirectCallback follow_redirect_callback;
   mock_client_->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
       [&](const net::RedirectInfo& redirect_info,
@@ -649,8 +645,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowWithRemovedHeaders) {
   std::move(follow_redirect_callback).Run({"Foo-Bar", "Hoge-Piyo"}, {});
   run_loop_for_redirect.Run();
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            absl::nullopt);
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
 }
@@ -679,7 +674,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowWithModifiedHeaders) {
         run_loop_for_redirect.Quit();
       }));
 
-  absl::optional<net::RedirectInfo> received_redirect_info;
+  std::optional<net::RedirectInfo> received_redirect_info;
   ResourceRequestClient::FollowRedirectCallback follow_redirect_callback;
   mock_client_->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
       [&](const net::RedirectInfo& redirect_info,
@@ -705,8 +700,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowWithModifiedHeaders) {
   std::move(follow_redirect_callback).Run({}, std::move(modified_headers));
   run_loop_for_redirect.Run();
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            absl::nullopt);
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
 }
@@ -732,7 +726,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowAfterCancel) {
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL(kRedirectedUrl);
 
-  absl::optional<net::RedirectInfo> received_redirect_info;
+  std::optional<net::RedirectInfo> received_redirect_info;
   ResourceRequestClient::FollowRedirectCallback follow_redirect_callback;
   mock_client_->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
       [&](const net::RedirectInfo& redirect_info,
@@ -766,8 +760,7 @@ TEST_F(ResourceRequestSenderTest, ReceiveResponseWithoutMetadata) {
 
   // Send a response without metadata.
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            absl::nullopt);
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -829,8 +822,7 @@ TEST_F(ResourceRequestSenderTest, EmptyCodeCacheThenReceiveResponse) {
 
   // Send a response without metadata.
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            absl::nullopt);
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -871,8 +863,8 @@ TEST_F(ResourceRequestSenderTest, ReceiveCodeCacheThenReceiveResponse) {
   base::RunLoop().RunUntilIdle();
 
   // Send a response without metadata.
-  client->OnReceiveResponse(
-      std::move(response), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(std::move(response),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -916,8 +908,8 @@ TEST_F(ResourceRequestSenderTest,
   base::RunLoop().RunUntilIdle();
 
   // Send a response without metadata.
-  client->OnReceiveResponse(
-      std::move(response), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(std::move(response),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(mock_client_->received_response());
@@ -1163,7 +1155,7 @@ TEST_F(ResourceRequestSenderTest, SlowCodeCache) {
                            base::BindLambdaForTesting([]() {}));
   client->OnReceiveResponse(
       std::move(response),
-      CreateDataPipeConsumerHandleFilledWithString(kTestData), absl::nullopt);
+      CreateDataPipeConsumerHandleFilledWithString(kTestData), std::nullopt);
   client->OnTransferSizeUpdated(100);
   client->OnComplete(network::URLLoaderCompletionStatus(net::Error::OK));
   base::RunLoop().RunUntilIdle();
@@ -1230,7 +1222,7 @@ TEST_F(ResourceRequestSenderTest, ReceiveCodeCacheWhileFrozen) {
                            base::BindLambdaForTesting([]() {}));
   client->OnReceiveResponse(
       std::move(response),
-      CreateDataPipeConsumerHandleFilledWithString(kTestData), absl::nullopt);
+      CreateDataPipeConsumerHandleFilledWithString(kTestData), std::nullopt);
   client->OnTransferSizeUpdated(100);
   client->OnComplete(network::URLLoaderCompletionStatus(net::Error::OK));
   base::RunLoop().RunUntilIdle();
@@ -1311,8 +1303,8 @@ TEST_F(ResourceRequestSenderTest,
   base::RunLoop().RunUntilIdle();
 
   // Send a response without metadata.
-  client->OnReceiveResponse(
-      std::move(response), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(std::move(response),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1357,8 +1349,8 @@ TEST_F(ResourceRequestSenderTest,
   base::RunLoop().RunUntilIdle();
 
   // Send a response without metadata.
-  client->OnReceiveResponse(
-      std::move(response), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(std::move(response),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1404,8 +1396,8 @@ TEST_F(ResourceRequestSenderTest,
   base::RunLoop().RunUntilIdle();
 
   // Send a response without metadata.
-  client->OnReceiveResponse(
-      std::move(response), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(std::move(response),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1450,8 +1442,8 @@ TEST_F(ResourceRequestSenderTest,
   base::RunLoop().RunUntilIdle();
 
   // Send a response without metadata.
-  client->OnReceiveResponse(
-      std::move(response), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(std::move(response),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1492,8 +1484,8 @@ TEST_F(ResourceRequestSenderTest, CodeCacheWithHashingEmptyCodeCache) {
   base::RunLoop().RunUntilIdle();
 
   // Send a response without metadata.
-  client->OnReceiveResponse(
-      CreateResponse(), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(CreateResponse(),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1536,8 +1528,8 @@ TEST_F(ResourceRequestSenderTest, CodeCacheWithHashingWithCodeCache) {
   base::RunLoop().RunUntilIdle();
 
   // Send a response without metadata.
-  client->OnReceiveResponse(
-      CreateResponse(), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(CreateResponse(),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1602,7 +1594,7 @@ TEST_F(ResourceRequestSenderTest,
 
   // Send a response without metadata.
   second_client->OnReceiveResponse(
-      CreateResponse(), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+      CreateResponse(), mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1642,8 +1634,8 @@ TEST_F(ResourceRequestSenderTest, WebAssemblyCodeCacheRequest) {
       .Run(base::Time(), mojo_base::BigBuffer());
   base::RunLoop().RunUntilIdle();
 
-  client->OnReceiveResponse(
-      CreateResponse(), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(CreateResponse(),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1670,8 +1662,8 @@ TEST_F(ResourceRequestSenderTest, KeepaliveRequest) {
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(loader_and_clients_[0].second));
 
-  client->OnReceiveResponse(
-      CreateResponse(), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client->OnReceiveResponse(CreateResponse(),
+                            mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_client_->received_response());
@@ -1795,7 +1787,7 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRequest) {
             loader_client->OnReceiveResponse(
                 network::mojom::URLResponseHead::New(),
                 CreateDataPipeConsumerHandleFilledWithString(kTestData),
-                absl::nullopt);
+                std::nullopt);
             loader_client->OnComplete(
                 network::URLLoaderCompletionStatus(net::Error::OK));
           }));
@@ -1855,7 +1847,7 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirect) {
               refcounted_client->data->OnReceiveResponse(
                   network::mojom::URLResponseHead::New(),
                   CreateDataPipeConsumerHandleFilledWithString(kTestData),
-                  absl::nullopt);
+                  std::nullopt);
 
               refcounted_client->data->OnComplete(
                   network::URLLoaderCompletionStatus(net::Error::OK));
@@ -1920,7 +1912,7 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectWithRemovedHeaders) {
               refcounted_client->data->OnReceiveResponse(
                   network::mojom::URLResponseHead::New(),
                   CreateDataPipeConsumerHandleFilledWithString(kTestData),
-                  absl::nullopt);
+                  std::nullopt);
               refcounted_client->data->OnComplete(
                   network::URLLoaderCompletionStatus(net::Error::OK));
             },
@@ -1989,7 +1981,7 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectWithModifiedHeaders) {
               refcounted_client->data->OnReceiveResponse(
                   network::mojom::URLResponseHead::New(),
                   CreateDataPipeConsumerHandleFilledWithString(kTestData),
-                  absl::nullopt);
+                  std::nullopt);
               refcounted_client->data->OnComplete(
                   network::URLLoaderCompletionStatus(net::Error::OK));
             },
@@ -2065,7 +2057,7 @@ class TimeConversionTest : public ResourceRequestSenderTest {
     loader_and_clients_.clear();
     client->OnReceiveResponse(std::move(response_head),
                               mojo::ScopedDataPipeConsumerHandle(),
-                              absl::nullopt);
+                              std::nullopt);
     base::RunLoop().RunUntilIdle();
   }
   const net::LoadTimingInfo& received_load_timing() const {
@@ -2141,7 +2133,7 @@ class CompletionTimeConversionTest : public ResourceRequestSenderTest {
               MOJO_RESULT_OK);
 
     client->OnReceiveResponse(std::move(response_head),
-                              std::move(consumer_handle), absl::nullopt);
+                              std::move(consumer_handle), std::nullopt);
     producer_handle.reset();  // The response is empty.
 
     network::URLLoaderCompletionStatus status;

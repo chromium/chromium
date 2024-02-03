@@ -4,13 +4,14 @@
 
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"

@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
@@ -43,7 +44,6 @@
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
@@ -306,6 +306,13 @@ using DocumentClassFlags = base::
 using ExplicitlySetAttrElementsMap =
     HeapHashMap<QualifiedName, Member<HeapLinkedHashSet<WeakMember<Element>>>>;
 
+// A map of IDL attribute name to Element FrozenArray value, for one particular
+// element.
+// This represents 'cached attr-associated elements' in the HTML specification.
+// https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#cached-attr-associated-elements
+using CachedAttrAssociatedElementsMap =
+    HeapHashMap<QualifiedName, Member<FrozenArray<Element>>>;
+
 // Represents the start and end time of the unload event.
 struct UnloadEventTiming {
   bool can_request;
@@ -323,7 +330,7 @@ struct UnloadEventTimingInfo {
   // The unload timing of the old document. This is only set from
   // Document::DispatchUnloadEvents() of the old document. This might not be set
   // if no old document gets unloaded.
-  absl::optional<UnloadEventTiming> unload_timing;
+  std::optional<UnloadEventTiming> unload_timing;
 };
 
 // A document (https://dom.spec.whatwg.org/#concept-document) is the root node
@@ -558,7 +565,9 @@ class CORE_EXPORT Document : public ContainerNode,
   HTMLCollection* DocumentAllNamedItems(const AtomicString& name);
 
   // The unassociated listed elements are listed elements that are not
-  // associated to a <form> element.
+  // associated to a <form> element. Note that if
+  // `features::kAutofillIncludeShadowDomInUnassociatedListedElements` is
+  // enabled, this includes elements inside Shadow DOM.
   const ListedElement::List& UnassociatedListedElements() const;
   void MarkUnassociatedListedElementsDirty();
 
@@ -1013,6 +1022,11 @@ class CORE_EXPORT Document : public ContainerNode,
       Element*,
       Document& new_document);
 
+  CachedAttrAssociatedElementsMap* GetCachedAttrAssociatedElementsMap(Element*);
+  void MoveElementCachedAttrAssociatedElementsMapToNewDocument(
+      Element*,
+      Document& new_document);
+
   // Returns false if the function fails.  e.g. |pseudo| is not supported.
   bool SetPseudoStateForTesting(Element& element,
                                 const String& pseudo,
@@ -1194,7 +1208,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void OverrideLastModified(const AtomicString& modified) {
     override_last_modified_ = modified;
   }
-  absl::optional<base::Time> lastModifiedTime() const;
+  std::optional<base::Time> lastModifiedTime() const;
   String lastModified() const;
 
   // The cookieURL is used to query the cookie database for this document's
@@ -1354,7 +1368,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Vector<IconURL> IconURLs(int icon_types_mask);
 
   void UpdateThemeColorCache();
-  absl::optional<Color> ThemeColor();
+  std::optional<Color> ThemeColor();
 
   // Returns the HTMLLinkElement currently in use for the Web Manifest.
   // Returns null if there is no such element.
@@ -1571,10 +1585,10 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   void ScheduleForTopLayerRemoval(Element*, TopLayerReason);
   void RemoveFinishedTopLayerElements();
-  // Returns absl::nullopt if the provided element is not scheduled for top
+  // Returns std::nullopt if the provided element is not scheduled for top
   // layer removal. If it is scheduled for removal, then this returns the reason
   // for the element being in the top layer.
-  absl::optional<TopLayerReason> IsScheduledForTopLayerRemoval(Element*) const;
+  std::optional<TopLayerReason> IsScheduledForTopLayerRemoval(Element*) const;
 
   HTMLDialogElement* ActiveModalDialog() const;
 
@@ -2704,6 +2718,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HeapHashMap<WeakMember<Element>, Member<ExplicitlySetAttrElementsMap>>
       element_explicitly_set_attr_elements_map_;
+  HeapHashMap<WeakMember<Element>, Member<CachedAttrAssociatedElementsMap>>
+      element_cached_attr_associated_elements_map_;
 
   HeapObserverSet<SynchronousMutationObserver>
       synchronous_mutation_observer_set_;
@@ -2767,7 +2783,7 @@ class CORE_EXPORT Document : public ContainerNode,
   unsigned data_list_count_ = 0;
 
   // If legacy DOM Mutation event listeners are supported by the embedder.
-  absl::optional<bool> legacy_dom_mutations_supported_;
+  std::optional<bool> legacy_dom_mutations_supported_;
 
   // For rendering media URLs in a top-level context that use the
   // Content-Security-Policy header to sandbox their content. This causes

@@ -54,18 +54,18 @@ namespace {
 constexpr char kCannotDeserializeDataErrorMessage[] =
     "Cannot deserialize data.";
 
-absl::optional<ScriptValue> Deserialize(
+std::optional<ScriptValue> Deserialize(
     v8::Isolate* isolate,
     ExecutionContext* execution_context,
     const BlinkCloneableMessage& serialized_data) {
   if (!serialized_data.message->CanDeserializeIn(execution_context)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Member<UnpackedSerializedScriptValue> unpacked =
       SerializedScriptValue::Unpack(serialized_data.message);
   if (!unpacked) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ScriptValue(isolate, unpacked->Deserialize(isolate));
@@ -402,7 +402,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
   base::ranges::transform(urls, std::back_inserter(urls_param),
                           [](const KURL& url) { return url.GetString(); });
 
-  absl::optional<ScriptValue> data_param =
+  std::optional<ScriptValue> data_param =
       Deserialize(isolate, /*execution_context=*/this, serialized_data);
   if (!data_param) {
     std::move(combined_operation_completion_cb)
@@ -479,7 +479,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   V8RunFunctionForSharedStorageRunOperation* registered_run_function =
       operation_definition->GetRunFunctionForSharedStorageRunOperation();
 
-  absl::optional<ScriptValue> data_param =
+  std::optional<ScriptValue> data_param =
       Deserialize(isolate, /*execution_context=*/this, serialized_data);
   if (!data_param) {
     std::move(combined_operation_completion_cb)

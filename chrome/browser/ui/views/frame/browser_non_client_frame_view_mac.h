@@ -24,6 +24,10 @@ namespace views {
 class Label;
 }
 
+namespace remote_cocoa::mojom {
+enum class ToolbarVisibilityStyle;
+}
+
 @class FullscreenToolbarController;
 
 class CaptionButtonPlaceholderContainer;
@@ -86,7 +90,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
  protected:
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
@@ -138,6 +142,10 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // Fires after 24 hours to emit the duration of the current fullscreen
   // session, if any.
   std::unique_ptr<base::OneShotTimer> fullscreen_session_timer_;
+
+  // Used to track the current toolbar style.
+  std::optional<remote_cocoa::mojom::ToolbarVisibilityStyle>
+      current_toolbar_style_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_

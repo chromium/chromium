@@ -18,7 +18,8 @@ namespace mojom = ::chromeos::network_diagnostics::mojom;
 class LanConnectivityRoutineTest : public ::testing::Test {
  public:
   LanConnectivityRoutineTest() {
-    lan_connectivity_routine_ = std::make_unique<LanConnectivityRoutine>();
+    lan_connectivity_routine_ = std::make_unique<LanConnectivityRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
   }
 
   LanConnectivityRoutineTest(const LanConnectivityRoutineTest&) = delete;

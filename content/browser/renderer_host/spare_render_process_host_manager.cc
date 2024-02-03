@@ -27,6 +27,12 @@ SpareRenderProcessHostManager& SpareRenderProcessHostManager::GetInstance() {
 
 void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
     BrowserContext* browser_context) {
+  if (delay_timer_) {
+    UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessDelayTime",
+                        delay_timer_->Elapsed());
+    delay_timer_.reset();
+  }
+
   if (spare_render_process_host_ &&
       spare_render_process_host_->GetBrowserContext() == browser_context) {
     DCHECK_EQ(browser_context->GetDefaultStoragePartition(),
@@ -67,6 +73,7 @@ void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
     return;
   }
 
+  process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
   spare_render_process_host_ = RenderProcessHostImpl::CreateRenderProcessHost(
       browser_context, nullptr /* site_instance */);
   spare_render_process_host_->AddObserver(this);
@@ -208,6 +215,10 @@ void SpareRenderProcessHostManager::PrepareForFutureRequests(
     // Always keep around a spare process for the most recently requested
     // |browser_context|.
     if (delay.has_value()) {
+      // The actual delay time is not necessarily `delay` because the
+      // process can be delayed until the page stops loading, in which case
+      // `delay` is TimeDelta::Max().
+      delay_timer_ = std::make_unique<base::ElapsedTimer>();
       DeferredWarmupSpareRenderProcessHost(browser_context, *delay);
     } else {
       WarmupSpareRenderProcessHost(browser_context);
@@ -257,6 +268,10 @@ void SpareRenderProcessHostManager::ReleaseSpareRenderProcessHost() {
 void SpareRenderProcessHostManager::RenderProcessReady(
     RenderProcessHost* host) {
   CHECK_EQ(spare_render_process_host_, host);
+  CHECK(process_startup_timer_);
+  UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessStartupTime",
+                      process_startup_timer_->Elapsed());
+  process_startup_timer_.reset();
   spare_render_process_host_changed_callback_list_.Notify(
       spare_render_process_host_);
 }

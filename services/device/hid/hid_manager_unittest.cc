@@ -425,7 +425,7 @@ TEST_F(HidManagerTest, TestHidConnectionInterface) {
     base::RunLoop run_loop;
     client->GetConnection()->Read(base::BindLambdaForTesting(
         [&](bool success, uint8_t report_id,
-            const absl::optional<std::vector<uint8_t>>& buffer) {
+            const std::optional<std::vector<uint8_t>>& buffer) {
           constexpr std::string_view kExpected = "TestRead";
           EXPECT_TRUE(success);
           EXPECT_EQ(report_id, 1u);
@@ -455,7 +455,7 @@ TEST_F(HidManagerTest, TestHidConnectionInterface) {
         /*report_id=*/0,
         base::BindLambdaForTesting(
             [&](bool success,
-                const absl::optional<std::vector<uint8_t>>& buffer) {
+                const std::optional<std::vector<uint8_t>>& buffer) {
               constexpr std::string_view kExpected = "TestGetFeatureReport";
               EXPECT_TRUE(success);
               ASSERT_TRUE(buffer);

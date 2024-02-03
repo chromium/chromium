@@ -62,34 +62,36 @@ ScriptPromise PeriodicSyncManager::registerPeriodicSync(
   return promise;
 }
 
-ScriptPromise PeriodicSyncManager::getTags(ScriptState* script_state) {
+ScriptPromiseTyped<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
+    ScriptState* script_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsInFencedFrame()) {
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLSequence<IDLString>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "Periodic Background Sync is not allowed in fenced frames."));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   // Creating a Periodic Background Sync registration requires an activated
   // service worker, so if |registration_| has not been activated yet, we can
   // skip the Mojo roundtrip.
   if (!registration_->active()) {
-    return ScriptPromise::Cast(script_state,
-                               v8::Array::New(script_state->GetIsolate()));
+    resolver->Resolve(Vector<String>());
+  } else {
+    // TODO(crbug.com/932591): Optimize this to only get the tags from the
+    // browser process instead of the registrations themselves.
+    GetBackgroundSyncServiceRemote()->GetRegistrations(
+        registration_->RegistrationId(),
+        resolver->WrapCallbackInScriptScope(
+            WTF::BindOnce(&PeriodicSyncManager::GetRegistrationsCallback,
+                          WrapPersistent(this))));
   }
-
-  // TODO(crbug.com/932591): Optimize this to only get the tags from the browser
-  // process instead of the registrations themselves.
-  GetBackgroundSyncServiceRemote()->GetRegistrations(
-      registration_->RegistrationId(),
-      resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&PeriodicSyncManager::GetRegistrationsCallback,
-                        WrapPersistent(this))));
   return promise;
 }
 
@@ -169,7 +171,7 @@ void PeriodicSyncManager::RegisterCallback(
 }
 
 void PeriodicSyncManager::GetRegistrationsCallback(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
     mojom::blink::BackgroundSyncError error,
     WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
   switch (error) {
@@ -177,7 +179,7 @@ void PeriodicSyncManager::GetRegistrationsCallback(
       Vector<String> tags;
       for (const auto& registration : registrations)
         tags.push_back(registration->tag);
-      resolver->Resolve<IDLSequence<IDLString>>(tags);
+      resolver->Resolve(tags);
       break;
     }
     case mojom::blink::BackgroundSyncError::NOT_FOUND:

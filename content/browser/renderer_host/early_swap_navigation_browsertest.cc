@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(EarlySwapNavigationBrowserTest, BackNavigation) {
     // already locked to a.com.
     EXPECT_EQ(
         shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
-        GURL::EmptyGURL());
+        GURL());
     EXPECT_EQ(navigating_rfh->GetSiteInstance()->GetSiteInfo().site_url(),
               GURL("http://a.com"));
     EXPECT_TRUE(
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(EarlySwapNavigationBrowserTest,
       GURL("http://a.com"));
   EXPECT_EQ(
       shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
-      GURL::EmptyGURL());
+      GURL());
 }
 
 // Exercise a case where a back navigation performs an early RFH swap, but that

@@ -15,6 +15,7 @@
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
+#include "chrome/browser/accessibility/media_app/test/test_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -99,7 +100,7 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
     mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPage>
         pageReceiver = pageRemote.InitWithNewPipeAndPassReceiver();
 
-    handler_ = std::make_unique<AXMediaAppUntrustedHandler>(
+    handler_ = std::make_unique<TestAXMediaAppUntrustedHandler>(
         *browser()->profile(), std::move(pageRemote));
     // TODO(b/309860428): Delete MediaApp interface - after we implement all
     // Mojo APIs, it should not be needed any more.
@@ -126,7 +127,7 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
   }
 
   FakeAXMediaApp fake_media_app_;
-  std::unique_ptr<AXMediaAppUntrustedHandler> handler_;
+  std::unique_ptr<TestAXMediaAppUntrustedHandler> handler_;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   screen_ai::test::FakeScreenAIAnnotator fake_annotator_{
       /*create_empty_result=*/false};
@@ -174,6 +175,19 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
             pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (0, 20)-(3, 8)\n",
             pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(3, 28) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-"
+      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 10)-"
+      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 20)-"
+      "(3, 8) restriction=readonly  is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
 
   // Relocate all the pages 3 units to the left and resize the second page. This
   // is similar to a scenario that might happen if the second page was rotated.
@@ -207,6 +221,92 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
             pages2.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (-3, 15)-(3, 8)\n",
             pages2.at(fake_metadata[2]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (-3, 0)-(8, 23) "
+      "text_align=left restriction=readonly scroll_x_min=-3 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (-3, 0)-"
+      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (-3, 10)-"
+      "(8, 3) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (-3, 15)-"
+      "(3, 8) restriction=readonly  is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       PageContentsUpdatedEdit) {
+  const size_t kTestNumPages = 3;
+  auto fake_metadata = CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // All pages have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+
+  // Mark the second page as dirty.
+  handler_->PageContentsUpdated("PageB");
+  WaitForOcringPages(1u);
+
+  ASSERT_EQ(4u, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[3]);
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageRotation) {
+  const size_t kTestNumPages = 4;
+  auto fake_metadata = CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // All pages have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+  EXPECT_EQ("PageD", fake_media_app_.PageIdsWithBitmap()[3]);
+
+  // 'Rotate' the third page, moving the other pages to fit it.
+  fake_metadata[2]->rect = gfx::RectF(
+      /*x=*/-2.5,
+      /*y=*/fake_metadata[1]->rect.y() + kTestPageHeight + kTestPageGap,
+      /*width=*/kTestPageHeight, /*height=*/kTestPageWidth);
+  fake_metadata[3]->rect = gfx::RectF(
+      /*x=*/0, /*y=*/fake_metadata[2]->rect.y() + kTestPageWidth + kTestPageGap,
+      /*width=*/kTestPageWidth, /*height=*/kTestPageHeight);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  handler_->PageContentsUpdated("PageC");
+  WaitForOcringPages(1u);
+
+  ASSERT_EQ(5u, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+  EXPECT_EQ("PageD", fake_media_app_.PageIdsWithBitmap()[3]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[4]);
+
+  EXPECT_EQ(
+      "AXTree\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
+      "name_from=attribute clips_children child_ids=2,3,4,5 (-2.5, 0)-(8, 33) "
+      "text_align=left restriction=readonly scroll_x_min=-2 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-"
+      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 10)-"
+      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (-2.5, 20)-"
+      "(8, 3) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, 25)-"
+      "(3, 8) restriction=readonly  is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

@@ -10,9 +10,10 @@ import {FocusRow} from '//resources/js/focus_row.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {isMac, isWindows} from '//resources/js/platform.js';
 import {getDeepActiveElement} from '//resources/js/util.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_action_menu.html.js';
+import {getCss} from './cr_action_menu.css.js';
+import {getHtml} from './cr_action_menu.html.js';
 
 interface ShowAtConfig {
   top?: number;
@@ -119,42 +120,42 @@ export interface CrActionMenuElement {
   };
 }
 
-export class CrActionMenuElement extends PolymerElement {
+export class CrActionMenuElement extends CrLitElement {
   static get is() {
     return 'cr-action-menu';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // Accessibility text of the menu. Should be something along the lines of
       // "actions", or "more actions".
-      accessibilityLabel: String,
+      accessibilityLabel: {type: String},
 
       // Setting this flag will make the menu listen for content size changes
       // and reposition to its anchor accordingly.
-      autoReposition: {
-        type: Boolean,
-        value: false,
-      },
+      autoReposition: {type: Boolean},
 
       open: {
         type: Boolean,
         notify: true,
-        value: false,
       },
 
       // Descriptor of the menu. Should be something along the lines of "menu"
-      roleDescription: String,
+      roleDescription: {type: String},
     };
   }
 
   accessibilityLabel?: string;
-  autoReposition: boolean;
-  open: boolean;
+  autoReposition: boolean = false;
+  open: boolean = false;
   roleDescription?: string;
 
   private boundClose_: (() => void)|null = null;
@@ -163,9 +164,7 @@ export class CrActionMenuElement extends PolymerElement {
   private anchorElement_: HTMLElement|null = null;
   private lastConfig_: ShowAtPositionConfig|null = null;
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('mouseover', this.onMouseover_);
     this.addEventListener('click', this.onClick_);
@@ -175,11 +174,6 @@ export class CrActionMenuElement extends PolymerElement {
     super.disconnectedCallback();
 
     this.removeListeners_();
-  }
-
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   /**
@@ -199,7 +193,7 @@ export class CrActionMenuElement extends PolymerElement {
     }
   }
 
-  private onNativeDialogClose_(e: Event) {
+  protected onNativeDialogClose_(e: Event) {
     // Ignore any 'close' events not fired directly by the <dialog> element.
     if (e.target !== this.$.dialog) {
       return;
@@ -207,7 +201,7 @@ export class CrActionMenuElement extends PolymerElement {
 
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
-    this.fire_('close');
+    this.fire('close');
   }
 
   private onClick_(e: Event) {
@@ -223,7 +217,7 @@ export class CrActionMenuElement extends PolymerElement {
     if (e.key === 'Tab' || e.key === 'Escape') {
       this.close();
       if (e.key === 'Tab') {
-        this.fire_('tabkeyclose', {shiftKey: e.shiftKey});
+        this.fire('tabkeyclose', {shiftKey: e.shiftKey});
       }
       e.preventDefault();
       return;
@@ -291,6 +285,10 @@ export class CrActionMenuElement extends PolymerElement {
   }
 
   close() {
+    if (!this.open) {
+      return;
+    }
+
     // Removing 'resize' and 'popstate' listeners when dialog is closed.
     this.removeListeners_();
     this.$.dialog.close();
@@ -451,7 +449,7 @@ export class CrActionMenuElement extends PolymerElement {
     this.$.dialog.style.top = menuTop + 'px';
   }
 
-  private onSlotchange_() {
+  protected onSlotchange_() {
     for (const node of this.$.contentNode.assignedElements({flatten: true})) {
       if (node.classList.contains(DROPDOWN_ITEM_CLASS) &&
           !node.getAttribute('role')) {
@@ -473,7 +471,7 @@ export class CrActionMenuElement extends PolymerElement {
       this.resizeObserver_ = new ResizeObserver(() => {
         if (this.lastConfig_) {
           this.positionDialog_(this.lastConfig_);
-          this.fire_('cr-action-menu-repositioned');  // For easier testing.
+          this.fire('cr-action-menu-repositioned');  // For easier testing.
         }
       });
 

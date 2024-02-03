@@ -45,7 +45,7 @@ class InSessionPasswordSyncManager
       public PasswordSyncTokenFetcher::Consumer,
       public AuthStatusConsumer {
  public:
-  enum class ReauthenticationReason {
+  enum class LockScreenReauthReason {
     kNone,
     // Enforced by the timeout set in SAMLOfflineSigninTimeLimit policy.
     kPolicy,
@@ -68,7 +68,7 @@ class InSessionPasswordSyncManager
 
   // Sets online re-auth on lock flag and changes the UI to online
   // re-auth when called on the lock screen.
-  void MaybeForceReauthOnLockScreen(ReauthenticationReason reauth_reason);
+  void MaybeForceReauthOnLockScreen(LockScreenReauthReason reauth_reason);
 
   // Set special clock for testing.
   void SetClockForTesting(const base::Clock* clock);
@@ -120,8 +120,8 @@ class InSessionPasswordSyncManager
   UserContext user_context_;
   raw_ptr<const base::Clock> clock_;
   const raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
-  ReauthenticationReason lock_screen_reauth_reason_ =
-      ReauthenticationReason::kNone;
+  LockScreenReauthReason lock_screen_reauth_reason_ =
+      LockScreenReauthReason::kNone;
   raw_ptr<proximity_auth::ScreenlockBridge> screenlock_bridge_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
 

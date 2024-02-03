@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -15,7 +16,6 @@
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
@@ -139,8 +139,8 @@ class PLATFORM_EXPORT PaintController {
       const TransformPaintPropertyNode* scroll_translation,
       const gfx::Rect&);
 
-  void RecordSelection(absl::optional<PaintedSelectionBound> start,
-                       absl::optional<PaintedSelectionBound> end,
+  void RecordSelection(std::optional<PaintedSelectionBound> start,
+                       std::optional<PaintedSelectionBound> end,
                        String debug_info);
   void RecordAnySelectionWasPainted() {
     paint_chunker_.RecordAnySelectionWasPainted();

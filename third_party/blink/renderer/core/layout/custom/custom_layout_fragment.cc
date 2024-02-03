@@ -16,7 +16,7 @@ CustomLayoutFragment::CustomLayoutFragment(
     CustomLayoutToken* token,
     const LayoutResult* layout_result,
     const LogicalSize& size,
-    const absl::optional<LayoutUnit> baseline,
+    const std::optional<LayoutUnit> baseline,
     v8::Isolate* isolate)
     : child_(child),
       token_(token),
@@ -44,7 +44,7 @@ ScriptValue CustomLayoutFragment::data(ScriptState* script_state) const {
   // to return the same deserialized object. We don't need to check which world
   // it is being accessed from.
   DCHECK(ExecutionContext::From(script_state)->IsLayoutWorkletGlobalScope());
-  DCHECK(script_state->World().IsWorkerWorld());
+  DCHECK(script_state->World().IsWorkerOrWorkletWorld());
 
   if (layout_worklet_world_v8_data_.IsEmpty())
     return ScriptValue::CreateNull(script_state->GetIsolate());

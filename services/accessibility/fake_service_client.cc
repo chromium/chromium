@@ -193,6 +193,14 @@ void FakeServiceClient::SendSyntheticKeyEventForShortcutOrNavigation(
   }
 }
 
+void FakeServiceClient::SendSyntheticMouseEvent(
+    mojom::SyntheticMouseEventPtr mouse_event) {
+  mouse_events_.emplace_back(mouse_event.Clone());
+  if (synthetic_mouse_event_callback_) {
+    synthetic_mouse_event_callback_.Run();
+  }
+}
+
 void FakeServiceClient::DarkenScreen(bool darken) {
   if (darken_screen_callback_) {
     darken_screen_callback_.Run(darken);
@@ -208,7 +216,7 @@ void FakeServiceClient::OpenSettingsSubpage(const std::string& subpage) {
 void FakeServiceClient::ShowConfirmationDialog(
     const std::string& title,
     const std::string& description,
-    const absl::optional<std::string>& cancel_name,
+    const std::optional<std::string>& cancel_name,
     ShowConfirmationDialogCallback callback) {
   std::move(callback).Run(true);
 }
@@ -310,9 +318,19 @@ void FakeServiceClient::SetSyntheticKeyEventCallback(
   synthetic_key_event_callback_ = std::move(callback);
 }
 
+void FakeServiceClient::SetSyntheticMouseEventCallback(
+    base::RepeatingCallback<void()> callback) {
+  synthetic_mouse_event_callback_ = std::move(callback);
+}
+
 const std::vector<mojom::SyntheticKeyEventPtr>&
 FakeServiceClient::GetKeyEvents() const {
   return key_events_;
+}
+
+const std::vector<mojom::SyntheticMouseEventPtr>&
+FakeServiceClient::GetMouseEvents() const {
+  return mouse_events_;
 }
 
 void FakeServiceClient::SetDarkenScreenCallback(

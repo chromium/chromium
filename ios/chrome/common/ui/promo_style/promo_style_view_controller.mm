@@ -8,7 +8,6 @@
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
 #import "base/notreached.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -21,7 +20,6 @@
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
@@ -71,6 +69,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 // This view contains only the header image.
 @property(nonatomic, strong) UIImageView* headerImageView;
 @property(nonatomic, strong) UITextView* disclaimerView;
+// Primary action button for the view controller.
 @property(nonatomic, strong) HighlightButton* primaryActionButton;
 
 // Read/Write override.
@@ -144,6 +143,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _headerImageBottomMargin = kDefaultMargin;
     _noBackgroundHeaderImageTopMarginPercentage =
         kNoBackgroundHeaderImageTopMarginPercentage;
+    _primaryButtonEnabled = YES;
   }
 
   return self;
@@ -454,7 +454,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   } else {
     [NSLayoutConstraint activateConstraints:@[
       [titleLabel.topAnchor
-          constraintEqualToAnchor:self.bannerImageView.bottomAnchor],
+          constraintEqualToAnchor:self.bannerImageView.bottomAnchor
+                         constant:_titleTopMarginWhenNoHeaderImage],
     ]];
   }
 
@@ -750,6 +751,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
+    _primaryActionButton.configurationUpdateHandler = self.updateHandler;
+    _primaryActionButton.enabled = _primaryButtonEnabled;
   }
   return _primaryActionButton;
 }
@@ -808,6 +811,13 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                forControlEvents:UIControlEventTouchUpInside];
   }
   return _learnMoreButton;
+}
+
+- (void)setPrimaryButtonEnabled:(BOOL)primaryButtonEnabled {
+  _primaryButtonEnabled = primaryButtonEnabled;
+  if (_primaryActionButton) {
+    _primaryActionButton.enabled = primaryButtonEnabled;
+  }
 }
 
 #pragma mark - Private

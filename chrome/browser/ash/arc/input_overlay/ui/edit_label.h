@@ -19,10 +19,12 @@ class DisplayOverlayController;
 
 // EditLabel shows input mappings and can be edited to change mappings.
 class EditLabel : public views::LabelButton {
+  METADATA_HEADER(EditLabel, views::LabelButton)
+
  public:
-  METADATA_HEADER(EditLabel);
   EditLabel(DisplayOverlayController* controller,
             Action* action,
+            bool for_editing_list,
             size_t index = 0);
 
   EditLabel(const EditLabel&) = delete;
@@ -45,7 +47,7 @@ class EditLabel : public views::LabelButton {
   void SetLabelContent();
   void SetTextLabel(const std::u16string& text);
   void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
-  std::u16string CalculateAccessibleName();
+  void UpdateAccessibleName();
 
   void SetToDefault();
   void SetToFocused();
@@ -55,13 +57,14 @@ class EditLabel : public views::LabelButton {
   void OnBlur() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
-  // Layer for edit label pulse animation.
-  std::unique_ptr<ui::Layer> pulse_layer_;
-
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
+  // A11y label is different for `EditingList` and `ButtonOptionsMenu`.
+  const bool for_editing_list_;
+  const size_t index_;
 
-  size_t index_ = 0;
+  // Layer for edit label pulse animation.
+  std::unique_ptr<ui::Layer> pulse_layer_;
 };
 
 }  // namespace arc::input_overlay

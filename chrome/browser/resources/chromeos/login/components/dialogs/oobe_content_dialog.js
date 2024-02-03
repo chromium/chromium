@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import '//resources/polymer/v3_0/paper-styles/color.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '../common_styles/oobe_common_styles.css.js';
 import '../common_styles/oobe_dialog_host_styles.css.js';
 import '../oobe_vars/oobe_shared_vars.css.js';

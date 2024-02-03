@@ -2,7 +2,6 @@
   "phases": {
     "ninja": {
       "gn_args": {
-        "enable_nacl": false,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,
@@ -12,7 +11,6 @@
     },
     "siso_native": {
       "gn_args": {
-        "enable_nacl": false,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,
@@ -21,7 +19,6 @@
     },
     "siso_reproxy": {
       "gn_args": {
-        "enable_nacl": false,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,

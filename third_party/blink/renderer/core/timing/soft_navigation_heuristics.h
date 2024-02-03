@@ -66,9 +66,9 @@ class CORE_EXPORT SoftNavigationHeuristics
                                  EventScopeType,
                                  bool is_new_interaction);
   void UserInitiatedInteraction();
-  void SameDocumentNavigationStarted(ScriptState*);
-  void SameDocumentNavigationCommitted(ScriptState*, const String& url);
-  bool ModifiedDOM(ScriptState*);
+  void SameDocumentNavigationStarted();
+  void SameDocumentNavigationCommitted(const String& url);
+  bool ModifiedDOM();
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
@@ -120,33 +120,32 @@ class CORE_EXPORT SoftNavigationHeuristics
   };
 
   void ReportSoftNavigationToMetrics(LocalFrame* frame) const;
-  void CheckSoftNavigationConditions(const PerInteractionData& data,
-                                     ScriptState* script_state);
+  void CheckSoftNavigationConditions(const PerInteractionData& data);
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
 
-  absl::optional<scheduler::TaskAttributionId>
-  GetUserInteractionAncestorTaskIfAny(ScriptState*);
-  absl::optional<scheduler::TaskAttributionId> SetFlagIfDescendantAndCheck(
-      ScriptState*,
+  std::optional<scheduler::TaskAttributionId>
+  GetUserInteractionAncestorTaskIfAny();
+  std::optional<scheduler::TaskAttributionId> SetFlagIfDescendantAndCheck(
       FlagType);
   void ResetHeuristic();
   void ResetPaintsIfNeeded();
   void CommitPreviousPaints(LocalFrame*);
   void EmitSoftNavigationEntryIfAllConditionsMet(LocalFrame*);
+  LocalFrame* GetLocalFrameIfNotDetached() const;
 
   PerInteractionData* GetCurrentInteractionData(scheduler::TaskAttributionId);
 
   HeapHashSet<WeakMember<const scheduler::TaskAttributionInfo>>
       potential_soft_navigation_tasks_;
   WTF::HashMap<scheduler::TaskAttributionIdType,
-               absl::optional<scheduler::TaskAttributionId>>
+               std::optional<scheduler::TaskAttributionId>>
       soft_navigation_descendant_cache_;
   bool did_reset_paints_ = false;
   bool did_commit_previous_paints_ = false;
   HeapHashMap<scheduler::TaskAttributionIdType, Member<PerInteractionData>>
       interaction_task_id_to_interaction_data_;
   base::TimeTicks pending_interaction_timestamp_;
-  absl::optional<scheduler::TaskAttributionId>
+  std::optional<scheduler::TaskAttributionId>
       last_soft_navigation_ancestor_task_;
   Member<const PerInteractionData> soft_navigation_interaction_data_;
   WTF::HashMap<scheduler::TaskAttributionIdType,

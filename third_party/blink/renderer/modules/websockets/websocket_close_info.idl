@@ -5,6 +5,6 @@
 // TODO(ricea): Add standard link when there is one.
 
 dictionary WebSocketCloseInfo {
-  [Clamp] unsigned short code;
+  [Clamp] unsigned short closeCode;
   USVString reason = "";
 };

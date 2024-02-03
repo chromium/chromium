@@ -48,7 +48,7 @@ sk_sp<PaintFilter> FEBlend::CreateImageFilter() {
       InputEffect(1), OperatingInterpolationSpace()));
   SkBlendMode mode =
       WebCoreCompositeToSkiaComposite(kCompositeSourceOver, mode_);
-  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<XfermodePaintFilter>(mode, std::move(background),
                                          std::move(foreground),
                                          base::OptionalToPtr(crop_rect));

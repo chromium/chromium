@@ -179,7 +179,7 @@ void SearchResultBaseView::ClearSelectedResultAction() {
   }
 }
 
-BEGIN_METADATA(SearchResultBaseView, views::Button)
+BEGIN_METADATA(SearchResultBaseView)
 END_METADATA
 
 }  // namespace ash

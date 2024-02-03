@@ -52,6 +52,10 @@ extern const char kModelOverride[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelExecutionOverride[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceValidationRequestOverride[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceValidationWriteToFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kDebugLoggingEnabled[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelValidate[];
@@ -149,6 +153,15 @@ std::optional<std::string> GetModelOverride();
 // Returns the on-device model execution override command line switch.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<std::string> GetOnDeviceModelExecutionOverride();
+
+// Returns the file path to the text file to use for the on-device request
+// override.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::optional<base::FilePath> GetOnDeviceValidationRequestOverride();
+
+// Returns the file path to write the on-device validation response to.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::optional<base::FilePath> GetOnDeviceValidationWriteToFile();
 
 // Returns true if debug logs are enabled for the optimization guide.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

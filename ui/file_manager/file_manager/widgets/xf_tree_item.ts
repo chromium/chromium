@@ -506,6 +506,7 @@ function getCSS() {
       border: none;
       color: var(--cros-sys-on_surface);
       display: none;
+      font: var(--cros-body-2-font);
       height: 20px;
       margin: 0 10px;
       outline: 2px solid var(--cros-sys-focus_ring);

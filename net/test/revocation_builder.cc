@@ -4,6 +4,7 @@
 
 #include "net/test/revocation_builder.h"
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_piece.h"
@@ -36,11 +37,10 @@ bool CBBAddBytes(CBB* cbb, base::StringPiece bytes) {
                        bytes.size());
 }
 
-// Adds bytes (from fixed size array) to the given CBB.
+// Adds bytes (specified as a span) to the given CBB.
 // The argument ordering follows the boringssl CBB_* api style.
-template <size_t N>
-bool CBBAddBytes(CBB* cbb, const uint8_t (&data)[N]) {
-  return CBB_add_bytes(cbb, data, N);
+bool CBBAddBytes(CBB* cbb, base::span<const uint8_t> data) {
+  return CBB_add_bytes(cbb, data.data(), data.size());
 }
 
 // Adds a GeneralizedTime value to the given CBB.
@@ -133,7 +133,7 @@ std::string EncodeOCSPResponse(
       ocsp_response_bytes_sequence, ocsp_response_type,
       ocsp_response_octet_string;
 
-  if (!CBB_init(cbb.get(), 64 + response_type.Length() + response.size()) ||
+  if (!CBB_init(cbb.get(), 64 + response_type.size() + response.size()) ||
       !CBB_add_asn1(cbb.get(), &ocsp_response, CBS_ASN1_SEQUENCE) ||
       !CBB_add_asn1(&ocsp_response, &ocsp_response_status,
                     CBS_ASN1_ENUMERATED) ||
@@ -143,14 +143,14 @@ std::string EncodeOCSPResponse(
     return std::string();
   }
 
-  if (response_type.Length()) {
+  if (!response_type.empty()) {
     if (!CBB_add_asn1(&ocsp_response, &ocsp_response_bytes,
                       CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0) ||
         !CBB_add_asn1(&ocsp_response_bytes, &ocsp_response_bytes_sequence,
                       CBS_ASN1_SEQUENCE) ||
         !CBB_add_asn1(&ocsp_response_bytes_sequence, &ocsp_response_type,
                       CBS_ASN1_OBJECT) ||
-        !CBBAddBytes(&ocsp_response_type, response_type.AsStringView()) ||
+        !CBBAddBytes(&ocsp_response_type, response_type) ||
         !CBB_add_asn1(&ocsp_response_bytes_sequence,
                       &ocsp_response_octet_string, CBS_ASN1_OCTETSTRING) ||
         !CBBAddBytes(&ocsp_response_octet_string, response)) {

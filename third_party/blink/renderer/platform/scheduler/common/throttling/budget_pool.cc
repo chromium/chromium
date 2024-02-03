@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 
 #include <cstdint>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
 namespace blink {

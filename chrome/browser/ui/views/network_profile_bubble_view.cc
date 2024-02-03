@@ -26,8 +26,9 @@
 namespace {
 
 class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(NetworkProfileBubbleView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(NetworkProfileBubbleView);
   NetworkProfileBubbleView(views::View* anchor,
                            content::PageNavigator* navigator,
                            Profile* profile);
@@ -68,14 +69,13 @@ NetworkProfileBubbleView::NetworkProfileBubbleView(
 ////////////////////////////////////////////////////////////////////////////////
 // NetworkProfileBubbleView, private:
 
-NetworkProfileBubbleView::~NetworkProfileBubbleView() {
-}
+NetworkProfileBubbleView::~NetworkProfileBubbleView() {}
 
 void NetworkProfileBubbleView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   views::Label* label = new views::Label(
       l10n_util::GetStringFUTF16(IDS_PROFILE_ON_NETWORK_WARNING,
-          l10n_util::GetStringUTF16(IDS_PRODUCT_NAME)));
+                                 l10n_util::GetStringUTF16(IDS_PRODUCT_NAME)));
   label->SetMultiLine(true);
   constexpr int kNotificationBubbleWidth = 250;
   label->SizeToFit(kNotificationBubbleWidth);
@@ -108,7 +108,7 @@ void NetworkProfileBubbleView::LinkClicked(const ui::Event& event) {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(NetworkProfileBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(NetworkProfileBubbleView)
 END_METADATA
 
 }  // namespace
@@ -117,8 +117,9 @@ END_METADATA
 void NetworkProfileBubble::ShowNotification(Browser* browser) {
   views::View* anchor = NULL;
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view && browser_view->toolbar())
+  if (browser_view && browser_view->toolbar()) {
     anchor = browser_view->toolbar_button_provider()->GetAppMenuButton();
+  }
   NetworkProfileBubbleView* bubble =
       new NetworkProfileBubbleView(anchor, browser, browser->profile());
   views::BubbleDialogDelegateView::CreateBubble(bubble)->Show();
@@ -131,6 +132,7 @@ void NetworkProfileBubble::ShowNotification(Browser* browser) {
   prefs->SetInt64(prefs::kNetworkProfileLastWarningTime,
                   base::Time::Now().ToTimeT());
   int left_warnings = prefs->GetInteger(prefs::kNetworkProfileWarningsLeft);
-  if (left_warnings > 0)
+  if (left_warnings > 0) {
     prefs->SetInteger(prefs::kNetworkProfileWarningsLeft, --left_warnings);
+  }
 }

@@ -18,9 +18,8 @@
 
 namespace variations {
 
-SHA1EntropyProvider::SHA1EntropyProvider(const std::string& entropy_source)
-    : entropy_source_(entropy_source) {
-}
+SHA1EntropyProvider::SHA1EntropyProvider(std::string_view entropy_source)
+    : entropy_source_(entropy_source) {}
 
 SHA1EntropyProvider::~SHA1EntropyProvider() {
 }
@@ -95,13 +94,17 @@ double SessionEntropyProvider::GetEntropyForTrial(
   return base::RandDouble();
 }
 
-EntropyProviders::EntropyProviders(const std::string& high_entropy_value,
+EntropyProviders::EntropyProviders(std::string_view high_entropy_value,
                                    ValueInRange low_entropy_value,
+                                   std::string_view limited_entropy_value,
                                    bool enable_benchmarking)
     : low_entropy_(low_entropy_value),
       benchmarking_enabled_(enable_benchmarking) {
   if (!high_entropy_value.empty()) {
     high_entropy_.emplace(high_entropy_value);
+  }
+  if (!limited_entropy_value.empty()) {
+    limited_entropy_.emplace(limited_entropy_value);
   }
 }
 
@@ -121,6 +124,14 @@ const base::FieldTrial::EntropyProvider& EntropyProviders::low_entropy() const {
 const base::FieldTrial::EntropyProvider& EntropyProviders::session_entropy()
     const {
   return session_entropy_;
+}
+
+const base::FieldTrial::EntropyProvider& EntropyProviders::limited_entropy()
+    const {
+  // The caller must initialize the instance with a
+  // |limited_entropy_randomization_source|.
+  CHECK(has_limited_entropy());
+  return limited_entropy_.value();
 }
 
 }  // namespace variations

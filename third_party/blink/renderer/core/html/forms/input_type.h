@@ -33,7 +33,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -191,7 +192,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual ValueMode GetValueMode() const = 0;
 
   virtual double ValueAsDate() const;
-  virtual void SetValueAsDate(const absl::optional<base::Time>&,
+  virtual void SetValueAsDate(const std::optional<base::Time>&,
                               ExceptionState&) const;
   virtual double ValueAsDouble() const;
   virtual void SetValueAsDouble(double,

@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -45,7 +46,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_answer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
@@ -504,7 +503,6 @@ void RTCPeerConnection::EventWrapper::Trace(Visitor* visitor) const {
 RTCPeerConnection* RTCPeerConnection::Create(
     ExecutionContext* context,
     const RTCConfiguration* rtc_configuration,
-    GoogMediaConstraints* media_constraints,
     ExceptionState& exception_state) {
   if (context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(
@@ -530,13 +528,10 @@ RTCPeerConnection* RTCPeerConnection::Create(
       UseCounter::Count(context, WebFeature::kRTCPeerConnectionWithBlockingCsp);
     }
   }
-  if (media_constraints->hasMandatory() || media_constraints->hasOptional()) {
-    UseCounter::Count(context,
-                      WebFeature::kRTCPeerConnectionConstructorConstraints);
-  } else {
-    UseCounter::Count(context,
-                      WebFeature::kRTCPeerConnectionConstructorCompliant);
-  }
+  // TODO(https://crbug.com/1318448): figure out if this counter should be
+  // retired - the other alternative is removed.
+  UseCounter::Count(context,
+                    WebFeature::kRTCPeerConnectionConstructorCompliant);
 
   webrtc::PeerConnectionInterface::RTCConfiguration configuration =
       ParseConfiguration(context, rtc_configuration, &exception_state);
@@ -560,26 +555,16 @@ RTCPeerConnection* RTCPeerConnection::Create(
 
   RTCPeerConnection* peer_connection = MakeGarbageCollected<RTCPeerConnection>(
       context, std::move(configuration),
-      rtc_configuration->encodedInsertableStreams(), media_constraints,
-      exception_state);
+      rtc_configuration->encodedInsertableStreams(), exception_state);
   if (exception_state.HadException())
     return nullptr;
   return peer_connection;
-}
-
-RTCPeerConnection* RTCPeerConnection::Create(
-    ExecutionContext* context,
-    const RTCConfiguration* rtc_configuration,
-    ExceptionState& exception_state) {
-  return Create(context, rtc_configuration, GoogMediaConstraints::Create(),
-                exception_state);
 }
 
 RTCPeerConnection::RTCPeerConnection(
     ExecutionContext* context,
     webrtc::PeerConnectionInterface::RTCConfiguration configuration,
     bool encoded_insertable_streams,
-    GoogMediaConstraints* media_constraints,
     ExceptionState& exception_state)
     : ActiveScriptWrappable<RTCPeerConnection>({}),
       ExecutionContextLifecycleObserver(context),
@@ -631,8 +616,8 @@ RTCPeerConnection::RTCPeerConnection(
 
   auto* web_frame =
       static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(window->GetFrame()));
-  if (!peer_handler_->Initialize(context, configuration, media_constraints,
-                                 web_frame, exception_state)) {
+  if (!peer_handler_->Initialize(context, configuration, web_frame,
+                                 exception_state)) {
     DCHECK(exception_state.HadException());
     return;
   }
@@ -1303,7 +1288,7 @@ ScriptPromise RTCPeerConnection::generateCertificate(
 
   // Check if |keygenAlgorithm| contains the optional DOMTimeStamp |expires|
   // attribute.
-  absl::optional<DOMTimeStamp> expires;
+  std::optional<DOMTimeStamp> expires;
   if (keygen_algorithm->IsObject()) {
     Dictionary keygen_algorithm_dict(script_state->GetIsolate(),
                                      keygen_algorithm->GetAsObject().V8Value(),
@@ -1337,7 +1322,7 @@ ScriptPromise RTCPeerConnection::generateCertificate(
   const char* unsupported_params_string =
       "The 1st argument provided is an AlgorithmIdentifier with a supported "
       "algorithm name, but the parameters are not supported.";
-  absl::optional<rtc::KeyParams> key_params;
+  std::optional<rtc::KeyParams> key_params;
   switch (crypto_algorithm.Id()) {
     case kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5:
       // name: "RSASSA-PKCS1-v1_5"
@@ -1523,19 +1508,19 @@ String RTCPeerConnection::connectionState() const {
       webrtc::PeerConnectionInterface::AsString(peer_connection_state_).data());
 }
 
-absl::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
+std::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
   if (closed_ || !remoteDescription()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   webrtc::PeerConnectionInterface* native_connection =
       peer_handler_->NativePeerConnection();
   if (!native_connection) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<bool> can_trickle =
+  std::optional<bool> can_trickle =
       native_connection->can_trickle_ice_candidates();
   if (!can_trickle) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *can_trickle;
 }
@@ -1708,7 +1693,7 @@ RtpContributingSourceCache& RTCPeerConnection::GetRtpContributingSourceCache() {
   return rtp_contributing_source_cache_.value();
 }
 
-absl::optional<webrtc::RtpTransceiverInit> ValidateRtpTransceiverInit(
+std::optional<webrtc::RtpTransceiverInit> ValidateRtpTransceiverInit(
     ExecutionContext* execution_context,
     ExceptionState& exception_state,
     const RTCRtpTransceiverInit* init,
@@ -1718,14 +1703,14 @@ absl::optional<webrtc::RtpTransceiverInit> ValidateRtpTransceiverInit(
   for (auto& encoding : webrtc_init.send_encodings) {
     if (encoding.rid.length() > 16) {
       exception_state.ThrowTypeError("Illegal length of rid");
-      return absl::nullopt;
+      return std::nullopt;
     }
     // Allowed characters: a-z 0-9 _ and -
     if (encoding.rid.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM"
                                        "NOPQRSTUVWXYZ0123456789-_") !=
         std::string::npos) {
       exception_state.ThrowTypeError("Illegal character in rid");
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return webrtc_init;
@@ -2219,7 +2204,7 @@ void RTCPeerConnection::DidGenerateICECandidate(
 }
 
 void RTCPeerConnection::DidFailICECandidate(const String& address,
-                                            absl::optional<uint16_t> port,
+                                            std::optional<uint16_t> port,
                                             const String& host_candidate,
                                             const String& url,
                                             int error_code,

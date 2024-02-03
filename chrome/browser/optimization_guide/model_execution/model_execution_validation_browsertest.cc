@@ -151,6 +151,7 @@ class ModelExecutionValidationBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* cmd) override {
     ModelExecutionValidationBrowserTestBase::SetUpCommandLine(cmd);
+    cmd->AppendSwitch(switches::kDebugLoggingEnabled);
     cmd->AppendSwitchASCII(switches::kModelExecutionValidate, "test_request");
   }
 };

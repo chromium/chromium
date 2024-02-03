@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 @class FormSuggestion;
@@ -34,8 +34,8 @@
 // Enables or disables the previous button if any.
 @property(nonatomic) BOOL formInputPreviousButtonEnabled;
 
-// Type of the form suggestions.
-@property(nonatomic) autofill::PopupType suggestionType;
+// Main type of the form suggestions.
+@property(nonatomic) autofill::FillingProduct mainFillingProduct;
 
 // ID of the field that currently has focus.
 @property(nonatomic) autofill::FieldRendererId currentFieldId;

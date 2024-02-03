@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1213425325105380833">يمكنك استعادة تطبيقات الويب التي استخدمتها مؤخرًا على الأجهزة المرتبطة بهذا الحساب.</translation>
+<translation id="1786044937610313874">‏يتم فتح الاختصارات في متصفِّح Chrome.</translation>
+<translation id="204914487372604757">إنشاء اختصار</translation>
 <translation id="2065911435109240297">استعادة تطبيقات الويب</translation>
 <translation id="2111649875343992405">الاطّلاع على تطبيقات الويب المطلوب استعادتها</translation>
 <translation id="2139186145475833000">الإضافة إلى الشاشة الرئيسية</translation>
@@ -13,6 +15,7 @@
 <translation id="4338600611020922010">الإضافة إلى الشاشة الرئيسية</translation>
 <translation id="4665282149850138822">تمت إضافة <ph name="NAME" /> إلى صفحتك الرئيسية</translation>
 <translation id="5250483651202458397">انقر لإغلاق لقطة الشاشة.</translation>
+<translation id="5684726956335420505">اختَر كيفية إضافة التطبيق إلى الشاشة الرئيسية.</translation>
 <translation id="5972844218283131174">إلغاء اختيار الكل</translation>
 <translation id="6838423508083736333">تطبيقات الويب المستخدَمة خلال الشهر الماضي</translation>
 <translation id="6990079615885386641">‏الحصول على التطبيق من متجر Google Play: <ph name="APP_ACTION" /></translation>

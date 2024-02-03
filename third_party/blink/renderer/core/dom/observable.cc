@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/observable_internal_observer.h"
 #include "third_party/blink/renderer/core/dom/subscriber.h"
@@ -136,6 +137,142 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
 
+class OperatorTakeUntilSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorTakeUntilSubscribeDelegate(Observable* source_observable,
+                                     Observable* notifier)
+      : source_observable_(source_observable), notifier_(notifier) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    AbortController* controller = AbortController::Create(script_state);
+
+    HeapVector<Member<AbortSignal>> signals{controller->signal(),
+                                            subscriber->signal()};
+    AbortSignal* signal =
+        MakeGarbageCollected<AbortSignal>(script_state, signals);
+
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(signal);
+
+    notifier_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<NotifierInternalObserver>(subscriber, controller,
+                                                       script_state),
+        options);
+
+    // If `notifier_` synchronously emits a "next" or "error" value, thus making
+    // `subscriber` inactive, we do not even attempt to subscribe to
+    // `source_observable_` at all.
+    if (!subscriber->active()) {
+      return;
+    }
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, controller,
+                                                     script_state),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+    visitor->Trace(notifier_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  // This is the "internal observer" that we use to subscribe to
+  // `source_observable_`. It is a simple pass-through, which forwards all of
+  // the `source_observable_` values to `outer_subscriber_`, which is the
+  // `Subscriber` associated with the subscription to `this`. In addition to
+  // being a simple pass-through, it also appropriately unsubscribes from
+  // `notifier_`, once the `source_observable_` subscription ends.
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* outer_subscriber,
+                           AbortController* controller,
+                           ScriptState* script_state)
+        : outer_subscriber_(outer_subscriber),
+          controller_(controller),
+          script_state_(script_state) {
+      CHECK(outer_subscriber_);
+      CHECK(controller_);
+      CHECK(script_state_);
+    }
+
+    void Next(ScriptValue value) override { outer_subscriber_->next(value); }
+    void Error(ScriptState* script_state, ScriptValue error) override {
+      // When a notifier Observable emits an "error" value, we "complete"
+      // `outer_subscriber_` and abort `controller_`, which requires a valid
+      // execution context.
+      outer_subscriber_->error(script_state_, error);
+      controller_->abort(script_state_);
+    }
+    void Complete() override {
+      outer_subscriber_->complete(script_state_);
+      controller_->abort(script_state_);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(outer_subscriber_);
+      visitor->Trace(controller_);
+      visitor->Trace(script_state_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> outer_subscriber_;
+    Member<AbortController> controller_;
+    Member<ScriptState> script_state_;
+  };
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  Member<Observable> source_observable_;
+
+  // This is the "internal observer" that we use to subscribe to `notifier_`
+  // with. It is simply responsible for taking the `Subscriber` associated with
+  // `this`, and completing it.
+  class NotifierInternalObserver final : public ObservableInternalObserver {
+   public:
+    NotifierInternalObserver(Subscriber* outer_subscriber,
+                             AbortController* controller,
+                             ScriptState* script_state)
+        : outer_subscriber_(outer_subscriber),
+          controller_(controller),
+          script_state_(script_state) {
+      CHECK(outer_subscriber_);
+      CHECK(controller_);
+      CHECK(script_state_);
+    }
+    void Next(ScriptValue) override {
+      outer_subscriber_->complete(script_state_);
+      controller_->abort(script_state_);
+    }
+    void Error(ScriptState* script_state, ScriptValue) override {
+      outer_subscriber_->complete(script_state_);
+      controller_->abort(script_state_);
+    }
+    void Complete() override {}
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(outer_subscriber_);
+      visitor->Trace(controller_);
+      visitor->Trace(script_state_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> outer_subscriber_;
+    Member<AbortController> controller_;
+    Member<ScriptState> script_state_;
+  };
+  // The `Observable` that, once a `next` or `error` value is emitted`, will
+  // force the unsubscription to `source_observable_`.
+  Member<Observable> notifier_;
+};
+
 }  // namespace
 
 using PassKey = base::PassKey<Observable>;
@@ -168,15 +305,15 @@ Observable::Observable(ExecutionContext* execution_context,
 void Observable::subscribe(ScriptState* script_state,
                            V8UnionObserverOrObserverCallback* observer_union,
                            SubscribeOptions* options) {
-  // Cannot subscribe to an Observable that was constructed in a detached
-  // context, because this might involve reporting an exception with the global,
-  // which relies on a valid `ScriptState`.
-  if (!script_state->ContextIsValid()) {
-    CHECK(!GetExecutionContext());
-    return;
-  }
-
   SubscribeInternal(script_state, observer_union, /*internal_observer=*/nullptr,
+                    options);
+}
+
+void Observable::SubscribeWithNativeObserver(
+    ScriptState* script_state,
+    ObservableInternalObserver* internal_observer,
+    SubscribeOptions* options) {
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     options);
 }
 
@@ -185,6 +322,14 @@ void Observable::SubscribeInternal(
     V8UnionObserverOrObserverCallback* observer_union,
     ObservableInternalObserver* internal_observer,
     SubscribeOptions* options) {
+  // Cannot subscribe to an Observable that was constructed in a detached
+  // context, because this might involve reporting an exception with the global,
+  // which relies on a valid `ScriptState`.
+  if (!script_state->ContextIsValid()) {
+    CHECK(!GetExecutionContext());
+    return;
+  }
+
   // Exactly one of `observer_union` or `internal_observer` must be non-null.
   // This is important because this method is called in one of two paths:
   //   1. The the "usual" path of `Observable#subscribe()` with
@@ -265,6 +410,17 @@ void Observable::SubscribeInternal(
     subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
                                                 try_catch.Exception()));
   }
+}
+
+Observable* Observable::takeUntil(ScriptState*, Observable* notifier) {
+  // This method is just a loose wrapper that returns another `Observable`,
+  // whose logic is defined by `OperatorTakeUntilSubscribeDelegate`. When
+  // subscribed to, `return_observable` will simply mirror `this` until
+  // `notifier` emits either a `next` or `error` value.
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorTakeUntilSubscribeDelegate>(this, notifier));
+  return return_observable;
 }
 
 ScriptPromise Observable::toArray(ScriptState* script_state,

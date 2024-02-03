@@ -535,7 +535,7 @@ bool CheckHistogramHasValue(const base::Value::List& values,
     if (!dict.contains(bucket)) {
       continue;
     }
-    absl::optional<int> bucket_count = dict.FindInt(bucket);
+    std::optional<int> bucket_count = dict.FindInt(bucket);
     if (!bucket_count.has_value()) {
       return false;
     }

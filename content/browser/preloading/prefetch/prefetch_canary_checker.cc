@@ -374,7 +374,7 @@ std::string PrefetchCanaryChecker::AppendNameToHistogram(
 }
 
 void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
-  net::NetworkAnonymizationKey nik =
+  net::NetworkAnonymizationKey nak =
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url))
           .network_anonymization_key();
 
@@ -402,7 +402,7 @@ void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
       ->GetNetworkContext()
       ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                         net::HostPortPair::FromURL(url)),
-                    nik, std::move(resolve_host_parameters),
+                    nak, std::move(resolve_host_parameters),
                     std::move(client_remote));
 
   timeout_timer_ = std::make_unique<base::OneShotTimer>();

@@ -28,8 +28,54 @@ class SimpleURLLoader;
 struct ResourceRequest;
 }  // namespace network
 
+// The types of requests for remote suggestions.
+// These values are written to logs. New enum values can be added, but existing
+// enums must never be renumbered or deleted and reused.
+enum class RemoteRequestType {
+  // Search suggestion requests.
+  kSearch = 0,
+  // Search suggestion warm-up requests.
+  kSearchWarmup = 1,
+  // Search suggestion requests to obtain images.
+  kImages = 2,
+  // Zero-prefix suggestion requests.
+  kZeroSuggest = 3,
+  // Zero-prefix suggestion prefetching requests.
+  kZeroSuggestPrefetch = 4,
+  // Document suggestion requests.
+  kDocumentSuggest = 5,
+  // Suggestion deletion requests.
+  kDeletion = 6,
+  kMaxValue = kDeletion,
+};
+
+// The event types recorded by the providers for remote suggestions. Each event
+// must be logged at most once from when the provider is started until it is
+// stopped.
+// These values are written to logs. New enum values can be added, but existing
+// enums must never be renumbered or deleted and reused.
+enum class RemoteRequestEvent {
+  // Cached response was synchronously converted to displayed matches.
+  // Recorded for non-prefetch requests only.
+  kCachedResponseConvertedToMatches = 0,
+  // Request was sent.
+  kRequestSent = 1,
+  // Request was invalidated.
+  kRequestInvalidated = 2,
+  // Response was received asynchronously.
+  kResponseReceived = 3,
+  // Response was cached.
+  kResponseCached = 4,
+  // Response ended up being converted to displayed matches. This may happen due
+  // to an empty displayed result set or an empty remote result set.
+  // Recorded for non-prefetch requests only.
+  kResponseConvertedToMatches = 5,
+  kMaxValue = kResponseConvertedToMatches,
+};
+
 // A service to fetch suggestions from a search provider's suggest endpoint.
-// Used by the ZeroSuggestProvider, the SearchProvider, and the ImageService.
+// Used by ZeroSuggestProvider, SearchProvider, DocumentProvider, and
+// ImageService.
 //
 // This service is always sent the user's authentication state, so the
 // suggestions always can be personalized. This service is also sometimes sent
@@ -93,6 +139,7 @@ class RemoteSuggestionsService : public KeyedService {
   // `search_terms_data` is used to build the endpoint URL.
   // `completion_callback` will be invoked when the transfer is done.
   std::unique_ptr<network::SimpleURLLoader> StartSuggestionsRequest(
+      RemoteRequestType request_type,
       const TemplateURL* template_url,
       TemplateURLRef::SearchTermsArgs search_terms_args,
       const SearchTermsData& search_terms_data,
@@ -107,6 +154,7 @@ class RemoteSuggestionsService : public KeyedService {
   // `search_terms_data` is used to build the endpoint URL.
   // `completion_callback` will be invoked when the transfer is done.
   std::unique_ptr<network::SimpleURLLoader> StartZeroPrefixSuggestionsRequest(
+      RemoteRequestType request_type,
       const TemplateURL* template_url,
       TemplateURLRef::SearchTermsArgs search_terms_args,
       const SearchTermsData& search_terms_data,

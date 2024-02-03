@@ -8,8 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 class RulesetManager;
 
@@ -31,7 +30,6 @@ class WebContentsHelper : public content::WebContentsObserver {
   const raw_ptr<RulesetManager> ruleset_manager_ = nullptr;
 };
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_WEB_CONTENTS_HELPER_H_

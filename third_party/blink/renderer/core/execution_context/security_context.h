@@ -28,10 +28,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_SECURITY_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
@@ -160,7 +160,7 @@ class CORE_EXPORT SecurityContext {
     bool should_report;
     // Where a report should be sent, if one should be. nullopt if no reporting
     // is configured for this feature.
-    absl::optional<String> reporting_endpoint;
+    std::optional<String> reporting_endpoint;
   };
 
   // Permissions Policy

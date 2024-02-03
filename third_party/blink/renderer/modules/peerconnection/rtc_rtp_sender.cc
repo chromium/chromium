@@ -461,7 +461,7 @@ webrtc::Priority PriorityToEnum(const WTF::String& priority) {
 }
 
 std::tuple<Vector<webrtc::RtpEncodingParameters>,
-           absl::optional<webrtc::DegradationPreference>>
+           std::optional<webrtc::DegradationPreference>>
 ToRtpParameters(ExecutionContext* context,
                 const RTCRtpSendParameters* parameters,
                 const String& kind) {
@@ -474,7 +474,7 @@ ToRtpParameters(ExecutionContext* context,
     }
   }
 
-  absl::optional<webrtc::DegradationPreference> degradation_preference;
+  std::optional<webrtc::DegradationPreference> degradation_preference;
 
   if (parameters->hasDegradationPreference()) {
     if (parameters->degradationPreference() == "balanced") {
@@ -844,7 +844,7 @@ ScriptPromise RTCRtpSender::setParameters(
   // native layer without having to transform all the other read-only
   // parameters.
   Vector<webrtc::RtpEncodingParameters> encodings;
-  absl::optional<webrtc::DegradationPreference> degradation_preference;
+  std::optional<webrtc::DegradationPreference> degradation_preference;
   std::tie(encodings, degradation_preference) =
       ToRtpParameters(pc_->GetExecutionContext(), parameters, kind_);
 

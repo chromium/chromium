@@ -26,9 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_EVENT_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_EVENT_HANDLER_H_
 
+#include <optional>
+
+#include "base/debug/crash_logging.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -282,6 +284,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   TaskHandle& GetDelayedNavigationTaskHandle();
 
+  base::debug::CrashKeyString* CrashKeyForBug1519197() const;
+
  private:
   WebInputEventResult HandleMouseMoveOrLeaveEvent(
       const WebMouseEvent&,
@@ -310,11 +314,11 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   bool IsSelectingLink(const HitTestResult&);
   bool ShouldShowIBeamForNode(const Node*, const HitTestResult&);
   bool ShouldShowResizeForNode(const LayoutObject&, const HitTestLocation&);
-  absl::optional<ui::Cursor> SelectCursor(const HitTestLocation& location,
-                                          const HitTestResult&);
-  absl::optional<ui::Cursor> SelectAutoCursor(const HitTestResult&,
-                                              Node*,
-                                              const ui::Cursor& i_beam);
+  std::optional<ui::Cursor> SelectCursor(const HitTestLocation& location,
+                                         const HitTestResult&);
+  std::optional<ui::Cursor> SelectAutoCursor(const HitTestResult&,
+                                             Node*,
+                                             const ui::Cursor& i_beam);
 
   void HoverTimerFired(TimerBase*);
   void CursorUpdateTimerFired(TimerBase*);
@@ -440,7 +444,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // following events too soon (less than 0.15s). It is ok we only record
   // last_show_press_timestamp_ in root frame since root frame will have
   // subframe as active element if subframe has active element.
-  absl::optional<base::TimeTicks> last_show_press_timestamp_;
+  std::optional<base::TimeTicks> last_show_press_timestamp_;
   Member<Element> last_deferred_tap_element_;
 
   // Set on GestureTapDown if unique_touch_event_id_ matches cached adjusted

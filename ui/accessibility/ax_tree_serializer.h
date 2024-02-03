@@ -139,6 +139,12 @@ class AXTreeSerializer {
   // as explored by the serializer.
   size_t ClientTreeNodeCount() const;
 
+#if DCHECK_IS_ON()
+  std::vector<AXNodeID> ClientTreeNodeIds() const;
+
+  AXSourceNode ParentOf(AXNodeID id);
+#endif
+
  private:
   // Return the least common ancestor of a node in the source tree
   // and a node in the client tree, or nullptr if there is no such node.
@@ -320,6 +326,29 @@ size_t AXTreeSerializer<AXSourceNode,
                         AXSourceNodeVectorType>::ClientTreeNodeCount() const {
   return client_id_map_.size();
 }
+
+#if DCHECK_IS_ON()
+template <typename AXSourceNode, typename AXSourceNodeVectorType>
+std::vector<AXNodeID>
+AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::ClientTreeNodeIds()
+    const {
+  std::vector<AXNodeID> keys;
+  std::transform(
+      client_id_map_.begin(), client_id_map_.end(), std::back_inserter(keys),
+      [](std::pair<AXNodeID, ClientTreeNode*> item) { return item.first; });
+  return keys;
+}
+
+template <typename AXSourceNode, typename AXSourceNodeVectorType>
+AXSourceNode AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::ParentOf(
+    AXNodeID id) {
+  ClientTreeNode* node = ClientTreeNodeById(id);
+  if (!node || !node->parent) {
+    return nullptr;
+  }
+  return tree_->GetFromId(node->parent->id);
+}
+#endif
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
 AXSourceNode

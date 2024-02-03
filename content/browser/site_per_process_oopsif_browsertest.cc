@@ -194,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(BaseUrlLegacyBehaviorIframeTest,
 
   // Restore the altered entry in a new tab and verify the frame loads without
   // hitting any CHECKs.
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()

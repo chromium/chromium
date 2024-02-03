@@ -381,6 +381,10 @@ inline constexpr char kContextualSearchWasFullyPrivacyEnabled[] =
 // Boolean pref recording whether cookie and data would be used only for
 // essential purposes.
 inline constexpr char kEssentialSearchEnabled[] = "essential_search_enabled";
+// Boolean pref recording the last applied value for kEssentialSearchEnabled
+// prefs.
+inline constexpr char kLastEssentialSearchValue[] =
+    "last_essential_search_value";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
@@ -1057,10 +1061,6 @@ inline constexpr char kLastChildScreenTimeReset[] =
 inline constexpr char kHelpAppNotificationLastShownMilestone[] =
     "help_app_notification_last_shown_milestone";
 
-// Last milestone on which an `UpdateNotification` was shown.
-inline constexpr char kUpdateNotificationLastShownMilestone[] =
-    "update_notification_last_shown_milestone";
-
 // Amount of times the release notes suggestion chip should be
 // shown before it disappears.
 inline constexpr char kReleaseNotesSuggestionChipTimesLeftToShow[] =
@@ -1444,6 +1444,11 @@ inline constexpr char kApplyPageColorsOnlyOnIncreasedContrast[] =
 inline constexpr char kIsDefaultPageColorsOnHighContrast[] =
     "settings.a11y.is_default_page_colors_on_high_contrast";
 #endif  // BUILDFLAG(IS_WIN)
+
+// Boolean that indicates whether a user prefers to have default scrollbar
+// styles.
+inline constexpr char kPrefersDefaultScrollbarStyles[] =
+    "settings.a11y.prefers_default_scrollbar_styles";
 
 #if BUILDFLAG(IS_MAC)
 // Boolean that indicates whether the application should show the info bar
@@ -3026,6 +3031,11 @@ inline constexpr char
     kRemoteAccessHostAllowEnterpriseRemoteSupportConnections[] =
         "enterprise_remote_support_connections_allowed";
 
+// A dictionary containing weekly time intervals to automatically sleep and wake
+// up the device.
+inline constexpr char kDeviceWeeklyScheduledSuspend[] =
+    "device_weekly_scheduled_suspend";
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // *************** SERVICE PREFS ***************
@@ -4025,6 +4035,14 @@ inline constexpr char kCAHintCertificates[] =
 inline constexpr char kCAPlatformIntegrationEnabled[] =
     "certificates.ca_platform_integration_enabled";
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+
+// Integer value controlling whether to show Work/School label next to the
+// avatar. This is used on the local state so that the management label is
+// always shown for managed profiles on unmanaged devices.
+// - 0: Always show the label
+// - 1: Show the label for 30s
+inline constexpr char kToolbarAvatarLabelSettings[] =
+    "toolbar_avatar.label.settings";
 
 }  // namespace prefs
 

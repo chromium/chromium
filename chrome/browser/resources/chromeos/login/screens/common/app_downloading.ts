@@ -7,7 +7,7 @@
  * screen.
  */
 
-import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_cr_lottie.js';
 import '../../components/buttons/oobe_text_button.js';

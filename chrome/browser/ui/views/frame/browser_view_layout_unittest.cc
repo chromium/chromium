@@ -153,6 +153,7 @@ class MockImmersiveModeController : public ImmersiveModeController {
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override {}
   int GetMinimumContentOffset() const override { return 0; }
   int GetExtraInfobarOffset() const override { return 0; }
+  void OnContentFullscreenChanged(bool is_content_fullscreen) override {}
 };
 
 }  // anonymous namespace

@@ -65,7 +65,8 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   }
 
   void SetUpDnsResolutionRoutine() {
-    dns_resolution_routine_ = std::make_unique<DnsResolutionRoutine>();
+    dns_resolution_routine_ = std::make_unique<DnsResolutionRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     dns_resolution_routine_->set_network_context_for_testing(
         fake_network_context_.get());
     dns_resolution_routine_->set_profile_for_testing(test_profile_);

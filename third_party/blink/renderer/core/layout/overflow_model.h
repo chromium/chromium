@@ -22,7 +22,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OVERFLOW_MODEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OVERFLOW_MODEL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -153,8 +154,8 @@ class BoxVisualOverflowModel {
 };
 
 struct BoxOverflowModel : public GarbageCollected<BoxOverflowModel> {
-  absl::optional<BoxScrollableOverflowModel> scrollable_overflow;
-  absl::optional<BoxVisualOverflowModel> visual_overflow;
+  std::optional<BoxScrollableOverflowModel> scrollable_overflow;
+  std::optional<BoxVisualOverflowModel> visual_overflow;
 
   // Used by BoxPaintInvalidator. Stores the previous overflow data after the
   // last paint invalidation.
@@ -163,7 +164,7 @@ struct BoxOverflowModel : public GarbageCollected<BoxOverflowModel> {
     PhysicalRect previous_visual_overflow_rect;
     PhysicalRect previous_self_visual_overflow_rect;
   };
-  absl::optional<PreviousOverflowData> previous_overflow_data;
+  std::optional<PreviousOverflowData> previous_overflow_data;
 
   void Trace(Visitor*) const {}
 };

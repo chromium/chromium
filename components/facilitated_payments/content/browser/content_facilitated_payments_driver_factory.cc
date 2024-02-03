@@ -7,10 +7,14 @@
 namespace payments::facilitated {
 
 ContentFacilitatedPaymentsDriverFactory::
-    ContentFacilitatedPaymentsDriverFactory(content::WebContents* web_contents)
+    ContentFacilitatedPaymentsDriverFactory(
+        content::WebContents* web_contents,
+        optimization_guide::OptimizationGuideDecider*
+            optimization_guide_decider)
     : content::WebContentsUserData<ContentFacilitatedPaymentsDriverFactory>(
           *web_contents),
-      content::WebContentsObserver(web_contents) {}
+      content::WebContentsObserver(web_contents),
+      optimization_guide_decider_(optimization_guide_decider) {}
 
 ContentFacilitatedPaymentsDriverFactory::
     ~ContentFacilitatedPaymentsDriverFactory() {
@@ -46,7 +50,8 @@ ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
     DCHECK(driver);
     return *iter->second;
   }
-  driver = std::make_unique<ContentFacilitatedPaymentsDriver>();
+  driver = std::make_unique<ContentFacilitatedPaymentsDriver>(
+      optimization_guide_decider_);
   DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(), driver.get());
   return *iter->second;
 }

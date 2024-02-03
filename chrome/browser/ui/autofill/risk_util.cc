@@ -44,10 +44,9 @@ namespace {
 
 void PassRiskData(base::OnceCallback<void(const std::string&)> callback,
                   std::unique_ptr<risk::Fingerprint> fingerprint) {
-  std::string proto_data, risk_data;
+  std::string proto_data;
   fingerprint->SerializeToString(&proto_data);
-  base::Base64Encode(proto_data, &risk_data);
-  std::move(callback).Run(risk_data);
+  std::move(callback).Run(base::Base64Encode(proto_data));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

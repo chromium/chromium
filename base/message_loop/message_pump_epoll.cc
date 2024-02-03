@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
@@ -88,7 +89,7 @@ bool MessagePumpEpoll::WatchFileDescriptor(int fd,
 void MessagePumpEpoll::Run(Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RunState run_state(delegate);
-  AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
+  AutoReset<raw_ptr<RunState>> auto_reset_run_state(&run_state_, &run_state);
   for (;;) {
     // Do some work and see if the next task is ready right away.
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
@@ -97,8 +98,11 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
       break;
     }
 
+    // Reset the native work flag before processing IO events.
+    native_work_started_ = false;
+
     // Process any immediately ready IO event, but don't wait for more yet.
-    WaitForEpollEvents(TimeDelta(), delegate);
+    WaitForEpollEvents(TimeDelta());
 
     bool attempt_more_work = immediate_work_available || processed_io_events_;
     processed_io_events_ = false;
@@ -125,7 +129,7 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
       timeout = next_work_info.remaining_delay();
     }
     delegate->BeforeWait();
-    WaitForEpollEvents(timeout, delegate);
+    WaitForEpollEvents(timeout);
     if (run_state.should_quit) {
       break;
     }
@@ -220,8 +224,7 @@ void MessagePumpEpoll::UnregisterInterest(
   }
 }
 
-bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout,
-                                          Delegate* delegate) {
+bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // `timeout` has microsecond resolution, but timeouts accepted by epoll_wait()
@@ -242,7 +245,6 @@ bool MessagePumpEpoll::WaitForEpollEvents(TimeDelta timeout,
     return false;
   }
 
-  delegate->BeginNativeWorkBeforeDoWork();
   const base::span<epoll_event> ready_events(events,
                                              static_cast<size_t>(epoll_result));
   for (auto& e : ready_events) {
@@ -348,6 +350,7 @@ void MessagePumpEpoll::HandleEvent(int fd,
                                    bool can_write,
                                    FdWatchController* controller) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  BeginNativeWorkBatch();
   processed_io_events_ = true;
   // Make the MessagePumpDelegate aware of this other form of "DoWork". Skip if
   // HandleNotification() is called outside of Run() (e.g. in unit tests).
@@ -387,10 +390,22 @@ void MessagePumpEpoll::HandleEvent(int fd,
 
 void MessagePumpEpoll::HandleWakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  BeginNativeWorkBatch();
   processed_io_events_ = true;
   uint64_t value;
   ssize_t n = HANDLE_EINTR(read(wake_event_.get(), &value, sizeof(value)));
   DPCHECK(n == sizeof(value));
+}
+
+void MessagePumpEpoll::BeginNativeWorkBatch() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Call `BeginNativeWorkBeforeDoWork()` if native work hasn't started.
+  if (!native_work_started_) {
+    if (run_state_) {
+      run_state_->delegate->BeginNativeWorkBeforeDoWork();
+    }
+    native_work_started_ = true;
+  }
 }
 
 MessagePumpEpoll::EpollEventEntry::EpollEventEntry(int fd) : fd(fd) {}

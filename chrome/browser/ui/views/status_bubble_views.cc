@@ -129,9 +129,9 @@ class StatusBubbleViews::StatusViewAnimation
 // StatusView manages the display of the bubble, applying text changes and
 // fading in or out the bubble as required.
 class StatusBubbleViews::StatusView : public views::View {
- public:
-  METADATA_HEADER(StatusView);
+  METADATA_HEADER(StatusView, views::View)
 
+ public:
   // The bubble can be in one of many states:
   enum class BubbleState {
     kHidden,
@@ -570,7 +570,7 @@ DEFINE_ENUM_CONVERTERS(StatusView::BubbleStyle,
                        {StatusView::BubbleStyle::kStandardRight,
                         u"kStandardRight"})
 
-BEGIN_METADATA(StatusView, views::View)
+BEGIN_METADATA(StatusView)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_READONLY_PROPERTY_METADATA(StatusView::BubbleState, State)
 ADD_PROPERTY_METADATA(StatusView::BubbleStyle, Style)

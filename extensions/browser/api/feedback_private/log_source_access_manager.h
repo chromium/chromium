@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/feedback_private/access_rate_limiter.h"
 #include "extensions/common/api/feedback_private.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -58,7 +59,7 @@ class LogSourceAccessManager {
   // Initiates a fetch from a log source, as specified in |params|. See
   // feedback_private.idl for more info about the actual parameters.
   bool FetchFromSource(const api::feedback_private::ReadLogSourceParams& params,
-                       const std::string& extension_id,
+                       const ExtensionId& extension_id,
                        ReadLogSourceCallback callback);
 
   // Each log source may not have more than this number of readers accessing it,
@@ -74,7 +75,7 @@ class LogSourceAccessManager {
   // Contains a source/extension pair.
   struct SourceAndExtension {
     explicit SourceAndExtension(api::feedback_private::LogSource source,
-                                const std::string& extension_id);
+                                const ExtensionId& extension_id);
 
     bool operator<(const SourceAndExtension& other) const {
       return std::make_pair(source, extension_id) <
@@ -84,7 +85,7 @@ class LogSourceAccessManager {
     // The log source that this handle is accessing.
     api::feedback_private::LogSource source;
     // ID of the extension that opened this handle.
-    std::string extension_id;
+    ExtensionId extension_id;
   };
 
   using ResourceId = int;
@@ -102,7 +103,7 @@ class LogSourceAccessManager {
   // Returns the nonzero ID of the newly created LogSourceResource, or
   // |kInvalidResourceId| if a new resource could not be created.
   ResourceId CreateResource(api::feedback_private::LogSource source,
-                            const std::string& extension_id);
+                            const ExtensionId& extension_id);
 
   // Callback that is passed to the log source from FetchFromSource.
   // Arguments:
@@ -115,7 +116,7 @@ class LogSourceAccessManager {
   // - response: Contains the result from an operation to fetch from system
   //   log(s).
   void OnFetchComplete(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       ResourceId resource_id,
       bool delete_source,
       ReadLogSourceCallback callback,

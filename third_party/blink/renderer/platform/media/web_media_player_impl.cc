@@ -1115,7 +1115,7 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
 void WebMediaPlayerImpl::SetLatencyHint(double seconds) {
   DVLOG(1) << __func__ << "(" << seconds << ")";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  absl::optional<base::TimeDelta> latency_hint;
+  std::optional<base::TimeDelta> latency_hint;
   if (std::isfinite(seconds)) {
     DCHECK_GE(seconds, 0);
     latency_hint = base::Seconds(seconds);
@@ -1201,7 +1201,7 @@ void WebMediaPlayerImpl::SelectedVideoTrackChanged(
     WebMediaPlayer::TrackId* selectedTrackId) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  absl::optional<MediaTrack::Id> selected_video_track_id;
+  std::optional<MediaTrack::Id> selected_video_track_id;
   if (selectedTrackId && !video_track_disabled_)
     selected_video_track_id = MediaTrack::Id(selectedTrackId->Utf8().data());
   MEDIA_LOG(INFO, media_log_.get())
@@ -1252,7 +1252,7 @@ double WebMediaPlayerImpl::Duration() const {
 
   // Some demuxer's might have more accurate duration information than the
   // pipeline, so check that first.
-  absl::optional<double> duration = demuxer_manager_->GetDemuxerDuration();
+  std::optional<double> duration = demuxer_manager_->GetDemuxerDuration();
   if (duration.has_value()) {
     return *duration;
   }
@@ -1442,18 +1442,18 @@ WebMediaPlayerImpl::GetCurrentFrameThenUpdate() {
   return GetCurrentFrameFromCompositor();
 }
 
-absl::optional<media::VideoFrame::ID> WebMediaPlayerImpl::CurrentFrameId()
+std::optional<media::VideoFrame::ID> WebMediaPlayerImpl::CurrentFrameId()
     const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl::GetCurrentFrameID");
 
   // We can't copy from protected frames.
   if (cdm_context_ref_)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (auto frame = compositor_->GetCurrentFrameOnAnyThread())
     return frame->unique_id();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 media::PaintCanvasVideoRenderer*
@@ -2368,7 +2368,7 @@ void WebMediaPlayerImpl::OnVideoOpacityChange(bool opaque) {
     bridge_->SetContentsOpaque(opaque_);
 }
 
-void WebMediaPlayerImpl::OnVideoFrameRateChange(absl::optional<int> fps) {
+void WebMediaPlayerImpl::OnVideoFrameRateChange(std::optional<int> fps) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   if (power_status_helper_)
     power_status_helper_->SetAverageFrameRate(fps);
@@ -2777,7 +2777,7 @@ void WebMediaPlayerImpl::MaybeSendOverlayInfoToDecoder() {
 }
 
 std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
-    absl::optional<media::RendererType> renderer_type) {
+    std::optional<media::RendererType> renderer_type) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   // Make sure that overlays are enabled if they're always allowed.
@@ -2818,13 +2818,13 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
       client_->TargetColorSpace());
 }
 
-absl::optional<media::DemuxerType> WebMediaPlayerImpl::GetDemuxerType() const {
+std::optional<media::DemuxerType> WebMediaPlayerImpl::GetDemuxerType() const {
   // Note: this can't be a ternary expression because the compiler throws a fit
   // over type conversions.
   if (demuxer_manager_) {
     return demuxer_manager_->GetDemuxerType();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 media::PipelineStatus WebMediaPlayerImpl::OnDemuxerCreated(
@@ -3472,9 +3472,9 @@ int WebMediaPlayerImpl::GetDelegateId() {
   return delegate_id_;
 }
 
-absl::optional<viz::SurfaceId> WebMediaPlayerImpl::GetSurfaceId() {
+std::optional<viz::SurfaceId> WebMediaPlayerImpl::GetSurfaceId() {
   if (!surface_layer_for_video_enabled_)
-    return absl::nullopt;
+    return std::nullopt;
   return bridge_->GetSurfaceId();
 }
 
@@ -3665,7 +3665,7 @@ void WebMediaPlayerImpl::DisableVideoTrackIfNeeded() {
 
 void WebMediaPlayerImpl::SetPipelineStatisticsForTest(
     const media::PipelineStatistics& stats) {
-  pipeline_statistics_for_test_ = absl::make_optional(stats);
+  pipeline_statistics_for_test_ = std::make_optional(stats);
 }
 
 media::PipelineStatistics WebMediaPlayerImpl::GetPipelineStatistics() const {
@@ -3677,7 +3677,7 @@ media::PipelineStatistics WebMediaPlayerImpl::GetPipelineStatistics() const {
 
 void WebMediaPlayerImpl::SetPipelineMediaDurationForTest(
     base::TimeDelta duration) {
-  pipeline_media_duration_for_test_ = absl::make_optional(duration);
+  pipeline_media_duration_for_test_ = std::make_optional(duration);
 }
 
 base::TimeDelta WebMediaPlayerImpl::GetPipelineMediaDuration() const {

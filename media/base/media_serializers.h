@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_MEDIA_SERIALIZERS_H_
 #define MEDIA_BASE_MEDIA_SERIALIZERS_H_
 
+#include <optional>
 #include <sstream>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "media/base/renderer.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -78,8 +78,8 @@ struct MediaSerializer<std::unique_ptr<T>> {
 
 // serialize optional types
 template <typename OptType>
-struct MediaSerializer<absl::optional<OptType>> {
-  static base::Value Serialize(const absl::optional<OptType>& opt) {
+struct MediaSerializer<std::optional<OptType>> {
+  static base::Value Serialize(const std::optional<OptType>& opt) {
     return opt ? MediaSerializer<OptType>::Serialize(opt.value())
                : base::Value("unset");  // TODO(tmathmeyer) maybe empty string?
   }

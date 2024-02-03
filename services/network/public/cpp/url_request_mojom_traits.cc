@@ -187,7 +187,7 @@ bool StructTraits<
   // help debug crbug.com/1062637.
   if (!data.ReadTrustTokenParams(&out->trust_token_params.as_ptr())) {
     // We don't return false here to avoid duplicate reports.
-    out->trust_token_params = absl::nullopt;
+    out->trust_token_params = std::nullopt;
     base::debug::DumpWithoutCrashing();
   }
 

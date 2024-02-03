@@ -4,9 +4,11 @@
 
 #include "ash/constants/ambient_video.h"
 
+#include <string_view>
+
 namespace ash {
 
-base::StringPiece ToString(AmbientVideo video) {
+std::string_view ToString(AmbientVideo video) {
   // See the "AmbientModeThemes" <variants> tag in histograms.xml. These names
   // are currently used for metrics purposes, so they cannot be arbitrarily
   // renamed.

@@ -89,7 +89,6 @@ BOOL WaitForKeyboardToAppear() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSPaymentsBottomSheet);
   config.features_enabled.push_back(
       autofill::features::kAutofillEnableVirtualCards);
   return config;
@@ -519,7 +518,8 @@ NSString* ExpirationDateNSString() {
 
 // Tests that both the virtual card and the original card are shown
 // in the Payments Bottom Sheet.
-- (void)testPaymentsBottomSheetShowsVirtualCard {
+// TODO(crbug.com/1524066): This test flakily crashes the browser.
+- (void)DISABLED_testPaymentsBottomSheetShowsVirtualCard {
   // Add a credit card enrolled in VCN to the Personal Data Manager.
   [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
 

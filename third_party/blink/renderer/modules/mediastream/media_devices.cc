@@ -441,6 +441,7 @@ ScriptPromise MediaDevices::getUserMedia(
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
       script_state, "Media.MediaDevices.GetUserMedia", base::Seconds(8));
+  const ScriptPromise promise = resolver->Promise();
 
   DCHECK(options);  // Guaranteed by the default value in the IDL.
   DCHECK(!exception_state.HadException());
@@ -449,9 +450,8 @@ ScriptPromise MediaDevices::getUserMedia(
       ToMediaStreamConstraints(options, exception_state);
   if (!constraints) {
     DCHECK(exception_state.HadException());
-    resolver->RecordResultAndLatency(
-        UserMediaRequestResult::kInvalidConstraints);
-    return ScriptPromise();
+    resolver->RecordAndDetach(UserMediaRequestResult::kInvalidConstraints);
+    return promise;
   }
 
   return SendUserMediaRequest(UserMediaRequestType::kUserMedia, resolver,
@@ -466,6 +466,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!exception_state.HadException());
 
+  ScriptPromise promise = resolver->Promise();
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
     resolver->RecordAndThrowDOMException(
@@ -473,7 +474,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
         "No media device client available; "
         "is this a detached window?",
         UserMediaRequestResult::kContextDestroyed);
-    return ScriptPromise();
+    return promise;
   }
 
   base::OnceCallback<void(const String&, CaptureController*)>
@@ -495,9 +496,8 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   }
 
   if (exception_state.HadException()) {
-    resolver->RecordResultAndLatency(
-        UserMediaRequestResult::kInvalidConstraints);
-    return ScriptPromise();
+    resolver->RecordAndDetach(UserMediaRequestResult::kInvalidConstraints);
+    return promise;
   }
 #endif
 
@@ -513,18 +513,16 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
     surface = IdentifiableSurface::FromTypeAndToken(
         surface_type, TokenFromConstraints(options));
   }
-  ScriptPromise promise = resolver->Promise();
   UserMediaRequest* request =
       UserMediaRequest::Create(window, user_media_client, media_type, options,
                                callbacks, exception_state, surface);
   if (!request) {
     DCHECK(exception_state.HadException());
-    resolver->RecordResultAndLatency(
-        UserMediaRequestResult::kInvalidConstraints);
+    resolver->RecordAndDetach(UserMediaRequestResult::kInvalidConstraints);
     RecordIdentifiabilityMetric(
         surface, GetExecutionContext(),
         IdentifiabilityBenignStringToken(exception_state.Message()));
-    return ScriptPromise();
+    return promise;
   }
 
   String error_message;
@@ -532,7 +530,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
     resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotSupportedError, error_message,
         UserMediaRequestResult::kInsecureContext);
-    return ScriptPromise();
+    return promise;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -555,6 +553,7 @@ ScriptPromise MediaDevices::getAllScreensMedia(
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
       script_state, "Media.MediaDevices.GetAllScreensMedia", base::Seconds(6));
+  ScriptPromise promise = resolver->Promise();
 
   ExecutionContext* const context = GetExecutionContext();
   if (!context) {
@@ -562,7 +561,7 @@ ScriptPromise MediaDevices::getAllScreensMedia(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "No media device client available; is this a detached window?",
         UserMediaRequestResult::kContextDestroyed);
-    return ScriptPromise();
+    return promise;
   }
 
   MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
@@ -584,13 +583,14 @@ ScriptPromise MediaDevices::getDisplayMedia(
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
       script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(6));
+  ScriptPromise promise = resolver->Promise();
 
   if (!window) {
     resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "No local DOM window; is this a detached window?",
         UserMediaRequestResult::kContextDestroyed);
-    return ScriptPromise();
+    return promise;
   }
 
   const bool capture_allowed_by_permissions_policy = window->IsFeatureEnabled(
@@ -607,14 +607,15 @@ ScriptPromise MediaDevices::getDisplayMedia(
     resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotAllowedError,
         kFeaturePolicyBlocked, UserMediaRequestResult::kNotAllowedError);
-    return ScriptPromise();
+    return promise;
   }
 
   if (!TransientActivationRequirementSatisfied(window)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "getDisplayMedia() requires transient activation (user gesture).");
-    return ScriptPromise();
+    resolver->RecordAndThrowDOMException(
+        exception_state, DOMExceptionCode::kInvalidStateError,
+        "getDisplayMedia() requires transient activation (user gesture).",
+        UserMediaRequestResult::kInvalidStateError);
+    return promise;
   }
 
   if (options->hasAutoSelectAllScreens() && options->autoSelectAllScreens()) {
@@ -623,7 +624,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
         "The autoSelectAllScreens property is not allowed for usage with "
         "getDisplayMedia.",
         UserMediaRequestResult::kInvalidConstraints);
-    return ScriptPromise();
+    return promise;
   }
 
   if (CaptureController* const capture_controller =
@@ -634,8 +635,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
           "A CaptureController object may only be used with a single "
           "getDisplayMedia() invocation.",
           UserMediaRequestResult::kInvalidStateError);
-
-      return ScriptPromise();
+      return promise;
     }
     capture_controller->SetIsBound(true);
   }

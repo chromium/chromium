@@ -13,6 +13,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -131,7 +132,7 @@ class EventListenerMapWithContextTest
       public testing::WithParamInterface<bool /* is_for_service_worker */> {};
 
 std::unique_ptr<EventListener> CreateEventListenerForExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
     std::optional<base::Value::Dict> filter) {
@@ -149,7 +150,7 @@ std::unique_ptr<EventListener> CreateEventListenerForURL(
 }
 
 std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
     std::optional<base::Value::Dict> filter) {

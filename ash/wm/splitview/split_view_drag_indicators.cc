@@ -329,7 +329,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
   }
 
   // views::View:
-  void Layout() override { Layout(/*animate=*/false); }
+  void Layout(PassKey) override { Layout(/*animate=*/false); }
 
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override {
@@ -343,7 +343,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
   // changed.
   void Layout(bool animate) {
     if (!dragged_window_) {
-      // `Layout()` can also be called during test teardown.
+      // This can be called during test teardown.
       return;
     }
     // TODO(b/252514604): Attempt to simplify this logic.

@@ -7,11 +7,12 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "net/base/address_list.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -24,16 +25,16 @@ class NetworkContext;
 struct DnsLookupResult {
   DnsLookupResult(int32_t error,
                   net::ResolveErrorInfo resolve_error_info,
-                  absl::optional<net::AddressList> resolved_addresses,
-                  absl::optional<net::HostResolverEndpointResults>
+                  std::optional<net::AddressList> resolved_addresses,
+                  std::optional<net::HostResolverEndpointResults>
                       endpoint_results_with_metadata);
   DnsLookupResult(const DnsLookupResult& dns_lookup_result);
   ~DnsLookupResult();
 
   int32_t error;
   net::ResolveErrorInfo resolve_error_info;
-  absl::optional<net::AddressList> resolved_addresses;
-  absl::optional<net::HostResolverEndpointResults>
+  std::optional<net::AddressList> resolved_addresses;
+  std::optional<net::HostResolverEndpointResults>
       endpoint_results_with_metadata;
 };
 

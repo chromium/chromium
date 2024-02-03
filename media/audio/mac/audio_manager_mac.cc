@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -41,7 +42,6 @@
 #include "media/base/limits.h"
 #include "media/base/mac/audio_latency_mac.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -149,13 +149,13 @@ static void GetAudioDeviceInfo(bool is_input,
       continue;
     }
 
-    absl::optional<std::string> unique_id =
+    std::optional<std::string> unique_id =
         core_audio_mac::GetDeviceUniqueID(device_id);
     if (!unique_id) {
       continue;
     }
 
-    absl::optional<std::string> label =
+    std::optional<std::string> label =
         core_audio_mac::GetDeviceLabel(device_id, is_input);
     if (!label) {
       continue;
@@ -581,7 +581,7 @@ std::vector<AudioObjectID> AudioManagerMac::GetRelatedBluetoothDeviceIDs(
 
   // Get unique ID of input device which would be used to match with unique IDs
   // of all other devices.
-  absl::optional<std::string> input_unique_id = GetDeviceUniqueID(device_id);
+  std::optional<std::string> input_unique_id = GetDeviceUniqueID(device_id);
   if (!input_unique_id) {
     return result_ids;
   }
@@ -601,7 +601,7 @@ std::vector<AudioObjectID> AudioManagerMac::GetRelatedBluetoothDeviceIDs(
   // Iterate through all device IDs and match the unique IDs base to find the
   // related devices.
   for (const auto& id : GetAllAudioDeviceIDs()) {
-    absl::optional<std::string> unique_id = GetDeviceUniqueID(id);
+    std::optional<std::string> unique_id = GetDeviceUniqueID(id);
     if (!unique_id) {
       continue;
     }
@@ -624,20 +624,20 @@ std::vector<AudioObjectID> AudioManagerMac::GetRelatedBluetoothDeviceIDs(
 std::vector<AudioObjectID> AudioManagerMac::GetRelatedDeviceIDs(
     AudioObjectID device_id) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
-  absl::optional<uint32_t> transport_type = GetDeviceTransportType(device_id);
+  std::optional<uint32_t> transport_type = GetDeviceTransportType(device_id);
   if (transport_type && *transport_type == kAudioDeviceTransportTypeBluetooth) {
     return GetRelatedBluetoothDeviceIDs(device_id);
   }
   return GetRelatedNonBluetoothDeviceIDs(device_id);
 }
 
-absl::optional<std::string> AudioManagerMac::GetDeviceUniqueID(
+std::optional<std::string> AudioManagerMac::GetDeviceUniqueID(
     AudioObjectID device_id) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   return core_audio_mac::GetDeviceUniqueID(device_id);
 }
 
-absl::optional<uint32_t> AudioManagerMac::GetDeviceTransportType(
+std::optional<uint32_t> AudioManagerMac::GetDeviceTransportType(
     AudioObjectID device_id) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   return core_audio_mac::GetDeviceTransportType(device_id);
@@ -752,7 +752,7 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   // to detect if a device (e.g. a digital output device) is actually connected
   // to an endpoint, so we cannot randomly pick a device.
   if (related_output_device_ids.size() == 1) {
-    absl::optional<std::string> related_unique_id =
+    std::optional<std::string> related_unique_id =
         GetDeviceUniqueID(*related_output_device_ids.begin());
     if (related_unique_id) {
       return std::move(*related_unique_id);

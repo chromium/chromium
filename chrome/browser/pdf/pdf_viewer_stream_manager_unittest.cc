@@ -376,10 +376,8 @@ TEST_F(PdfViewerStreamManagerTest,
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host2));
 }
 
-// The initial load should claim the stream. If the top level frame is
-// committing a navigation to a different document, the stream should be
-// deleted.
-TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndDelete) {
+// The initial load should claim the stream.
+TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
@@ -393,18 +391,39 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndDelete) {
 
   // The initial load should cause the embedder host to claim the stream.
   manager->ReadyToCommitNavigation(&navigation_handle1);
-  EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
+  base::WeakPtr<extensions::StreamContainer> original_stream =
+      manager->GetStreamContainer(embedder_host);
+  EXPECT_TRUE(original_stream);
   EXPECT_TRUE(pdf_viewer_stream_manager());
 
   NiceMock<content::MockNavigationHandle> navigation_handle2;
   navigation_handle2.set_render_frame_host(embedder_host);
 
   // Committing a navigation again shouldn't try to claim a stream again if
-  // there isn't a new stream. The stream should still exist. This can occur
+  // there isn't a new stream. The stream should remain the same. This can occur
   // if a page contains an embed to a PDF, and the embed later navigates to
   // another URL.
   manager->ReadyToCommitNavigation(&navigation_handle2);
+  base::WeakPtr<extensions::StreamContainer> same_stream =
+      manager->GetStreamContainer(embedder_host);
+  ASSERT_TRUE(original_stream);
+  ASSERT_TRUE(same_stream);
+  EXPECT_EQ(original_stream.get(), same_stream.get());
+  EXPECT_TRUE(pdf_viewer_stream_manager());
+
+  // Re-add a duplicate stream.
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+
+  NiceMock<content::MockNavigationHandle> navigation_handle3;
+  navigation_handle3.set_render_frame_host(embedder_host);
+
+  // If a new stream exists for the same frame tree node ID, allow claiming the
+  // new stream. This can occur if a full page PDF viewer refreshes.
+  manager->ReadyToCommitNavigation(&navigation_handle3);
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
+  EXPECT_FALSE(original_stream);
   EXPECT_TRUE(pdf_viewer_stream_manager());
 }
 

@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1384959399684842514">Gert var hlé á niðurhali</translation>
 <translation id="1415402041810619267">Stytt vefslóð</translation>
-<translation id="1426410128494586442">Já</translation>
 <translation id="1434873037477293673">verðlækkunarspjald</translation>
 <translation id="1448064542941920355">Minnka aðdrátt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vefsvæði}one{<ph name="SITE_COUNT" /> vefsvæði}other{<ph name="SITE_COUNT" /> vefsvæðum}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Til að veita <ph name="APP_NAME" /> aðgang að myndavélinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
 <translation id="2238944249568001759">Leitartillögur byggðar á síðasta flipa</translation>
+<translation id="2241587408274973373">Kort nýrrar flipasíðu</translation>
 <translation id="2241634353105152135">Bara einu sinni</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Fjarlægja</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Lokað á 1 vefsvæði}one{Lokað á # vefsvæði}other{Lokað á # vefsvæði}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Vefsvæði geta nú birt innskráningartilkynningar frá auðkenningarþjónustum.</translation>
 <translation id="2790501146643349491">Þegar kveikt er á þessu geta vefsvæði sem nýlega var lokað lokið við að senda og taka á móti gögnum. Þegar slökkt er á þessu geta vefsvæði sem nýlega var lokað ekki lokið við að senda og taka á móti gögnum.</translation>
 <translation id="2822354292072154809">Viltu örugglega endurstilla allar heimildir vefsvæða fyrir „<ph name="CHOSEN_OBJECT_NAME" />“?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Biðja um símaútgáfu</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2874939134665556319">Fyrra lag</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Vottorðaskoðari</translation>
 <translation id="2979365474350987274">Fótspor þriðju aðila eru takmörkuð</translation>
 <translation id="3008272652534848354">Endurstilla heimildir</translation>
-<translation id="3013291976881901233">MIDI-tæki</translation>
 <translation id="301521992641321250">Sjálfkrafa lokað á</translation>
 <translation id="3069226013421428034">Leyfa innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Rennur út á morgun}one{Rennur út eftir # dag}other{Rennur út eftir # daga}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Tengt við USB-tæki</translation>
 <translation id="4194328954146351878">Spyrja áður en vefsvæði fá að sjá og breyta upplýsingum í NFC-tækjum (ráðlagt)</translation>
 <translation id="4200726100658658164">Opna staðsetningarstillingar</translation>
-<translation id="4212246570487010370">Halda áfram að fletta</translation>
 <translation id="4226663524361240545">Tilkynningar gætu látið tækið titra</translation>
 <translation id="4259722352634471385">Lokað er fyrir skoðun: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Leyft</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Færa niður</translation>
 <translation id="6749077623962119521">Endurstilla heimildir?</translation>
 <translation id="6766622839693428701">Strjúktu niður til að loka.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> úr <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Veldu valkost fyrir <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6818926723028410516">Veldu atriði</translation>

@@ -7,7 +7,7 @@
 
 // Enum representing the existing set of menu scenarios. Current values should
 // not be renumbered. Please keep in sync with "IOSMenuScenario" in
-// src/tools/metrics/histograms/enums.xml.
+// src/tools/metrics/histograms/metadata/mobile/enums.xml.
 // LINT.IfChange
 enum MenuScenarioHistogram {
   kMenuScenarioHistogramBookmarkEntry = 0,
@@ -30,9 +30,10 @@ enum MenuScenarioHistogram {
   kMenuScenarioHistogramPinnedTabsEntry = 17,
   kMenuScenarioHistogramTabStripEntry = 18,
   kMenuScenarioHistogramInactiveTabsEntry = 19,
+  kMenuScenarioHistogramTabGroupGridEntry = 20,
   kMenuScenarioHistogramCount,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 
 // Records a menu shown histogram metric for the `scenario`.
 void RecordMenuShown(enum MenuScenarioHistogram scenario);

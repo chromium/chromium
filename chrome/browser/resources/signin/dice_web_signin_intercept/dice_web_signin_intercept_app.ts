@@ -10,13 +10,14 @@ import './signin_shared.css.js';
 import './signin_vars.css.js';
 import './strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './dice_web_signin_intercept_app.html.js';
-import {DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
+import type {DiceWebSigninInterceptBrowserProxy, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
+import {DiceWebSigninInterceptBrowserProxyImpl} from './dice_web_signin_intercept_browser_proxy.js';
 
 const DiceWebSigninInterceptAppElementBase = WebUiListenerMixin(PolymerElement);
 

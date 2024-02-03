@@ -99,14 +99,13 @@ class CORE_EXPORT ViewTransitionSupplement
       ScriptState*,
       Document&,
       V8ViewTransitionCallback* callback,
-      const absl::optional<Vector<String>>& types,
+      const std::optional<Vector<String>>& types,
       ExceptionState&);
 
-  DOMViewTransition* StartTransition(
-      Document& document,
-      V8ViewTransitionCallback* callback,
-      const absl::optional<Vector<String>>& types,
-      ExceptionState& exception_state);
+  DOMViewTransition* StartTransition(Document& document,
+                                     V8ViewTransitionCallback* callback,
+                                     const std::optional<Vector<String>>& types,
+                                     ExceptionState& exception_state);
   void StartTransition(Document& document,
                        ViewTransition::ViewTransitionStateCallback callback);
   void StartTransition(Document& document,

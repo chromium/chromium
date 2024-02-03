@@ -6094,7 +6094,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ChromeOS.AppInstallDialog.AppLaunched">
-  <owner>dominicschulz@google.com</owner>
+  <owner>glenrob@chromium.org</owner>
   <owner>cros-web-apps-infra-team@google.com</owner>
   <description>
     Recorded when the user requested a previously installed app to be launched
@@ -6103,7 +6103,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ChromeOS.AppInstallDialog.Cancelled">
-  <owner>dominicschulz@google.com</owner>
+  <owner>glenrob@chromium.org</owner>
   <owner>cros-web-apps-infra-team@google.com</owner>
   <description>
     Recorded when the user closed an installation dialog without installing.
@@ -6111,7 +6111,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ChromeOS.AppInstallDialog.Installed">
-  <owner>dominicschulz@google.com</owner>
+  <owner>glenrob@chromium.org</owner>
   <owner>cros-web-apps-infra-team@google.com</owner>
   <description>
     Recorded when the user requested an app to be installed in the CrOS App
@@ -6120,7 +6120,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ChromeOS.AppInstallDialog.Shown">
-  <owner>dominicschulz@google.com</owner>
+  <owner>glenrob@chromium.org</owner>
   <owner>cros-web-apps-infra-team@google.com</owner>
   <description>
     Recorded when the CrOS App Install dialog was opened by the user.
@@ -21871,7 +21871,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileMenuReadAloud">
   <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.com</owner>
+  <owner>iwells@chromium.org</owner>
   <description>User pressed 'Listen to this page' in the app menu.</description>
 </action>
 
@@ -24437,7 +24437,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileTopToolbarReadAloudButton">
   <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.com</owner>
+  <owner>iwells@chromium.org</owner>
   <description>
     The user tapped on the top toolbar's read aloud button.
   </description>
@@ -30712,6 +30712,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Sanitize">
+  <owner>behnoodm@google.com</owner>
+  <description>
+    Used by the user for the Sanitize option to do a soft reset on the settings.
+  </description>
+</action>
+
 <action name="Save">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -32490,6 +32497,36 @@ should be able to be added at any place in this file.
   <description>User started a browser safety check in settings.</description>
 </action>
 
+<action name="Settings.SafetyHub.IncognitoLinkClicked">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded whenever the user clicks on 'Incognito' link in the Education
+    module of Safety Check page in settings.
+  </description>
+</action>
+
+<action name="Settings.SafetyHub.SafeBrowsingLinkClicked">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded whenever the user clicks on 'Safe Browsing' link in the Education
+    module of Safety Check page in settings.
+  </description>
+</action>
+
+<action name="Settings.SafetyHub.SafetyToolsLinkClicked">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded whenever the user clicks on 'Safety Tools' link in the Education
+    module of Safety Check page in settings.
+  </description>
+</action>
+
 <action name="Settings.Searching">
   <owner>dschuyler@chromium.org</owner>
   <description>
@@ -33272,7 +33309,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShortcutCustomization_OpenEditAcceleratorDialog">
-  <owner>jimmyxgong@chromium.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <description>
     User clicks on an editable accelerator to modify it.
@@ -33280,13 +33317,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShortcutCustomization_RemoveAccelerator">
-  <owner>jimmyxgong@chromium.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <description>User has removed an accelerator.</description>
 </action>
 
 <action name="ShortcutCustomization_ResetAction">
-  <owner>jimmyxgong@chromium.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <description>
     User has clicked on the restore default button for an action.
@@ -33294,7 +33331,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShortcutCustomization_ResetAll">
-  <owner>jimmyxgong@chromium.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <description>
     User has clicked on the restore default for all actions button.
@@ -33302,19 +33339,19 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShortcutCustomization_StartAddAccelerator">
-  <owner>jimmyxgong@chromium.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <description>User has begun adding a new accelerator.</description>
 </action>
 
 <action name="ShortcutCustomization_StartReplaceAccelerator">
-  <owner>jimmyxgong@chromium.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <description>User has begun replacing an accelerator.</description>
 </action>
 
 <action name="ShortcutCustomization_SuccessfullyModified">
-  <owner>jimmyxgong@chromium.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <description>
     User has successfully added or replaced an accelerator.
@@ -34347,7 +34384,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromNTPFeedBottomSigninPromo">
-  <owner>sczs@chromium.com</owner>
+  <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>
     Recorded when showing sign-in promo card in the feed bottom.
@@ -34355,7 +34392,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromNTPFeedCardMenuSigninPromo">
-  <owner>sczs@chromium.com</owner>
+  <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>
     Recorded when showing sign-in promo UI triggered by feed card menu
@@ -39512,6 +39549,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="UpdateNotificaion.NotificationShown">
+  <obsolete>Not present in the codebase. Removed in M123.</obsolete>
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <description>

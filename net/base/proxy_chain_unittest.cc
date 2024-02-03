@@ -79,10 +79,9 @@ TEST(ProxyChainTest, ToDebugString) {
   ProxyChain direct_proxy_chain = ProxyChain::Direct();
   EXPECT_EQ(direct_proxy_chain.ToDebugString(), "[direct://]");
 
-  ProxyChain ip_protection_proxy_chain =
-      ProxyChain({ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS),
-                  ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS)})
-          .ForIpProtection();
+  ProxyChain ip_protection_proxy_chain = ProxyChain::ForIpProtection(
+      {ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS),
+       ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS)});
   EXPECT_EQ(ip_protection_proxy_chain.ToDebugString(),
             "[https://foo:444, https://foo:555] (IP Protection)");
 
@@ -130,14 +129,12 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
 
       // Other schemes
       {ProxyServer::SCHEME_HTTPS, "foopy", 111, "111", "foopy", 111},
-      {ProxyServer::SCHEME_QUIC, "foopy", 111, "111", "foopy", 111},
       {ProxyServer::SCHEME_SOCKS4, "foopy", 111, "111", "foopy", 111},
       {ProxyServer::SCHEME_SOCKS5, "foopy", 111, "111", "foopy", 111},
 
       // Default ports
       {ProxyServer::SCHEME_HTTP, "foopy", std::nullopt, "", "foopy", 80},
       {ProxyServer::SCHEME_HTTPS, "foopy", std::nullopt, "", "foopy", 443},
-      {ProxyServer::SCHEME_QUIC, "foopy", std::nullopt, "", "foopy", 443},
       {ProxyServer::SCHEME_SOCKS4, "foopy", std::nullopt, "", "foopy", 1080},
       {ProxyServer::SCHEME_SOCKS5, "foopy", std::nullopt, "", "foopy", 1080},
   };
@@ -246,11 +243,11 @@ TEST(ProxyChainTest, SplitLast) {
   auto proxy_server3 =
       ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
 
-  auto chain3 = ProxyChain({proxy_server1, proxy_server2, proxy_server3})
-                    .ForIpProtection();
+  auto chain3 = ProxyChain::ForIpProtection(
+      {proxy_server1, proxy_server2, proxy_server3});
   EXPECT_EQ(chain3.SplitLast(),
             std::make_pair(
-                ProxyChain({proxy_server1, proxy_server2}).ForIpProtection(),
+                ProxyChain::ForIpProtection({proxy_server1, proxy_server2}),
                 proxy_server3));
 
   auto chain2 = ProxyChain({proxy_server1, proxy_server2});
@@ -279,7 +276,8 @@ TEST(ProxyChainTest, IsForIpProtection) {
   auto regular_proxy_chain1 = ProxyChain::Direct();
   EXPECT_FALSE(regular_proxy_chain1.is_for_ip_protection());
 
-  auto ip_protection_proxy_chain1 = ProxyChain::Direct().ForIpProtection();
+  auto ip_protection_proxy_chain1 =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
   EXPECT_TRUE(ip_protection_proxy_chain1.is_for_ip_protection());
 
   auto regular_proxy_chain2 =
@@ -287,26 +285,29 @@ TEST(ProxyChainTest, IsForIpProtection) {
                   ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)});
   EXPECT_FALSE(regular_proxy_chain2.is_for_ip_protection());
 
-  auto ip_protection_proxy_chain2 =
-      ProxyChain({ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
-                  ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)})
-          .ForIpProtection();
+  auto ip_protection_proxy_chain2 = ProxyChain::ForIpProtection(
+      {ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
+       ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)});
   EXPECT_TRUE(ip_protection_proxy_chain2.is_for_ip_protection());
 }
 
 TEST(ProxyChainTest, ForIpProtection) {
-  auto ip_protection_proxy_chain1 = ProxyChain::Direct().ForIpProtection();
+  auto ip_protection_proxy_chain1 =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
   EXPECT_TRUE(ip_protection_proxy_chain1.is_direct());
   EXPECT_TRUE(ip_protection_proxy_chain1.is_for_ip_protection());
+  EXPECT_EQ(ip_protection_proxy_chain1.ip_protection_chain_id(),
+            ProxyChain::kDefaultIpProtectionChainId);
 
   auto regular_proxy_chain2 =
       ProxyChain({ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
                   ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)});
-  auto ip_protection_proxy_chain2 =
-      ProxyChain({ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
-                  ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)})
-          .ForIpProtection();
+  auto ip_protection_proxy_chain2 = ProxyChain::ForIpProtection(
+      {ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
+       ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)});
   EXPECT_TRUE(ip_protection_proxy_chain2.is_for_ip_protection());
+  EXPECT_EQ(ip_protection_proxy_chain2.ip_protection_chain_id(),
+            ProxyChain::kDefaultIpProtectionChainId);
   EXPECT_EQ(regular_proxy_chain2.proxy_servers(),
             ip_protection_proxy_chain2.proxy_servers());
 
@@ -316,12 +317,24 @@ TEST(ProxyChainTest, ForIpProtection) {
   auto copied_proxy_chain = self_assignable_proxy_chain;
 
   EXPECT_FALSE(self_assignable_proxy_chain.is_for_ip_protection());
+  EXPECT_EQ(self_assignable_proxy_chain.ip_protection_chain_id(),
+            ProxyChain::kNotIpProtectionChainId);
 
-  self_assignable_proxy_chain =
-      std::move(self_assignable_proxy_chain).ForIpProtection();
+  self_assignable_proxy_chain = ProxyChain::ForIpProtection(
+      std::move(self_assignable_proxy_chain.proxy_servers()));
   EXPECT_TRUE(self_assignable_proxy_chain.is_for_ip_protection());
   EXPECT_EQ(self_assignable_proxy_chain.proxy_servers(),
             copied_proxy_chain.proxy_servers());
+  EXPECT_EQ(self_assignable_proxy_chain.ip_protection_chain_id(),
+            ProxyChain::kDefaultIpProtectionChainId);
+
+  auto chain_with_id = ProxyChain::ForIpProtection(
+      {ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
+       ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)},
+      /*chain_id=*/3);
+  EXPECT_FALSE(chain_with_id.is_direct());
+  EXPECT_TRUE(chain_with_id.is_for_ip_protection());
+  EXPECT_EQ(chain_with_id.ip_protection_chain_id(), 3);
 }
 
 TEST(ProxyChainTest, IsGetToProxyAllowed) {
@@ -342,17 +355,25 @@ TEST(ProxyChainTest, IsGetToProxyAllowed) {
 }
 
 TEST(ProxyChainTest, IsValid) {
-  ProxyChain direct_chain = ProxyChain::Direct();
-  ProxyServer http_proxy1 =
-      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
-  ProxyServer http_proxy2 =
-      ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
+  auto direct_chain = ProxyChain::Direct();
 
   // Single hop proxy of type Direct is valid.
   EXPECT_TRUE(direct_chain.IsValid());
 
-  // Multi hop proxy with same type is valid.
+  auto http_proxy1 =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  auto http_proxy2 =
+      ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
+
+  // Multi hop proxy with HTTPs type is valid.
   EXPECT_TRUE(ProxyChain({http_proxy1, http_proxy2}).IsValid());
+
+  auto quic_proxy1 = ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_QUIC);
+  auto quic_proxy2 = ProxyUriToProxyServer("foo:777", ProxyServer::SCHEME_QUIC);
+  auto ip_protection_quic_proxy_chain =
+      ProxyChain::ForIpProtection({quic_proxy1, quic_proxy2});
+  // Multi hop proxy with QUIC and IP Protection is valid.
+  EXPECT_TRUE(ip_protection_quic_proxy_chain.IsValid());
 }
 
 TEST(ProxyChainTest, Unequal) {
@@ -366,9 +387,9 @@ TEST(ProxyChainTest, Unequal) {
       ProxyUriToProxyChain("socks4://foo:33", ProxyServer::SCHEME_SOCKS4),
       ProxyUriToProxyChain("http://foo:33", ProxyServer::SCHEME_HTTP),
       ProxyChain({ProxyUriToProxyChain("bar:33", ProxyServer::SCHEME_HTTP)}),
-      ProxyChain({ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
-                  ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)})
-          .ForIpProtection()};
+      ProxyChain::ForIpProtection(
+          {ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
+           ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)})};
 
   // Unordered proxy chains.
   std::set<ProxyChain> proxy_chain_set(proxy_chain_list.begin(),

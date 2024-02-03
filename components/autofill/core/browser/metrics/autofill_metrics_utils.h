@@ -93,7 +93,7 @@ enum class SettingsVisibleFieldTypeForMetrics {
   kState = 7,
   kStreetAddress = 8,
   kDependentLocality = 9,
-  kHonorificPrefix = 10,
+  // kHonorificPrefix = 10,  // Deprecated in M123.
   kCompany = 11,
   kMaxValue = kCompany
 };

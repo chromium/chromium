@@ -78,7 +78,7 @@ void RemoveDisabledShortcuts(
 KeyboardShortcutProvider::KeyboardShortcutProvider(
     Profile* profile,
     std::unique_ptr<ManateeCache> manatee_cache)
-    : SearchProvider(ControlCategory::kHelp),
+    : SearchProvider(SearchCategory::kHelp),
       profile_(profile),
       manatee_cache_(std::move(manatee_cache)) {
   DCHECK(profile_);

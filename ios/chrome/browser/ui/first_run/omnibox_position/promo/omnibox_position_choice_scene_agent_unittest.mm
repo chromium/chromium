@@ -9,13 +9,13 @@
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
-#import "ios/chrome/browser/first_run/model/first_run.h"
-#import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -24,35 +24,10 @@
 
 namespace {
 
-/// FirstRunRecency key, should match the one in `system_flags`.
-NSString* kFirstRunRecencyKey = @"FirstRunRecency";
-
-/// Simulates a first run state for an existing user.
-void ForceExistingUser() {
-  FirstRun::RemoveSentinel();
-  base::File::Error file_error;
-  startup_metric_utils::FirstRunSentinelCreationResult sentinel_created =
-      FirstRun::CreateSentinel(&file_error);
-  ASSERT_EQ(sentinel_created,
-            startup_metric_utils::FirstRunSentinelCreationResult::kSuccess);
-  FirstRun::LoadSentinelInfo();
-  FirstRun::ClearStateForTesting();
-  FirstRun::IsChromeFirstRun();
-  // Set first run recency to a value considered as an existing user.
-  [[NSUserDefaults standardUserDefaults] setInteger:100
-                                             forKey:kFirstRunRecencyKey];
-}
-
-/// Simulates a first run state for a new user.
-void ForceNewUser() {
-  if (FirstRun::RemoveSentinel()) {
-    FirstRun::LoadSentinelInfo();
-    FirstRun::ClearStateForTesting();
-    FirstRun::IsChromeFirstRun();
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:kFirstRunRecencyKey];
-  }
-}
+/// Number of days since first run to be considered as an existing user. This is
+/// larger than the real value so it doesn't have to be updated when the real
+/// value changes.
+constexpr NSInteger kFirstRunRecencyForExistingUser = 100;
 
 }  // namespace
 
@@ -83,7 +58,7 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
   void TearDown() override {
     PlatformTest::TearDown();
     // Clear first run sentinel and user default.
-    ForceNewUser();
+    ResetFirstRunSentinel();
   }
 
  protected:
@@ -104,7 +79,7 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestPromoRegistration) {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return;
   }
-  ForceExistingUser();
+  ForceFirstRunRecency(kFirstRunRecencyForExistingUser);
 
   EXPECT_CALL(
       *promos_manager_.get(),
@@ -128,7 +103,7 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest,
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return;
   }
-  ForceExistingUser();
+  ForceFirstRunRecency(kFirstRunRecencyForExistingUser);
 
   EXPECT_CALL(
       *promos_manager_.get(),
@@ -160,7 +135,7 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestNoPromoRegistrationNewUser) {
       .Times(1);
 
   // The promo should not register for new users.
-  ForceNewUser();
+  ResetFirstRunSentinel();
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
 
@@ -170,7 +145,7 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestDeregistration) {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return;
   }
-  ForceExistingUser();
+  ForceFirstRunRecency(kFirstRunRecencyForExistingUser);
 
   scene_state_.UIEnabled = YES;
   EXPECT_CALL(

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "content/public/browser/media_stream_request.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -47,7 +48,7 @@ class ExtensionHostDelegate {
   // Creates a new tab or popup window with |web_contents|. The embedder may
   // choose to do nothing if tabs and popups are not supported.
   virtual void CreateTab(std::unique_ptr<content::WebContents> web_contents,
-                         const std::string& extension_id,
+                         const ExtensionId& extension_id,
                          WindowOpenDisposition disposition,
                          const blink::mojom::WindowFeatures& window_features,
                          bool user_gesture) = 0;

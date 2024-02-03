@@ -7,6 +7,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+#include <string>
+
 namespace ash {
 enum class AppListLaunchedFrom;
 enum class AppListOrderUpdateEvent;
@@ -190,6 +192,9 @@ enum SearchResultType {
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
+
+ASH_PUBLIC_EXPORT std::string SearchSessionConclusionToString(
+    SearchSessionConclusion conclusion);
 
 // Returns true if the `show_source` is one that a user directly triggers.
 ASH_PUBLIC_EXPORT bool IsAppListShowSourceUserTriggered(

@@ -187,7 +187,7 @@ bool CocoaScrollBar::OverlapsContent() const {
 //////////////////////////////////////////////////////////////////
 // CocoaScrollBar::View:
 
-void CocoaScrollBar::Layout() {
+void CocoaScrollBar::Layout(PassKey) {
   // Set the thickness of the thumb according to the track bounds.
   // The length of the thumb is set by ScrollBar::Update().
   gfx::Rect thumb_bounds(GetThumb()->bounds());

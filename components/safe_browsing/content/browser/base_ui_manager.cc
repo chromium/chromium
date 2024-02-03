@@ -278,7 +278,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   if (resource.threat_type != SB_THREAT_TYPE_SAFE &&
       resource.threat_type != SB_THREAT_TYPE_BILLING &&
       resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_BLOCK &&
-      resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_WARN) {
+      resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_WARN &&
+      resource.should_send_reports) {
     // TODO(vakh): crbug/883462: The reports for SB_THREAT_TYPE_BILLING should
     // be disabled for M70 but enabled for a later release (M71?).
     CreateAndSendHitReport(resource);

@@ -7,15 +7,15 @@
  * Page in eSIM Setup flow that requests user consent to scan for profiles.
  */
 
-import 'chrome://resources/ash/common/cellular_setup/cellular_setup_icons.html.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import './cellular_setup_icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './base_page.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
 import {getTemplate} from './profile_discovery_consent_page.html.js';
 

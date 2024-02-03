@@ -193,7 +193,7 @@ class LocationBarView : public LocationBar,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnThemeChanged() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 

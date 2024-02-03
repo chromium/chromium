@@ -108,7 +108,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       const H264PPS& pps,
       scoped_refptr<H264Picture> pic,
       const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0,
-      const absl::optional<size_t>& ref_frame_index);
+      const std::optional<size_t>& ref_frame_index);
 
   // Current SPS, PPS and their packed versions. Packed versions are NALUs
   // in AnnexB format *without* emulation prevention three-byte sequences

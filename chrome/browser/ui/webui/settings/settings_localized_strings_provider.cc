@@ -260,11 +260,6 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 
   html_source->AddBoolean("isChildAccount", profile->IsChild());
 
-  html_source->AddBoolean(
-      "clearingCookiesKeepsSupervisedUsersSignedIn",
-      base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn));
-
 #if BUILDFLAG(IS_LINUX)
   bool allow_qt_theme = base::FeatureList::IsEnabled(ui::kAllowQt);
 #else
@@ -559,8 +554,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
           IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE,
           l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK)));
 
-  html_source->AddBoolean("unoDesktopEnabled",
-                          base::FeatureList::IsEnabled(switches::kUnoDesktop));
+  html_source->AddBoolean(
+      "unoDesktopEnabled",
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
@@ -1959,17 +1956,17 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"topicsPageTitle", IDS_SETTINGS_TOPICS_PAGE_TITLE},
       {"topicsPageToggleLabel", IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL},
       {"topicsPageToggleSubLabel", IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL},
-      {"topicsPageToggleSubLabelPTB",
-       IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_PTB},
+      {"topicsPageToggleSubLabelV2",
+       IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2},
       {"topicsPageDisclaimer", IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER},
       {"topicsPageCurrentTopicsHeading",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING},
-      {"topicsPageCurrentTopicsHeadingPTB",
-       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING_PTB},
+      {"topicsPageCurrentTopicsHeadingV2",
+       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING_V2},
       {"topicsPageCurrentTopicsDescription",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION},
-      {"topicsPageCurrentTopicsDescriptionPTB",
-       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_PTB},
+      {"topicsPageCurrentTopicsDescriptionV2",
+       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_V2},
       {"topicsPageCurrentTopicsDescriptionLearnMoreLink",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_LINK},
       {"topicsPageCurrentTopicsRegionA11yDescription",
@@ -1984,21 +1981,27 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED},
       {"topicsPageCurrentTopicsDescriptionEmpty",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY},
-      {"topicsPageCurrentTopicsDescriptionEmptyPTB",
-       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_PTB},
+      {"topicsPageCurrentTopicsDescriptionEmptyTextHeading",
+       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_HEADING},
+      {"topicsPageCurrentTopicsDescriptionEmptyTextV2",
+       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2},
+      {"topicsPageBlockedTopicsDescriptionEmptyTextHeading",
+       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_HEADING},
+      {"topicsPageBlockedTopicsDescriptionEmptyTextV2",
+       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2},
       {"topicsPageBlockTopic", IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC},
       {"topicsPageBlockTopicA11yLabel",
        IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC_A11Y_LABEL},
       {"topicsPageBlockedTopicsHeading",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING},
-      {"topicsPageBlockedTopicsHeadingPTB",
-       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_PTB},
+      {"topicsPageBlockedTopicsHeadingV2",
+       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_V2},
       {"topicsPageBlockedTopicsDescription",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION},
       {"topicsPageBlockedTopicsDescriptionEmpty",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY},
-      {"topicsPageBlockedTopicsDescriptionPTB",
-       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_PTB},
+      {"topicsPageBlockedTopicsDescriptionV2",
+       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_V2},
       {"topicsPageBlockedTopicsRegionA11yDescription",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_REGION_A11Y_DESCRIPTION},
       {"topicsPageAllowTopic", IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC},
@@ -2073,6 +2076,12 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"manageTopicsDialogBody", IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BODY},
       {"manageTopicDialogBlockButtonText",
        IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BLOCK_BUTTON_TEXT},
+      {"unblockTopicToastBody", IDS_SETTINGS_UNBLOCK_TOPIC_TOAST_BODY},
+      {"unblockTopicToastButtonText",
+       IDS_SETTINGS_UNBLOCK_TOPIC_TOAST_BUTTON_TEXT},
+      {"fledgePageSecondaryDescriptionV2",
+       IDS_SETTINGS_FLEDGE_PAGE_SECONDARY_DESCRIPTION_V2},
+      {"unblockTopicButtonTextV2", IDS_SETTINGS_UNBLOCK_TOPIC_BUTTON_TEXT_V2},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -2115,9 +2124,9 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxFledgeURL),
           base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL)));
   html_source->AddString(
-      "topicsPageFooterPTB",
+      "topicsPageFooterV2",
       l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_TOPICS_PAGE_FOOTER_PTB,
+          IDS_SETTINGS_TOPICS_PAGE_FOOTER_V2,
           base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxFledgeURL),
           base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL),
           base::ASCIIToUTF16(
@@ -2128,6 +2137,14 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           IDS_SETTINGS_FLEDGE_PAGE_FOOTER,
           base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxTopicsURL),
           base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL)));
+  html_source->AddString(
+      "fledgePageFooterV2",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_FLEDGE_PAGE_FOOTER_V2,
+          base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxTopicsURL),
+          base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL),
+          base::ASCIIToUTF16(
+              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL)));
   html_source->AddBoolean(
       "firstPartySetsUIEnabled",
       base::FeatureList::IsEnabled(
@@ -2782,9 +2799,9 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsHidDevicesAsk", IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK},
       {"siteSettingsHidDevicesBlock",
        IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCK},
-      {"siteSettingsMidiDevices", IDS_SITE_SETTINGS_TYPE_MIDI},
+      {"siteSettingsMidiDevices", IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX},
       {"siteSettingsMidiDevicesMidSentence",
-       IDS_SITE_SETTINGS_TYPE_MIDI_MID_SENTENCE},
+       IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX_MID_SENTENCE},
       {"siteSettingsSerialPorts", IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS},
       {"siteSettingsSerialPortsMidSentence",
        IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE},
@@ -3410,8 +3427,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
                           base::FeatureList::IsEnabled(
                               features::kWebBluetoothNewPermissionsBackend));
 
-  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
-  // flag after FSA Persistent Permissions feature launch.
   html_source->AddBoolean(
       "showPersistentPermissions",
       base::FeatureList::IsEnabled(
@@ -3421,10 +3436,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       "permissionDedicatedCpssSettings",
       base::FeatureList::IsEnabled(
           permissions::features::kPermissionDedicatedCpssSetting));
-
-  html_source->AddBoolean(
-      "blockMidiByDefault",
-      base::FeatureList::IsEnabled(features::kBlockMidiByDefault));
 
   // The exception placeholder should not be translated. See
   // crbug.com/1095878.
@@ -3492,7 +3503,8 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString(
       "siteDataPageClearOnExitRadioSubLabel",
-      base::FeatureList::IsEnabled(switches::kUnoDesktop)
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)
           ? IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_WITH_EXCEPTION_RADIO_SUBLABEL
           : IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL);
 }

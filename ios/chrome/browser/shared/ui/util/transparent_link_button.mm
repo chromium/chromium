@@ -8,7 +8,6 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "url/gurl.h"
 
 // Minimum tap area dimension, as specified by Apple guidelines.

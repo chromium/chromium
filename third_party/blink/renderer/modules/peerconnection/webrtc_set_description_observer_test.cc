@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_set_description_observer.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
@@ -255,8 +255,8 @@ class WebRtcSetDescriptionObserverHandlerTest
                 {remote_stream})));
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver(
         new rtc::RefCountedObject<blink::FakeRtpTransceiver>(
-            cricket::MEDIA_TYPE_AUDIO, sender, receiver, absl::nullopt, false,
-            webrtc::RtpTransceiverDirection::kSendRecv, absl::nullopt));
+            cricket::MEDIA_TYPE_AUDIO, sender, receiver, std::nullopt, false,
+            webrtc::RtpTransceiverDirection::kSendRecv, std::nullopt));
     transceivers_.push_back(transceiver);
     EXPECT_CALL(*pc_, GetTransceivers()).WillRepeatedly(Return(transceivers_));
   }

@@ -145,7 +145,7 @@ class PageResourceCPUMonitorTest : public GraphTestHarness {
   void SetProcessExited(ProcessNodeImpl* process_node) {
     process_node->SetProcessExitStatus(0);
     // After a process exits, GetCumulativeCPUUsage() starts returning an error.
-    SetProcessCPUUsageError(process_node, base::TimeDelta());
+    SetProcessCPUUsageError(process_node, true);
   }
 
   void SetProcessCPUUsage(const ProcessNodeImpl* process_node, double usage) {
@@ -153,8 +153,8 @@ class PageResourceCPUMonitorTest : public GraphTestHarness {
   }
 
   void SetProcessCPUUsageError(const ProcessNodeImpl* process_node,
-                               base::TimeDelta usage_error) {
-    delegate_factory_.GetDelegate(process_node).SetError(usage_error);
+                               bool has_error) {
+    delegate_factory_.GetDelegate(process_node).SetError(has_error);
   }
 
   // Factory to return CPUMeasurementDelegates for `cpu_monitor_`. This must be
@@ -451,8 +451,6 @@ TEST_F(PageResourceCPUMonitorTest, CPUMeasurementError) {
   SetProcessId(renderer1.process_node.get());
   const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
   SetProcessId(renderer2.process_node.get());
-  const SinglePageRendererNodes renderer3 = CreateSimpleCPUTrackingRenderer();
-  SetProcessId(renderer3.process_node.get());
 
   cpu_monitor_.StartMonitoring(graph());
 
@@ -464,18 +462,11 @@ TEST_F(PageResourceCPUMonitorTest, CPUMeasurementError) {
                 Optional(DoubleEq(1.0)));
     EXPECT_THAT(GetMeasurementResult(measurements, renderer2.resource_context),
                 Optional(DoubleEq(1.0)));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.resource_context),
-                Optional(DoubleEq(1.0)));
   }
 
   SetProcessCPUUsage(renderer1.process_node.get(), 0.5);
   SetProcessCPUUsage(renderer2.process_node.get(), 0.5);
-  SetProcessCPUUsage(renderer3.process_node.get(), 0.5);
-
-  // Most platforms returns a zero TimeDelta on error.
-  SetProcessCPUUsageError(renderer1.process_node.get(), base::TimeDelta());
-  // Linux returns a negative TimeDelta on error.
-  SetProcessCPUUsageError(renderer2.process_node.get(), base::TimeDelta::Min());
+  SetProcessCPUUsageError(renderer1.process_node.get(), true);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
 
@@ -484,8 +475,6 @@ TEST_F(PageResourceCPUMonitorTest, CPUMeasurementError) {
     EXPECT_THAT(GetMeasurementResult(measurements, renderer1.resource_context),
                 Eq(std::nullopt));
     EXPECT_THAT(GetMeasurementResult(measurements, renderer2.resource_context),
-                Eq(std::nullopt));
-    EXPECT_THAT(GetMeasurementResult(measurements, renderer3.resource_context),
                 Optional(DoubleEq(0.5)));
   }
 

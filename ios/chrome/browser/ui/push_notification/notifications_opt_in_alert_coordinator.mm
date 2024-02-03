@@ -84,7 +84,9 @@
   NSString* alertTitle =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_TITLE);
   NSString* alertMessage =
-      l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_MESSAGE);
+      self.alertMessage
+          ? self.alertMessage
+          : l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_MESSAGE);
   NSString* cancelTitle =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
   NSString* settingsTitle =

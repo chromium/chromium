@@ -211,7 +211,7 @@ struct FormFieldData {
 
   // An identifier that is unique across all fields in all frames.
   // Must not be leaked to renderer process. See FieldGlobalId for details.
-  FieldGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
+  FieldGlobalId global_id() const { return {host_frame, renderer_id}; }
 
   // An identifier of the renderer form that contained this field.
   // This may be different from the browser form that contains this field in the
@@ -305,7 +305,7 @@ struct FormFieldData {
   // frame. In the browser process, it should only be used in conjunction with
   // |host_frame| to identify a field; see global_id(). It is not persistent
   // between page loads and therefore not used in comparison in SameFieldAs().
-  FieldRendererId unique_renderer_id;
+  FieldRendererId renderer_id;
 
   // Unique renderer ID of the enclosing form in the same frame.
   FormRendererId host_form_id;
@@ -428,7 +428,7 @@ struct FormFieldData::FillData {
   std::u16string value;
 
   // An identifier of the field that is unique among fields from the same frame.
-  FieldRendererId unique_renderer_id;
+  FieldRendererId renderer_id;
 
   // The unique identifier of the section (e.g. billing vs. shipping address)
   // of this field.

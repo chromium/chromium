@@ -53,8 +53,8 @@ void HandleUnknownTag(TagItem /*tag*/) {
   // unrecognized tags.
 }
 
-absl::optional<ParseStatus> ParseCommonTag(TagItem tag,
-                                           CommonParserState* state) {
+std::optional<ParseStatus> ParseCommonTag(TagItem tag,
+                                          CommonParserState* state) {
   DCHECK(tag.GetName() && GetTagKind(*tag.GetName()) == TagKind::kCommonTag);
 
   switch (static_cast<CommonTagName>(*tag.GetName())) {
@@ -110,7 +110,7 @@ absl::optional<ParseStatus> ParseCommonTag(TagItem tag,
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ParseStatus::Or<GURL> ParseUri(

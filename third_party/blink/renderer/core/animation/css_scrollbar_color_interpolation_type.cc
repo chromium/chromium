@@ -20,10 +20,10 @@ namespace blink {
 
 namespace {
 
-absl::optional<StyleColor> ColorFromKeyword(CSSValueID css_value_id) {
+std::optional<StyleColor> ColorFromKeyword(CSSValueID css_value_id) {
   // TODO(kevers): handle currentcolor etc.
   if (!StyleColor::IsColorKeyword(css_value_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Color color = StyleColor::ColorFromKeyword(css_value_id,
@@ -31,7 +31,7 @@ absl::optional<StyleColor> ColorFromKeyword(CSSValueID css_value_id) {
   return (StyleColor(color));
 }
 
-absl::optional<StyleColor> MaybeResolveColor(const CSSValue& value) {
+std::optional<StyleColor> MaybeResolveColor(const CSSValue& value) {
   if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
     return StyleColor(color_value->Value());
   } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -39,7 +39,7 @@ absl::optional<StyleColor> MaybeResolveColor(const CSSValue& value) {
   }
   // TODO(kevers): Handle unsupported color representations, i.e.
   // CSSColorMixValue.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -50,7 +50,7 @@ class CSSScrollbarColorNonInterpolableValue final
   ~CSSScrollbarColorNonInterpolableValue() final = default;
 
   static scoped_refptr<CSSScrollbarColorNonInterpolableValue> Create(
-      absl::optional<StyleScrollbarColor> scrollbar_color) {
+      std::optional<StyleScrollbarColor> scrollbar_color) {
     return base::AdoptRef(
         new CSSScrollbarColorNonInterpolableValue(scrollbar_color.has_value()));
   }
@@ -90,7 +90,7 @@ class InheritedScrollbarColorChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit InheritedScrollbarColorChecker(
-      absl::optional<StyleScrollbarColor> scrollbar_color)
+      std::optional<StyleScrollbarColor> scrollbar_color)
       : scrollbar_color_(scrollbar_color) {}
 
  private:
@@ -99,7 +99,7 @@ class InheritedScrollbarColorChecker
     return scrollbar_color_ == state.ParentStyle()->ScrollbarColor();
   }
 
-  absl::optional<StyleScrollbarColor> scrollbar_color_;
+  std::optional<StyleScrollbarColor> scrollbar_color_;
 };
 
 InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertNeutral(
@@ -112,7 +112,7 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInitial(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  absl::optional<StyleScrollbarColor> initial_scrollbar_color =
+  std::optional<StyleScrollbarColor> initial_scrollbar_color =
       state.GetDocument().GetStyleResolver().InitialStyle().ScrollbarColor();
   return InterpolationValue(
       CreateScrollbarColorValue(initial_scrollbar_color),
@@ -126,7 +126,7 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInherit(
     return nullptr;
   }
 
-  absl::optional<StyleScrollbarColor> inherited_scrollbar_color =
+  std::optional<StyleScrollbarColor> inherited_scrollbar_color =
       state.ParentStyle()->ScrollbarColor();
   conversion_checkers.push_back(
       std::make_unique<InheritedScrollbarColorChecker>(
@@ -157,8 +157,8 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertValue(
 
   const CSSValueList& list = To<CSSValueList>(value);
   DCHECK_EQ(list.length(), 2u);
-  absl::optional<StyleColor> thumb_color = MaybeResolveColor(list.First());
-  absl::optional<StyleColor> track_color = MaybeResolveColor(list.Last());
+  std::optional<StyleColor> thumb_color = MaybeResolveColor(list.First());
+  std::optional<StyleColor> track_color = MaybeResolveColor(list.Last());
   if (!thumb_color || !track_color) {
     // Fallback to discrete if unable to resolve the thumb or track color.
     return nullptr;
@@ -168,7 +168,7 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertValue(
 
   return InterpolationValue(InterpolableScrollbarColor::Create(scrollbar_color),
                             CSSScrollbarColorNonInterpolableValue::Create(
-                                absl::make_optional(scrollbar_color)));
+                                std::make_optional(scrollbar_color)));
 }
 
 PairwiseInterpolationValue
@@ -225,7 +225,7 @@ void CSSScrollbarColorInterpolationType::ApplyStandardPropertyValue(
 
 InterpolableScrollbarColor*
 CSSScrollbarColorInterpolationType::CreateScrollbarColorValue(
-    absl::optional<StyleScrollbarColor> scrollbar_color) const {
+    std::optional<StyleScrollbarColor> scrollbar_color) const {
   if (!scrollbar_color.has_value()) {
     return nullptr;
   }

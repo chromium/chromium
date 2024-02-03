@@ -346,9 +346,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
 
-  source->AddBoolean("isOobeConsumersLocalPasswordsEnabled",
-                     features::AreLocalPasswordsEnabledForConsumers());
-
   source->AddBoolean("isPasswordlessGaiaEnabledForConsumers",
                      features::IsPasswordlessGaiaEnabledForConsumers());
 
@@ -484,9 +481,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<FingerprintSetupScreenHandler>());
 
-  if (features::AreLocalPasswordsEnabledForConsumers()) {
-    AddScreenHandler(std::make_unique<LocalPasswordSetupHandler>());
-  }
+  AddScreenHandler(std::make_unique<LocalPasswordSetupHandler>());
   AddScreenHandler(std::make_unique<PasswordSelectionScreenHandler>());
   AddScreenHandler(std::make_unique<ApplyOnlinePasswordScreenHandler>());
 

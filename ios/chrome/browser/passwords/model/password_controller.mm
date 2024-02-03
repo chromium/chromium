@@ -103,7 +103,6 @@ using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManager;
 using password_manager::PasswordManagerClient;
-using password_manager::metrics_util::LogPasswordDropdownShown;
 using password_manager::metrics_util::PasswordDropdownState;
 using safe_browsing::PasswordReuseDetectionManagerClient;
 using web::WebState;
@@ -447,7 +446,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browserState);
   const std::optional<std::string> accountToStorePassword =
-      password_manager::sync_util::GetAccountForSaving(syncService);
+      password_manager::sync_util::GetAccountForSaving(prefs, syncService);
   const password_manager::features_util::PasswordAccountStorageUserState
       accountStorageUserState = password_manager::features_util::
           ComputePasswordAccountStorageUserState(prefs, syncService);

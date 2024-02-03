@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
   base::expected<net::IPEndPoint, int32_t> Listen(
       const net::IPEndPoint& local_addr,
       int backlog,
-      absl::optional<bool> ipv6_only);
+      std::optional<bool> ipv6_only);
 
   // TCPServerSocket implementation.
   void Accept(mojo::PendingRemote<mojom::SocketObserver> observer,

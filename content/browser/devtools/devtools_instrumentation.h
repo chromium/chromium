@@ -12,6 +12,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/memory/stack_allocated.h"
 #include "base/values.h"
 #include "content/browser/devtools/devtools_device_request_prompt_info.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
@@ -114,41 +115,44 @@ bool ApplyUserAgentMetadataOverrides(
     FrameTreeNode* frame_tree_node,
     std::optional<blink::UserAgentMetadata>* override_out);
 
-bool WillCreateURLLoaderFactory(
-    RenderFrameHostImpl* rfh,
-    bool is_navigation,
-    bool is_download,
-    network::URLLoaderFactoryBuilder& factory_builder,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+class WillCreateURLLoaderFactoryParams final {
+  STACK_ALLOCATED();
 
-bool WillCreateURLLoaderFactoryForServiceWorker(
-    RenderProcessHost* rph,
-    int routing_id,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+ public:
+  static WillCreateURLLoaderFactoryParams ForFrame(RenderFrameHostImpl* rfh);
 
-bool WillCreateURLLoaderFactoryForServiceWorkerMainScript(
-    const ServiceWorkerContextWrapper* context_wrapper,
-    int64_t version_id,
-    network::URLLoaderFactoryBuilder& factory_builder);
+  static WillCreateURLLoaderFactoryParams ForServiceWorker(
+      RenderProcessHost& rph,
+      int routing_id);
 
-bool WillCreateURLLoaderFactoryForSharedWorker(
-    SharedWorkerHost* host,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+  static std::optional<WillCreateURLLoaderFactoryParams>
+  ForServiceWorkerMainScript(const ServiceWorkerContextWrapper* context_wrapper,
+                             std::optional<int64_t> version_id);
 
-bool WillCreateURLLoaderFactoryForWorkerMainScript(
-    DevToolsAgentHostImpl* host,
-    const base::UnguessableToken& worker_token,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+  static std::optional<WillCreateURLLoaderFactoryParams> ForSharedWorker(
+      SharedWorkerHost* host);
 
-bool WillCreateURLLoaderFactoryInternal(
-    DevToolsAgentHostImpl* agent_host,
-    const base::UnguessableToken& devtools_token,
-    int process_id,
-    StoragePartition* storage_partition,
-    bool is_navigation,
-    bool is_download,
-    network::URLLoaderFactoryBuilder* factory_builder,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+  static WillCreateURLLoaderFactoryParams ForWorkerMainScript(
+      DevToolsAgentHostImpl* agent_host,
+      const base::UnguessableToken& worker_token);
+
+  // Calls devtools hooks so that they can add interceptors.
+  bool Run(bool is_navigation,
+           bool is_download,
+           network::URLLoaderFactoryBuilder& factory_builder,
+           network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+
+ private:
+  WillCreateURLLoaderFactoryParams(DevToolsAgentHostImpl* agent_host,
+                                   const base::UnguessableToken& devtools_token,
+                                   int process_id,
+                                   StoragePartition* storage_partition);
+
+  const raw_ptr<DevToolsAgentHostImpl> agent_host_;
+  const base::UnguessableToken devtools_token_;
+  const int process_id_;
+  const raw_ptr<StoragePartition> storage_partition_;
+};
 
 void OnPrefetchRequestWillBeSent(
     FrameTreeNode* frame_tree_node,

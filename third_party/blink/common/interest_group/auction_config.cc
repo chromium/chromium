@@ -150,6 +150,19 @@ base::Value SerializeIntoValue(const AuctionConfig::MaybePromise<T>& promise) {
   return base::Value(std::move(result));
 }
 
+template <>
+base::Value SerializeIntoValue(
+    const AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig&
+        value) {
+  base::Value::Dict result;
+  result.Set("enabled", value.is_enabled);
+  if (value.debug_key.has_value()) {
+    // debug_key is uint64, so it doesn't fit into regular JS numeric types.
+    result.Set("debugKey", base::ToString(value.debug_key.value()));
+  }
+  return base::Value(std::move(result));
+}
+
 template <typename K, typename V>
 base::Value SerializeIntoValue(const base::flat_map<K, V>& value) {
   base::Value::Dict result;
@@ -275,11 +288,8 @@ DirectFromSellerSignalsSubresource::operator=(
 DirectFromSellerSignalsSubresource&
 DirectFromSellerSignalsSubresource::operator=(
     DirectFromSellerSignalsSubresource&&) = default;
-
-bool operator==(const DirectFromSellerSignalsSubresource& a,
-                const DirectFromSellerSignalsSubresource& b) {
-  return std::tie(a.bundle_url, a.token) == std::tie(b.bundle_url, b.token);
-}
+bool operator==(const DirectFromSellerSignalsSubresource&,
+                const DirectFromSellerSignalsSubresource&) = default;
 
 DirectFromSellerSignals::DirectFromSellerSignals() = default;
 DirectFromSellerSignals::DirectFromSellerSignals(
@@ -292,6 +302,14 @@ DirectFromSellerSignals& DirectFromSellerSignals::operator=(
     const DirectFromSellerSignals&) = default;
 DirectFromSellerSignals& DirectFromSellerSignals::operator=(
     DirectFromSellerSignals&&) = default;
+bool operator==(const DirectFromSellerSignals&,
+                const DirectFromSellerSignals&) = default;
+
+bool operator==(const AuctionConfig::BuyerTimeouts&,
+                const AuctionConfig::BuyerTimeouts&) = default;
+
+bool operator==(const AuctionConfig::BuyerCurrencies&,
+                const AuctionConfig::BuyerCurrencies&) = default;
 
 AuctionConfig::NonSharedParams::NonSharedParams() = default;
 AuctionConfig::NonSharedParams::NonSharedParams(const NonSharedParams&) =
@@ -303,6 +321,17 @@ AuctionConfig::NonSharedParams& AuctionConfig::NonSharedParams::operator=(
     const NonSharedParams&) = default;
 AuctionConfig::NonSharedParams& AuctionConfig::NonSharedParams::operator=(
     NonSharedParams&&) = default;
+bool operator==(const AuctionConfig::NonSharedParams&,
+                const AuctionConfig::NonSharedParams&) = default;
+
+bool operator==(
+    const AuctionConfig::NonSharedParams::AuctionReportBuyersConfig&,
+    const AuctionConfig::NonSharedParams::AuctionReportBuyersConfig&) = default;
+
+bool operator==(
+    const AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig&,
+    const AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig&) =
+    default;
 
 AuctionConfig::ServerResponseConfig::ServerResponseConfig() = default;
 AuctionConfig::ServerResponseConfig::ServerResponseConfig(
@@ -319,6 +348,9 @@ AuctionConfig::ServerResponseConfig&
 AuctionConfig::ServerResponseConfig::operator=(ServerResponseConfig&&) =
     default;
 
+bool operator==(const AuctionConfig::ServerResponseConfig&,
+                const AuctionConfig::ServerResponseConfig&) = default;
+
 AuctionConfig::AuctionConfig() = default;
 AuctionConfig::AuctionConfig(const AuctionConfig&) = default;
 AuctionConfig::AuctionConfig(AuctionConfig&&) = default;
@@ -326,6 +358,8 @@ AuctionConfig::~AuctionConfig() = default;
 
 AuctionConfig& AuctionConfig::operator=(const AuctionConfig&) = default;
 AuctionConfig& AuctionConfig::operator=(AuctionConfig&&) = default;
+
+bool operator==(const AuctionConfig&, const AuctionConfig&) = default;
 
 int AuctionConfig::NumPromises() const {
   int total = 0;
@@ -421,9 +455,11 @@ base::Value::Dict AuctionConfig::SerializeForDevtools() const {
   base::Value::Dict result;
   SerializeIntoDict("seller", seller, result);
   SerializeIntoDict("serverResponse", server_response, result);
-  SerializeIntoDict("decisionLogicUrl", decision_logic_url, result);
-  SerializeIntoDict("trustedScoringSignalsUrl", trusted_scoring_signals_url,
+  SerializeIntoDict("decisionLogicURL", decision_logic_url, result);
+  SerializeIntoDict("trustedScoringSignalsURL", trusted_scoring_signals_url,
                     result);
+  SerializeIntoDict("maxTrustedScoringSignalsURLLength",
+                    max_trusted_scoring_signals_url_length, result);
   SerializeIntoDict("interestGroupBuyers",
                     non_shared_params.interest_group_buyers, result);
   SerializeIntoDict("auctionSignals", non_shared_params.auction_signals,
@@ -456,6 +492,9 @@ base::Value::Dict AuctionConfig::SerializeForDevtools() const {
                     non_shared_params.auction_report_buyers, result);
   SerializeIntoDict("requiredSellerCapabilities",
                     non_shared_params.required_seller_capabilities, result);
+  SerializeIntoDict("auctionReportBuyerDebugModeConfig",
+                    non_shared_params.auction_report_buyer_debug_mode_config,
+                    result);
   SerializeIntoDict("requestedSize", non_shared_params.requested_size, result);
   SerializeIntoDict("allSlotsRequestedSizes",
                     non_shared_params.all_slots_requested_sizes, result);

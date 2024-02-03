@@ -49,7 +49,7 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
-  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
+  static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,

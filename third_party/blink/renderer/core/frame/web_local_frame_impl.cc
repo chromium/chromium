@@ -822,7 +822,7 @@ WebString WebLocalFrameImpl::AssignedName() const {
 }
 
 ui::AXTreeID WebLocalFrameImpl::GetAXTreeID() const {
-  const absl::optional<base::UnguessableToken>& embedding_token =
+  const std::optional<base::UnguessableToken>& embedding_token =
       GetEmbeddingToken();
   if (embedding_token && !embedding_token->is_empty())
     return ui::AXTreeID::FromToken(embedding_token.value());
@@ -969,7 +969,7 @@ void WebLocalFrameImpl::SetAdEvidence(
   GetFrame()->SetAdEvidence(ad_evidence);
 }
 
-const absl::optional<blink::FrameAdEvidence>& WebLocalFrameImpl::AdEvidence() {
+const std::optional<blink::FrameAdEvidence>& WebLocalFrameImpl::AdEvidence() {
   DCHECK(GetFrame());
   return GetFrame()->AdEvidence();
 }
@@ -2630,7 +2630,7 @@ bool WebLocalFrameImpl::IsInFencedFrameTree() const {
   return result;
 }
 
-const absl::optional<base::UnguessableToken>&
+const std::optional<base::UnguessableToken>&
 WebLocalFrameImpl::GetEmbeddingToken() const {
   return frame_->GetEmbeddingToken();
 }
@@ -2698,7 +2698,7 @@ blink::mojom::CommitResult WebLocalFrameImpl::CommitSameDocumentNavigation(
     bool has_transient_user_activation,
     const WebSecurityOrigin& initiator_origin,
     bool is_browser_initiated,
-    absl::optional<scheduler::TaskAttributionId>
+    std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   DCHECK(GetFrame());
   DCHECK(!url.ProtocolIs("javascript"));
@@ -2902,7 +2902,7 @@ void WebLocalFrameImpl::ShowContextMenuFromExternal(
 void WebLocalFrameImpl::ShowContextMenu(
     mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
     const blink::ContextMenuData& data,
-    const absl::optional<gfx::Point>& host_context_menu_location) {
+    const std::optional<gfx::Point>& host_context_menu_location) {
   UntrustworthyContextMenuParams params =
       blink::ContextMenuParamsBuilder::Build(data);
   if (host_context_menu_location.has_value()) {
@@ -3216,8 +3216,9 @@ void WebLocalFrameImpl::SetLCPPHint(
     return;
   }
 
+  lcpp->Reset();
+
   if (!hint) {
-    lcpp->Reset();
     return;
   }
 
@@ -3236,6 +3237,14 @@ void WebLocalFrameImpl::SetLCPPHint(
     fetched_fonts.emplace_back(url);
   }
   lcpp->set_fetched_fonts(std::move(fetched_fonts));
+
+  Vector<url::Origin> preconnect_origins;
+  preconnect_origins.reserve(
+      base::checked_cast<wtf_size_t>(hint->preconnect_origins.size()));
+  for (const auto& origin_url : hint->preconnect_origins) {
+    preconnect_origins.emplace_back(url::Origin::Create(origin_url));
+  }
+  lcpp->set_preconnected_origins(preconnect_origins);
 }
 
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(

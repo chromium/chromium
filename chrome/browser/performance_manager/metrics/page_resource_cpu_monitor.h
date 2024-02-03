@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -89,7 +90,7 @@ class PageResourceCPUMonitor : public ProcessNode::ObserverDefaultImpl {
 
     // Returns the most recent measurement that was taken during
     // MeasureAndDistributeCPUUsage().
-    base::TimeDelta most_recent_measurement() const {
+    std::optional<base::TimeDelta> most_recent_measurement() const {
       return most_recent_measurement_;
     }
 
@@ -105,7 +106,7 @@ class PageResourceCPUMonitor : public ProcessNode::ObserverDefaultImpl {
 
    private:
     std::unique_ptr<CPUMeasurementDelegate> delegate_;
-    base::TimeDelta most_recent_measurement_;
+    std::optional<base::TimeDelta> most_recent_measurement_;
   };
 
   // Creates a CPUMeasurement tracker for `process_node` and adds it to

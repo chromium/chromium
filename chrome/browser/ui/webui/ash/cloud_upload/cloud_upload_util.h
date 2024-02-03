@@ -93,7 +93,9 @@ enum class OfficeDriveOpenErrors {
   kNoDriveService = 9,
   kDriveAuthenticationNotReady = 10,
   kMeteredConnection = 11,
-  kMaxValue = kMeteredConnection,
+  kEmptyAlternateUrl = 12,
+  kWaitingForUpload = 13,
+  kMaxValue = kWaitingForUpload,
 };
 
 // List of UMA enum values for opening Office files from OneDrive, with the
@@ -328,6 +330,11 @@ file_system_provider::ProvidedFileSystemInterface* GetODFS(Profile* profile);
 bool IsODFSMounted(Profile* profile);
 bool IsODFSInstalled(Profile* profile);
 bool IsOfficeWebAppInstalled(Profile* profile);
+
+// Returns true if the IsMicrosoftOfficeOneDriveIntegrationAllowed() returns
+// true and if the ODFS extension is installed. It returns false otherwise.
+bool IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
+    Profile* profile);
 
 // Returns true if url refers to an entry on any current mount provided by the
 // ODFS file system provider.

@@ -28,7 +28,7 @@ bool IsDolbyVisionHEVCCodecId(std::string_view codec_id) {
 
 namespace media {
 
-absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
+std::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   // Initialize optional fields to their defaults.
   VideoType result = {
       .codec = VideoCodec::kVP9,
@@ -43,12 +43,12 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   if (fields.size() < 4 || fields.size() > 9) {
     DVLOG(3) << __func__ << " Invalid number of fields (" << fields.size()
              << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (fields[0] != "vp09") {
     DVLOG(3) << __func__ << " Invalid 4CC (" << fields[0] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<int> values;
@@ -56,12 +56,12 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
     // Missing value is not allowed.
     if (fields[i] == "") {
       DVLOG(3) << __func__ << " Invalid missing field (position:" << i << ")";
-      return absl::nullopt;
+      return std::nullopt;
     }
     int value;
     if (!base::StringToInt(fields[i], &value) || value < 0) {
       DVLOG(3) << __func__ << " Invalid field value (" << value << ")";
-      return absl::nullopt;
+      return std::nullopt;
     }
     values.push_back(value);
   }
@@ -82,7 +82,7 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
       break;
     default:
       DVLOG(3) << __func__ << " Invalid profile (" << profile_idc << ")";
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   result.level = values[1];
@@ -104,13 +104,14 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
       break;
     default:
       DVLOG(3) << __func__ << " Invalid level (" << result.level << ")";
-      return absl::nullopt;
+      return std::nullopt;
   }
 
-  const int bit_depth = values[2];
-  if (bit_depth != 8 && bit_depth != 10 && bit_depth != 12) {
-    DVLOG(3) << __func__ << " Invalid bit-depth (" << bit_depth << ")";
-    return absl::nullopt;
+  result.bit_depth = values[2];
+  if (result.bit_depth != 8 && result.bit_depth != 10 &&
+      result.bit_depth != 12) {
+    DVLOG(3) << __func__ << " Invalid bit-depth (" << *result.bit_depth << ")";
+    return std::nullopt;
   }
 
   // 4:2:0 isn't supported in profiles 1, 3.
@@ -136,7 +137,7 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
     default:
       DVLOG(3) << __func__ << " Invalid chroma subsampling ("
                << chroma_subsampling << ")";
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   if (result.subsampling != VideoChromaSampling::k420 && profile_idc != 1 &&
@@ -154,7 +155,7 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   result.color_space.primaries = VideoColorSpace::GetPrimaryID(values[4]);
   if (result.color_space.primaries == VideoColorSpace::PrimaryID::INVALID) {
     DVLOG(3) << __func__ << " Invalid color primaries (" << values[4] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (values.size() < 6) {
@@ -163,7 +164,7 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   result.color_space.transfer = VideoColorSpace::GetTransferID(values[5]);
   if (result.color_space.transfer == VideoColorSpace::TransferID::INVALID) {
     DVLOG(3) << __func__ << " Invalid transfer function (" << values[5] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (values.size() < 7) {
@@ -173,7 +174,7 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   if (result.color_space.matrix == VideoColorSpace::MatrixID::INVALID) {
     DVLOG(3) << __func__ << " Invalid matrix coefficients (" << values[6]
              << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (result.color_space.matrix == VideoColorSpace::MatrixID::RGB &&
       chroma_subsampling != 3) {
@@ -188,7 +189,7 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   if (video_full_range_flag > 1) {
     DVLOG(3) << __func__ << " Invalid full range flag ("
              << video_full_range_flag << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
   result.color_space.range = video_full_range_flag == 1
                                  ? gfx::ColorSpace::RangeID::FULL
@@ -197,7 +198,7 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   return result;
 }
 
-absl::optional<VideoType> ParseLegacyVp9CodecID(std::string_view codec_id) {
+std::optional<VideoType> ParseLegacyVp9CodecID(std::string_view codec_id) {
   if (codec_id == "vp9" || codec_id == "vp9.0") {
     // Profile is not included in the codec string. Consumers of parsed codec
     // should handle by rejecting ambiguous string or resolving to a default
@@ -208,10 +209,10 @@ absl::optional<VideoType> ParseLegacyVp9CodecID(std::string_view codec_id) {
     return result;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
+std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   // The codecs parameter string for the AOM AV1 codec is as follows:
   // See https://aomediacodec.github.io/av1-isobmff/#codecsparam.
   //
@@ -228,7 +229,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   if (fields.size() < 4 || fields.size() > 10) {
     DVLOG(3) << __func__ << " Invalid number of fields (" << fields.size()
              << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // All the other fields (including their leading '.') are optional, mutually
@@ -250,7 +251,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
 
   if (fields[0] != "av01") {
     DVLOG(3) << __func__ << " Invalid AV1 4CC (" << fields[0] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The level parameter value SHALL equal the first level value indicated by
@@ -259,7 +260,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   // 0, and H when it is equal to 1.
   if (fields[2].size() != 3 || (fields[2][2] != 'M' && fields[2][2] != 'H')) {
     DVLOG(3) << __func__ << " Invalid level+tier (" << fields[2] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Since tier has been validated, strip the trailing tier indicator to allow
@@ -271,12 +272,12 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   for (size_t i = 1; i < fields.size(); ++i) {
     if (fields[i].empty()) {
       DVLOG(3) << __func__ << " Invalid empty field (position:" << i << ")";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!base::StringToInt(fields[i], &values[i]) || values[i] < 0) {
       DVLOG(3) << __func__ << " Invalid field value (" << values[i] << ")";
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -288,6 +289,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
       result.profile = AV1PROFILE_PROFILE_MAIN;
       break;
     case 1:
+      result.subsampling = VideoChromaSampling::k444;
       result.profile = AV1PROFILE_PROFILE_HIGH;
       break;
     case 2:
@@ -295,7 +297,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
       break;
     default:
       DVLOG(3) << __func__ << " Invalid profile (" << fields[1] << ")";
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   // The level parameter value SHALL equal the first level value indicated by
@@ -304,16 +306,17 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   result.level = values[2];
   if (result.level > 31) {
     DVLOG(3) << __func__ << " Invalid level (" << result.level << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The bitDepth parameter value SHALL equal the value of BitDepth variable as
   // defined in [AV1] derived from the Sequence Header. Leading zeros required.
-  const int bit_depth = values[3];
+  result.bit_depth = values[3];
   if (fields[3].size() != 2 ||
-      (bit_depth != 8 && bit_depth != 10 && bit_depth != 12)) {
+      (result.bit_depth != 8 && result.bit_depth != 10 &&
+       result.bit_depth != 12)) {
     DVLOG(3) << __func__ << " Invalid bit-depth (" << fields[3] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (values.size() <= 4) {
@@ -325,7 +328,11 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   const int monochrome = values[4];
   if (fields[4].size() != 1 || monochrome > 1) {
     DVLOG(3) << __func__ << " Invalid monochrome (" << fields[4] << ")";
-    return absl::nullopt;
+    return std::nullopt;
+  }
+  if (monochrome == 1 && result.profile == AV1PROFILE_PROFILE_HIGH) {
+    DVLOG(3) << "Monochrome isn't supported in high profile.";
+    return std::nullopt;
   }
 
   if (values.size() <= 5) {
@@ -342,7 +349,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   // otherwise it SHALL be set to 0.
   if (fields[5].size() != 3) {
     DVLOG(3) << __func__ << " Invalid chroma subsampling (" << fields[5] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const char subsampling_x = fields[5][0];
@@ -352,13 +359,13 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
       (subsampling_y < '0' || subsampling_y > '1') ||
       (chroma_sample_position < '0' || chroma_sample_position > '3')) {
     DVLOG(3) << __func__ << " Invalid chroma subsampling (" << fields[5] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (((subsampling_x == '0' || subsampling_y == '0') &&
        chroma_sample_position != '0')) {
     DVLOG(3) << __func__ << " Invalid chroma subsampling (" << fields[5] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (subsampling_x == '0' && subsampling_y == '0' && monochrome == 0) {
@@ -392,7 +399,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   if (fields[6].size() != 2 ||
       result.color_space.primaries == VideoColorSpace::PrimaryID::INVALID) {
     DVLOG(3) << __func__ << " Invalid color primaries (" << fields[6] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (values.size() <= 7) {
@@ -403,7 +410,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   if (fields[7].size() != 2 ||
       result.color_space.transfer == VideoColorSpace::TransferID::INVALID) {
     DVLOG(3) << __func__ << " Invalid transfer function (" << fields[7] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (values.size() <= 8) {
@@ -422,7 +429,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
       DVLOG(3) << __func__ << " Invalid matrix coefficients (" << fields[8]
                << ")";
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (values.size() <= 9) {
@@ -432,7 +439,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   const int video_full_range_flag = values[9];
   if (fields[9].size() != 1 || video_full_range_flag > 1) {
     DVLOG(3) << __func__ << " Invalid full range flag (" << fields[9] << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
   result.color_space.range = video_full_range_flag == 1
                                  ? gfx::ColorSpace::RangeID::FULL
@@ -441,17 +448,17 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   return result;
 }
 
-absl::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
+std::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
   // Make sure we have avc1.xxxxxx or avc3.xxxxxx , where xxxxxx are hex digits
   if (!base::StartsWith(codec_id, "avc1.", base::CompareCase::SENSITIVE) &&
       !base::StartsWith(codec_id, "avc3.", base::CompareCase::SENSITIVE)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   uint32_t elem = 0;
   if (codec_id.size() != 11 ||
       !base::HexStringToUInt(base::StringPiece(codec_id).substr(5), &elem)) {
     DVLOG(4) << __func__ << ": invalid avc codec id (" << codec_id << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint8_t level_byte = elem & 0xFF;
@@ -462,7 +469,7 @@ absl::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
   // reserved and must be zero according to ISO IEC 14496-10).
   if (constraints_byte & 3) {
     DVLOG(4) << __func__ << ": non-zero reserved bits in codec id " << codec_id;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VideoCodecProfile out_profile = VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -504,7 +511,7 @@ absl::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
       break;
     default:
       DVLOG(1) << "Warning: unrecognized AVC/H.264 profile " << profile_idc;
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   // TODO(servolk): Take into account also constraint set flags 3 through 5.
@@ -531,10 +538,10 @@ absl::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
 
 // The specification for HEVC codec id strings can be found in ISO IEC 14496-15
 // dated 2012 or newer in the Annex E.3
-absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
+std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
   if (!base::StartsWith(codec_id, "hev1.", base::CompareCase::SENSITIVE) &&
       !base::StartsWith(codec_id, "hvc1.", base::CompareCase::SENSITIVE)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // HEVC codec id consists of:
@@ -547,7 +554,7 @@ absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
 
   if (codec_id.size() > kMaxHevcCodecIdLength) {
     DVLOG(4) << __func__ << ": Codec id is too long (" << codec_id << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> elem = base::SplitString(
@@ -556,7 +563,7 @@ absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
 
   if (elem.size() < 4) {
     DVLOG(4) << __func__ << ": invalid HEVC codec id " << codec_id;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint8_t general_profile_space = 0;
@@ -571,14 +578,14 @@ absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
   if (!base::StringToUint(elem[1], &general_profile_idc) ||
       general_profile_idc > 0x1f) {
     DVLOG(4) << __func__ << ": invalid general_profile_idc=" << elem[1];
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint32_t general_profile_compatibility_flags = 0;
   if (!base::HexStringToUInt(elem[2], &general_profile_compatibility_flags)) {
     DVLOG(4) << __func__
              << ": invalid general_profile_compatibility_flags=" << elem[2];
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VideoCodecProfile out_profile = VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -639,7 +646,7 @@ absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
     DVLOG(1) << "Warning: unrecognized HEVC/H.265 general_profile_idc: "
              << general_profile_idc << ", general_profile_compatibility_flags: "
              << general_profile_compatibility_flags;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint8_t general_tier_flag;
@@ -648,7 +655,7 @@ absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
     elem[3].erase(0, 1);
   } else {
     DVLOG(4) << __func__ << ": invalid general_tier_flag=" << elem[3];
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(general_tier_flag == 0 || general_tier_flag == 1);
 
@@ -656,7 +663,7 @@ absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
   if (!base::StringToUint(elem[3], &general_level_idc) ||
       general_level_idc > 0xff) {
     DVLOG(4) << __func__ << ": invalid general_level_idc=" << elem[3];
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint8_t constraint_flags[6];
@@ -665,13 +672,13 @@ absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
   if (elem.size() > 10) {
     DVLOG(4) << __func__ << ": unexpected number of trailing bytes in HEVC "
              << "codec id " << codec_id;
-    return absl::nullopt;
+    return std::nullopt;
   }
   for (size_t i = 4; i < elem.size(); ++i) {
     unsigned constr_byte = 0;
     if (!base::HexStringToUInt(elem[i], &constr_byte) || constr_byte > 0xFF) {
       DVLOG(4) << __func__ << ": invalid constraint byte=" << elem[i];
-      return absl::nullopt;
+      return std::nullopt;
     }
     constraint_flags[i - 4] = constr_byte;
   }
@@ -695,10 +702,10 @@ absl::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
 // .S<general_sub_profile_idc1>  (Optional, base32 with "=" might be omitted.)
 // <+general_sub_profile_
 // .O<ols_idx>+<max_tid>   (Optional, base10 OlsIdx & MaxTid)
-absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
+std::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
   if (!base::StartsWith(codec_id, "vvc1.", base::CompareCase::SENSITIVE) &&
       !base::StartsWith(codec_id, "vvi1.", base::CompareCase::SENSITIVE)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> elem = base::SplitString(
@@ -707,7 +714,7 @@ absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
 
   if (elem.size() < 3 || elem.size() > 6) {
     DVLOG(4) << __func__ << ": invalid VVC codec id " << codec_id;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (auto& item : elem) {
@@ -715,11 +722,11 @@ absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
         ((item[0] == 'C' || item[0] == 'S' || item[0] == 'O') &&
          item.size() < 2)) {
       DVLOG(4) << __func__ << ": subelement of VVC codec id invalid.";
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (item[0] == 'O' && item.back() == '+') {
       DVLOG(4) << __func__ << ": invalid OlxIdx and MaxTid string.";
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -727,7 +734,7 @@ absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
   if (!base::StringToUint(elem[1], &general_profile_idc) ||
       general_profile_idc > 0x63) {
     DVLOG(4) << __func__ << ": invalid general_profile_idc=" << elem[1];
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VideoCodecProfile out_profile = VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -784,7 +791,7 @@ absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
   if (out_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
     DVLOG(1) << "Warning: unrecognized VVC/H.266 general_profile_idc: "
              << general_profile_idc;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint8_t general_tier_flag;
@@ -793,7 +800,7 @@ absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
     elem[2].erase(0, 1);
   } else {
     DVLOG(4) << __func__ << ": invalid general_tier_flag=" << elem[2];
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(general_tier_flag == 0 || general_tier_flag == 1);
 
@@ -801,7 +808,7 @@ absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
   if (!base::StringToUint(elem[2], &general_level_idc) ||
       general_level_idc > 0xff) {
     DVLOG(4) << __func__ << ": invalid general_level_idc=" << elem[2];
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // C-string, if existing, should proceed S-string and O-string.
@@ -825,7 +832,7 @@ absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
 
   if (!trailing_valid) {
     DVLOG(4) << __func__ << ": invalid traing codec string.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // TODO(crbug.com/1417910): Add VideoCodec::kVVC here when its ready.
@@ -840,10 +847,10 @@ absl::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
 // The specification for Dolby Vision codec id strings can be found in Dolby
 // Vision streams within the MPEG-DASH format:
 // https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolbyvisioninmpegdashspecification_v2_0_public_20190107.pdf
-absl::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
+std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
   if (!IsDolbyVisionAVCCodecId(codec_id) &&
       !IsDolbyVisionHEVCCodecId(codec_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const int kMaxDvCodecIdLength = 5     // FOURCC string
@@ -854,7 +861,7 @@ absl::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
 
   if (codec_id.size() > kMaxDvCodecIdLength) {
     DVLOG(4) << __func__ << ": Codec id is too long (" << codec_id << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> elem = base::SplitString(
@@ -864,7 +871,7 @@ absl::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
 
   if (elem.size() != 3) {
     DVLOG(4) << __func__ << ": invalid dolby vision codec id " << codec_id;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Profile string should be two digits.
@@ -872,7 +879,7 @@ absl::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
   if (elem[1].size() != 2 || !base::StringToUint(elem[1], &profile_id) ||
       profile_id > 9) {
     DVLOG(4) << __func__ << ": invalid format or profile_id=" << elem[1];
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VideoType result = {
@@ -887,7 +894,7 @@ absl::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
       if (!IsDolbyVisionAVCCodecId(codec_id)) {
         DVLOG(4) << __func__
                  << ": codec id is mismatched with profile_id=" << profile_id;
-        return absl::nullopt;
+        return std::nullopt;
       }
       if (profile_id == 0) {
         result.profile = DOLBYVISION_PROFILE0;
@@ -901,7 +908,7 @@ absl::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
       if (!IsDolbyVisionHEVCCodecId(codec_id)) {
         DVLOG(4) << __func__
                  << ": codec id is mismatched with profile_id=" << profile_id;
-        return absl::nullopt;
+        return std::nullopt;
       }
       if (profile_id == 5) {
         result.profile = DOLBYVISION_PROFILE5;
@@ -914,7 +921,7 @@ absl::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
     default:
       DVLOG(4) << __func__
                << ": depecrated and not supported profile_id=" << profile_id;
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   // Level string should be two digits.
@@ -922,18 +929,18 @@ absl::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
   if (elem[2].size() != 2 || !base::StringToUint(elem[2], &level_id) ||
       level_id > 13 || level_id < 1) {
     DVLOG(4) << __func__ << ": invalid format level_id=" << elem[2];
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   result.level = level_id;
   return result;
 }
 
-absl::optional<VideoType> ParseCodec(std::string_view codec_id) {
+std::optional<VideoType> ParseCodec(std::string_view codec_id) {
   std::vector<std::string> elem = base::SplitString(
       codec_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (elem.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (codec_id == "vp8" || codec_id == "vp8.0") {
@@ -978,7 +985,7 @@ absl::optional<VideoType> ParseCodec(std::string_view codec_id) {
     return result;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 VideoCodec StringToVideoCodec(std::string_view codec_id) {

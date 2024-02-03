@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
-<translation id="1426410128494586442">Da</translation>
 <translation id="1434873037477293673">card de scădere de preț</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}few{<ph name="SITE_COUNT" /> site-uri}other{<ph name="SITE_COUNT" /> de site-uri}}</translation>
@@ -67,6 +66,7 @@
 <translation id="2228071138934252756">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze camera, activează camera și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
 <translation id="2238944249568001759">Căutări sugerate pe baza ultimei file</translation>
+<translation id="2241587408274973373">Carduri din pagina Filă nouă</translation>
 <translation id="2241634353105152135">Numai o singură dată</translation>
 <translation id="2253414712144136228">Elimină <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Un site blocat}few{# site-uri blocate}other{# de site-uri blocate}}</translation>
@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Site-urile pot afișa solicitări de conectare de la servicii de identitate.</translation>
 <translation id="2790501146643349491">Când opțiunea este activată, site-urile închise recent pot să finalizeze trimiterea și primirea datelor. Când opțiunea este dezactivată, site-urile închise recent nu pot finaliza trimiterea sau primirea datelor.</translation>
 <translation id="2822354292072154809">Sigur dorești să resetezi toate permisiunile la nivel de site pentru <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Solicită afișarea pe mobil</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Melodia anterioară</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Vizualizator de certificate</translation>
 <translation id="2979365474350987274">Cookie-urile terță parte sunt limitate</translation>
 <translation id="3008272652534848354">Resetează permisiunile</translation>
-<translation id="3013291976881901233">Dispozitive MIDI</translation>
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3069226013421428034">Permite conectarea terță parte pentru un anumit site.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Conectat la un dispozitiv USB</translation>
 <translation id="4194328954146351878">Întreabă înainte de a permite site-urilor să vadă și să modifice informații de pe dispozitive NFC (recomandat)</translation>
 <translation id="4200726100658658164">Deschide setările privind locația</translation>
-<translation id="4212246570487010370">Continuă navigarea</translation>
 <translation id="4226663524361240545">Notificările pot face dispozitivul să vibreze</translation>
 <translation id="4259722352634471385">Navigarea este blocată: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Se permite</translation>
@@ -350,7 +347,6 @@
 <translation id="6746124502594467657">Mutați în jos</translation>
 <translation id="6749077623962119521">Resetezi permisiunile?</translation>
 <translation id="6766622839693428701">Glisează în jos pentru a închide.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> De pe <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selectează o opțiune pentru <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6818926723028410516">Selectează elementele</translation>

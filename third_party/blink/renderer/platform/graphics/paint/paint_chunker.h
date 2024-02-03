@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNKER_H_
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
@@ -60,7 +61,7 @@ class PLATFORM_EXPORT PaintChunker final {
   // before and after the item to force a dedicated paint chunk.
   void SetWillForceNewChunk(bool force) {
     will_force_new_chunk_ = force;
-    next_chunk_id_ = absl::nullopt;
+    next_chunk_id_ = std::nullopt;
   }
   bool WillForceNewChunkForTesting() const { return will_force_new_chunk_; }
 
@@ -95,8 +96,8 @@ class PLATFORM_EXPORT PaintChunker final {
 
   // The id will be used when we need to create a new current chunk.
   // Otherwise it's ignored. Returns true if a new chunk is added.
-  void AddSelectionToCurrentChunk(absl::optional<PaintedSelectionBound> start,
-                                  absl::optional<PaintedSelectionBound> end,
+  void AddSelectionToCurrentChunk(std::optional<PaintedSelectionBound> start,
+                                  std::optional<PaintedSelectionBound> end,
                                   String debug_info);
   void RecordAnySelectionWasPainted();
 
@@ -133,7 +134,7 @@ class PLATFORM_EXPORT PaintChunker final {
   // create a chunk with it (e.g. when properties don't change and we are not
   // forced to create a new chunk).
   typedef std::pair<PaintChunk::Id, const DisplayItemClient&> NextChunkId;
-  absl::optional<NextChunkId> next_chunk_id_;
+  std::optional<NextChunkId> next_chunk_id_;
 
   PropertyTreeStateOrAlias current_properties_ =
       PropertyTreeState::Uninitialized();

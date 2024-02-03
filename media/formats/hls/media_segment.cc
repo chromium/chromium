@@ -12,7 +12,7 @@ namespace media::hls {
 
 MediaSegment::InitializationSegment::InitializationSegment(
     GURL uri,
-    absl::optional<types::ByteRange> byte_range)
+    std::optional<types::ByteRange> byte_range)
     : uri_(std::move(uri)), byte_range_(byte_range) {}
 
 MediaSegment::InitializationSegment::~InitializationSegment() = default;
@@ -23,8 +23,8 @@ MediaSegment::MediaSegment(
     types::DecimalInteger discontinuity_sequence_number,
     GURL uri,
     scoped_refptr<InitializationSegment> initialization_segment,
-    absl::optional<types::ByteRange> byte_range,
-    absl::optional<types::DecimalInteger> bitrate,
+    std::optional<types::ByteRange> byte_range,
+    std::optional<types::DecimalInteger> bitrate,
     bool has_discontinuity,
     bool is_gap,
     bool has_new_init_segment)

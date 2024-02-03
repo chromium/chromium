@@ -40,8 +40,12 @@ class AwFieldTrialsTest : public testing::Test {
 
   void SetUpFeatureTrial(base::FeatureList* feature_list,
                          base::FeatureList::OverrideState override_state) {
-    // Set-up a trial enable/disable test feature.
-    variations::EntropyProviders entropy_providers("client_id", {0, 8000});
+    // Set-up a trial enable/disable test feature. An empty limited entropy
+    // randomization is used since only default_entropy() will used on the
+    // constructed `entropy_providers` instance.
+    variations::EntropyProviders entropy_providers(
+        "client_id", {0, 8000},
+        /*limited_entropy_randomization_source=*/std::string_view());
     scoped_refptr<base::FieldTrial> trial(
         base::FieldTrialList::FactoryGetFieldTrial(
             kTestTrialName, /*total_probability=*/1000, "Default",

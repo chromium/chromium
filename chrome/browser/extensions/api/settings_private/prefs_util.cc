@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -693,6 +694,18 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSpeedUp] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSpeedDown] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSpeedLeft] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSpeedRight] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSmoothing] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorUseAcceleration] =
+      settings_api::PrefType::kBoolean;
 
   // Text to Speech.
   (*s_allowlist)[::prefs::kTextToSpeechLangToVoiceName] =
@@ -827,7 +840,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // Restore apps and pages on startup
-  (*s_allowlist)[ash::full_restore::kRestoreAppsAndPagesPrefName] =
+  (*s_allowlist)[ash::prefs::kRestoreAppsAndPagesPrefName] =
       settings_api::PrefType::kNumber;
 
   // Timezone settings.
@@ -865,6 +878,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kDockedMagnifierScreenHeightDivisor] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kSnapWindowSuggestions] =
+      settings_api::PrefType::kBoolean;
 
   // Input method settings.
   (*s_allowlist)[::prefs::kLanguagePreloadEngines] =
@@ -1561,8 +1576,8 @@ const Extension* PrefsUtil::GetExtensionControllingPref(
   if (extension_id.empty())
     return nullptr;
 
-  return ExtensionRegistry::Get(profile_)->GetExtensionById(
-      extension_id, ExtensionRegistry::ENABLED);
+  return ExtensionRegistry::Get(profile_)->enabled_extensions().GetByID(
+      extension_id);
 }
 
 }  // namespace extensions

@@ -717,6 +717,7 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
   static constexpr auto kNoNameTypes =
       base::MakeFixedFlatSet<ContentSettingsType>({
           // clang-format off
+          ContentSettingsType::MIDI,
           ContentSettingsType::DURABLE_STORAGE,
           ContentSettingsType::ACCESSIBILITY_EVENTS,
           ContentSettingsType::NFC,

@@ -132,6 +132,7 @@ bool AllowSharedWorker(
     const std::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
     int render_process_id,
     int render_frame_id,
     const content_settings::CookieSettings* cookie_settings) {
@@ -156,7 +157,7 @@ bool AllowSharedWorker(
 
   content_settings::PageSpecificContentSettings::SharedWorkerAccessed(
       render_process_id, render_frame_id, worker_url, name, storage_key,
-      !allow);
+      same_site_cookies, !allow);
   return allow;
 }
 

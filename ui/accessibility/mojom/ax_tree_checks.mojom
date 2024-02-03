@@ -1,0 +1,11 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+// See ui::AXTreeChecks for comments / explanations of these fields.
+[Stable, Uuid="7b7814bc-d0a3-11ed-afa1-0242ac120002"]
+struct AXTreeChecks {
+  uint64 node_count;
+};

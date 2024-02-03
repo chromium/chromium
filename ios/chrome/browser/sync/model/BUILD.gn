@@ -172,6 +172,7 @@ source_set("unit_tests") {
     "//base",
     "//components/autofill/core/common/",
     "//components/browser_sync",
+    "//components/data_sharing/public",
     "//components/password_manager/core/browser/features:password_features",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",

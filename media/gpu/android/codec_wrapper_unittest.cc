@@ -242,7 +242,7 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeNoAlignment) {
       std::move(surface_pair), output_buffer_release_cb_.Get(),
       // Unrendered output buffers are released on our thread.
       base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
-      absl::nullopt);
+      std::nullopt);
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))

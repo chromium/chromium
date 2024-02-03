@@ -431,9 +431,9 @@ VideoColorSpace VP9Decoder::GetVideoColorSpace() const {
   return picture_color_space_;
 }
 
-absl::optional<gfx::HDRMetadata> VP9Decoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> VP9Decoder::GetHDRMetadata() const {
   // VP9 only allow HDR metadata exists in the container.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 size_t VP9Decoder::GetRequiredNumOfPictures() const {

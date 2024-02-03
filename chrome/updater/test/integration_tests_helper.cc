@@ -323,14 +323,17 @@ void AppTestHelper::FirstTaskRun() {
            WithSystemScope(Wrap(&ExpectMarshalInterfaceSucceeds))},
           {"expect_legacy_update3web_succeeds",
            WithSwitch(
-               "expected_error_code",
+               "cancel_when_downloading",
                WithSwitch(
-                   "expected_final_state",
+                   "expected_error_code",
                    WithSwitch(
-                       "app_bundle_web_create_mode",
-                       WithSwitch("app_id",
-                                  WithSystemScope(Wrap(
-                                      &ExpectLegacyUpdate3WebSucceeds))))))},
+                       "expected_final_state",
+                       WithSwitch(
+                           "app_bundle_web_create_mode",
+                           WithSwitch(
+                               "app_id",
+                               WithSystemScope(
+                                   Wrap(&ExpectLegacyUpdate3WebSucceeds)))))))},
           {"expect_legacy_process_launcher_succeeds",
            WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
           {"expect_legacy_app_command_web_succeeds",

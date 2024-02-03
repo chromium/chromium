@@ -15,7 +15,7 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -67,7 +67,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
 
  private:
   // mojom::Renderer implementation:
-  void ActivateExtension(const std::string& extension_id) override {
+  void ActivateExtension(const ExtensionId& extension_id) override {
     activated_extensions_.push_back(extension_id);
   }
   void SetActivityLoggingEnabled(bool enabled) override {}
@@ -91,17 +91,17 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
     }
   }
 
-  void UnloadExtension(const std::string& extension_id) override {
+  void UnloadExtension(const ExtensionId& extension_id) override {
     unloaded_extensions_.push_back(extension_id);
   }
 
   void SuspendExtension(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       mojom::Renderer::SuspendExtensionCallback callback) override {
     std::move(callback).Run();
   }
 
-  void CancelSuspendExtension(const std::string& extension_id) override {}
+  void CancelSuspendExtension(const ExtensionId& extension_id) override {}
 
   void SetDeveloperMode(bool current_developer_mode) override {}
 
@@ -114,7 +114,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   void SetWebViewPartitionID(const std::string& partition_id) override {}
 
   void SetScriptingAllowlist(
-      const std::vector<std::string>& extension_ids) override {}
+      const std::vector<ExtensionId>& extension_ids) override {}
 
   void UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) override {}
 
@@ -126,7 +126,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
     std::move(callback).Run();
   }
 
-  void UpdatePermissions(const std::string& extension_id,
+  void UpdatePermissions(const ExtensionId& extension_id,
                          PermissionSet active_permissions,
                          PermissionSet withheld_permissions,
                          URLPatternSet policy_blocked_hosts,
@@ -143,7 +143,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   void UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
                                   URLPatternSet user_allowed_hosts) override {}
 
-  void UpdateTabSpecificPermissions(const std::string& extension_id,
+  void UpdateTabSpecificPermissions(const ExtensionId& extension_id,
                                     URLPatternSet new_hosts,
                                     int tab_id,
                                     bool update_origin_allowlist) override {}
@@ -152,7 +152,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
                          mojom::HostIDPtr host_id) override {}
 
   void ClearTabSpecificPermissions(
-      const std::vector<std::string>& extension_ids,
+      const std::vector<ExtensionId>& extension_ids,
       int tab_id,
       bool update_origin_allowlist) override {}
 
@@ -160,10 +160,10 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
 
   URLPatternSet default_blocked_hosts_;
   URLPatternSet default_allowed_hosts_;
-  std::vector<std::string> activated_extensions_;
+  std::vector<ExtensionId> activated_extensions_;
   size_t num_loaded_extensions_;
   size_t num_loaded_extensions_in_incognito_;
-  std::vector<std::string> unloaded_extensions_;
+  std::vector<ExtensionId> unloaded_extensions_;
   raw_ptr<content::BrowserContext> browser_context_;
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
@@ -207,7 +207,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
     helper_->RenderProcessHostDestroyed(rph);
   }
 
-  scoped_refptr<const Extension> CreateExtension(const std::string& id_input) {
+  scoped_refptr<const Extension> CreateExtension(const ExtensionId& id_input) {
     base::Value::Dict manifest = base::Value::Dict()
                                      .Set("name", "extension")
                                      .Set("description", "an extension")
@@ -216,7 +216,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
     return CreateExtension(id_input, std::move(manifest));
   }
 
-  scoped_refptr<const Extension> CreateTheme(const std::string& id_input) {
+  scoped_refptr<const Extension> CreateTheme(const ExtensionId& id_input) {
     base::Value::Dict manifest = base::Value::Dict()
                                      .Set("name", "theme")
                                      .Set("description", "a theme")
@@ -227,7 +227,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   scoped_refptr<const Extension> CreatePlatformApp(
-      const std::string& id_input) {
+      const ExtensionId& id_input) {
     base::Value::Dict background = base::Value::Dict().Set(
         "scripts", base::Value::List().Append("background.js"));
     base::Value::Dict manifest =
@@ -278,7 +278,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
   scoped_refptr<const Extension> extension_;
 
  private:
-  scoped_refptr<const Extension> CreateExtension(const std::string& id_input,
+  scoped_refptr<const Extension> CreateExtension(const ExtensionId& id_input,
                                                  base::Value::Dict manifest) {
     return ExtensionBuilder()
         .SetManifest(std::move(manifest))

@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_type_converters.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/notreached.h"
 #include "components/digital_goods/mojom/digital_goods.mojom-blink.h"
 #include "components/payments/mojom/payment_request_data.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink.h"
 #include "third_party/blink/renderer/modules/payments/payment_event_data_conversion.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"

@@ -158,6 +158,13 @@ MLOperand* BuildConstant(MLGraphBuilder* builder,
   return BuildConstant(builder, dimensions, data_type, exception_state, buffer);
 }
 
+// This method is especially for checking the floating-point output data of some
+// ops like the element wise binary pow, unary operator softmax, etc. The output
+// data is compared with the expected output data per element by macros
+// EXPECT_FLOAT_EQ.
+void ExpectFloatArrayEqual(const Vector<float>& data,
+                           const Vector<float>& expected_data);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_BASE_H_

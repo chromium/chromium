@@ -47,8 +47,8 @@ namespace ash::capture_mode_util {
 
 namespace {
 
-constexpr int kBannerViewTopRadius = 0;
-constexpr int kBannerViewBottomRadius = 8;
+constexpr float kBannerViewTopRadius = 0.0f;
+constexpr float kBannerViewBottomRadius = 8.0f;
 constexpr float kScaleUpFactor = 0.8f;
 
 // The app ID used for the capture mode privacy indicators.
@@ -341,8 +341,7 @@ std::unique_ptr<views::View> CreateBannerView() {
           ? cros_tokens::kCrosSysPrimary
           : static_cast<ui::ColorId>(kColorAshControlBackgroundColorActive);
   banner_view->SetBackground(views::CreateThemedRoundedRectBackground(
-      background_color_id, kBannerViewTopRadius, kBannerViewBottomRadius,
-      /*for_border_thickness=*/0));
+      background_color_id, kBannerViewTopRadius, kBannerViewBottomRadius));
 
   views::ImageView* icon =
       banner_view->AddChildView(std::make_unique<views::ImageView>());

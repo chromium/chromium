@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
@@ -46,6 +47,10 @@
   base::WeakPtr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
   base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
   raw_ptr<syncer::SyncService> _syncService;
+  // The folder in which was the bookmark when the view was opened.
+  const bookmarks::BookmarkNode* _originalFolder;
+  // Authentication service for this mediator.
+  base::WeakPtr<AuthenticationService> _authenticationService;
 }
 
 - (instancetype)
@@ -56,6 +61,8 @@
                             bookmarkNode:
                                 (const bookmarks::BookmarkNode*)bookmarkNode
                                    prefs:(PrefService*)prefs
+                   authenticationService:
+                       (AuthenticationService*)authenticationService
                              syncService:(syncer::SyncService*)syncService
                             browserState:(ChromeBrowserState*)browserState {
   self = [super init];
@@ -72,12 +79,14 @@
     }
     _bookmark = bookmarkNode;
     _folder = bookmarkNode->parent();
+    _originalFolder = bookmarkNode->parent();
     _prefs = prefs;
     _bookmarkModelBridgeObserver.reset(
         new BookmarkModelBridge(self, self.bookmarkModel));
     _syncService = syncService;
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
     _browserState = browserState;
+    _authenticationService = authenticationService->GetWeakPtr();
   }
   return self;
 }
@@ -92,6 +101,8 @@
   _syncService = nullptr;
   _syncObserverModelBridge.reset();
   _browserState = nullptr;
+  _originalFolder = nullptr;
+  _authenticationService = nullptr;
 }
 
 - (void)dealloc {
@@ -234,9 +245,10 @@
 
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoToast(
-                              [self bookmark], name, url, [self folder],
-                              _localOrSyncableBookmarkModel.get(),
-                              _accountBookmarkModel.get(), _browserState)];
+                              self.bookmark, name, url, _originalFolder,
+                              self.folder, _localOrSyncableBookmarkModel.get(),
+                              _accountBookmarkModel.get(), _browserState,
+                              _authenticationService, _syncService)];
   if (_manuallyChangedTheFolder) {
     bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
         _folder, _localOrSyncableBookmarkModel.get(),

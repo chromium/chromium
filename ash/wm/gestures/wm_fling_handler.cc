@@ -48,11 +48,11 @@ void WmFlingHandler::OnAnimationStep(base::TimeTicks timestamp) {
   offset.Scale(1 / kFlingScaleDown);
 
   // The below `on_step_callback_` (which is bound to
-  // `WindowCycleView::OnFlingStep()`) will trigger a
-  // `WindowCycleView::Layout()`, which in turn can trigger an `OnFlingEnd()`
-  // leading to the destruction of `this` while still in the middle of this
-  // function. Here we use a `WeakPtr` to detect this and early exit and skip
-  // the rest this function to avoid a UAF. https://crbug.com/1350558.
+  // `WindowCycleView::OnFlingStep()`) will trigger layout, which in turn can
+  // trigger an `OnFlingEnd()` leading to the destruction of `this` while still
+  // in the middle of this function. Here we use a `WeakPtr` to detect this and
+  // early exit and skip the rest this function to avoid a UAF.
+  // https://crbug.com/1350558.
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
 
   // Note that order matters here. We want to stop flinging if the API for fling

@@ -54,7 +54,7 @@ base::Value::Dict ParsedField(std::string renderer_id,
                                 .Set("name", name)
                                 .Set("name_attribute", name)
                                 .Set("id_attribute", "")
-                                .Set("unique_renderer_id", renderer_id)
+                                .Set("renderer_id", renderer_id)
                                 .Set("form_control_type", control_type)
                                 .Set("aria_label", "")
                                 .Set("aria_description", "")
@@ -153,7 +153,7 @@ class PasswordControllerJsTest : public PlatformTest {
                          .Set("action", base::SysNSStringToUTF8(PageOrigin()))
                          .Set("origin", base::SysNSStringToUTF8(FormOrigin()))
                          .Set("name", "login_form")
-                         .Set("unique_renderer_id", 1);
+                         .Set("renderer_id", 1);
 
     auto fields = base::Value::List();
 
@@ -161,24 +161,24 @@ class PasswordControllerJsTest : public PlatformTest {
       fields.Append(base::Value::Dict()
                         .Set("name", "username")
                         .Set("value", "username")
-                        .Set("unique_renderer_id", username_renderer_id));
+                        .Set("renderer_id", username_renderer_id));
     } else {
       fields.Append(base::Value::Dict()
                         .Set("name", "")
                         .Set("value", "")
-                        .Set("unique_renderer_id", 0));
+                        .Set("renderer_id", 0));
     }
 
     if (password_renderer_id) {
       fields.Append(base::Value::Dict()
                         .Set("name", "password")
                         .Set("value", "password")
-                        .Set("unique_renderer_id", password_renderer_id));
+                        .Set("renderer_id", password_renderer_id));
     } else {
       fields.Append(base::Value::Dict()
                         .Set("name", "")
                         .Set("value", "")
-                        .Set("unique_renderer_id", 0));
+                        .Set("renderer_id", 0));
     }
 
     fill_data.Set("fields", std::move(fields));
@@ -235,18 +235,18 @@ NSString* GAIASignInForm(NSString* formAction,
 
 // Returns an autoreleased string of JSON for a parsed form.
 NSString* GAIASignInFormData(NSString* formOrigin, NSString* formName) {
-  return [NSString
-      stringWithFormat:
-          @"{"
-           "  \"origin\":\"%@\","
-           "  \"name\":\"%@\","
-           "  \"unique_renderer_id\":1,"
-           "  \"fields\":["
-           "    {\"name\":\"%@\", \"value\":\"\", \"unique_renderer_id\":2},"
-           "    {\"name\":\"%@\",\"value\":\"\", \"unique_renderer_id\":3},"
-           "  ]"
-           "}",
-          formOrigin, formName, kEmailInputID, kPasswordInputID];
+  return
+      [NSString stringWithFormat:
+                    @"{"
+                     "  \"origin\":\"%@\","
+                     "  \"name\":\"%@\","
+                     "  \"renderer_id\":1,"
+                     "  \"fields\":["
+                     "    {\"name\":\"%@\", \"value\":\"\", \"renderer_id\":2},"
+                     "    {\"name\":\"%@\",\"value\":\"\", \"renderer_id\":3},"
+                     "  ]"
+                     "}",
+                    formOrigin, formName, kEmailInputID, kPasswordInputID];
 }
 
 // Loads a page with a password form containing a username value already.
@@ -401,7 +401,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndSingleForm) {
           .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
-          .Set("unique_renderer_id", "1")
+          .Set("renderer_id", "1")
           .Set("frame_id", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
@@ -454,7 +454,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
             .Set("action", base::StrCat({BaseUrl(), "generic_submit1"}))
             .Set("name_attribute", "login_form1")
             .Set("id_attribute", "")
-            .Set("unique_renderer_id", "1")
+            .Set("renderer_id", "1")
             .Set("frame_id", GetMainWebFrame()->GetFrameId());
 
     base::Value::Dict expected_username_field =
@@ -481,7 +481,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
             .Set("action", base::StrCat({BaseUrl(), "generic_submit2"}))
             .Set("name_attribute", "login_form2")
             .Set("id_attribute", "")
-            .Set("unique_renderer_id", "4")
+            .Set("renderer_id", "4")
             .Set("frame_id", GetMainWebFrame()->GetFrameId());
     base::Value::Dict expected_username_field =
         ParsedField(/*renderer_id=*/"5", /*contole_type=*/"text",
@@ -525,7 +525,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_DirectJsCall) {
           .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
-          .Set("unique_renderer_id", "1")
+          .Set("renderer_id", "1")
           .Set("frame_id", GetMainWebFrame()->GetFrameId())
           .Set("fields", base::Value::List());
 
@@ -572,7 +572,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_FormActionIsNotSet) {
                            .Set("action", BaseUrl())
                            .Set("name_attribute", "login_form")
                            .Set("id_attribute", "")
-                           .Set("unique_renderer_id", "1")
+                           .Set("renderer_id", "1")
                            .Set("frame_id", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
@@ -616,7 +616,7 @@ TEST_F(PasswordControllerJsTest,
           .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
-          .Set("unique_renderer_id", "1")
+          .Set("renderer_id", "1")
           .Set("frame_id", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
@@ -658,7 +658,7 @@ TEST_F(PasswordControllerJsTest,
           .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
-          .Set("unique_renderer_id", "1")
+          .Set("renderer_id", "1")
           .Set("frame_id", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
@@ -752,7 +752,7 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
                            .Set("action", BaseUrl())
                            .Set("name_attribute", "login_form")
                            .Set("id_attribute", "login_form")
-                           .Set("unique_renderer_id", "1")
+                           .Set("renderer_id", "1")
                            .Set("frame_id", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field = ParsedField(
       /*renderer_id=*/"2", /*contole_type=*/"text",

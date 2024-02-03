@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1021782183249308751">Press and hold the Chrome icon and click 'Edit Home screen'</translation>
 <translation id="1066101356081285416">Chrome will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google Shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />package tracking settings<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
 <translation id="1105362920864247682">Clear browsing data in Chrome.</translation>
@@ -96,6 +97,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{This happens when Chrome isn't used for {THRESHOLD} minute}other{This happens when Chrome isn't used for {THRESHOLD} minutes}}</translation>
 <translation id="3399930248910934354">Open Chrome settings</translation>
+<translation id="344736123700721678">Access Chrome faster from your Home screen dock</translation>
 <translation id="3472587960215700950">Chrome uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
@@ -177,12 +179,15 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="6054613632208573261">Use Chrome by default</translation>
 <translation id="6063091872902370735">Allow Chrome Sign-in</translation>
 <translation id="6110625574506755980">Some Chrome features won’t be available anymore.</translation>
+<translation id="6132149203299792222">Sign in with your Google Account to sync your passwords, bookmarks and more.</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6181930887571472871">Switch to Chrome</translation>
 <translation id="6238746320622508509">Let Chrome lock your incognito tabs.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6272822675004864999">To receive notifications from Chrome, turn on notifications in your iOS settings.</translation>
 <translation id="630693926528731525">Your password wasn't shared. Check your Internet connection and make sure that you're signed in to Chrome. Then try again.</translation>
 <translation id="6348855835728304880">Access your Chrome passwords and more across other apps on this device.</translation>
+<translation id="6389317667633680932">Explore new features that help you get the most out of Chrome.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6427126399757991875">Your organisation is setting up Chrome…</translation>
 <translation id="6484712497741564393">Signed in as <ph name="EMAIL" />.
@@ -214,8 +219,10 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7124339256045485976">Keep Chrome up to date</translation>
 <translation id="7161390184744336561">Google Chrome is out of date</translation>
 <translation id="7165736900384873061">Start Using Google Chrome QR Scanner</translation>
+<translation id="7175129790242719365">Chrome tip: Sign in to Chrome</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="7200524487407690471">Chrome automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.</translation>
+<translation id="7203324561587388418">Keep up with content and helpful Chrome tips.</translation>
 <translation id="72119412072970160">You can use the passwords that you saved to Google Password Manager in other apps on your iPad.</translation>
 <translation id="723787869754590019">Use Chrome for auto-fill</translation>
 <translation id="7254380941803999489">Set Chrome as default browser</translation>
@@ -244,6 +251,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7897703007638178753">See Chrome Recent Tabs</translation>
 <translation id="7925119591961387184">Select "Chrome."</translation>
 <translation id="7933491483529363150">Open my latest tab in Chrome.</translation>
+<translation id="7948283758957877064">What’s new in Chrome</translation>
+<translation id="8006014511203279255">Use Chrome any time that you tap links in messages or other apps.</translation>
 <translation id="8022947259858476807">Use Chrome by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="804638182476029347">Allow Chrome notifications to get price drop alerts</translation>
 <translation id="8065292699993359127">Open URLs in Chrome in Incognito</translation>
@@ -280,6 +289,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8772179140489533211">Shows prompts to sign in to Chrome.</translation>
 <translation id="8788269841521769222">You won't need to remember this password. It will be saved to Google Password Manager for <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Chrome tip: Use Chrome by default</translation>
 <translation id="8808828119384186784">Chrome settings</translation>
 <translation id="8855781063981781621">To disable Lockdown mode in Chrome, turn it off on your iPad.</translation>
 <translation id="8856877214925961642">Passphrase encryption doesn't include payment methods and addresses.

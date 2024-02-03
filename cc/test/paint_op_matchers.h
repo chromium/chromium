@@ -101,6 +101,30 @@ class PaintOpIs {
   }
 };
 
+// Equality matcher for DrawRecordOp objects.
+//
+// Example use:
+//   PaintOpBuffer nested_buffer;
+//   nested_buffer.push<SaveOp>();
+//   nested_buffer.push<RestoreOp>();
+//
+//   PaintOpBuffer parent_buffer;
+//   parent_buffer.push<DrawRecordOp>(nested_buffer.ReleaseAsRecord());
+//
+//   EXPECT_THAT(parent_buffer.ReleaseAsRecord(),
+//               ElementsAre(DrawRecordOpEq(PaintOpEq<SaveOp>(),
+//                                          PaintOpEq<RestoreOp>())));
+template <typename... Args>
+testing::Matcher<PaintOp> DrawRecordOpEq(Args... args) {
+  return testing::AllOf(
+      PaintOpIs<DrawRecordOp>(),
+      testing::ResultOf(
+          [](const PaintOp& record) {
+            return static_cast<const DrawRecordOp&>(record).record;
+          },
+          testing::ElementsAre(args...)));
+}
+
 }  // namespace cc
 
 #endif  // CC_TEST_PAINT_OP_MATCHERS_H_

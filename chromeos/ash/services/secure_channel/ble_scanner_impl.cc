@@ -110,6 +110,7 @@ void BleScannerImpl::AdapterPoweredChanged(device::BluetoothAdapter* adapter,
     // The BluetoothLowEnergyScanSession callbacks may never be called due to
     // Floss being powered off. Reset the session anyway.
     PA_LOG(INFO) << "Reset LE scan session due to power off.";
+    SetDiscoverySeissionFailed(mojom::DiscoveryErrorCode::kBluetoothTurnedOff);
     is_initializing_discovery_session_ = false;
     le_scan_session_.reset();
   }
@@ -179,6 +180,8 @@ void BleScannerImpl::EnsureDiscoverySessionActive() {
     if (!filter) {
       PA_LOG(ERROR)
           << "Failed to start LE scanning due to failure to create filter.";
+      SetDiscoverySeissionFailed(
+          mojom::DiscoveryErrorCode::kFilterCreationFailed);
       return;
     }
 
@@ -210,6 +213,8 @@ void BleScannerImpl::OnDiscoverySessionStarted(
 void BleScannerImpl::OnStartDiscoverySessionError() {
   is_initializing_discovery_session_ = false;
   PA_LOG(ERROR) << "Error starting discovery session.";
+  SetDiscoverySeissionFailed(
+      mojom::DiscoveryErrorCode::kErrorStartingDiscovery);
   UpdateDiscoveryStatus();
 }
 
@@ -272,6 +277,8 @@ void BleScannerImpl::OnSessionStarted(
   if (error_code) {
     PA_LOG(ERROR) << "LE scan session failed to start, error_code = "
                   << static_cast<int>(error_code.value());
+    SetDiscoverySeissionFailed(
+        mojom::DiscoveryErrorCode::kErrorStartingDiscovery);
     if (le_scan_session_)
       le_scan_session_.reset();
   } else {
@@ -284,6 +291,7 @@ void BleScannerImpl::OnSessionStarted(
 void BleScannerImpl::OnSessionInvalidated(
     device::BluetoothLowEnergyScanSession* scan_session) {
   PA_LOG(INFO) << "LE scan session was invalidated";
+  SetDiscoverySeissionFailed(mojom::DiscoveryErrorCode::kBleSessionInvalidated);
   if (le_scan_session_)
     le_scan_session_.reset();
   UpdateDiscoveryStatus();
@@ -358,8 +366,8 @@ void BleScannerImpl::HandlePotentialScanResult(
   }
 
   // Prepare a hex string of |service_data|.
-  std::string hex_service_data = base::StrCat(
-      {"0x", base::HexEncode(service_data.data(), service_data.size())});
+  std::string hex_service_data =
+      base::StrCat({"0x", base::HexEncode(service_data)});
 
   if (results.empty()) {
     PA_LOG(WARNING) << "BleScannerImpl::HandleDeviceUpdated(): Received scan "
@@ -369,6 +377,8 @@ void BleScannerImpl::HandlePotentialScanResult(
                     << "request. Service data: " << hex_service_data
                     << ", Background advertisement: "
                     << (potential_result.second ? "true" : "false");
+    SetDiscoverySeissionFailed(
+        mojom::DiscoveryErrorCode::kDeviceNotInScanRequest);
     return;
   }
 
@@ -386,6 +396,14 @@ void BleScannerImpl::HandlePotentialScanResult(
     NotifyReceivedAdvertisementFromDevice(potential_result.first,
                                           bluetooth_device, result.first,
                                           result.second, eid);
+  }
+}
+
+void BleScannerImpl::SetDiscoverySeissionFailed(
+    mojom::DiscoveryErrorCode error_code) {
+  for (const auto& device_id_pair : GetAllDeviceIdPairs()) {
+    NotifyBleDiscoverySessionFailed(
+        device_id_pair, mojom::DiscoveryResult::kFailure, error_code);
   }
 }
 

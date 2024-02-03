@@ -691,7 +691,7 @@ void AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone(
 
   if (!aborted) {
     if (target_visibility) {
-      view_->Layout();
+      view_->DeprecatedLayoutImmediately();
     } else if (!target_visibility && !window->is_destroying()) {
       window->Hide();
       OnClosed();

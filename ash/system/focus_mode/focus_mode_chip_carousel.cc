@@ -126,12 +126,12 @@ FocusModeChipCarousel::FocusModeChipCarousel(
 
 FocusModeChipCarousel::~FocusModeChipCarousel() = default;
 
-void FocusModeChipCarousel::Layout() {
+void FocusModeChipCarousel::Layout(PassKey) {
   if (!GetVisible()) {
     return;
   }
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   scroll_contents_->SizeToPreferredSize();
 
   const gfx::Rect contents_bounds = GetContentsBounds();

@@ -81,6 +81,10 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // session based on whether focus is in session.
   void UpdateTimerView(bool in_focus_session);
 
+  // Clear the focus for `timer_textfield_` when it's be inactive and update the
+  // session duration.
+  void HandleTextfieldActivationChange();
+
   // Creates the row with the task elements. Creates the textfield to allow a
   // user to manually input a task and creates a chip carousel list of tasks to
   // allow the user to select a task. Once the user enters a task in the

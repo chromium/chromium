@@ -10,6 +10,8 @@
 #import "components/autofill/core/browser/autofill_manager.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/plus_addresses/plus_address_types.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -18,6 +20,7 @@
 namespace autofill {
 class AutofillBottomSheetObserver;
 struct FormActivityParams;
+struct VirtualCardEnrollUiModel;
 }  // namespace autofill
 
 namespace web {
@@ -64,6 +67,11 @@ class AutofillBottomSheetTabHelper
       const url::Origin& main_frame_origin,
       plus_addresses::PlusAddressCallback callback);
 
+  // Send a command to show the VCN enrollment Bottom Sheet.
+  void ShowVirtualCardEnrollmentBottomSheet(
+      autofill::VirtualCardEnrollUiModel model,
+      autofill::VirtualCardEnrollmentCallbacks callbacks);
+
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
 
@@ -109,6 +117,10 @@ class AutofillBottomSheetTabHelper
 
   // Used to get the callback to be run on completion of the plus_address UI.
   plus_addresses::PlusAddressCallback GetPendingPlusAddressFillCallback();
+
+  // Used to get the callbacks to be run on completion of the VCN enrollment UI.
+  // This value is moved and should only be retrieved once per bottom sheet.
+  autofill::VirtualCardEnrollmentCallbacks GetVirtualCardEnrollmentCallbacks();
 
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
@@ -178,6 +190,10 @@ class AutofillBottomSheetTabHelper
   // A callback to be run on completion of the plus address bottom sheet UI
   // flow.
   plus_addresses::PlusAddressCallback pending_plus_address_callback_;
+
+  // Callbacks to be run when the virtual card enrollment bottom sheet UI has
+  // completed.
+  autofill::VirtualCardEnrollmentCallbacks virtual_card_enrollment_callbacks_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

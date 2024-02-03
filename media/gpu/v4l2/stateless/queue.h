@@ -41,7 +41,7 @@ class MEDIA_GPU_EXPORT BaseQueue {
   bool AllocateBuffers(uint32_t num_planes, size_t num_buffers);
   virtual std::string Description() = 0;
   void ReturnBuffer(uint32_t index);
-  absl::optional<uint32_t> GetFreeBufferIndex();
+  std::optional<uint32_t> GetFreeBufferIndex();
 
   scoped_refptr<StatelessDevice> device_;
   const BufferType buffer_type_;

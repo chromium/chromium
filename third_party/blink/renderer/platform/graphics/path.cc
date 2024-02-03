@@ -212,7 +212,7 @@ gfx::PointF Path::PointAtLength(float length) const {
   return PointAndNormalAtLength(length).point;
 }
 
-static absl::optional<PointAndTangent> CalculatePointAndNormalOnPath(
+static std::optional<PointAndTangent> CalculatePointAndNormalOnPath(
     SkPathMeasure& measure,
     SkScalar& contour_start,
     SkScalar length) {
@@ -233,15 +233,16 @@ static absl::optional<PointAndTangent> CalculatePointAndNormalOnPath(
     }
     contour_start = contour_end;
   } while (measure.nextContour());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 PointAndTangent Path::PointAndNormalAtLength(float length) const {
   SkPathMeasure measure(path_, false);
   SkScalar start = 0;
-  if (absl::optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
-          measure, start, WebCoreFloatToSkScalar(length)))
+  if (std::optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
+          measure, start, WebCoreFloatToSkScalar(length))) {
     return *result;
+  }
   return {gfx::SkPointToPointF(path_.getPoint(0)), 0};
 }
 
@@ -259,7 +260,7 @@ PointAndTangent Path::PositionCalculator::PointAndNormalAtLength(float length) {
       accumulated_length_ = 0;
     }
 
-    absl::optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
+    std::optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
         path_measure_, accumulated_length_, sk_length);
     if (result)
       return *result;

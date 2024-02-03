@@ -56,7 +56,7 @@ public class TabUiFeatureUtilitiesUnitTest {
     @Test
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_HighEnd() {
-        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode());
         assertTrue(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                         ContextUtils.getApplicationContext()));
@@ -64,7 +64,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
 
-        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode());
         assertTrue(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                         ContextUtils.getApplicationContext()));
@@ -73,7 +73,7 @@ public class TabUiFeatureUtilitiesUnitTest {
     @Test
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_LowEnd() {
-        assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.shouldUseListMode());
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                         ContextUtils.getApplicationContext()));
@@ -81,7 +81,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
 
-        assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.shouldUseListMode());
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                         ContextUtils.getApplicationContext()));

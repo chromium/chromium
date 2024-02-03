@@ -31,6 +31,21 @@ struct DynamicParams {
   string allowed_domains_for_apps;
 };
 
+// Event triggering release of blocked requests.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[EnableIf=enable_bound_session_credentials]
+enum ResumeBlockedRequestsTrigger {
+  kObservedFreshCookies = 0,
+  kCookieRefreshFetchSuccess = 1,
+  kCookieRefreshFetchFailure = 2,
+  kNetworkConnectionOffline = 3,
+  kTimeout = 4,
+  kShutdownOrSessionTermination = 5,
+  kCookieAlreadyFresh = 6,
+  kRendererDisconnected = 7
+};
+
 // Allows the renderer to notify the browser process that requests in renderer
 // are throttled and require a fresh short lived cookie.
 interface BoundSessionRequestThrottledHandler {
@@ -40,7 +55,8 @@ interface BoundSessionRequestThrottledHandler {
   // Note: The callback might be called synchronously in process if the
   // previous conditions apply.
   [EnableIf=enable_bound_session_credentials]
-  HandleRequestBlockedOnCookie() => ();
+  HandleRequestBlockedOnCookie()
+      => (ResumeBlockedRequestsTrigger resume_trigger);
 };
 
 interface ChromeOSListener {

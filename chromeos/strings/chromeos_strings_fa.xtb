@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">خطای داخلی</translation>
 <translation id="1124772482545689468">کاربر</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ضرب کنید</translation>
 <translation id="1145018782460575098">پنجره به‌روزرسانی سفت‌افزار برای دستگاه‌های خارجی باز است. <ph name="NUM_UPDATES" /> به‌روزرسانی دردسترس است</translation>
 <translation id="1145516343487477149">‏برای سؤالات متداول Chromebook، مقاله راهنما و پاسخ پیدا کنید</translation>
 <translation id="1154390310959620237">می‌توانید فقط ۵ میان‌بر را سفارشی‌سازی کنید. یکی از میان‌برها را برای افزودن میان‌بر جدید حذف کنید.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">متناسب با ناحیه اسکن</translation>
 <translation id="1367951781824006909">انتخاب یک فایل</translation>
+<translation id="1371650399987522809">‏بازخورد درباره کاغذدیواری ایجادشده با بهره‌گیری از هوش مصنوعی Google</translation>
 <translation id="1387854245479784695">این مجموع تمام هسته‌ها است</translation>
 <translation id="1394661041439318933">باتری قاب دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="1397738625398125236">دروازه را می‌توان پینگ کرد</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">صفحه لمسی</translation>
 <translation id="1561927818299383735">رنگ نور پس‌زمینه</translation>
 <translation id="1565038567006703504">به‌روزرسانی <ph name="DEVICE_NAME" /> انجام نشد</translation>
+<translation id="1566493343215789965">تقسیم کنید</translation>
 <translation id="1567064801249837505">آلبوم‌ها</translation>
 <translation id="1572585716423026576">تنظیم به‌عنوان کاغذدیواری</translation>
 <translation id="1578784163189013834">انتخاب پس‌زمینه محافظ صفحه</translation>
 <translation id="160633243685262989">پیش‌دید کردن تصویر</translation>
 <translation id="1611649489706141841">هدایت</translation>
 <translation id="1615335640928990664">مصرف داده از <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">درحال تولید تصاویر…</translation>
 <translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
 <translation id="1626590945318984973">میان‌بر دردسترس نیست. میان‌بر جدیدی را بدون استفاده از کلیدهای عملیات و <ph name="META_KEY" /> فشار دهید.</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
 <translation id="2880569433548999039">محافظ صفحه جریان ابر</translation>
 <translation id="2926057806159140518">نام کاربری و گذرواژه‌تان را وارد کنید یا رمزینه پاسخ‌سریع را اسکن کنید</translation>
+<translation id="2938573842839598578">برای دستیابی به نتیجه تقریبی، مقدار <ph name="CATEGORY_TEXT" /> را در <ph name="CONVERSION_RATE" /> <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">نمی‌توان دستگاه را آزمایش کرد. برای آزمایش کردن، در دستگاه را دوباره باز کنید.</translation>
 <translation id="2941112035454246133">کم</translation>
 <translation id="3008341117444806826">بازآوری</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">‏به‌روزرسانی ChromeOS</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
+<translation id="3547264467365135390">فرمول</translation>
 <translation id="3557205324756024651">شناسه محلی (اختیاری)</translation>
 <translation id="3565064564551103223">‏IPهای مجاز</translation>
 <translation id="3569407787324516067">محافظ صفحه</translation>
@@ -469,7 +475,7 @@
 <translation id="4469288414739283461">محافظ صفحه گردش زمین</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
-<translation id="4500722292849917410">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از یکی از کلیدهای تغییردهنده (مهار، دگرساز، تبدیل، یا <ph name="META_KEY" />) فشار دهید.</translation>
+<translation id="4500722292849917410">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از یکی از کلیدهای توصیف‌گر (مهار، دگرساز، تبدیل، یا <ph name="META_KEY" />) فشار دهید.</translation>
 <translation id="4500966230243561393">رنگ میانا</translation>
 <translation id="4503223151711056411">جهت‌نمای چپ</translation>
 <translation id="4507392511610824664">افزایش روشنایی</translation>
@@ -544,7 +550,7 @@
 <translation id="4969079779290789265">تقسیم کردن</translation>
 <translation id="4972592110715526173">تغییر حالت</translation>
 <translation id="498186245079027698">اسکنر را بررسی کنید و دوباره امتحان کنید. مطمئن شوید فضای کافی برای ذخیره کردن فایل‌های اسکن‌شده در دستگاه وجود داشته باشد.</translation>
-<translation id="4982627662315910959">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از کلید تبدیل و یک کلید تغییردهنده دیگر (مهار، دگرساز، یا <ph name="META_KEY" />) فشار دهید.</translation>
+<translation id="4982627662315910959">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از کلید تبدیل و یک کلید توصیف‌گر دیگر (مهار، دگرساز، یا <ph name="META_KEY" />) فشار دهید.</translation>
 <translation id="4985509611418653372">اجرا</translation>
 <translation id="4987769320337599931">دیوار آتش</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">بازآوری</translation>
 <translation id="7180865173735832675">سفارشی کردن</translation>
 <translation id="7184043045742675738">برای سفارشی‌سازی دکمه، روی یکی از کلیدها کلیک کنید. موقعیت را با موشواره یا کلیدهای جهت‌نما تغییر دهید.</translation>
+<translation id="7206979415662233817">شرایط خدمات</translation>
 <translation id="7212547870105584639">‏مدیریت تنظیمات APN شبکه. APN اتصالی میان شبکه تلفن همراه و اینترنت برقرار می‌کند. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">به‌روزرسانی‌های سفت‌افزار برای دستگاه‌های خارجی</translation>
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">رنگ صفحه‌کلید</translation>
 <translation id="7317831949569936035">ثبت‌نام مدرسه</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">‏باید حداقل ۱۸ سال داشته باشید و موافقت کنید استفاده شما از کاغذدیواری‌های هوش مصنوعی تابع <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />شرایط خدمات Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> و <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />شرایط خدمات تکمیلی هوش مصنوعی زایا<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> است.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          فقط می‌توانید برای استفاده شخصی و غیرتجاری، کاغذدیواری‌ها را با هوش مصنوعی بسازید. وقتی برای کاغذدیواری کمک دریافت می‌کنید، نوشتار به سرورهای هوش مصنوعی Google ارسال می‌شود تا کاغذدیواری‌های پیشنهادی مطابق با <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />خط‌مشی رازداری Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> تولید شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ کلیدهای «جستجو» و «فاصله» را فشار دهید تا نتیجه را در «جستجوی Google» ببینید</translation>
 <translation id="7343649194310845056">دستگاه‌های شبکه</translation>
 <translation id="7353413232959255829">‏نتیجه جستجوی <ph name="LIST_POSITION" /> از <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" /> برای پیمایش به میان‌بر، کلید Enter را فشار دهید.</translation>
@@ -1114,7 +1125,7 @@
 <translation id="9111102763498581341">باز کردن قفل</translation>
 <translation id="9122602430962285795">برای اتصال مجدد، به «تنظیمات» بروید</translation>
 <translation id="9126720536733509015">‏ذخیره چند صفحه در یک فایل PDF</translation>
-<translation id="9133772297793293778">کلیدهای تغییردهنده ۱ تا ۴ و یک کلید دیگر را روی صفحه‌کلید فشار دهید. برای خروج از حالت ویرایش، دگرساز + گریز را فشار دهید.</translation>
+<translation id="9133772297793293778">کلیدهای توصیف‌گر ۱ تا ۴ و یک کلید دیگر را روی صفحه‌کلید فشار دهید. برای خروج از حالت ویرایش، دگرساز + گریز را فشار دهید.</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9138630967333032450">کلید تبدیل چپ</translation>
 <translation id="9149391708638971077">اجرای آزمایش حافظه</translation>

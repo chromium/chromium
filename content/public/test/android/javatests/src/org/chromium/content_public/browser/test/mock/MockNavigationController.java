@@ -7,6 +7,7 @@ package org.chromium.content_public.browser.test.mock;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 
 /** Mock NavigationController implementation for Test. */
@@ -64,7 +65,9 @@ public class MockNavigationController implements NavigationController {
     public void continuePendingReload() {}
 
     @Override
-    public void loadUrl(LoadUrlParams params) {}
+    public NavigationHandle loadUrl(LoadUrlParams params) {
+        return null;
+    }
 
     @Override
     public void clearHistory() {}

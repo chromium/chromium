@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link.css.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/action_link.css.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 

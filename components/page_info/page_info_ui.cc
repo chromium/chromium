@@ -156,17 +156,8 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {ContentSettingsType::AUTOMATIC_DOWNLOADS,
        IDS_SITE_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
        IDS_SITE_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS_MID_SENTENCE},
-      {ContentSettingsType::MIDI, IDS_SITE_SETTINGS_TYPE_MIDI,
-       IDS_SITE_SETTINGS_TYPE_MIDI_MID_SENTENCE},
-      {
-          ContentSettingsType::MIDI_SYSEX,
-          base::FeatureList::IsEnabled(features::kBlockMidiByDefault)
-              ? IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX
-              : IDS_SITE_SETTINGS_TYPE_MIDI,
-          base::FeatureList::IsEnabled(features::kBlockMidiByDefault)
-              ? IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX_MID_SENTENCE
-              : IDS_SITE_SETTINGS_TYPE_MIDI_MID_SENTENCE,
-      },
+      {ContentSettingsType::MIDI_SYSEX, IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX,
+       IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX_MID_SENTENCE},
       {ContentSettingsType::BACKGROUND_SYNC,
        IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC,
        IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC_MID_SENTENCE},
@@ -333,9 +324,6 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::NOTIFICATIONS:
       message_id = IDS_PAGE_INFO_STATE_TEXT_NOTIFICATIONS_ASK;
-      break;
-    case ContentSettingsType::MIDI:
-      message_id = IDS_PAGE_INFO_STATE_TEXT_MIDI_ASK;
       break;
     case ContentSettingsType::MIDI_SYSEX:
       message_id = IDS_PAGE_INFO_STATE_TEXT_MIDI_SYSEX_ASK;

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -32,7 +33,6 @@
 #include "net/socket/connect_job_factory.h"
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -277,11 +277,10 @@ int ProxyResolvingClientSocket::DoInitConnection() {
 
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
-  absl::optional<net::NetworkTrafficAnnotationTag> proxy_annotation_tag =
-      proxy_info_.is_direct()
-          ? absl::nullopt
-          : absl::optional<net::NetworkTrafficAnnotationTag>(
-                proxy_info_.traffic_annotation());
+  std::optional<net::NetworkTrafficAnnotationTag> proxy_annotation_tag =
+      proxy_info_.is_direct() ? std::nullopt
+                              : std::optional<net::NetworkTrafficAnnotationTag>(
+                                    proxy_info_.traffic_annotation());
 
   // Now that the proxy is resolved, create and start a ConnectJob. Using an
   // empty NetworkAnonymizationKey means that tunnels over H2 or QUIC proxies

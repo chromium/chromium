@@ -219,7 +219,7 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
         bool has_storage_access,
         mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
             handshake_client,
-        const absl::optional<base::UnguessableToken>& throttling_profile_id)
+        const std::optional<base::UnguessableToken>& throttling_profile_id)
         override {
       connect_args_.push_back(ConnectArgs(url, requested_protocols,
                                           site_for_cookies, user_agent,
@@ -1363,7 +1363,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, ThrottleSucceedsFirst) {
   checkpoint.Call(1);
   test::RunPendingTasks();
 
-  Channel()->OnCompletion(absl::nullopt);
+  Channel()->OnCompletion(std::nullopt);
   checkpoint.Call(2);
 
   auto websocket =
@@ -1392,7 +1392,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, HandshakeSucceedsFirst) {
   ASSERT_TRUE(websocket);
 
   checkpoint.Call(2);
-  Channel()->OnCompletion(absl::nullopt);
+  Channel()->OnCompletion(std::nullopt);
 }
 
 // This happens if JS code calls close() during the handshake.
@@ -1617,7 +1617,7 @@ class MockWebSocketConnector : public mojom::blink::WebSocketConnector {
        const String&,
        bool,
        mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>,
-       const absl::optional<base::UnguessableToken>&));
+       const std::optional<base::UnguessableToken>&));
 };
 
 // This can't use WebSocketChannelImplTest because it requires multiple

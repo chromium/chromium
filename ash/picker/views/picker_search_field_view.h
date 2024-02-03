@@ -8,7 +8,7 @@
 #include <string_view>
 
 #include "ash/ash_export.h"
-#include "ash/picker/picker_session_metrics.h"
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "base/functional/callback_forward.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/focus/focus_manager.h"

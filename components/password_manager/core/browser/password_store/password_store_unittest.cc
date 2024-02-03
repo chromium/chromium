@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1434,6 +1435,26 @@ TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
   store->ShutdownOnUIThread();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(PasswordStoreTest, AbleToSavePasswords) {
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
+      .WillOnce(testing::Return(true));
+
+  EXPECT_TRUE(store->IsAbleToSavePasswords());
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, NotAbleToSavePasswords) {
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
+      .WillOnce(testing::Return(false));
+
+  EXPECT_FALSE(store->IsAbleToSavePasswords());
+  store->ShutdownOnUIThread();
+}
 
 TEST_F(PasswordStoreTest, GetAllLogins) {
   static constexpr PasswordFormData kTestCredentials[] = {

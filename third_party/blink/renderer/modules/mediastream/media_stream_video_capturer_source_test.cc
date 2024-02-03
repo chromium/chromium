@@ -115,7 +115,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
 
   WebMediaStreamTrack StartSource(
       const VideoTrackAdapterSettings& adapter_settings,
-      const absl::optional<bool>& noise_reduction,
+      const std::optional<bool>& noise_reduction,
       bool is_screencast,
       double min_frame_rate) {
     bool enabled = true;
@@ -181,7 +181,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, StartAndStop) {
   InSequence s;
   EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
   WebMediaStreamTrack track =
-      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
@@ -219,7 +219,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, CaptureTimeAndMetadataPlumbing) {
   EXPECT_CALL(mock_delegate(), RequestRefreshFrame());
   EXPECT_CALL(mock_delegate(), MockStopCapture());
   WebMediaStreamTrack track =
-      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
   running_cb.Run(RunState::kRunning);
 
   base::RunLoop run_loop;
@@ -248,7 +248,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, Restart) {
   EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
       .WillOnce(Return(RunState::kRunning));
   WebMediaStreamTrack track =
-      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
@@ -331,7 +331,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, StartStopAndNotify) {
   EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
       .WillOnce(Return(RunState::kRunning));
   WebMediaStreamTrack web_track =
-      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
@@ -364,7 +364,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, ChangeSource) {
   EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
       .WillOnce(Return(RunState::kRunning));
   WebMediaStreamTrack track =
-      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
@@ -406,7 +406,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, FailStartSystemPermission) {
   EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
       .WillOnce(Return(RunState::kSystemPermissionsError));
   WebMediaStreamTrack track =
-      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(source_stopped_);
   EXPECT_EQ(start_result_, MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED);
@@ -417,7 +417,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, FailStartCamInUse) {
   EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
       .WillOnce(Return(RunState::kCameraBusyError));
   WebMediaStreamTrack track =
-      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(source_stopped_);
   EXPECT_EQ(start_result_, MediaStreamRequestResult::DEVICE_IN_USE);

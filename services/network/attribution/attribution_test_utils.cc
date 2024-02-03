@@ -50,10 +50,10 @@ bool FakeCryptographer::AddKey(std::string_view key) {
   return true;
 }
 
-absl::optional<std::string> FakeCryptographer::BeginIssuance(
+std::optional<std::string> FakeCryptographer::BeginIssuance(
     std::string_view message) {
   if (should_fail_begin_issuance_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::StrCat({kBlindingKey, message});
 }
@@ -69,11 +69,10 @@ std::string FakeCryptographer::UnblindMessage(
   return blind_message.substr(sizeof(kBlindingKey) - 1, std::string::npos);
 }
 
-absl::optional<std::string>
-FakeCryptographer::ConfirmIssuanceAndBeginRedemption(
+std::optional<std::string> FakeCryptographer::ConfirmIssuanceAndBeginRedemption(
     std::string_view blind_token) {
   if (should_fail_confirm_issuance_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::StrCat({kUnblindKey, blind_token});
 }
@@ -182,7 +181,7 @@ AttributionVerificationMediator CreateTestVerificationMediator(
 
 std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
     std::string_view header) {
-  absl::optional<net::structured_headers::List> parsed_list =
+  std::optional<net::structured_headers::List> parsed_list =
       net::structured_headers::ParseList(header);
   if (!parsed_list.has_value()) {
     return {};
@@ -211,7 +210,7 @@ std::string SerializeStructureHeaderListOfStrings(
     headers.emplace_back(
         net::structured_headers::ParameterizedMember(item, {}));
   }
-  absl::optional<std::string> serialized =
+  std::optional<std::string> serialized =
       net::structured_headers::SerializeList(headers);
   CHECK(serialized.has_value());
   return serialized.value();

@@ -69,22 +69,28 @@ static bool IsMainWorldId(int32_t world_id) {
 }
 #endif
 
-scoped_refptr<DOMWrapperWorld> DOMWrapperWorld::Create(v8::Isolate* isolate,
-                                                       WorldType world_type) {
+scoped_refptr<DOMWrapperWorld> DOMWrapperWorld::Create(
+    v8::Isolate* isolate,
+    WorldType world_type,
+    bool is_default_world_of_isolate) {
+  DCHECK(isolate);
   DCHECK_NE(WorldType::kIsolated, world_type);
   int32_t world_id = GenerateWorldIdForType(world_type);
   if (world_id == kInvalidWorldId)
     return nullptr;
-  return base::AdoptRef(new DOMWrapperWorld(isolate, world_type, world_id));
+  return base::AdoptRef(new DOMWrapperWorld(isolate, world_type, world_id,
+                                            is_default_world_of_isolate));
 }
 
 DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
                                  WorldType world_type,
-                                 int32_t world_id)
+                                 int32_t world_id,
+                                 bool is_default_world_of_isolate)
     : world_type_(world_type),
       world_id_(world_id),
       dom_data_store_(
-          MakeGarbageCollected<DOMDataStore>(isolate, IsMainWorld())),
+          MakeGarbageCollected<DOMDataStore>(isolate,
+                                             is_default_world_of_isolate)),
       v8_object_data_store_(MakeGarbageCollected<V8ObjectDataStore>()) {
   switch (world_type_) {
     case WorldType::kMain:
@@ -92,9 +98,9 @@ DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
       break;
     case WorldType::kIsolated:
     case WorldType::kInspectorIsolated:
-    case WorldType::kBlinkInternalNonJSExposed:
+    case WorldType::kRegExp:
     case WorldType::kForV8ContextSnapshotNonMain:
-    case WorldType::kWorker:
+    case WorldType::kWorkerOrWorklet:
     case WorldType::kShadowRealm: {
       WorldMap& map = GetWorldMap();
       DCHECK(!map.Contains(world_id_));
@@ -127,7 +133,7 @@ DOMWrapperWorld::~DOMWrapperWorld() {
   }
 
   // WorkerWorld should be disposed of before the dtor.
-  if (!IsWorkerWorld()) {
+  if (!IsWorkerOrWorkletWorld()) {
     Dispose();
   }
   DCHECK(IsMainWorld() || !GetWorldMap().Contains(world_id_));
@@ -164,7 +170,8 @@ scoped_refptr<DOMWrapperWorld> DOMWrapperWorld::EnsureIsolatedWorld(
   }
 
   return base::AdoptRef(
-      new DOMWrapperWorld(isolate, WorldType::kIsolated, world_id));
+      new DOMWrapperWorld(isolate, WorldType::kIsolated, world_id,
+                          /*is_default_world_of_isolate=*/false));
 }
 
 typedef HashMap<int, scoped_refptr<SecurityOrigin>>
@@ -278,9 +285,9 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
         return WorldId::kInvalidWorldId;
       return next_devtools_isolated_world_id++;
     }
-    case WorldType::kBlinkInternalNonJSExposed:
+    case WorldType::kRegExp:
     case WorldType::kForV8ContextSnapshotNonMain:
-    case WorldType::kWorker:
+    case WorldType::kWorkerOrWorklet:
     case WorldType::kShadowRealm: {
       CHECK_GE(next_world_id, kUnspecifiedWorldIdStart);
       return next_world_id++;
@@ -291,12 +298,12 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
 }
 
 // static
-bool DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(
+bool DOMWrapperWorld::ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
     ScriptWrappable* object,
     const v8::Local<v8::Object>& handle) {
   for (DOMWrapperWorld* world : GetWorldMap().Values()) {
     DOMDataStore& data_store = world->DomDataStore();
-    if (data_store.ClearWrapperIfEqualTo(object, handle)) {
+    if (data_store.ClearInMapIfEqualTo(object, handle)) {
       return true;
     }
   }
@@ -304,12 +311,12 @@ bool DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(
 }
 
 // static
-bool DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(
+bool DOMWrapperWorld::ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
     ScriptWrappable* object,
     const v8::TracedReference<v8::Object>& handle) {
   for (DOMWrapperWorld* world : GetWorldMap().Values()) {
     DOMDataStore& data_store = world->DomDataStore();
-    if (data_store.ClearWrapperIfEqualTo(object, handle)) {
+    if (data_store.ClearInMapIfEqualTo(object, handle)) {
       return true;
     }
   }

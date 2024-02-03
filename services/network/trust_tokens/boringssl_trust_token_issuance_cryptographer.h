@@ -6,13 +6,13 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_BORINGSSL_TRUST_TOKEN_ISSUANCE_CRYPTOGRAPHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_request_issuance_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -30,7 +30,7 @@ class BoringsslTrustTokenIssuanceCryptographer
   bool Initialize(mojom::TrustTokenProtocolVersion issuer_configured_version,
                   int issuer_configured_batch_size) override;
   bool AddKey(std::string_view key) override;
-  absl::optional<std::string> BeginIssuance(size_t num_tokens) override;
+  std::optional<std::string> BeginIssuance(size_t num_tokens) override;
   std::unique_ptr<UnblindedTokens> ConfirmIssuance(
       std::string_view response_header) override;
 

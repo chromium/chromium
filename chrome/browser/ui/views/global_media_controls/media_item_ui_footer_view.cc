@@ -29,8 +29,9 @@ constexpr int kDeviceIconSize = 12;
 
 // Label button with custom hover effect.
 class DeviceEntryButton : public views::LabelButton {
+  METADATA_HEADER(DeviceEntryButton, views::LabelButton)
+
  public:
-  METADATA_HEADER(DeviceEntryButton);
   explicit DeviceEntryButton(PressedCallback callback,
                              const gfx::VectorIcon* icon = nullptr,
                              const std::u16string& text = std::u16string());
@@ -88,7 +89,7 @@ void DeviceEntryButton::UpdateImage() {
                                                kDeviceIconSize));
 }
 
-BEGIN_METADATA(DeviceEntryButton, views::LabelButton)
+BEGIN_METADATA(DeviceEntryButton)
 END_METADATA
 
 }  // anonymous namespace
@@ -154,16 +155,16 @@ void MediaItemUIFooterView::OnMediaItemUIDeviceSelectorUpdated(
   UpdateButtonsColor();
 }
 
-void MediaItemUIFooterView::Layout() {
+void MediaItemUIFooterView::Layout(PassKey) {
   if (!overflow_button_) {
-    views::View::Layout();
+    LayoutSuperclass<views::View>(this);
     return;
   }
 
   overflow_button_->SetVisible(false);
   if (GetPreferredSize().width() > GetContentsBounds().width())
     overflow_button_->SetVisible(true);
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 void MediaItemUIFooterView::OnColorsChanged(SkColor foreground,

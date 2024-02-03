@@ -22,7 +22,6 @@ BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kSupervisedPrefsControlledBySupervisedStore);
 BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
-BASE_DECLARE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
@@ -51,6 +50,12 @@ BASE_DECLARE_FEATURE(kShadowKidsApiWithSafeSites);
 
 // Forces Safe Search for supervised users.
 BASE_DECLARE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers);
+
+// Updates usages of Profile.isChild() in Profile.java to use the account
+// capability to determine if account is supervised.
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kMigrateAccountManagementSettingsToCapabilities);
+#endif
 
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.

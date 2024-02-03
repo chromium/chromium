@@ -112,7 +112,7 @@ class ASH_EXPORT AppsContainerView
       const gfx::Size& search_box_size);
 
   // views::View overrides:
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;

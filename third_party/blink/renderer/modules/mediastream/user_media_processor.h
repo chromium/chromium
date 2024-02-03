@@ -105,7 +105,7 @@ class MODULES_EXPORT UserMediaProcessor
       const mojom::blink::MediaStreamStateChange new_state);
   void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
-
+  void OnZoomLevelChange(const MediaStreamDevice& device, int zoom_level);
   void set_media_stream_dispatcher_host_for_testing(
       mojo::PendingRemote<blink::mojom::blink::MediaStreamDispatcherHost>
           dispatcher_host) {
@@ -208,10 +208,10 @@ class MODULES_EXPORT UserMediaProcessor
   void StartTracks(const String& label);
 
   blink::MediaStreamComponent* CreateVideoTrack(
-      const absl::optional<blink::MediaStreamDevice>& device);
+      const std::optional<blink::MediaStreamDevice>& device);
 
   blink::MediaStreamComponent* CreateAudioTrack(
-      const absl::optional<blink::MediaStreamDevice>& device);
+      const std::optional<blink::MediaStreamDevice>& device);
 
   // Callback function triggered when all native versions of the
   // underlying media sources and tracks have been created and started.
@@ -292,11 +292,11 @@ class MODULES_EXPORT UserMediaProcessor
       const blink::VideoCaptureSettings& settings);
   void SelectVideoContentSettings();
 
-  absl::optional<base::UnguessableToken> DetermineExistingAudioSessionId();
+  std::optional<base::UnguessableToken> DetermineExistingAudioSessionId();
 
   void GenerateStreamForCurrentRequestInfo(
-      absl::optional<base::UnguessableToken>
-          requested_audio_capture_session_id = absl::nullopt,
+      std::optional<base::UnguessableToken> requested_audio_capture_session_id =
+          std::nullopt,
       blink::mojom::StreamSelectionStrategy strategy =
           blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID);
 

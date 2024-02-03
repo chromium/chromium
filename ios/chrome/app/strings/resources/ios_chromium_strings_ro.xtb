@@ -25,6 +25,7 @@
 <translation id="1617663976202781617">Date din sincronizarea Chromium</translation>
 <translation id="1647558790457890304">Setări Chromium</translation>
 <translation id="164952285225495380">Coletul este deja urmărit în Chromium.</translation>
+<translation id="1707458603865303524">Folosește Chromium oricând atingi linkuri în mesaje sau alte aplicații.</translation>
 <translation id="1722370509450468186">Parola va fi salvată în contul tău (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Datele Chromium au fost șterse</translation>
 <translation id="1791845338122684020">Deschide pagina Istoricul Chromium.</translation>
@@ -40,9 +41,11 @@
 <translation id="2054703085270098503">Protejează-te cu Chromium</translation>
 <translation id="2098023844024447022">Deschide cea mai recentă filă în Chromium.</translation>
 <translation id="2109439615198500433">Sfat pentru Chromium</translation>
+<translation id="2147210759439165826">Rămâi la curent cu conținutul și sfaturile utile pentru Chromium.</translation>
 <translation id="2168108852149185974">Unele suplimente blochează Chromium. Dezinstalează:</translation>
 <translation id="2178608107313874732">Momentan, Chromium nu poate folosi camera foto</translation>
 <translation id="2195025571279539885">Dorești ca data viitoare Chromium să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
+<translation id="2216344354848599203">Apasă lung pictograma Chromium și dă clic pe Editează ecranul de pornire</translation>
 <translation id="2218146227246548550">Organizația îți solicită să te conectezi pentru a folosi Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Această adresă se salvează momentan în Chromium. Pentru a o folosi în toate produsele Google, salveaz-o în Contul Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Aceasta înseamnă că Chromium va solicita de fiecare dată versiunea pentru desktop a site-urilor.</translation>
@@ -95,6 +98,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="3805899903892079518">Chromium nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
 <translation id="3827545470516145620">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
 <translation id="3833326979834193417">Chromium rulează automat Verificarea de siguranță în fiecare zi pentru a te proteja împotriva încălcării securității datelor, a site-urilor nesigure și nu numai. Poți afla mai multe despre Verificarea de siguranță în Setări.</translation>
+<translation id="3855938650519180865">Ce e nou în Chromium</translation>
 <translation id="3886689467633467988">Conectează-te la acest site și la Chromium pentru a accesa marcajele și multe altele de pe toate dispozitivele tale.</translation>
 <translation id="394413318816989199">Criptarea cu expresie de acces nu include metodele de plată și adresele.
 
@@ -107,6 +111,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="4106512142782407609">Te-ai conectat ca <ph name="EMAIL" />.
 
 Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a salva datele Chromium în Contul Google.</translation>
+<translation id="4118287192800900567">Sfat pentru Chromium: conectează-te la Chromium</translation>
 <translation id="4195557071150719219">Vezi filele recente din Chromium</translation>
 <translation id="4200712796753248893">Folosește Acțiuni în Chromium pe iOS</translation>
 <translation id="420541179527342563">Pentru a dezactiva modul Blocare în Chromium, dezactivează-l pe iPad.</translation>
@@ -158,6 +163,7 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 <translation id="5688047395118852662">Acest card afișează sugestii privind modul în care poți profita la maximum de Chromium.</translation>
 <translation id="5700709190537129682">Chromium nu îți poate verifica parolele</translation>
 <translation id="5777187867430702742">Pagină Chromium</translation>
+<translation id="584239279770005676">Sfat pentru Chromium: folosește Chromium în mod prestabilit</translation>
 <translation id="584550191241316896">Te-ai conectat la Chromium</translation>
 <translation id="5889847953983052353">Când opțiunea este activă:
 <ph name="BEGIN_INDENT" /> • contribui la îmbunătățirea browserului Chromium pentru cei care-l folosesc în mod similar cu tine.<ph name="END_INDENT" />
@@ -172,6 +178,7 @@ De reținut:
 <translation id="5951593919357934226">Profită din plin de Chromium.</translation>
 <translation id="5983312940147103417">Contribuie la îmbunătățirea Chromium</translation>
 <translation id="5985102273857091344">Selectează Chromium.</translation>
+<translation id="5985254578475526217">Pentru a primi notificări de la Chromium, activează notificările din Setările iOS.</translation>
 <translation id="6062449165341879460">Organizația ta <ph name="DOMAIN" /> va avea acces la datele Chromium, marcajele, istoricul, parolele și alte setări pe care le stochezi în acest cont. Când te deconectezi, datele vor fi șterse de pe acest dispozitiv.  Însă vor rămâne stocate în Contul Google administrat și vor fi disponibile pentru organizația ta. În plus, organizația ta poate să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chromium.</translation>
 <translation id="6093744543579359059">Gestionează parolele în Chromium</translation>
 <translation id="6104024151682120539">Deschide în Chromium</translation>
@@ -180,6 +187,7 @@ De reținut:
 1. deschide Setările;
 2. atinge Aplicația browser prestabilită;
 3. selectează Chromium.</translation>
+<translation id="6132149203299792222">Conectează-te cu Contul Google pentru a sincroniza parolele, marcajele și multe altele.</translation>
 <translation id="6154098560469640583">Folosește Chromium când dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="6170619162539716595">Permite browserului Chromium să folosească Google Maps pentru a-ți oferi indicații de orientare și informații locale despre adresele detectate.</translation>
 <translation id="6175967839221456271">Permite accesul la Chromium</translation>
@@ -191,6 +199,7 @@ De reținut:
 <translation id="632825460376924298">Permite conectarea la Chromium</translation>
 <translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>
 <translation id="6348483005826990855">3. Selectează Chromium</translation>
+<translation id="6383607155624074112">Accesează Chromium mai rapid din bara de andocare de pe ecranul de pornire</translation>
 <translation id="6407399265324739055">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chromium nu se va sincroniza.
 
 Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>
@@ -257,6 +266,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="8234150821523419638">Deschide meniul Chromium</translation>
 <translation id="8235427517854598594">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="8240981428553046115">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
+<translation id="8254729934443216898">Explorează noile funcții care te ajută să profiți din plin de Chromium.</translation>
 <translation id="8303579360494576778">Gestionează metodele de plată în Chromium</translation>
 <translation id="830951810931292870">Deschide adresele URL introduse în Chromium în modul incognito.</translation>
 <translation id="8386869251364507178">Acțiuni în Chromium</translation>

@@ -122,27 +122,27 @@ void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
   clip_content_path_validity_ = kClipContentPathUnknown;
   clip_content_path_.Clear();
-  cached_paint_record_ = absl::nullopt;
+  cached_paint_record_ = std::nullopt;
   local_clip_bounds_ = gfx::RectF();
   MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
 }
 
-absl::optional<Path> LayoutSVGResourceClipper::AsPath() {
+std::optional<Path> LayoutSVGResourceClipper::AsPath() {
   NOT_DESTROYED();
   if (clip_content_path_validity_ == kClipContentPathValid)
-    return absl::optional<Path>(clip_content_path_);
+    return std::optional<Path>(clip_content_path_);
   if (clip_content_path_validity_ == kClipContentPathInvalid)
-    return absl::nullopt;
+    return std::nullopt;
   DCHECK_EQ(clip_content_path_validity_, kClipContentPathUnknown);
 
   clip_content_path_validity_ = kClipContentPathInvalid;
   // If the current clip-path gets clipped itself, we have to fallback to
   // masking.
   if (StyleRef().HasClipPath())
-    return absl::nullopt;
+    return std::nullopt;
 
   unsigned op_count = 0;
-  absl::optional<SkOpBuilder> clip_path_builder;
+  std::optional<SkOpBuilder> clip_path_builder;
   SkPath resolved_path;
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
@@ -150,14 +150,14 @@ absl::optional<Path> LayoutSVGResourceClipper::AsPath() {
     if (strategy == ClipStrategy::kNone)
       continue;
     if (strategy == ClipStrategy::kMask)
-      return absl::nullopt;
+      return std::nullopt;
 
     // Multiple shapes require PathOps. In some degenerate cases PathOps can
     // exhibit quadratic behavior, so we cap the number of ops to a reasonable
     // count.
     const unsigned kMaxOps = 42;
     if (++op_count > kMaxOps)
-      return absl::nullopt;
+      return std::nullopt;
     if (clip_path_builder) {
       clip_path_builder->add(PathFromElement(child_element).GetSkPath(),
                              kUnion_SkPathOp);
@@ -175,7 +175,7 @@ absl::optional<Path> LayoutSVGResourceClipper::AsPath() {
     clip_path_builder->resolve(&resolved_path);
   clip_content_path_ = std::move(resolved_path);
   clip_content_path_validity_ = kClipContentPathValid;
-  return absl::optional<Path>(clip_content_path_);
+  return std::optional<Path>(clip_content_path_);
 }
 
 PaintRecord LayoutSVGResourceClipper::CreatePaintRecord() {

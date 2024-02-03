@@ -492,9 +492,9 @@ void Combobox::RemovedFromWidget() {
   widget_observer_.Reset();
 }
 
-void Combobox::Layout() {
-  views::Button::Layout();
-  views::FocusRing::Get(this)->Layout();
+void Combobox::Layout(PassKey) {
+  LayoutSuperclass<views::Button>(this);
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }
 
 void Combobox::OnWidgetBoundsChanged(views::Widget* widget,
@@ -604,8 +604,7 @@ void Combobox::ShowDropDownMenu() {
   menu_view_->ScrollToSelectedView();
 
   SetBackground(views::CreateThemedRoundedRectBackground(
-      kComboboxActiveColorId, kComboboxRoundedCorners,
-      /*for_border_thickness=*/0));
+      kComboboxActiveColorId, kComboboxRoundedCorners));
   title_->SetEnabledColorId(kActiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));

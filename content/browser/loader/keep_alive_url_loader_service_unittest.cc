@@ -4,16 +4,24 @@
 
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 
+#include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_render_view_host.h"
+#include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,10 +29,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
@@ -36,6 +46,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
 namespace {
@@ -393,6 +404,10 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   }
   base::test::ScopedFeatureList& feature_list() { return scoped_feature_list_; }
 
+  TestWebContents* test_web_contents() {
+    return static_cast<TestWebContents*>(web_contents());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -407,8 +422,10 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
 class KeepAliveURLLoaderServiceTest : public KeepAliveURLLoaderServiceTestBase {
  protected:
   void SetUp() override {
-    feature_list().InitAndEnableFeature(
-        blink::features::kKeepAliveInBrowserMigration);
+    feature_list().InitWithFeatures(
+        {blink::features::kKeepAliveInBrowserMigration,
+         blink::features::kAttributionReportingInBrowserMigration},
+        {});
     KeepAliveURLLoaderServiceTestBase::SetUp();
   }
 };
@@ -584,6 +601,54 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveResponse) {
       /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       ForwardRedirectsAndResponseToAttributionRequestHelper) {
+  // The Attribution Manager uses the DataDecoder service, which, when an
+  // InProcessDataDecoer object exists, will route to an internal in-process
+  // instance.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  // Set up the Attribution Manager.
+  test_web_contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
+  auto mock_manager = std::make_unique<MockAttributionManager>();
+  mock_manager->SetDataHostManager(
+      std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get()));
+  MockAttributionManager* mock_attribution_manager = mock_manager.get();
+  static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition())
+      ->OverrideAttributionManagerForTesting(std::move(mock_manager));
+
+  // Loads keepalive request.
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+  network::ResourceRequest request =
+      CreateResourceRequest(GURL(kTestRequestUrl));
+  request.attribution_reporting_eligibility =
+      network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger;
+  renderer_loader_factory.CreateLoaderAndStart(
+      std::move(request), renderer_loader_client.BindNewPipeAndPassRemote());
+
+  // Simluates receiving a redirect in the network service.
+  EXPECT_CALL(*mock_attribution_manager, HandleTrigger).Times(1);
+  constexpr char kRegisterTriggerJson[] = R"json({ })json";
+  GetLastPendingRequest()->client->OnReceiveRedirect(
+      CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
+      CreateResponseHead({{kAttributionReportingRegisterTriggerHeader,
+                           kRegisterTriggerJson}}));
+
+  // Simluates receiving response in the network service.
+  EXPECT_CALL(*mock_attribution_manager, HandleSource).Times(1);
+  constexpr char kRegisterSourceJson[] =
+      R"json({"destination":"https://destination.example"})json";
+  GetLastPendingRequest()->client->OnReceiveResponse(
+      CreateResponseHead(
+          {{kAttributionReportingRegisterSourceHeader, kRegisterSourceJson}}),
+      /*body=*/{}, /*cached_metadata=*/absl::nullopt);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest,

@@ -244,7 +244,7 @@ void WebThemeEngineDefault::Paint(
     const WebThemeEngine::ExtraParams* extra_params,
     mojom::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider,
-    const absl::optional<SkColor>& accent_color) {
+    const std::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
       GetNativeThemeExtraParams(part, state, extra_params);
 
@@ -302,13 +302,13 @@ int WebThemeEngineDefault::GetPaintedScrollbarTrackInset() const {
   return ui::NativeTheme::GetInstanceForWeb()->GetPaintedScrollbarTrackInset();
 }
 
-absl::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
+std::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
     WebThemeEngine::SystemThemeColor system_theme_color) const {
   return ui::NativeTheme::GetInstanceForWeb()->GetSystemThemeColor(
       NativeSystemThemeColor(system_theme_color));
 }
 
-absl::optional<SkColor> WebThemeEngineDefault::GetAccentColor() const {
+std::optional<SkColor> WebThemeEngineDefault::GetAccentColor() const {
   return ui::NativeTheme::GetInstanceForWeb()->user_color();
 }
 
@@ -496,7 +496,7 @@ SkColor WebThemeEngineDefault::GetContrastingColorFor(
 }
 
 mojom::ColorScheme WebThemeEngineDefault::CalculateColorSchemeForAccentColor(
-    absl::optional<SkColor> accent_color,
+    std::optional<SkColor> accent_color,
     mojom::ColorScheme color_scheme,
     SkColor light_contrasting_color,
     SkColor dark_contrasting_color) const {

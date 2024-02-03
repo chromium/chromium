@@ -238,7 +238,7 @@ void ContentsView::SetActiveStateInternal(int page_index, bool animate) {
   ActivePageChanged();
 
   if (!should_animate)
-    Layout();
+    DeprecatedLayoutImmediately();
 }
 
 void ContentsView::ActivePageChanged() {
@@ -313,7 +313,7 @@ void ContentsView::ShowEmbeddedAssistantUI(bool show) {
   if (next_page == GetPageIndexForState(AppListState::kStateApps)) {
     GetSearchBoxView()->ClearSearch();
     GetSearchBoxView()->SetSearchBoxActive(false, ui::ET_UNKNOWN);
-    apps_container_view_->Layout();
+    apps_container_view_->DeprecatedLayoutImmediately();
   }
 }
 
@@ -478,7 +478,7 @@ bool ContentsView::Back() {
   return true;
 }
 
-void ContentsView::Layout() {
+void ContentsView::Layout(PassKey) {
   const gfx::Rect rect = GetContentsBounds();
   if (rect.IsEmpty())
     return;

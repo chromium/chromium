@@ -795,7 +795,7 @@ void V4L2MjpegDecodeAccelerator::DevicePollTask() {
 bool V4L2MjpegDecodeAccelerator::DequeueSourceChangeEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
 
-  if (absl::optional<struct v4l2_event> event = device_->DequeueEvent()) {
+  if (std::optional<struct v4l2_event> event = device_->DequeueEvent()) {
     if (event->type == V4L2_EVENT_SOURCE_CHANGE) {
       VLOGF(2) << ": got source change event: " << event->u.src_change.changes;
       if (event->u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION) {

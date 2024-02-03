@@ -23,12 +23,13 @@ FontTableMatcher::MemoryMappingFromFontUniqueNameTable(
   CHECK(serialization_size);
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(serialization_size);
+  CHECK(mapped_region.IsValid());
   font_unique_name_table.SerializeToArray(mapped_region.mapping.memory(),
                                           mapped_region.mapping.mapped_size());
   return mapped_region.region.Map();
 }
 
-absl::optional<FontTableMatcher::MatchResult> FontTableMatcher::MatchName(
+std::optional<FontTableMatcher::MatchResult> FontTableMatcher::MatchName(
     const std::string& name_request) const {
   std::string folded_name_request = IcuFoldCase(name_request);
 
@@ -52,7 +53,7 @@ absl::optional<FontTableMatcher::MatchResult> FontTableMatcher::MatchName(
 
   if (found_font.file_path().empty())
     return {};
-  return absl::optional<MatchResult>(
+  return std::optional<MatchResult>(
       {found_font.file_path(), found_font.ttc_index()});
 }
 

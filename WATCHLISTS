@@ -39,6 +39,10 @@
                   '|content/renderer/accessibility/render_accessibility_impl' \
                   '|content/browser/accessibility/browser_accessibility(\.|_manager|_win|_com|_cocoa)'
     },
+    'accessibility_reading': {
+      'filepath': 'read_anything/|'\
+      'chrome/renderer/accessibility/',
+    },
     'accessibility_service': {
       'filepath': 'services/accessibility/',
     },
@@ -2410,6 +2414,7 @@
                                            'shannc+watch@chromium.org'],
     'accessibility_features_ash': ['katie+watch@chromium.org'],
     'accessibility_minimal_core': ['aleventhal+watcha11y@chromium.org'],
+    'accessibility_reading': ['lwinston+watch-readinga11y@google.com'],
     'accessibility_service': ['katie+watch@chromium.org'],
     'add_to_homescreen': ['dominickn+watch-a2hs@chromium.org',
                           'pkotwicz+watch@chromium.org',
@@ -2885,7 +2890,7 @@
     'fuchsia': ['fuchsia-reviews@chromium.org',
                 'zijiehe@google.com'],
     'full_restore': ['nancylingwang@chromium.org'],
-    'fuzzing': ['fuzzing@chromium.org'],
+    'fuzzing': ['fuzzing+watch@chromium.org'],
     'gamepad': ['mattreynolds+watch@chromium.org'],
     'gcm': ['peter@chromium.org'],
     'generic_sensor': ['mattreynolds+watch@chromium.org',
@@ -3221,7 +3226,6 @@
     'switch_access': ['anastasi+watch@google.com'],
     'syncfs': ['kinuko+fileapi@chromium.org'],
     'system_web_apps': [ 'ortuno@chromium.org',
-                         'dominicschulz@google.com',
                          'qjw@chromium.org'],
     'tab_alert_indicators': ['jophba+watch@chromium.org'],
     'tab_capture': ['jophba+watch@chromium.org',
@@ -3288,8 +3292,7 @@
     'video': ['posciak+watch@chromium.org'],
     'video_capture': ['chfremer+watch@chromium.org',
                       'rijubrata.bhaumik@intel.com'],
-    'virtual_keyboard': ['dfaden+virtualkb@google.com',
-                         'shend+watch@chromium.org',
+    'virtual_keyboard': ['shend+watch@chromium.org',
                          'tranbaoduy+watch@chromium.org',
                          'yhanada+watchvk@chromium.org'],
     'virtual_reality': ['feature-vr-reviews@chromium.org'],

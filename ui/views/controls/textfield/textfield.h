@@ -541,6 +541,9 @@ class VIEWS_EXPORT Textfield : public View,
   // A callback function to periodically update the cursor node_data.
   void UpdateCursorVisibility();
 
+  // Returns true if a context menu for this view is showing.
+  bool IsMenuShowing() const;
+
  private:
   friend class TextfieldTestApi;
 

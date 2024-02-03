@@ -46,7 +46,7 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
   void OnMouseEntered(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   gfx::Size GetPreviewViewSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 

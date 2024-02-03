@@ -4,6 +4,7 @@
 
 #include "services/network/tcp_server_socket.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -16,7 +17,6 @@
 #include "net/log/net_log.h"
 #include "net/socket/tcp_server_socket.h"
 #include "services/network/tcp_connected_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -45,7 +45,7 @@ TCPServerSocket::~TCPServerSocket() {}
 base::expected<net::IPEndPoint, int32_t> TCPServerSocket::Listen(
     const net::IPEndPoint& local_addr,
     int backlog,
-    absl::optional<bool> ipv6_only) {
+    std::optional<bool> ipv6_only) {
   if (backlog == 0) {
     // SocketPosix::Listen and TCPSocketWin::Listen DCHECKs on backlog > 0.
     return base::unexpected(net::ERR_INVALID_ARGUMENT);
@@ -66,7 +66,7 @@ void TCPServerSocket::Accept(
     mojo::PendingRemote<mojom::SocketObserver> observer,
     AcceptCallback callback) {
   if (pending_accepts_queue_.size() >= static_cast<size_t>(backlog_)) {
-    std::move(callback).Run(net::ERR_INSUFFICIENT_RESOURCES, absl::nullopt,
+    std::move(callback).Run(net::ERR_INSUFFICIENT_RESOURCES, std::nullopt,
                             mojo::NullRemote(),
                             mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
@@ -140,7 +140,7 @@ void TCPServerSocket::OnAcceptCompleted(int result) {
              std::move(send_producer_handle));
   } else {
     std::move(pending_accept->callback)
-        .Run(result, absl::nullopt, mojo::NullRemote(),
+        .Run(result, std::nullopt, mojo::NullRemote(),
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
   }

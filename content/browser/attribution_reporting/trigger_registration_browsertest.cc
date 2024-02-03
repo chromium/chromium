@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -27,6 +28,8 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
 
@@ -44,9 +47,22 @@ using ::testing::StrictMock;
 
 }  // namespace
 
-class AttributionTriggerRegistrationBrowserTest : public ContentBrowserTest {
+class AttributionTriggerRegistrationBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  AttributionTriggerRegistrationBrowserTest() = default;
+  AttributionTriggerRegistrationBrowserTest() {
+    const bool enable_in_browser_migration = GetParam();
+    if (enable_in_browser_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kKeepAliveInBrowserMigration,
+           blink::features::kAttributionReportingInBrowserMigration},
+          {});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          {blink::features::kKeepAliveInBrowserMigration});
+    }
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Sets up the blink runtime feature for ConversionMeasurement.
@@ -87,12 +103,17 @@ class AttributionTriggerRegistrationBrowserTest : public ContentBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   AttributionManagerImpl::ScopedUseInMemoryStorageForTesting
       attribution_manager_in_memory_setting_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionTriggerRegistrationBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
     AttributionTriggerRegistrationBrowserTest,
     NonAttributionSrcImgRedirect_MultipleTriggersRegistered) {
   EXPECT_TRUE(NavigateToURL(

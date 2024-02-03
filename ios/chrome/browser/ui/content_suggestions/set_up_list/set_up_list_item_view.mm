@@ -60,7 +60,7 @@ struct ViewConfig {
   int signin_sync_description;
   int default_browser_description;
   int autofill_description;
-  int content_notification_description;
+  int notifications_description;
   NSString* title_font;
   NSString* description_font;
   CGFloat text_spacing;
@@ -90,13 +90,17 @@ struct ViewConfig {
               syncer::kReplaceSyncPromosWithSignInPromos)
               ? IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_SYNC
               : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION;
+      int notificationsString =
+          IsIOSTipsNotificationsEnabled()
+              ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION
+              : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION;
       _config = {
           YES,
           NO,
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
-          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION,
+          notificationsString,
           UIFontTextStyleFootnote,
           UIFontTextStyleCaption2,
           kCompactTextSpacing,
@@ -107,13 +111,17 @@ struct ViewConfig {
               syncer::kReplaceSyncPromosWithSignInPromos)
               ? IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL
               : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_MAGIC_STACK_DESCRIPTION;
+      int notificationsString =
+          IsIOSTipsNotificationsEnabled()
+              ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION
+              : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION;
       _config = {
           NO,
           YES,
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION,
-          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION,
+          notificationsString,
           UIFontTextStyleSubheadline,
           UIFontTextStyleFootnote,
           kTextSpacing,
@@ -124,13 +132,17 @@ struct ViewConfig {
                            syncer::kReplaceSyncPromosWithSignInPromos)
                            ? IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL
                            : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION;
+      int notificationsString =
+          IsIOSTipsNotificationsEnabled()
+              ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION
+              : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION;
       _config = {
           NO,
           NO,
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
-          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION,
+          notificationsString,
           UIFontTextStyleSubheadline,
           UIFontTextStyleFootnote,
           kTextSpacing,
@@ -353,9 +365,12 @@ struct ViewConfig {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE);
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE);
-    case SetUpListItemType::kContentNotification:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE);
+    case SetUpListItemType::kNotifications:
+      return IsIOSTipsNotificationsEnabled()
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
@@ -373,8 +388,8 @@ struct ViewConfig {
       return l10n_util::GetNSString(_config.default_browser_description);
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(_config.autofill_description);
-    case SetUpListItemType::kContentNotification:
-      return l10n_util::GetNSString(_config.content_notification_description);
+    case SetUpListItemType::kNotifications:
+      return l10n_util::GetNSString(_config.notifications_description);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
     case SetUpListItemType::kFollow:
@@ -391,7 +406,7 @@ struct ViewConfig {
       return set_up_list::kDefaultBrowserItemID;
     case SetUpListItemType::kAutofill:
       return set_up_list::kAutofillItemID;
-    case SetUpListItemType::kContentNotification:
+    case SetUpListItemType::kNotifications:
       return set_up_list::kContentNotificationItemID;
     case SetUpListItemType::kAllSet:
       return set_up_list::kAllSetItemID;

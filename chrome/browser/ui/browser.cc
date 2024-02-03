@@ -707,8 +707,16 @@ std::u16string Browser::GetWindowTitleForCurrentTab(
     bool include_app_name) const {
   if (!user_title_.empty())
     return base::UTF8ToUTF16(user_title_);
-  return GetWindowTitleFromWebContents(
-      include_app_name, tab_strip_model_->GetActiveWebContents());
+
+  // For document picture-in-picture windows, we use the title from the opener
+  // WebContents instead of the picture-in-picture WebContents itself.
+  content::WebContents* web_contents_for_title =
+      is_type_picture_in_picture()
+          ? PictureInPictureWindowManager::GetInstance()->GetWebContents()
+          : tab_strip_model_->GetActiveWebContents();
+
+  return GetWindowTitleFromWebContents(include_app_name,
+                                       web_contents_for_title);
 }
 
 std::u16string Browser::GetWindowTitleForTab(int index) const {

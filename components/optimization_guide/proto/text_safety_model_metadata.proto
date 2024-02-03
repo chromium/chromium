@@ -38,4 +38,8 @@ message FeatureTextSafetyConfiguration {
 
   // The set of thresholds to apply per category.
   repeated SafetyCategoryThreshold safety_category_thresholds = 2;
+
+  // The set of languages allowed for text safety evaluation. If empty, no
+  // language constraints are enforced.
+  repeated string allowed_languages = 3;
 }

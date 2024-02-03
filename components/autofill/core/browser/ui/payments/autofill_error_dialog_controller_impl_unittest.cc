@@ -24,6 +24,13 @@ class TestAutofillErrorDialogView : public AutofillErrorDialogView {
   ~TestAutofillErrorDialogView() override = default;
 
   void Dismiss() override {}
+
+  base::WeakPtr<AutofillErrorDialogView> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestAutofillErrorDialogView> weak_ptr_factory_{this};
 };
 
 // Param of the AutofillErrorDialogControllerImplTest:
@@ -46,9 +53,9 @@ class AutofillErrorDialogControllerImplTest
             base::Unretained(this)));
   }
 
-  AutofillErrorDialogView* CreateErrorDialogView() {
+  base::WeakPtr<AutofillErrorDialogView> CreateErrorDialogView() {
     view_ = std::make_unique<TestAutofillErrorDialogView>();
-    return view_.get();
+    return view_->GetWeakPtr();
   }
 
   AutofillErrorDialogControllerImpl* controller() { return controller_.get(); }

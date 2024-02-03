@@ -104,7 +104,8 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   other.is_child_account = signin::Tribool::kTrue;
   other.access_point = signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
   AccountCapabilitiesTestMutator mutator(&other.capabilities);
-  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
 
   EXPECT_TRUE(info.UpdateWith(other));
   EXPECT_EQ("test_id", info.gaia);
@@ -114,8 +115,10 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
             info.access_point);
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
-  EXPECT_EQ(signin::Tribool::kTrue,
-            info.capabilities.can_offer_extended_chrome_sync_promos());
+  EXPECT_EQ(
+      signin::Tribool::kTrue,
+      info.capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions());
 }
 
 // Tests that UpdateWith() sets default values for hosted_domain and

@@ -29,6 +29,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -106,13 +107,16 @@ try_.builder(
             "reclient",
             "chrome_with_codecs",
             "pdf_xfa",
-            "disable_nacl",
             "mojo_fuzzer",
             "skip_generate_fuzzer_owners",
         ],
     ),
     builderless = False,
     os = os.WINDOWS_ANY,
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
+    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -150,7 +154,6 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
-    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -162,7 +165,6 @@ try_.compilator_builder(
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -199,36 +201,10 @@ try_.builder(
     ssd = True,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
     tryjob = try_.job(
         # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
         # out builder cache
         cancel_stale = False,
-    ),
-)
-
-try_.builder(
-    name = "win_chromium_compile_siso_dbg_ng",
-    description_html = """\
-This builder shadows win_chromium_compile_dbg_ng builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating win_chromium_compile_dbg_ng from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/win_chromium_compile_dbg_ng"),
-    try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    gn_args = "try/win_chromium_compile_dbg_ng",
-    builderless = False,
-    cores = 16,
-    ssd = True,
-    contact_team_email = "chrome-build-team@google.com",
-    main_list_view = "try",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
-    tryjob = try_.job(
-        cancel_stale = False,
-        experiment_percentage = 10,
     ),
 )
 
@@ -369,7 +345,6 @@ try_.compilator_builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     grace_period = 3 * time.minute,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
@@ -395,7 +370,6 @@ try_.orchestrator_builder(
     compilator = "win-arm64-rel-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
-    siso_enabled = True,
     use_clang_coverage = True,
     # Enable when stable.
     # main_list_view = "try",
@@ -416,8 +390,9 @@ try_.builder(
             "ci/win-arm64-dbg",
         ],
     ),
-    builderless = False,
+    builderless = True,
     cores = 16,
+    os = os.WINDOWS_10,
     ssd = True,
     contact_team_email = "chrome-desktop-engprod@google.com",
     # Enable when stable.
@@ -484,7 +459,6 @@ try_.gpu.optional_tests_builder(
             "reclient",
             "minimal_symbols",
             "dcheck_always_on",
-            "disable_nacl",
         ],
     ),
     os = os.WINDOWS_DEFAULT,

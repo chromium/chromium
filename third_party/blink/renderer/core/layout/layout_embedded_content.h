@@ -80,7 +80,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
 
   // The size of the child frame when it should be "frozen"; i.e., it should not
   // change even when the size of |this| changes.
-  virtual const absl::optional<PhysicalSize> FrozenFrameSize() const;
+  virtual const std::optional<PhysicalSize> FrozenFrameSize() const;
 
   // A transform mapping from the coordinate space of the embedded content
   // rendered by this object to the object's border-box.

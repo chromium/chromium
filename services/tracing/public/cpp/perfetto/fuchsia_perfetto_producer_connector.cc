@@ -94,11 +94,11 @@ FuchsiaPerfettoProducerConnector::~FuchsiaPerfettoProducerConnector() {
           std::move(buffer_receiver_), std::move(buffer_receiver_thread_)));
 }
 
-absl::optional<perfetto::ipc::Client::ConnArgs>
+std::optional<perfetto::ipc::Client::ConnArgs>
 FuchsiaPerfettoProducerConnector::Connect() {
   auto socket = ConnectSocket();
   if (!socket.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   perfetto::ipc::Client::ConnArgs conn_args(
       perfetto::base::ScopedSocketHandle(socket.release()));

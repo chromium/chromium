@@ -25,6 +25,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_util.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -231,7 +232,7 @@ scoped_refptr<const WebRequestAction> CreateRemoveResponseHeaderAction(
     return scoped_refptr<const WebRequestAction>(nullptr);
   }
 
-  const std::string& value_string = value ? *value : base::EmptyString();
+  const std::string& value_string = value ? *value : std::string();
   return base::MakeRefCounted<WebRequestRemoveResponseHeaderAction>(
       *name, value_string, value != nullptr);
 }
@@ -437,7 +438,7 @@ bool WebRequestAction::Equals(const WebRequestAction* other) const {
 }
 
 bool WebRequestAction::HasPermission(ApplyInfo* apply_info,
-                                     const std::string& extension_id) const {
+                                     const ExtensionId& extension_id) const {
   PermissionHelper* permission_helper = apply_info->permission_helper;
   const WebRequestInfo* request = apply_info->request_data->request;
   if (WebRequestPermissions::HideRequest(permission_helper, *request))
@@ -492,7 +493,7 @@ scoped_refptr<const WebRequestAction> WebRequestAction::Create(
                                      bad_message);
 }
 
-void WebRequestAction::Apply(const std::string& extension_id,
+void WebRequestAction::Apply(const ExtensionId& extension_id,
                              base::Time extension_install_time,
                              ApplyInfo* apply_info) const {
   if (!HasPermission(apply_info, extension_id))
@@ -539,7 +540,7 @@ std::string WebRequestCancelAction::GetName() const {
 
 std::optional<EventResponseDelta> WebRequestCancelAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   EventResponseDelta result(extension_id, extension_install_time);
@@ -572,7 +573,7 @@ std::string WebRequestRedirectAction::GetName() const {
 
 std::optional<EventResponseDelta> WebRequestRedirectAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   if (request_data.request->url == redirect_url_)
@@ -603,7 +604,7 @@ std::string WebRequestRedirectToTransparentImageAction::GetName() const {
 std::optional<EventResponseDelta>
 WebRequestRedirectToTransparentImageAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   EventResponseDelta result(extension_id, extension_install_time);
@@ -632,7 +633,7 @@ std::string WebRequestRedirectToEmptyDocumentAction::GetName() const {
 std::optional<EventResponseDelta>
 WebRequestRedirectToEmptyDocumentAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   EventResponseDelta result(extension_id, extension_install_time);
@@ -725,7 +726,7 @@ std::string WebRequestRedirectByRegExAction::GetName() const {
 
 std::optional<EventResponseDelta> WebRequestRedirectByRegExAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   CHECK(from_pattern_.get());
@@ -773,7 +774,7 @@ std::string WebRequestSetRequestHeaderAction::GetName() const {
 
 std::optional<EventResponseDelta> WebRequestSetRequestHeaderAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   EventResponseDelta result(extension_id, extension_install_time);
@@ -812,7 +813,7 @@ std::string WebRequestRemoveRequestHeaderAction::GetName() const {
 std::optional<EventResponseDelta>
 WebRequestRemoveRequestHeaderAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   EventResponseDelta result(extension_id, extension_install_time);
@@ -853,7 +854,7 @@ std::string WebRequestAddResponseHeaderAction::GetName() const {
 std::optional<EventResponseDelta>
 WebRequestAddResponseHeaderAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   const net::HttpResponseHeaders* headers =
@@ -906,7 +907,7 @@ std::string WebRequestRemoveResponseHeaderAction::GetName() const {
 std::optional<EventResponseDelta>
 WebRequestRemoveResponseHeaderAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   const net::HttpResponseHeaders* headers =
@@ -956,7 +957,7 @@ std::string WebRequestIgnoreRulesAction::GetName() const {
 
 std::optional<EventResponseDelta> WebRequestIgnoreRulesAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   return std::nullopt;
@@ -1001,7 +1002,7 @@ std::string WebRequestRequestCookieAction::GetName() const {
 
 std::optional<EventResponseDelta> WebRequestRequestCookieAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   EventResponseDelta result(extension_id, extension_install_time);
@@ -1049,7 +1050,7 @@ std::string WebRequestResponseCookieAction::GetName() const {
 
 std::optional<EventResponseDelta> WebRequestResponseCookieAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   EventResponseDelta result(extension_id, extension_install_time);
@@ -1090,7 +1091,7 @@ std::string WebRequestSendMessageToExtensionAction::GetName() const {
 std::optional<EventResponseDelta>
 WebRequestSendMessageToExtensionAction::CreateDelta(
     const WebRequestData& request_data,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Time& extension_install_time) const {
   CHECK(request_data.stage & stages());
   EventResponseDelta result(extension_id, extension_install_time);

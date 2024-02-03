@@ -28,7 +28,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -79,6 +78,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/network/shared_dictionary_util.h"
@@ -139,6 +139,7 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -270,14 +271,6 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemote() {
     }
   }
   return remote;
-}
-
-// A callback to create a URLLoaderFactory that is used in tests.
-StoragePartitionImpl::CreateNetworkFactoryCallback&
-GetCreateURLLoaderFactoryCallback() {
-  static base::NoDestructor<StoragePartitionImpl::CreateNetworkFactoryCallback>
-      create_factory_callback;
-  return *create_factory_callback;
 }
 
 void OnClearedCookies(base::OnceClosure callback, uint32_t num_deleted) {
@@ -850,18 +843,6 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
     quota_client_types.insert(storage::QuotaClientType::kMediaLicense);
   }
   return quota_client_types;
-}
-
-// static
-void StoragePartitionImpl::
-    SetGetURLLoaderFactoryForBrowserProcessCallbackForTesting(
-        CreateNetworkFactoryCallback url_loader_factory_callback) {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(!url_loader_factory_callback || !GetCreateURLLoaderFactoryCallback())
-      << "It is not expected that this is called with non-null callback when "
-      << "another overriding callback is already set.";
-  GetCreateURLLoaderFactoryCallback() = std::move(url_loader_factory_callback);
 }
 
 // static
@@ -3396,28 +3377,25 @@ StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessInternal() {
   // previously created one if the test override has changed.
   if (url_loader_factory_for_browser_process_ &&
       url_loader_factory_for_browser_process_.is_connected() &&
-      is_test_url_loader_factory_for_browser_process_ !=
-          !GetCreateURLLoaderFactoryCallback()) {
+      is_test_url_loader_factory_for_browser_process_ ==
+          !!url_loader_factory::GetTestingInterceptor()) {
     return url_loader_factory_for_browser_process_.get();
   }
 
-  network::mojom::URLLoaderFactoryParamsPtr params =
-      CreateURLLoaderFactoryParams();
-  url_loader_factory_for_browser_process_.reset();
-  if (!GetCreateURLLoaderFactoryCallback()) {
-    GetNetworkContext()->CreateURLLoaderFactory(
-        url_loader_factory_for_browser_process_.BindNewPipeAndPassReceiver(),
-        std::move(params));
-    is_test_url_loader_factory_for_browser_process_ = false;
-    return url_loader_factory_for_browser_process_.get();
-  }
+  is_test_url_loader_factory_for_browser_process_ =
+      !!url_loader_factory::GetTestingInterceptor();
 
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory;
-  GetNetworkContext()->CreateURLLoaderFactory(
-      original_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
-  url_loader_factory_for_browser_process_.Bind(
-      GetCreateURLLoaderFactoryCallback().Run(std::move(original_factory)));
-  is_test_url_loader_factory_for_browser_process_ = true;
+  network::URLLoaderFactoryBuilder factory_builder;
+  if (url_loader_factory::GetTestingInterceptor()) {
+    url_loader_factory::GetTestingInterceptor().Run(
+        network::mojom::kBrowserProcessId, factory_builder);
+  }
+  url_loader_factory_for_browser_process_ =
+      mojo::Remote<network::mojom::URLLoaderFactory>(
+          std::move(factory_builder)
+              .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+                  GetNetworkContext(), CreateURLLoaderFactoryParams()));
+
   return url_loader_factory_for_browser_process_.get();
 }
 

@@ -4,11 +4,11 @@
 
 #include "services/network/public/cpp/trigger_verification.h"
 
+#include <optional>
 #include <string>
 
 #include "base/uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -45,7 +45,7 @@ TEST(TriggerVerificationTest, Create) {
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<TriggerVerification> actual =
+    std::optional<TriggerVerification> actual =
         TriggerVerification::Create(test_case.token, test_case.id);
 
     EXPECT_EQ(test_case.expected_created, actual.has_value())

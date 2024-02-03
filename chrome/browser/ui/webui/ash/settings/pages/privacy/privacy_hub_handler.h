@@ -45,6 +45,9 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   void HandleInitialCameraSwitchForceDisabledState(
       const base::Value::List& args);
   void HandleInitialCameraLedFallbackState(const base::Value::List& args);
+  void HandleGetCurrentTimezoneName(const base::Value::List& args);
+  void HandleGetCurrentSunSetTime(const base::Value::List& args);
+  void HandleGetCurrentSunRiseTime(const base::Value::List& args);
 
  private:
   // return the callback_id

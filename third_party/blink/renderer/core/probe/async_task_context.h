@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PROBE_ASYNC_TASK_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PROBE_ASYNC_TASK_CONTEXT_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
 
 namespace v8 {
@@ -45,16 +45,16 @@ class CORE_EXPORT AsyncTaskContext {
 
   // Marks this async task as being created on behalf of ad script. If the ad
   // script has an identifier then pass it in `ad_identifier` else pass
-  // `absl::nullopt`. `ad_identifier` is for developer debugging purposes and
+  // `std::nullopt`. `ad_identifier` is for developer debugging purposes and
   // providing an accurate identifier is best effort.
-  void SetAdTask(const absl::optional<AdScriptIdentifier>& ad_identifier) {
+  void SetAdTask(const std::optional<AdScriptIdentifier>& ad_identifier) {
     ad_task_ = true;
     ad_identifier_ = ad_identifier;
   }
 
   bool IsAdTask() const { return ad_task_; }
 
-  absl::optional<AdScriptIdentifier> ad_identifier() const {
+  std::optional<AdScriptIdentifier> ad_identifier() const {
     return ad_identifier_;
   }
 
@@ -71,7 +71,7 @@ class CORE_EXPORT AsyncTaskContext {
   // If this async task was created by ad-related script, the identifier
   // specifies which ad script it was in many cases, but not always (e.g., not
   // when the entire execution context is considered ad related).
-  absl::optional<AdScriptIdentifier> ad_identifier_;
+  std::optional<AdScriptIdentifier> ad_identifier_;
 
   v8::Isolate* isolate_ = nullptr;
 };

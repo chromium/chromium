@@ -213,6 +213,15 @@ Vector<Length> NormalizeMargins(const Vector<Length>& margins) {
   return normalized_margins;
 }
 
+Vector<Length> NormalizeScrollMargins(const Vector<Length>& margins) {
+  Vector<Length> normalized_margins = NormalizeMargins(margins);
+  if (std::all_of(normalized_margins.begin(), normalized_margins.end(),
+                  [](const auto& m) { return m.IsZero(); })) {
+    return Vector<Length>();
+  }
+  return normalized_margins;
+}
+
 String StringifyMargin(const Vector<Length>& margin) {
   StringBuilder string_builder;
 
@@ -265,11 +274,11 @@ IntersectionObserver* IntersectionObserver::Create(
     }
   }
 
-  DOMHighResTimeStamp delay = 0;
-  bool track_visibility = false;
-  delay = observer_init->delay();
-  track_visibility = observer_init->trackVisibility();
-  if (track_visibility && delay < 100) {
+  Params params = {
+      .delay = observer_init->delay(),
+      .track_visibility = observer_init->trackVisibility(),
+  };
+  if (params.track_visibility && params.delay < 100) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "To enable the 'trackVisibility' option, you must also use a "
@@ -281,30 +290,28 @@ IntersectionObserver* IntersectionObserver::Create(
     return nullptr;
   }
 
-  Vector<Length> margin;
-  ParseMargin(observer_init->rootMargin(), margin, exception_state, "root");
+  ParseMargin(observer_init->rootMargin(), params.margin, exception_state,
+              "root");
   if (exception_state.HadException()) {
     return nullptr;
   }
 
-  Vector<Length> scroll_margin;
   if (RuntimeEnabledFeatures::IntersectionObserverScrollMarginEnabled()) {
-    ParseMargin(observer_init->scrollMargin(), scroll_margin, exception_state,
-                "scroll");
+    ParseMargin(observer_init->scrollMargin(), params.scroll_margin,
+                exception_state, "scroll");
     if (exception_state.HadException()) {
       return nullptr;
     }
   }
 
-  Vector<float> thresholds;
-  ParseThresholds(observer_init->threshold(), thresholds, exception_state);
+  ParseThresholds(observer_init->threshold(), params.thresholds,
+                  exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
 
-  return MakeGarbageCollected<IntersectionObserver>(
-      delegate, root, margin, scroll_margin, thresholds, kFractionOfTarget,
-      delay, track_visibility, false, kApplyMarginToRoot, false);
+  return MakeGarbageCollected<IntersectionObserver>(delegate, root,
+                                                    std::move(params));
 }
 
 IntersectionObserver* IntersectionObserver::Create(
@@ -323,63 +330,37 @@ IntersectionObserver* IntersectionObserver::Create(
 }
 
 IntersectionObserver* IntersectionObserver::Create(
-    const Vector<Length>& margin,
-    const Vector<Length>& scroll_margin,
-    const Vector<float>& thresholds,
-    Document* document,
+    const Document& document,
     EventCallback callback,
     LocalFrameUkmAggregator::MetricId ukm_metric_id,
-    DeliveryBehavior behavior,
-    ThresholdInterpretation semantics,
-    DOMHighResTimeStamp delay,
-    bool track_visibility,
-    bool always_report_root_bounds,
-    MarginTarget margin_target,
-    bool use_overflow_clip_edge,
-    bool needs_initial_observation_with_detached_target,
-    ExceptionState& exception_state) {
+    Params&& params) {
   IntersectionObserverDelegateImpl* intersection_observer_delegate =
       MakeGarbageCollected<IntersectionObserverDelegateImpl>(
-          document->GetExecutionContext(), std::move(callback), ukm_metric_id,
-          behavior, needs_initial_observation_with_detached_target);
+          document.GetExecutionContext(), std::move(callback), ukm_metric_id,
+          params.behavior,
+          params.needs_initial_observation_with_detached_target);
   return MakeGarbageCollected<IntersectionObserver>(
-      *intersection_observer_delegate, nullptr, margin, scroll_margin,
-      thresholds, semantics, delay, track_visibility, always_report_root_bounds,
-      margin_target, use_overflow_clip_edge);
+      *intersection_observer_delegate, /*root=*/nullptr, std::move(params));
 }
 
 IntersectionObserver::IntersectionObserver(
     IntersectionObserverDelegate& delegate,
     Node* root,
-    const Vector<Length>& margin,
-    const Vector<Length>& scroll_margin,
-    const Vector<float>& thresholds,
-    ThresholdInterpretation semantics,
-    DOMHighResTimeStamp delay,
-    bool track_visibility,
-    bool always_report_root_bounds,
-    MarginTarget margin_target,
-    bool use_overflow_clip_edge)
+    Params&& params)
     : ActiveScriptWrappable<IntersectionObserver>({}),
       ExecutionContextClient(delegate.GetExecutionContext()),
       delegate_(&delegate),
       root_(root),
-      thresholds_(thresholds),
-      delay_(delay),
-      margin_target_(margin_target),
+      thresholds_(std::move(params.thresholds)),
+      delay_(params.delay),
+      margin_(NormalizeMargins(params.margin)),
+      scroll_margin_(NormalizeScrollMargins(params.scroll_margin)),
+      margin_target_(params.margin_target),
       root_is_implicit_(root ? 0 : 1),
-      track_visibility_(track_visibility),
-      track_fraction_of_root_(semantics == kFractionOfRoot),
-      always_report_root_bounds_(always_report_root_bounds),
-      use_overflow_clip_edge_(use_overflow_clip_edge) {
-  margin_ = NormalizeMargins(margin);
-
-  scroll_margin_ = NormalizeMargins(scroll_margin);
-  if (std::all_of(scroll_margin_.begin(), scroll_margin_.end(),
-                  [](const auto& m) { return m.IsZero(); })) {
-    scroll_margin_.clear();
-  }
-
+      track_visibility_(params.track_visibility),
+      track_fraction_of_root_(params.semantics == kFractionOfRoot),
+      always_report_root_bounds_(params.always_report_root_bounds),
+      use_overflow_clip_edge_(params.use_overflow_clip_edge) {
   if (root) {
     if (root->IsDocumentNode()) {
       To<Document>(root)
@@ -441,8 +422,8 @@ void IntersectionObserver::observe(Element* target,
       frame_view->ScheduleAnimation();
     }
   } else if (delegate_->NeedsInitialObservationWithDetachedTarget()) {
-    absl::optional<base::TimeTicks> monotonic_time;
-    absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
+    std::optional<base::TimeTicks> monotonic_time;
+    std::optional<IntersectionGeometry::RootGeometry> root_geometry;
     observation->ComputeIntersection(
         IntersectionObservation::kImplicitRootObserversNeedUpdate |
             IntersectionObservation::kExplicitRootObserversNeedUpdate |
@@ -516,13 +497,13 @@ DOMHighResTimeStamp IntersectionObserver::GetTimeStamp(
 
 int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
-    absl::optional<base::TimeTicks>& monotonic_time,
+    std::optional<base::TimeTicks>& monotonic_time,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update) {
   DCHECK(!RootIsImplicit());
   if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
     return 0;
 
-  absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
+  std::optional<IntersectionGeometry::RootGeometry> root_geometry;
   int64_t result = 0;
   if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     for (auto& observation : observations_) {

@@ -70,8 +70,6 @@ static_library("ui") {
     "autofill/payments/card_unmask_otp_input_dialog_view.h",
     "autofill/payments/chrome_payments_autofill_client.cc",
     "autofill/payments/chrome_payments_autofill_client.h",
-    "autofill/payments/chrome_payments_window_manager.cc",
-    "autofill/payments/chrome_payments_window_manager.h",
     "autofill/payments/create_card_unmask_prompt_view.h",
     "autofill/payments/credit_card_scanner_controller.cc",
     "autofill/payments/credit_card_scanner_controller.h",
@@ -535,7 +533,6 @@ static_library("ui") {
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/history_clusters/history_clusters_internals/webui:constants",
     "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",
-    "//components/history_clusters/ui",
     "//components/image_fetcher/core",
     "//components/infobars/content",
     "//components/infobars/core",
@@ -1047,6 +1044,8 @@ static_library("ui") {
       "apps/directory_access_confirmation_dialog.h",
       "autofill/autofill_context_menu_manager.cc",
       "autofill/autofill_context_menu_manager.h",
+      "autofill/payments/desktop_payments_window_manager.cc",
+      "autofill/payments/desktop_payments_window_manager.h",
       "blocked_content/framebust_block_tab_helper.cc",
       "blocked_content/framebust_block_tab_helper.h",
       "blocked_content/popunder_preventer.cc",
@@ -1311,6 +1310,8 @@ static_library("ui") {
       "passwords/bubble_controllers/auto_sign_in_bubble_controller.h",
       "passwords/bubble_controllers/common_saved_account_manager_bubble_controller.cc",
       "passwords/bubble_controllers/common_saved_account_manager_bubble_controller.h",
+      "passwords/bubble_controllers/default_store_changed_bubble_controller.cc",
+      "passwords/bubble_controllers/default_store_changed_bubble_controller.h",
       "passwords/bubble_controllers/generation_confirmation_bubble_controller.cc",
       "passwords/bubble_controllers/generation_confirmation_bubble_controller.h",
       "passwords/bubble_controllers/manage_passwords_bubble_controller.cc",
@@ -1364,6 +1365,10 @@ static_library("ui") {
       "performance_controls/performance_controls_hats_service_factory.h",
       "performance_controls/performance_controls_metrics.cc",
       "performance_controls/performance_controls_metrics.h",
+      "performance_controls/tab_resource_usage_collector.cc",
+      "performance_controls/tab_resource_usage_collector.h",
+      "performance_controls/tab_resource_usage_tab_helper.cc",
+      "performance_controls/tab_resource_usage_tab_helper.h",
       "permission_bubble/permission_prompt.h",
       "privacy_sandbox/privacy_sandbox_prompt.cc",
       "privacy_sandbox/privacy_sandbox_prompt.h",
@@ -1660,6 +1665,8 @@ static_library("ui") {
       "webui/commander/commander_handler.h",
       "webui/commander/commander_ui.cc",
       "webui/commander/commander_ui.h",
+      "webui/commerce/product_specifications_ui.cc",
+      "webui/commerce/product_specifications_ui.h",
       "webui/commerce/shopping_insights_side_panel_ui.cc",
       "webui/commerce/shopping_insights_side_panel_ui.h",
       "webui/commerce/shopping_list_context_menu_controller.cc",
@@ -2012,7 +2019,6 @@ static_library("ui") {
       "//chrome/browser/companion/core/mojom:mojo_bindings",
       "//chrome/browser/companion/text_finder",
       "//chrome/browser/companion/visual_query",
-      "//chrome/browser/headless:command_processor",
       "//chrome/browser/image_editor",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/media/prefs:prefs",
@@ -2168,6 +2174,10 @@ static_library("ui") {
       ]
       deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
     }
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/headless:command_processor" ]
+    }
   }
 
   if (enable_paint_preview) {
@@ -2181,10 +2191,7 @@ static_library("ui") {
       "webui/family_link_user_internals/family_link_user_internals_ui.cc",
       "webui/family_link_user_internals/family_link_user_internals_ui.h",
     ]
-    deps += [
-      "//components/supervised_user/core/browser",
-      "//components/supervised_user/core/browser:supervised_user_preferences",
-    ]
+    deps += [ "//components/supervised_user/core/browser" ]
   }
 
   if (enable_supervised_users && enable_extensions) {
@@ -3103,6 +3110,8 @@ static_library("ui") {
       "webui/ash/enterprise_reporting/enterprise_reporting_ui.h",
       "webui/ash/enterprise_reporting/history_converter.cc",
       "webui/ash/enterprise_reporting/history_converter.h",
+      "webui/ash/extended_updates/extended_updates_dialog.cc",
+      "webui/ash/extended_updates/extended_updates_dialog.h",
       "webui/ash/healthd_internals/healthd_internals_ui.cc",
       "webui/ash/healthd_internals/healthd_internals_ui.h",
       "webui/ash/human_presence_internals_ui.cc",
@@ -3495,6 +3504,8 @@ static_library("ui") {
       "webui/ash/settings/pages/multidevice/multidevice_handler.h",
       "webui/ash/settings/pages/multidevice/multidevice_section.cc",
       "webui/ash/settings/pages/multidevice/multidevice_section.h",
+      "webui/ash/settings/pages/multitasking/multitasking_section.cc",
+      "webui/ash/settings/pages/multitasking/multitasking_section.h",
       "webui/ash/settings/pages/os_settings_section.cc",
       "webui/ash/settings/pages/os_settings_section.h",
       "webui/ash/settings/pages/os_settings_sections.cc",
@@ -4418,13 +4429,13 @@ static_library("ui") {
       "cocoa/javascript_app_modal_dialog_cocoa.mm",
       "cocoa/l10n_util.h",
       "cocoa/l10n_util.mm",
-      "cocoa/last_active_browser_cocoa.cc",
-      "cocoa/last_active_browser_cocoa.h",
       "cocoa/main_menu_builder.h",
       "cocoa/main_menu_builder.mm",
       "cocoa/main_menu_item.h",
       "cocoa/profiles/profile_menu_controller.h",
       "cocoa/profiles/profile_menu_controller.mm",
+      "cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h",
+      "cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.mm",
       "cocoa/renderer_context_menu/render_view_context_menu_mac.h",
       "cocoa/renderer_context_menu/render_view_context_menu_mac.mm",
       "cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h",
@@ -4782,6 +4793,8 @@ static_library("ui") {
       "views/media_preview/mic_preview/mic_mediator.h",
       "views/media_preview/mic_preview/mic_view_controller.cc",
       "views/media_preview/mic_preview/mic_view_controller.h",
+      "views/media_preview/scroll_media_preview.cc",
+      "views/media_preview/scroll_media_preview.h",
     ]
     deps += [
       "//components/capture_mode",
@@ -5031,6 +5044,8 @@ static_library("ui") {
       "views/autofill/payments/promo_code_label_button.h",
       "views/autofill/payments/promo_code_label_view.cc",
       "views/autofill/payments/promo_code_label_view.h",
+      "views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.cc",
+      "views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h",
       "views/autofill/payments/save_card_bubble_views.cc",
       "views/autofill/payments/save_card_bubble_views.h",
       "views/autofill/payments/save_card_manage_cards_bubble_views.cc",
@@ -5410,8 +5425,6 @@ static_library("ui") {
       "views/intent_picker_bubble_view.h",
       "views/javascript_tab_modal_dialog_view_views.cc",
       "views/javascript_tab_modal_dialog_view_views.h",
-      "views/layout/interpolating_layout_manager.cc",
-      "views/layout/interpolating_layout_manager.h",
       "views/location_bar/content_setting_image_view.cc",
       "views/location_bar/content_setting_image_view.h",
       "views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.cc",
@@ -5617,6 +5630,8 @@ static_library("ui") {
       "views/passwords/password_auto_sign_in_view.h",
       "views/passwords/password_bubble_view_base.cc",
       "views/passwords/password_bubble_view_base.h",
+      "views/passwords/password_default_store_changed_view.cc",
+      "views/passwords/password_default_store_changed_view.h",
       "views/passwords/password_generation_confirmation_view.cc",
       "views/passwords/password_generation_confirmation_view.h",
       "views/passwords/password_generation_popup_view_views.cc",
@@ -6189,7 +6204,10 @@ static_library("ui") {
       "views/webauthn/webauthn_hover_button.h",
       "views/webid/account_selection_bubble_view.cc",
       "views/webid/account_selection_bubble_view.h",
-      "views/webid/account_selection_view_interface.h",
+      "views/webid/account_selection_modal_view.cc",
+      "views/webid/account_selection_modal_view.h",
+      "views/webid/account_selection_view_base.cc",
+      "views/webid/account_selection_view_base.h",
       "views/webid/fedcm_account_selection_view_desktop.cc",
       "views/webid/fedcm_account_selection_view_desktop.h",
       "views/webid/fedcm_modal_dialog_view.cc",
@@ -6446,6 +6464,8 @@ static_library("ui") {
       sources += [
         "views/apps/app_dialog/shortcut_removal_dialog_view.cc",
         "views/apps/app_dialog/shortcut_removal_dialog_view.h",
+        "views/frame/picture_in_picture_browser_frame_view_ash.cc",
+        "views/frame/picture_in_picture_browser_frame_view_ash.h",
         "views/web_apps/isolated_web_apps/pref_observer_ash.cc",
       ]
       deps += [ "//components/metrics/debug/structured:debug" ]
@@ -6895,6 +6915,7 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "autofill/payments/desktop_payments_window_manager_test_api.h",
     "content_settings/fake_owner.cc",
     "content_settings/fake_owner.h",
     "find_bar/find_bar_host_unittest_util.h",

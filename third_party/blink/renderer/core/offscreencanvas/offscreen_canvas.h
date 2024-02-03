@@ -68,9 +68,9 @@ class CORE_EXPORT OffscreenCanvas final
 
   // For deferred canvases this will have the side effect of drawing recorded
   // commands in order to finalize the frame.
-  ScriptPromise convertToBlob(ScriptState* script_state,
-                              const ImageEncodeOptions* options,
-                              ExceptionState& exception_state);
+  ScriptPromiseTyped<Blob> convertToBlob(ScriptState* script_state,
+                                         const ImageEncodeOptions* options,
+                                         ExceptionState& exception_state);
 
   void SetSize(gfx::Size) override;
   void RecordTransfer();
@@ -161,7 +161,7 @@ class CORE_EXPORT OffscreenCanvas final
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const final;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<gfx::Rect>,
+                                  std::optional<gfx::Rect>,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) final;
 

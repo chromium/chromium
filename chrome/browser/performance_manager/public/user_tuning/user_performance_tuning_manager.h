@@ -16,7 +16,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class ChromeBrowserMainExtraPartsPerformanceManager;
@@ -61,59 +60,6 @@ class UserPerformanceTuningManager {
     // Raised when the count of janky intervals reaches X.
     // Can be used by the UI to show a promo
     virtual void OnJankThresholdReached() {}
-
-    // Raised when memory metrics for a discarded page becomes available to read
-    virtual void OnMemoryMetricsRefreshed() {}
-  };
-
-  class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
-   public:
-    TabResourceUsage() = default;
-
-    uint64_t memory_usage_in_bytes() const { return memory_usage_bytes_; }
-
-    void set_memory_usage_in_bytes(uint64_t memory_usage_bytes) {
-      memory_usage_bytes_ = memory_usage_bytes;
-    }
-
-   private:
-    friend class base::RefCounted<TabResourceUsage>;
-    ~TabResourceUsage() = default;
-
-    uint64_t memory_usage_bytes_ = 0;
-  };
-
-  // Per-tab class to keep track of current memory usage for each tab.
-  class ResourceUsageTabHelper
-      : public content::WebContentsObserver,
-        public content::WebContentsUserData<ResourceUsageTabHelper> {
-   public:
-    ResourceUsageTabHelper(const ResourceUsageTabHelper&) = delete;
-    ResourceUsageTabHelper& operator=(const ResourceUsageTabHelper&) = delete;
-
-    ~ResourceUsageTabHelper() override;
-
-    // content::WebContentsObserver
-    void PrimaryPageChanged(content::Page& page) override;
-
-    uint64_t GetMemoryUsageInBytes() {
-      return resource_usage_->memory_usage_in_bytes();
-    }
-
-    void SetMemoryUsageInBytes(uint64_t memory_usage_bytes) {
-      resource_usage_->set_memory_usage_in_bytes(memory_usage_bytes);
-    }
-
-    scoped_refptr<const TabResourceUsage> resource_usage() const {
-      return resource_usage_;
-    }
-
-   private:
-    friend class content::WebContentsUserData<ResourceUsageTabHelper>;
-    explicit ResourceUsageTabHelper(content::WebContents* contents);
-    WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-    scoped_refptr<TabResourceUsage> resource_usage_;
   };
 
   class PreDiscardResourceUsage
@@ -193,7 +139,6 @@ class UserPerformanceTuningManager {
 
     void NotifyTabCountThresholdReached() override;
     void NotifyMemoryThresholdReached() override;
-    void NotifyMemoryMetricsRefreshed(ProxyAndPmfKbVector) override;
   };
 
   explicit UserPerformanceTuningManager(

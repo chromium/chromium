@@ -45,6 +45,10 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/buildflags/buildflags.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/pref_names.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -350,6 +354,9 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 true);
   registry->RegisterIntegerPref(prefs::kProfileIconVersion, 0);
   registry->RegisterBooleanPref(prefs::kAllowDinosaurEasterEgg, true);
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(chromeos::prefs::kCaptivePortalSignin, false);
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(dilmah): For OS_CHROMEOS we maintain kApplicationLocale in both
   // local state and user's profile.  For other platforms we maintain

@@ -5,8 +5,8 @@
 import '//resources/cr_elements/cr_tree/cr_tree.js';
 import '//resources/cr_elements/cr_tree/cr_tree_item.js';
 
-import {CrTreeElement} from '//resources/cr_elements/cr_tree/cr_tree.js';
-import {CrTreeItemElement} from '//resources/cr_elements/cr_tree/cr_tree_item.js';
+import type {CrTreeElement} from '//resources/cr_elements/cr_tree/cr_tree.js';
+import type {CrTreeItemElement} from '//resources/cr_elements/cr_tree/cr_tree_item.js';
 import {assert} from '//resources/js/assert.js';
 import {CustomElement} from '//resources/js/custom_element.js';
 

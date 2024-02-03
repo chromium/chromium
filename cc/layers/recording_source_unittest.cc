@@ -385,5 +385,15 @@ TEST(RecordingSourceTest, AnalyzeIsSolid) {
   }
 }
 
+TEST(RecordingSourceTest, RecordedBounds) {
+  gfx::Size layer_bounds(400, 400);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
+  recording_source->add_draw_rect(gfx::Rect(100, 100, 100, 100));
+  recording_source->add_draw_rect(gfx::Rect(50, 200, 200, 50));
+  recording_source->Rerecord();
+  auto raster = recording_source->CreateRasterSource();
+  EXPECT_EQ(gfx::Rect(50, 100, 200, 150), raster->recorded_bounds());
+}
+
 }  // namespace
 }  // namespace cc

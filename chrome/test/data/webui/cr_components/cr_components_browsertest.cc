@@ -87,32 +87,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, SettingsPrefUtils) {
   RunTest("cr_components/settings_pref_util_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaBrowserTest CrComponentsAppManagementTest;
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, PermissionItem) {
-  RunTest("cr_components/app_management/permission_item_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, FileHandlingItem) {
-  RunTest("cr_components/app_management/file_handling_item_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, SupportedLinksItem) {
-  RunTest("cr_components/app_management/supported_links_item_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, UninstallButton) {
-  RunTest("cr_components/app_management/uninstall_button_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, WindowModeItem) {
-  RunTest("cr_components/app_management/window_mode_item_test.js",
-          "mocha.run()");
-}
-
 class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsHistoryClustersTest() {

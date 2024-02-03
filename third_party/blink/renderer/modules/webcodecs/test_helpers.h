@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_TEST_HELPERS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_scheme.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 
 namespace blink {
@@ -24,7 +24,7 @@ std::string BufferToString(const media::DecoderBuffer& buffer);
 // for EncryptionScheme::kUnencrypted.
 std::unique_ptr<media::DecryptConfig> CreateTestDecryptConfig(
     media::EncryptionScheme scheme,
-    absl::optional<media::EncryptionPattern> pattern = absl::nullopt);
+    std::optional<media::EncryptionPattern> pattern = std::nullopt);
 
 }  // namespace blink
 

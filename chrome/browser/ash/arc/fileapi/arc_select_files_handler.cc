@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -300,6 +302,8 @@ void ArcSelectFilesHandler::OnFileSelectorEvent(
     mojom::FileSystemHost::OnFileSelectorEventCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  bool isFilesNewDirectoryTreeOn =
+      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   std::string quotedClickTargetName =
       base::GetQuotedJSONString(event->click_target->name.c_str());
   std::string script;
@@ -311,7 +315,9 @@ void ArcSelectFilesHandler::OnFileSelectorEvent(
       script = kScriptClickCancel;
       break;
     case mojom::FileSelectorEventType::CLICK_DIRECTORY:
-      script = base::StringPrintf(kScriptClickDirectory,
+      script = base::StringPrintf(isFilesNewDirectoryTreeOn
+                                      ? kScriptClickDirectoryForNewTree
+                                      : kScriptClickDirectory,
                                   quotedClickTargetName.c_str());
       break;
     case mojom::FileSelectorEventType::CLICK_FILE:
@@ -329,8 +335,11 @@ void ArcSelectFilesHandler::GetFileSelectorElements(
     mojom::FileSystemHost::GetFileSelectorElementsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  bool isFilesNewDirectoryTreeOn =
+      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   dialog_holder_->ExecuteJavaScript(
-      kScriptGetElements,
+      isFilesNewDirectoryTreeOn ? kScriptGetElementsForNewTree
+                                : kScriptGetElements,
       base::BindOnce(&OnGetElementsScriptResults, std::move(callback)));
 }
 

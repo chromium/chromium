@@ -18,6 +18,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -27,6 +28,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/compositor/image_transport_factory.h"
+#include "content/browser/device_posture/device_posture_platform_provider.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/text_input_manager.h"
@@ -34,7 +36,6 @@
 #include "content/common/cursors/webcursor.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/visibility.h"
-#include "services/device/public/mojom/device_posture_provider.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -52,8 +53,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/renderer_host/virtual_keyboard_controller_win.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #endif
 
 namespace aura_extra {
@@ -106,7 +105,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       public wm::ActivationDelegate,
       public aura::client::FocusChangeObserver,
       public aura::client::CursorClientObserver,
-      public device::mojom::DeviceViewportSegmentsClient {
+      public DevicePosturePlatformProvider::Observer {
  public:
   explicit RenderWidgetHostViewAura(RenderWidgetHost* host);
   RenderWidgetHostViewAura(const RenderWidgetHostViewAura&) = delete;
@@ -679,10 +678,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 #if BUILDFLAG(IS_WIN)
   // Ensure that we're connecting to the device posture provider to
   // get the DisplayFeatures.
-  void EnsureDevicePostureServiceConnection();
+  void ObserveDevicePosturePlatformProvider();
 #endif
 
-  // DeviceViewportSegmentClient.
+  // DevicePosturePlatformProvider::Observer.
   void OnViewportSegmentsChanged(
       const std::vector<gfx::Rect>& segments) override;
 
@@ -820,9 +819,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   std::vector<gfx::Rect> viewport_segments_;
 
 #if BUILDFLAG(IS_WIN)
-  mojo::Remote<device::mojom::DevicePostureProvider> device_posture_provider_;
-  mojo::Receiver<device::mojom::DeviceViewportSegmentsClient>
-      device_posture_receiver_{this};
+  base::ScopedObservation<DevicePosturePlatformProvider,
+                          DevicePosturePlatformProvider::Observer>
+      device_posture_observation_{this};
 #endif
 
   std::optional<display::ScopedDisplayObserver> display_observer_;

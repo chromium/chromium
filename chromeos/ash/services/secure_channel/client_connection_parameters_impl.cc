@@ -78,4 +78,11 @@ void ClientConnectionParametersImpl::OnConnectionDelegateRemoteDisconnected() {
   NotifyConnectionRequestCanceled();
 }
 
+void ClientConnectionParametersImpl::UpdateBleDiscoveryState(
+    mojom::DiscoveryResult discovery_state,
+    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+  secure_channel_structured_metrics_logger_remote_->LogDiscoveryAttempt(
+      discovery_state, potential_error_code);
+}
+
 }  // namespace ash::secure_channel

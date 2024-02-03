@@ -102,7 +102,7 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API)
   bool error_occurred_ = false;
 
   // Delayed error status to be reported on the next Encode() or Flush() call.
-  absl::optional<EncoderStatus> pending_error_status_;
+  std::optional<EncoderStatus> pending_error_status_;
 
   // What portion of the flushing process we are in, if any.
   FlushState flush_state_ GUARDED_BY_CONTEXT(sequence_checker_) =

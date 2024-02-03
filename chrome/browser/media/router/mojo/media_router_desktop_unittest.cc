@@ -121,8 +121,7 @@ std::string RouteMessageToString(const RouteMessagePtr& message) {
     const base::StringPiece src(
         reinterpret_cast<const char*>(message->data.value().data()),
         message->data.value().size());
-    base::Base64Encode(src, &result);
-    result = "binary=" + result;
+    result = "binary=" + base::Base64Encode(src);
   }
   return result;
 }

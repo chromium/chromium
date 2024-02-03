@@ -170,7 +170,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
     mojo::Remote<mojom::URLLoaderClient> client(std::move(pending_client));
     mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
     client->OnReceiveResponse(std::move(response_head), /*body=*/{},
-                              absl::nullopt);
+                              std::nullopt);
     client->OnComplete(URLLoaderCompletionStatus(net::OK));
   }
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override {
@@ -184,7 +184,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
         const std::vector<std::string>& removed_headers,
         const net::HttpRequestHeaders& modified_headers,
         const net::HttpRequestHeaders& modified_cors_exempt_headers,
-        const absl::optional<GURL>& new_url) override {}
+        const std::optional<GURL>& new_url) override {}
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override {}
     void PauseReadingBodyFromNet() override {}
@@ -884,7 +884,7 @@ TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
   net::NetworkIsolationKey network_isolation_key(/*top_frame_site=*/site,
                                                  /*frame_site=*/site);
 
-  absl::optional<std::string> cache_key = memory_cache().CanServe(
+  std::optional<std::string> cache_key = memory_cache().CanServe(
       mojom::kURLLoadOptionNone, request, network_isolation_key,
       CrossOriginEmbedderPolicy(),
       /*client_security_state=*/nullptr);
@@ -944,7 +944,7 @@ TEST_F(NetworkServiceMemoryCacheTest, CachedAfterRedirect) {
   pair.client->RunUntilRedirectReceived();
   pair.loader_remote->FollowRedirect(
       /*removed_headers=*/{}, /*modified_headers=*/{},
-      /*modified_cors_exempt_headers=*/{}, /*new_url=*/absl::nullopt);
+      /*modified_cors_exempt_headers=*/{}, /*new_url=*/std::nullopt);
   pair.client->RunUntilComplete();
 
   request.load_flags &= ~net::LOAD_BYPASS_CACHE;

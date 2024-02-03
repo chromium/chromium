@@ -134,4 +134,6 @@ struct V8ContextToken {
 union WebGPUExecutionContextToken {
   DocumentToken document_token;
   DedicatedWorkerToken dedicated_worker_token;
+  SharedWorkerToken shared_worker_token;
+  ServiceWorkerToken service_worker_token;
 };

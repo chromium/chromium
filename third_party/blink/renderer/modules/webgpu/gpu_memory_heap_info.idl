@@ -4,7 +4,7 @@
 
 [
     RuntimeEnabled=WebGPUDeveloperFeatures,
-    Exposed=(Window, DedicatedWorker),
+    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
     SecureContext
 ] interface GPUMemoryHeapInfo {
   readonly attribute unsigned long long size;

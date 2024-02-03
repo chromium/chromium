@@ -61,7 +61,7 @@ base::apple::ScopedCFTypeRef<CVImageBufferRef> CreateCVImageBuffer(
     media::VideoColorSpace cs) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt =
       CreateFormatExtensions(kCMVideoCodecType_H264, media::H264PROFILE_MAIN, 8,
-                             cs, gfx::HDRMetadata(), absl::nullopt);
+                             cs, gfx::HDRMetadata(), std::nullopt);
 
   base::apple::ScopedCFTypeRef<CVImageBufferRef> image_buffer;
   OSStatus err =
@@ -117,8 +117,8 @@ gfx::ColorSpace ToBT709_APPLE(gfx::ColorSpace cs) {
 void AssertHasDefaultHDRMetadata(CFDictionaryRef fmt) {
   // We constructed with an invalid HDRMetadata, so all values should be
   // overridden to the default.
-  auto mdcv_expected = gfx::GenerateMasteringDisplayColorVolume(absl::nullopt);
-  auto clli_expected = gfx::GenerateContentLightLevelInfo(absl::nullopt);
+  auto mdcv_expected = gfx::GenerateMasteringDisplayColorVolume(std::nullopt);
+  auto clli_expected = gfx::GenerateContentLightLevelInfo(std::nullopt);
 
   auto mdcv = GetDataValue(
       fmt, kCMFormatDescriptionExtension_MasteringDisplayColorVolume);
@@ -150,7 +150,7 @@ namespace media {
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT709) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN, 8, VideoColorSpace::REC709(),
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   EXPECT_EQ("avc1",
             GetStrValue(fmt.get(), kCMFormatDescriptionExtension_FormatName));
@@ -182,7 +182,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      gfx::HDRMetadata(), absl::nullopt);
+      gfx::HDRMetadata(), std::nullopt);
 
   EXPECT_EQ("avc1",
             GetStrValue(fmt.get(), kCMFormatDescriptionExtension_FormatName));
@@ -208,7 +208,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
                       VideoColorSpace::TransferID::ARIB_STD_B67,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      gfx::HDRMetadata(), absl::nullopt);
+      gfx::HDRMetadata(), std::nullopt);
 
   EXPECT_EQ("avc1",
             GetStrValue(fmt.get(), kCMFormatDescriptionExtension_FormatName));
@@ -243,7 +243,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      hdr_meta, absl::nullopt);
+      hdr_meta, std::nullopt);
 
   {
     auto mdcv = GetDataValue(
@@ -289,7 +289,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile0) {
   const auto kTestColorSpace = VideoColorSpace::REC709();
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt(
       CreateFormatExtensions(kCMVideoCodecType_VP9, kTestProfile, 8,
-                             kTestColorSpace, absl::nullopt, absl::nullopt));
+                             kTestColorSpace, std::nullopt, std::nullopt));
   EXPECT_EQ(8, GetIntValue(fmt.get(),
                            base::SysUTF8ToCFStringRef(kBitDepthKey).get()));
 
@@ -313,7 +313,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile2) {
       VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt =
       CreateFormatExtensions(kCMVideoCodecType_VP9, kTestProfile, 10,
-                             kTestColorSpace, absl::nullopt, absl::nullopt);
+                             kTestColorSpace, std::nullopt, std::nullopt);
   EXPECT_EQ(10, GetIntValue(fmt.get(),
                             base::SysUTF8ToCFStringRef(kBitDepthKey).get()));
 
@@ -341,7 +341,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_AV1) {
       VideoColorSpace::TransferID::SMPTEST2084,
       VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
-      kCMVideoCodecType_AV1, kTestProfile, 10, kTestColorSpace, absl::nullopt,
+      kCMVideoCodecType_AV1, kTestProfile, 10, kTestColorSpace, std::nullopt,
       base::span<const uint8_t>(kAvc1Box, sizeof(kAvc1Box)));
   EXPECT_EQ(10, GetIntValue(fmt.get(),
                             base::SysUTF8ToCFStringRef(kBitDepthKey).get()));

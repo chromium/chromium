@@ -5,6 +5,8 @@
 #ifndef MEDIA_MOJO_MOJOM_STATUS_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_STATUS_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "media/base/decoder_status.h"
@@ -13,7 +15,6 @@
 #include "media/base/status.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -64,7 +65,7 @@ struct StructTraits<DataView, media::TypedStatus<StatusEnum>> {
   }
 
   static bool Read(DataView data, media::TypedStatus<StatusEnum>* output) {
-    absl::optional<media::internal::StatusData> internal;
+    std::optional<media::internal::StatusData> internal;
     if (!data.ReadInternal(&internal))
       return false;
     if (internal)

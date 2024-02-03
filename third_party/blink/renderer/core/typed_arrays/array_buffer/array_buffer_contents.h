@@ -64,7 +64,7 @@ class CORE_EXPORT ArrayBufferContents {
                       SharingType is_shared,
                       InitializationPolicy policy)
       : ArrayBufferContents(num_elements,
-                            absl::nullopt,
+                            std::nullopt,
                             element_byte_size,
                             is_shared,
                             policy) {}
@@ -72,7 +72,7 @@ class CORE_EXPORT ArrayBufferContents {
   // ArrayBuffer is created. Otherwise a backing store for a fixed-length
   // ArrayBuffer is created.
   ArrayBufferContents(size_t num_elements,
-                      absl::optional<size_t> max_num_elements,
+                      std::optional<size_t> max_num_elements,
                       size_t element_byte_size,
                       SharingType is_shared,
                       InitializationPolicy);

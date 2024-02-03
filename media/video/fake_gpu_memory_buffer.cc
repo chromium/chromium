@@ -63,7 +63,7 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format,
                                          uint64_t modifier)
     : size_(size), format_(format) {
-  absl::optional<VideoPixelFormat> video_pixel_format =
+  std::optional<VideoPixelFormat> video_pixel_format =
       GfxBufferFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
   video_pixel_format_ = *video_pixel_format;

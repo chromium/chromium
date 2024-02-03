@@ -72,6 +72,18 @@ constexpr char kAppListSortDiscoveryDurationAfterNudgeClamshell[] =
 constexpr char kAppListSortDiscoveryDurationAfterNudgeTablet[] =
     "Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2.TabletMode";
 
+std::string SearchSessionConclusionToString(
+    SearchSessionConclusion conclusion) {
+  switch (conclusion) {
+    case SearchSessionConclusion::kQuit:
+      return "Quit";
+    case SearchSessionConclusion::kLaunch:
+      return "Launch";
+    case SearchSessionConclusion::kAnswerCardSeen:
+      return "AnswerCardSeen";
+  }
+}
+
 bool IsAppListShowSourceUserTriggered(AppListShowSource show_source) {
   switch (show_source) {
     case AppListShowSource::kScrollFromShelf:

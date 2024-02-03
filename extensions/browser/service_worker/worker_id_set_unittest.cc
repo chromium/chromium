@@ -157,7 +157,7 @@ TEST_F(WorkerIdSetTest, RemoveAllForExtension) {
   EXPECT_EQ(workers_vector.size(), worker_id_set->count_for_testing());
 
   size_t expected_entries_removed = 0u;
-  auto test_removal = [&](const std::string& extension_id_to_remove,
+  auto test_removal = [&](const ExtensionId& extension_id_to_remove,
                           size_t expected_removal_count) {
     std::vector<WorkerId> worker_ids_to_remove =
         worker_id_set->GetAllForExtension(extension_id_to_remove);

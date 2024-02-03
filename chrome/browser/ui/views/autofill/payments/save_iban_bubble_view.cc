@@ -114,7 +114,8 @@ void SaveIbanBubbleView::CreateMainContentView() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
-  SetID(DialogViewId::MAIN_CONTENT_VIEW_LOCAL);
+  SetID(controller_->IsUploadSave() ? DialogViewId::MAIN_CONTENT_VIEW_UPLOAD
+                                    : DialogViewId::MAIN_CONTENT_VIEW_LOCAL);
   SetProperty(views::kMarginsKey, gfx::Insets());
 
   // If applicable, add the upload explanation label. Appears above the IBAN
@@ -219,6 +220,7 @@ void SaveIbanBubbleView::CreateMainContentView() {
 
   if (std::unique_ptr<views::View> legal_message_view =
           CreateLegalMessageView()) {
+    legal_message_view->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
     AddChildView(std::move(legal_message_view));
   }
 }

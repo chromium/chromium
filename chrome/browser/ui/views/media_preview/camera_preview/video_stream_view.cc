@@ -82,6 +82,8 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
 
   const gfx::RectF dest_rect(x, 0, rendered_frame_width, height());
   cc::PaintFlags flags;
+  // Select high quality frame scaling.
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
   media::VideoTransformation transformation;
   transformation.mirrored = true;
   video_renderer_.Paint(std::move(latest_frame_), canvas->sk_canvas(),
@@ -95,10 +97,6 @@ int VideoStreamView::GetHeightForWidth(int w) const {
 
 gfx::Size VideoStreamView::CalculatePreferredSize() const {
   return gfx::Size(width(), GetHeightForWidth(width()));
-}
-
-void VideoStreamView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  has_updated_preferred_size_ = false;
 }
 
 BEGIN_METADATA(VideoStreamView)

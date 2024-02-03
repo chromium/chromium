@@ -725,7 +725,7 @@ AppListItemView::~AppListItemView() {
 void AppListItemView::UpdateIconView(bool update_item_icon) {
   if (!use_item_icon_) {
     folder_icon_->SetIconScale(icon_scale_);
-    Layout();
+    DeprecatedLayoutImmediately();
     return;
   }
 
@@ -819,7 +819,7 @@ void AppListItemView::SetIconAndMaybeHostBadgeIcon(
         icon, skia::ImageOperations::RESIZE_BEST, icon_size));
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 gfx::Size AppListItemView::GetIconSize() const {
@@ -1173,7 +1173,7 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
                        IDS_APP_LIST_FOLDER_BUTTON_ACCESSIBILE_NAME,
                        full_name.empty() ? folder_name_placeholder : full_name)
                  : full_name);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void AppListItemView::SetItemAccessibleName(const std::u16string& name) {
@@ -1380,13 +1380,13 @@ bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
-void AppListItemView::Layout() {
+void AppListItemView::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty()) {
     return;
   }
 
-  views::FocusRing::Get(this)->Layout();
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 
   const gfx::Size icon_size = GetIconSize();
 
@@ -2085,7 +2085,7 @@ void AppListItemView::ItemIsNewInstallChanged() {
   DCHECK(item_weak_);
   if (new_install_dot_) {
     new_install_dot_->SetVisible(item_weak_->is_new_install());
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 
@@ -2313,7 +2313,7 @@ bool AppListItemView::AlwaysPaintsToLayer() {
   return is_promise_app_ || progress_indicator_;
 }
 
-BEGIN_METADATA(AppListItemView, views::Button)
+BEGIN_METADATA(AppListItemView)
 END_METADATA
 
 }  // namespace ash

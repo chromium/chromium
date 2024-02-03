@@ -10,12 +10,8 @@ class TemplateURLService;
 
 namespace search_engines {
 
-// Updates the current search engine, as well as the list of available search
-// engines if the locale of the user changed.
-// TODO(crbug.com/153047): Once user can customize search engines remove this
-// method.
-void UpdateSearchEnginesIfNeeded(PrefService* preferences,
-                                 TemplateURLService* service);
+// Updates the current country code pref for the search engine.
+void UpdateSearchEngineCountryCodeIfNeeded(PrefService* preferences);
 
 // Checks whether the default url of the given template url supports searching
 // by image.

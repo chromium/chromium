@@ -55,7 +55,7 @@ class ScopedTestMountPoint {
   // provided content. Returns the created file's file path, or an empty path on
   // failure.
   base::FilePath CreateFile(const base::FilePath& relative_path,
-                            const std::string& content = base::EmptyString());
+                            const std::string& content = std::string());
 
   // Creates an arbitrary file under the 'mount_point'.
   base::FilePath CreateArbitraryFile();

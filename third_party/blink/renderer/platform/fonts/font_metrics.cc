@@ -50,8 +50,8 @@ void FontMetrics::AscentDescentWithHacks(
     const FontPlatformData& platform_data,
     const SkFont& font,
     bool subpixel_ascent_descent,
-    absl::optional<float> ascent_override,
-    absl::optional<float> descent_override) {
+    std::optional<float> ascent_override,
+    std::optional<float> descent_override) {
   SkTypeface* face = font.getTypeface();
   DCHECK(face);
 

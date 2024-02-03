@@ -55,6 +55,10 @@ struct Config {
   // auto-dismissal.
   unsigned int saved_state_timeout_milliseconds = 2000;
 
+  // Whether the dialog should prioritize staying within bounds of the browser
+  // window above visibility of the anchor rect.
+  bool stay_in_window_bounds = true;
+
   // The dialog positioning strategy to use if there isn't enough space above or
   // below the anchor element.
   DialogFallbackPositioningStrategy positioning_strategy =

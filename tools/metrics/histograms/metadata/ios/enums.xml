@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Tab Resumption"/>
   <int value="11" label="Parcel Tracking"/>
   <int value="12" label="Parcel Tracking See More"/>
-  <int value="13" label="Set Up List Content Notification"/>
+  <int value="13" label="Set Up List Notifications"/>
   <int value="14" label="Placeholder"/>
 </enum>
 
@@ -669,7 +669,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Autofill"/>
   <int value="4" label="Follow"/>
   <int value="5" label="All Set"/>
-  <int value="6" label="Content Notification"/>
+  <int value="6" label="Notifications"/>
 </enum>
 
 <enum name="IOSShareExtensionReceivedEntrySource">
@@ -940,8 +940,14 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="PushNotificationPermissionPromptStatus">
-  <int value="0" label="Accpeted"/>
+  <int value="0" label="Accepted"/>
   <int value="1" label="Declined"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<enum name="PushNotificationPermissionProvisionalStatus">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Notifications previously authorized"/>
   <int value="2" label="Error"/>
 </enum>
 

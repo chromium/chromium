@@ -75,7 +75,7 @@ appending `target_os = ['linux', 'android']` to your `.gclient` file (in the
 directory above `src`):
 
 ```shell
-echo "target_os = [ 'android' ]" >> ../.gclient
+echo "target_os = [ 'linux', 'android' ]" >> ../.gclient
 ```
 
 Then run `gclient sync` to pull the new Android dependencies:

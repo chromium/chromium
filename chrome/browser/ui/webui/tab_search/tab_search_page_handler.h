@@ -191,6 +191,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   void NotifyTabIndexPrefChanged(const Profile* profile);
 
+  void NotifySettingEnabledPrefChanged(Profile* profile);
+
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;

@@ -16,6 +16,7 @@ struct BrowserWindowInstanceUpdate {
   uint32_t browser_session_id = 0;
   uint32_t restored_browser_session_id = 0;
   bool is_incognito = false;
+  uint64_t lacros_profile_id = 0;
 };
 
 }  // namespace apps

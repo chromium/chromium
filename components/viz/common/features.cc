@@ -269,8 +269,8 @@ BASE_FEATURE(kOnBeginFrameThrottleVideo,
              );
 
 BASE_FEATURE(kSharedBitmapToSharedImage,
-             "SharedBitmapToSharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             "SharedBitmapToSharedImage_NotToBeEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Used to enable the HintSession::Mode::BOOST mode. BOOST mode try to force
 // the ADPF(Android Dynamic Performance Framework) to give Chrome more CPU
 // resources during a scroll.
@@ -321,7 +321,7 @@ BASE_FEATURE(kDrawImmediatelyWhenInteractive,
 // as the HDR metadata NDWL nits.
 BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits,
              "UseDisplaySDRMaxLuminanceNits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Invalidate the `viz::LocalSurfaceId` on the browser side when the page is
 // navigated away. This flag serves as the kill-switch for the uncaught edge

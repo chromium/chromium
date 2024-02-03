@@ -325,7 +325,7 @@ void CameraPreviewView::OnMouseExited(const ui::MouseEvent& event) {
   ScheduleRefreshResizeButtonVisibility();
 }
 
-void CameraPreviewView::Layout() {
+void CameraPreviewView::Layout(PassKey) {
   const gfx::Size resize_button_size = resize_button_->GetPreferredSize();
   const gfx::Rect bounds(
       (width() - resize_button_size.width()) / 2.f,

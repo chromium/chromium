@@ -386,7 +386,7 @@ void FilesPolicyWarnDialog::ContentsChanged(
   }
 }
 
-BEGIN_METADATA(FilesPolicyWarnDialog, FilesPolicyDialog)
+BEGIN_METADATA(FilesPolicyWarnDialog)
 END_METADATA
 
 }  // namespace policy

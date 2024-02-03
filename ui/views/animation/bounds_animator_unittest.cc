@@ -5,6 +5,7 @@
 #include "ui/views/animation/bounds_animator.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -147,9 +148,8 @@ class BoundsAnimatorTest : public testing::Test {
   BoundsAnimatorTest()
       : task_environment_(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
-        child_(new TestView()) {
-    parent_.AddChildView(child_.get());
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
+    parent_.AddChildView(std::make_unique<TestView>());
     RecreateAnimator(/*use_transforms=*/false);
   }
 
@@ -157,7 +157,9 @@ class BoundsAnimatorTest : public testing::Test {
   BoundsAnimatorTest& operator=(const BoundsAnimatorTest&) = delete;
 
   TestView* parent() { return &parent_; }
-  TestView* child() { return child_; }
+  TestView* child() {
+    return static_cast<TestView*>(parent_.children()[0].get());
+  }
   BoundsAnimator* animator() { return animator_.get(); }
 
  protected:
@@ -208,7 +210,6 @@ class BoundsAnimatorTest : public testing::Test {
 
  private:
   TestView parent_;
-  raw_ptr<TestView, DanglingUntriaged> child_;  // Owned by |parent_|.
   std::unique_ptr<BoundsAnimator> animator_;
 };
 
@@ -252,9 +253,9 @@ TEST_F(BoundsAnimatorTest, DeleteWhileAnimating) {
   EXPECT_TRUE(animator()->IsAnimating(child()));
 
   // Make sure that animation is removed upon deletion.
-  delete child();
-  EXPECT_FALSE(animator()->GetAnimationForView(child()));
-  EXPECT_FALSE(animator()->IsAnimating(child()));
+  std::unique_ptr<View> child_owning = parent()->RemoveChildViewT(child());
+  EXPECT_FALSE(animator()->GetAnimationForView(child_owning.get()));
+  EXPECT_FALSE(animator()->IsAnimating(child_owning.get()));
 }
 
 // Make sure an AnimationDelegate is deleted when canceled.

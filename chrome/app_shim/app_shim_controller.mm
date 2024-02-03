@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/cocoa/browser_window_command_handler.h"
 #include "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
+#import "chrome/browser/ui/cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -181,6 +182,9 @@ AppShimController::AppShimController(const Params& params)
           [[ApplicationDockMenuTarget alloc] initWithController:this]) {
   screen_ = std::make_unique<display::ScopedNativeScreen>();
   NSApp.delegate = delegate_;
+
+  [ChromeSwizzleServicesMenuUpdater install];
+
   // Since this is early startup code, there is no guarantee that the state of
   // the features being tested for here matches the state from the eventualy
   // Chrome we connect to (although they will match the vast majority of the

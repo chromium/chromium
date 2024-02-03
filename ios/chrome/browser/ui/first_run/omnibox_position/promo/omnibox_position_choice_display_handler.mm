@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/first_run/omnibox_position/promo/omnibox_position_choice_display_handler.h"
 
 #import "components/feature_engagement/public/feature_constants.h"
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/promo_config.h"
 
 @implementation OmniboxPositionChoiceDisplayHandler
 

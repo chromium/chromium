@@ -361,7 +361,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // into a TimeTick value and a default base::TimeTicks::Now() is larger than
   // 500 msec. A true return value should trigger usage of "fake" audio
   // timestamps instead of default which are QPC based.
-  absl::optional<bool> use_fake_audio_capture_timestamps_;
+  std::optional<bool> use_fake_audio_capture_timestamps_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

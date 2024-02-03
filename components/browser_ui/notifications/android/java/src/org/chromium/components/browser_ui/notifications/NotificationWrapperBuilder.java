@@ -76,6 +76,8 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setDeleteIntent(PendingIntentProvider intent);
 
+    NotificationWrapperBuilder setDeleteIntent(PendingIntentProvider intent, int actionType);
+
     /**
      * Sets the priority of single notification on Android versions prior to Oreo.
      * (From Oreo onwards, priority is instead determined by channel importance.)

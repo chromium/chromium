@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include "base/debug/crash_logging.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -38,17 +39,17 @@ struct PortContext {
     WorkerContext();
     WorkerContext(int thread_id,
                   int64_t version_id,
-                  const std::string& extension_id);
+                  const ExtensionId& extension_id);
 
     int thread_id;
     int64_t version_id;
-    std::string extension_id;
+    ExtensionId extension_id;
   };
 
   static PortContext ForFrame(int routing_id);
   static PortContext ForWorker(int thread_id,
                                int64_t version_id,
-                               const std::string& extension_id);
+                               const ExtensionId& extension_id);
   static PortContext ForNativeHost();
 
   bool is_for_render_frame() const { return frame.has_value(); }

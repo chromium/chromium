@@ -271,7 +271,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   bool is_using_pin_ = false;
   AuthFlow auth_flow_ = AUTH_FLOW_OFFLINE;
   bool is_using_saml_principals_api_ = false;
-  user_manager::UserType user_type_ = user_manager::USER_TYPE_REGULAR;
+  user_manager::UserType user_type_ = user_manager::UserType::kRegular;
   std::string public_session_locale_;
   std::string public_session_input_method_;
   std::string device_id_;

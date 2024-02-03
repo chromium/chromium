@@ -92,11 +92,9 @@ std::unique_ptr<test_server::HttpResponse> ServeResponse(
 }
 
 std::string MakeRandomHexString(size_t num_bytes) {
-  std::vector<char> rand_bytes;
-  rand_bytes.resize(num_bytes);
-
-  base::RandBytes(rand_bytes.data(), rand_bytes.size());
-  return base::HexEncode(rand_bytes.data(), rand_bytes.size());
+  std::vector<uint8_t> rand_bytes(num_bytes);
+  base::RandBytes(rand_bytes);
+  return base::HexEncode(rand_bytes);
 }
 
 static std::string MakeRandomPath(std::string_view suffix) {

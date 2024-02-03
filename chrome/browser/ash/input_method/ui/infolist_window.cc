@@ -90,8 +90,9 @@ gfx::Insets InfolistBorder::GetInsets() const {
 
 // InfolistRow renderes a row of a infolist.
 class InfolistEntryView : public views::View {
+  METADATA_HEADER(InfolistEntryView, views::View)
+
  public:
-  METADATA_HEADER(InfolistEntryView);
   InfolistEntryView(const ui::InfolistEntry& entry,
                     const gfx::FontList& title_font_list,
                     const gfx::FontList& description_font_list);
@@ -116,7 +117,7 @@ class InfolistEntryView : public views::View {
   raw_ptr<views::Label> description_label_;
 };
 
-BEGIN_METADATA(InfolistEntryView, views::View)
+BEGIN_METADATA(InfolistEntryView)
 END_METADATA
 
 InfolistEntryView::InfolistEntryView(const ui::InfolistEntry& entry,
@@ -249,7 +250,7 @@ void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {
     entry_views_.resize(entries.size());
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
   SizeToContents();
 }
 
@@ -279,7 +280,7 @@ void InfolistWindow::WindowClosing() {
   show_hide_timer_.Stop();
 }
 
-BEGIN_METADATA(InfolistWindow, views::BubbleDialogDelegateView)
+BEGIN_METADATA(InfolistWindow)
 END_METADATA
 
 }  // namespace ime

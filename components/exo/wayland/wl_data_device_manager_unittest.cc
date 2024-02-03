@@ -43,8 +43,7 @@ class InputListenerImpl : public test::InputListener {
 }  // namespace
 
 // TODO(crbug.com/1521845): enable the flaky test.
-#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE) && \
-    defined(LEAK_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_Mouse DISABLED_Mouse
 #else
 #define MAYBE_Mouse Mouse
@@ -144,8 +143,7 @@ TEST_F(DataDeviceManagerTest, MAYBE_Mouse) {
 }
 
 // TODO(crbug.com/1521845): enable the flaky test.
-#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE) && \
-    defined(LEAK_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_Touch DISABLED_Touch
 #else
 #define MAYBE_Touch Touch

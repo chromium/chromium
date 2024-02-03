@@ -67,7 +67,7 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   class PowerButtonMenuBackgroundView;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -82,7 +82,7 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // Lays out the view without animation transform.
   void LayoutWithoutTransform();
 
-  // Helper methods for Layout().
+  // Helper methods for performing layout.
   void LayoutMenuView();
   void LayoutMenuCurtainView();
 

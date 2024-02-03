@@ -19,9 +19,9 @@ class AssistantViewDelegate;
 // The assistant page for the app list bubble / clamshell launcher. Similar to
 // AssistantMainView in the fullscreen launcher.
 class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
- public:
-  METADATA_HEADER(AppListBubbleAssistantPage);
+  METADATA_HEADER(AppListBubbleAssistantPage, views::View)
 
+ public:
   explicit AppListBubbleAssistantPage(AssistantViewDelegate* delegate);
   AppListBubbleAssistantPage(const AppListBubbleAssistantPage&) = delete;
   AppListBubbleAssistantPage& operator=(const AppListBubbleAssistantPage&) =

@@ -26,6 +26,7 @@
 #include "chrome/test/base/test_launcher_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -43,6 +44,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "chrome/browser/media/media_foundation_service_monitor.h"
+#include "content/public/browser/gpu_data_manager.h"
+#include "gpu/config/gpu_info.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/base/win/mf_feature_checks.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -96,6 +99,12 @@ enum class ConfigChangeType {
 
 // Whether the video should be not played or played once or twice.
 enum class PlayCount { ZERO = 0, ONCE = 1, TWICE = 2 };
+
+using ::testing::Bool;
+using ::testing::Combine;
+using ::testing::UnitTest;
+using ::testing::Values;
+using ::testing::WithParamInterface;
 
 // Base class for encrypted media tests.
 class EncryptedMediaTestBase : public MediaBrowserTest {
@@ -384,10 +393,13 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
 // Tests encrypted media playback using ExternalClearKey key system with a
 // specific library CDM interface version as test parameter:
 // - int: CDM interface version to test
-class ECKEncryptedMediaTest : public EncryptedMediaTestBase,
-                              public testing::WithParamInterface<int> {
+// - bool: Whether the kCdmStorageDatabase feature is enabled
+// - bool: Whether the kCdmStorageDatabaseMigration feature is enabled
+class ECKEncryptedMediaTest
+    : public EncryptedMediaTestBase,
+      public WithParamInterface<std::tuple<int, bool, bool>> {
  public:
-  int GetCdmInterfaceVersion() { return GetParam(); }
+  int GetCdmInterfaceVersion() { return std::get<0>(GetParam()); }
 
   // We use special |key_system| names to do non-playback related tests,
   // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
@@ -411,8 +423,26 @@ class ECKEncryptedMediaTest : public EncryptedMediaTestBase,
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EncryptedMediaTestBase::SetUpCommandLine(command_line);
+    // If we are testing the FileIO functionalities, we should parameterize to
+    // test the different combinations of the CdmStorageDatabase flags to make
+    // sure that end to end functionalities do not break with changes made, so
+    // that the MediaLicenseDatabase, the CdmStorageDatabaseMigration, and the
+    // final CdmStorageDatabase all work as expected.
+    // TODO(crbug.com/1454512): Remove logic here when fully transitioned to
+    // CdmStorageDatabase.
+    std::vector<base::test::FeatureRefAndParams> storage_feature_list;
+
+    if (std::get<1>(GetParam())) {
+      storage_feature_list.push_back({features::kCdmStorageDatabase, {}});
+    }
+
+    if (std::get<2>(GetParam())) {
+      storage_feature_list.push_back(
+          {features::kCdmStorageDatabaseMigration, {}});
+    }
+
     SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
-                                 command_line);
+                                 command_line, storage_feature_list);
     // Override enabled CDM interface version for testing.
     command_line->AppendSwitchASCII(
         switches::kOverrideEnabledCdmInterfaceVersion,
@@ -425,7 +455,7 @@ class ECKEncryptedMediaTest : public EncryptedMediaTestBase,
 // test parameter.
 class ECKEncryptedMediaOutputProtectionTest
     : public EncryptedMediaTestBase,
-      public testing::WithParamInterface<const char*> {
+      public WithParamInterface<const char*> {
  public:
   void TestOutputProtection(bool create_recorder_before_media_keys) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -604,7 +634,7 @@ class ParameterizedEncryptedMediaTestBase : public EncryptedMediaTestBase {
 // supported by both the CDM and Chromium will be used.
 class EncryptedMediaTest
     : public ParameterizedEncryptedMediaTestBase,
-      public testing::WithParamInterface<std::tuple<const char*, SrcType>> {
+      public WithParamInterface<std::tuple<const char*, SrcType>> {
  public:
   std::string CurrentKeySystem() override { return std::get<0>(GetParam()); }
   SrcType CurrentSourceType() override { return std::get<1>(GetParam()); }
@@ -615,14 +645,11 @@ class EncryptedMediaTest
 // encrypted MP4, see http://crbug.com/170793. Use this class for those tests so
 // we don't have to start the test and then skip it.
 class MseEncryptedMediaTest : public ParameterizedEncryptedMediaTestBase,
-                              public testing::WithParamInterface<const char*> {
+                              public WithParamInterface<const char*> {
  public:
   std::string CurrentKeySystem() override { return GetParam(); }
   SrcType CurrentSourceType() override { return SrcType::MSE; }
 };
-
-using ::testing::Combine;
-using ::testing::Values;
 
 INSTANTIATE_TEST_SUITE_P(MSE_ClearKey,
                          EncryptedMediaTest,
@@ -773,7 +800,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, InvalidResponseKeyError) {
 
 // This is not really an "encrypted" media test. Keep it here for completeness.
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
-  LOG(INFO) << ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
   if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
   }
@@ -783,7 +810,7 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
 
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        ConfigChangeVideo_ClearToEncrypted) {
-  LOG(INFO) << ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
   if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
   }
@@ -793,7 +820,7 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        ConfigChangeVideo_EncryptedToClear) {
-  LOG(INFO) << ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
   if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
   }
@@ -803,7 +830,7 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        ConfigChangeVideo_EncryptedToEncrypted) {
-  LOG(INFO) << ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
   if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
   }
@@ -812,7 +839,7 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, FrameSizeChangeVideo) {
-  LOG(INFO) << ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
   if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "FrameSizeChange test requires video playback.";
   }
@@ -902,8 +929,12 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 // Test CDM_10 through CDM_11.
 static_assert(media::CheckSupportedCdmInterfaceVersions(10, 11),
               "Mismatch between implementation and test coverage");
-INSTANTIATE_TEST_SUITE_P(CDM_10, ECKEncryptedMediaTest, Values(10));
-INSTANTIATE_TEST_SUITE_P(CDM_11, ECKEncryptedMediaTest, Values(11));
+INSTANTIATE_TEST_SUITE_P(CDM_10,
+                         ECKEncryptedMediaTest,
+                         Combine(Values(10), Bool(), Bool()));
+INSTANTIATE_TEST_SUITE_P(CDM_11,
+                         ECKEncryptedMediaTest,
+                         Combine(Values(11), Bool(), Bool()));
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
   TestNonPlaybackCases(kExternalClearKeyInitializeFailKeySystem,
@@ -1181,6 +1212,18 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
         switches::kUseGpuInTests);
     bool disable_gpu = base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kDisableGpu);
+
+    const auto& gpu_info = content::GpuDataManager::GetInstance()->GetGPUInfo();
+    const auto& active_gpu = gpu_info.active_gpu();
+    LOG(INFO) << "active_gpu.vendor_id=" << active_gpu.vendor_id;
+    LOG(INFO) << "active_gpu.device_id=" << active_gpu.device_id;
+    LOG(INFO) << "active_gpu.driver_version=" << active_gpu.driver_version;
+    LOG(INFO) << "gpu_info.gl_vendor=" << gpu_info.gl_vendor;
+    LOG(INFO) << "gpu_info.gl_renderer=" << gpu_info.gl_renderer;
+    LOG(INFO) << "switches::kDisableGpuDriverBugWorkarounds="
+              << base::CommandLine::ForCurrentProcess()->HasSwitch(
+                     switches::kDisableGpuDriverBugWorkarounds);
+
     bool is_playback_supported =
         is_mediafoundation_encrypted_playback_supported && use_gpu_in_tests &&
         !disable_gpu;
@@ -1193,11 +1236,10 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
     // Otherwise, NotSupportedError or the failure to create D3D11 device is
     // expected.
     if (!is_playback_supported) {
-      LOG(INFO)
-          << "Test method "
-          << ::testing::UnitTest::GetInstance()->current_test_info()->name()
-          << " is inconclusive since MediaFoundation playback is not "
-             "supported.";
+      LOG(INFO) << "Test method "
+                << UnitTest::GetInstance()->current_test_info()->name()
+                << " is inconclusive since MediaFoundation playback is not "
+                   "supported.";
 
       if (!is_mediafoundation_encrypted_playback_supported) {
         auto os_version = static_cast<int>(base::win::GetVersion());
@@ -1272,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
   if (!IsDefaultAudioOutputDeviceAvailable()) {
     LOG(INFO)
         << "Test method "
-        << ::testing::UnitTest::GetInstance()->current_test_info()->name()
+        << UnitTest::GetInstance()->current_test_info()->name()
         << " is expected to receive an error since there is no default audio "
            "output device.";
     expected_title = media::kErrorTitle;

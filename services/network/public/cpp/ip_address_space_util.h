@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ref.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -108,7 +108,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpaceParams {
 // See: https://wicg.github.io/cors-rfc1918/#address-space
 mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpace(
     const GURL& url,
-    absl::optional<CalculateClientAddressSpaceParams> params);
+    std::optional<CalculateClientAddressSpaceParams> params);
 
 // Given a response URL and the IP endpoint the requested resource was fetched
 // from, this function calculates the IPAddressSpace of the requested resource.

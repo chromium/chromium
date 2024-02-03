@@ -20,8 +20,7 @@
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace flat_rule = url_pattern_index::flat;
 namespace dnr_api = api::declarative_net_request;
 
@@ -425,5 +424,4 @@ std::optional<RequestAction> RulesetMatcherBase::GetAllowlistedFrameAction(
   return it->second.Clone();
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">내부 오류</translation>
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">곱하기</translation>
 <translation id="1145018782460575098">외부 기기용 펌웨어 업데이트 창이 열려 있습니다. 업데이트가 <ph name="NUM_UPDATES" />개 있습니다.</translation>
 <translation id="1145516343487477149">Chromebook과 관련된 일반적인 질문에 관한 도움말 및 답변 찾기</translation>
 <translation id="1154390310959620237">단축키는 5개까지만 맞춤설정할 수 있습니다. 새로운 단축키를 추가하려면 기존 단축키를 삭제하세요.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">스캔 영역에 맞춤</translation>
 <translation id="1367951781824006909">파일 선택</translation>
+<translation id="1371650399987522809">Google AI 기반 배경화면에 관한 의견</translation>
 <translation id="1387854245479784695">모든 코어에서 집계한 값입니다.</translation>
 <translation id="1394661041439318933">기기의 케이스 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="1397738625398125236">핑할 수 있는 게이트웨이</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">터치패드</translation>
 <translation id="1561927818299383735">백라이트 색상</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> 업데이트할 수 없음</translation>
+<translation id="1566493343215789965">나누기</translation>
 <translation id="1567064801249837505">앨범</translation>
 <translation id="1572585716423026576">배경화면으로 설정</translation>
 <translation id="1578784163189013834">화면 보호기 배경 선택</translation>
 <translation id="160633243685262989">미리보기 이미지</translation>
 <translation id="1611649489706141841">앞으로</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 이후 데이터 사용량</translation>
+<translation id="1615576200479539465">이미지 생성 중…</translation>
 <translation id="1621067168122174824">충전 테스트 실행</translation>
 <translation id="1626590945318984973">단축키를 사용할 수 없습니다. 기능 키와 <ph name="META_KEY" /> 키를 사용하지 않고 새로운 단축키를 누르세요.</translation>
 <translation id="1639239467298939599">로드 중</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
 <translation id="2880569433548999039">구름 흐름 화면 보호기</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
+<translation id="2938573842839598578">근삿값 결과를 얻으려면 <ph name="CATEGORY_TEXT" /> 값을 <ph name="CONVERSION_RATE" /> 값으로 <ph name="OPERATOR_TEXT" />하세요</translation>
 <translation id="2940811910881150316">기기를 테스트할 수 없습니다. 테스트하려면 덮개를 다시 엽니다.</translation>
 <translation id="2941112035454246133">낮음</translation>
 <translation id="3008341117444806826">새로고침</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Chrome OS 업데이트</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
+<translation id="3547264467365135390">공식</translation>
 <translation id="3557205324756024651">로컬 ID(선택사항)</translation>
 <translation id="3565064564551103223">허용된 IP</translation>
 <translation id="3569407787324516067">화면 보호기</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7184043045742675738">아무 키나 클릭하여 버튼을 맞춤설정합니다. 마우스 또는 화살표 키를 사용하여 키를 재배치합니다.</translation>
+<translation id="7206979415662233817">서비스 약관</translation>
 <translation id="7212547870105584639">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">외부 기기 펌웨어 업데이트</translation>
 <translation id="7216409898977639127">이동통신사</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">키보드 색상</translation>
 <translation id="7317831949569936035">학교 등록</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">18세 이상이어야 하며 AI 배경화면 사용 시 <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 서비스 약관<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> 및 <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />생성형 AI 추가 서비스 약관<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />이 적용된다는 점에 동의해야 합니다.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI로는 개인용 배경화면 및 비상업용 배경화면만 만들 수 있습니다. 배경화면 지원을 받는 경우 배경화면 추천을 생성하기 위해 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 텍스트가 Google AI 서버로 전송됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Search와 Space키를 눌러 Google 검색에서 검색결과를 확인하세요.</translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7353413232959255829">검색 결과 <ph name="LIST_SIZE" />개 중 <ph name="LIST_POSITION" />번: <ph name="SEARCH_RESULT_TEXT" />. 바로가기로 이동하려면 Enter를 누르세요.</translation>

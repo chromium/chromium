@@ -32,9 +32,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_PEER_CONNECTION_HANDLER_CLIENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -64,7 +64,7 @@ class PLATFORM_EXPORT RTCPeerConnectionHandlerClient
   virtual void NegotiationNeeded() = 0;
   virtual void DidGenerateICECandidate(RTCIceCandidatePlatform*) = 0;
   virtual void DidFailICECandidate(const String& address,
-                                   absl::optional<uint16_t> port,
+                                   std::optional<uint16_t> port,
                                    const String& host_candidate,
                                    const String& url,
                                    int error_code,

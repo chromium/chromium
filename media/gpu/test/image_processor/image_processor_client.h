@@ -45,7 +45,7 @@ class ImageProcessorClient {
   // validation, writing to file) on each video frame produced by the
   // ImageProcessor.
   static std::unique_ptr<ImageProcessorClient> Create(
-      absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
+      std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
       const ImageProcessor::PortConfig& input_config,
       const ImageProcessor::PortConfig& output_config,
       size_t num_buffers,
@@ -86,14 +86,14 @@ class ImageProcessorClient {
   // Create ImageProcessor with |input_config|, |output_config| and
   // |num_buffers|.
   bool CreateImageProcessor(
-      absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
+      std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
       const ImageProcessor::PortConfig& input_config,
       const ImageProcessor::PortConfig& output_config,
       size_t num_buffers);
 
   // Create |image_processor_| on |my_thread_|.
   void CreateImageProcessorTask(
-      absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
+      std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
       const ImageProcessor::PortConfig& input_config,
       const ImageProcessor::PortConfig& output_config,
       size_t num_buffers,

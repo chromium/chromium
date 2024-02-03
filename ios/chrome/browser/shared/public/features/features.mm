@@ -26,10 +26,6 @@ BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
              "kIOSKeyboardAccessoryUpgrade",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSPaymentsBottomSheet,
-             "IOSPaymentsBottomSheet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafetyCheckMagicStack,
@@ -295,6 +291,10 @@ BASE_FEATURE(kDynamicBackgroundColor,
              "DynamicBackgroundColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabGridAlwaysBounce,
+             "TabGridAlwaysBounce",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabGridCompositionalLayout,
              "TabGridCompositionalLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -390,6 +390,10 @@ BASE_FEATURE(kIOSExternalActionURLs,
              "IOSExternalActionURLs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDisableLensCamera,
+             "DisableLensCamera",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh capability. This is used because
 // registering for background refreshes must happen early in app initialization
@@ -426,7 +430,7 @@ DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled() {
 }
 
 bool IsWebChannelsEnabled() {
-  std::string launched_countries[5] = {"AU", "GB", "NZ", "US", "ZA"};
+  std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
   if (base::Contains(launched_countries,
                      country_codes::GetCurrentCountryCode())) {
     return true;
@@ -555,6 +559,11 @@ bool IsFeedAblationEnabled() {
 }
 
 bool IsFollowUIUpdateEnabled() {
+  std::string launched_countries[1] = {"US"};
+  if (base::Contains(launched_countries,
+                     country_codes::GetCurrentCountryCode())) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kEnableFollowUIUpdate);
 }
 
@@ -700,6 +709,8 @@ BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
 BASE_FEATURE(kIOSTipsNotifications,
              "IOSTipsNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kIOSTipsNotificationsTriggerTimeParam[] = "trigger_time";
 
 bool IsIOSTipsNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSTipsNotifications);

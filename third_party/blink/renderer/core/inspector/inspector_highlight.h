@@ -91,15 +91,15 @@ struct CORE_EXPORT InspectorFlexContainerHighlightConfig {
  public:
   InspectorFlexContainerHighlightConfig();
 
-  absl::optional<LineStyle> container_border;
-  absl::optional<LineStyle> line_separator;
-  absl::optional<LineStyle> item_separator;
+  std::optional<LineStyle> container_border;
+  std::optional<LineStyle> line_separator;
+  std::optional<LineStyle> item_separator;
 
-  absl::optional<BoxStyle> main_distributed_space;
-  absl::optional<BoxStyle> cross_distributed_space;
-  absl::optional<BoxStyle> row_gap_space;
-  absl::optional<BoxStyle> column_gap_space;
-  absl::optional<LineStyle> cross_alignment;
+  std::optional<BoxStyle> main_distributed_space;
+  std::optional<BoxStyle> cross_distributed_space;
+  std::optional<BoxStyle> row_gap_space;
+  std::optional<BoxStyle> column_gap_space;
+  std::optional<LineStyle> cross_alignment;
 };
 
 struct CORE_EXPORT InspectorScrollSnapContainerHighlightConfig {
@@ -108,8 +108,8 @@ struct CORE_EXPORT InspectorScrollSnapContainerHighlightConfig {
  public:
   InspectorScrollSnapContainerHighlightConfig() = default;
 
-  absl::optional<LineStyle> snapport_border;
-  absl::optional<LineStyle> snap_area_border;
+  std::optional<LineStyle> snapport_border;
+  std::optional<LineStyle> snap_area_border;
 
   Color scroll_margin_color;
   Color scroll_padding_color;
@@ -121,8 +121,8 @@ struct CORE_EXPORT InspectorContainerQueryContainerHighlightConfig {
  public:
   InspectorContainerQueryContainerHighlightConfig() = default;
 
-  absl::optional<LineStyle> container_border;
-  absl::optional<LineStyle> descendant_border;
+  std::optional<LineStyle> container_border;
+  std::optional<LineStyle> descendant_border;
 };
 
 struct CORE_EXPORT InspectorFlexItemHighlightConfig {
@@ -131,9 +131,9 @@ struct CORE_EXPORT InspectorFlexItemHighlightConfig {
  public:
   InspectorFlexItemHighlightConfig();
 
-  absl::optional<BoxStyle> base_size_box;
-  absl::optional<LineStyle> base_size_border;
-  absl::optional<LineStyle> flexibility_arrow;
+  std::optional<BoxStyle> base_size_box;
+  std::optional<LineStyle> base_size_border;
+  std::optional<LineStyle> flexibility_arrow;
 };
 
 struct CORE_EXPORT InspectorIsolationModeHighlightConfig {

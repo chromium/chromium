@@ -29,12 +29,12 @@ class {{struct.name}}DataView {
   [[nodiscard]] bool Read{{name|under_to_camel}}(UserType* output) const {
 {%-         if pf.min_version != 0 %}
     if (data_->header_.version < {{pf.min_version}}) {
-      *output = absl::nullopt;
+      *output = std::nullopt;
       return true;
     }
 {%-         endif %}
     if (!data_->{{has_value_pf.field.name}}) {
-      *output = absl::nullopt;
+      *output = std::nullopt;
       return true;
     }
 
@@ -46,11 +46,11 @@ class {{struct.name}}DataView {
   {{kind|cpp_data_view_type}} {{name}}() const {
 {%-           if pf.min_version != 0 %}
     if (data_->header_.version < {{pf.min_version}}) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 {%-           endif %}
     if (!data_->{{has_value_pf.field.name}}) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return ::mojo::internal::ToKnownEnumValueHelper(
           static_cast<{{value_pf.field.kind|unmapped_type_for_serializer}}>(data_->{{value_pf.field.name}}));
@@ -61,13 +61,13 @@ class {{struct.name}}DataView {
   {{kind|cpp_data_view_type}} {{name}}() const {
 {%-         if pf.min_version != 0 %}
     if (data_->header_.version < {{pf.min_version}}) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 {%-         endif %}
 
     return data_->{{has_value_pf.field.name}}
-        ? absl::make_optional({{ "!!" if kind|is_bool_kind }}data_->{{value_pf.field.name}})
-        : absl::nullopt;
+        ? std::make_optional({{ "!!" if kind|is_bool_kind }}data_->{{value_pf.field.name}})
+        : std::nullopt;
   }
 
 {%-       endif %}

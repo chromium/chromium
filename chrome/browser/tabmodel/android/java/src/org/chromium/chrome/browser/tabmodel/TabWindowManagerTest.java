@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -626,12 +627,11 @@ public class TabWindowManagerTest {
 
     @Test
     @Config(sdk = VERSION_CODES.Q)
-    @EnableFeatures({
-        ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH,
-        ChromeFeatureList.TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ON_MISMATCH
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH})
     public void testIndexReassignmentWhenIndicesMismatch() {
-        when(mMismatchedIndicesHandler.handleMismatchedIndices(any())).thenReturn(true);
+        // Simulate successful index mismatch handling, that will trigger reassignment.
+        when(mMismatchedIndicesHandler.handleMismatchedIndices(any(), anyBoolean(), anyBoolean()))
+                .thenReturn(true);
 
         // Create activity0 and request its tab model selector to use index 0.
         ActivityController<Activity> activityController0 = createActivity();
@@ -644,12 +644,9 @@ public class TabWindowManagerTest {
                 mMismatchedIndicesHandler,
                 0);
 
-        // Create activity1, trigger finish() on activity0, and request activity1's tab model
-        // selector to use index 0.
+        // Create activity1 and request its tab model selector to use index 0.
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-
-        activity0.finish();
 
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -670,8 +667,8 @@ public class TabWindowManagerTest {
                     (int) assignment.first);
         }
 
-        // Finishing activity0's index 0 assignment should be cleared and activity1 should be
-        // able to use the requested index 0.
+        // activity0's index 0 assignment should be cleared and activity1 should be able to use the
+        // requested index 0.
         assertEquals(
                 "Index for activity0 should be cleared.",
                 TabWindowManager.INVALID_WINDOW_INDEX,

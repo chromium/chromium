@@ -184,7 +184,7 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
     AccountId account_id =
         AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR,
+        account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
         profile_.get());
     fake_user_manager_->LoginUser(account_id, true);
 
@@ -662,11 +662,11 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
                             u"Test User modified · just now"),
                         SuggestionInfo(root.Append("Modified last by user"),
                                        u"You modified · just now"),
+                        SuggestionInfo(root.Append("Viewed last item"),
+                                       u"You viewed · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
                             u"Shared · just now"),
-                        SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You viewed · just now"),
                         SuggestionInfo(root.Append("Shared"),
                                        u"Shared · Dec 3"),
                         SuggestionInfo(
@@ -804,11 +804,11 @@ TEST_F(DriveRecentFileSuggestionProviderWithSharingUserTest, SharedItems) {
                             u"Test User modified · just now"),
                         SuggestionInfo(root.Append("Modified last by user"),
                                        u"You modified · just now"),
+                        SuggestionInfo(root.Append("Viewed last item"),
+                                       u"You viewed · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
                             u"Shared · just now"),
-                        SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You viewed · just now"),
                         SuggestionInfo(root.Append("Shared"),
                                        u"Shared · Dec 3"),
                         SuggestionInfo(

@@ -85,7 +85,7 @@ void SecurityContextInit::ApplyDocumentPolicy(
   // yet (|document_| field in current frame is not yet initialized yet).
   DocumentPolicy::ParsedDocumentPolicy report_only_document_policy;
   PolicyParserMessageBuffer logger("%s", /* discard_message */ true);
-  absl::optional<DocumentPolicy::ParsedDocumentPolicy>
+  std::optional<DocumentPolicy::ParsedDocumentPolicy>
       report_only_parsed_policy = DocumentPolicyParser::Parse(
           report_only_document_policy_header, logger);
   if (report_only_parsed_policy) {
@@ -104,7 +104,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     LocalFrame& frame,
     const ResourceResponse& response,
     const FramePolicy& frame_policy,
-    const absl::optional<ParsedPermissionsPolicy>& isolated_app_policy,
+    const std::optional<ParsedPermissionsPolicy>& isolated_app_policy,
     const base::optional_ref<const FencedFrame::RedactedFencedFrameProperties>
         fenced_frame_properties) {
   const url::Origin origin =

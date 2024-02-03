@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 
+#include <optional>
+
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -220,7 +221,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   bool should_create_subsequence =
       should_paint_content &&
       ShouldCreateSubsequence(paint_layer_, context, paint_flags);
-  absl::optional<SubsequenceRecorder> subsequence_recorder;
+  std::optional<SubsequenceRecorder> subsequence_recorder;
   if (should_create_subsequence) {
     if (!paint_layer_.SelfOrDescendantNeedsRepaint() &&
         SubsequenceRecorder::UseCachedSubsequenceIfPossible(context,
@@ -231,11 +232,11 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     subsequence_recorder.emplace(context, paint_layer_);
   }
 
-  absl::optional<ScopedEffectivelyInvisible> effectively_invisible;
+  std::optional<ScopedEffectivelyInvisible> effectively_invisible;
   if (PaintedOutputInvisible(object.StyleRef()))
     effectively_invisible.emplace(context.GetPaintController());
 
-  absl::optional<ScopedPaintChunkProperties> layer_chunk_properties;
+  std::optional<ScopedPaintChunkProperties> layer_chunk_properties;
   if (should_paint_content) {
     // If we will create a new paint chunk for this layer, this gives the chunk
     // a stable id.
@@ -433,7 +434,7 @@ void PaintLayerPainter::PaintWithPhase(PaintPhase phase,
       DCHECK(physical_fragment);
     }
 
-    absl::optional<ScopedDisplayItemFragment> scoped_display_item_fragment;
+    std::optional<ScopedDisplayItemFragment> scoped_display_item_fragment;
     if (fragment_idx)
       scoped_display_item_fragment.emplace(context, fragment_idx);
 

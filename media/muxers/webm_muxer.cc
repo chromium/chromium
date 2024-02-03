@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -27,7 +28,6 @@
 #include "media/base/video_frame.h"
 #include "media/formats/common/opus_constants.h"
 #include "media/muxers/muxer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libwebm/source/mkvmuxer.hpp"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -125,7 +125,7 @@ static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
   }
 }
 
-absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
+std::optional<mkvmuxer::Colour> ColorFromColorSpace(
     const gfx::ColorSpace& color) {
   using mkvmuxer::Colour;
   using MatrixID = gfx::ColorSpace::MatrixID;
@@ -142,7 +142,7 @@ absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
       matrix_coefficients = Colour::kBt2020NonConstantLuminance;
       break;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
   colour.set_matrix_coefficients(matrix_coefficients);
   int range;
@@ -154,7 +154,7 @@ absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
       range = Colour::kFullRange;
       break;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
   colour.set_range(range);
   int transfer_characteristics;
@@ -169,7 +169,7 @@ absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
       transfer_characteristics = Colour::kSmpteSt2084;
       break;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
   colour.set_transfer_characteristics(transfer_characteristics);
   int primaries;
@@ -181,7 +181,7 @@ absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
       primaries = Colour::kIturBt2020;
       break;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
   colour.set_primaries(primaries);
   return colour;
@@ -218,7 +218,7 @@ WebmMuxer::WebmMuxer(AudioCodec audio_codec,
                      bool has_video,
                      bool has_audio,
                      std::unique_ptr<Delegate> delegate,
-                     absl::optional<base::TimeDelta> max_data_output_interval)
+                     std::optional<base::TimeDelta> max_data_output_interval)
     : audio_codec_(audio_codec),
       has_video_(has_video),
       has_audio_(has_audio),
@@ -254,7 +254,7 @@ bool WebmMuxer::Flush() {
 void WebmMuxer::AddVideoTrack(
     const gfx::Size& frame_size,
     double frame_rate,
-    const absl::optional<gfx::ColorSpace>& color_space) {
+    const std::optional<gfx::ColorSpace>& color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, video_track_index_)
       << "WebmMuxer can only be initialized once.";

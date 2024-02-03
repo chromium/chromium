@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_VIEW_TRANSITION_STATE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_VIEW_TRANSITION_STATE_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
@@ -13,8 +15,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 
@@ -40,7 +40,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
   gfx::RectF overflow_rect_in_layout_space;
   viz::ViewTransitionElementResourceId snapshot_id;
   int32_t paint_order = 0;
-  absl::optional<gfx::RectF> captured_rect_in_layout_space;
+  std::optional<gfx::RectF> captured_rect_in_layout_space;
   base::flat_map<blink::mojom::ViewTransitionPropertyId, std::string>
       captured_css_properties;
 };

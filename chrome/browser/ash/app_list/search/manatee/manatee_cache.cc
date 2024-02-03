@@ -113,6 +113,7 @@ std::string ManateeCache::VectorToString(std::vector<std::string> messages) {
 }
 
 void ManateeCache::UrlLoader(std::vector<std::string> messages) {
+  weak_factory_.InvalidateWeakPtrs();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Make a new request. This destroys any existing |url_loader_| which will
   // cancel that request if it is in-progress.
@@ -155,11 +156,13 @@ void ManateeCache::OnJsonParsed(
   }
 
   std::optional<EmbeddingsList> embeddings = GetList(&*result).value();
-  if (embeddings.has_value()) {
-    std::move(results_callback_).Run(embeddings.value());
-    results_callback_.Reset();
-    response_ = std::move(embeddings.value());
+  if (!embeddings.has_value() || results_callback_.is_null()) {
+    return;
   }
+  std::move(results_callback_).Run(embeddings.value());
+  results_callback_.Reset();
+  response_ = std::move(embeddings.value());
+
 }
 
 EmbeddingsList ManateeCache::GetResponse() {

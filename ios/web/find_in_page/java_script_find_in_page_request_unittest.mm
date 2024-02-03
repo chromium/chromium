@@ -13,10 +13,9 @@ namespace web {
 class JavaScriptFindInPageRequestTest : public WebTest {
  protected:
   JavaScriptFindInPageRequestTest() {
-    auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+    auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL());
     request_.AddFrame(main_frame.get());
-    auto frame_with_two_matches =
-        FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());
+    auto frame_with_two_matches = FakeWebFrame::CreateChildWebFrame(GURL());
     request_.AddFrame(frame_with_two_matches.get());
     request_.Reset(@"foo", 2);
     request_.SetMatchCountForFrame(1, kMainFakeFrameId);

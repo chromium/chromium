@@ -14,7 +14,6 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition.h"
@@ -106,7 +105,7 @@ void AssistantWebContainerView::ChildPreferredSizeChanged(views::View* child) {
   // Because AssistantWebContainerView has a fixed size, it does not re-layout
   // its children when their preferred size changes. To address this, we need to
   // explicitly request a layout pass.
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -206,9 +205,6 @@ void AssistantWebContainerView::InitLayout() {
   params.type = views::Widget::InitParams::TYPE_WINDOW;
   params.delegate = this;
   params.name = GetClassName();
-
-  // Specify the radius of drop shadow of the window.
-  params.corner_radius = chromeos::features::RoundedWindowsRadius();
 
   views::Widget* widget = new views::Widget;
   widget->Init(std::move(params));

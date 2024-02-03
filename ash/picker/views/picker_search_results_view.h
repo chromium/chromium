@@ -16,7 +16,6 @@
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerItemView;
 class PickerSearchResult;
 class PickerSectionView;
 
@@ -50,9 +49,9 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
   // nothing).
   void SelectSearchResult(const PickerSearchResult& result);
 
-  // Creates a result item view based on what type `result` is.
-  std::unique_ptr<PickerItemView> CreateItemView(
-      const PickerSearchResult& result);
+  // Adds a result item view to `section_view` based on what type `result` is.
+  void AddResultToSection(const PickerSearchResult& result,
+                          PickerSectionView* section_view);
 
   SelectSearchResultCallback select_search_result_callback_;
   PickerSearchResults search_results_;

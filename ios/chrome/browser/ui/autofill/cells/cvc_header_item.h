@@ -7,16 +7,31 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 
-// Item to represent and configure a CVCHeaderCell
+// Item to represent and configure a CVCHeaderCell.
 @interface CVCHeaderItem : TableViewHeaderFooterItem
+
+// The title text to display.
+@property(nonatomic, copy) NSString* titleText;
 
 // The instructions text to display.
 @property(nonatomic, copy) NSString* instructionsText;
+
+- (instancetype)initWithType:(NSInteger)type
+                   titleText:(NSString*)titleText
+            instructionsText:(NSString*)instructionsText
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
+
+// Returns the accessibility labels of the CVCHeaderItem.
+- (NSString*)accessibilityLabels;
 
 @end
 
 // Header view of the CVC Prompt.
 @interface CVCHeaderView : UITableViewHeaderFooterView
+
+// The label displaying the title.
+@property(nonatomic, readonly, strong) UILabel* titleLabel;
 
 // The label displaying instructions.
 @property(nonatomic, readonly, strong) UILabel* instructionsLabel;

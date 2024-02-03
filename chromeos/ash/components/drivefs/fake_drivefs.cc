@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -65,7 +66,7 @@ base::FilePath MaybeMountDriveFs(
   for (const auto& option : mount_options) {
     if (base::StartsWith(option, "datadir=", base::CompareCase::SENSITIVE)) {
       auto datadir =
-          base::FilePath(base::StringPiece(option).substr(strlen("datadir=")));
+          base::FilePath(std::string_view(option).substr(strlen("datadir=")));
       CHECK(datadir.IsAbsolute());
       CHECK(!datadir.ReferencesParent());
       datadir_suffix = datadir.BaseName().value();
@@ -470,7 +471,7 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   if (!stored_metadata.alternate_url.empty()) {
     metadata->alternate_url = stored_metadata.alternate_url;
   } else {
-    base::StringPiece prefix;
+    std::string_view prefix;
     if (stored_metadata.hosted) {
       prefix = "https://document_alternate_link/";
     } else if (info.is_directory) {

@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   void SetHeaderCornerRadius(int radius);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   bool IsDrawn() const override;
 

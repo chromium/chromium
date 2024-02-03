@@ -92,7 +92,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Mock TabModel mTabModel;
 
-    @Mock TabGroupModelFilter.Observer mTabGroupModelFilterObserver;
+    @Mock TabGroupModelFilterObserver mTabGroupModelFilterObserver;
 
     @Mock Context mContext;
 

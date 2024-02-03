@@ -9,8 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,8 +34,7 @@ class AXTreeID;
 namespace screen_ai {
 
 class AXScreenAIAnnotator : public KeyedService,
-                            mojom::ScreenAIAnnotatorClient,
-                            ScreenAIInstallState::Observer {
+                            mojom::ScreenAIAnnotatorClient {
  public:
   explicit AXScreenAIAnnotator(content::BrowserContext* browser_context);
   AXScreenAIAnnotator(const AXScreenAIAnnotator&) = delete;
@@ -48,12 +45,9 @@ class AXScreenAIAnnotator : public KeyedService,
   // call.
   void AnnotateScreenshot(content::WebContents* web_contents);
 
-  // ScreenAIInstallState::Observer:
-  void StateChanged(ScreenAIInstallState::State state) override;
-
  private:
-  // Binds `screen_ai_annotator_` to the Screen AI service.
-  virtual void BindToScreenAIService(content::BrowserContext* browser_context);
+  // Is called when ScreenAI service is successfully initialized.
+  void ScreenAIServiceInitializationCallback(bool successful);
 
   // Receives a screenshot and passes it to `ExtractSemanticLayout` for
   // processing.
@@ -78,9 +72,6 @@ class AXScreenAIAnnotator : public KeyedService,
 
   // mojom::ScreenAIAnnotatorClient:
   void HandleAXTreeUpdate(const ui::AXTreeUpdate& update) override;
-
-  base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
-      component_ready_observer_{this};
 
   // AXScreenAIAnnotator is created by a factory on this browser context and
   // will be destroyed before browser context gets destroyed.

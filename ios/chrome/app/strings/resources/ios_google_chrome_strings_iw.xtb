@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1021782183249308751">‏לוחצים לחיצה ארוכה על סמל Chrome ואז לוחצים על 'עריכה של מסך הבית'</translation>
 <translation id="1066101356081285416">‏Chrome יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Google כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות ב-Google לכולם. תמיד אפשר לעדכן את <ph name="BEGIN_LINK" />הגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="1105362920864247682">‏ניקוי נתוני הגלישה ב-Chrome.</translation>
@@ -96,6 +97,7 @@
 <translation id="3345341804167540816">‏להשתמש ב-Chrome בכל מקום</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chrome במשך דקה ({THRESHOLD})}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chrome במשך {THRESHOLD} דקות}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chrome במשך {THRESHOLD} דקות}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chrome במשך {THRESHOLD} דקות}}</translation>
 <translation id="3399930248910934354">‏פתיחת ההגדרות של Chrome</translation>
+<translation id="344736123700721678">‏גישה מהירה יותר ל-Chrome דרך ה-Dock של מסך הבית</translation>
 <translation id="3472587960215700950">‏בעזרת מפות Google, אפשר לקבל ב-Chrome מסלולים ומידע מקומי על כתובות שהמערכת מזהה.</translation>
 <translation id="3503014945441706099">‏אפשר לקבל את הגרסה המשופרת של הגלישה הבטוחה גם לפרופיל Chrome הזה</translation>
 <translation id="3522659714780527202">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להפעיל את הסנכרון</translation>
@@ -177,12 +179,15 @@
 <translation id="6054613632208573261">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="6063091872902370735">‏התרת כניסה אל Chrome</translation>
 <translation id="6110625574506755980">‏חלק מהתכונות של Chrome לא יהיו זמינות יותר.</translation>
+<translation id="6132149203299792222">‏כניסה באמצעות חשבון Google כדי לסנכרן את הסיסמאות, הסימניות ועוד.</translation>
 <translation id="6177442314419606057">‏חיפוש ב-Chrome</translation>
 <translation id="6181930887571472871">‏לעבור ל-Chrome?</translation>
 <translation id="6238746320622508509">‏כרטיסיות מצב אנונימי יינעלו באמצעות Chrome.</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
+<translation id="6272822675004864999">‏כדי לקבל התראות מ-Chrome, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="630693926528731525">‏הסיסמה שלך לא שותפה. רצוי לבדוק את החיבור לאינטרנט ולוודא שנכנסת לחשבון ב-Chrome. אחר כך אפשר לנסות שוב.</translation>
 <translation id="6348855835728304880">‏גישה לסיסמאות ולעוד אפשרויות ב-Chrome מאפליקציות נוספות במכשיר הזה.</translation>
+<translation id="6389317667633680932">‏יש לך הזדמנות לגלות תכונות חדשות שיעזרו לך להפיק את המירב מ-Chrome.</translation>
 <translation id="6412673304250309937">‏המערכת בודקת כתובות URL ששמורות ב-Chrome ומכילות רשימות של אתרים לא בטוחים. אם אתר מסוים מנסה לגנוב סיסמה או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מהתוכן של הדף.</translation>
 <translation id="6427126399757991875">‏הארגון שלך מגדיר את Chrome…</translation>
 <translation id="6484712497741564393">‏נכנסת לחשבון בתור <ph name="EMAIL" />.
@@ -214,8 +219,10 @@
 <translation id="7124339256045485976">‏Chrome יתעדכן באופן קבוע</translation>
 <translation id="7161390184744336561">‏Google Chrome אינו מעודכן</translation>
 <translation id="7165736900384873061">‏התחלת השימוש בסורק ה-QR של Google Chrome</translation>
+<translation id="7175129790242719365">‏טיפ ל-Chrome: כדאי להיכנס לחשבון ב-Chrome</translation>
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="7200524487407690471">‏Chrome מפעיל בדיקת אבטחה באופן אוטומטי מדי יום כדי להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים ועוד. מידע נוסף על בדיקת האבטחה זמין בהגדרות.</translation>
+<translation id="7203324561587388418">‏מתעדכנים בתוכן ובטיפים שיעזרו לך עם Chrome.</translation>
 <translation id="72119412072970160">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות של Google באפליקציות אחרות ב-iPad.</translation>
 <translation id="723787869754590019">‏שימוש ב-Chrome למילוי אוטומטי</translation>
 <translation id="7254380941803999489">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
@@ -244,6 +251,8 @@
 <translation id="7897703007638178753">‏הצגת הכרטיסיות האחרונות ב-Chrome</translation>
 <translation id="7925119591961387184">‏בוחרים באפשרות Chrome.</translation>
 <translation id="7933491483529363150">‏פתיחת הכרטיסייה האחרונה שלי ב-Chrome.</translation>
+<translation id="7948283758957877064">‏מה חדש ב-Chrome</translation>
+<translation id="8006014511203279255">‏שימוש ב-Chrome בכל פעם שמקישים על קישורים בהודעות או באפליקציות אחרות.</translation>
 <translation id="8022947259858476807">‏כדאי להגדיר את Chrome כדפדפן ברירת המחדל כדי לפתוח קישורים, לחפש מווידג'טים ולבצע מילוי אוטומטי של סיסמאות באפליקציות אחרות</translation>
 <translation id="804638182476029347">‏אישור לקבלת התראות על הנחות ב-Chrome</translation>
 <translation id="8065292699993359127">‏פתיחת כתובות URL ב-Chrome במצב אנונימי</translation>
@@ -280,6 +289,7 @@
 <translation id="8765470054473112089">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="8772179140489533211">‏יוצגו הודעות לצורך כניסה אל Chrome.</translation>
 <translation id="8788269841521769222">‏אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">‏טיפ ל-Chrome: כדאי להגדיר את Chrome כדפדפן ברירת המחדל</translation>
 <translation id="8808828119384186784">‏ההגדרות של Chrome</translation>
 <translation id="8855781063981781621">‏כדי להשבית את האפשרות 'ללא 'ביטול נעילה עם טביעת אצבע'' ב-Chrome, צריך להשבית אותה ב-iPad.</translation>
 <translation id="8856877214925961642">‏הצפנה בעזרת ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות.

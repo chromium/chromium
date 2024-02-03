@@ -473,4 +473,25 @@ public final class TopicsFragmentTest {
         // Close the additional activity by navigating back.
         pressBack();
     }
+
+    @Test
+    @SmallTest
+    public void testTopicsIconsExist() {
+        var activity = mSettingsActivityTestRule.startSettingsActivity();
+        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, new PrivacySandboxBridgeJni());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (var topic : PrivacySandboxBridge.getFirstLevelTopics()) {
+                        String iconName =
+                                String.format(
+                                        "topic_taxonomy_%s_id_%s",
+                                        topic.getTaxonomyVersion(), topic.getTopicId());
+                        int iconId =
+                                activity.getResources()
+                                        .getIdentifier(
+                                                iconName, "drawable", activity.getPackageName());
+                        assertTrue("Topic drawable icon not found: " + iconName, iconId != 0);
+                    }
+                });
+    }
 }

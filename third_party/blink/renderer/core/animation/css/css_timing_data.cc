@@ -6,7 +6,7 @@
 
 namespace blink {
 
-CSSTimingData::CSSTimingData(absl::optional<double> initial_duration) {
+CSSTimingData::CSSTimingData(std::optional<double> initial_duration) {
   delay_start_list_.push_back(InitialDelayStart());
   delay_end_list_.push_back(InitialDelayEnd());
   duration_list_.push_back(initial_duration);
@@ -19,13 +19,13 @@ Timing CSSTimingData::ConvertToTiming(size_t index) const {
   Timing timing;
   timing.start_delay = GetRepeated(delay_start_list_, index);
   timing.end_delay = GetRepeated(delay_end_list_, index);
-  absl::optional<double> duration = GetRepeated(duration_list_, index);
+  std::optional<double> duration = GetRepeated(duration_list_, index);
   DCHECK(!duration.has_value() || !std::isnan(duration.value()));
   timing.iteration_duration =
       duration.has_value()
-          ? absl::make_optional(
+          ? std::make_optional(
                 ANIMATION_TIME_DELTA_FROM_SECONDS(duration.value()))
-          : absl::nullopt;
+          : std::nullopt;
   timing.timing_function = GetRepeated(timing_function_list_, index);
   timing.AssertValid();
   return timing;

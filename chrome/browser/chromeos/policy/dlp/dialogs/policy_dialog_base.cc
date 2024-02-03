@@ -167,7 +167,7 @@ views::Label* PolicyDialogBase::AddRowTitle(const std::u16string& title,
   return label;
 }
 
-BEGIN_METADATA(PolicyDialogBase, views::DialogDelegateView)
+BEGIN_METADATA(PolicyDialogBase)
 END_METADATA
 
 }  // namespace policy

@@ -85,6 +85,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     sources += aom_ports_asm_x86
     sources += aom_av1_encoder_asm_sse2
     sources += aom_dsp_encoder_asm_sse2
+    sources += aom_dsp_encoder_asm_ssse3
     if (current_cpu == "x64") {
       sources += aom_av1_encoder_asm_ssse3_x86_64
       sources += aom_dsp_encoder_asm_sse2_x86_64
@@ -369,7 +370,10 @@ if (fuzztest_supported) {
   test("av1_encoder_fuzz_test") {
     sources = [ "fuzz/av1_encoder_fuzz_test.cc" ]
 
-    enable_fuzztest = true
+    fuzztests = [
+      "AV1EncodeFuzzTest.AV1EncodeSucceeds",
+      "AV1EncodeFuzzTest.AV1EncodeArbitraryCallSequenceSucceeds",
+    ]
 
     deps = [
       ":libaom",

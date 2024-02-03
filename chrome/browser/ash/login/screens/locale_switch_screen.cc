@@ -101,7 +101,7 @@ void LocaleSwitchScreen::ShowImpl() {
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(user->is_profile_created());
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  if (user->GetType() == user_manager::UserType::kPublicAccount) {
     std::string locale =
         profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
     DCHECK(!locale.empty());
@@ -193,7 +193,7 @@ void LocaleSwitchScreen::SwitchLocale(std::string locale) {
   // Types of users that have a GAIA account and could be used during the
   // "Add Person" flow.
   static constexpr user_manager::UserType kAddPersonUserTypes[] = {
-      user_manager::USER_TYPE_REGULAR, user_manager::USER_TYPE_CHILD};
+      user_manager::UserType::kRegular, user_manager::UserType::kChild};
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
   // Don't show notification for the ephemeral logins, proceed with the default

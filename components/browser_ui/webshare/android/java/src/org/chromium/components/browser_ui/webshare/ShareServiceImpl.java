@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CollectionUtil;
@@ -43,7 +42,6 @@ import java.util.Set;
  * third_party/blink/public/mojom/webshare/webshare.mojom.
  */
 public class ShareServiceImpl implements ShareService {
-    private final WindowAndroid mWindow;
     private final WebShareDelegate mDelegate;
 
     private static final String TAG = "share";
@@ -161,10 +159,14 @@ public class ShareServiceImpl implements ShareService {
          * @param params the share data.
          */
         public void share(ShareParams params);
+
+        /**
+         * @return The current {@link WindowAndroid} used to perform sharing.
+         */
+        WindowAndroid getWindowAndroid();
     }
 
-    public ShareServiceImpl(@NonNull WebContents webContents, WebShareDelegate delegate) {
-        mWindow = webContents.getTopLevelNativeWindow();
+    public ShareServiceImpl(WebShareDelegate delegate) {
         mDelegate = delegate;
     }
 
@@ -215,7 +217,7 @@ public class ShareServiceImpl implements ShareService {
                 };
 
         final ShareParams.Builder paramsBuilder =
-                new ShareParams.Builder(mWindow, title, url.url)
+                new ShareParams.Builder(mDelegate.getWindowAndroid(), title, url.url)
                         .setText(text)
                         .setCallback(innerCallback);
         if (files == null || files.length == 0) {

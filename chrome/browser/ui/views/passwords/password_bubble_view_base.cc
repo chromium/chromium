@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/passwords/move_to_account_store_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_add_username_view.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
+#include "chrome/browser/ui/views/passwords/password_default_store_changed_view.h"
 #include "chrome/browser/ui/views/passwords/password_generation_confirmation_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_unsynced_credentials_locally_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
@@ -111,7 +112,9 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     view = new PasswordSaveUnsyncedCredentialsLocallyView(web_contents,
                                                           anchor_view);
   } else if (model_state ==
-             password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE) {
+                 password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE ||
+             model_state == password_manager::ui::
+                                MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE) {
     view = new MoveToAccountStoreBubbleView(web_contents, anchor_view);
   } else if (model_state == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
              model_state ==
@@ -143,6 +146,9 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
         Profile::FromBrowserContext(web_contents->GetBrowserContext())
             ->GetPrefs());
 #endif
+  } else if (model_state ==
+             password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE) {
+    view = new PasswordDefaultStoreChangedView(web_contents, anchor_view);
   } else {
     NOTREACHED_NORETURN();
   }

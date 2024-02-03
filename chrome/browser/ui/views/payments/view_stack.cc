@@ -42,7 +42,7 @@ void ViewStack::Push(std::unique_ptr<views::View> view, bool animate) {
   } else {
     view->SetBoundsRect(destination);
   }
-  view->Layout();
+  view->DeprecatedLayoutImmediately();
 
   // Add the new view to the stack so it can be popped later when navigating
   // back to the previous screen.

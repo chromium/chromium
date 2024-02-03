@@ -43,6 +43,23 @@ public class PathUtilsTest {
     }
 
     @Test
+    public void testIsPathUnderAppDirFalse() {
+        Context context = ApplicationProvider.getApplicationContext();
+        String dataPath = "/data_path/a/b/c";
+
+        assertEquals(false, PathUtils.isPathUnderAppDir(dataPath, context));
+    }
+
+    @Test
+    public void testIsPathUnderAppDirTrue() {
+        Context context = ApplicationProvider.getApplicationContext();
+        String dataSuffix = "data_suffix";
+        String expectedDataDir = context.getDir(dataSuffix, Context.MODE_PRIVATE).getPath();
+
+        assertEquals(true, PathUtils.isPathUnderAppDir(expectedDataDir, context));
+    }
+
+    @Test
     public void testSetPrivateDirectoryPath() {
         String dataPath = "/data_path/a/b/c";
         String cachePath = "/cache_path/a/b/c";

@@ -178,8 +178,7 @@
           "builder": "Mac13 Tests",
           "project": "chromium"
         }
-      ],
-      "is_compile_only": true
+      ]
     }
   },
   "$build/code_coverage": {

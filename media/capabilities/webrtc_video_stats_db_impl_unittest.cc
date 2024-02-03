@@ -143,8 +143,7 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
 
   void VerifyReadStats(const VideoDescKey& key,
                        const VideoStatsEntry& expected) {
-    EXPECT_CALL(*this,
-                MockGetVideoStatsCb(true, absl::make_optional(expected)));
+    EXPECT_CALL(*this, MockGetVideoStatsCb(true, std::make_optional(expected)));
     stats_db_->GetVideoStats(
         key, base::BindOnce(&WebrtcVideoStatsDBImplTest::MockGetVideoStatsCb,
                             base::Unretained(this)));
@@ -157,7 +156,7 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
       const VideoDescKey& key,
       const WebrtcVideoStatsDB::VideoStatsCollection& expected) {
     EXPECT_CALL(*this, MockGetVideoStatsCollectionCb(
-                           true, absl::make_optional(expected)));
+                           true, std::make_optional(expected)));
     stats_db_->GetVideoStatsCollection(
         key, base::BindOnce(
                  &WebrtcVideoStatsDBImplTest::MockGetVideoStatsCollectionCb,
@@ -169,7 +168,7 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
 
   void VerifyEmptyStats(const VideoDescKey& key) {
     EXPECT_CALL(*this,
-                MockGetVideoStatsCb(true, absl::optional<VideoStatsEntry>()));
+                MockGetVideoStatsCb(true, std::optional<VideoStatsEntry>()));
     stats_db_->GetVideoStats(
         key, base::BindOnce(&WebrtcVideoStatsDBImplTest::MockGetVideoStatsCb,
                             base::Unretained(this)));
@@ -204,12 +203,12 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
   MOCK_METHOD1(OnInitialize, void(bool success));
 
   MOCK_METHOD2(MockGetVideoStatsCb,
-               void(bool success, absl::optional<VideoStatsEntry> entry));
+               void(bool success, std::optional<VideoStatsEntry> entry));
 
-  MOCK_METHOD2(MockGetVideoStatsCollectionCb,
-               void(bool success,
-                    absl::optional<WebrtcVideoStatsDB::VideoStatsCollection>
-                        collection));
+  MOCK_METHOD2(
+      MockGetVideoStatsCollectionCb,
+      void(bool success,
+           std::optional<WebrtcVideoStatsDB::VideoStatsCollection> collection));
 
   MOCK_METHOD1(MockAppendVideoStatsCb, void(bool success));
 

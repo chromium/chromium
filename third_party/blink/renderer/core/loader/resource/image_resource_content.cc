@@ -60,8 +60,8 @@ class NullImageResourceInfo final
     return true;
   }
   bool HasCacheControlNoStoreHeader() const override { return false; }
-  absl::optional<ResourceError> GetResourceError() const override {
-    return absl::nullopt;
+  std::optional<ResourceError> GetResourceError() const override {
+    return std::nullopt;
   }
 
   void SetDecodedSize(size_t) override {}
@@ -80,8 +80,8 @@ class NullImageResourceInfo final
     return nullptr;
   }
 
-  absl::optional<WebURLRequest::Priority> RequestPriority() const override {
-    return absl::nullopt;
+  std::optional<WebURLRequest::Priority> RequestPriority() const override {
+    return std::nullopt;
   }
 
   const KURL url_;
@@ -234,7 +234,7 @@ ImageResourceContent::PriorityFromObservers() const {
   return std::make_pair(priority, priority_excluding_image_loader);
 }
 
-absl::optional<WebURLRequest::Priority> ImageResourceContent::RequestPriority()
+std::optional<WebURLRequest::Priority> ImageResourceContent::RequestPriority()
     const {
   return info_->RequestPriority();
 }
@@ -757,7 +757,7 @@ const ResourceResponse& ImageResourceContent::GetResponse() const {
   return info_->GetResponse();
 }
 
-absl::optional<ResourceError> ImageResourceContent::GetResourceError() const {
+std::optional<ResourceError> ImageResourceContent::GetResourceError() const {
   return info_->GetResourceError();
 }
 

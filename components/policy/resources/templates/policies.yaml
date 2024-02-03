@@ -1126,9 +1126,9 @@ policies:
   1125: ArcVmDataMigrationStrategy
   1126: AccessibilityPerformanceFilteringAllowed
   1127: RemoteAccessHostAllowEnterpriseFileTransfer
-  1128: DefaultMidiSetting
-  1129: MidiAllowedForUrls
-  1130: MidiBlockedForUrls
+  1128: ''
+  1129: ''
+  1130: ''
   1131: GlanceablesEnabled
   1132: DeviceAuthenticationURLBlocklist
   1133: DeviceAuthenticationURLAllowlist
@@ -1206,6 +1206,9 @@ policies:
   1205: HomeAndEndKeysModifier
   1206: PageUpAndPageDownKeysModifier
   1207: InsertKeyModifier
+  1208: ToolbarAvatarLabelSettings
+  1209: DeviceWeeklyScheduledSuspend
+  1210: RemoteAccessHostAllowUrlForwarding
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1254,6 +1257,6 @@ atomic_groups:
   45: PrivacySandbox
   46: KerberosPrefilledConfig
   47: ThirdPartyStoragePartitioningSettings
-  48: MidiSettings
+  48: ''
   49: ProfileSeparation
   50: FloatingSso

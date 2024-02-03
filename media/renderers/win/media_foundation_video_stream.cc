@@ -282,12 +282,6 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
                                 max_frame_average_luminance_level));
     }
   }
-  base::UmaHistogramEnumeration(
-      "Media.MediaFoundation.VideoColorSpace.TransferID",
-      config.color_space_info().transfer);
-  base::UmaHistogramEnumeration(
-      "Media.MediaFoundation.VideoColorSpace.PrimaryID",
-      config.color_space_info().primaries);
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   if (config.codec() == VideoCodec::kDolbyVision) {

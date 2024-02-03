@@ -349,8 +349,6 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
       // @ts-ignore: error TS4111: Property 'smallDocx' comes from an index
       // signature, so it must be accessed with ['smallDocx'].
       appId, `#file-list [file-name="${ENTRIES.smallDocx.nameText}"]`,
-      // @ts-ignore: error TS2345: Argument of type '{ ctrl: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       {ctrl: true});
 
   // Wait for the file to be unselected.

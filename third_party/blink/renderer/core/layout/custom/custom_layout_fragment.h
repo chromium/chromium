@@ -39,7 +39,7 @@ class CustomLayoutFragment : public ScriptWrappable {
                        CustomLayoutToken*,
                        const LayoutResult*,
                        const LogicalSize& size,
-                       const absl::optional<LayoutUnit> baseline,
+                       const std::optional<LayoutUnit> baseline,
                        v8::Isolate*);
   CustomLayoutFragment(const CustomLayoutFragment&) = delete;
   CustomLayoutFragment& operator=(const CustomLayoutFragment&) = delete;
@@ -54,7 +54,7 @@ class CustomLayoutFragment : public ScriptWrappable {
   void setInlineOffset(double inline_offset) { inline_offset_ = inline_offset; }
   void setBlockOffset(double block_offset) { block_offset_ = block_offset; }
 
-  absl::optional<double> baseline() const { return baseline_; }
+  std::optional<double> baseline() const { return baseline_; }
 
   ScriptValue data(ScriptState*) const;
 
@@ -94,7 +94,7 @@ class CustomLayoutFragment : public ScriptWrappable {
   double block_offset_ = 0;
 
   // The first-line baseline.
-  const absl::optional<double> baseline_;
+  const std::optional<double> baseline_;
 
   TraceWrapperV8Reference<v8::Value> layout_worklet_world_v8_data_;
 };

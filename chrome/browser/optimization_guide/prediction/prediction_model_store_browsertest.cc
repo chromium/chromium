@@ -118,7 +118,6 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
                      "/")
             .spec());
     cmd->AppendSwitchASCII("force-variation-ids", "4");
-    cmd->AppendSwitch(switches::kDebugLoggingEnabled);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     cmd->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
 #endif

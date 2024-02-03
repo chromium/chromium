@@ -29,7 +29,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/script_injection_tracker.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"

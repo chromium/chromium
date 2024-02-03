@@ -241,7 +241,7 @@ void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
 user_manager::UserType CalculateUserType(const AccountId& account_id) {
   CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
 
-  return user_manager::USER_TYPE_REGULAR;
+  return user_manager::UserType::kRegular;
 }
 
 chromeos::PinDialogManager* GetLoginScreenPinDialogManager() {
@@ -354,7 +354,7 @@ void GaiaScreenHandler::LoadGaia(const login::GaiaContext& context) {
         user_manager::UserManager::Get()->FindUser(account_id);
 
     if (user && user->using_saml() &&
-        user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+        user->GetType() == user_manager::UserType::kPublicAccount) {
       public_saml_url_fetcher_ =
           std::make_unique<PublicSamlUrlFetcher>(account_id);
       public_saml_url_fetcher_->Fetch(std::move(partition_call));
@@ -454,8 +454,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     // but preserve a policy file referencing an owner: https://crbug.com/850139
     const user_manager::User* owner_user =
         user_manager::UserManager::Get()->FindUser(owner_account_id);
-    if (owner_user &&
-        owner_user->GetType() == user_manager::UserType::USER_TYPE_CHILD) {
+    if (owner_user && owner_user->GetType() == user_manager::UserType::kChild) {
       params.Set("obfuscatedOwnerId", owner_account_id.GetGaiaId());
     }
   }
@@ -962,7 +961,7 @@ void GaiaScreenHandler::HandleLaunchSAMLPublicSession(
       user_manager::KnownUser(g_browser_process->local_state())
           .GetAccountId(email, std::string() /* id */, AccountType::UNKNOWN);
 
-  UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT, account_id);
+  UserContext context(user_manager::UserType::kPublicAccount, account_id);
 
   auto& existing_user_controller =
       CHECK_DEREF(ExistingUserController::current_controller());

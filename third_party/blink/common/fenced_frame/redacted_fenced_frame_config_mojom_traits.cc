@@ -513,7 +513,7 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
                            nested_urn_config_pair->config);
       }
     } else {
-      out_properties->nested_urn_config_pairs_.emplace(absl::nullopt);
+      out_properties->nested_urn_config_pairs_.emplace(std::nullopt);
     }
   }
 

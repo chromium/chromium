@@ -25,7 +25,8 @@ class PasswordStoreAndroidBackendBridgeHelper {
   // Factory function for creating the helper. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
   // Ensure `CanCreateBackend` returns true before calling this method.
-  static std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> Create();
+  static std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> Create(
+      password_manager::IsAccountStore is_account_store);
 
   // Method that checks whether a backend can be created or whether `Create`
   // would fail. It returns true if all nontransient prerequisistes are

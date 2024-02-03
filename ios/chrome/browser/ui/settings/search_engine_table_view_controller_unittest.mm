@@ -90,14 +90,6 @@ class SearchEngineTableViewControllerTest
     LegacyChromeTableViewControllerTest::TearDown();
   }
 
-  void SetupForChoiceScreenDisplay() {
-    pref_service_ = chrome_browser_state_->GetTestingPrefService();
-
-    // Override the country checks to simulate being in Belgium.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry, "BE");
-  }
-
   LegacyChromeTableViewController* InstantiateController() override {
     return [[SearchEngineTableViewController alloc]
         initWithBrowserState:chrome_browser_state_.get()];

@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -175,5 +176,13 @@ public class TabUnitTest {
         assertEquals(mTab.getNativePage(), mNativePage);
         mTab.freezeNativePage();
         assertNotEquals(mTab.getNativePage(), mNativePage);
+    }
+
+    @Test
+    @SmallTest
+    public void testMaybeLoadNativePage_nullOrEmptyUrl() {
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+        assertFalse(mTab.maybeShowNativePage(null, /* forceReload= */ false));
+        assertFalse(mTab.maybeShowNativePage("", /* forceReload= */ false));
     }
 }

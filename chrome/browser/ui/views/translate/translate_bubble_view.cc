@@ -529,7 +529,7 @@ void TranslateBubbleView::UpdateChildVisibilities() {
 
   // BoxLayout only considers visible children, so ensure any newly visible
   // child views are positioned correctly.
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 std::unique_ptr<views::View> TranslateBubbleView::CreateEmptyPane() {
@@ -1057,7 +1057,7 @@ void TranslateBubbleView::UpdateAdvancedView() {
     advanced_reset_button_target_->SetEnabled(DidLanguageSelectionChange(
         TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE));
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void TranslateBubbleView::UpdateLanguageNames(

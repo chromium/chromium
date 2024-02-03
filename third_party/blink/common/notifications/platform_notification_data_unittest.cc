@@ -43,7 +43,7 @@ TEST(PlatformNotificationDataTest, AssignmentOperator) {
   notification_data.actions[0]->action = "buttonAction";
   notification_data.actions[0]->title = u"Button Title!";
   notification_data.actions[0]->icon = GURL("https://example.com/aButton.png");
-  notification_data.actions[0]->placeholder = absl::nullopt;
+  notification_data.actions[0]->placeholder = std::nullopt;
 
   notification_data.actions[1] = blink::mojom::NotificationAction::New();
   notification_data.actions[1]->type =

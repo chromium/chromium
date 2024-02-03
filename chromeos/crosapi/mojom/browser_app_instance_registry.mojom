@@ -33,6 +33,10 @@ struct BrowserWindowInstanceUpdate {
   // Whether the browser window is an incognito window.
   [MinVersion=3]
   bool is_incognito@5;
+
+  // Unique lacros profile id for the profile browser belongs to.
+  [MinVersion=4]
+  uint64 lacros_profile_id@6;
 };
 
 [Stable, Extensible]

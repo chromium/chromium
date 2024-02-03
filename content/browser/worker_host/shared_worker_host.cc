@@ -17,6 +17,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -45,7 +46,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/client_security_state.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
@@ -304,7 +304,8 @@ void SharedWorkerHost::Start(
   blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
       instance_.url(), std::move(options),
       mojo::Clone(content_security_policies_),
-      std::move(outside_fetch_client_settings_object)));
+      std::move(outside_fetch_client_settings_object),
+      instance_.same_site_cookies()));
 
   auto renderer_preferences = blink::RendererPreferences();
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
@@ -392,27 +393,23 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(bypass_redirect_checks);
 
-  network::URLLoaderFactoryBuilder factory_builder;
-
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       CreateNetworkFactoryParamsForSubresources();
   url::Origin origin = url::Origin::Create(instance_.url());
-  GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      GetProcessHost()->GetBrowserContext(),
-      /*frame=*/nullptr, GetProcessHost()->GetID(),
-      ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource, origin,
-      /*navigation_id=*/std::nullopt,
-      ukm::SourceIdObj::FromInt64(ukm_source_id_), factory_builder,
-      &factory_params->header_client, bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, &factory_params->factory_override,
-      /*navigation_response_task_runner=*/nullptr);
 
-  devtools_instrumentation::WillCreateURLLoaderFactoryForSharedWorker(
-      this, &factory_params->factory_override);
-
-  return std::move(factory_builder)
-      .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-          GetProcessHost(), std::move(factory_params));
+  return url_loader_factory::CreatePendingRemote(
+      ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
+      url_loader_factory::TerminalParams::ForNetworkContext(
+          GetProcessHost()->GetStoragePartition()->GetNetworkContext(),
+          std::move(factory_params),
+          url_loader_factory::HeaderClientOption::kAllow,
+          url_loader_factory::FactoryOverrideOption::kAllow),
+      url_loader_factory::ContentClientParams(
+          GetProcessHost()->GetBrowserContext(),
+          /*frame=*/nullptr, GetProcessHost()->GetID(), origin,
+          ukm::SourceIdObj::FromInt64(ukm_source_id_), bypass_redirect_checks),
+      devtools_instrumentation::WillCreateURLLoaderFactoryParams::
+          ForSharedWorker(this));
 }
 
 network::mojom::URLLoaderFactoryParamsPtr

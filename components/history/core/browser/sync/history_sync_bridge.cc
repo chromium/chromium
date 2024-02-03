@@ -1030,7 +1030,7 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
 
     // Query the URL and annotation info for the current subchain.
     std::vector<AnnotatedVisit> annotated_visits =
-        history_backend_->ToAnnotatedVisits(
+        history_backend_->ToAnnotatedVisitsFromRows(
             subchain_visits,
             /*compute_redirect_chain_start_properties=*/false);
     if (annotated_visits.empty()) {

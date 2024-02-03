@@ -20,14 +20,14 @@ namespace blink {
 
 namespace {
 
-absl::optional<float> CalculateSpaceNeeded(const float destination,
-                                           const float source) {
+std::optional<float> CalculateSpaceNeeded(const float destination,
+                                          const float source) {
   DCHECK_GT(source, 0);
   DCHECK_GT(destination, 0);
 
   float repeat_tiles_count = floorf(destination / source);
   if (!repeat_tiles_count)
-    return absl::nullopt;
+    return std::nullopt;
 
   float space = destination;
   space -= source * repeat_tiles_count;
@@ -42,7 +42,7 @@ struct TileParameters {
   STACK_ALLOCATED();
 };
 
-absl::optional<TileParameters> ComputeTileParameters(
+std::optional<TileParameters> ComputeTileParameters(
     ENinePieceImageRule tile_rule,
     float dst_extent,
     float src_extent) {
@@ -59,10 +59,10 @@ absl::optional<TileParameters> ComputeTileParameters(
       return TileParameters{1, phase, 0};
     }
     case kSpaceImageRule: {
-      const absl::optional<float> spacing =
+      const std::optional<float> spacing =
           CalculateSpaceNeeded(dst_extent, src_extent);
       if (!spacing)
-        return absl::nullopt;
+        return std::nullopt;
       return TileParameters{1, *spacing, *spacing};
     }
     case kStretchImageRule:
@@ -70,7 +70,7 @@ absl::optional<TileParameters> ComputeTileParameters(
     default:
       NOTREACHED();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ShouldTile(const NinePieceImageGrid::NinePieceDrawInfo& draw_info) {
@@ -148,10 +148,10 @@ void PaintPieces(GraphicsContext& context,
     }
 
     // TODO(cavalcantii): see crbug.com/662513.
-    const absl::optional<TileParameters> h_tile = ComputeTileParameters(
+    const std::optional<TileParameters> h_tile = ComputeTileParameters(
         draw_info.tile_rule.horizontal, draw_info.destination.width(),
         draw_info.source.width() * draw_info.tile_scale.x());
-    const absl::optional<TileParameters> v_tile = ComputeTileParameters(
+    const std::optional<TileParameters> v_tile = ComputeTileParameters(
         draw_info.tile_rule.vertical, draw_info.destination.height(),
         draw_info.source.height() * draw_info.tile_scale.y());
     if (!h_tile || !v_tile)

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -51,7 +52,6 @@
 #include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -136,7 +136,7 @@ bool IsThrottlableRequestContext(mojom::blink::RequestContextType context) {
 }
 
 void LogMixedAutoupgradeMetrics(blink::MixedContentAutoupgradeStatus status,
-                                absl::optional<int> response_or_error_code,
+                                std::optional<int> response_or_error_code,
                                 ukm::SourceId source_id,
                                 ukm::UkmRecorder* recorder,
                                 Resource* resource) {
@@ -192,13 +192,13 @@ SchedulingPolicy::Feature GetFeatureFromRequestContextType(
   }
 }
 
-absl::optional<mojom::WebFeature> PreflightResultToWebFeature(
+std::optional<mojom::WebFeature> PreflightResultToWebFeature(
     network::mojom::PrivateNetworkAccessPreflightResult result) {
   using Result = network::mojom::PrivateNetworkAccessPreflightResult;
 
   switch (result) {
     case Result::kNone:
-      return absl::nullopt;
+      return std::nullopt;
     case Result::kError:
       return mojom::WebFeature::kPrivateNetworkAccessPreflightError;
     case Result::kSuccess:
@@ -363,7 +363,7 @@ void ResourceLoader::Start() {
 
   if (request.IsAutomaticUpgrade()) {
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kStarted,
-                               absl::nullopt, request.GetUkmSourceId(),
+                               std::nullopt, request.GetUkmSourceId(),
                                fetcher_->UkmRecorder(), resource_);
   }
   if (resource_->GetResourceRequest().IsDownloadToNetworkCacheOnly()) {
@@ -671,13 +671,13 @@ bool ResourceLoader::WillFollowRedirect(
         reporting_disposition, url_before_redirects,
         ResourceRequest::RedirectStatus::kFollowedRedirect);
 
-    absl::optional<ResourceRequestBlockedReason> blocked_reason =
+    std::optional<ResourceRequestBlockedReason> blocked_reason =
         Context().CanRequest(resource_type, *new_request, new_url, options,
                              reporting_disposition,
                              new_request->GetRedirectInfo());
 
     if (Context().CalculateIfAdSubresource(
-            *new_request, absl::nullopt /* alias_url */, resource_type,
+            *new_request, std::nullopt /* alias_url */, resource_type,
             options.initiator_info)) {
       new_request->SetIsAdResource();
     }
@@ -771,7 +771,7 @@ FetchContext& ResourceLoader::Context() const {
 void ResourceLoader::DidReceiveResponse(
     const WebURLResponse& response,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!response.IsNull());
   DidReceiveResponseInternal(response.ToResourceResponse(),
                              std::move(cached_metadata));
@@ -806,7 +806,7 @@ void ResourceLoader::DidReceiveResponse(
 
 void ResourceLoader::DidReceiveResponseInternal(
     const ResourceResponse& response,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   const ResourceRequestHead& request = resource_->GetResourceRequest();
 
   AtomicString content_encoding =
@@ -876,7 +876,7 @@ void ResourceLoader::DidReceiveResponseInternal(
           ? resource_->GetResponse()
           : response;
 
-  if (absl::optional<ResourceRequestBlockedReason> blocked_reason =
+  if (std::optional<ResourceRequestBlockedReason> blocked_reason =
           CheckResponseNosniff(request_context, nosniffed_response)) {
     HandleError(ResourceError::CancelledDueToAccessCheckError(
         response.CurrentRequestUrl(), blocked_reason.value()));
@@ -898,7 +898,7 @@ void ResourceLoader::DidReceiveResponseInternal(
   }
 
   // Redirect information for possible post-request checks below.
-  const absl::optional<ResourceRequest::RedirectInfo>& previous_redirect_info =
+  const std::optional<ResourceRequest::RedirectInfo>& previous_redirect_info =
       request.GetRedirectInfo();
   const KURL& original_url = previous_redirect_info
                                  ? previous_redirect_info->original_url
@@ -934,7 +934,7 @@ void ResourceLoader::DidReceiveResponseInternal(
         ReportingDisposition::kReport, original_url,
         ResourceRequest::RedirectStatus::kFollowedRedirect);
 
-    absl::optional<ResourceRequestBlockedReason> blocked_reason =
+    std::optional<ResourceRequestBlockedReason> blocked_reason =
         Context().CanRequest(resource_type, ResourceRequest(initial_request),
                              response_url, options,
                              ReportingDisposition::kReport, redirect_info);
@@ -1098,7 +1098,7 @@ void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
   loader_.reset();
   response_body_loader_ = nullptr;
   has_seen_end_of_body_ = false;
-  deferred_finish_loading_info_ = absl::nullopt;
+  deferred_finish_loading_info_ = std::nullopt;
   finished_ = true;
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
@@ -1180,7 +1180,7 @@ void ResourceLoader::HandleError(const ResourceError& error) {
   loader_.reset();
   response_body_loader_ = nullptr;
   has_seen_end_of_body_ = false;
-  deferred_finish_loading_info_ = absl::nullopt;
+  deferred_finish_loading_info_ = std::nullopt;
   finished_ = true;
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
@@ -1206,7 +1206,7 @@ void ResourceLoader::RequestSynchronously() {
             ResourceLoadPriority::kHighest);
 
   WebURLResponse response_out;
-  absl::optional<WebURLError> error_out;
+  std::optional<WebURLError> error_out;
   scoped_refptr<SharedBuffer> data_out;
   int64_t encoded_data_length = URLLoaderClient::kUnknownEncodedDataLength;
   uint64_t encoded_body_length = 0;
@@ -1254,7 +1254,7 @@ void ResourceLoader::RequestSynchronously() {
   }
 
   DidReceiveResponseInternal(response_out.ToResourceResponse(),
-                             /*cached_metadata=*/absl::nullopt);
+                             /*cached_metadata=*/std::nullopt);
   if (!IsLoading()) {
     return;
   }
@@ -1395,7 +1395,7 @@ void ResourceLoader::FinishedCreatingBlob(
   }
 }
 
-absl::optional<ResourceRequestBlockedReason>
+std::optional<ResourceRequestBlockedReason>
 ResourceLoader::CheckResponseNosniff(
     mojom::blink::RequestContextType request_context,
     const ResourceResponse& response) {
@@ -1403,7 +1403,7 @@ ResourceLoader::CheckResponseNosniff(
       ParseContentTypeOptionsHeader(response.HttpHeaderField(
           http_names::kXContentTypeOptions)) != kContentTypeOptionsNosniff;
   if (sniffing_allowed) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   String mime_type = response.HttpContentType();
@@ -1422,7 +1422,7 @@ ResourceLoader::CheckResponseNosniff(
   // TODO(mkwst): Move the 'nosniff' bit of 'AllowedByNosniff::MimeTypeAsScript'
   // here alongside the style checks, and put its use counters somewhere else.
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ResourceLoader::HandleDataUrl() {
@@ -1442,13 +1442,13 @@ void ResourceLoader::HandleDataUrl() {
   auto [result, response, data] = network_utils::ParseDataURL(
       resource_->Url(), resource_->GetResourceRequest().HttpMethod());
   if (result != net::OK) {
-    HandleError(ResourceError(result, resource_->Url(), absl::nullopt));
+    HandleError(ResourceError(result, resource_->Url(), std::nullopt));
     return;
   }
   DCHECK(data);
   const size_t data_size = data->size();
 
-  DidReceiveResponseInternal(response, /*cached_metadata=*/absl::nullopt);
+  DidReceiveResponseInternal(response, /*cached_metadata=*/std::nullopt);
   if (!IsLoading()) {
     return;
   }
@@ -1509,7 +1509,7 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
       continue;
     }
 
-    absl::optional<ResourceRequestBlockedReason> blocked_reason =
+    std::optional<ResourceRequestBlockedReason> blocked_reason =
         Context().CanRequestBasedOnSubresourceFilterOnly(
             resource_type, ResourceRequest(initial_request), alias_url, options,
             ReportingDisposition::kReport, redirect_info);
@@ -1534,7 +1534,7 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
 
 void ResourceLoader::CountPrivateNetworkAccessPreflightResult(
     network::mojom::PrivateNetworkAccessPreflightResult result) {
-  absl::optional<mojom::WebFeature> feature =
+  std::optional<mojom::WebFeature> feature =
       PreflightResultToWebFeature(result);
   if (!feature.has_value()) {
     return;

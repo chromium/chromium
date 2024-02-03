@@ -60,8 +60,6 @@ constexpr char kGivenNameBase[] = "given_name";
 const char kTermsOfServiceUrl[] = "htpps://terms-of-service.com";
 const char kPrivacyPolicyUrl[] = "https://privacy-policy.com";
 
-constexpr int kDesiredAvatarSize = 30;
-
 content::IdentityRequestAccount CreateTestIdentityRequestAccount(
     const std::string& account_suffix,
     content::IdentityRequestAccount::LoginState login_state) {
@@ -69,7 +67,7 @@ content::IdentityRequestAccount CreateTestIdentityRequestAccount(
       std::string(kIdBase) + account_suffix,
       std::string(kEmailBase) + account_suffix,
       std::string(kNameBase) + account_suffix,
-      std::string(kGivenNameBase) + account_suffix, GURL::EmptyGURL(),
+      std::string(kGivenNameBase) + account_suffix, GURL(),
       /*login_hints=*/std::vector<std::string>(),
       /*domain_hints=*/std::vector<std::string>(), login_state);
 }
@@ -135,8 +133,9 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     dialog_ = new AccountSelectionBubbleView(
         kTopFrameETLDPlusOne, iframe_etld_plus_one, title,
         blink::mojom::RpContext::kSignIn, show_auto_reauthn_checkbox,
-        anchor_widget_->GetContentsView(), shared_url_loader_factory(),
-        /*observer=*/nullptr);
+        /*browser=*/nullptr, anchor_widget_->GetContentsView(),
+        shared_url_loader_factory(),
+        /*observer=*/nullptr, /*widget_observer=*/nullptr);
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 
@@ -158,6 +157,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         exclude_iframe ? std::nullopt
                        : std::make_optional<std::u16string>(kIframeETLDPlusOne),
         account, idp_data, show_back_button);
+    dialog_->SizeToContents();
   }
 
   void CreateMultiAccountPicker(
@@ -179,6 +179,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowMultiAccountPicker(idp_data);
+    dialog_->SizeToContents();
   }
 
   void CreateMultiIdpAccountPicker(
@@ -187,6 +188,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                                  /*exclude_iframe=*/true,
                                  /*show_auto_reauthn_checkbox=*/false);
     dialog_->ShowMultiAccountPicker(idp_data_list);
+    dialog_->SizeToContents();
   }
 
   void CheckAccountRow(views::View* row, const std::string& account_suffix) {

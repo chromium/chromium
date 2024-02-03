@@ -182,8 +182,7 @@ void OnArcIconLoaded(
     auto it = icons->find(arc::ArcIntentHelperBridge::ActivityName(
         handler->package_name, handler->activity_name));
     const GURL& icon_url =
-        (it == icons->end() ? GURL::EmptyGURL()
-                            : it->second.icon16_dataurl->data);
+        (it == icons->end() ? GURL() : it->second.icon16_dataurl->data);
     resulting_tasks->tasks.emplace_back(
         TaskDescriptor(
             ActivityNameToAppId(handler->package_name, handler->activity_name),

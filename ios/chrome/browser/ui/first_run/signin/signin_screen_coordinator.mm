@@ -135,6 +135,7 @@
 
 - (void)stop {
   [self.identityChooserCoordinator stop];
+  self.identityChooserCoordinator = nil;
   self.delegate = nil;
   self.viewController = nil;
   [self.mediator disconnect];
@@ -142,6 +143,18 @@
   self.accountManagerService = nil;
   self.authenticationService = nil;
   [super stop];
+}
+
+#pragma mark - InterruptibleChromeCoordinator
+
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
+                 completion:(ProceduralBlock)completion {
+  if (self.addAccountSigninCoordinator) {
+    [self.addAccountSigninCoordinator interruptWithAction:action
+                                               completion:completion];
+  } else if (completion) {
+    completion();
+  }
 }
 
 #pragma mark - Private

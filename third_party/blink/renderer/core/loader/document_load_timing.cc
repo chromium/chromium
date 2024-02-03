@@ -38,9 +38,9 @@
 namespace blink {
 
 DocumentLoadTiming::DocumentLoadTiming(DocumentLoader& document_loader)
-    : user_timing_mark_fully_loaded_(absl::nullopt),
-      user_timing_mark_fully_visible_(absl::nullopt),
-      user_timing_mark_interactive_(absl::nullopt),
+    : user_timing_mark_fully_loaded_(std::nullopt),
+      user_timing_mark_fully_visible_(std::nullopt),
+      user_timing_mark_interactive_(std::nullopt),
       clock_(base::DefaultClock::GetInstance()),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       document_loader_(document_loader),

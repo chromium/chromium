@@ -95,9 +95,9 @@ class AudioCallback : public AudioIOCallback {
 };
 
 class AudioDestinationTest
-    : public ::testing::TestWithParam<absl::optional<float>> {
+    : public ::testing::TestWithParam<std::optional<float>> {
  public:
-  void CountWASamplesProcessedForRate(absl::optional<float> sample_rate) {
+  void CountWASamplesProcessedForRate(std::optional<float> sample_rate) {
     WebAudioLatencyHint latency_hint(WebAudioLatencyHint::kCategoryInteractive);
     AudioCallback callback;
 
@@ -158,7 +158,7 @@ TEST_P(AudioDestinationTest, ResamplingTest) {
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,
                          AudioDestinationTest,
-                         ::testing::Values(absl::optional<float>(),
+                         ::testing::Values(std::optional<float>(),
                                            8000,
                                            24000,
                                            44100,

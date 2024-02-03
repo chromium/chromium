@@ -397,6 +397,10 @@ bool AddAutofillProfileToTable(sql::Database* db,
         type == ADDRESS_HOME_ADMIN_LEVEL2) {
       continue;
     }
+    if (!base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel) &&
+        type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
+      continue;
+    }
     InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
                   {kGuid, kType, kValue, kVerificationStatus, kObservations});
     s.BindString(0, profile.guid());
@@ -619,7 +623,7 @@ std::unique_ptr<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
     FieldType type = ToSafeFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
-    if (type == UNKNOWN_TYPE) {
+    if (!GetDatabaseStoredTypesOfAutofillProfile().contains(type)) {
       // This is possible in two cases:
       // - The database was tampered with by external means.
       // - The type corresponding to `s.ColumnInt(0)` was deprecated. In this

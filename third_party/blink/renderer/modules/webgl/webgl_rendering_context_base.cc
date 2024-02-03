@@ -121,6 +121,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/image_extractor.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
@@ -3265,10 +3266,10 @@ WebGLActiveInfo* WebGLRenderingContextBase::getActiveUniform(
                                                type, size);
 }
 
-absl::optional<HeapVector<Member<WebGLShader>>>
+std::optional<HeapVector<Member<WebGLShader>>>
 WebGLRenderingContextBase::getAttachedShaders(WebGLProgram* program) {
   if (!ValidateWebGLProgramOrShader("getAttachedShaders", program))
-    return absl::nullopt;
+    return std::nullopt;
 
   HeapVector<Member<WebGLShader>> shader_objects;
   for (GLenum shaderType : {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}) {
@@ -4199,10 +4200,10 @@ String WebGLRenderingContextBase::getShaderSource(WebGLShader* shader) {
   return EnsureNotNull(shader->Source());
 }
 
-absl::optional<Vector<String>>
+std::optional<Vector<String>>
 WebGLRenderingContextBase::getSupportedExtensions() {
   if (isContextLost())
-    return absl::nullopt;
+    return std::nullopt;
 
   Vector<String> result;
 
@@ -5012,7 +5013,7 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
   // we want to avoid this error. Therefore we provide temporary memory here if
   // 'ArrayBufferView' does not provide a backing store but we actually read
   // zero pixels.
-  absl::optional<Vector<uint8_t>> buffer;
+  std::optional<Vector<uint8_t>> buffer;
   if (!data && (width == 0 || height == 0)) {
     buffer.emplace(32);
     data = buffer->data();
@@ -5504,8 +5505,8 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
 bool WebGLRenderingContextBase::ValidateTexFunc(
     TexImageParams params,
     TexFuncValidationSourceType source_type,
-    absl::optional<GLsizei> source_width,
-    absl::optional<GLsizei> source_height) {
+    std::optional<GLsizei> source_width,
+    std::optional<GLsizei> source_height) {
   // Overwrite `params.width` and `params.height` with `source_width` and
   // `source_height`. If `params.depth` is unspecified, set it to 1.
   if (source_width)
@@ -5560,7 +5561,7 @@ bool WebGLRenderingContextBase::ValidateValueFitNonNegInt32(
   return true;
 }
 
-// TODO(fmalita): figure why WebGLImageConversion::ImageExtractor can't handle
+// TODO(fmalita): figure why ImageExtractor can't handle
 // SVG-backed images, and get rid of this intermediate step.
 scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
     scoped_refptr<Image> pass_image,
@@ -5672,8 +5673,8 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
     return;
   if (!ValidateTexImageBinding(params))
     return;
-  if (!ValidateTexFunc(params, kSourceArrayBufferView, absl::nullopt,
-                       absl::nullopt)) {
+  if (!ValidateTexFunc(params, kSourceArrayBufferView, std::nullopt,
+                       std::nullopt)) {
     return;
   }
   if (!ValidateTexFuncData(params, pixels, null_disposition, src_offset))
@@ -5814,7 +5815,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     return;
   }
 
-  WebGLImageConversion::ImageExtractor image_extractor(
+  ImageExtractor image_extractor(
       image_for_render.get(), params.unpack_premultiply_alpha,
       unpack_colorspace_conversion_ == GL_NONE
           ? nullptr
@@ -6476,8 +6477,8 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     return;
   }
 
-  if (!ValidateTexFunc(params, kSourceImageBitmap, absl::nullopt,
-                       absl::nullopt)) {
+  if (!ValidateTexFunc(params, kSourceImageBitmap, std::nullopt,
+                       std::nullopt)) {
     return;
   }
 

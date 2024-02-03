@@ -380,7 +380,7 @@ void AuctionProcessManager::OnWorkletProcessUnusable(
     // created for the first request. Could cache the process returned by the
     // first request and reuse it, but doesn't seem worth the effort.
     bool process_created = TryCreateOrGetProcessForHandle(process_handle);
-    DCHECK(process_created);
+    CHECK(process_created);
     --num_matching_requests;
 
     // Nothing else to do after assigning the process - assigning a process

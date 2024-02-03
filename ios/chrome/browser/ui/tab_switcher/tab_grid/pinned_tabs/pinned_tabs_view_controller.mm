@@ -528,9 +528,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
            itemsForBeginningDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath {
   _draggedItem = _items[indexPath.item];
-
   UIDragItem* dragItem = [self.dragDropHandler dragItemForItem:_draggedItem];
-  return [NSArray arrayWithObjects:dragItem, nil];
+  if (!dragItem) {
+    return @[];
+  }
+  return @[ dragItem ];
 }
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView

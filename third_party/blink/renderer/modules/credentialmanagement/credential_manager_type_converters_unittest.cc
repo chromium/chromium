@@ -209,9 +209,9 @@ TEST(CredentialManagerTypeConvertersTest,
       blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
   mojo_type->echo_prf = true;
   mojo_type->prf_results = blink::mojom::blink::PRFValues::New(
-      /*id=*/absl::nullopt,
+      /*id=*/std::nullopt,
       /*first=*/Vector<uint8_t>{1, 2, 3},
-      /*second=*/absl::nullopt);
+      /*second=*/std::nullopt);
 
   auto* blink_type =
       ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
@@ -232,7 +232,7 @@ TEST(CredentialManagerTypeConvertersTest,
       blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
   mojo_type->echo_prf = true;
   mojo_type->prf_results = blink::mojom::blink::PRFValues::New(
-      /*id=*/absl::nullopt,
+      /*id=*/std::nullopt,
       /*first=*/Vector<uint8_t>{1, 2, 3},
       /*second=*/Vector<uint8_t>{4, 5, 6});
 
@@ -422,8 +422,8 @@ TEST(CredentialManagerTypeConvertersTest,
   auto sample_vector = vectorOf(kSample, std::size(kSample));
   Vector<blink::mojom::blink::PRFValuesPtr> expected_prf_values;
   expected_prf_values.emplace_back(blink::mojom::blink::PRFValues::New(
-      absl::optional<Vector<uint8_t>>(), sample_vector,
-      absl::optional<Vector<uint8_t>>()));
+      std::optional<Vector<uint8_t>>(), sample_vector,
+      std::optional<Vector<uint8_t>>()));
   ASSERT_EQ(mojo_type->prf_inputs[0]->first, expected_prf_values[0]->first);
 }
 

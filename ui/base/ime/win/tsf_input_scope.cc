@@ -100,14 +100,6 @@ class TSFInputScope final : public ITfInputScope {
   volatile ULONG ref_count_;
 };
 
-typedef HRESULT (WINAPI *SetInputScopesFunc)(HWND window_handle,
-                                             const InputScope* input_scope_list,
-                                             UINT num_input_scopes,
-                                             WCHAR**, /* unused */
-                                             UINT, /* unused */
-                                             WCHAR*, /* unused */
-                                             WCHAR* /* unused */);
-
 InputScope ConvertTextInputTypeToInputScope(TextInputType text_input_type) {
   // Following mapping is based in IE10 on Windows 8.
   switch (text_input_type) {

@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_VIDEO_DEVICE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_VIDEO_DEVICE_H_
 
+#include <optional>
+
 #include "media/capture/video_capture_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -55,7 +56,7 @@ struct MODULES_EXPORT VideoDeviceCaptureCapabilities {
   // VideoInputDeviceCapabilitiesPtr type once dependent types are migrated to
   // Blink.
   Vector<VideoInputDeviceCapabilities> device_capabilities;
-  Vector<absl::optional<bool>> noise_reduction_capabilities;
+  Vector<std::optional<bool>> noise_reduction_capabilities;
 };
 
 // This function performs source, source-settings and track-settings selection

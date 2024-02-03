@@ -587,8 +587,7 @@ void AddStoreInfo(const DatabaseManagerInfo::DatabaseInfo::StoreInfo store_info,
   }
 
   if (store_info.has_state()) {
-    std::string state_base64;
-    base::Base64Encode(store_info.state(), &state_base64);
+    std::string state_base64 = base::Base64Encode(store_info.state());
     store_info_list.Append("State: " + state_base64);
   }
 
@@ -850,8 +849,7 @@ base::Value::Dict SerializeChromeUserPopulation(
     token_dict.Set("token_time_msec",
                    static_cast<double>(token.token_time_msec()));
 
-    std::string token_base64;
-    base::Base64Encode(token.token_value(), &token_base64);
+    std::string token_base64 = base::Base64Encode(token.token_value());
     token_dict.Set("token_value", token_base64);
 
     page_load_tokens.Append(std::move(token_dict));
@@ -1386,6 +1384,8 @@ base::Value::Dict SerializeSafeBrowsingClientProperties(
       break;
   }
   client_properties_dict.Set("url_api_type", url_api_type);
+  client_properties_dict.Set("is_async_check",
+                             client_properties.is_async_check());
   return client_properties_dict;
 }
 
@@ -1665,8 +1665,7 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
   }
   std::string serialized;
   if (report.SerializeToString(&serialized)) {
-    std::string base64_encoded;
-    base::Base64Encode(serialized, &base64_encoded);
+    std::string base64_encoded = base::Base64Encode(serialized);
     report_request.Set("csbrr(base64)", base64_encoded);
   }
   std::string report_request_serialized;
@@ -2581,9 +2580,8 @@ std::string SerializeContentAnalysisRequest(
     request_data.Set("filename", request.request_data().filename());
     request_data.Set("digest", request.request_data().digest());
     if (request.request_data().has_csd()) {
-      std::string csd_base64;
-      base::Base64Encode(request.request_data().csd().SerializeAsString(),
-                         &csd_base64);
+      std::string csd_base64 =
+          base::Base64Encode(request.request_data().csd().SerializeAsString());
       request_data.Set("csd", csd_base64);
     }
     request_data.Set("content_type", request.request_data().content_type());

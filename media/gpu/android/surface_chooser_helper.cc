@@ -100,7 +100,7 @@ void SurfaceChooserHelper::SetIsPersistentVideo(bool is_persistent_video) {
 }
 
 void SurfaceChooserHelper::UpdateChooserState(
-    absl::optional<AndroidOverlayFactoryCB> new_factory) {
+    std::optional<AndroidOverlayFactoryCB> new_factory) {
   surface_chooser_->UpdateState(std::move(new_factory), surface_chooser_state_);
 }
 
@@ -144,7 +144,7 @@ void SurfaceChooserHelper::NotifyPromotionHintAndUpdateChooser(
 
   if (update_state) {
     most_recent_chooser_retry_ = now;
-    UpdateChooserState(absl::optional<AndroidOverlayFactoryCB>());
+    UpdateChooserState(std::optional<AndroidOverlayFactoryCB>());
   }
 }
 
