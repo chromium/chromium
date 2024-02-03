@@ -163,9 +163,7 @@ bool DoIsRelativeURL(const char* base,
 
   // If the scheme isn't valid, then it's relative.
   if (!IsValidScheme(url, scheme)) {
-    if (url[begin] == '#' &&
-        base::FeatureList::IsEnabled(
-            kResolveBareFragmentWithColonOnNonHierarchical)) {
+    if (url[begin] == '#') {
       // |url| is a bare fragment (e.g. "#foo:bar"). This can be resolved
       // against any base. Fall-through.
     } else if (!is_base_hierarchical) {
