@@ -151,8 +151,10 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   // Call periodically to clean up resources.
   void CleanupTempEGLSyncObjects();
 
-  // Call once upon shutdown of the display.
-  void CleanupMetalSharedEvent();
+  // Call during Initialize/Shutdown to clean initialize/delete the objective C
+  // shared event storage
+  void InitMetalSharedEventStorage();
+  void CleanupMetalSharedEventStorage();
 #endif
 
  private:

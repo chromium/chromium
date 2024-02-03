@@ -622,7 +622,7 @@ void GLDisplayEGL::Shutdown() {
   egl_android_native_fence_sync_supported_ = false;
 
 #if BUILDFLAG(IS_APPLE)
-  CleanupMetalSharedEvent();
+  CleanupMetalSharedEventStorage();
 #endif
 }
 
@@ -903,6 +903,10 @@ void GLDisplayEGL::InitializeCommon(bool for_testing) {
           gpu_switching_observer_.get());
     }
   }
+
+#if BUILDFLAG(IS_APPLE)
+  InitMetalSharedEventStorage();
+#endif
 }
 #endif  // defined(USE_EGL)
 
