@@ -2069,6 +2069,13 @@
      }
     },
     "css-display": {
+     "display-contents-001-crash.html": [
+      "376c3b549aad11dea1b144c989a69418c575a51f",
+      [
+       null,
+       {}
+      ]
+     ],
      "display-none-root-hit-test-crash.html": [
       "b2467fa58fdb965f4097c447ce8a93391d80ef7d",
       [
