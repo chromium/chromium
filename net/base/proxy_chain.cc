@@ -24,18 +24,7 @@ ProxyChain::ProxyChain(const ProxyChain& other) = default;
 ProxyChain::ProxyChain(ProxyChain&& other) noexcept = default;
 
 ProxyChain& ProxyChain::operator=(const ProxyChain& other) = default;
-// Note: We define this move assignment operator explicitly to make the
-// `ForIpProtection()` method safer to use. Specifically, we want to prevent
-// moving the `proxy_server_list_` in the event that self-assignment is
-// occurring (i.e. "proxy_chain = std::move(proxy_chain).ForIpProtection()") or
-// else the list of ProxyServers will get cleared.
-ProxyChain& ProxyChain::operator=(ProxyChain&& other) noexcept {
-  if (this != &other) {
-    proxy_server_list_ = std::move(other.proxy_server_list_);
-    ip_protection_chain_id_ = other.ip_protection_chain_id_;
-  }
-  return *this;
-}
+ProxyChain& ProxyChain::operator=(ProxyChain&& other) noexcept = default;
 ProxyChain::~ProxyChain() = default;
 
 ProxyChain::ProxyChain(ProxyServer proxy_server)
