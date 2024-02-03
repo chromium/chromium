@@ -332,7 +332,8 @@ void EditingList::AddControlListContent() {
 
 void EditingList::MaybeApplyEduDecoration() {
   // Show education decoration only once.
-  if (show_edu_) {
+  if (const auto& list_children = scroll_content_->children();
+      show_edu_ && list_children.size() == 1u) {
     ShowKeyEditNudge();
     PerformPulseAnimation();
     show_edu_ = false;
