@@ -287,6 +287,43 @@ void StartDragDeskPreview(const DeskMiniView* desk_mini_view,
   event_generator->MoveMouseBy(0, 50);
 }
 
+TestDeskProfilesDelegate& GetDeskProfilesTestDelegate() {
+  CHECK(chromeos::features::IsDeskProfilesEnabled());
+  return *static_cast<TestDeskProfilesDelegate*>(
+      Shell::Get()->GetDeskProfilesDelegate());
+}
+
+uint64_t GetDummyLacrosDeskProfileId(size_t index) {
+  static constexpr uint64_t kLacrosProfileIdBase = 1001;
+  return kLacrosProfileIdBase + index * 2;
+}
+
+// Adds `count` dummy lacros profiles to the test delegate.
+void AddDummyLacrosDeskProfiles(size_t count) {
+  for (size_t i = 0; i != count; ++i) {
+    LacrosProfileSummary summary;
+    summary.profile_id = GetDummyLacrosDeskProfileId(i);
+    summary.name = base::StringPrintf("Lacros user %lu", i + 1);
+    summary.email = base::StringPrintf("email%lu@gmail.com", i + 1);
+    summary.icon = gfx::test::CreateImageSkia(32, 32);
+
+    GetDeskProfilesTestDelegate().UpdateTestProfile(std::move(summary));
+  }
+}
+
+// Sends tab keys (or shift+tab) until the passed predicate becomes true, or a
+// fixed max is hit.
+template <class Predicate>
+bool TabUntil(bool reverse, Predicate&& predicate) {
+  for (int i = 0; i != 100; ++i) {
+    if (predicate()) {
+      return true;
+    }
+    SendKey(ui::VKEY_TAB, reverse ? ui::EF_SHIFT_DOWN : ui::EF_NONE);
+  }
+  return false;
+}
+
 // Defines an observer to test DesksController notifications.
 class TestObserver : public DesksController::Observer {
  public:
@@ -2700,8 +2737,6 @@ TEST_F(DesksWithMultiDisplayOverview, CloseDeskBeforeAnimationFinishes) {
   ASSERT_TRUE(desks_bar_view_2->IsZeroState());
 }
 
-namespace {
-
 PrefService* GetPrimaryUserPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
@@ -2746,8 +2781,6 @@ std::vector<uint64_t> GetDeskRestoreLacrosProfileIds(PrefService* user_prefs) {
   }
   return lacros_profile_ids;
 }
-
-}  // namespace
 
 class DesksEditableNamesTest : public DesksTest {
  public:
@@ -4870,12 +4903,8 @@ TEST_F(FloatAllDesksWithoutZOrderTest, RestackOnDeskSwitch) {
   EXPECT_TRUE(WindowState::Get(floated_adw.get())->IsFloated());
 }
 
-namespace {
-
 constexpr char kUser1Email[] = "user1@desks";
 constexpr char kUser2Email[] = "user2@desks";
-
-}  // namespace
 
 class DesksMultiUserTest : public NoSessionAshTestBase,
                            public MultiUserWindowManagerDelegate {
@@ -9216,9 +9245,10 @@ TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
   EXPECT_FALSE(window.is_valid());
 }
 
-class DeskBarTest : public AshTestBase,
-                    public ::testing::WithParamInterface<
-                        testing::tuple<bool, bool, DeskBarViewBase::Type>> {
+class DeskBarTest
+    : public AshTestBase,
+      public ::testing::WithParamInterface<
+          testing::tuple<bool, bool, bool, DeskBarViewBase::Type>> {
  public:
   DeskBarTest() = default;
   DeskBarTest(const DeskBarTest&) = delete;
@@ -9226,10 +9256,12 @@ class DeskBarTest : public AshTestBase,
   ~DeskBarTest() override = default;
 
   void SetUp() override {
-    std::tie(use_touch_gestures_, use_16_desks_, bar_type_) = GetParam();
+    std::tie(use_touch_gestures_, use_16_desks_, use_desk_profiles_,
+             bar_type_) = GetParam();
 
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kFeatureManagement16Desks, use_16_desks_}});
+        {{features::kFeatureManagement16Desks, use_16_desks_},
+         {chromeos::features::kDeskProfiles, use_desk_profiles_}});
 
     AshTestBase::SetUp();
 
@@ -9238,6 +9270,12 @@ class DeskBarTest : public AshTestBase,
     ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
 
     SetShowDeskButtonInShelfPref(GetPrimaryUserPrefService(), true);
+
+    if (use_desk_profiles_) {
+      // Add two lacros profiles so that the desk profile avatar shows up in
+      // desk mini views.
+      AddDummyLacrosDeskProfiles(2);
+    }
   }
 
   void TearDown() override {
@@ -9364,16 +9402,28 @@ class DeskBarTest : public AshTestBase,
     EXPECT_TRUE(GetDeskBarView(root, DeskBarViewBase::Type::kOverview));
   }
 
-  void CheckOverviewFocusRing(OverviewFocusableView* view, bool focused) {
-    if (bar_type_ == DeskBarViewBase::Type::kOverview) {
-      ASSERT_EQ(view->is_focused(), focused);
-    }
-  }
-
   void CheckFocus(const views::View* view, bool focused) {
     if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
       ASSERT_EQ(view->HasFocus(), focused);
     }
+  }
+
+  // Returns a predicate that will return true if the given view is
+  // "focused". The semantics of what that means is dependent on which mode the
+  // test is in.
+  auto OverviewItemFocused(OverviewFocusableView* view) {
+    return [this, view] {
+      if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+        return view->is_focused();
+      } else {
+        CHECK(view->GetView());
+        return view->GetView()->HasFocus();
+      }
+    };
+  }
+
+  bool OverviewItemHasFocus(OverviewFocusableView* view) {
+    return OverviewItemFocused(view)();
   }
 
   // Executes a context menu command for the desk at index `index`. `close_all`
@@ -9438,6 +9488,7 @@ class DeskBarTest : public AshTestBase,
 
   bool use_touch_gestures_;
   bool use_16_desks_;
+  bool use_desk_profiles_;
   DeskBarViewBase::Type bar_type_;
 
  private:
@@ -10062,9 +10113,8 @@ TEST_P(DeskBarTest, DeskRenameKeyTab) {
   EXPECT_FALSE(desk_name_view->HasFocus());
   EXPECT_TRUE(desk->is_name_set_by_user());
   EXPECT_THAT(desk_name_view->GetText(), u"D1");
-  CheckOverviewFocusRing(desk_bar_view->mini_views()[1]->desk_preview(),
-                         /*focused=*/true);
-  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), /*focused=*/true);
+  ASSERT_TRUE(
+      OverviewItemHasFocus(desk_bar_view->mini_views()[1]->desk_preview()));
 
   CloseDeskBar();
 }
@@ -10085,13 +10135,16 @@ TEST_P(DeskBarTest, DeskRenameKeyShiftTab) {
   SendKey(ui::VKEY_D, ui::EF_SHIFT_DOWN);
   SendKey(ui::VKEY_1);
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  // Skip past the desk profiles button.
+  if (use_desk_profiles_ && bar_type_ == DeskBarViewBase::Type::kOverview) {
+    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  }
   EXPECT_FALSE(desk_name_view->HasFocus());
   EXPECT_TRUE(desk->is_name_set_by_user());
   EXPECT_THAT(desk_name_view->GetText(), u"D1");
 
   if (bar_type_ == DeskBarViewBase::Type::kOverview) {
-    CheckOverviewFocusRing(mini_view->desk_preview(), /*focused=*/true);
-    CheckFocus(mini_view->desk_preview(), /*focused=*/true);
+    ASSERT_TRUE(OverviewItemHasFocus(mini_view->desk_preview()));
   } else {
     CheckFocus(mini_view->desk_action_view()->close_all_button(),
                /*focused=*/true);
@@ -10211,8 +10264,7 @@ TEST_P(DeskBarTest, ForwardTabbing) {
     auto* mini_view = desk_bar_view->mini_views()[i].get();
 
     SendKey(ui::VKEY_TAB);
-    CheckOverviewFocusRing(mini_view->desk_preview(), /*focused=*/true);
-    CheckFocus(mini_view->desk_preview(), /*focused=*/true);
+    ASSERT_TRUE(OverviewItemHasFocus(mini_view->desk_preview()));
     // The shortcut view only appears on the first 8 desks in the desk button
     // desk bar.
     const bool expected_visibility =
@@ -10221,6 +10273,11 @@ TEST_P(DeskBarTest, ForwardTabbing) {
               expected_visibility);
 
     if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+      if (use_desk_profiles_) {
+        SendKey(ui::VKEY_TAB);
+        ASSERT_TRUE(OverviewItemHasFocus(mini_view->desk_profiles_button()));
+      }
+
       if (i == 0) {
         SendKey(ui::VKEY_TAB);
         CheckFocus(mini_view->desk_action_view()->combine_desks_button(),
@@ -10234,24 +10291,25 @@ TEST_P(DeskBarTest, ForwardTabbing) {
       // desk bar.
       EXPECT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
                 expected_visibility);
+    } else {  // overview bar.
+      if (use_desk_profiles_) {
+        SendKey(ui::VKEY_TAB);
+      }
     }
 
     SendKey(ui::VKEY_TAB);
-    CheckOverviewFocusRing(mini_view->desk_name_view(), /*focused=*/true);
-    CheckFocus(mini_view->desk_name_view(), /*focused=*/true);
+    ASSERT_TRUE(OverviewItemHasFocus(mini_view->desk_name_view()));
     EXPECT_FALSE(DesksTestApi::IsDeskShortcutViewVisible(
         desk_bar_view->mini_views()[i]));
   }
 
   // Tab through new desk button.
   SendKey(ui::VKEY_TAB);
-  CheckOverviewFocusRing(desk_bar_view->new_desk_button(), /*focused=*/true);
-  CheckFocus(desk_bar_view->new_desk_button(), /*focused=*/true);
+  ASSERT_TRUE(OverviewItemHasFocus(desk_bar_view->new_desk_button()));
 
   // Tab through library button.
   SendKey(ui::VKEY_TAB);
-  CheckOverviewFocusRing(desk_bar_view->library_button(), /*focused=*/true);
-  CheckFocus(desk_bar_view->library_button(), /*focused=*/true);
+  ASSERT_TRUE(OverviewItemHasFocus(desk_bar_view->library_button()));
 
   CloseDeskBar();
 }
@@ -10282,21 +10340,18 @@ TEST_P(DeskBarTest, ReverseTabbing) {
 
   // Tab through library button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  CheckOverviewFocusRing(desk_bar_view->library_button(), /*focused=*/true);
-  CheckFocus(desk_bar_view->library_button(), /*focused=*/true);
+  ASSERT_TRUE(OverviewItemHasFocus(desk_bar_view->library_button()));
 
   // Tab through new desk button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  CheckOverviewFocusRing(desk_bar_view->new_desk_button(), /*focused=*/true);
-  CheckFocus(desk_bar_view->new_desk_button(), /*focused=*/true);
+  ASSERT_TRUE(OverviewItemHasFocus(desk_bar_view->new_desk_button()));
 
   // Tab through all desks.
   for (int i = desk_controller->GetNumberOfDesks() - 1; i >= 0; i--) {
     auto* mini_view = desk_bar_view->mini_views()[i].get();
 
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    CheckOverviewFocusRing(mini_view->desk_name_view(), /*focused=*/true);
-    CheckFocus(mini_view->desk_name_view(), /*focused=*/true);
+    ASSERT_TRUE(OverviewItemHasFocus(mini_view->desk_name_view()));
     EXPECT_FALSE(DesksTestApi::IsDeskShortcutViewVisible(
         desk_bar_view->mini_views()[i]));
 
@@ -10310,17 +10365,27 @@ TEST_P(DeskBarTest, ReverseTabbing) {
         CheckFocus(mini_view->desk_action_view()->combine_desks_button(),
                    /*focused=*/true);
       }
+
+      if (use_desk_profiles_) {
+        SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+        ASSERT_TRUE(OverviewItemHasFocus(mini_view->desk_profiles_button()));
+      }
+
       // The shortcut view only appears on the first 8 desks in the desk button
       // desk bar.
       const bool expected_visibility =
           i <= 7 && bar_type_ == DeskBarViewBase::Type::kDeskButton;
       EXPECT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
                 expected_visibility);
+    } else {  // overview bar.
+      if (use_desk_profiles_) {
+        SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+        ASSERT_TRUE(OverviewItemHasFocus(mini_view->desk_profiles_button()));
+      }
     }
 
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    CheckOverviewFocusRing(mini_view->desk_preview(), /*focused=*/true);
-    CheckFocus(mini_view->desk_preview(), /*focused=*/true);
+    ASSERT_TRUE(OverviewItemHasFocus(mini_view->desk_preview()));
     // The shortcut view only appears on the first 8 desks in the desk button
     // desk bar.
     const bool expected_visibility =
@@ -10349,17 +10414,10 @@ TEST_P(DeskBarTest, CloseActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Focus desk #1. For `kDeskButton` bar, 1 tab is needed since it tabs from
-  // the active desk; for `kOverview` bar, 4 tabs are needed to tab through the
-  // overview item, desk 1's desk preview and desk name view.
-  for (int i = 0; i < (bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4);
-       i++) {
-    SendKey(ui::VKEY_TAB);
-  }
-
-  CheckOverviewFocusRing(desk_bar_view->mini_views()[1]->desk_preview(),
-                         /*focused=*/true);
-  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), /*focused=*/true);
+  // Focus desk #1.
+  ASSERT_TRUE(TabUntil(
+      /*reverse=*/false,
+      OverviewItemFocused(desk_bar_view->mini_views()[1]->desk_preview())));
 
   // Close active desk.
   if (bar_type_ == DeskBarViewBase::Type::kOverview) {
@@ -10401,17 +10459,10 @@ TEST_P(DeskBarTest, MergeActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Focus desk #1. For `kDeskButton` bar, 1 tab is needed since it tabs from
-  // the active desk; for `kOverview` bar, 4 tabs are needed to tab through the
-  // overview item, desk 1's desk preview and desk name view.
-  for (int i = 0; i < (bar_type_ == DeskBarViewBase::Type::kDeskButton ? 1 : 4);
-       i++) {
-    SendKey(ui::VKEY_TAB);
-  }
-
-  CheckOverviewFocusRing(desk_bar_view->mini_views()[1]->desk_preview(),
-                         /*focused=*/true);
-  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), /*focused=*/true);
+  // Focus desk #1
+  ASSERT_TRUE(TabUntil(
+      /*reverse=*/false,
+      OverviewItemFocused(desk_bar_view->mini_views()[1]->desk_preview())));
 
   // Merge active desk.
   if (bar_type_ == DeskBarViewBase::Type::kOverview) {
@@ -10453,17 +10504,9 @@ TEST_P(DeskBarTest, CloseNonActiveDesk) {
   ASSERT_TRUE(desk_bar_view);
 
   // Highlight desk #1.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-
-  if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
-    SendKey(ui::VKEY_TAB);
-  }
-
-  CheckOverviewFocusRing(desk_bar_view->mini_views()[1]->desk_preview(),
-                         /*focused=*/true);
-  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), /*focused=*/true);
+  ASSERT_TRUE(TabUntil(
+      /*reverse=*/false,
+      OverviewItemFocused(desk_bar_view->mini_views()[1]->desk_preview())));
 
   // Close non-active desk.
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
@@ -10495,17 +10538,9 @@ TEST_P(DeskBarTest, MergeNonActiveDesk) {
   ASSERT_TRUE(desk_bar_view);
 
   // Highlight desk #1.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-
-  if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
-    SendKey(ui::VKEY_TAB);
-  }
-
-  CheckOverviewFocusRing(desk_bar_view->mini_views()[1]->desk_preview(),
-                         /*focused=*/true);
-  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), /*focused=*/true);
+  ASSERT_TRUE(TabUntil(
+      /*reverse=*/false,
+      OverviewItemFocused(desk_bar_view->mini_views()[1]->desk_preview())));
 
   // Close non-active desk.
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
@@ -10755,29 +10790,13 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
   struct {
     const std::string scope_trace;
     const DeskRemovalMethod desk_removal_method;
-    const int expected_tab_count;
   } kTestCases[] = {
-      {base::StringPrintf("Forward tabbing to the undo button after removing "
-                          "an inactive desk %s",
-                          (bar_type_ == DeskBarViewBase::Type::kDeskButton
-                               ? "in desk button desk bar"
-                               : "in overview desk bar")),
-       DeskRemovalMethod::kInactiveDeskRemovedForwardTab,
-       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 8 : 4},
-      {base::StringPrintf("Reverse tabbing to the undo button after removing "
-                          "an inactive desk %s",
-                          (bar_type_ == DeskBarViewBase::Type::kDeskButton
-                               ? "in desk button desk bar"
-                               : "in overview desk bar")),
-       DeskRemovalMethod::kInactiveDeskRemovedReverseTab,
-       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 2 : 4},
-      {base::StringPrintf(
-           "Activating the undo button after removing the active desk %s",
-           (bar_type_ == DeskBarViewBase::Type::kDeskButton
-                ? "in desk button desk bar"
-                : "in overview desk bar")),
-       DeskRemovalMethod::kActiveDeskRemoved,
-       bar_type_ == DeskBarViewBase::Type::kDeskButton ? 0 : 6},
+      {"Forward tabbing to the undo button after removing an inactive desk",
+       DeskRemovalMethod::kInactiveDeskRemovedForwardTab},
+      {"Reverse tabbing to the undo button after removing an inactive desk",
+       DeskRemovalMethod::kInactiveDeskRemovedReverseTab},
+      {"Activating the undo button after removing the active desk",
+       DeskRemovalMethod::kActiveDeskRemoved},
   };
 
   NewDesk();
@@ -10801,6 +10820,12 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
         DeskRemovalMethod::kActiveDeskRemoved) {
       SendKey(ui::VKEY_TAB);
       SendKey(ui::VKEY_TAB);
+
+      // If desk profiles are enabled then we need to tab past the profile
+      // avatar button.
+      if (use_desk_profiles_) {
+        SendKey(ui::VKEY_TAB);
+      }
 
       // The desk button desk bar adds the close-all button to the tab order, so
       // we need to include an extra tab for that.
@@ -10852,22 +10877,11 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
 
     ASSERT_EQ(2u, desks_controller->desks().size());
 
-    // Tab to the undo toast.
-    for (int i = 0; i < test_case.expected_tab_count; i++) {
-      SendKey(ui::VKEY_TAB,
-              test_case.desk_removal_method ==
-                      DeskRemovalMethod::kInactiveDeskRemovedReverseTab
-                  ? ui::EF_SHIFT_DOWN
-                  : ui::EF_NONE);
-    }
-
-    ASSERT_TRUE(bar_type_ == DeskBarViewBase::Type::kDeskButton
-                    ? desks_controller->IsUndoToastHighlighted()
-                    : !Shell::Get()
-                           ->overview_controller()
-                           ->overview_session()
-                           ->focus_cycler()
-                           ->focused_view());
+    ASSERT_TRUE(TabUntil(/*reverse=*/test_case.desk_removal_method ==
+                             DeskRemovalMethod::kInactiveDeskRemovedReverseTab,
+                         [desks_controller] {
+                           return desks_controller->IsUndoToastHighlighted();
+                         }));
 
     // Pressing undo in the desk button desk bar after closing the active desk
     // will switch us back to the removed desk.
@@ -10884,8 +10898,6 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
     ASSERT_EQ(3u, desks_controller->desks().size());
   }
 }
-
-namespace {
 
 struct DeskButtonTestParams {
   ShelfAlignment alignment = ShelfAlignment::kBottom;
@@ -11010,8 +11022,6 @@ class DeskButtonTest
  private:
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
-
-}  // namespace
 
 // Tests functionalities for `DeskSwitchButton`s.
 TEST_P(DeskButtonTest, DeskSwitchButtons) {
@@ -11714,6 +11724,87 @@ TEST_P(DesksAcceleratorsTest, DeskSwitchScreenshotMetricsRecording) {
                                      true, 2);
 }
 
+class DeskProfilesTest : public AshTestBase {
+ public:
+  DeskProfilesTest() = default;
+  ~DeskProfilesTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kDeskProfiles};
+};
+
+TEST_F(DeskProfilesTest, RemoveProfile) {
+  // This test creates three dummy lacros profiles and sets up three desks with
+  // each associated with a different user. The last user is then removed and we
+  // verify that the desk has reverted to the default lacros profile.
+  AddDummyLacrosDeskProfiles(3);
+
+  const uint64_t lacros_profile_id1 = GetDummyLacrosDeskProfileId(0);
+  const uint64_t lacros_profile_id2 = GetDummyLacrosDeskProfileId(1);
+  const uint64_t lacros_profile_id3 = GetDummyLacrosDeskProfileId(2);
+
+  GetDeskProfilesTestDelegate().SetPrimaryProfileByProfileId(
+      lacros_profile_id1);
+
+  NewDesk();
+  NewDesk();
+
+  // Assign different lacros profiles to all three desks.
+  auto* controller = DesksController::Get();
+  auto* desk1 = controller->GetDeskAtIndex(0);
+  auto* desk2 = controller->GetDeskAtIndex(1);
+  auto* desk3 = controller->GetDeskAtIndex(2);
+  desk1->SetLacrosProfileId(lacros_profile_id1);
+  desk2->SetLacrosProfileId(lacros_profile_id2);
+  desk3->SetLacrosProfileId(lacros_profile_id3);
+
+  EXPECT_EQ(desk1->lacros_profile_id(), lacros_profile_id1);
+  EXPECT_EQ(desk2->lacros_profile_id(), lacros_profile_id2);
+  EXPECT_EQ(desk3->lacros_profile_id(), lacros_profile_id3);
+
+  // Remove the last profile. We now expect the desk to be updated to the
+  // default profile (lacros_profile_id1).
+  GetDeskProfilesTestDelegate().RemoveTestProfile(lacros_profile_id3);
+
+  EXPECT_EQ(desk1->lacros_profile_id(), lacros_profile_id1);
+  EXPECT_EQ(desk2->lacros_profile_id(), lacros_profile_id2);
+  EXPECT_EQ(desk3->lacros_profile_id(), lacros_profile_id1);
+}
+
+TEST_F(DeskProfilesTest, DeskProfilesButtonClickMetrics) {
+  // The desk profile button is visible when there are two or more profiles.
+  AddDummyLacrosDeskProfiles(2);
+
+  base::HistogramTester histogram_tester;
+  auto* desk_controller = DesksController::Get()->desk_bar_controller();
+  desk_controller->OpenDeskBar(Shell::Get()->GetPrimaryRootWindow());
+  auto* desk_bar_view =
+      desk_controller->GetDeskBarView(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1u, desk_bar_view->mini_views().size());
+
+  DeskProfilesButton* desk_profile_button =
+      DesksTestApi::GetDeskProfileButton(desk_bar_view->mini_views()[0]);
+  ASSERT_NE(desk_profile_button, nullptr);
+
+  auto* event_generator = GetEventGenerator();
+  // Test desk profile button click metrics.
+  ClickOnView(desk_profile_button, event_generator);
+  histogram_tester.ExpectTotalCount(kDeskProfilesPressesHistogramName, 1);
+
+  // Test context menu profile manager click metrics.
+  DeskActionContextMenu* menu = desk_profile_button->menu();
+  ASSERT_NE(menu, nullptr);
+
+  views::MenuItemView* menu_item = DesksTestApi::GetDeskActionContextMenuItem(
+      menu, DeskActionContextMenu::kShowProfileManager);
+  ASSERT_NE(menu_item, nullptr);
+
+  ClickOnView(menu_item, event_generator);
+  histogram_tester.ExpectTotalCount(
+      kDeskProfilesOpenProfileManagerHistogramName, 1);
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
@@ -11801,13 +11892,15 @@ INSTANTIATE_TEST_SUITE_P(
     DeskBarTest,
     testing::Combine(testing::Bool(),  // use touch gestures
                      testing::Bool(),  // use 16 desks
+                     testing::Bool(),  // use desk profiles
                      testing::Values(DeskBarViewBase::Type::kDeskButton,
                                      DeskBarViewBase::Type::kOverview)),
     [](const testing::TestParamInfo<DeskBarTest::ParamType>& info) {
       DesksTestParams params;
       DeskBarViewBase::Type bar_type;
-      std::tie(params.use_touch_gestures, params.use_16_desks, bar_type) =
-          info.param;
+      bool use_desk_profiles;
+      std::tie(params.use_touch_gestures, params.use_16_desks,
+               use_desk_profiles, bar_type) = info.param;
       std::string result = GetTestSuffix(params);
       std::string bar_type_str;
       switch (bar_type) {
@@ -11819,7 +11912,11 @@ INSTANTIATE_TEST_SUITE_P(
           break;
       }
 
-      return base::StringPrintf("%s_%s", result.c_str(), bar_type_str.c_str());
+      std::string desk_profiles_str =
+          use_desk_profiles ? "DeskProfiles" : "NoDeskProfiles";
+      return base::StringPrintf("%s_%s_%s", result.c_str(),
+                                bar_type_str.c_str(),
+                                desk_profiles_str.c_str());
     });
 
 INSTANTIATE_TEST_SUITE_P(
@@ -11841,109 +11938,5 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 }  // namespace
-
-class DeskProfilesTest : public AshTestBase {
- public:
-  DeskProfilesTest() = default;
-  ~DeskProfilesTest() override = default;
-
- protected:
-  static constexpr uint64_t kLacrosProfileIdBase = 1001;
-
-  TestDeskProfilesDelegate& GetTestDelegate() {
-    return *static_cast<TestDeskProfilesDelegate*>(
-        Shell::Get()->GetDeskProfilesDelegate());
-  }
-
-  void AddDummyProfiles(size_t count) {
-    for (size_t i = 0; i != count; ++i) {
-      LacrosProfileSummary summary;
-      summary.profile_id = GetLacrosProfileId(i);
-      summary.name = base::StringPrintf("Lacros user %lu", i + 1);
-      summary.email = base::StringPrintf("email%lu@gmail.com", i + 1);
-      summary.icon = gfx::test::CreateImageSkia(32, 32);
-
-      GetTestDelegate().UpdateTestProfile(std::move(summary));
-    }
-  }
-
-  uint64_t GetLacrosProfileId(size_t index) {
-    return kLacrosProfileIdBase + index * 2;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kDeskProfiles};
-};
-
-TEST_F(DeskProfilesTest, RemoveProfile) {
-  // This test creates three dummy lacros profiles and sets up three desks with
-  // each associated with a different user. The last user is then removed and we
-  // verify that the desk has reverted to the default lacros profile.
-  AddDummyProfiles(3);
-
-  const uint64_t lacros_profile_id1 = GetLacrosProfileId(0);
-  const uint64_t lacros_profile_id2 = GetLacrosProfileId(1);
-  const uint64_t lacros_profile_id3 = GetLacrosProfileId(2);
-
-  GetTestDelegate().SetPrimaryProfileByProfileId(lacros_profile_id1);
-
-  NewDesk();
-  NewDesk();
-
-  // Assign different lacros profiles to all three desks.
-  auto* controller = DesksController::Get();
-  auto* desk1 = controller->GetDeskAtIndex(0);
-  auto* desk2 = controller->GetDeskAtIndex(1);
-  auto* desk3 = controller->GetDeskAtIndex(2);
-  desk1->SetLacrosProfileId(lacros_profile_id1);
-  desk2->SetLacrosProfileId(lacros_profile_id2);
-  desk3->SetLacrosProfileId(lacros_profile_id3);
-
-  EXPECT_EQ(desk1->lacros_profile_id(), lacros_profile_id1);
-  EXPECT_EQ(desk2->lacros_profile_id(), lacros_profile_id2);
-  EXPECT_EQ(desk3->lacros_profile_id(), lacros_profile_id3);
-
-  // Remove the last profile. We now expect the desk to be updated to the
-  // default profile (lacros_profile_id1).
-  GetTestDelegate().RemoveTestProfile(lacros_profile_id3);
-
-  EXPECT_EQ(desk1->lacros_profile_id(), lacros_profile_id1);
-  EXPECT_EQ(desk2->lacros_profile_id(), lacros_profile_id2);
-  EXPECT_EQ(desk3->lacros_profile_id(), lacros_profile_id1);
-}
-
-TEST_F(DeskProfilesTest, DeskProfilesButtonClickMetrics) {
-  // The desk profile button is visible when there are two or more profiles.
-  AddDummyProfiles(2);
-
-  base::HistogramTester histogram_tester;
-  auto* desk_controller = DesksController::Get()->desk_bar_controller();
-  desk_controller->OpenDeskBar(Shell::Get()->GetPrimaryRootWindow());
-  auto* desk_bar_view =
-      desk_controller->GetDeskBarView(Shell::Get()->GetPrimaryRootWindow());
-  ASSERT_EQ(1u, desk_bar_view->mini_views().size());
-
-  DeskProfilesButton* desk_profile_button =
-      DesksTestApi::GetDeskProfileButton(desk_bar_view->mini_views()[0]);
-  ASSERT_NE(desk_profile_button, nullptr);
-
-  auto* event_generator = GetEventGenerator();
-  // Test desk profile button click metrics.
-  ClickOnView(desk_profile_button, event_generator);
-  histogram_tester.ExpectTotalCount(kDeskProfilesPressesHistogramName, 1);
-
-  // Test context menu profile manager click metrics.
-  DeskActionContextMenu* menu = desk_profile_button->menu();
-  ASSERT_NE(menu, nullptr);
-
-  views::MenuItemView* menu_item = DesksTestApi::GetDeskActionContextMenuItem(
-      menu, DeskActionContextMenu::kShowProfileManager);
-  ASSERT_NE(menu_item, nullptr);
-
-  ClickOnView(menu_item, event_generator);
-  histogram_tester.ExpectTotalCount(
-      kDeskProfilesOpenProfileManagerHistogramName, 1);
-}
 
 }  // namespace ash

@@ -192,7 +192,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
       ((desk_profile_delegate &&
         desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
     desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
-        desk, owner_bar_->type() == DeskBarViewBase::Type::kOverview));
+        desk, this, owner_bar_->type() == DeskBarViewBase::Type::kOverview));
   }
 
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
@@ -502,8 +502,9 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
       close_type);
 }
 
-void DeskMiniView::OnPreviewAboutToBeFocusedByReverseTab() {
-  if (!desk_action_view_->ChildHasFocus()) {
+void DeskMiniView::OnPreviewOrProfileAboutToBeFocusedByReverseTab() {
+  if (!desk_action_view_->ChildHasFocus() &&
+      (desk_profile_button_ == nullptr || !desk_profile_button_->HasFocus())) {
     desk_action_view_->SetVisible(true);
     desk_action_view_->close_all_button()->RequestFocus();
   }

@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/check_op.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -31,8 +32,10 @@ namespace {
 constexpr gfx::Size kIconButtonSize(22, 22);
 }  // namespace
 
-DeskProfilesButton::DeskProfilesButton(Desk* desk, bool owner_bar_is_overview)
-    : desk_(desk) {
+DeskProfilesButton::DeskProfilesButton(Desk* desk,
+                                       DeskMiniView* mini_view,
+                                       bool owner_bar_is_overview)
+    : desk_(desk), mini_view_(mini_view) {
   desk_->AddObserver(this);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetPreferredSize(kIconButtonSize);
@@ -125,6 +128,12 @@ bool DeskProfilesButton::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
   return ImageButton::OnKeyPressed(event);
+}
+
+void DeskProfilesButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
+  if (reverse) {
+    mini_view_->OnPreviewOrProfileAboutToBeFocusedByReverseTab();
+  }
 }
 
 views::View* DeskProfilesButton::GetView() {

@@ -623,7 +623,7 @@ void DeskPreviewView::OnBlur() {
 
 void DeskPreviewView::AboutToRequestFocusFromTabTraversal(bool reverse) {
   if (reverse) {
-    mini_view_->OnPreviewAboutToBeFocusedByReverseTab();
+    mini_view_->OnPreviewOrProfileAboutToBeFocusedByReverseTab();
   }
 }
 

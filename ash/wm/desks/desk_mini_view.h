@@ -136,10 +136,10 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // Invoked when the user has clicked a desk close button.
   void OnRemovingDesk(DeskCloseType close_type);
 
-  // Notifies the mini-view that the preview is about to request focus from a
-  // reverse tab traversal so that it can show and focus the desk action view
-  // first if it was not already focused.
-  void OnPreviewAboutToBeFocusedByReverseTab();
+  // Notifies the mini-view that the preview or profile button is about to
+  // request focus from a reverse tab traversal so that it can show and focus
+  // the desk action view first if it was not already focused.
+  void OnPreviewOrProfileAboutToBeFocusedByReverseTab();
 
   // views::View:
   void Layout(PassKey) override;

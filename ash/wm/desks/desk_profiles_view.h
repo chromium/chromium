@@ -15,6 +15,8 @@
 
 namespace ash {
 
+class DeskMiniView;
+
 class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
                                       public Desk::Observer,
                                       public OverviewFocusableView {
@@ -24,7 +26,9 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   // Creates a DeskProfilesButton for desk `desk`. If `owner_bar_is_overview`,
   // then a focus predicate is installed on the focus ring. This is required
   // to properly implement the `OverviewFocusableView` interface.
-  DeskProfilesButton(Desk* desk, bool owner_bar_is_overview);
+  DeskProfilesButton(Desk* desk,
+                     DeskMiniView* desk_mini_view,
+                     bool owner_bar_is_overview);
   DeskProfilesButton(const DeskProfilesButton&) = delete;
   DeskProfilesButton& operator=(const DeskProfilesButton&) = delete;
   ~DeskProfilesButton() override;
@@ -42,6 +46,7 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void AboutToRequestFocusFromTabTraversal(bool reverse) override;
 
   // OverviewFocusableView:
   views::View* GetView() override;
@@ -66,7 +71,10 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   void OnSetLacrosProfileId(uint64_t lacros_profile_id);
 
   // The associated desk.
-  raw_ptr<Desk> desk_;  // Not owned.
+  raw_ptr<Desk> desk_;
+
+  // The mini view that owns this button.
+  raw_ptr<DeskMiniView> mini_view_;
 
   // The context menu used to change the profile associated with the desk.
   std::unique_ptr<DeskActionContextMenu> context_menu_;
