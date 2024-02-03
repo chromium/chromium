@@ -2501,7 +2501,7 @@
     },
     {
       name: "NavigationActivation",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NavigationId",
