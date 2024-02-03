@@ -223,7 +223,8 @@ function prepareMacOSBinaries(buildId) {
   );
 
   // Mac Code Signing.
-  const shouldCodesign = !!process.env["REPLAY_APPLE_CODESIGN_PATH"];
+  // TODO: https://linear.app/replay/issue/RUN-3225/remove-code-signing-temporarily
+  const shouldCodesign = false; // !!process.env["REPLAY_APPLE_CODESIGN_PATH"];
 
   if (shouldCodesign) {
     const anyCodesignEnvVarIsNotSet = [
