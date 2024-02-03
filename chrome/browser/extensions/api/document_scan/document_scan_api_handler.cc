@@ -284,6 +284,22 @@ void DocumentScanAPIHandler::OnOpenScannerResponse(
     return;
   }
 
+  // Clear any open handles that point to the same scanner.  These are no longer
+  // valid after opening a new handle.
+  for (auto it = state.scanner_handles.begin();
+       it != state.scanner_handles.end();) {
+    if (it->second == scanner_id) {
+      // Erase job handles pointing to the same scanner handle before erasing
+      // the scanner handle.
+      std::erase_if(state.active_job_handles, [&it](const auto& item) {
+        return item.second == it->first;
+      });
+      it = state.scanner_handles.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   // Track that this handle belongs to this extension.  This prevents other
   // extensions from using it.
   if (response_out.scanner_handle.has_value()) {
@@ -330,19 +346,32 @@ void DocumentScanAPIHandler::CloseScanner(
     auto response = crosapi::mojom::CloseScannerResponse::New();
     response->scanner_handle = scanner_handle;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    OnCloseScannerResponse(std::move(callback), std::move(response));
+    OnCloseScannerResponse(extension->id(), std::move(callback),
+                           std::move(response));
     return;
   }
 
   document_scan_->CloseScanner(
       scanner_handle,
       base::BindOnce(&DocumentScanAPIHandler::OnCloseScannerResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), extension->id(),
+                     std::move(callback)));
 }
 
 void DocumentScanAPIHandler::OnCloseScannerResponse(
+    const ExtensionId& extension_id,
     CloseScannerCallback callback,
     crosapi::mojom::CloseScannerResponsePtr response) {
+  ExtensionState& state = extension_state_[extension_id];
+
+  // Stop tracking the handle and remove any job handles pointing to the same
+  // scanner handle.
+  const auto& scanner_handle = response->scanner_handle;
+  std::erase_if(state.active_job_handles, [&scanner_handle](const auto& item) {
+    return item.second == scanner_handle;
+  });
+  state.scanner_handles.erase(scanner_handle);
+
   std::move(callback).Run(
       response.To<api::document_scan::CloseScannerResponse>());
 }
@@ -510,7 +539,8 @@ void DocumentScanAPIHandler::OnStartScanResponse(
 
     // Keep track of active job handles for this extension.
     if (!api_response.job.value_or("").empty()) {
-      state.active_job_handles.insert(api_response.job.value());
+      state.active_job_handles[api_response.job.value()] =
+          api_response.scanner_handle;
     }
   }
 

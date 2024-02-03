@@ -188,8 +188,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
     // up scanner in `active_scanner_ids`).
     std::map<std::string, std::string> scanner_handles;
 
-    // Active job handles.
-    std::set<std::string> active_job_handles;
+    // Map from active job handles back to the originating scanner handle.
+    std::map<std::string, std::string> active_job_handles;
 
     // A set of scanner handles the user has approved for scanning.
     std::set<std::string> approved_scanners;
@@ -228,7 +228,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   void OnGetOptionGroupsResponse(
       GetOptionGroupsCallback callback,
       crosapi::mojom::GetOptionGroupsResponsePtr response);
-  void OnCloseScannerResponse(CloseScannerCallback callback,
+  void OnCloseScannerResponse(const ExtensionId& extension_id,
+                              CloseScannerCallback callback,
                               crosapi::mojom::CloseScannerResponsePtr response);
   void OnSetOptionsResponse(SetOptionsCallback callback,
                             crosapi::mojom::SetOptionsResponsePtr response);

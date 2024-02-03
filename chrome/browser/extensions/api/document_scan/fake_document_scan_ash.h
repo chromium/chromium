@@ -67,6 +67,7 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
     std::optional<std::string> job_handle;
   };
 
+  size_t handle_count_ = 0;  // How many times a handle has been issued.
   std::vector<std::string> scanner_names_;
   std::optional<std::vector<std::string>> scan_data_;
   std::vector<crosapi::mojom::ScannerInfoPtr> scanners_;
