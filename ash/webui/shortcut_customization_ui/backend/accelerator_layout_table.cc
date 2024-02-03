@@ -500,7 +500,7 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_SCREEN,
             mojom::AcceleratorCategory::kGeneral,
             mojom::AcceleratorSubcategory::kGeneralControls,
-            /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kSuspend,
         AcceleratorLayoutDetails(
@@ -508,7 +508,7 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             IDS_ASH_ACCELERATOR_DESCRIPTION_SUSPEND,
             mojom::AcceleratorCategory::kGeneral,
             mojom::AcceleratorSubcategory::kGeneralControls,
-            /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kExit,
         AcceleratorLayoutDetails(
