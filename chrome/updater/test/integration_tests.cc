@@ -2867,6 +2867,41 @@ TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+class IntegrationInstallerResultsTestNewInstalls : public IntegrationTestMsi {};
+
+TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
+  const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallApp(kMsiAppId, base::Version({0, 0, 0, 0})));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      test_server_.get(), kMsiAppId, UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), kMsiUpdatedVersion));
+
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
+      {
+          AppUpdateExpectation(
+              "INSTALLER_RESULT=0", kMsiAppId, base::Version({0, 0, 0, 0}),
+              kMsiUpdatedVersion,
+              /*is_install=*/false, /*should_update=*/false,
+              /*allow_rollback=*/false,
+              /*target_version_prefix=*/{}, /*target_channel=*/{},
+              crx_relative_path,
+              /*always_serve_crx=*/true, UpdateService::ErrorCategory::kService,
+              static_cast<int>(update_client::ServiceError::CANCELLED),
+              /*EVENT_INSTALL_COMPLETE=*/2, {}),
+      });
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
+      kMsiAppId, AppBundleWebCreateMode::kCreateApp, STATE_ERROR,
+      static_cast<int>(update_client::ServiceError::CANCELLED)));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 

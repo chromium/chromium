@@ -1270,11 +1270,6 @@ HRESULT DoUpdate(UpdaterScope scope,
           EXPECT_HRESULT_SUCCEEDED(bundle->download());
         }
 
-        // `IAppBundleWeb::cancel` calls `UpdateServiceImpl::CancelInstalls`,
-        // which does nothing right now, but if this test starts failing, remove
-        // this line, and write a proper test for `IAppBundleWeb::cancel`.
-        EXPECT_HRESULT_SUCCEEDED(bundle->cancel());
-
         break;
       }
 
@@ -1295,6 +1290,15 @@ HRESULT DoUpdate(UpdaterScope scope,
             "[Bytes downloaded: %lu][Bytes total: %lu][Time remaining: %ld]",
             bytes_downloaded, total_bytes_to_download,
             download_time_remaining_ms));
+
+        // `IntegrationInstallerResultsTestNewInstalls.OnDemandCancel`.
+        // TODO(crbug.com/1523813): perhaps parameterize this to be more
+        // specific.
+        if (app_bundle_web_create_mode == AppBundleWebCreateMode::kCreateApp &&
+            expected_final_state == STATE_ERROR) {
+          EXPECT_HRESULT_SUCCEEDED(bundle->cancel());
+        }
+
         break;
       }
 
