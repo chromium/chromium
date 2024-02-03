@@ -22,7 +22,7 @@ steps:
       - "be_cmd npm-ci -- npm ci"
       - "be_cmd lint-replay_build_scripts -- npm run lint"
       - "popd"
-      - "be_cmd lint-replay-scripts -- node replay_build_scripts/lint.mjs third_party/blink/renderer/bindings/core/v8/record_replay_interface.cc"
+      - "be_cmd lint-replay-scripts -- node replay_build_scripts/lint.mjs"
     env:
       RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
     agents:
@@ -53,7 +53,7 @@ steps:
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
       - "pushd ../backend"
       - "be_cmd buck2-kill -- buck2 kill"
-      - "be_cmd buck2-build -- buck2 build -c replay.driver_revision=$DRIVER_REVISION --console simple //:chromium"
+      - "be_cmd buck2-build -- buck2 build -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium"
       - "popd"
     env:
       RBE_service: simpsonite.cluster.engflow.com:443
@@ -92,7 +92,7 @@ steps:
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
       - "pushd ../backend"
       - "be_cmd buck2-kill -- buckle kill"
-      - "be_cmd buck2-build -- buckle build -c replay.driver_revision=$DRIVER_REVISION --console simple //:chromium --target-platforms=//:macos-x86_64"
+      - "be_cmd buck2-build -- buckle build -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium --target-platforms=//:macos-x86_64"
       - "popd"
     env:
       RBE_service: simpsonite.cluster.engflow.com:443
@@ -131,7 +131,7 @@ steps:
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
       - "pushd ../backend"
       - "be_cmd buck2-kill -- buckle kill"
-      - "be_cmd buck2-build -- buckle build -c replay.driver_revision=$DRIVER_REVISION --console simple //:chromium --target-platforms=//:macos-arm64"
+      - "be_cmd buck2-build -- buckle build -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium --target-platforms=//:macos-arm64"
       - "popd"
     env:
       RBE_service: simpsonite.cluster.engflow.com:443
@@ -168,7 +168,7 @@ steps:
       - "build_id/windows/x86_64/**"
     soft_fail: true
 
-  - label: ":sleuth_or_spy: Verify cross-arch `.pak` sizes and dep hashes"
+  - label: "Verify cross-arch build integrity :sleuth_or_spy:"
     key: "verify-cross-arch-pak-sizes"
     commands:
       - "be_cmd download-macos-arm64-gclient_entries -- buildkite-agent artifact download build_id/macOS/arm64/entries ."
@@ -194,19 +194,19 @@ steps:
       - "os=linux"
       - "queue=runtime"
 
-  - label: ":hammer: Trigger Runtime Tests"
+  - label: "Trigger Live Tests :hammer:"
     trigger: "testing-runtime-e2e"
     depends_on:
       - "build-chromium-linux-x86_64"
       - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
 
-  - label: ":hammer: Trigger Metabase Tests"
+  - label: "Trigger Metabase Tests :hammer:"
     trigger: "testing-runtime-metabase"
     depends_on:
       - "build-chromium-linux-x86_64"
 
-  - label: ":hammer: Trigger Runtime FE Tests"
+  - label: "Trigger Runtime FE Tests :hammer:"
     trigger: "runtime-fe-end-to-end-tests"
     depends_on:
       - "build-chromium-linux-x86_64"

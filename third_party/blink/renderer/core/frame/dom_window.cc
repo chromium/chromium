@@ -263,8 +263,6 @@ String DOMWindow::SanitizedCrossDomainAccessErrorMessage(
   if (accessing_window_url.IsNull())
     return String();
 
-  recordreplay::Trace("[RUN-1990] DOMWindow::SanitizedCrossDomainAccessErrorMessage");
-
   const SecurityOrigin* active_origin = accessing_window->GetSecurityOrigin();
   String message;
   if (cross_document_access == CrossDocumentAccessPolicy::kDisallowed) {
