@@ -9,5 +9,6 @@ specific_include_rules = {
         "+base/strings",
         "+components/viz",
         "+cc/test/paint_op_matchers.h",
+        "+ui/gfx/skia_util.h",
     ]
 }

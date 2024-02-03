@@ -636,12 +636,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   CanvasRenderingContext2DState::SaveType SaveLayerForState(
       const CanvasRenderingContext2DState& state,
+      sk_sp<PaintFilter> filter,
       cc::PaintCanvas& canvas) const;
 
   // Pops from the top of the state stack, inverts transform, restores the
   // PaintCanvas, and validates the state stack. Helper for Restore and
   // EndLayer.
-  void PopAndRestore();
+  void PopAndRestore(cc::PaintCanvas& canvas);
 
   void ValidateStateStackImpl(const cc::PaintCanvas* canvas = nullptr) const;
 

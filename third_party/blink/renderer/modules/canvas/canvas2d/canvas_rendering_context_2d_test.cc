@@ -73,7 +73,9 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/modules/skcms/skcms.h"
+#include "ui/gfx/skia_util.h"
 
+using ::base::test::ScopedFeatureList;
 using ::blink_testing::RecordedOpsAre;
 using ::blink_testing::RecordedOpsView;
 using ::cc::ClipRectOp;
@@ -95,6 +97,7 @@ using ::testing::InSequence;
 using ::testing::Message;
 using ::testing::Mock;
 using ::testing::Optional;
+using ::testing::SaveArg;
 
 namespace blink {
 
@@ -151,7 +154,7 @@ scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
 
 class CanvasRenderingContext2DTest : public ::testing::Test,
                                      public PaintTestConfigurations {
- protected:
+ public:
   CanvasRenderingContext2DTest();
   void SetUp() override;
   virtual bool AllowsAcceleration() { return false; }
@@ -526,12 +529,14 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideLayer) {
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), DrawRectFlags()),
-          PaintOpEq<SaveLayerAlphaOp>(1.0f),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2), DrawRectFlags()),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
-                                ClearRectFlags()),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), DrawRectFlags()),
-          PaintOpEq<RestoreOp>())));
+          DrawRecordOpEq(PaintOpEq<SaveLayerAlphaOp>(1.0f),
+                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2),
+                                               DrawRectFlags()),
+                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                                               ClearRectFlags()),
+                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3),
+                                               DrawRectFlags()),
+                         PaintOpEq<RestoreOp>()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
@@ -559,14 +564,17 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideNestedLayer) {
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), DrawRectFlags()),
-          PaintOpEq<SaveLayerAlphaOp>(1.0f),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2), DrawRectFlags()),
-          PaintOpEq<SaveLayerAlphaOp>(1.0f),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), DrawRectFlags()),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
-                                ClearRectFlags()),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(4, 4, 4, 4), DrawRectFlags()),
-          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
+          DrawRecordOpEq(PaintOpEq<SaveLayerAlphaOp>(1.0f),
+                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2),
+                                               DrawRectFlags()),
+                         PaintOpEq<SaveLayerAlphaOp>(1.0f),
+                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3),
+                                               DrawRectFlags()),
+                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                                               ClearRectFlags()),
+                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(4, 4, 4, 4),
+                                               DrawRectFlags()),
+                         PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
@@ -1756,6 +1764,115 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
             painting_layer->SelfNeedsRepaint());
 }
 
+sk_sp<SkImage> CreateSkImage(int width, int height, SkColor color) {
+  sk_sp<SkSurface> surface =
+      SkSurfaces::Raster(SkImageInfo::MakeN32Premul(width, height));
+  surface->getCanvas()->clear(color);
+  return surface->makeImageSnapshot();
+}
+
+ImageBitmap* CreateImageBitmap(int width, int height, SkColor color) {
+  return MakeGarbageCollected<ImageBitmap>(
+      UnacceleratedStaticBitmapImage::Create(
+          CreateSkImage(width, height, color)));
+}
+
+MATCHER_P(DrawImageRectOpIs, sk_image, "") {
+  if (!ExplainMatchResult(PaintOpIs<DrawImageRectOp>(), arg, result_listener)) {
+    return false;
+  }
+  const auto& draw_op = static_cast<const DrawImageRectOp&>(arg);
+  SkBitmap lhs, rhs;
+  draw_op.image.GetSwSkImage()->asLegacyBitmap(&lhs);
+  sk_image->asLegacyBitmap(&rhs);
+  if (!gfx::BitmapsAreEqual(lhs, rhs)) {
+    *result_listener << "DrawImageRectOp has an unexpected image content";
+    return false;
+  }
+  return true;
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
+  ScopedCanvas2dLayersForTest layer_feature{/*enabled=*/true};
+  ScopedFeatureList scoped_feature_list(features::kCanvas2DHibernation);
+  CreateContext(kNonOpaque);
+  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+
+  gfx::Size size(100, 100);
+  auto provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferGPU, &CanvasElement());
+
+  // Recorded draw ops are resterized on hibernation. The provider gets replaced
+  // when getting out of hibernation, so this mock will not see the later calls
+  // to `RasterRecord`.
+  cc::PaintRecord hibernation_raster;
+  EXPECT_CALL(*provider, Snapshot(FlushReason::kHibernating, _)).Times(1);
+  EXPECT_CALL(*provider, RasterRecord)
+      .Times(1)
+      .WillOnce(SaveArg<0>(&hibernation_raster));
+
+  CanvasElement().SetResourceProviderForTesting(
+      std::move(provider), std::make_unique<Canvas2DLayerBridge>(), size);
+
+  ThreadScheduler::Current()->PostIdleTask(
+      FROM_HERE, WTF::BindOnce(
+                     [](CanvasRenderingContext2DTestAccelerated* fixture,
+                        base::TimeTicks /*idleDeadline*/) {
+                       NonThrowableExceptionState exception_state;
+
+                       // Will be rasterized on hibernation.
+                       fixture->Context2D()->fillRect(0, 0, 1, 1);
+
+                       fixture->Context2D()->beginLayer(
+                           fixture->GetScriptState(),
+                           BeginLayerOptions::Create(), exception_state);
+
+                       // Will be preserved as a paint op in hibernation.
+                       fixture->Context2D()->fillRect(1, 1, 1, 1);
+
+                       // Referred image should survive hibernation.
+                       fixture->Context2D()->drawImage(
+                           CreateImageBitmap(/*width=*/1, /*height=*/1,
+                                             SK_ColorRED),          //
+                           /*sx=*/0, /*sy=*/0, /*sw=*/1, /*sh*/ 1,  //
+                           /*dx=*/0, /*dy=*/0, /*dw=*/1, /*dh=*/1,  //
+                           exception_state);
+                     },
+                     WTF::Unretained(this)));
+  blink::test::RunPendingTasks();
+
+  // Hibernate the canvas. Hibernation is handled in a idle task.
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+
+  // Hibernating should have rastered paint ops preceding `beginLayer`.
+  EXPECT_THAT(hibernation_raster,
+              RecordedOpsAre(PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 1, 1),
+                                                   DrawRectFlags())));
+
+  // Wake up from hibernation.
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kVisible, /*is_initial_state=*/false);
+
+  NonThrowableExceptionState exception_state;
+  Context2D()->endLayer(exception_state);
+
+  // Post hibernation recording now holds the layer content.
+  EXPECT_THAT(
+      Context2D()->FlushCanvas(FlushReason::kTesting),
+      Optional(RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerAlphaOp>(1.0f),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), DrawRectFlags()),
+          DrawImageRectOpIs(
+              CreateSkImage(/*width=*/1, /*height=*/1, SK_ColorRED)),
+          PaintOpEq<RestoreOp>()))));
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoHibernationIfNoResourceProvider) {
   CreateContext(kNonOpaque);
@@ -1862,10 +1979,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
-       DisableAccelerationPreservesRaster) {
+       DisableAccelerationPreservesRasterAndRecording) {
+  ScopedCanvas2dLayersForTest layer_feature{/*enabled=*/true};
   CreateContext(kNonOpaque);
 
-  gfx::Size size(10, 10);
+  gfx::Size size(100, 100);
   auto gpu_provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
       RasterModeHint::kPreferGPU, &CanvasElement());
@@ -1884,9 +2002,33 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().SetResourceProviderForTesting(
       std::move(gpu_provider), std::make_unique<Canvas2DLayerBridge>(), size);
 
+  NonThrowableExceptionState exception_state;
+  Context2D()->fillRect(10, 10, 20, 20);
+  Context2D()->save();
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          exception_state);
+  Context2D()->fillRect(10, 20, 30, 40);
+
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   CanvasElement().DisableAcceleration(std::move(cpu_provider));
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+
+  Context2D()->endLayer(exception_state);
+  Context2D()->restore(exception_state);
+
+  cc::PaintFlags rect_flags;
+  rect_flags.setAntiAlias(true);
+  rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+
+  EXPECT_THAT(
+      Context2D()->FlushCanvas(FlushReason::kTesting),
+      Optional(RecordedOpsAre(
+          PaintOpEq<SaveOp>(),
+          DrawRecordOpEq(PaintOpEq<SaveLayerAlphaOp>(1.0f),
+                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(10, 20, 30, 40),
+                                               rect_flags),
+                         PaintOpEq<RestoreOp>()),
+          PaintOpEq<RestoreOp>())));
 }
 
 class CanvasRenderingContext2DTestAcceleratedMultipleDisables
