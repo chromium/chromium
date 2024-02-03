@@ -249,12 +249,24 @@ GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Disable OOP-C if explicitly turned off from the command line.
+  base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  if (feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
+                          features::kCanvasOopRasterization.name,
+                          base::FeatureList::OVERRIDE_DISABLE_FEATURE))
+    return kGpuFeatureStatusDisabled;
+
   // VDA video decoder on ChromeOS uses legacy mailboxes which is not compatible
   // with OOP-C
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!gpu_preferences.enable_chromeos_direct_video_decoder)
     return kGpuFeatureStatusDisabled;
-#endif
+
+  // On certain ChromeOS devices, using Vulkan without OOP-C results in video
+  // encode artifacts (b/318721705).
+  if (gpu_preferences.use_vulkan != VulkanImplementationName::kNone)
+    return kGpuFeatureStatusEnabled;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Canvas OOP Rasterization on platforms that are not fully enabled is
   // controlled by a finch experiment.
