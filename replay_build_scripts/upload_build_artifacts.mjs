@@ -162,15 +162,17 @@ function prepareWindowsBinaries(buildId) {
 function prepareMacOSBinaries(buildId) {
   const buildIdDmgArchive = buildArm ? `${buildId}-arm.dmg` : `${buildId}.dmg`;
   const dmgArchive = buildArm ? "macos-chromium-arm.dmg" : "macos-chromium.dmg";
+  const signedDmg = buildArm
+    ? `${buildId}-arm-signed.dmg`
+    : `${buildId}-signed.dmg`;
   const outdir = buildArm ? "out/Release-ARM" : "out/Release";
   fs.rmSync(path.join(outdir, "Replay-Chromium.app"), {
     recursive: true,
     force: true,
   });
-  fs.renameSync(
-    path.join(outdir, "Chromium.app"),
-    path.join(outdir, "Replay-Chromium.app")
-  );
+  const appPath = path.join(outdir, "Replay-Chromium.app");
+  fs.renameSync(path.join(outdir, "Chromium.app"), appPath);
+
   spawnChecked(
     "hdiutil",
     [
@@ -186,6 +188,7 @@ function prepareMacOSBinaries(buildId) {
     ],
     { cwd: outdir, stdio: "inherit" }
   );
+
   const buildIdTarArchive = buildArm
     ? `${buildId}-arm.tar.xz`
     : `${buildId}.tar.xz`;
@@ -198,6 +201,116 @@ function prepareMacOSBinaries(buildId) {
     ["cfJ", path.join(process.cwd(), buildIdTarArchive), "Replay-Chromium.app"],
     { cwd: outdir }
   );
+
+  const shouldCodesign = !!process.env["REPLAY_APPLE_CODESIGN_PATH"];
+
+  if (shouldCodesign) {
+    const anyCodesignEnvVarIsNotSet = [
+      "REPLAY_APPLE_CODESIGN_PATH",
+      "REPLAY_APPLE_CODESIGN_CERT_PATH",
+      "REPLAY_APPLE_CODESIGN_CERT_PASS_PATH",
+      "REPLAY_APP_STORE_CONNECT_API_KEY_PATH",
+    ].some((envVar) => !process.env[envVar]);
+    if (anyCodesignEnvVarIsNotSet) {
+      console.error("Missing codesign environment variables", {
+        REPLAY_APPLE_CODESIGN_PATH:
+          process.env["REPLAY_APPLE_CODESIGN_PATH"] || "missing",
+        REPLAY_APPLE_CODESIGN_CERT_PATH:
+          process.env["REPLAY_APPLE_CODESIGN_CERT_PATH"] || "missing",
+        REPLAY_APPLE_CODESIGN_CERT_PASS_PATH:
+          process.env["REPLAY_APPLE_CODESIGN_CERT_PASS_PATH"] || "missing",
+        REPLAY_APP_STORE_CONNECT_API_KEY_PATH:
+          process.env["REPLAY_APP_STORE_CONNECT_API_KEY_PATH"] || "missing",
+      });
+    }
+    const originalWorkingDir =
+      process.env["REPLAY_ORIGINAL_WORKING_DIR"] || process.cwd();
+    const codesignPath = process.env["REPLAY_APPLE_CODESIGN_PATH"];
+    const fullCodesignPath = path.join(originalWorkingDir, codesignPath);
+    const p12FilePath = path.join(
+      originalWorkingDir,
+      process.env["REPLAY_APPLE_CODESIGN_CERT_PATH"]
+    );
+    const p12PassPath = path.join(
+      originalWorkingDir,
+      process.env["REPLAY_APPLE_CODESIGN_CERT_PASS_PATH"]
+    );
+    const appStoreApiKeyPath = path.join(
+      originalWorkingDir,
+      process.env["REPLAY_APP_STORE_CONNECT_API_KEY_PATH"]
+    );
+    const pathsToSign = [
+      "Contents/MacOS/Chromium",
+      "Contents/Frameworks/Chromium Framework.framework/Versions/108.0.5359.0/Helpers/app_mode_loader",
+      "Contents/Frameworks/Chromium Framework.framework/Versions/108.0.5359.0/Helpers/Chromium Helper (Alerts).app/Contents/MacOS/Chromium Helper (Alerts)",
+      "Contents/Frameworks/Chromium Framework.framework/Versions/108.0.5359.0/Helpers/Chromium Helper (GPU).app/Contents/MacOS/Chromium Helper (GPU)",
+      "Contents/Frameworks/Chromium Framework.framework/Versions/108.0.5359.0/Helpers/Chromium Helper (Plugin).app/Contents/MacOS/Chromium Helper (Plugin)",
+      "Contents/Frameworks/Chromium Framework.framework/Versions/108.0.5359.0/Helpers/Chromium Helper (Renderer).app/Contents/MacOS/Chromium Helper (Renderer)",
+      "Contents/Frameworks/Chromium Framework.framework/Versions/108.0.5359.0/Helpers/Chromium Helper.app/Contents/MacOS/Chromium Helper",
+      "Contents/Frameworks/Chromium Framework.framework/Versions/108.0.5359.0/Helpers/chrome_crashpad_handler",
+    ];
+
+    const codeSignatureValues = pathsToSign.map((path) => `${path}:runtime`);
+    const codeSignatureFlags = codeSignatureValues.flatMap((value) => [
+      "--code-signature-flags",
+      value,
+    ]);
+
+    spawnChecked(
+      fullCodesignPath,
+      [
+        "sign",
+        "--p12-file",
+        p12FilePath,
+        "--p12-password-file",
+        p12PassPath,
+        ...codeSignatureFlags,
+        appPath,
+      ],
+      { stdio: "inherit" }
+    );
+    spawnChecked(
+      "hdiutil",
+      [
+        "create",
+        path.join(process.cwd(), signedDmg),
+        "-ov",
+        "-volname",
+        "Replay-Chromium",
+        "-fs",
+        "HFS+",
+        "-srcfolder",
+        "Replay-Chromium.app",
+      ],
+      { cwd: outdir, stdio: "inherit" }
+    );
+    spawnChecked(
+      fullCodesignPath,
+      [
+        "sign",
+        "--p12-file",
+        p12FilePath,
+        "--p12-password-file",
+        p12PassPath,
+        signedDmg,
+      ],
+      { stdio: "inherit" }
+    );
+    spawnChecked(
+      fullCodesignPath,
+      [
+        "notary-submit",
+        "--api-key-file",
+        appStoreApiKeyPath,
+        "--staple",
+        signedDmg,
+      ],
+      { stdio: "inherit" }
+    );
+  } else {
+    log("Skipping signing/notarization of dmg");
+  }
+
   fs.renameSync(
     path.join(outdir, "Replay-Chromium.app"),
     path.join(outdir, "Chromium.app")
@@ -206,7 +319,12 @@ function prepareMacOSBinaries(buildId) {
   fs.cpSync(buildIdDmgArchive, dmgArchive);
   fs.cpSync(buildIdTarArchive, tarArchive);
 
-  return [buildIdDmgArchive, buildIdTarArchive];
+  const buildArtifacts = [buildIdDmgArchive, buildIdTarArchive];
+  if (shouldCodesign) {
+    buildArtifacts.push(signedDmg);
+  }
+
+  return buildArtifacts;
 }
 
 async function main(options) {
