@@ -216,6 +216,7 @@ source_set("headers") {
     "media/video_capture.h",
     "media/watch_time_component.h",
     "media/watch_time_reporter.h",
+    "mediastream/media_device_id.h",
     "mediastream/media_devices.h",
     "mediastream/media_devices_mojom_traits.h",
     "mediastream/media_stream_controls.h",

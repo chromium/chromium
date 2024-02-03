@@ -6,11 +6,10 @@
 
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-shared.h"
-// #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 
 TEST(MediaDevicesMojomTraitsTest, Serialization) {
   const std::string device_id = "device_id";
