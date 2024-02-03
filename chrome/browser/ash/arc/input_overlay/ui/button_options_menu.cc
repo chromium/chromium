@@ -280,7 +280,7 @@ void ButtonOptionsMenu::AddActionEdit() {
   // ------------------------------
   action_edit_ = AddChildView(
       std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
-  action_name_label_->SetText(action_edit_->GetActionName());
+  action_name_label_->SetText(action_edit_->CalculateActionName());
 }
 
 void ButtonOptionsMenu::AddDoneButton() {
@@ -318,14 +318,14 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   RemoveChildViewT(action_edit_);
   action_edit_ = AddChildViewAt(
       std::make_unique<ButtonOptionsActionEdit>(controller_, action_), *index);
-  action_name_label_->SetText(action_edit_->GetActionName());
+  action_name_label_->SetText(action_edit_->CalculateActionName());
   UpdateWidget();
 }
 
 void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
   if (action_ == &action) {
     action_edit_->OnActionInputBindingUpdated();
-    action_name_label_->SetText(action_edit_->GetActionName());
+    action_name_label_->SetText(action_edit_->CalculateActionName());
   }
 }
 

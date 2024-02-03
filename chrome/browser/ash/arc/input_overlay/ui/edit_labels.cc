@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 
 #include "base/check_op.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
@@ -130,6 +131,15 @@ std::u16string EditLabels::CalculateActionName() {
   return l10n_util::GetStringFUTF16(
       IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_TEMPLATE,
       l10n_util::GetStringUTF16(control_type_id), key_string);
+}
+
+std::u16string EditLabels::CalculateKeyListForA11yLabel() const {
+  std::vector<std::u16string> keys;
+  for (EditLabel* label : labels_) {
+    keys.push_back(GetDisplayTextAccessibleName(label->GetText()));
+  }
+
+  return base::JoinString(keys, u", ");
 }
 
 void EditLabels::PerformPulseAnimationOnFirstLabel() {

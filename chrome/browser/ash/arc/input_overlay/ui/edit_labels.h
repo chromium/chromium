@@ -61,6 +61,8 @@ class EditLabels : public views::View {
 
   // Returns Action name, such as "Joystick wasd".
   std::u16string CalculateActionName();
+  // Returns key list, such as "w, a, s, d" or "w".
+  std::u16string CalculateKeyListForA11yLabel() const;
 
   void PerformPulseAnimationOnFirstLabel();
 

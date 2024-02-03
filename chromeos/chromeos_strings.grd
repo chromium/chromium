@@ -4841,6 +4841,9 @@
         <message name="IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL" desc="The title of buttons in the Game Controls menu indicating to save and close either the main or editor menu." translateable="false">
           Done
         </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ACTION_EDIT_BUTTON_A11Y_LABEL" desc="Action edit button a11y label for button options menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Tap on the button to focus on the label
+        </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu without having created any buttons." translateable="false">
           Assign first control
         </message>
@@ -4861,6 +4864,12 @@
         </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_DONE_BUTTON_A11Y_LABEL" desc="Done button a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
           Done editing
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_A11Y_TEMPLATE" desc="List item button a11y label for editing list when including one single edit label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Selected key is <ph name="KEYS">$1<ex>w</ex></ph>. Tap on the button to edit the control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_A11Y_PLURAL_TEMPLATE" desc="List item button a11y label for editing list when including more than one edit label. Spoken by screen readers when list item button gets focus but not visually rendered." translateable="false">
+          Selected key are <ph name="KEYS">$1<ex>w, a, s, d</ex></ph>. Tap on the button to edit the control
         </message>
         <!-- End of Arc Input Overlay -->
       </if>

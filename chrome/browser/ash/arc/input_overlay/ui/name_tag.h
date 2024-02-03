@@ -62,12 +62,12 @@ class NameTag : public views::View {
   // whether `error_icon_` shows up.
   void UpdateLabelsFitWidth();
 
+  // True if this view is in EditingList. Otherwise, it is in ButtonOptionsMenu.
+  const bool for_editing_list_;
+
   raw_ptr<views::ImageView> error_icon_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> subtitle_label_ = nullptr;
-
-  // True if this view is in EditingList. Otherwise, it is in ButtonOptionsMenu.
-  const bool for_editing_list_;
 
   size_t available_width_ = 0;
 };
