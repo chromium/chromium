@@ -9,7 +9,29 @@
 
 namespace media {
 
-VideoFrameResource::VideoFrameResource(scoped_refptr<VideoFrame> frame)
+scoped_refptr<VideoFrameResource> VideoFrameResource::Create(
+    scoped_refptr<VideoFrame> frame) {
+  if (!frame) {
+    return nullptr;
+  }
+  // Uses WrapRefCounted since MakeRefCounted cannot access a private
+  // constructor.
+  return base::WrapRefCounted<VideoFrameResource>(
+      new VideoFrameResource(std::move(frame)));
+}
+
+scoped_refptr<const VideoFrameResource> VideoFrameResource::CreateConst(
+    scoped_refptr<const VideoFrame> frame) {
+  if (!frame) {
+    return nullptr;
+  }
+  // Uses WrapRefCounted since MakeRefCounted cannot access a private
+  // constructor.
+  return base::WrapRefCounted<const VideoFrameResource>(
+      new VideoFrameResource(std::move(frame)));
+}
+
+VideoFrameResource::VideoFrameResource(scoped_refptr<const VideoFrame> frame)
     : FrameResource(), frame_(std::move(frame)) {
   CHECK(frame_);
 }
@@ -153,13 +175,8 @@ void VideoFrameResource::AddDestructionObserver(base::OnceClosure callback) {
 scoped_refptr<FrameResource> VideoFrameResource::CreateWrappingFrame(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size) {
-  scoped_refptr<VideoFrame> wrapping_video_frame = VideoFrame::WrapVideoFrame(
-      GetMutableVideoFrame(), format(), visible_rect, natural_size);
-  if (!wrapping_video_frame) {
-    return nullptr;
-  }
-  return base::MakeRefCounted<VideoFrameResource>(
-      std::move(wrapping_video_frame));
+  return Create(VideoFrame::WrapVideoFrame(GetMutableVideoFrame(), format(),
+                                           visible_rect, natural_size));
 }
 
 std::string VideoFrameResource::AsHumanReadableString() const {

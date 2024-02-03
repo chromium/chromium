@@ -17,9 +17,14 @@ namespace media {
 // Implements a FrameResource that is backed by a media::VideoFrame.
 class VideoFrameResource : public FrameResource {
  public:
-  explicit VideoFrameResource(scoped_refptr<VideoFrame> frame);
   VideoFrameResource(const VideoFrameResource&) = delete;
   VideoFrameResource& operator=(const VideoFrameResource&) = delete;
+
+  // Const and non-const factory functions.
+  static scoped_refptr<VideoFrameResource> Create(
+      scoped_refptr<VideoFrame> frame);
+  static scoped_refptr<const VideoFrameResource> CreateConst(
+      scoped_refptr<const VideoFrame> frame);
 
   // FrameResource implementation.
   VideoFrameResource* AsVideoFrameResource() override;
@@ -70,6 +75,7 @@ class VideoFrameResource : public FrameResource {
   scoped_refptr<const VideoFrame> GetVideoFrame() const;
 
  private:
+  explicit VideoFrameResource(scoped_refptr<const VideoFrame> frame);
   ~VideoFrameResource() override;
 
   const scoped_refptr<const VideoFrame> frame_;
