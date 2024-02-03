@@ -439,6 +439,10 @@ bool CardUnmaskPromptControllerImpl::IsVirtualCard() const {
   return card_.record_type() == CreditCard::RecordType::kVirtualCard;
 }
 
+const CreditCard& CardUnmaskPromptControllerImpl::GetCreditCard() const {
+  return card_;
+}
+
 #if !BUILDFLAG(IS_IOS)
 int CardUnmaskPromptControllerImpl::GetCvcTooltipResourceId() {
   return IsCvcInFront()

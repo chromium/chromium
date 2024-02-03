@@ -86,6 +86,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   base::TimeDelta GetSuccessMessageDuration() const override;
   AutofillClient::PaymentsRpcResult GetVerificationResult() const override;
   bool IsVirtualCard() const override;
+  const CreditCard& GetCreditCard() const override;
 #if !BUILDFLAG(IS_IOS)
   int GetCvcTooltipResourceId() override;
 #endif

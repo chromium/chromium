@@ -84,6 +84,7 @@ source_set("bridges") {
     "//base",
     "//components/autofill/core/browser",
     "//components/strings",
+    "//ios/chrome/browser/autofill/model/credit_card:credit_card",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -91,6 +92,7 @@ source_set("bridges") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
     "//url",
   ]

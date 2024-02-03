@@ -9,8 +9,11 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -21,6 +24,7 @@
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -29,6 +33,11 @@ NSString* const kCardUnmaskPromptTableViewAccessibilityID =
 
 namespace {
 
+BOOL VirtualCardFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillEnableVirtualCards);
+}
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierHeader = kSectionIdentifierEnumZero,
   SectionIdentifierInputs,
@@ -36,6 +45,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader = kItemTypeEnumZero,
+  ItemTypeCardInfo,
   ItemTypeCVCInput,
   ItemTypeFooter,
   ItemTypeExpirationDateInput,
@@ -73,6 +83,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   // Owns `self`. A value of nullptr means the view controller is dismissed or
   // about to be dismissed.
   raw_ptr<autofill::CardUnmaskPromptViewBridge> _bridge;  // weak
+  // Model of the card info cell.
+  TableViewDetailIconItem* _cardInfoItem;
   // Model of the CVC input cell.
   TableViewTextEditItem* _CVCInputItem;
   // Model of the footer.
@@ -160,6 +172,14 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   _headerItem = [self createHeaderItem];
   [model setHeader:_headerItem
       forSectionWithIdentifier:SectionIdentifierHeader];
+
+  if (VirtualCardFeatureEnabled()) {
+    _cardInfoItem = [self createCardInfoItem];
+    if (_cardInfoItem != nil) {
+      [self.tableViewModel addItem:_cardInfoItem
+           toSectionWithIdentifier:SectionIdentifierHeader];
+    }
+  }
 
   [model addSectionWithIdentifier:SectionIdentifierInputs];
 
@@ -378,6 +398,24 @@ const char kFooterDummyLinkTarget[] = "about:blank";
                                forState:UIControlStateDisabled];
 
   return confirmButton;
+}
+
+// Returns the model for the card info cell.
+- (TableViewDetailIconItem*)createCardInfoItem {
+  if (_bridge == nullptr) {
+    return nil;
+  }
+
+  CreditCardData* data = _bridge->credit_card_data();
+
+  TableViewDetailIconItem* cardInfoItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeCardInfo];
+  cardInfoItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+  cardInfoItem.text = data.cardNameAndLastFourDigits;
+  cardInfoItem.detailText = data.cardDetails;
+  cardInfoItem.iconBackgroundColor = UIColor.clearColor;
+  cardInfoItem.iconImage = data.icon;
+  return cardInfoItem;
 }
 
 // Returns the model for the CVC input cell.
@@ -613,6 +651,16 @@ const char kFooterDummyLinkTarget[] = "about:blank";
     rowCell.textField.delegate = self;
     // Hide the icon from Voice Over.
     rowCell.identifyingIconButton.isAccessibilityElement = NO;
+  }
+
+  if (rowItemType == ItemTypeCardInfo) {
+    TableViewDetailIconCell* rowCell =
+        base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
+    rowCell.backgroundColor = [UIColor colorNamed:kGrey200Color];
+    rowCell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+    rowCell.textLabel.numberOfLines = 1;
+    rowCell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+    rowCell.detailTextLabel.numberOfLines = 1;
   }
 
   return cell;
