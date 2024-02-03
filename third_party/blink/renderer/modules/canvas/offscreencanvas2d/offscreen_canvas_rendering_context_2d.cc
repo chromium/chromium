@@ -140,7 +140,7 @@ void OffscreenCanvasRenderingContext2D::commit() {
 void OffscreenCanvasRenderingContext2D::FlushRecording(FlushReason reason) {
   CanvasResourceProvider* provider = GetCanvasResourceProvider();
   if (UNLIKELY(provider == nullptr) ||
-      !provider->Recorder().HasRecordedDrawOps()) {
+      !provider->Recorder().HasReleasableDrawOps()) {
     return;
   }
 

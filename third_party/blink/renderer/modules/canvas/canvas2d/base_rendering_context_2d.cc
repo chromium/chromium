@@ -2714,7 +2714,7 @@ void BaseRenderingContext2D::WillOverwriteCanvas(
   }
 
   if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
-    recorder->SkipQueuedDrawCommands();
+    recorder->RestartCurrentLayer();
   }
 }
 

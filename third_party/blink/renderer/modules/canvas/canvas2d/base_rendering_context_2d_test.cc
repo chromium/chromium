@@ -69,9 +69,7 @@ class TestRenderingContext2D final
   ~TestRenderingContext2D() override = default;
 
   // Returns the content of the paint recorder, leaving it empty.
-  cc::PaintRecord FlushRecorder() {
-    return recorder_.finishRecordingAsPicture();
-  }
+  cc::PaintRecord FlushRecorder() { return recorder_.ReleaseMainRecording(); }
 
   int StateStackDepth() {
     // Subtract the extra save that gets added when the context is initialized.
@@ -149,7 +147,7 @@ class TestRenderingContext2D final
   void RecordingCleared() override {}
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
-    return recorder_.finishRecordingAsPicture();
+    return recorder_.ReleaseMainRecording();
   }
 
   const MemoryManagedPaintRecorder* Recorder() const override {

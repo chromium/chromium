@@ -141,7 +141,7 @@ PaintRecord PaintRenderingContext2D::GetRecord() {
     return *previous_frame_;  // Reuse the previous frame
   }
 
-  return paint_recorder_.finishRecordingAsPicture();
+  return paint_recorder_.ReleaseMainRecording();
 }
 
 }  // namespace blink

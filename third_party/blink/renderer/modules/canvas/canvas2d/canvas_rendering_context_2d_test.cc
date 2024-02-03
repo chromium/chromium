@@ -1538,7 +1538,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
   const size_t initial_op_count = Context2D()->Recorder()->TotalOpCount();
 
-  while (Context2D()->Recorder()->OpBytesUsed() <= kMaxRecordedOpKB * 1024) {
+  while (Context2D()->Recorder()->TotalOpBytesUsed() <=
+         kMaxRecordedOpKB * 1024) {
     Context2D()->fillRect(0, 0, 1, 1);
     // Verify that auto-flush did not happen
     ASSERT_GT(Context2D()->Recorder()->TotalOpCount(), initial_op_count);
@@ -1598,11 +1599,12 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
   Context2D()->drawImage(&unique_image, 0, 0, 10, 10, 0, 0, 10, 10,
                          exception_state);
   size_t initial_op_count = Context2D()->Recorder()->TotalOpCount();
-  ASSERT_EQ(Context2D()->Recorder()->ImageBytesUsed(), kBytesPerImage);
+  ASSERT_EQ(Context2D()->Recorder()->ReleasableImageBytesUsed(),
+            kBytesPerImage);
 
   Context2D()->clearRect(0, 0, 10, 10);  // Overdraw
   ASSERT_EQ(Context2D()->Recorder()->TotalOpCount(), initial_op_count);
-  ASSERT_EQ(Context2D()->Recorder()->ImageBytesUsed(), 0u);
+  ASSERT_EQ(Context2D()->Recorder()->ReleasableImageBytesUsed(), 0u);
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
@@ -1641,7 +1643,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
   Context2D()->beginLayer(ToScriptStateForMainWorld(GetDocument().GetFrame()),
                           BeginLayerOptions::Create(), exception_state);
   const size_t initial_op_count = Context2D()->Recorder()->TotalOpCount();
-  while (Context2D()->Recorder()->OpBytesUsed() <=
+  while (Context2D()->Recorder()->TotalOpBytesUsed() <=
          kMaxRecordedOpKB * 1024 * 2) {
     Context2D()->fillRect(0, 0, 1, 1);
     ASSERT_GT(Context2D()->Recorder()->TotalOpCount(), initial_op_count);

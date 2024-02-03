@@ -1340,8 +1340,9 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   if (IsPrinting() && clear_frame_) {
     return;
   }
-  if (UNLIKELY(recorder_->OpBytesUsed() > max_recorded_op_bytes_) ||
-      UNLIKELY(recorder_->ImageBytesUsed() > max_pinned_image_bytes_)) {
+  if (UNLIKELY(recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_) ||
+      UNLIKELY(recorder_->ReleasableImageBytesUsed() >
+               max_pinned_image_bytes_)) {
     FlushCanvas(FlushReason::kRecordingLimitExceeded);
   }
 }
@@ -1516,7 +1517,7 @@ gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     FlushReason reason) {
-  if (!recorder_->HasRecordedDrawOps()) {
+  if (!recorder_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
   ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
@@ -1539,7 +1540,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     clear_frame_ = true;
     printing_fallback_reason_ = FlushReason::kNone;
   }
-  cc::PaintRecord recording = recorder_->finishRecordingAsPicture();
+  cc::PaintRecord recording = recorder_->ReleaseMainRecording();
   RasterRecord(recording);
   last_recording_ =
       preserve_recording ? std::optional(recording) : std::nullopt;

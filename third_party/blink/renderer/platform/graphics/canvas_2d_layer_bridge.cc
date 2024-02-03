@@ -147,7 +147,8 @@ void Canvas2DLayerBridge::Hibernate() {
   // case because flushRecording should only fail it it fails to allocate
   // a surface, and we have an early exit at the top of this function for when
   // 'this' does not already have a surface.
-  DCHECK(!resource_host_->ResourceProvider()->Recorder().HasRecordedDrawOps());
+  DCHECK(
+      !resource_host_->ResourceProvider()->Recorder().HasReleasableDrawOps());
   SkPaint copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
   scoped_refptr<StaticBitmapImage> snapshot =
@@ -342,7 +343,19 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
   if (x <= 0 && y <= 0 &&
       x + orig_info.width() >= resource_host_->Size().width() &&
       y + orig_info.height() >= resource_host_->Size().height()) {
-    provider->Recorder().SkipQueuedDrawCommands();
+    MemoryManagedPaintRecorder& recorder = provider->Recorder();
+    if (recorder.HasSideRecording()) {
+      // Even with opened layers, WritePixels would write to the main canvas
+      // surface under the layers. We can therefore clear the paint ops recorded
+      // before the first `beginLayer`, but the layers themselves must be kept
+      // untouched. Note that this operation makes little sense and is actually
+      // disabled in `putImageData` by raising an exception if layers are
+      // opened. Still, it's preferable to handle this scenario here because the
+      // alternative would be to crash or leave the canvas in an invalid state.
+      recorder.ReleaseMainRecording();
+    } else {
+      recorder.RestartRecording();
+    }
   } else {
     FlushRecording(FlushReason::kWritePixels);
     if (!GetOrCreateResourceProvider())
@@ -355,7 +368,7 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
 void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
   CHECK(resource_host_);
   CanvasResourceProvider* provider = GetOrCreateResourceProvider();
-  if (!provider || !provider->Recorder().HasRecordedDrawOps()) {
+  if (!provider || !provider->Recorder().HasReleasableDrawOps()) {
     return;
   }
 
