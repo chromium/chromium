@@ -31,7 +31,7 @@ constexpr base::TimeDelta kModelExecutionValidationStartupDelay =
 
 // Delay at the startup before performing the model execution validation.
 constexpr base::TimeDelta kOnDeviceModelExecutionValidationStartupDelay =
-    base::Seconds(12);
+    base::Seconds(5);
 
 std::unique_ptr<optimization_guide::proto::ComposeRequest>
 ParseComposeRequestFromFile(base::FilePath path) {
