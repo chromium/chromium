@@ -60,6 +60,10 @@
 // Whether to show the scroll hint.
 @property(nonatomic, assign) BOOL showScrollHint;
 
+// UI tap recognizer used to dismiss bubble presenter.
+@property(nonatomic, strong)
+    UITapGestureRecognizer* formInputAccessoryTapRecognizer;
+
 @end
 
 @implementation FormInputAccessoryViewController {
@@ -257,6 +261,20 @@
       _formInputPreviousButtonEnabled;
 }
 
+#pragma mark - Actions
+
+- (void)tapInsideRecognized:(id)sender {
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    [self.formInputAccessoryViewControllerDelegate
+        formInputAccessoryViewController:self
+            didTapFormInputAccessoryView:self.view];
+  } else {
+    // This method can't be reached when `kEnableStartupImprovements` is
+    // enabled.
+    NOTREACHED();
+  }
+}
+
 #pragma mark - Private
 
 // Resets this view to its original state. Can be animated.
@@ -319,6 +337,16 @@
   // `self.formAccessoryVisible` depends on the visible state of its view.
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
+
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    // Adds tap recognizer.
+    self.formInputAccessoryTapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapInsideRecognized:)];
+    self.formInputAccessoryTapRecognizer.cancelsTouchesInView = NO;
+    [formInputAccessoryView
+        addGestureRecognizer:self.formInputAccessoryTapRecognizer];
+  }
 
   self.formInputAccessoryView = formInputAccessoryView;
 }

@@ -32,6 +32,11 @@
             (FormInputAccessoryViewController*)formInputAccessoryViewController
                   didPressPasswordButton:(UIButton*)passwordButton;
 
+// Invoked after the user taps the form input accessory view.
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+            didTapFormInputAccessoryView:(UIView*)formInputAccessoryView;
+
 // Resets the delegate.
 - (void)formInputAccessoryViewControllerReset:
     (FormInputAccessoryViewController*)formInputAccessoryViewController;
