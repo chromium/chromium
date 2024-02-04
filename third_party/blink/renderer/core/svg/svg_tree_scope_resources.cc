@@ -18,8 +18,12 @@ LocalSVGResource* SVGTreeScopeResources::ResourceForId(const AtomicString& id) {
   if (id.empty())
     return nullptr;
   auto& entry = resources_.insert(id, nullptr).stored_value->value;
-  if (!entry)
+  recordreplay::Assert("[RUN-2424-3227] SVGTreeScopeResources::ResourceForId %d",
+    !!entry);
+  if (!entry) {
     entry = MakeGarbageCollected<LocalSVGResource>(*tree_scope_, id);
+    replay_strong_resources_.insert(id, entry);
+  }
   return entry;
 }
 
@@ -50,6 +54,7 @@ void SVGTreeScopeResources::Trace(Visitor* visitor) const {
       SVGTreeScopeResources, &SVGTreeScopeResources::ProcessCustomWeakness>(
       this);
   visitor->Trace(resources_);
+  visitor->Trace(replay_strong_resources_);
   visitor->Trace(tree_scope_);
 }
 

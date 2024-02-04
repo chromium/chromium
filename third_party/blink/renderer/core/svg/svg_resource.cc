@@ -151,6 +151,7 @@ LocalSVGResource::LocalSVGResource(TreeScope& tree_scope,
 }
 
 void LocalSVGResource::Unregister() {
+  recordreplay::Assert("[RUN-2424-3227] LocalSVGResource::Unregister");
   SVGURIReference::UnobserveTarget(id_observer_);
 }
 

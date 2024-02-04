@@ -6750,6 +6750,9 @@ const ComputedStyle* Element::EnsureComputedStyle(
   // the V8 heap.
   DCHECK(ThreadState::Current()->IsAllocationAllowed());
 
+  recordreplay::Assert("[RUN-2424-3227] Element::EnsureComputedStyle %d",
+    RecordReplayId());
+
   StyleEngine::InEnsureComputedStyleScope ensure_scope(
       GetDocument().GetStyleEngine());
 

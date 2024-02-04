@@ -184,7 +184,6 @@ static std::string ReadReplayAssetFileRaw(const char* filename, size_t& len) {
 }
 
 static String ReadReplayAssetFile(const char* fname) {
-  // "__RECORD_REPLAY_ARGUMENTS__.log(`DDBG ReplayCommandHandler ############`)";
   size_t len;
 
   // Important: Treat as UTF-8.
@@ -199,7 +198,6 @@ static String ReadReplayAssetFile(const char* fname) {
   if (!len) {
     recordreplay::Crash("ReadReplayAssetFile failed: %s", fname);
   }
-  recordreplay::Print("DDBG ReadReplayAssetFile %zu", len);
   return result;
 }
 
