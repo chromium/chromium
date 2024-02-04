@@ -13,7 +13,7 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
-      - replayio/buildevents#adb8a05: ~
+      - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
@@ -46,7 +46,7 @@ steps:
               secret-id: engflow-certificate
             - path: "/home/ubuntu/chromium/engflow.key"
               secret-id: engflow-key
-      - replayio/buildevents#adb8a05: ~
+      - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
@@ -85,7 +85,7 @@ steps:
               secret-id: engflow-certificate
             - path: "/Users/administrator/chromium/engflow.key"
               secret-id: engflow-key
-      - replayio/buildevents#adb8a05: ~
+      - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
@@ -124,7 +124,7 @@ steps:
               secret-id: engflow-certificate
             - path: "/Users/administrator/chromium/engflow.key"
               secret-id: engflow-key
-      - replayio/buildevents#adb8a05: ~
+      - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
@@ -188,7 +188,7 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
-      - replayio/buildevents#adb8a05: ~
+      - replayio/buildevents#76b6f57: ~
     agents:
       - "runtimeType=chromiumbuild"
       - "os=linux"
@@ -233,7 +233,7 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
-      - replayio/buildevents#adb8a05: ~
+      - replayio/buildevents#76b6f57: ~
     command: "be_watch"
     agents:
       - "runtimeType=chromiumbuild"
