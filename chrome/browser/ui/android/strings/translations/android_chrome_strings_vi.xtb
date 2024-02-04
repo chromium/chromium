@@ -51,7 +51,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1239792311949352652">Chia sẻ nhanh trang này. Để chỉnh sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>
 <translation id="1240190568154816272">Mẹo dùng Chrome</translation>
 <translation id="1240288207750131269">Đang tải <ph name="LANG" /></translation>
-<translation id="1240903469550363138">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />điều khoản dịch vụ<ph name="END_LINK2" /> của trang web này</translation>
+<translation id="1240903469550363138">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />điều khoản dịch vụ<ph name="END_LINK2" /> của trang web này.</translation>
 <translation id="124116460088058876">Ngôn ngữ khác</translation>
 <translation id="1241792820757384812">Mật khẩu của bạn sẽ bị xoá khỏi Trình quản lý mật khẩu của Google trên <ph name="CHROME_CHANNEL" />. Bạn sẽ giữ tệp mật khẩu mà bạn vừa tải xuống.</translation>
 <translation id="1242883863226959074">thiết bị</translation>
@@ -183,7 +183,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1974060860693918893">Nâng cao</translation>
 <translation id="1984417487208496350">Không được bảo vệ (không khuyến nghị)</translation>
 <translation id="1986685561493779662">Tên đã tồn tại</translation>
-<translation id="1995884366040846621">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> của trang web này</translation>
+<translation id="1995884366040846621">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> của trang web này.</translation>
 <translation id="200114059308480249">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google?</translation>
 <translation id="2009341475524975924">Để đo lường hiệu suất quảng cáo, các trang web chỉ có thể chia sẻ với nhau một số loại dữ liệu nhất định, chẳng hạn như thời điểm trong ngày mà bạn thấy quảng cáo.</translation>
 <translation id="201060170519281460">Khoá hồ sơ giúp đảm bảo an toàn cho thông tin của bạn trong ô tô, trong đó có mật khẩu đã đồng bộ hoá, thông tin thanh toán, v.v.</translation>
