@@ -616,8 +616,7 @@ void SynchronousCompositorHost::LayerTreeFrameSinkCreated() {
   DCHECK(compositor);
   compositor->SetMemoryPolicy(bytes_limit_);
 
-  if (begin_frame_paused_)
-    SendBeginFramePaused();
+  SendBeginFramePaused();
 }
 
 void SynchronousCompositorHost::UpdateState(
