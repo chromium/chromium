@@ -92,6 +92,13 @@ void ConnectorsInternalsPageHandler::DeleteDeviceTrustKey(
 #endif  // BUILDFLAG(IS_MAC)
 }
 
+void ConnectorsInternalsPageHandler::GetClientCertificateState(
+    GetClientCertificateStateCallback callback) {
+  std::move(callback).Run(
+      connectors_internals::mojom::ClientCertificateState::New(
+          std::vector<std::string>(), nullptr, nullptr));
+}
+
 void ConnectorsInternalsPageHandler::OnSignalsCollected(
     GetDeviceTrustStateCallback callback,
     bool is_device_trust_enabled,

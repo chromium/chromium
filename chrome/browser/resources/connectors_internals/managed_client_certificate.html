@@ -1,0 +1,30 @@
+<style>
+  .bold {
+    font-weight: bold;
+  }
+
+  div ~ div {
+    margin-top: 5px;
+  }
+
+  #managed-identities {
+    display: flex
+  }
+
+  #managed-identities > div {
+    margin: 10px;
+    padding: 5px;
+    flex-shrink: 1;
+    border: gray 1px solid;
+  }
+
+</style>
+<h2>Managed Client Certificate</h2>
+<div>
+  Enabled Policy Levels: <span id="policy-enabled-levels" class="bold"></span>
+</div>
+<div>
+  Managed Identities:
+  <!-- Identity elements will be added dynamically. -->
+  <div id="managed-identities"></div>
+</div>

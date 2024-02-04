@@ -96,6 +96,43 @@ struct DeviceTrustState {
   ConsentMetadata? consent_metadata;
 };
 
+struct CertificateMetadata {
+  // Certificate's thumbprint.
+  string thumbprint;
+
+  // Expiration date of the certificate.
+  string expiration_date_string;
+
+  // Display name of the certificate's subject.
+  string subject_display_name;
+
+  // Display name of the certificate's issuer.
+  string issuer_display_name;
+};
+
+struct ClientIdentity {
+  // Name of the identity.
+  string identity_name;
+
+  // Information about the identity's private key.
+  LoadedKeyInfo? loaded_key_info;
+
+  // Information about the identity's certificate.
+  CertificateMetadata? certificate_metadata;
+};
+
+struct ClientCertificateState {
+  // Information around the levels the client certificate provisioning policy
+  // is enabled for.
+  array<string> policy_enabled_levels;
+
+  // Information about the current Profile's managed identity.
+  ClientIdentity? managed_profile_identity;
+
+  // Information about the browser's managed identity.
+  ClientIdentity? managed_browser_identity;
+};
+
 // Browser interface for the page. Consists of calls for data and hooks for
 // interactivity.
 interface PageHandler {
@@ -105,4 +142,7 @@ interface PageHandler {
   // Deletes the Device Trust key stored on the device. Will only work on
   // developer builds or early release channels.
   DeleteDeviceTrustKey() => ();
+
+  // Get state information about managed client certificates.
+  GetClientCertificateState() => (ClientCertificateState state);
 };
