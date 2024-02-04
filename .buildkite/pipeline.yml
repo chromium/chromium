@@ -206,7 +206,7 @@ steps:
     depends_on:
       - "build-chromium-linux-x86_64"
 
-  - label: "Trigger Runtime FE Tests :hammer:"
+  - label: "Trigger FE E2E Tests :hammer:"
     trigger: "runtime-fe-end-to-end-tests"
     depends_on:
       - "build-chromium-linux-x86_64"

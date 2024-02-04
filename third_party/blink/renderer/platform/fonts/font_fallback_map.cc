@@ -23,15 +23,11 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
     const FontDescription& font_description) {
   AutoLockForParallelTextShaping guard(lock_);
   auto iter = fallback_list_for_description_.find(font_description);
-  recordreplay::Assert("[RUN-3109] FontFallbackMap::Get %d %u %d",
+  recordreplay::Assert("[RUN-3109-3229] FontFallbackMap::Get %d %d %d %u",
                        iter != fallback_list_for_description_.end(),
-                       font_description.GetHash(),
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  1
-#else
-  0
-#endif
-                       );
+                       iter != fallback_list_for_description_.end() ? iter->value->RecordReplayId() : -1,
+                       iter != fallback_list_for_description_.end() ? iter->value->HasOneRef() : -1,
+                       font_description.GetHash());
   if (iter != fallback_list_for_description_.end()) {
     DCHECK(iter->value->IsValid());
     return iter->value;
@@ -51,6 +47,8 @@ void FontFallbackMap::Remove(const FontDescription& font_description) {
   DCHECK_NE(iter, fallback_list_for_description_.end());
   DCHECK(iter->value->IsValid());
   DCHECK(iter->value->HasOneRef());
+  recordreplay::Assert("[RUN-3109-3229] FontFallbackMap::Remove %u",
+                       font_description.GetHash());
   fallback_list_for_description_.erase(iter);
 }
 
@@ -60,6 +58,9 @@ void FontFallbackMap::InvalidateAll() {
     return;
   }
   lock_.AssertAcquired();
+
+  recordreplay::Assert("[RUN-3109-3229] FontFallbackMap::InvalidateAll");
+
   for (auto& entry : fallback_list_for_description_)
     entry.value->MarkInvalid();
   fallback_list_for_description_.clear();
@@ -75,6 +76,16 @@ void FontFallbackMap::InvalidateInternal(Predicate predicate) {
       entry.value->MarkInvalid();
     }
   }
+
+  if (recordreplay::IsRecordingOrReplaying() && !recordreplay::AreAssertsDisabled()) {
+    std::ostringstream ss;
+    for (auto& entry : invalidated) {
+      ss << entry.GetHash() << ",";
+    }
+    recordreplay::Assert(
+      "[RUN-3109-3229] FontFallbackMap::InvalidateInternal %s", ss.str().c_str());
+  }
+
   fallback_list_for_description_.RemoveAll(invalidated);
 }
 

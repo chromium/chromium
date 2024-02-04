@@ -77,6 +77,8 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   uint16_t Generation() const { return generation_; }
 
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
+    recordreplay::Assert("[RUN-TODO] FontFallbackList::GetShapeCache %d",
+      !!shape_cache_);
     if (!shape_cache_) {
       FallbackListCompositeKey key = CompositeKey(font_description);
       shape_cache_ = FontCache::Get().GetShapeCache(key)->GetWeakPtr();
@@ -134,7 +136,7 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool is_invalid_ : 1;
 
   base::WeakPtr<ShapeCache> shape_cache_;
-  int record_replay_id_;
+  HAS_RECORD_REPLAY_ID();
 };
 
 }  // namespace blink
