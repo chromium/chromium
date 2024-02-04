@@ -136,7 +136,7 @@ ExternalSource GetExternalSourceFromExternalImage(
           external_image->GetAsHTMLVideoElement(), exception_state);
       if (external_texture_source.valid) {
         external_source.external_texture_source = external_texture_source;
-        DCHECK(external_texture_source.media_video_frame);
+        CHECK(external_texture_source.media_video_frame);
         external_source.width = static_cast<uint32_t>(
             external_texture_source.media_video_frame->natural_size().width());
         external_source.height = static_cast<uint32_t>(
@@ -149,7 +149,7 @@ ExternalSource GetExternalSourceFromExternalImage(
           external_image->GetAsVideoFrame(), exception_state);
       if (external_texture_source.valid) {
         external_source.external_texture_source = external_texture_source;
-        DCHECK(external_texture_source.media_video_frame);
+        CHECK(external_texture_source.media_video_frame);
         external_source.width = static_cast<uint32_t>(
             external_texture_source.media_video_frame->coded_size().width());
         external_source.height = static_cast<uint32_t>(
@@ -348,10 +348,10 @@ gfx::Rect GetSourceImageSubrect(StaticBitmapImage* image,
   int y = static_cast<int>(origin.y) + source_image_rect.y();
 
   // Ensure generated source image subrect is into source image rect.
-  DCHECK(width <= source_image_rect.width() - source_image_rect.x() &&
-         height <= source_image_rect.height() - source_image_rect.y() &&
-         x <= source_image_rect.width() - source_image_rect.x() - width &&
-         y <= source_image_rect.height() - source_image_rect.y() - height);
+  CHECK(width <= source_image_rect.width() - source_image_rect.x() &&
+        height <= source_image_rect.height() - source_image_rect.y() &&
+        x <= source_image_rect.width() - source_image_rect.x() - width &&
+        y <= source_image_rect.height() - source_image_rect.y() - height);
 
   return gfx::Rect(x, y, width, height);
 }
@@ -597,8 +597,6 @@ void GPUQueue::copyExternalImageToTexture(
     GPUImageCopyTextureTagged* destination,
     const V8GPUExtent3D* copy_size,
     ExceptionState& exception_state) {
-  // "srgb" is the only valid color space for now.
-  DCHECK_EQ(destination->colorSpace(), "srgb");
 
   // Extract color space info before getting source image to handle some
   // redecoded cases like ImageElement.
@@ -714,7 +712,7 @@ void GPUQueue::CopyFromVideoElement(
     bool dst_premultiplied_alpha,
     PredefinedColorSpace dst_color_space,
     bool flipY) {
-  DCHECK(source.valid);
+  CHECK(source.valid);
 
   // Import GPUExternalTexture to sRGB color space always.
   // Delegate future color space conversion for
@@ -893,8 +891,8 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   // - Issue Dawn::queueCopyTextureForBrowser to upload contents from temp
   // texture to dst texture.
   // - Destroy all temp resources.
-  DCHECK(!image->IsTextureBacked());
-  DCHECK(!paint_image.IsTextureBacked());
+  CHECK(!image->IsTextureBacked());
+  CHECK(!paint_image.IsTextureBacked());
 
   // Handling CPU resource.
 
