@@ -80,7 +80,8 @@ int64_t IntersectionObservation::ComputeIntersection(
       honor_margins ? observer_->RootMargin() : empty_margin,
       observer_->thresholds(),
       honor_margins ? observer_->TargetMargin() : empty_margin,
-      observer_->ScrollMargin(), geometry_flags, root_geometry, &cached_rects_);
+      honor_margins ? observer_->ScrollMargin() : empty_margin, geometry_flags,
+      root_geometry, &cached_rects_);
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   if (cached_rects_backup) {
