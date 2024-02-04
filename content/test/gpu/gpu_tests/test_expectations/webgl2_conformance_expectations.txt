@@ -418,14 +418,7 @@ crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/s
 crbug.com/1336010 [ android angle-disabled no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 # Failing on Pixel 4; not sure about other devices.
 crbug.com/1473838 [ android angle-opengles passthrough ] conformance2/extensions/oes-sample-variables.html [ Failure ]
-# Failing on at least NVIDIA and Intel
-crbug.com/1336010 [ angle-disabled chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 
-# The validating command decoder suppressions here will not be fixed.
-crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
-crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
-crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-crbug.com/angleproject/6245 [ desktop no-passthrough target-cpu-64 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
 # Failing on some platforms.
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -814,13 +807,10 @@ crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffer
 # ChromeOS failures #
 #####################
 
-crbug.com/1215700 [ chromeos no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 crbug.com/1380411 [ chromeos passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Skip ]
 crbug.com/1380411 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 passthrough target-cpu-64 ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1380411 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 passthrough target-cpu-64 ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1380411 [ chromeos passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
-crbug.com/1210240 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/1210240 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1213198 [ chromeos chromeos-board-amd64-generic ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/1213198 [ chromeos chromeos-board-amd64-generic ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Failure ]
 crbug.com/1215695 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/fbocolorbuffer/tex2d_00.html [ Failure ]
@@ -841,7 +831,6 @@ crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/fborender/resize_01.html [ Failure ]
 crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/fborender/resize_02.html [ Failure ]
 crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/fborender/resize_03.html [ Failure ]
-crbug.com/1218607 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
@@ -849,7 +838,6 @@ crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 # Suspected i915 image uprev
 crbug.com/1498990 [ chromeos chromeos-board-octopus ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
-crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
@@ -857,8 +845,6 @@ crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExt
 # Must investigate ChromeOS failures with passthrough command decoder.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
-# Failures on validating command decoder only; won't fix.
-crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 no-passthrough target-cpu-64 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # ANGLE disallows WEBGL_clip_cull_distance if the underlying GL extension doesn't support requirements for number of distances.
 crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
