@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">ऐप्‍लिकेशन वर्शन</translation>
 <translation id="1428770807407000502">क्या आपको सिंक करने की सुविधा बंद करनी है?</translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
+<translation id="1435593198351412143">PDF फ़ाइलें अपने-आप खुलें</translation>
 <translation id="1436784010935106834">निकाला गया</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> में चल रही है</translation>
 <translation id="1448440926884431741">ट्रैक किए गए प्रॉडक्ट को Bookmarks में व्यवस्थित करें</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">आपके ब्राउज़र या डिवाइस को धीमा नहीं करती.</translation>
 <translation id="2900528713135656174">इवेंट बनाएं</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> के लिए सुझाव दिखाए जा रहे हैं</translation>
+<translation id="2904300462646366554">डाउनलोड की गई PDF फ़ाइलें, आपके डिवाइस में मौजूद किसी PDF व्यूअर में अपने-आप खुल जाएंगी</translation>
 <translation id="2904414404539560095">टैब शेयर करने वाले डिवाइस की सूची पूरी खुली हुई है.</translation>
 <translation id="2908243544703713905">वे कॉन्टेंट तैयार हैं जिन्हें पढ़ा नहीं गया है</translation>
 <translation id="2909615210195135082">Google सूचना प्लैटफ़ॉर्म</translation>
@@ -894,9 +896,11 @@
 <translation id="5810288467834065221">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="5814749351757353073">अपनी पसंदीदा साइटें फ़ॉलो करते रहें</translation>
 <translation id="5822875253699806474">जिन साइटों पर आपने विज़िट की है उन्हें तेज़ी से ऐक्सेस करने के लिए, अपने टैब और इतिहास को सिंक करें</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> में सेव किया गया</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक शेयर करें</translation>
 <translation id="5839058148541733625">Chrome डायनो</translation>
+<translation id="5848257610304005265">क्या आपको <ph name="APP_NAME" /> में PDF फ़ाइल खोलनी है?</translation>
 <translation id="5853623416121554550">रोका गया</translation>
 <translation id="5855546874025048181">बेहतर बनाएं: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">कोई गड़बड़ी हुई. ट्रैक की गई कीमत अपडेट नहीं हो सकी.</translation>
@@ -1379,6 +1383,7 @@
 <translation id="8127542551745560481">होम पेज में बदलाव करें</translation>
 <translation id="8130309322784422030">हो सकता है कि आपकी सेव की गई, साइन इन से जुड़ी जानकारी पुरानी हो</translation>
 <translation id="813082847718468539">साइट जानकारी देखें</translation>
+<translation id="8135406045838672858">डाउनलोड की गई PDF फ़ाइलें, <ph name="APP_NAME" /> में अपने-आप खुलती हैं</translation>
 <translation id="8137562778192957619">आपको यह पासवर्ड याद नहीं रखना पड़ेगा. यह Google Password Manager में सेव हो जाएगा.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फ़ाइलें बची हैं</translation>
 <translation id="8190358571722158785">1 दिन शेष</translation>

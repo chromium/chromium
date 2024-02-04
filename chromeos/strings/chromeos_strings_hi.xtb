@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">आंतरिक गड़बड़ी</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">गुणा करें</translation>
 <translation id="1145018782460575098">बाहरी डिवाइसों के लिए फ़र्मवेयर को अपडेट करने वाली विंडो खुली है. <ph name="NUM_UPDATES" /> अपडेट उपलब्ध हैं.</translation>
 <translation id="1145516343487477149">Chromebook से जुड़े सामान्य सवालों के लिए, सहायता लेख और जवाब ढूंढें</translation>
 <translation id="1154390310959620237">सिर्फ़ पांच शॉर्टकट को पसंद के मुताबिक बनाया जा सकता है. नया शॉर्टकट जोड़ने के लिए, कोई शॉर्टकट मिटाएं.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कैन करने की जगह में फ़िट करें</translation>
 <translation id="1367951781824006909">कोई फ़ाइल चुनें</translation>
+<translation id="1371650399987522809">Google के एआई की मदद से बनाए गए वॉलपेपर के लिए सुझाव/राय दें या शिकायत करें</translation>
 <translation id="1387854245479784695">यह सभी कोर एक साथ दिखाता है</translation>
 <translation id="1394661041439318933">डिवाइस के केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="1397738625398125236">गेटवे को पिंग किया जा सकता है</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">टचपैड</translation>
 <translation id="1561927818299383735">बैकलिट का रंग</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> को अपडेट नहीं किया जा सकता</translation>
+<translation id="1566493343215789965">भाग दें</translation>
 <translation id="1567064801249837505">एल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
 <translation id="1578784163189013834">स्क्रीन सेवर का बैकग्राउंड चुनें</translation>
 <translation id="160633243685262989">इमेज की झलक देखें</translation>
 <translation id="1611649489706141841">आगे जाएं</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
+<translation id="1615576200479539465">इमेज जनरेट की जा रही हैं...</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
 <translation id="1626590945318984973">शॉर्टकट उपलब्ध नहीं है. फ़ंक्शन और <ph name="META_KEY" /> बटनों के बिना, नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
 <translation id="2880569433548999039">क्लाउड फ़्लो स्क्रीन सेवर</translation>
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
+<translation id="2938573842839598578">अनुमानित नतीजा पाने के लिए, <ph name="CATEGORY_TEXT" /> की वैल्यू को <ph name="CONVERSION_RATE" /> से <ph name="OPERATOR_TEXT" /> करें</translation>
 <translation id="2940811910881150316">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए लिड को फिर से खोलें.</translation>
 <translation id="2941112035454246133">कम</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS का अपडेट</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
+<translation id="3547264467365135390">फ़ॉर्मूला</translation>
 <translation id="3557205324756024651">लोकल आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="3565064564551103223">जिन आईपी को अनुमति दी गई है</translation>
 <translation id="3569407787324516067">स्क्रीन सेवर</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7180865173735832675">पसंद के मुताबिक बनाएं</translation>
 <translation id="7184043045742675738">अपने बटन को पसंद के मुताबिक बनाने के लिए, किसी भी बटन पर क्लिक करें. माउस या ऐरो बटन की मदद से, बटन की जगह बदलें.</translation>
+<translation id="7206979415662233817">सेवा की शर्तें</translation>
 <translation id="7212547870105584639">नेटवर्क एपीएन सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाहरी डिवाइसों के लिए फ़र्मवेयर अपडेट</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">कीबोर्ड का रंग</translation>
 <translation id="7317831949569936035">स्कूल में नाम दर्ज कराएं</translation>
 <translation id="7319430975418800333">ए3</translation>
+<translation id="7331297744262591636">आपकी उम्र कम से कम 18 साल होनी चाहिए. साथ ही, आपको इस बात के लिए सहमति जतानी होगी कि एआई वॉलपेपर के आपके इस्तेमाल पर, <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google की सेवा की शर्तें<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> और <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />जनरेटिव एआई की सेवा की अन्य शर्तें<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> लागू होंगी.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          एआई की मदद से, सिर्फ़ निजी और गैर-व्यावसायिक इस्तेमाल के लिए वॉलपेपर बनाए जा सकते हैं. जब आपको वॉलपेपर के लिए मदद मिलती है, तब Google के एआई से जुड़े सभी सर्वर को टेक्स्ट भेजा जाता है, ताकि वॉलपेपर के लिए सुझाव जनरेट किए जा सकें. इस पर <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google की निजता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> लागू होती है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search में नतीजा देखने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> में से <ph name="LIST_POSITION" /> खोज का नतीजा: <ph name="SEARCH_RESULT_TEXT" />. शॉर्टकट पर जाने के लिए, Enter दबाएं.</translation>
