@@ -11,11 +11,10 @@
 namespace content {
 class IndexedDBBucketContext;
 
-// This handle tells the IndexedDBBucketContext that there is still something
-// using the bucket, and the IndexedDBBucketContext won't close until all
-// handles are destroyed. Destroying this handle can cause the bucket state
-// to synchronously destruct, which modifies the `bucket_contexts_`
-// map in IndexedDBFactory.
+// This object tells the IndexedDBBucketContext that there is still something
+// using the backing store, and the IndexedDBBucketContext won't close it until
+// all handles are destroyed. "Something" means, for example, an
+// `IndexedDBConnection`.
 class CONTENT_EXPORT IndexedDBBucketContextHandle {
  public:
   IndexedDBBucketContextHandle();

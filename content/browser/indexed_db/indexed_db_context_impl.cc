@@ -81,15 +81,6 @@ bool IsAllowedPath(const std::vector<base::FilePath>& allowed_paths,
   return false;
 }
 
-storage::BucketInfo ToBucketInfoForTesting(
-    const storage::BucketLocator& bucket_locator) {
-  storage::BucketInfo bucket_info;
-  bucket_info.id = bucket_locator.id;
-  bucket_info.storage_key = bucket_locator.storage_key;
-  bucket_info.name = storage::kDefaultBucketName;
-  return bucket_info;
-}
-
 }  // namespace
 
 IndexedDBContextImpl::IndexedDBContextImpl(
@@ -568,20 +559,14 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
     const std::string& key,
     const std::string& value,
     base::OnceClosure callback) {
-  IndexedDBBucketContextHandle handle;
-  leveldb::Status s;
-  std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrCreateBucketContext(
-          ToBucketInfoForTesting(bucket_locator), GetDataPath(bucket_locator),
-          /*create_if_missing=*/true);
-  CHECK(s.ok()) << s.ToString();
-  CHECK(handle.IsHeld());
+  IndexedDBBucketContext* bucket_context =
+      GetIDBFactory()->GetBucketContextForTesting(  // IN-TEST
+          bucket_locator.id);
 
-  TransactionalLevelDBDatabase* db = handle->backing_store()->db();
+  TransactionalLevelDBDatabase* db = bucket_context->backing_store()->db();
   std::string value_copy = value;
-  s = db->Put(key, &value_copy);
+  leveldb::Status s = db->Put(key, &value_copy);
   CHECK(s.ok()) << s.ToString();
-  handle.Release();
   GetIDBFactory()->ForceClose(bucket_locator.id, true);
   std::move(callback).Run();
 }
@@ -596,16 +581,11 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
     const storage::BucketLocator& bucket_locator,
     int64_t database_id,
     GetNextBlobNumberForTestingCallback callback) {
-  IndexedDBBucketContextHandle handle;
-  leveldb::Status s;
-  std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrCreateBucketContext(
-          ToBucketInfoForTesting(bucket_locator), GetDataPath(bucket_locator),
-          /*create_if_missing=*/true);
-  CHECK(s.ok()) << s.ToString();
-  CHECK(handle.IsHeld());
+  IndexedDBBucketContext* bucket_context =
+      GetIDBFactory()->GetBucketContextForTesting(  // IN-TEST
+          bucket_locator.id);
 
-  TransactionalLevelDBDatabase* db = handle->backing_store()->db();
+  TransactionalLevelDBDatabase* db = bucket_context->backing_store()->db();
 
   const std::string key_gen_key = DatabaseMetaDataKey::Encode(
       database_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER);
@@ -627,16 +607,11 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
     int64_t database_id,
     int64_t blob_number,
     GetPathForBlobForTestingCallback callback) {
-  IndexedDBBucketContextHandle handle;
-  leveldb::Status s;
-  std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrCreateBucketContext(
-          ToBucketInfoForTesting(bucket_locator), GetDataPath(bucket_locator),
-          /*create_if_missing=*/true);
-  CHECK(s.ok()) << s.ToString();
-  CHECK(handle.IsHeld());
+  IndexedDBBucketContext* bucket_context =
+      GetIDBFactory()->GetBucketContextForTesting(  // IN-TEST
+          bucket_locator.id);
 
-  IndexedDBBackingStore* backing_store = handle->backing_store();
+  IndexedDBBackingStore* backing_store = bucket_context->backing_store();
   base::FilePath path =
       backing_store->GetBlobFileName(database_id, blob_number);
   std::move(callback).Run(path);
@@ -807,6 +782,7 @@ void IndexedDBContextImpl::FactoryOpened(
 void IndexedDBContextImpl::WritingTransactionComplete(
     const storage::BucketLocator& bucket_locator,
     bool flushed) {
+  bucket_set_.insert(bucket_locator);
   NotifyOfBucketModification(bucket_locator);
   if (!flushed) {
     // A negative value indicates "not cached, and LevelDB file write is

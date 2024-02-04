@@ -41,7 +41,6 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
-#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
@@ -70,82 +69,6 @@ using blink::StorageKey;
 using url::Origin;
 
 namespace content {
-namespace indexed_db_backing_store_unittest {
-
-class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
- public:
-  TestableIndexedDBBackingStore(
-      IndexedDBBackingStore::Mode backing_store_mode,
-      const storage::BucketLocator& bucket_locator,
-      const base::FilePath& blob_path,
-      std::unique_ptr<TransactionalLevelDBDatabase> db,
-      BlobFilesCleanedCallback blob_files_cleaned,
-      ReportOutstandingBlobsCallback report_outstanding_blobs,
-      scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
-      : IndexedDBBackingStore(backing_store_mode,
-                              bucket_locator,
-                              blob_path,
-                              std::move(db),
-                              std::move(blob_files_cleaned),
-                              std::move(report_outstanding_blobs),
-                              std::move(idb_task_runner)) {}
-
-  TestableIndexedDBBackingStore(const TestableIndexedDBBackingStore&) = delete;
-  TestableIndexedDBBackingStore& operator=(
-      const TestableIndexedDBBackingStore&) = delete;
-
-  ~TestableIndexedDBBackingStore() override = default;
-
-  const std::vector<base::FilePath>& removals() const { return removals_; }
-  void ClearRemovals() { removals_.clear(); }
-
-  void StartJournalCleaningTimer() override {
-    IndexedDBBackingStore::StartJournalCleaningTimer();
-  }
-
- protected:
-  bool RemoveBlobFile(int64_t database_id, int64_t blob_number) const override {
-    removals_.push_back(GetBlobFileName(database_id, blob_number));
-    return IndexedDBBackingStore::RemoveBlobFile(database_id, blob_number);
-  }
-
- private:
-  // This is modified in an overridden virtual function that is properly const
-  // in the real implementation, therefore must be mutable here.
-  mutable std::vector<base::FilePath> removals_;
-};
-
-// Factory subclass to allow the test to use the
-// TestableIndexedDBBackingStore subclass.
-class TestIDBFactory : public IndexedDBFactory {
- public:
-  explicit TestIDBFactory(IndexedDBContextImpl* idb_context)
-      : IndexedDBFactory(idb_context) {}
-
-  TestIDBFactory(const TestIDBFactory&) = delete;
-  TestIDBFactory& operator=(const TestIDBFactory&) = delete;
-
-  ~TestIDBFactory() override = default;
-
- protected:
-  std::unique_ptr<IndexedDBBackingStore> CreateBackingStore(
-      IndexedDBBackingStore::Mode backing_store_mode,
-      const storage::BucketLocator& bucket_locator,
-      const base::FilePath& blob_path,
-      std::unique_ptr<TransactionalLevelDBDatabase> db,
-      IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
-      IndexedDBBackingStore::ReportOutstandingBlobsCallback
-          report_outstanding_blobs,
-      scoped_refptr<base::SequencedTaskRunner> idb_task_runner) override {
-    // Use the overridden blob storage and File System Access contexts rather
-    // than the versions that were passed in to this method. This way tests can
-    // use a different context from what is stored in the IndexedDBContext.
-    return std::make_unique<TestableIndexedDBBackingStore>(
-        backing_store_mode, bucket_locator, blob_path, std::move(db),
-        std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
-        std::move(idb_task_runner));
-  }
-};
 
 struct BlobWrite {
   BlobWrite() = default;
@@ -300,28 +223,6 @@ class IndexedDBBackingStoreTest : public testing::Test {
         quota_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
 
-    mojo::PendingRemote<storage::mojom::BlobStorageContext>
-        blob_storage_context;
-    blob_context_->Clone(blob_storage_context.InitWithNewPipeAndPassReceiver());
-
-    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
-    file_system_access_context_->Clone(
-        fsa_context.InitWithNewPipeAndPassReceiver());
-
-    idb_context_ = std::make_unique<IndexedDBContextImpl>(
-        temp_dir_.GetPath(), quota_manager_proxy_,
-        std::move(blob_storage_context), std::move(fsa_context),
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        base::SequencedTaskRunner::GetCurrentDefault());
-
-    // Needed to get the QuotaClient bound.
-    {
-      base::RunLoop run_loop;
-      idb_context_->IDBTaskRunner()->PostTask(FROM_HERE,
-                                              run_loop.QuitClosure());
-      run_loop.Run();
-    }
-
     CreateFactoryAndBackingStore();
 
     // useful keys and values during tests
@@ -341,27 +242,29 @@ class IndexedDBBackingStoreTest : public testing::Test {
     bucket_info.name = storage::kDefaultBucketName;
     auto bucket_locator = bucket_info.ToBucketLocator();
 
-    idb_factory_ = std::make_unique<TestIDBFactory>(idb_context_.get());
+    mojo::PendingRemote<storage::mojom::BlobStorageContext>
+        blob_storage_context;
+    blob_context_->Clone(blob_storage_context.InitWithNewPipeAndPassReceiver());
 
-    leveldb::Status s;
-    std::tie(bucket_context_handle_, s, std::ignore, data_loss_info_,
-             std::ignore) =
-        idb_factory_->GetOrCreateBucketContext(
-            bucket_info, idb_context_->GetDataPath(bucket_locator),
-            /*create_if_missing=*/true);
-    if (!bucket_context_handle_.IsHeld()) {
-      backing_store_ = nullptr;
-      return;
-    }
-    backing_store_ = static_cast<TestableIndexedDBBackingStore*>(
-        bucket_context_handle_->backing_store());
-    lock_manager_ = bucket_context_handle_->lock_manager();
+    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
+    file_system_access_context_->Clone(
+        fsa_context.InitWithNewPipeAndPassReceiver());
+
+    bucket_context_ = std::make_unique<IndexedDBBucketContext>(
+        bucket_info, temp_dir_.GetPath(), IndexedDBBucketContext::Delegate(),
+        quota_manager_proxy_, base::SequencedTaskRunner::GetCurrentDefault(),
+        std::move(blob_storage_context), std::move(fsa_context),
+        base::DoNothing());
+    std::tie(std::ignore, std::ignore, data_loss_info_) =
+        bucket_context_->InitBackingStoreIfNeeded(/*create_if_missing=*/true);
+
+    backing_store_ = bucket_context_->backing_store();
   }
 
   std::vector<PartitionedLock> CreateDummyLock() {
     base::RunLoop loop;
     PartitionedLockHolder locks_receiver;
-    lock_manager_->AcquireLocks(
+    bucket_context_->lock_manager().AcquireLocks(
         {{{0, "01"}, PartitionedLockManager::LockType::kShared}},
         locks_receiver.AsWeakPtr(),
         base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
@@ -370,83 +273,17 @@ class IndexedDBBackingStoreTest : public testing::Test {
   }
 
   void DestroyFactoryAndBackingStore() {
-    lock_manager_ = nullptr;
     backing_store_ = nullptr;
-    bucket_context_handle_.Release();
-    idb_factory_.reset();
+    bucket_context_ = nullptr;
   }
 
   void TearDown() override {
     DestroyFactoryAndBackingStore();
-    if (idb_context_ && !idb_context_->IsInMemoryContext()) {
-      IndexedDBFactory* factory = idb_context_->GetIDBFactory();
-
-      // Loop through all open buckets, and force close them, and request the
-      // deletion of the leveldb state. Once the states are no longer around,
-      // delete all of the databases on disk.
-
-      for (const auto& bucket_id : factory->GetOpenBucketIdsForTesting()) {
-        base::RunLoop loop;
-        auto* leveldb_state = factory->GetBucketContextForTesting(bucket_id)
-                                  ->backing_store()
-                                  ->db()
-                                  ->leveldb_state();
-
-        base::WaitableEvent leveldb_close_event;
-        base::WaitableEventWatcher event_watcher;
-        leveldb_state->RequestDestruction(&leveldb_close_event);
-        event_watcher.StartWatching(
-            &leveldb_close_event,
-            base::BindLambdaForTesting(
-                [&](base::WaitableEvent*) { loop.Quit(); }),
-            base::SequencedTaskRunner::GetCurrentDefault());
-
-        idb_context_->ForceClose(
-            bucket_id,
-            storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
-            base::DoNothing());
-        loop.Run();
-        // There is a possible race in `leveldb_close_event` where the signaling
-        // thread is still in the WaitableEvent::Signal() method. To ensure that
-        // the other thread exits their Signal method, any method on the
-        // WaitableEvent can be called to acquire the internal lock (which will
-        // subsequently wait for the other thread to exit the Signal method).
-        EXPECT_TRUE(leveldb_close_event.IsSignaled());
-      }
-      // All leveldb databases are closed, and they can be deleted.
-      for (auto bucket_locator : idb_context_->GetAllBuckets()) {
-        base::test::TestFuture<bool> success;
-        idb_context_->DeleteForStorageKey(bucket_locator.storage_key,
-                                          success.GetCallback());
-        EXPECT_TRUE(success.Get());
-      }
-    }
     if (temp_dir_.IsValid())
       ASSERT_TRUE(temp_dir_.Delete());
-
-    // Wait until the context has fully destroyed.
-    scoped_refptr<base::SequencedTaskRunner> task_runner =
-        idb_context_->IDBTaskRunner();
-    idb_context_.reset();
-    {
-      base::RunLoop loop;
-      task_runner->PostTask(FROM_HERE, loop.QuitClosure());
-      loop.Run();
-    }
   }
 
-  TestableIndexedDBBackingStore* backing_store() { return backing_store_; }
-
-  // Cycle the idb runner to help clean up tasks, which allows for a clean
-  // shutdown of the leveldb database. This ensures that all file handles are
-  // released and the folder can be deleted on windows (which doesn't allow
-  // folders to be deleted when inside files are in use/exist).
-  void CycleIDBTaskRunner() {
-    base::RunLoop cycle_loop;
-    idb_context_->IDBTaskRunner()->PostTask(FROM_HERE,
-                                            cycle_loop.QuitClosure());
-    cycle_loop.Run();
-  }
+  IndexedDBBackingStore* backing_store() { return backing_store_; }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -456,12 +293,9 @@ class IndexedDBBackingStoreTest : public testing::Test {
   std::unique_ptr<MockFileSystemAccessContext> file_system_access_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  std::unique_ptr<IndexedDBContextImpl> idb_context_;
-  std::unique_ptr<TestIDBFactory> idb_factory_;
-  raw_ptr<PartitionedLockManager> lock_manager_ = nullptr;
 
-  IndexedDBBucketContextHandle bucket_context_handle_;
-  raw_ptr<TestableIndexedDBBackingStore> backing_store_ = nullptr;
+  std::unique_ptr<IndexedDBBucketContext> bucket_context_;
+  raw_ptr<IndexedDBBackingStore> backing_store_ = nullptr;
   IndexedDBDataLossInfo data_loss_info_;
 
   // Sample keys and values that are consistent.
@@ -606,8 +440,6 @@ class IndexedDBBackingStoreTestWithExternalObjects
   // the file path and UUID will change and thus aren't verified.
   bool CheckBlobInfoMatches(
       const std::vector<IndexedDBExternalObject>& reads) const {
-    DCHECK(idb_context_->IDBTaskRunner()->RunsTasksInCurrentSequence());
-
     if (external_objects_.size() != reads.size()) {
       EXPECT_EQ(external_objects_.size(), reads.size());
       return false;
@@ -653,8 +485,6 @@ class IndexedDBBackingStoreTestWithExternalObjects
 
   bool CheckBlobReadsMatchWrites(
       const std::vector<IndexedDBExternalObject>& reads) const {
-    DCHECK(idb_context_->IDBTaskRunner()->RunsTasksInCurrentSequence());
-
     if (blob_context_->writes().size() +
             file_system_access_context_->writes().size() !=
         reads.size()) {
@@ -685,8 +515,6 @@ class IndexedDBBackingStoreTestWithExternalObjects
   }
 
   bool CheckBlobWrites() {
-    DCHECK(idb_context_->IDBTaskRunner()->RunsTasksInCurrentSequence());
-
     size_t num_empty_blobs = 0;
     for (const auto& info : external_objects_) {
       if (info.object_type() == IndexedDBExternalObject::ObjectType::kFile &&
@@ -752,17 +580,20 @@ class IndexedDBBackingStoreTestWithExternalObjects
     return true;
   }
 
-  bool CheckBlobRemovals() const {
-    DCHECK(idb_context_->IDBTaskRunner()->RunsTasksInCurrentSequence());
+  void VerifyNumBlobsRemoved(int deleted_count) {
+#if DCHECK_IS_ON()
+    EXPECT_EQ(deleted_count + removed_blobs_count_,
+              backing_store()->NumBlobFilesDeletedForTesting());
+    removed_blobs_count_ += deleted_count;
+#endif
+  }
 
-    if (backing_store_->removals().size() != blob_context_->writes().size())
-      return false;
-    for (size_t i = 0; i < blob_context_->writes().size(); ++i) {
-      if (blob_context_->writes()[i].path != backing_store_->removals()[i]) {
-        return false;
-      }
+  void CheckFirstNBlobsRemoved(size_t deleted_count) {
+    VerifyNumBlobsRemoved(deleted_count);
+
+    for (size_t i = 0; i < deleted_count; ++i) {
+      EXPECT_FALSE(base::PathExists(blob_context_->writes()[i].path));
     }
-    return true;
   }
 
   std::vector<IndexedDBExternalObject>& external_objects() {
@@ -784,6 +615,9 @@ class IndexedDBBackingStoreTestWithExternalObjects
   std::vector<IndexedDBExternalObject> external_objects_;
 
   std::vector<std::string> blob_remote_uuids_;
+  // Number of blob deletions previously counted by a call to
+  // `VerifyNumBlobsRemoved()`.
+  int removed_blobs_count_ = 0;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -828,51 +662,42 @@ BlobWriteCallback CreateBlobWriteCallback(
 
 TEST_F(IndexedDBBackingStoreTest, PutGetConsistency) {
   base::RunLoop loop;
-  idb_context_->IDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        const IndexedDBKey key = key1_;
-        IndexedDBValue value = value1_;
-        {
-          IndexedDBBackingStore::Transaction transaction1(
-              backing_store()->AsWeakPtr(),
-              blink::mojom::IDBTransactionDurability::Relaxed,
-              blink::mojom::IDBTransactionMode::ReadWrite);
-          transaction1.Begin(CreateDummyLock());
-          IndexedDBBackingStore::RecordIdentifier record;
-          leveldb::Status s = backing_store()->PutRecord(&transaction1, 1, 1,
-                                                         key, &value, &record);
-          EXPECT_TRUE(s.ok());
-          bool succeeded = false;
-          EXPECT_TRUE(
-              transaction1.CommitPhaseOne(CreateBlobWriteCallback(&succeeded))
-                  .ok());
-          EXPECT_TRUE(succeeded);
-          EXPECT_TRUE(transaction1.CommitPhaseTwo().ok());
-        }
+  const IndexedDBKey key = key1_;
+  IndexedDBValue value = value1_;
+  {
+    IndexedDBBackingStore::Transaction transaction1(
+        backing_store()->AsWeakPtr(),
+        blink::mojom::IDBTransactionDurability::Relaxed,
+        blink::mojom::IDBTransactionMode::ReadWrite);
+    transaction1.Begin(CreateDummyLock());
+    IndexedDBBackingStore::RecordIdentifier record;
+    leveldb::Status s =
+        backing_store()->PutRecord(&transaction1, 1, 1, key, &value, &record);
+    EXPECT_TRUE(s.ok());
+    bool succeeded = false;
+    EXPECT_TRUE(
+        transaction1.CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
+    EXPECT_TRUE(succeeded);
+    EXPECT_TRUE(transaction1.CommitPhaseTwo().ok());
+  }
 
-        {
-          IndexedDBBackingStore::Transaction transaction2(
-              backing_store()->AsWeakPtr(),
-              blink::mojom::IDBTransactionDurability::Relaxed,
-              blink::mojom::IDBTransactionMode::ReadWrite);
-          transaction2.Begin(CreateDummyLock());
-          IndexedDBValue result_value;
-          EXPECT_TRUE(backing_store()
-                          ->GetRecord(&transaction2, 1, 1, key, &result_value)
-                          .ok());
-          bool succeeded = false;
-          EXPECT_TRUE(
-              transaction2.CommitPhaseOne(CreateBlobWriteCallback(&succeeded))
-                  .ok());
-          EXPECT_TRUE(succeeded);
-          EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
-          EXPECT_EQ(value.bits, result_value.bits);
-        }
-        loop.Quit();
-      }));
-  loop.Run();
-
-  CycleIDBTaskRunner();
+  {
+    IndexedDBBackingStore::Transaction transaction2(
+        backing_store()->AsWeakPtr(),
+        blink::mojom::IDBTransactionDurability::Relaxed,
+        blink::mojom::IDBTransactionMode::ReadWrite);
+    transaction2.Begin(CreateDummyLock());
+    IndexedDBValue result_value;
+    EXPECT_TRUE(backing_store()
+                    ->GetRecord(&transaction2, 1, 1, key, &result_value)
+                    .ok());
+    bool succeeded = false;
+    EXPECT_TRUE(
+        transaction2.CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
+    EXPECT_TRUE(succeeded);
+    EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
+    EXPECT_EQ(value.bits, result_value.bits);
+  }
 }
 
 TEST_P(IndexedDBBackingStoreTestWithExternalObjects, PutGetConsistency) {
@@ -948,7 +773,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, PutGetConsistency) {
 
   // Finish up transaction 3, verifying blob deletes.
   EXPECT_TRUE(transaction3->CommitPhaseTwo().ok());
-  EXPECT_TRUE(CheckBlobRemovals());
+  CheckFirstNBlobsRemoved(blob_context_->writes().size());
 
   // Clean up on the IDB sequence.
   transaction1.reset();
@@ -1011,7 +836,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
   // Verify lack of blob removals.
-  ASSERT_EQ(0UL, backing_store()->removals().size());
+  VerifyNumBlobsRemoved(0);
 
   // Clean up on the IDB sequence.
   transaction1.reset();
@@ -1043,7 +868,6 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
     // Reset from previous iteration.
     blob_context_->ClearWrites();
     file_system_access_context_->ClearWrites();
-    backing_store()->ClearRemovals();
 
     std::vector<IndexedDBValue> values = {
         IndexedDBValue("value0", {external_objects[0]}),
@@ -1104,9 +928,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
     EXPECT_TRUE(transaction2->CommitPhaseTwo().ok());
 
     // Verify blob removals.
-    ASSERT_EQ(2UL, backing_store()->removals().size());
-    EXPECT_EQ(blob_context_->writes()[1].path, backing_store()->removals()[0]);
-    EXPECT_EQ(blob_context_->writes()[2].path, backing_store()->removals()[1]);
+    CheckFirstNBlobsRemoved(2U);
 
     // Clean up on the IDB sequence.
     transaction1.reset();
@@ -1138,7 +960,6 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     // Reset from previous iteration.
     blob_context_->ClearWrites();
     file_system_access_context_->ClearWrites();
-    backing_store()->ClearRemovals();
 
     std::vector<IndexedDBValue> values = {
         IndexedDBValue("value0", {external_objects[0]}),
@@ -1197,7 +1018,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     EXPECT_TRUE(transaction2->CommitPhaseTwo().ok());
 
     // Verify blob removals.
-    EXPECT_EQ(0UL, backing_store()->removals().size());
+    VerifyNumBlobsRemoved(0U);
 
     // Clean on the IDB sequence.
     transaction1.reset();
@@ -1229,7 +1050,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects,
 
   EXPECT_TRUE(succeeded);
   EXPECT_TRUE(CheckBlobWrites());
-  EXPECT_EQ(0U, backing_store()->removals().size());
+  VerifyNumBlobsRemoved(0);
 
   // Initiate transaction2.
   std::unique_ptr<IndexedDBBackingStore::Transaction> transaction2 =
@@ -1251,14 +1072,14 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects,
   // Verify transaction2 phase one completed.
   EXPECT_TRUE(succeeded);
   EXPECT_TRUE(CheckBlobWrites());
-  EXPECT_EQ(0U, backing_store()->removals().size());
+  VerifyNumBlobsRemoved(0);
 
   // Finalize both transactions.
   EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
-  EXPECT_EQ(0U, backing_store()->removals().size());
+  VerifyNumBlobsRemoved(0);
 
   EXPECT_TRUE(transaction2->CommitPhaseTwo().ok());
-  EXPECT_EQ(0U, backing_store()->removals().size());
+  VerifyNumBlobsRemoved(0);
 
   // Clean up on the IDB sequence.
   transaction1.reset();
@@ -1330,7 +1151,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
 
   EXPECT_TRUE(succeeded);
   EXPECT_TRUE(transaction3->CommitPhaseTwo().ok());
-  EXPECT_EQ(0U, backing_store()->removals().size());
+  VerifyNumBlobsRemoved(0);
   for (const IndexedDBExternalObject& external_object :
        read_result_value.external_objects) {
     if (external_object.release_callback())
@@ -1347,8 +1168,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
     for (int i = 3; i < IndexedDBBackingStore::kMaxJournalCleanRequests; ++i) {
       backing_store()->StartJournalCleaningTimer();
     }
-    EXPECT_NE(0U, backing_store()->removals().size());
-    EXPECT_TRUE(CheckBlobRemovals());
+    CheckFirstNBlobsRemoved(3);
 #if DCHECK_IS_ON()
     EXPECT_EQ(3, backing_store()->NumBlobFilesDeletedForTesting());
 #endif
@@ -1439,15 +1259,10 @@ TEST_F(IndexedDBBackingStoreTest, HighIds) {
     EXPECT_TRUE(succeeded);
     EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
   }
-
-  CycleIDBTaskRunner();
 }
 
 // Make sure that other invalid ids do not crash.
 TEST_F(IndexedDBBackingStoreTest, InvalidIds) {
-  base::RunLoop loop;
-  idb_context_->IDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
         const IndexedDBKey key = key1_;
         IndexedDBValue value = value1_;
 
@@ -1516,15 +1331,9 @@ TEST_F(IndexedDBBackingStoreTest, InvalidIds) {
             &transaction1, database_id, KeyPrefix::kInvalidId, index_id, key,
             &new_primary_key);
         EXPECT_FALSE(s.ok());
-        loop.Quit();
-      }));
-  loop.Run();
 }
 
 TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
-  base::RunLoop loop;
-  idb_context_->IDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
         const std::u16string database_name(u"db1");
         int64_t database_id;
         const int64_t version = 9;
@@ -1601,17 +1410,6 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
           EXPECT_EQ(unique, index.unique);
           EXPECT_EQ(multi_entry, index.multi_entry);
         }
-        loop.Quit();
-      }));
-  loop.Run();
-
-  {
-    // Cycle the idb runner to help clean up tasks for the Windows tests.
-    base::RunLoop cycle_loop;
-    idb_context_->IDBTaskRunner()->PostTask(FROM_HERE,
-                                            cycle_loop.QuitClosure());
-    cycle_loop.Run();
-  }
 }
 
 TEST_F(IndexedDBBackingStoreTest, GetDatabaseNames) {
@@ -1740,7 +1538,7 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
       blink::mojom::AncestorChainBit::kCrossSite);
   bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
   bucket_locator.is_default = true;
-  const base::FilePath path_base = idb_context_->GetDataPath(bucket_locator);
+  const base::FilePath path_base = temp_dir_.GetPath();
   ASSERT_FALSE(path_base.empty());
 
   // File not found.
@@ -2385,16 +2183,11 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   EXPECT_TRUE(transaction2->CommitPhaseTwo().ok());
 
   // Verify blob removals.
-  ASSERT_EQ(4UL, backing_store()->removals().size());
-  EXPECT_EQ(blob_context_->writes()[0].path, backing_store()->removals()[0]);
-  EXPECT_EQ(blob_context_->writes()[1].path, backing_store()->removals()[1]);
-  EXPECT_EQ(blob_context_->writes()[2].path, backing_store()->removals()[2]);
-  EXPECT_EQ(blob_context_->writes()[3].path, backing_store()->removals()[3]);
+  CheckFirstNBlobsRemoved(4);
 
   // Clean up on the IDB sequence.
   transaction2.reset();
   task_environment_.RunUntilIdle();
 }
 
-}  // namespace indexed_db_backing_store_unittest
 }  // namespace content

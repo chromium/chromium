@@ -182,7 +182,7 @@ void IDBFactory::DidGetDatabaseInfo(
     return;
   }
 
-  if (error) {
+  if (error->error_code != mojom::blink::IDBException::kNoError) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         static_cast<DOMExceptionCode>(error->error_code),
         error->error_message));

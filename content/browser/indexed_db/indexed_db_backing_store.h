@@ -691,6 +691,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   void CleanRecoveryJournalIgnoreReturn();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBBackingStoreTestWithExternalObjects,
+                           ActiveBlobJournal);
+
   friend class AutoDidCommitTransaction;
 
   leveldb::Status MigrateToV1(LevelDBWriteBatch* write_batch);

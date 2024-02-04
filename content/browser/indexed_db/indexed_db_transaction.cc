@@ -299,7 +299,7 @@ bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
   CHECK_EQ(state_, STARTED);
   for (const PartitionedLockId& lock_id : lock_ids_) {
     std::set<PartitionedLockHolder*> blocked_requests =
-        bucket_context_->lock_manager()->GetQueuedRequests(lock_id);
+        bucket_context_->lock_manager().GetQueuedRequests(lock_id);
     if (std::any_of(blocked_requests.begin(), blocked_requests.end(),
                     [&](PartitionedLockHolder* blocked_lock_holder) {
                       auto* lock_request_data =

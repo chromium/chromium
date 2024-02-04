@@ -159,7 +159,7 @@ IndexedDBBackingStore* IndexedDBDatabase::backing_store() {
   return bucket_context_->backing_store();
 }
 
-PartitionedLockManager* IndexedDBDatabase::lock_manager() {
+PartitionedLockManager& IndexedDBDatabase::lock_manager() {
   return bucket_context_->lock_manager();
 }
 
@@ -168,7 +168,7 @@ void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
     std::vector<PartitionedLockManager::PartitionedLockRequest>&
         lock_requests) {
   std::vector<PartitionedLockId> blocked_lock_ids =
-      lock_manager()->GetUnacquirableLocks(lock_requests);
+      lock_manager().GetUnacquirableLocks(lock_requests);
 
   if (blocked_lock_ids.empty()) {
     return;
@@ -213,7 +213,7 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
 
   RequireBlockingTransactionClientsToBeActive(transaction, lock_requests);
 
-  lock_manager()->AcquireLocks(
+  lock_manager().AcquireLocks(
       std::move(lock_requests),
       transaction->mutable_locks_receiver()->AsWeakPtr(),
       base::BindOnce(&IndexedDBTransaction::Start, transaction->AsWeakPtr()));

@@ -74,7 +74,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   const Identifier& identifier() const { return identifier_; }
   IndexedDBBackingStore* backing_store();
-  PartitionedLockManager* lock_manager();
+  PartitionedLockManager& lock_manager();
 
   int64_t id() const { return metadata_.id; }
   const std::u16string& name() const { return metadata_.name; }

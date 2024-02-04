@@ -211,7 +211,7 @@ void OnGotDatabaseNames(
     std::unique_ptr<RequestDatabaseNamesCallback> request_callback,
     Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions,
     mojom::blink::IDBErrorPtr error) {
-  if (error) {
+  if (error->error_code != mojom::blink::IDBException::kNoError) {
     request_callback->sendFailure(
         protocol::Response::ServerError("Could not obtain database names."));
     return;

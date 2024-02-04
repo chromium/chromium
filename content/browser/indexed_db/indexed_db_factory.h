@@ -41,13 +41,10 @@
 
 namespace base {
 class FilePath;
-class SequencedTaskRunner;
 }  // namespace base
 
 namespace content {
-class IndexedDBBucketContextHandle;
 class IndexedDBContextImpl;
-class TransactionalLevelDBDatabase;
 
 // This class has a 1:1 relationship with `IndexedDBContextImpl`.
 // TODO(crbug.com/1474996): merge with `IndexedDBContextImpl`.
@@ -67,6 +64,11 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
   // blink::mojom::IDBFactory implementation:
+  //
+  // The `IndexedDBFactory` is only an IDBFactory implementation for the case of
+  // a missing bucket, i.e. where the Quota system failed to retrieve a bucket.
+  // Hence, these implementations only return errors. In the normal case,
+  // the IndexedDBBucketContext is the IDBFactory endpoint.
   void GetDatabaseInfo(GetDatabaseInfoCallback callback) override;
   void Open(mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
                 factory_client,
@@ -106,15 +108,6 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
   IndexedDBBucketContext* GetBucketContextForTesting(
       const storage::BucketId& id) const;
 
-  std::tuple<IndexedDBBucketContextHandle,
-             leveldb::Status,
-             IndexedDBDatabaseError,
-             IndexedDBDataLossInfo,
-             /*was_cold_open=*/bool>
-  GetOrCreateBucketContext(const storage::BucketInfo& bucket,
-                           const base::FilePath& data_directory,
-                           bool create_if_missing);
-
   // Finishes filling in `info` with data relevant to idb-internals and passes
   // the result back via `result`. The bucket is described by
   // `info->bucket_locator`.
@@ -125,65 +118,17 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
   void CompactBackingStoreForTesting(
       const storage::BucketLocator& bucket_locator);
 
- protected:
-  // Used by unittests to allow subclassing of IndexedDBBackingStore.
-  virtual std::unique_ptr<IndexedDBBackingStore> CreateBackingStore(
-      IndexedDBBackingStore::Mode backing_store_mode,
-      const storage::BucketLocator& bucket_locator,
-      const base::FilePath& blob_path,
-      std::unique_ptr<TransactionalLevelDBDatabase> db,
-      IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
-      IndexedDBBackingStore::ReportOutstandingBlobsCallback
-          report_outstanding_blobs,
-      scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
-
  private:
-  // The data structure that stores everything bound to the receiver. This will
-  // be stored together with the receiver in the `mojo::ReceiverSet`.
-  struct ReceiverContext {
-    ReceiverContext(
-        std::optional<storage::BucketInfo> bucket,
-        mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-            client_state_checker_remote,
-        base::UnguessableToken token);
+  friend class IndexedDBFactoryTest;
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithStoragePartitioning,
+                           BasicFactoryCreationAndTearDown);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, TooLongOrigin);
 
-    ~ReceiverContext();
-
-    ReceiverContext(const ReceiverContext&) = delete;
-    ReceiverContext(ReceiverContext&&) noexcept;
-    ReceiverContext& operator=(const ReceiverContext&) = delete;
-    ReceiverContext& operator=(ReceiverContext&&) = delete;
-
-    // The `bucket` might be null if `QuotaDatabase::GetDatabase()` fails
-    // during the IndexedDB binding.
-    std::optional<storage::BucketInfo> bucket;
-
-    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote;
-
-    base::UnguessableToken client_token;
-  };
-
-  // `path_base` is the directory that will contain the database directory, the
-  // blob directory, and any data loss info. `database_path` is the directory
-  // for the leveldb database, and `blob_path` is the directory to store blob
-  // files. If `path_base` is empty, then an in-memory database is opened.
-  std::tuple<std::unique_ptr<IndexedDBBackingStore>,
-             leveldb::Status,
-             IndexedDBDataLossInfo,
-             bool /* is_disk_full */>
-  OpenAndVerifyIndexedDBBackingStore(
-      const storage::BucketLocator& bucket_locator,
-      base::FilePath data_directory,
-      base::FilePath database_path,
-      base::FilePath blob_path,
-      PartitionedLockManager* lock_manager,
-      bool is_first_attempt,
-      bool create_if_missing);
+  IndexedDBBucketContext& GetOrCreateBucketContext(
+      const storage::BucketInfo& bucket,
+      const base::FilePath& data_directory);
 
   void HandleBackingStoreFailure(const storage::BucketLocator& bucket_locator);
-  void HandleBackingStoreCorruption(storage::BucketLocator bucket_locator,
-                                    const IndexedDBDatabaseError& error);
 
   //////////////////////////////////////////////////////
   // Callbacks passed to bucket-sequence classes.
@@ -195,6 +140,9 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
   void OnDatabaseError(const storage::BucketLocator& bucket_locator,
                        leveldb::Status s,
                        const std::string& message);
+
+  void HandleBackingStoreCorruption(storage::BucketLocator bucket_locator,
+                                    const IndexedDBDatabaseError& error);
 
   void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
 
@@ -216,9 +164,8 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
   std::map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>
       bucket_contexts_;
 
-  std::set<storage::BucketLocator> backends_opened_since_startup_;
-
-  mojo::ReceiverSet<blink::mojom::IDBFactory, ReceiverContext> receivers_;
+  // See comment above IDBFactory overrides.
+  mojo::ReceiverSet<blink::mojom::IDBFactory> receivers_;
 
   // Weak pointers from this factory are invalidated when `context_` is
   // destroyed.

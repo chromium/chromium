@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/indexed_db_database.h"
 
 #include <stdint.h>
+
 #include <set>
 #include <string>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
-#include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
@@ -68,13 +68,6 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         quota_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
-    indexed_db_context_ = std::make_unique<IndexedDBContextImpl>(
-        temp_dir_.GetPath(), quota_manager_proxy_,
-        /*blob_storage_context=*/mojo::NullRemote(),
-        /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        base::SequencedTaskRunner::GetCurrentDefault());
-
     IndexedDBBucketContext::Delegate delegate;
     delegate.on_fatal_error = base::BindRepeating(
         &IndexedDBDatabaseTest::OnFatalError, weak_factory_.GetWeakPtr());
@@ -83,13 +76,13 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         weak_factory_.GetWeakPtr());
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketInfo(), std::make_unique<PartitionedLockManager>(),
-        std::move(delegate), std::make_unique<IndexedDBFakeBackingStore>(),
+        storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),
         quota_manager_proxy_,
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
 
+    bucket_context_->InitBackingStoreIfNeeded(true);
     db_ = bucket_context_->AddDatabase(
         u"db", std::make_unique<IndexedDBDatabase>(
                    u"db", *bucket_context_, IndexedDBDatabase::Identifier()));
@@ -114,7 +107,6 @@ class IndexedDBDatabaseTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBBucketContext> bucket_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
@@ -248,11 +240,10 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 0UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
-  bool deleted = false;
+  base::RunLoop run_loop;
   MockFactoryClient request2;
-  db_->ScheduleDeleteDatabase(
-      std::make_unique<ThunkFactoryClient>(request2),
-      base::BindLambdaForTesting([&]() { deleted = true; }));
+  db_->ScheduleDeleteDatabase(std::make_unique<ThunkFactoryClient>(request2),
+                              run_loop.QuitClosure());
   RunPostedTasks();
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
@@ -268,10 +259,9 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
   db_->ForceCloseAndRunTasks();
   db_ = nullptr;
 
-  RunPostedTasks();
+  run_loop.Run();
   EXPECT_FALSE(db_);
 
-  EXPECT_TRUE(deleted);
   EXPECT_TRUE(request2.success_called());
 }
 
@@ -358,18 +348,16 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 0UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
-  bool deleted = false;
+  base::RunLoop run_loop;
   MockFactoryClient request2;
-  db_->ScheduleDeleteDatabase(
-      std::make_unique<ThunkFactoryClient>(request2),
-      base::BindLambdaForTesting([&]() { deleted = true; }));
+  db_->ScheduleDeleteDatabase(std::make_unique<ThunkFactoryClient>(request2),
+                              run_loop.QuitClosure());
   RunPostedTasks();
-  EXPECT_FALSE(deleted);
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
   db_->ForceCloseAndRunTasks();
   db_ = nullptr;
-  RunPostedTasks();
+  run_loop.Run();
   EXPECT_FALSE(db_);
-  EXPECT_TRUE(deleted);
   EXPECT_FALSE(request2.blocked_called());
   EXPECT_TRUE(request2.success_called());
 }
@@ -446,13 +434,11 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   db_->ScheduleOpenConnection(std::move(connection2));
   RunPostedTasks();
 
-  bool deleted = false;
+  base::RunLoop run_loop;
   auto request3 = std::make_unique<MockFactoryClient>();
-  db_->ScheduleDeleteDatabase(
-      std::move(request3),
-      base::BindLambdaForTesting([&]() { deleted = true; }));
+  db_->ScheduleDeleteDatabase(std::move(request3), run_loop.QuitClosure());
   RunPostedTasks();
-  EXPECT_FALSE(deleted);
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
 
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
@@ -460,8 +446,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
 
   db_->ForceCloseAndRunTasks();
   db_ = nullptr;
-  RunPostedTasks();
-  EXPECT_TRUE(deleted);
+  run_loop.Run();
 }
 
 leveldb::Status DummyOperation(IndexedDBTransaction* transaction) {
@@ -494,12 +479,14 @@ class IndexedDBDatabaseOperationTest : public IndexedDBDatabaseTest {
     EXPECT_TRUE(request_.connection());
     transaction_ = request_.connection()->CreateVersionChangeTransaction(
         transaction_id, /*scope=*/std::set<int64_t>(),
-        new IndexedDBFakeBackingStore::FakeTransaction(commit_success_));
+        new FakeTransaction(commit_success_,
+                            blink::mojom::IDBTransactionMode::VersionChange,
+                            bucket_context_->backing_store()->AsWeakPtr()));
 
     std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
         {{GetDatabaseLockId(db_->metadata().name),
           PartitionedLockManager::LockType::kExclusive}};
-    db_->lock_manager()->AcquireLocks(
+    db_->lock_manager().AcquireLocks(
         std::move(lock_requests),
         transaction_->mutable_locks_receiver()->AsWeakPtr(),
         base::BindOnce(&IndexedDBTransaction::Start,
