@@ -139,6 +139,7 @@ void LegacyRenderWidgetHostHWND::OnFinalMessage(HWND hwnd) {
 
   // Re-enable flicks for just a moment
   base::win::EnableFlicks(hwnd);
+
   delete this;
 }
 
@@ -149,25 +150,20 @@ LegacyRenderWidgetHostHWND::LegacyRenderWidgetHostHWND(
       did_return_uia_object_(false) {}
 
 LegacyRenderWidgetHostHWND::~LegacyRenderWidgetHostHWND() {
-  // WindowImpl will clean up the hwnd value on WM_NCDESTROY.
-  DCHECK(!hwnd());
+  DCHECK(!::IsWindow(hwnd()));
 }
 
 bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
   // Need to use weak_ptr to guard against `this` from being deleted by
-  // Create(), which used to be called in the constructor and caused
+  // Base::Create(), which used to be called in the constructor and caused
   // heap-use-after-free crash (https://crbug.com/1194694).
   auto weak_ptr = weak_factory_.GetWeakPtr();
-
-  set_window_style(WS_CHILDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-  set_window_ex_style(WS_EX_TRANSPARENT);
-  set_window_class_name(ui::kLegacyRenderWidgetHostHwnd);
-  set_window_name(L"Chrome Legacy Window");
-  gfx::Rect rect(0, 0);
-  Init(parent, rect);
-
+  RECT rect = {0};
+  Base::Create(parent, rect, L"Chrome Legacy Window",
+               WS_CHILDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+               WS_EX_TRANSPARENT);
   if (!weak_ptr) {
-    // Create() runs nested windows message loops that could end up
+    // Base::Create() runs nested windows message loops that could end up
     // deleting `this`. Therefore, upon returning false here, `this` is already
     // deleted.
     return false;
@@ -305,20 +301,22 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
 // with capture changes.
 LRESULT LegacyRenderWidgetHostHWND::OnKeyboardRange(UINT message,
                                                     WPARAM w_param,
-                                                    LPARAM l_param) {
+                                                    LPARAM l_param,
+                                                    BOOL& handled) {
   LRESULT ret = 0;
   if (GetWindowEventTarget(GetParent())) {
     bool msg_handled = false;
     ret = GetWindowEventTarget(GetParent())->HandleKeyboardMessage(
         message, w_param, l_param, &msg_handled);
-    msg_handled_ = msg_handled;
+    handled = msg_handled;
   }
   return ret;
 }
 
 LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
                                                  WPARAM w_param,
-                                                 LPARAM l_param) {
+                                                 LPARAM l_param,
+                                                 BOOL& handled) {
   if (message == WM_MOUSEMOVE) {
     if (!mouse_tracking_enabled_) {
       mouse_tracking_enabled_ = true;
@@ -348,16 +346,15 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
     bool msg_handled = false;
     ret = GetWindowEventTarget(GetParent())->HandleMouseMessage(
         message, w_param, l_param, &msg_handled);
-
-    msg_handled_ = msg_handled;
+    handled = msg_handled;
     // If the parent did not handle non client mouse messages, we call
     // DefWindowProc on the message with the parent window handle. This
     // ensures that WM_SYSCOMMAND is generated for the parent and we are
     // out of the picture.
-    if (!msg_handled_ &&
+    if (!handled &&
         (message >= WM_NCMOUSEMOVE && message <= WM_NCXBUTTONDBLCLK)) {
       ret = ::DefWindowProc(GetParent(), message, w_param, l_param);
-      msg_handled_ = TRUE;
+      handled = TRUE;
     }
   }
   return ret;
