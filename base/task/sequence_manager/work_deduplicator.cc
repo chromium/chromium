@@ -41,6 +41,7 @@ WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::OnDelayedWorkRequested()
     const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   // This must be called on the associated thread or this read is racy.
+  recordreplay::AutoOrderedLock ordered(state_ordered_lock_id_);
   return state_.load() == State::kIdle ? ShouldScheduleWork::kScheduleImmediate
                                        : ShouldScheduleWork::kNotNeeded;
 }
