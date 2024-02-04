@@ -9360,8 +9360,9 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsOnFocusWithoutClick) {
   external_delegate()->CheckSuggestionCount(form.fields[3].global_id(), 1);
 }
 
-// Tests that compose suggestions are queried for textareas if Autofill does not
-// have suggestions of its own and the OS not Android, iOS or ChromeOS.
+// Tests that compose suggestions are queried and shown for textareas if
+// Autofill does not have suggestions of its own and the OS is not Android, iOS
+// or ChromeOS.
 TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
   MockAutofillComposeDelegate compose_delegate;
   ON_CALL(autofill_client_, GetComposeDelegate)
@@ -9374,10 +9375,16 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
   form.action = GURL("https://myform.com/submit.html");
   FormsSeen({form});
 
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .Times(0);
   EXPECT_CALL(compose_delegate,
-              ShouldOfferComposePopup(Property(
-                  &FormFieldData::global_id, Eq(form.fields[0].global_id()))));
+              ShouldOfferComposePopup(Property(&FormFieldData::global_id,
+                                               Eq(form.fields[0].global_id()))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(compose_delegate, HasSavedState(form.fields[0].global_id()))
+      .WillOnce(Return(true));
   GetAutofillSuggestions(form, form.fields[0]);
+  external_delegate()->CheckSuggestionCount(form.fields[0].global_id(), 1);
 }
 
 // Test param indicates if there is an active screen reader.

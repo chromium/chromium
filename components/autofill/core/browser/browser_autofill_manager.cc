@@ -999,7 +999,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   auto ShouldOfferSingleFieldFormFill = [&] {
-    if (!should_offer_other_suggestions) {
+    if (!suggestions.empty() || !should_offer_other_suggestions) {
       return false;
     }
 
