@@ -68,7 +68,7 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
 + (NSString*)saveMaskedCreditCard;
 
-// Saves a masked credit which is enrolled to create a Virtual Card.
+// Saves a masked credit card which is enrolled to create a Virtual Card.
 // No current CVC auth required.
 // Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
 + (NSString*)saveMaskedCreditCardEnrolledInVirtualCard;

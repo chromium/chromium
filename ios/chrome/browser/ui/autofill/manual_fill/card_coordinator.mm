@@ -133,6 +133,10 @@
   }];
 }
 
+- (void)openURL:(CrURL*)url {
+  // TODO: b/322521955 Open the URL.
+}
+
 #pragma mark - PersonalDataManagerObserver
 
 - (void)onPersonalDataChanged {

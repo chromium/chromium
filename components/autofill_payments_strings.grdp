@@ -854,6 +854,11 @@
       Virtual card turned on
     </message>
   </if>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_VIRTUAL_CARD_INSTRUCTION_TEXT" desc="Text displayed in the manual fallback instructing users on how to add their virtual card details to checkout.">
+      Tap virtual card details to add them to checkout.
+    </message>
+  </if>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for filling in CVC on a virtual card that is saved on file of a merchant website.">
       Use CVC for this virtual card
   </message>

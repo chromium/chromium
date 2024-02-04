@@ -93,7 +93,7 @@ const CGFloat kIPHVerticalOffset = -5;
 @property(nonatomic, strong)
     ManualFillAllPasswordCoordinator* allPasswordCoordinator;
 
-// Coordinator in charge of the keyboar autofill branding.
+// Coordinator in charge of the keyboard autofill branding.
 @property(nonatomic, strong) BrandingCoordinator* brandingCoordinator;
 
 // The Mediator for the input accessory view controller.

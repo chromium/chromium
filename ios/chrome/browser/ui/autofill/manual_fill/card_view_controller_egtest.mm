@@ -6,6 +6,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -105,9 +106,16 @@ BOOL WaitForKeyboardToAppear() {
   [super tearDown];
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnableVirtualCards);
+  return config;
+}
+
 #pragma mark - Tests
 
-// Tests that the credit card view butotn is absent when there are no cards
+// Tests that the credit card view button is absent when there are no cards
 // available.
 - (void)testCreditCardsButtonAbsentWhenNoCreditCardsAvailable {
   // Bring up the keyboard.
@@ -159,6 +167,38 @@ BOOL WaitForKeyboardToAppear() {
   // action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackManageCreditCardsMatcher()]
       assertWithMatcher:grey_interactable()];
+}
+
+// Tests that the manual fallback view shows both a virtual card and the
+// original card for a credit card with a virtual card status of enrolled.
+- (void)testManualFallbackShowsVirtualCards {
+  // Create & save credit card enrolled in virtual card program.
+  [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Tap on the credit card icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+      performAction:grey_tap()];
+
+  // Assert presence of virtual card.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          @"Mastercard \nVirtual card")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Scroll down to show original card.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
+
+  // Assert presence of original card.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Mastercard ")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Clear server cards.
+  [AutofillAppInterface clearAllServerDataForTesting];
 }
 
 // Tests that the "Manage Credit Cards..." action works.

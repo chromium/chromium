@@ -120,9 +120,11 @@ source_set("manual_fill_ui") {
   ]
   deps = [
     "//base",
+    "//components/autofill/core/browser",
     "//components/google/core/common",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/net/model:crurl",
