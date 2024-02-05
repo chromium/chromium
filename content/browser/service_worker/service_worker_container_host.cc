@@ -651,6 +651,7 @@ ServiceWorkerContainerHost::CreateControllerServiceWorkerInfo() {
       controller()->fetch_handler_bypass_option();
   controller_info->sha256_script_checksum =
       controller()->sha256_script_checksum();
+  controller_info->need_router_evaluate = controller()->NeedRouterEvaluate();
 
   if (controller()->router_evaluator()) {
     controller_info->router_data = blink::mojom::ServiceWorkerRouterData::New();
