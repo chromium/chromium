@@ -42,7 +42,7 @@ class TestBrowserThread;
 // To synchronously run tasks from the shared message loop:
 //
 // ... until there are no undelayed tasks in the shared message loop:
-//    base::RunLoop::RunUntilIdle();
+//    base::RunLoop().RunUntilIdle();
 //
 // ... until there are no undelayed tasks in the shared message loop, in
 // ThreadPool (excluding tasks not posted from the shared message loop's thread
