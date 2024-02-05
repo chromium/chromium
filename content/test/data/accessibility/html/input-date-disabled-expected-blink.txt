@@ -18,4 +18,3 @@ rootWebArea
 ++++++++++++++spinButton name='Year' placeholder='yyyy' restriction=disabled valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++staticText name='yyyy'
 ++++++++++++++++++inlineTextBox name='yyyy'
-++++++++++popUpButton ignored invisible

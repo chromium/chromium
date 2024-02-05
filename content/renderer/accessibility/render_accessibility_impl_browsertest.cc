@@ -422,8 +422,8 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
   LoadHTMLAndRefreshAccessibilityTree(R"HTML(
       <body>
         <div role="group" id="A">
-          <div role="group" id="B">
-            <div role="group" id="C" style="visibility: visible">
+          <div role="group" id="B" lang="en-US">
+            <div role="group" id="C" style="visibility: visible" lang="fr-CA">
             </div>
           </div>
         </div>
@@ -470,9 +470,9 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   // reparented to it.
   LoadHTMLAndRefreshAccessibilityTree(R"HTML(
       <body>
-        <div role="group" id="A">
-          <div role="group" id="B" style="visibility: hidden">
-            <div role="group" id="C" style="visibility: visible">
+        <div role="group" id="A" aria-describedby="B">
+          <div role="group" id="B" style="visibility: hidden" lang="en-US">
+            <div role="group" id="C" style="visibility: visible" lang="fr-CA">
             </div>
           </div>
         </div>

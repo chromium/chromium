@@ -8,4 +8,3 @@ rootWebArea focusable
 ++++++iframe
 ++++++++rootWebArea focusable
 ++++++++++genericContainer ignored
-++++++++++++genericContainer ignored invisible

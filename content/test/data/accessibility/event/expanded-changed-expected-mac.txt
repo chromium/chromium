@@ -1,2 +1,5 @@
+AXTitleChanged on AXGroup AXDescription='list item 1'
+AXTitleChanged on AXGroup AXDescription='list item 2'
+AXTitleChanged on AXGroup AXDescription='list item 3'
 === Start Continuation ===
 AXExpandedChanged on AXLink AXDescription='Toggle'

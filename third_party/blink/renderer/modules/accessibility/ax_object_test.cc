@@ -370,9 +370,9 @@ TEST_F(AccessibilityTest, UnignoredChildren) {
 
 TEST_F(AccessibilityTest, SimpleTreeNavigation) {
   SetBodyInnerHTML(R"HTML(<input id="input" type="text" value="value">
-                   <div id="ignored_a" aria-hidden="true"></div>
+                   <div id="ignored_a" aria-hidden="true" lang="en-US"></div>
                    <p id="paragraph">hello<br id="br">there</p>
-                   <span id="ignored_b" aria-hidden="true"></span>
+                   <span id="ignored_b" aria-hidden="true" lang="fr-CA"></span>
                    <button id="button">button</button>)HTML");
 
   AXObject* body = GetAXBodyObject();

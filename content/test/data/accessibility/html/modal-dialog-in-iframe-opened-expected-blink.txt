@@ -6,7 +6,6 @@ rootWebArea
 ++++++iframe
 ++++++++rootWebArea
 ++++++++++genericContainer ignored invisible
-++++++++++++genericContainer ignored invisible
-++++++++++++++dialog
-++++++++++++++++staticText name='Text in the dialog.'
-++++++++++++++++++inlineTextBox name='Text in the dialog.'
+++++++++++++dialog
+++++++++++++++staticText name='Text in the dialog.'
+++++++++++++++++inlineTextBox name='Text in the dialog.'

@@ -3055,6 +3055,13 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   if (IsMockObject()) {
     CHECK(parent_) << "Mock object missing parent: " << ToString(true, true);
     parent_->UpdateCachedAttributeValuesIfNeeded();
+    if (IsDetached()) {
+      // This object can become detached when parents update their values.
+      cached_is_ignored_ = true;
+      cached_is_ignored_but_included_in_tree_ = false;
+      return;
+    }
+    CHECK(!IsMissingParent());
   }
 
   const ComputedStyle* style = GetComputedStyle();
@@ -3968,7 +3975,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
 
   // Always pass through Line Breaking objects, this is necessary to
   // detect paragraph edges, which are defined as hard-line breaks.
-  if (IsLineBreakingObject()) {
+  if (IsLineBreakingObject() && IsVisible()) {
     return true;
   }
 

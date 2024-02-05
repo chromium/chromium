@@ -12,7 +12,9 @@
 namespace blink {
 
 // Friendly output of a subtree, useful for debugging.
-std::string TreeToStringHelper(const AXObject* obj, bool verbose = true);
+std::string TreeToStringHelper(const AXObject* obj,
+                               int indent = 2,
+                               bool verbose = true);
 std::string TreeToStringWithMarkedObjectHelper(const AXObject* obj,
                                                const AXObject* marked_object,
                                                bool verbose = true);

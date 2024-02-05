@@ -1,8 +1,6 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++listBox ignored invisible
-++++++listBox ignored invisible
 ++++++genericContainer ignored invisible
 ++++++++disclosureTriangle ignored invisible
 ++++++button collapsed name='Button pointing to hidden popover'

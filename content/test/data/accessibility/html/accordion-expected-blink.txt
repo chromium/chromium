@@ -15,13 +15,11 @@ rootWebArea
 ++++++++++paragraph
 ++++++++++++staticText name='Accordion Section #2'
 ++++++++++++++inlineTextBox name='Accordion Section #2'
-++++++region ignored invisible
 ++++++heading name='Accordion Section #3'
 ++++++++button collapsed name='Accordion Section #3' controlsIds=
 ++++++++++paragraph
 ++++++++++++staticText name='Accordion Section #3'
 ++++++++++++++inlineTextBox name='Accordion Section #3'
-++++++region ignored invisible
 ++++++heading name='Accordion Section #4'
 ++++++++button expanded name='Accordion Section #4' restriction=disabled
 ++++++++++paragraph

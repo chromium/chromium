@@ -1,9 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++paragraph ignored invisible
-++++++++staticText name='visible link'
-++++++++++inlineTextBox name='visible link'
-++++++paragraph ignored invisible
-++++++++staticText name='visible link'
-++++++++++inlineTextBox name='visible link'
+++++++staticText name='visible link'
+++++++++inlineTextBox name='visible link'
+++++++staticText name='visible link'
+++++++++inlineTextBox name='visible link'

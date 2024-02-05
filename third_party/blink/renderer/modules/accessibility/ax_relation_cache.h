@@ -97,6 +97,10 @@ class AXRelationCache {
   void UpdateReverseActiveDescendantRelations(Element& relation_source);
   void UpdateReverseOwnsRelations(Element& relation_source);
 
+  // Update a subtree used for a label so that it will be included in the tree,
+  // even if hidden.
+  void NotifySubtreeIsUsedForLabel(Element& labelling_subtree_root);
+
   // Process a new element and cache relations from its relevant attributes
   // using values of type IDREF/IDREFS.
   void CacheRelationIds(Element& element);

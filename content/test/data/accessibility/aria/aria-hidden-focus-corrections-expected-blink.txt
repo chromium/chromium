@@ -2,13 +2,12 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++tree
-++++++++group ignored invisible
-++++++++++treeItem invisible name='outer aria-hidden' selected=false
-++++++++++++staticText ignored invisible name='outer aria-hidden'
-++++++++++treeItem invisible name='outer aria-hidden, grandchildren' selected=false
+++++++++treeItem invisible name='outer aria-hidden' selected=false
+++++++++++staticText ignored invisible name='outer aria-hidden'
+++++++++treeItem invisible name='outer aria-hidden, grandchildren' selected=false
+++++++++++genericContainer ignored invisible
 ++++++++++++genericContainer ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++staticText ignored invisible name='outer aria-hidden, grandchildren'
+++++++++++++++staticText ignored invisible name='outer aria-hidden, grandchildren'
 ++++++++group
 ++++++++++treeItem invisible name='direct aria-hidden' selected=false
 ++++++++++++staticText ignored invisible name='direct aria-hidden'
@@ -17,5 +16,3 @@ rootWebArea
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++++staticText ignored invisible name='direct aria-hidden, grandchildren'
 ++++++++++treeItem selected=false
-++++++++++++genericContainer ignored invisible
-++++++++++++++genericContainer ignored invisible

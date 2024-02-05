@@ -7,18 +7,14 @@ rootWebArea
 === Start Continuation ===
 rootWebArea
 ++genericContainer ignored invisible
-++++genericContainer ignored invisible
-++++++genericContainer ignored invisible
-++++++++dialog
-++++++++++genericContainer name='Some Text'
-++++++++++++staticText name='Some Text'
-++++++++++++++inlineTextBox name='Some Text'
+++++dialog
+++++++genericContainer name='Some Text'
+++++++++staticText name='Some Text'
+++++++++++inlineTextBox name='Some Text'
 === Start Continuation ===
 rootWebArea
 ++genericContainer ignored invisible
-++++genericContainer ignored invisible
-++++++genericContainer ignored invisible
-++++++++dialog
-++++++++++genericContainer name='Done'
-++++++++++++staticText name='Done'
-++++++++++++++inlineTextBox name='Done'
+++++dialog
+++++++genericContainer name='Done'
+++++++++staticText name='Done'
+++++++++++inlineTextBox name='Done'

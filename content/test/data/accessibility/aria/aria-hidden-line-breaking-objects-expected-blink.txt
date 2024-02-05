@@ -1,8 +1,3 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++main ignored invisible
-++++++++genericContainer ignored invisible
-++++++++paragraph ignored invisible
-++++++++paragraph ignored invisible
-++++++++group ignored invisible

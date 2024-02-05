@@ -21,5 +21,3 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='Generic (nested)'
 ++++++++++inlineTextBox name='Generic (nested)'
-++++++main ignored invisible
-++++++complementary ignored invisible

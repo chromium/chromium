@@ -1,4 +1,3 @@
-AriaProperties changed on role=list, name=list
 AriaProperties changed on role=listitem, name=list item 1
 AriaProperties changed on role=listitem, name=list item 2
 AriaProperties changed on role=listitem, name=list item 3
