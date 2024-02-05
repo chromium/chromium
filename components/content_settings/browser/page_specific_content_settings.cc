@@ -1184,10 +1184,7 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
     // related to cookies, as that is the icon that is displayed.
     // TODO(crbug.com/1456641): When the COOKIES content setting Omnibox entry
     // correctly reflects site data, reconsider limiting the types.
-    // This logic will not show a site being blocked for partitioned storage,
-    // reconsider the usage of this method in this context.
-    if (blocked_browsing_data_model_->IsBlockedByThirdPartyCookieBlocking(
-            data_key, storage_type)) {
+    if (model->IsStorageTypeCookieLike(storage_type)) {
       OnContentBlocked(ContentSettingsType::COOKIES);
     }
   } else {

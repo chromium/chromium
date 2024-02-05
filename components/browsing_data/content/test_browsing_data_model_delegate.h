@@ -30,6 +30,8 @@ class TestBrowsingDataModelDelegate final : public BrowsingDataModel::Delegate {
   std::optional<BrowsingDataModel::DataOwner> GetDataOwner(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override;
+  std::optional<bool> IsStorageTypeCookieLike(
+      BrowsingDataModel::StorageType storage_type) const override;
   std::optional<bool> IsBlockedByThirdPartyCookieBlocking(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override;

@@ -851,22 +851,16 @@ void BrowsingDataModel::RemoveUnpartitionedBrowsingData(
   }
 }
 
-bool BrowsingDataModel::IsBlockedByThirdPartyCookieBlocking(
-    const DataKey& data_key,
-    StorageType type) const {
-  if (GetThirdPartyPartitioningSite(data_key).has_value()) {
-    return false;
-  }
-
+bool BrowsingDataModel::IsStorageTypeCookieLike(
+    StorageType storage_type) const {
   if (delegate_) {
-    auto delegate_response =
-        delegate_->IsBlockedByThirdPartyCookieBlocking(data_key, type);
+    auto delegate_response = delegate_->IsStorageTypeCookieLike(storage_type);
     if (delegate_response.has_value()) {
       return delegate_response.value();
     }
   }
 
-  switch (type) {
+  switch (storage_type) {
     case BrowsingDataModel::StorageType::kTrustTokens:
     case BrowsingDataModel::StorageType::kInterestGroup:
     case BrowsingDataModel::StorageType::kAttributionReporting:
@@ -883,6 +877,24 @@ bool BrowsingDataModel::IsBlockedByThirdPartyCookieBlocking(
     case BrowsingDataModel::StorageType::kExtendedDelegateRange:
       NOTREACHED_NORETURN();
   }
+}
+
+bool BrowsingDataModel::IsBlockedByThirdPartyCookieBlocking(
+    const DataKey& data_key,
+    StorageType storage_type) const {
+  if (GetThirdPartyPartitioningSite(data_key).has_value()) {
+    return false;
+  }
+
+  if (delegate_) {
+    auto delegate_response =
+        delegate_->IsBlockedByThirdPartyCookieBlocking(data_key, storage_type);
+    if (delegate_response.has_value()) {
+      return delegate_response.value();
+    }
+  }
+
+  return IsStorageTypeCookieLike(storage_type);
 }
 
 void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
