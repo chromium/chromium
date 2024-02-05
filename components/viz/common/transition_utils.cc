@@ -105,7 +105,10 @@ std::unordered_set<uint64_t> ProcessStack(
         stack.pop_back();
         continue;
       }
-
+      if (!*frame.quad_iter) {
+        stack.pop_back();
+        continue;
+      }
       frame.indent += 2;
     } else {
       if (++frame.quad_iter == pass->quad_list.end()) {
@@ -174,8 +177,8 @@ std::string TransitionUtils::RenderPassListToString(
     const CompositorRenderPassList& list) {
   std::ostringstream str;
 
-  if (list.size() > kMaxListToProcess) {
-    str << "RenderPassList too large (" << list.size()
+  if (list.size() > kMaxListToProcess || list.empty()) {
+    str << "RenderPassList too large or too small (" << list.size()
         << "), max supported list length " << kMaxListToProcess;
     return str.str();
   }
