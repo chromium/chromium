@@ -33,33 +33,6 @@ class FakeRecordingSource : public RecordingSource {
     return recording_source;
   }
 
-  // TODO(crbug.com/1517714): Remove the following two functions. The
-  // DisplayItemList determines whether the recording source fills the layer.
-
-  static std::unique_ptr<FakeRecordingSource> CreateRecordingSource(
-      const gfx::Rect& recorded_viewport,
-      const gfx::Size& layer_bounds) {
-    auto recording_source = std::make_unique<FakeRecordingSource>();
-    recording_source->SetCanUseRecordedBounds(false);
-    recording_source->SetRecordedViewport(recorded_viewport);
-    recording_source->SetLayerBounds(layer_bounds);
-    return recording_source;
-  }
-
-  static std::unique_ptr<FakeRecordingSource> CreateFilledRecordingSource(
-      const gfx::Size& layer_bounds) {
-    auto recording_source = std::make_unique<FakeRecordingSource>();
-    recording_source->SetCanUseRecordedBounds(false);
-    recording_source->SetRecordedViewport(gfx::Rect(layer_bounds));
-    recording_source->SetLayerBounds(layer_bounds);
-    return recording_source;
-  }
-
-  void SetRecordedViewport(const gfx::Rect& recorded_viewport) {
-    DCHECK(!can_use_recorded_bounds_);
-    recorded_bounds_ = recorded_viewport;
-  }
-
   void SetLayerBounds(const gfx::Size& layer_bounds) {
     size_ = layer_bounds;
     client_.set_bounds(layer_bounds);

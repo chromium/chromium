@@ -16542,8 +16542,7 @@ TEST_F(LayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   gfx::Size layer_size = gfx::Size(750, 750);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_size);
+  auto recording_source = FakeRecordingSource::Create(layer_size);
   PaintImage checkerable_image =
       PaintImageBuilder::WithCopy(
           CreateDiscardablePaintImage(gfx::Size(500, 500)))
