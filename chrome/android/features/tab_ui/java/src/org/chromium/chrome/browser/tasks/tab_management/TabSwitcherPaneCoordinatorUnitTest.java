@@ -42,6 +42,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -196,6 +197,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1524084")
     public void testShowTabListEditor() {
         ObservableSupplier<Boolean> handlesBackPressSupplier =
                 mCoordinator.getHandleBackPressChangedSupplier();
@@ -244,6 +246,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1524084")
     public void testTabGridDialogVisibilitySupplier() {
         Supplier<Boolean> tabGridDialogVisibilitySupplier =
                 mCoordinator.getTabGridDialogVisibilitySupplier();
