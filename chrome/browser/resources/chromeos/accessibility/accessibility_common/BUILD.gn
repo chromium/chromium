@@ -47,7 +47,6 @@ misc_sources = [
 ]
 
 js_modules = [
-  "dictation/parse/pumpkin/pumpkin_constants.js",
   "dictation/parse/pumpkin_parse_strategy.js",
   "dictation/parse/sandboxed_pumpkin_tagger.js",
   "dictation/parse/simple_parse_strategy.js",
@@ -81,6 +80,7 @@ ts_modules = [
   "dictation/macros/stop_listening_macro.ts",
   "dictation/parse/input_text_strategy.ts",
   "dictation/parse/parse_strategy.ts",
+  "dictation/parse/pumpkin/pumpkin_constants.ts",
   "facegaze/facegaze.ts",
   "facegaze/gesture_detector.ts",
   "facegaze/mouse_controller.ts",
