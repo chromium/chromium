@@ -10881,10 +10881,12 @@
                         "ReducedNTPTopSpace": "20",
                         "SetUpListCompactedTimeThresholdDays": "0",
                         "enable_default_model": "true",
-                        "variant": "tab-resumption-recent-tab-only"
+                        "variant": "tab-resumption-all-tabs"
                     },
                     "enable_features": [
+                        "IOSParcelTracking",
                         "MagicStack",
+                        "SafetyCheckMagicStack",
                         "SegmentationPlatformIosModuleRanker",
                         "SegmentationPlatformUserVisibleTaskRunner",
                         "TabResumption"
