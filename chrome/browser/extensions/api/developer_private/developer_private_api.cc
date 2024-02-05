@@ -430,22 +430,28 @@ void RevokePermissionsForSite(content::BrowserContext* context,
                               base::OnceClosure done_callback) {
   // Revoke all sites which have some intersection with `site` from the
   // extension's set of runtime granted host permissions.
-  URLPatternSet hosts_to_withhold;
+  auto* permissions_manager = PermissionsManager::Get(context);
   std::unique_ptr<const PermissionSet> runtime_granted_permissions =
-      ExtensionPrefs::Get(context)->GetRuntimeGrantedPermissions(
-          extension.id());
+      permissions_manager->GetRuntimePermissionsFromPrefs(extension);
 
-  for (const URLPattern& pattern :
-       runtime_granted_permissions->effective_hosts()) {
-    if (site.OverlapsWith(pattern))
-      hosts_to_withhold.AddPattern(pattern);
+  URLPatternSet explicit_hosts;
+  for (const auto& pattern : runtime_granted_permissions->explicit_hosts()) {
+    if (site.OverlapsWith(pattern)) {
+      explicit_hosts.AddPattern(pattern);
+    }
+  }
+  URLPatternSet scriptable_hosts;
+  for (const auto& pattern : runtime_granted_permissions->scriptable_hosts()) {
+    if (site.OverlapsWith(pattern)) {
+      scriptable_hosts.AddPattern(pattern);
+    }
   }
 
   std::unique_ptr<const PermissionSet> permissions_to_remove =
       PermissionSet::CreateIntersection(
           PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        hosts_to_withhold.Clone(), hosts_to_withhold.Clone()),
-          *PermissionsManager::Get(context)->GetRevokablePermissions(extension),
+                        std::move(explicit_hosts), std::move(scriptable_hosts)),
+          *permissions_manager->GetRevokablePermissions(extension),
           URLPatternSet::IntersectionBehavior::kDetailed);
   if (permissions_to_remove->IsEmpty()) {
     std::move(done_callback).Run();
