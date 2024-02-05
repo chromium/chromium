@@ -3295,6 +3295,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3497560059572256875">Sdílet sváteční logo</translation>
 <translation id="3497915391670770295">Odeslat na vaše &amp;zařízení</translation>
 <translation id="3500417806337761827">Při připojování sdíleného úložiště došlo k chybě. Již je připojeno příliš mnoho sdílených úložišť SMB.</translation>
+<translation id="3500764001796099683">Povolit izolované webové aplikace</translation>
 <translation id="350397915809787283">Pokud nemáte účet, vyberte první možnost a vytvořte si ho.</translation>
 <translation id="3503995387997205657">Můžete obnovit předchozí aplikace</translation>
 <translation id="3505100368357440862">Návrhy nákupů</translation>
@@ -7166,6 +7167,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6551508934388063976">Příkaz není k dispozici. Stisknutím kombinace kláves Ctrl+N otevřete nové okno prohlížeče.</translation>
 <translation id="6551606359270386381">Nástroj Elipsa</translation>
 <translation id="6551612971599078809">Web používá USB</translation>
+<translation id="6551620030439692385">Blokováno. Časové pásmo je aktuálně nastaveno na <ph name="TIMEZONE" /> a lze ho aktualizovat pouze ručně.</translation>
 <translation id="6551739526055143276">Spravováno aplikací Family Link</translation>
 <translation id="655384502888039633">Počet uživatelů: <ph name="USER_COUNT" /></translation>
 <translation id="6555432686520421228">Odebere všechny uživatelské účty a resetuje zařízení <ph name="IDS_SHORT_PRODUCT_NAME" /> na tovární nastavení.</translation>
@@ -7238,6 +7240,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6608773371844092260">Pokud chcete nastavit otisk prstu, nechte dítě dotknout se snímače otisků prstů na pravé straně zařízení <ph name="DEVICE_TYPE" />. Otisk prstu dítěte je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Přihlašovací údaje zůstanou v tomto zařízení uložené i po ukončení anonymního režimu. Pomocí zařízení se k těmto webovým stránkám budete moci později opět přihlásit.</translation>
 <translation id="6610002944194042868">Možnosti Překladače</translation>
+<translation id="6610064275805055636">Spravovat izolované webové aplikace</translation>
 <translation id="6611972847767394631">Zde naleznete své karty</translation>
 <translation id="661266467055912436">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu.</translation>
 <translation id="6613267708691765962">Vyhledávání malwaru…</translation>
@@ -8601,6 +8604,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7671472752213333268">Rozšíření <ph name="EXTENSION_NAME" /> chce skenovat pomocí skeneru <ph name="SCANNER_NAME" />.</translation>
 <translation id="7672504401554182757">Zvolte, které zařízení má přístupový klíč pro <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> na stránce <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blokováno. Plán je aktuálně nastaven na <ph name="SUNRISE_TIME" /> – <ph name="SUNSET_TIME" /> a lze ho aktualizovat pouze ručně.</translation>
 <translation id="7673313156293624327">Protokoly ChromeOS Shill (správce připojení)</translation>
 <translation id="7674416868315480713">Deaktivovat všechny porty přesměrovávané v Linuxu</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplikace</translation>
@@ -9534,6 +9538,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8376384591331888629">Včetně souborů cookie třetích stran na tomto webu</translation>
 <translation id="8376451933628734023">Pokud se vás tato webová aplikace snaží přesvědčit, že se jedná o jinou aplikaci, odinstalujte ji.</translation>
 <translation id="8376532149031784008">Opětovné načítání stránky <ph name="DOMAIN" />…</translation>
+<translation id="8376610503048439696">Rozšíření nainstalovaná administrátorem mohou tento web číst a měnit i nadále</translation>
 <translation id="8376752431516546391">Boční panel Vyhledávání Google</translation>
 <translation id="8377625247046155446">Tento přístupový klíč bude uložen pouze na tomto zařízení. Zůstane v tomto zařízení i po zavření všech anonymních oken.</translation>
 <translation id="8378714024927312812">Spravováno vaší organizací</translation>

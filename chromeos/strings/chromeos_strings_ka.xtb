@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">სურათები ვერ ჩაიტვირთა. შეამოწმეთ კავშირი ქსელთან, ან ხელახლა ცადეთ სურათების ჩატვირთვა.</translation>
 <translation id="1751249301761991853">პირადი</translation>
 <translation id="1753496554272155572">ფონის გადახედვის რეჟიმიდან გასვლა</translation>
+<translation id="1754578112426924640">რედაქტირების ღილაკი „<ph name="ACCELERATOR_INFO" />“-ისთვის.</translation>
 <translation id="1755556344721611131">დიაგნოსტიკის აპი</translation>
 <translation id="175763766237925754">კარგი (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android არ არის გაშვებული</translation>
 <translation id="551689408806449779">მოწყობილობა გაითიშა. ტესტირებისთვის ცადეთ მისი ხელახლა დაკავშირება.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">ჩაკეტილი</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">მუქ თემაზე ავტომატურად გადართვა მზის ჩასვლისას</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">ცენტრირება</translation>
 <translation id="5703716265115423771">ხმის დაწევა</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-ის <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605">რედაქტირების ღილაკი „<ph name="SHORTCUT_DESCRIPTION" />“-ისთვის.</translation>
 <translation id="5733298426544876109">განახლდეს <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">საშუალო</translation>
 <translation id="5757187557809630523">შემდეგი ჩანაწერი</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">აკრძალული</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{თქვენი ფაილი წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{თქვენი ფაილები წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">წაშლის ღილაკი „<ph name="ACCELERATOR_INFO" />“-ისთვის.</translation>
 <translation id="5931523347251946569">ფაილი ვერ მოიძებნა</translation>
 <translation id="593880865674747800">მეტის შექმნა ამ სტილში</translation>
 <translation id="5939518447894949180">გადატვირთვა</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS ვერ დარეგულირდა</translation>
 <translation id="6768237774506518020">DNS-ის წარუმატებელი დარეგულირებების მაჩვენებელი მაღალია</translation>
 <translation id="6791471867139427246">კლავიატურის განათების ფერი</translation>
+<translation id="6796229976413584781">მალსახმობი წაიშალა</translation>
 <translation id="6798678288485555829">ნავიგაცია ტექსტში</translation>
 <translation id="680983167891198932">გასაღები</translation>
 <translation id="6816797338148849397">ხელმისაწვდომია თქვენს არჩევანთან დაკავშირებული ინფორმაცია. წვდომისთვის გამოიყენეთ კლავიში ზემოთ მიმართული ისრით.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">გარე მოწყობილობებში ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
+<translation id="7233782086689993269">მალსახმობი აღდგენილია</translation>
 <translation id="725133483556299729">აირჩიეთ ელფოსტის მისამართი</translation>
 <translation id="7271040990581020067">სკანერი ამჟამად გამოიყენება. ცადეთ მოგვიანებით.</translation>
 <translation id="7271932918253517778">ზედა მწკრივის კლავიშების შემცველი მალსახმობი უნდა შეიცავდეს „<ph name="META_KEY" />“ კლავიშს.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS რეაგირების დრო დიდია</translation>
 <translation id="7656388927906093505">მოწყობილობა არის მაუსი.</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">ავატარის შეცვლა</translation>
 <translation id="7683228889864052081">კლავიატურის შეფერილობა</translation>
 <translation id="7690294790491645610">დაადასტურეთ ახალი პაროლი</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">კლავიატურის სინათლე</translation>
 <translation id="7730077286107534951">ანგარიშისა და სისტემის შესახებ გარკვეული ინფორმაცია შეიძლება გაეგზავნოს Google-ს. ამ ინფორმაციას ტექნიკური პრობლემების მოსაგვარებლად და ჩვენი სერვისების გასაუმჯობესებლად გამოვიყენებთ, ჩვენი <ph name="BEGIN_LINK2" />კონფიდენციალურობის დებულებისა<ph name="END_LINK2" /> და <ph name="BEGIN_LINK3" />მომსახურების პირობების<ph name="END_LINK3" /> შესაბამისად. კონტენტის ცვლილება რომ მოითხოვოთ, გადადით <ph name="BEGIN_LINK1" />სამართლებრივი დახმარების გვერდზე<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">ციკლების რაოდენობა</translation>
+<translation id="7746357909584236306">რედაქტირებადი</translation>
 <translation id="7747039790905080783">წინასწარ გაზიარებული გასაღები</translation>
 <translation id="7752963721013053477">განთიადიდან შებინდებამდე — ექსკლუზიური</translation>
 <translation id="7762130827864645708">პაროლი წარმატებით შეიცვალა. ამიერიდან გამოიყენეთ ახალი პაროლი.</translation>

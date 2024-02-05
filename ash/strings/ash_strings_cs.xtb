@@ -26,6 +26,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1087110696012418426">Dobré odpoledne, <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Prohledat soubory, aplikace a další obsah z kategorie <ph name="CATEGORY" />. Mezi aplikacemi se můžete pohybovat pomocí kláves.</translation>
 <translation id="1093645050124056515">ctrl + alt + šipka dolů</translation>
+<translation id="1094756674036064790">Vypnout Bluetooth?</translation>
 <translation id="109942774857561566">Nudím se</translation>
 <translation id="1104084341931202936">Zobrazit nastavení přístupnosti</translation>
 <translation id="1104621072296271835">Společně budou vaše zařízení fungovat ještě lépe</translation>
@@ -660,6 +661,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3660860940251915011">Přepnout vysokou viditelnost pro <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – spravovaný uživatel</translation>
 <translation id="3666266999138159418">Plovoucí okno skryjete přejetím prstem</translation>
+<translation id="3673898235958558034">Když vypnete Bluetooth, zařízení <ph name="DEVICE_NAME_1" /> a <ph name="DEVICE_NAME_2" /> se od Chromebooku odpojí.</translation>
 <translation id="367531336287639526">Vybrat první ikonu vlevo od adresního řádku</translation>
 <translation id="3677931086890821290">Všechny aplikace a weby s oprávněním pro přístup k poloze a systém ChromeOS budou moci používat polohu Wi-Fi a mobilních sítí.</translation>
 <translation id="3679827876008292680">Přejít na poslední kartu v okně</translation>
@@ -915,6 +917,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4666911709726371538">Další aplikace</translation>
 <translation id="4667099493359681081">Stahování souboru <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Zapnul se spořič baterie</translation>
+<translation id="4673427585974421255">Ponechat zapnuté</translation>
 <translation id="468293128311738995">Aplikace z telefonu</translation>
 <translation id="4690510401873698237">Polička dole</translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
@@ -1215,6 +1218,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5802516411616338943">Otevření Rychlého nastavení</translation>
 <translation id="5804651031882187592">Vypněte možnost Uzamknout SIM kartu</translation>
 <translation id="5805809050170488595">Kliknutím aktivujete síť <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Když vypnete Bluetooth, zařízení <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> a další (<ph name="DEVICE_COUNT" />) se od Chromebooku odpojí.</translation>
 <translation id="5823239091726045201">Úkoly Google na webu</translation>
 <translation id="5825969630400862129">Nastavení připojených zařízení</translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="6539852571005954999">Skenování staženého souboru <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Odesílání do zařízení <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Vyhledávání obrázků podle obsahu a náhledy obrázků</translation>
+<translation id="6547795021703527064">Když vypnete Bluetooth, zařízení <ph name="DEVICE_NAME" /> se od Chromebooku odpojí.</translation>
 <translation id="6555373427270923730">Zadejte do adresního řádku webovou adresu a poté stiskněte <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nová instalace</translation>

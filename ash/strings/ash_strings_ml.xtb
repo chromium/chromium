@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">ഗുഡ് ആഫ്‌റ്റർനൂൺ <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">നിങ്ങളുടെ <ph name="CATEGORY" />, ഫയലുകൾ, ആപ്പുകൾ എന്നിവയും മറ്റും തിരയൂ. നിങ്ങളുടെ ആപ്പുകളിലേക്ക് പോകാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
 <translation id="1093645050124056515">ctrl + alt + താഴേക്കുള്ള അമ്പടയാളം</translation>
+<translation id="1094756674036064790">Bluetooth ഓഫാക്കണോ?</translation>
 <translation id="109942774857561566">എനിക്ക് ബോറടിക്കുന്നു</translation>
 <translation id="1104084341931202936">പ്രവേശനക്ഷമത ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1104621072296271835">നിങ്ങളുടെ ഉപകരണങ്ങൾ 'ഒരുമിച്ചും' നന്നായി പ്രവർത്തിക്കും</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" />-ന്റെ ഉയർന്ന ദൃശ്യപരത ടോഗിൾ ചെയ്യുക</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">നിങ്ങളുടെ ഫ്ലോട്ടിംഗ് വിൻഡോ മറയ്ക്കാൻ സ്വൈപ്പ് ചെയ്യുക</translation>
+<translation id="3673898235958558034">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" എന്നിവ നിങ്ങളുടെ Chromebook-ൽ നിന്ന് വിച്ഛേദിക്കും.</translation>
 <translation id="367531336287639526">വിലാസ ബാറിന്റെ ഇടതുവശത്തുള്ള ആദ്യ ഐക്കൺ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3677931086890821290">ലൊക്കേഷൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകളെയും വെബ്സൈറ്റുകളെയും ChromeOS-നെയും വൈഫൈ, മൊബൈൽ നെറ്റ്‌വർക്കുകളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ ഇത് അനുവദിക്കുന്നു.</translation>
 <translation id="3679827876008292680">വിൻഡോയിലെ അവസാന ടാബിലേക്ക് പോകുക</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">കൂടുതൽ ആപ്പുകൾ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="4672539464599646374">ബാറ്ററി സേവർ ഓണാക്കി</translation>
+<translation id="4673427585974421255">ഓണാക്കി വയ്ക്കുക</translation>
 <translation id="468293128311738995">ഫോണിലെ ആപ്പുകൾ</translation>
 <translation id="4690510401873698237">സ്‌ക്രീനിൻ്റെ ചുവടെയാണ് ഷെൽഫ്</translation>
 <translation id="4696813013609194136">രക്ഷാകർതൃ കോഡ് ഉപയോഗിച്ച് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">ദ്രുത ക്രമീകരണം തുറക്കുക</translation>
 <translation id="5804651031882187592">"സിം ലോക്ക് ചെയ്യുക" ക്രമീകരണം ഓഫാക്കുക</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> സജീവമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="5816222150329690597">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" എന്നിവയും മറ്റ് <ph name="DEVICE_COUNT" /> ഉപകരണങ്ങളും നിങ്ങളുടെ Chromebook-ൽ നിന്ന് വിച്ഛേദിക്കും.</translation>
 <translation id="5823239091726045201">വെബിലെ Google ടാസ്ക്കുകൾ</translation>
 <translation id="5825969630400862129">കണക്റ്റ് ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾക്കുള്ള ക്രമീകരണം</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">ഡൗൺലോഡ് സ്‌കാൻ ചെയ്യുന്നു <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ഉപകരണത്തിലേക്ക് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
 <translation id="6546062506073634094">ഉള്ളടക്കം, ചിത്ര പ്രിവ്യൂകൾ എന്നിവ അനുസരിച്ചുള്ള ചിത്രമുപയോഗിച്ചുള്ള തിരയൽ</translation>
+<translation id="6547795021703527064">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, നിങ്ങളുടെ Chromebook-ൽ നിന്ന് "<ph name="DEVICE_NAME" />" വിച്ഛേദിക്കും.</translation>
 <translation id="6555373427270923730">വിലാസ ബാറിൽ ഒരു വെബ് വിലാസം ടൈപ്പ് ചെയ്യുക, തുടർന്ന് <ph name="MODIFIER" /><ph name="KEY" /> അമർത്തുക</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 പുതിയ ഇൻസ്റ്റാൾ</translation>

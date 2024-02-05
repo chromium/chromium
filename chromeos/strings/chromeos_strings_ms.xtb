@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Tidak dapat memuatkan imej. Semak sambungan rangkaian anda atau cuba muatkan imej sekali lagi.</translation>
 <translation id="1751249301761991853">Peribadi</translation>
 <translation id="1753496554272155572">Keluar pratonton kertas dinding</translation>
+<translation id="1754578112426924640">Edit butang untuk <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Apl diagnostik</translation>
 <translation id="175763766237925754">Baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android tidak berjalan</translation>
 <translation id="551689408806449779">Peranti telah diputuskan sambungan. Cuba sambung semula untuk menguji</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">dikunci</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Tukar kepada tema gelap pada waktu matahari terbenam secara automatik</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Tengah</translation>
 <translation id="5703716265115423771">kurangkan kelantangan</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Edit butang untuk <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Kemas kini <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Sederhana</translation>
 <translation id="5757187557809630523">lagu seterusnya</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Dilarang</translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Padamkan butang untuk <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Fail tidak dijumpai</translation>
 <translation id="593880865674747800">Buat lagi dalam gaya ini</translation>
 <translation id="5939518447894949180">Tetapkan semula</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Penyelesaian DNS gagal</translation>
 <translation id="6768237774506518020">Kadar kegagalan penyelesaian DNS tinggi</translation>
 <translation id="6791471867139427246">warna cerah papan kekunci</translation>
+<translation id="6796229976413584781">Pintasan telah dipadamkan</translation>
 <translation id="6798678288485555829">Navigasi teks</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Maklumat yang berkaitan dengan pilihan anda tersedia. Gunakan kekunci Anak panah ke atas untuk mengakses.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dengan Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Kemaskinian perisian tegar untuk peranti luaran</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
+<translation id="7233782086689993269">Pintasan telah dipulihkan</translation>
 <translation id="725133483556299729">Pilih e-mel</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7271932918253517778">Pintasan dengan kekunci baris atas perlu menyertakan kekunci <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
 <translation id="7656388927906093505">Peranti ialah tetikus.</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Tukar avatar</translation>
 <translation id="7683228889864052081">rona papan kekunci</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">cahaya papan kekunci</translation>
 <translation id="7730077286107534951">Sesetengah maklumat akaun dan sistem mungkin dihantar kepada Google. Kami menggunakan maklumat ini untuk mengatasi masalah teknikal dan meningkatkan perkhidmatan kami, tertakluk pada <ph name="BEGIN_LINK2" />Dasar Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Syarat Perkhidmatan<ph name="END_LINK3" /> kami. Akses <ph name="BEGIN_LINK1" />Bantuan Undang-undang<ph name="END_LINK1" /> untuk meminta perubahan kandungan.</translation>
 <translation id="773153675489693198">Kiraan kitaran</translation>
+<translation id="7746357909584236306">boleh diedit</translation>
 <translation id="7747039790905080783">Kunci prakongsi</translation>
 <translation id="7752963721013053477">Fajar hingga senja - eksklusif</translation>
 <translation id="7762130827864645708">Penukaran kata laluan anda berjaya. Sila gunakan kata laluan baharu mulai sekarang.</translation>

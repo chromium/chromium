@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Obrázky se nepodařilo načíst. Zkontrolujte připojení k síti a zkuste je načíst znovu.</translation>
 <translation id="1751249301761991853">Osobní</translation>
 <translation id="1753496554272155572">Zavřít náhled tapety</translation>
+<translation id="1754578112426924640">Tlačítko Upravit pro <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostická aplikace</translation>
 <translation id="175763766237925754">Dobrý (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android neběží</translation>
 <translation id="551689408806449779">Zařízení bylo odpojeno. Pokud ho chcete otestovat, zkuste se znovu připojit</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">uzamčeno</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Při západu slunce automaticky přepnout na tmavý motiv</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Na střed</translation>
 <translation id="5703716265115423771">snížit hlasitost</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Tlačítko Upravit pro <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Aktualizovat <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Střední</translation>
 <translation id="5757187557809630523">další skladba</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Zakázáno</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Soubor byl úspěšně naskenován a uložen do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Tlačítko Smazat pro <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Soubor nebyl nalezen</translation>
 <translation id="593880865674747800">Vytvořit další v tomto stylu</translation>
 <translation id="5939518447894949180">Resetovat</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Neúspěšné překlady DNS</translation>
 <translation id="6768237774506518020">Vysoká míra selhání překladu DNS</translation>
 <translation id="6791471867139427246">barva světla klávesnice</translation>
+<translation id="6796229976413584781">Zkratka byla smazána</translation>
 <translation id="6798678288485555829">Navigace v textu</translation>
 <translation id="680983167891198932">Klíč</translation>
 <translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Spravovat nastavení názvů přístupových bodů (APN) sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizace firmwaru pro externí zařízení</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
+<translation id="7233782086689993269">Zkratka byla obnovena</translation>
 <translation id="725133483556299729">Vyberte e-mail</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7271932918253517778">Zkratka s klávesami z horní řady musí zahrnovat klávesu <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="7656388927906093505">Zařízení je myš.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Změnit avatara</translation>
 <translation id="7683228889864052081">odstín klávesnice</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">světlo klávesnice</translation>
 <translation id="7730077286107534951">Některé údaje o účtu a systému mohou být předány společnosti Google. Tyto informace používáme k řešení technických problémů a zlepšování našich služeb v souladu s našimi <ph name="BEGIN_LINK2" />zásadami ochrany soukromí<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />smluvními podmínkami<ph name="END_LINK3" />. Pokud chcete požádat o změny obsahu, přejděte do <ph name="BEGIN_LINK1" />právní nápovědy<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Počet cyklů</translation>
+<translation id="7746357909584236306">upravitelné</translation>
 <translation id="7747039790905080783">Předem sdílený klíč</translation>
 <translation id="7752963721013053477">Od úsvitu do setmění - exkluzivní</translation>
 <translation id="7762130827864645708">Změna hesla byla úspěšná. Odteď používejte nové heslo.</translation>

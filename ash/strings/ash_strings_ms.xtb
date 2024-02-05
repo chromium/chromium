@@ -26,6 +26,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1087110696012418426">Selamat tengah hari <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Cari <ph name="CATEGORY" />, fail, apl anda dan pelbagai lagi. Gunakan kekunci anak panah untuk menavigasi apl anda.</translation>
 <translation id="1093645050124056515">ctrl + alt + anak panah ke bawah</translation>
+<translation id="1094756674036064790">Matikan Bluetooth?</translation>
 <translation id="109942774857561566">Saya bosan</translation>
 <translation id="1104084341931202936">Tunjukkan tetapan kebolehaksesan</translation>
 <translation id="1104621072296271835">Peranti anda akan berfungsi lebih baik bersama-sama</translation>
@@ -660,6 +661,7 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="3660860940251915011">Togol keterlihatan tinggi <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Pengguna terurus</translation>
 <translation id="3666266999138159418">Leret untuk menyembunyikan tetingkap terapung anda</translation>
+<translation id="3673898235958558034">Apabila anda mematikan Bluetooth, "<ph name="DEVICE_NAME_1" />" dan "<ph name="DEVICE_NAME_2" />" akan diputuskan sambungan daripada Chromebook anda.</translation>
 <translation id="367531336287639526">Pilih ikon pertama pada sebelah kiri bar alamat</translation>
 <translation id="3677931086890821290">Tindakan ini membenarkan semua apl dan laman web dengan kebenaran lokasi dan ChromeOS untuk menggunakan Wi-Fi dan lokasi rangkaian mudah alih.</translation>
 <translation id="3679827876008292680">Akses tab terakhir dalam tetingkap</translation>
@@ -915,6 +917,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4666911709726371538">Lagi apl</translation>
 <translation id="4667099493359681081">Memuat turun <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Penjimat Bateri dihidupkan</translation>
+<translation id="4673427585974421255">Biar hidup</translation>
 <translation id="468293128311738995">Apl daripada telefon anda</translation>
 <translation id="4690510401873698237">Rak di bahagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
@@ -1215,6 +1218,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5802516411616338943">Buka Tetapan Pantas</translation>
 <translation id="5804651031882187592">Matikan tetapan "Kunci SIM"</translation>
 <translation id="5805809050170488595">Klik untuk aktifkan <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Apabila anda mematikan Bluetooth, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" dan <ph name="DEVICE_COUNT" /> peranti lain akan diputuskan sambungan daripada Chromebook anda.</translation>
 <translation id="5823239091726045201">Google Task pada web</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="6539852571005954999">Pengimbasan muat turun <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Menghantar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Carian imej berdasarkan kandungan dan pratonton imej</translation>
+<translation id="6547795021703527064">Apabila anda mematikan Bluetooth, "<ph name="DEVICE_NAME" />" akan diputuskan sambungan daripada Chromebook anda.</translation>
 <translation id="6555373427270923730">Taipkan alamat web dalam bar alamat, kemudian tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Pemasangan baharu</translation>

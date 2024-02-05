@@ -75,6 +75,7 @@ Co je třeba zvážit:
 <translation id="2689064829982324496">Pokud se chcete odhlásit z účtu Google na všech webech, <ph name="BEGIN_LINK" />odhlaste se z Chromu<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
 <translation id="2702250627063295552">Přidat položku do seznamu četby v Chromu</translation>
+<translation id="2703746758996815929">Pokud chcete dostávat užitečné tipy pro Chrome, v nastavení systému iOS zapněte oznámení.</translation>
 <translation id="2736805085127235148">Oznámení prohlížeče Chrome jsou aktuálně v nastavení zařízení vypnutá.</translation>
 <translation id="2767464022270041271">Nemáte žádná uložená hesla. Správce hesel Google může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="2789947168960170215">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>
 <translation id="8865415417596392024">Data Chromu ve vašem účtu</translation>
+<translation id="8874688701962049679">Tipy, jak Chrome využít na maximum.</translation>
 <translation id="8891935667620843985">Pokud chcete odkazy otevírat automaticky v Chromu, nastavte ho jako výchozí prohlížeč.</translation>
 <translation id="8897749957032330183">Hesla se ukládají do Správce hesel Google na tomto zařízení.</translation>
 <translation id="8949681853939555434">Nastavte si Chrome jako výchozí prohlížeč</translation>

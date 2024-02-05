@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">မင်္ဂလာ နေ့လယ်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242">သင့် <ph name="CATEGORY" />၊ ဖိုင်၊ အက်ပ်နှင့် အခြားအရာများကို ရှာပါ။ သင့်အက်ပ်များသို့ သွားရန် မြားခလုတ်များကို သုံးပါ။</translation>
 <translation id="1093645050124056515">Ctrl + Alt + အောက်ညွှန်မြား</translation>
+<translation id="1094756674036064790">ဘလူးတုသ် ပိတ်မလား။</translation>
 <translation id="109942774857561566">ပျင်းနေတယ်</translation>
 <translation id="1104084341931202936">အများသုံးနိုင်မှု ဆက်တင်များကို ပြရန်</translation>
 <translation id="1104621072296271835">သင်၏စက်ပစ္စည်းများကို အတူတကွအသုံးပြုလျှင် ပိုမိုကောင်းမွန်ပါသည်</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> ၏ မြင့်မားသောမြင်နိုင်မှုကို ဖွင့်/ပိတ် လုပ်ရန်</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> စီမံခန့်ခွဲသော အသုံးပြုသူ</translation>
 <translation id="3666266999138159418">လွင့်မျောဝင်းဒိုးဖျောက်ရန် ပွတ်ဆွဲပါ</translation>
+<translation id="3673898235958558034">ဘလူးတုသ် ပိတ်လိုက်သောအခါ “<ph name="DEVICE_NAME_1" />” နှင့် “<ph name="DEVICE_NAME_2" />” ကို သင့် Chromebook မှ ချိတ်ဆက်မှုဖြုတ်ပါမည်။</translation>
 <translation id="367531336287639526">လိပ်စာဘား၏ ဘယ်ဘက်ရှိ ပထမဆုံးသင်္ကေတကို ရွေးရန်</translation>
 <translation id="3677931086890821290">၎င်းက Wi-Fi နှင့် မိုဘိုင်းကွန်ရက် တည်နေရာများ သုံးရန် တည်နေရာခွင့်ပြုချက်ရှိသော အက်ပ်၊ ဝဘ်ဆိုက်အားလုံးနှင့် ChromeOS တို့ကို ခွင့်ပြုပေးသည်။</translation>
 <translation id="3679827876008292680">ဝင်းဒိုးရှိ နောက်ဆုံးတဘ်သို့ သွားရန်</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">အက်ပ်များ ပိုပြပါ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="4672539464599646374">‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်</translation>
+<translation id="4673427585974421255">ဖွင့်ထားရန်</translation>
 <translation id="468293128311738995">သင့်ဖုန်းမှအက်ပ်များ</translation>
 <translation id="4690510401873698237">စင်ကို အောက်ခြေသို့ ရွှေ့လိုက်ပါပြီ</translation>
 <translation id="4696813013609194136">စက်ပစ္စည်းကို မိဘသုံးကုဒ်ဖြင့် ဖွင့်ပါ</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">အမြန်ဆက်တင်များ ဖွင့်ရန်</translation>
 <translation id="5804651031882187592">"ဆင်းမ်လော့ခ်ချရန်" ဆက်တင်ကို ပိတ်ပါ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> စတင်ရန် နှိပ်ပါ</translation>
+<translation id="5816222150329690597">ဘလူးတုသ် ပိတ်လိုက်သောအခါ “<ph name="DEVICE_NAME_1" />”၊ “<ph name="DEVICE_NAME_2" />” နှင့် အခြားစက် <ph name="DEVICE_COUNT" /> ခုကို သင့် Chromebook မှ ချိတ်ဆက်မှုဖြုတ်ပါမည်။</translation>
 <translation id="5823239091726045201">ဝဘ်ပေါ်ရှိ Google Tasks</translation>
 <translation id="5825969630400862129">ချိတ်ဆက်ထားသည့် စက်ဆက်တင်များ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> ဒေါင်းလုဒ်ဖိုင်ကို စစ်ဆေးနေသည်</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> သို့ ကာစ် လုပ်နေသည်</translation>
 <translation id="6546062506073634094">ပုံအစမ်းကြည့်ရှုခြင်းများနှင့် အကြောင်းအရာအလိုက် ပုံဖြင့်ရှာဖွေမှု</translation>
+<translation id="6547795021703527064">ဘလူးတုသ် ပိတ်လိုက်သောအခါ “<ph name="DEVICE_NAME" />” ကို သင့် Chromebook မှ ချိတ်ဆက်မှုဖြုတ်ပါမည်။</translation>
 <translation id="6555373427270923730">လိပ်စာဘားထဲတွင် ဝဘ်လိပ်စာကို ရိုက်ထည့်ပြီး <ph name="MODIFIER" /><ph name="KEY" /> ကို နှိပ်ပါ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 အသစ်ထည့်သွင်းမှု</translation>

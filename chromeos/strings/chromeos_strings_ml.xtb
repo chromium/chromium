@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">ചിത്രങ്ങൾ ലോഡ് ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിക്കുകയോ ചിത്രങ്ങൾ വീണ്ടും ലോഡ് ചെയ്യാൻ ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
 <translation id="1751249301761991853">വ്യക്തിപരമാക്കൽ</translation>
 <translation id="1753496554272155572">വാൾപേപ്പർ പ്രിവ്യൂവിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> എന്നതിനുള്ള 'എഡിറ്റ് ചെയ്യുക' ബട്ടൺ.</translation>
 <translation id="1755556344721611131">Diagnostics ആപ്പ്</translation>
 <translation id="175763766237925754">നല്ലത് (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android റൺ ചെയ്യുന്നില്ല</translation>
 <translation id="551689408806449779">ഉപകരണം വിച്ഛേദിച്ചിരിക്കുന്നു. ടെസ്റ്റ് ചെയ്യുന്നതിന് വീണ്ടും കണക്‌റ്റ് ചെയ്യാൻ ശ്രമിക്കുക</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">സൂര്യാസ്തമയ സമയത്ത് സ്വയമേവ ഡാർക്ക് തീമിലേക്ക് മാറുക</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">മധ്യഭാഗം</translation>
 <translation id="5703716265115423771">വോളിയം കുറയ്‌ക്കുക</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> എന്നതിനുള്ള 'എഡിറ്റ് ചെയ്യുക' ബട്ടൺ.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="574392208103952083">ഇടത്തരം</translation>
 <translation id="5757187557809630523">അടുത്ത ട്രാക്ക്</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">നിരോധിച്ചിരിക്കുന്നു</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{നിങ്ങളുടെ ഫയൽ സ്‌കാൻ ചെയ്ത് <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> എന്നതിലേക്ക് സംരക്ഷിച്ചു.}other{നിങ്ങളുടെ ഫയലുകൾ സ്‌കാൻ ചെയ്ത് <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> എന്നതിലേക്ക് സംരക്ഷിച്ചു.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> എന്നതിനുള്ള 'ഇല്ലാതാക്കുക' ബട്ടൺ.</translation>
 <translation id="5931523347251946569">ഫയൽ കണ്ടെത്തിയില്ല</translation>
 <translation id="593880865674747800">ഈ സ്റ്റൈലിൽ കൂടുതൽ സൃഷ്ടിക്കുക</translation>
 <translation id="5939518447894949180">റീസെറ്റ് ചെയ്യുക</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">പരാജയപ്പെട്ട DNS റെസല്യൂഷനുകൾ</translation>
 <translation id="6768237774506518020">ഉയർന്ന DNS റെസല്യൂഷൻ ഫെയ്‌ലിയർ നിരക്ക്</translation>
 <translation id="6791471867139427246">കീബോർഡ് ലൈറ്റിന്റെ നിറം</translation>
+<translation id="6796229976413584781">കുറുക്കുവഴി ഇല്ലാതാക്കി</translation>
 <translation id="6798678288485555829">ടെക്സ്റ്റ് നാവിഗേഷൻ</translation>
 <translation id="680983167891198932">കീ</translation>
 <translation id="6816797338148849397">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ലഭ്യമാണ്. ആക്‌സസ് ചെയ്യാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">നെറ്റ്‌വർക്ക് APN ക്രമീകരണം മാനേജ് ചെയ്യുക. സെല്ലുലാർ നെറ്റ്‌വർക്കിനും ഇന്റർനെറ്റിനും ഇടയിൽ APN-കൾ കണക്ഷൻ സ്ഥാപിക്കുന്നു. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ബാഹ്യ ഉപകരണങ്ങൾക്കുള്ള ഫേംവെയർ അപ്ഡേറ്റുകൾ</translation>
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
+<translation id="7233782086689993269">കുറുക്കുവഴി പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="725133483556299729">ഇമെയിൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7271040990581020067">സ്‌കാനർ നിലവിൽ ഉപയോഗത്തിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7271932918253517778">മുകൾ വരിയിലെ കീകൾ ഉള്ള കുറുക്കുവഴിയിൽ <ph name="META_KEY" /> കീ ഉൾപ്പെടുത്തേണ്ടതുണ്ട്.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
 <translation id="7656388927906093505">ഉപകരണം ഒരു മൗസാണ്.</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">അവതാർ മാറ്റുക</translation>
 <translation id="7683228889864052081">കീബോർഡിന്റെ നിറം</translation>
 <translation id="7690294790491645610">പുതിയ പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">കീബോർഡ് ലെെറ്റ്</translation>
 <translation id="7730077286107534951">അക്കൗണ്ടും സിസ്‌റ്റവുമായി ബന്ധപ്പെട്ട ചില വിവരങ്ങൾ Google-ന് അയച്ചേക്കാം. ഞങ്ങളുടെ <ph name="BEGIN_LINK2" />സ്വകാര്യതാ നയത്തിനും<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />സേവന നിബന്ധനകൾക്കും<ph name="END_LINK3" /> വിധേയമായി, സാങ്കേതിക പ്രശ്നങ്ങൾ പരിഹരിക്കാനും സേവനങ്ങൾ മെച്ചപ്പെടുത്താനും സഹായിക്കുന്നതിന് ഞങ്ങൾ ഈ വിവരങ്ങൾ ഉപയോഗിക്കുന്നു. ഉള്ളടക്ക മാറ്റങ്ങൾ അഭ്യർത്ഥിക്കാൻ <ph name="BEGIN_LINK1" />നിയമ സഹായം<ph name="END_LINK1" /> എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="773153675489693198">സൈക്കിളിന്റെ എണ്ണം</translation>
+<translation id="7746357909584236306">എഡിറ്റ് ചെയ്യാവുന്നത്</translation>
 <translation id="7747039790905080783">മുമ്പ് പങ്കിട്ട കീ</translation>
 <translation id="7752963721013053477">ഉദയം മുതൽ അസ്തമയം വരെ - എക്‌സ്‌ക്ലൂസീവ്</translation>
 <translation id="7762130827864645708">നിങ്ങൾ പാസ്‌വേഡ് മാറ്റി. ഇപ്പോൾ മുതൽ പുതിയ പാസ്‌വേഡ് ഉപയോഗിക്കുക.</translation>

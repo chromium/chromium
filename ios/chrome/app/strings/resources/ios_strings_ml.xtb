@@ -1412,6 +1412,7 @@
 <translation id="8273982424131314219"><ph name="URL" /> എന്നതിൽ നിങ്ങൾ വിവരങ്ങൾ പൂരിപ്പിക്കും</translation>
 <translation id="8281781826761538115">ഡിഫോൾട്ട് - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>
+<translation id="828291969289324795">{count,plural, =1{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="8283172974887967105">സജ്ജീകരിക്കുക…</translation>
 <translation id="8286036467436129157">സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8299417921174340354">പാസ്‍വേഡുകൾ ഉപയോഗിക്കാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>

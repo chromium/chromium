@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">గుడ్ ఆఫ్టర్‌నూన్ <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">మీ <ph name="CATEGORY" />, ఫైల్స్, యాప్‌లు, మరిన్నింటి కోసం సెర్చ్ చేయండి. మీ యాప్‌ల మధ్య నావిగేట్ చేయడానికి బాణం కీలను ఉపయోగించండి.</translation>
 <translation id="1093645050124056515">ctrl + alt + కింది వైపు బాణం గుర్తు</translation>
+<translation id="1094756674036064790">బ్లూటూత్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="109942774857561566">నాకు ఏమీ తోచడం లేదు</translation>
 <translation id="1104084341931202936">యాక్సెసిబిలిటీ సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="1104621072296271835">మీ పరికరాలు కలిసికట్టుగా మరింత బాగా పనిచేస్తాయి</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> అధిక విజిబిలిటీ టోగుల్ చేయండి</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> మేనేజ్ చేయబడిన యూజర్</translation>
 <translation id="3666266999138159418">మీ ఫ్లోటింగ్ విండోను దాచడానికి స్వైప్ చేయండి</translation>
+<translation id="3673898235958558034">మీరు బ్లూటూత్‌ను ఆఫ్ చేసినప్పుడు, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" మీ Chromebook నుండి డిస్‌కనెక్ట్ అవుతాయి.</translation>
 <translation id="367531336287639526">అడ్రస్ బార్‌కు ఎడమ వైపున ఉన్న మొదటి చిహ్నాన్ని ఎంచుకోండి</translation>
 <translation id="3677931086890821290">Wi-Fi, మొబైల్ నెట్‌వర్క్‌ల లొకేషన్‌ను ఉపయోగించడానికి ఇది అన్ని యాప్‌లు, వెబ్‌సైట్‌లను లొకేషన్ అనుమతి, ChromeOSతో అనుమతిస్తుంది.</translation>
 <translation id="3679827876008292680">విండోలో ఉన్న చివరి ట్యాబ్‌కు వెళ్లండి</translation>
@@ -916,6 +918,7 @@
 <translation id="4666911709726371538">మరిన్ని యాప్‌లు</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" />ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="4672539464599646374">బ్యాటరీ సేవర్ ఆన్ చేయబడింది</translation>
+<translation id="4673427585974421255">ఆన్‌లోనే ఉంచండి</translation>
 <translation id="468293128311738995">మీ ఫోన్‌లోని యాప్‌లు</translation>
 <translation id="4690510401873698237">అర కింది భాగంలో ఉంది</translation>
 <translation id="4696813013609194136">తల్లి/తండ్రి కోడ్‌తో పరికరాన్ని అన్‌లాక్ చేయండి</translation>
@@ -1216,6 +1219,7 @@
 <translation id="5802516411616338943">క్విక్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="5804651031882187592">"లాక్ SIM" సెట్టింగ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" />ను యాక్టివేట్ చేయడానికి క్లిక్ చేయండి</translation>
+<translation id="5816222150329690597">మీరు బ్లూటూత్‌ను ఆఫ్ చేసినప్పుడు, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" అలాగే <ph name="DEVICE_COUNT" /> ఇతర పరికరాలు మీ Chromebook నుండి డిస్‌కనెక్ట్ అవుతాయి.</translation>
 <translation id="5823239091726045201">వెబ్‌లో Google టాస్క్‌లు</translation>
 <translation id="5825969630400862129">కనెక్ట్ చేయబడిన పరికరాల సెట్టింగ్‌లు</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />లో <ph name="ROUTE_TITLE" /> ఆపివేయి</translation>
@@ -1396,6 +1400,7 @@
 <translation id="6539852571005954999">డౌన్‌లోడ్ చేయడానికి <ph name="FILENAME" />ను స్కాన్ చేస్తోంది</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />కు ప్రసారం చేస్తున్నారు</translation>
 <translation id="6546062506073634094">కంటెంట్, ఇమేజ్ ప్రివ్యూల ఆధారంగా ఇమేజ్ సెర్చ్</translation>
+<translation id="6547795021703527064">మీరు బ్లూటూత్‌ను ఆఫ్ చేసినప్పుడు, "<ph name="DEVICE_NAME" />" మీ Chromebook నుండి డిస్‌కనెక్ట్ అవుతుంది.</translation>
 <translation id="6555373427270923730">అడ్ర‌స్ బార్‌లో వెబ్ అడ్రస్‌ను టైప్ చేసి, <ph name="MODIFIER" /><ph name="KEY" />‌ను నొక్కండి</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 కొత్తగా ఇన్‌స్టాల్ చేయబడింది</translation>

@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">ఇమేజ్‌లను లోడ్ చేయడం సాధ్యపడలేదు. మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేయండి లేదా ఇమేజ్‌లను మళ్లీ లోడ్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="1751249301761991853">వ్యక్తిగతం</translation>
 <translation id="1753496554272155572">వాల్‌పేపర్ ప్రివ్యూ నుండి నిష్క్రమించండి</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> కోసం ఎడిట్ బటన్.</translation>
 <translation id="1755556344721611131">సమస్య విశ్లేషణలకు సంబంధించిన యాప్</translation>
 <translation id="175763766237925754">బాగుంది (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android రన్ అవ్వడం లేదు</translation>
 <translation id="551689408806449779">పరికరం డిస్‌కనెక్ట్ చేయబడింది. టెస్ట్ చేయడం కోసం మళ్లీ కనెక్ట్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">లాక్ చేయబడింది</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">సూర్యాస్తమయానికి ఆటోమేటిక్‌గా ముదురు రంగు రూపానికి మారండి</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="5703716265115423771">వాల్యూమ్ తగ్గిస్తుంది</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> కోసం ఎడిట్ బటన్.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
 <translation id="5757187557809630523">తర్వాతి ట్రాక్</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">నిషేధించబడింది</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{మీ ఫైల్ విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడింది.}other{మీ ఫైళ్లు విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడ్డాయి.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> కోసం తొలగించు బటన్.</translation>
 <translation id="5931523347251946569">ఫైల్ కనుగొనబడలేదు</translation>
 <translation id="593880865674747800">ఈ స్టయిల్‌లో మరిన్ని క్రియేట్ చేయండి</translation>
 <translation id="5939518447894949180">రీసెట్ చేయండి</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">విఫలమైన DNS రిజల్యూషన్‌లు</translation>
 <translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
 <translation id="6791471867139427246">కీబోర్డ్ లైట్ రంగు</translation>
+<translation id="6796229976413584781">షార్ట్‌కట్ తొలగించబడింది</translation>
 <translation id="6798678288485555829">టెక్స్ట్ నావిగేషన్</translation>
 <translation id="680983167891198932">కీ</translation>
 <translation id="6816797338148849397">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారం అందుబాటులో ఉంది. యాక్సెస్ చేయడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ని ఏర్పరుస్తాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">బాహ్య పరికరాల కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
+<translation id="7233782086689993269">షార్ట్‌కట్ రీస్టోర్ చేయబడింది</translation>
 <translation id="725133483556299729">ఈమెయిల్‌ను ఎంచుకోండి</translation>
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7271932918253517778">పైన ఉండే అడ్డు వరుసలోని కీలతో షార్ట్‌కట్‌ను క్రియేట్ చేయాలంటే, అందులో <ph name="META_KEY" /> కీ కూడా ఉండాలి.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7656388927906093505">పరికరం రకం మౌస్.</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">అవతార్‌ను మార్చండి</translation>
 <translation id="7683228889864052081">కీబోర్డ్ రంగు</translation>
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">కీబోర్డ్ లైట్</translation>
 <translation id="7730077286107534951">ఖాతా, సిస్టమ్‌కు సంబంధించిన కొంత సమాచారం Googleకు పంపబడవచ్చు. మా <ph name="BEGIN_LINK2" />గోప్యతా పాలసీ<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />సర్వీస్ నియమాలు<ph name="END_LINK3" />కు లోబడి సాంకేతిక సమస్యలను పరిష్కరించడంలో, మా సర్వీస్‌లను మెరుగుపరచడంలో సహాయపడటానికి మేము ఈ సమాచారాన్ని ఉపయోగిస్తాము. కంటెంట్ మార్పులను రిక్వెస్ట్ చేయడానికి, <ph name="BEGIN_LINK1" />చట్టపరమైన సహాయం<ph name="END_LINK1" />కి వెళ్లండి.</translation>
 <translation id="773153675489693198">సైకిల్ సంఖ్య</translation>
+<translation id="7746357909584236306">ఎడిట్ చేయదగినది</translation>
 <translation id="7747039790905080783">ముందే షేర్ చేసిన కీ</translation>
 <translation id="7752963721013053477">ఉదయం నుండి సాయంత్రం వరకు - ప్రత్యేకం</translation>
 <translation id="7762130827864645708">మీ పాస్‌వర్డ్ మార్పు విజయవంతమైంది. ఇప్పటి నుండి కొత్త పాస్‌వర్డ్‌ను ఉపయోగించండి.</translation>

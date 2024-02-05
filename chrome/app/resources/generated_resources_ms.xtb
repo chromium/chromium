@@ -3308,6 +3308,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3497560059572256875">Kongsi Coretan</translation>
 <translation id="3497915391670770295">Hantar kepada Peranti &amp;Anda</translation>
 <translation id="3500417806337761827">Ralat semasa melekapkan perkongsian. Terlalu banyak perkongsian SMB telah dilekapkan.</translation>
+<translation id="3500764001796099683">Dayakan apl web terpencil</translation>
 <translation id="350397915809787283">Jika anda tiada akaun, pilih pilihan pertama untuk membuat akaun.</translation>
 <translation id="3503995387997205657">Anda boleh memulihkan apl terdahulu anda</translation>
 <translation id="3505100368357440862">Cadangan beli-belah</translation>
@@ -7184,6 +7185,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6551508934388063976">Perintah tidak tersedia. Tekan control-N untuk membuka tetingkap baharu.</translation>
 <translation id="6551606359270386381">Alat Elips</translation>
 <translation id="6551612971599078809">Tapak menggunakan USB</translation>
+<translation id="6551620030439692385">Disekat. Zon waktu ditetapkan kepada <ph name="TIMEZONE" /> pada masa ini dan hanya boleh dikemaskinikan secara manual.</translation>
 <translation id="6551739526055143276">Diurus oleh Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> pengguna</translation>
 <translation id="6555432686520421228">Alih keluar semua akaun pengguna dan tetapkan semula peranti <ph name="IDS_SHORT_PRODUCT_NAME" /> anda menjadi seperti baharu.</translation>
@@ -7252,6 +7254,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6608773371844092260">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di sebelah kanan <ph name="DEVICE_TYPE" /> ini. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="6609478180749378879">Data log masuk akan disimpan pada peranti ini selepas anda keluar daripada mod Inkognito. Anda akan dapat log masuk ke laman web ini menggunakan peranti anda kemudian.</translation>
 <translation id="6610002944194042868">Pilihan Terjemahan</translation>
+<translation id="6610064275805055636">Urus apl web terpencil</translation>
 <translation id="6611972847767394631">Cari tab anda di sini</translation>
 <translation id="661266467055912436">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web.</translation>
 <translation id="6613267708691765962">Mengimbas untuk mengesan perisian hasad...</translation>
@@ -8616,6 +8619,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" mahu mengimbas daripada "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Pilih peranti yang mempunyai kunci laluan untuk <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, dalam <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Disekat. Jadual ditetapkan kepada <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> pada masa ini dan hanya boleh dikemaskinikan secara manual.</translation>
 <translation id="7673313156293624327">Log Shill (Pengurus Sambungan) ChromeOS</translation>
 <translation id="7674416868315480713">Nyahaktifkan semua port yang dikirim semula dalam Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apl</translation>
@@ -9550,6 +9554,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8376384591331888629">Termasuk kuki pihak ketiga pada tapak ini</translation>
 <translation id="8376451933628734023">Jika apl web ini cuba memperdaya anda agar menganggapnya apl lain, nyahpasang apl ini.</translation>
 <translation id="8376532149031784008">Memuat semula <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Sambungan yang dipasang oleh pentadbir anda masih boleh membaca dan mengubah laman ini</translation>
 <translation id="8376752431516546391">Panel sisi Google Search</translation>
 <translation id="8377625247046155446">Kunci laluan ini hanya akan disimpan pada peranti ini. Kunci ini akan kekal pada peranti ini selepas anda menutup semua tetingkap inkognito.</translation>
 <translation id="8378714024927312812">Diurus oleh organisasi anda</translation>
