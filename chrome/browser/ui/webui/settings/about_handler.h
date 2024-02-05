@@ -84,6 +84,9 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void HandleOpenHelpPage(const base::Value::List& args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Opens the Extended Updates dialog. |args| must be empty.
+  void HandleOpenExtendedUpdatesDialog(const base::Value::List& args);
+
   // Checks if ReleaseNotes is enabled.
   void HandleGetEnabledReleaseNotes(const base::Value::List& args);
 

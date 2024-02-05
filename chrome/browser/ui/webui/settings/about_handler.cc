@@ -67,6 +67,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/browser/ui/webui/ash/image_source.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
@@ -289,6 +290,11 @@ void AboutHandler::RegisterMessages() {
                                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
+      "openExtendedUpdatesDialog",
+      base::BindRepeating(&AboutHandler::HandleOpenExtendedUpdatesDialog,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
       "openDiagnostics",
       base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
                           base::Unretained(this)));
@@ -474,6 +480,12 @@ void AboutHandler::HandleOpenHelpPage(const base::Value::List& args) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void AboutHandler::HandleOpenExtendedUpdatesDialog(
+    const base::Value::List& args) {
+  DCHECK(args.empty());
+  ash::extended_updates::ExtendedUpdatesDialog::Show();
+}
+
 void AboutHandler::HandleOpenDiagnostics(const base::Value::List& args) {
   DCHECK(args.empty());
   chrome::ShowDiagnosticsApp(profile_);
