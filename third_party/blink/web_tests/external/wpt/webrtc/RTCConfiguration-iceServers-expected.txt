@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] new RTCPeerConnection(config) - with turns server and empty string username, credential should succeed
   Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
 [FAIL] setConfiguration(config) - with turns server and empty string username, credential should succeed
@@ -12,9 +12,5 @@ Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() =>\n      makePc({ iceServers: [{\n        url: 'stun:stun1.example.net'\n      }] })" did not throw
 [FAIL] setConfiguration(config) - with url field should throw TypeError
   assert_throws_js: function "() =>\n      makePc({ iceServers: [{\n        url: 'stun:stun1.example.net'\n      }] })" did not throw
-[FAIL] new RTCPeerConnection(config) - with turns server, and object credential should throw InvalidAccessError
-  assert_throws_dom: function "() =>\n      makePc({ iceServers: [{\n        urls: 'turns:turn.example.org',\n        username: 'user',\n        credential: {\n          macKey: '',\n          accessToken: ''\n        }\n      }] })" did not throw
-[FAIL] setConfiguration(config) - with turns server, and object credential should throw InvalidAccessError
-  assert_throws_dom: function "() =>\n      makePc({ iceServers: [{\n        urls: 'turns:turn.example.org',\n        username: 'user',\n        credential: {\n          macKey: '',\n          accessToken: ''\n        }\n      }] })" did not throw
 Harness: the test ran to completion.
 
