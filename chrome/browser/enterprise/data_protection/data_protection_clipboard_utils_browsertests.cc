@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/run_loop.h"
-#include "chrome/browser/enterprise/data_controls/test_utils.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/test_utils.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/enterprise/data_controls/features.h"
@@ -41,12 +44,12 @@ class DataControlsClipboardUtilsBrowserTest
     ASSERT_TRUE(dialog);
     ASSERT_EQ(dialog, constructed_dialog_);
 
-    // Some platforms crash if the dialog has been cancelled before fully        
-    // launching modally, so to avoid that issue cancelling the dialog is done   
-    // asynchronously.                                                           
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(                 
-        FROM_HERE,                                                               
-        base::BindOnce(&data_controls::DataControlsDialog::CancelDialog,         
+    // Some platforms crash if the dialog has been cancelled before fully
+    // launching modally, so to avoid that issue cancelling the dialog is done
+    // asynchronously.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&data_controls::DataControlsDialog::CancelDialog,
                        base::Unretained(dialog)));
   }
 
@@ -75,10 +78,12 @@ class DataControlsClipboardUtilsBrowserTest
   raw_ptr<data_controls::DataControlsDialog> constructed_dialog_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, PasteAllowed) {
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
+                       PasteAllowed_NoSource) {
   base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
   enterprise_data_protection::PasteIfAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(absl::nullopt),
+      /*destination=*/
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
@@ -96,7 +101,33 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, PasteAllowed) {
 }
 
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
-                       PasteBlockedByDataControls) {
+                       PasteAllowed_SameSource) {
+  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  enterprise_data_protection::PasteIfAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*destination=*/
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234},
+      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+
+  auto paste_data = future.Get();
+  EXPECT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, "text");
+  EXPECT_EQ(paste_data->image, "image");
+
+  EXPECT_FALSE(constructed_dialog_);
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
+                       PasteBlockedByDataControls_DestinationRule) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "destinations": {
                       "urls": ["google.com"]
@@ -109,6 +140,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
   enterprise_data_protection::PasteIfAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(absl::nullopt),
+      /*destination=*/
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
@@ -122,5 +154,56 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
 
   WaitForDialogToClose();
 }
+
+// Ash requires extra boilerplate to run this test, and since copy-pasting
+// between profiles on Ash isn't a meaningful test it is simply omitted from
+// running this.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
+                       PasteBlockedByDataControls_SourceRule) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "destinations": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  // By making a new profile for this test, we ensure we can prevent pasting to
+  // it by having the rule set in the source profile.
+  std::unique_ptr<Profile> destination_profile;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    destination_profile = Profile::CreateProfile(
+        g_browser_process->profile_manager()->user_data_dir().Append(
+            FILE_PATH_LITERAL("DC Test Profile")),
+        /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+  }
+
+  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  enterprise_data_protection::PasteIfAllowedByPolicy(
+      /*destination=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://foo.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*destination=*/
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [&destination_profile]() -> content::BrowserContext* {
+                return destination_profile.get();
+              }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234},
+      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+
+  auto paste_data = future.Get();
+  EXPECT_FALSE(paste_data);
+
+  WaitForDialogToClose();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace data_protection

@@ -175,6 +175,14 @@ void PasteIfAllowedByDataControls(
   auto verdict = data_controls::RulesServiceFactory::GetForBrowserContext(
                      destination.browser_context())
                      ->GetPasteVerdict(source, destination, metadata);
+  if (source.browser_context() &&
+      source.browser_context() != destination.browser_context()) {
+    verdict = data_controls::Verdict::Merge(
+        data_controls::RulesServiceFactory::GetForBrowserContext(
+            source.browser_context())
+            ->GetPasteVerdict(source, destination, metadata),
+        std::move(verdict));
+  }
 
   // TODO(b/302340176): Add support for verdicts other than "block".
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
