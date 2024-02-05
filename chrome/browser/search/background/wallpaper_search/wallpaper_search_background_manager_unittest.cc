@@ -47,6 +47,12 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
   MOCK_METHOD1(UpdateCustomLocalBackgroundColorAsync, void(const gfx::Image&));
 };
 
+class MockWallpaperSearchBackgroundManagerObserver
+    : public WallpaperSearchBackgroundManagerObserver {
+ public:
+  MOCK_METHOD0(OnHistoryUpdated, void());
+};
+
 std::unique_ptr<TestingProfile> MakeTestingProfile() {
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactory(
@@ -596,4 +602,24 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
 
   // The theme file created above should still be there.
   EXPECT_TRUE(base::PathExists(GetFilePathForBackground(tokens[3])));
+}
+
+TEST_F(WallpaperSearchBackgroundManagerTest, NotifyAboutHistory) {
+  std::unique_ptr<MockWallpaperSearchBackgroundManagerObserver> observer =
+      std::make_unique<MockWallpaperSearchBackgroundManagerObserver>();
+  EXPECT_CALL(*observer, OnHistoryUpdated());
+
+  // Add mock observer to observer list and update history pref.
+  wallpaper_search_background_manager().AddObserver(observer.get());
+  base::Value::List history =
+      base::Value::List().Append(base::Value::Dict().Set(
+          kWallpaperSearchHistoryId, base::Token::CreateRandom().ToString()));
+  pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
+
+  // Remove mock observer to observer list and update history pref.
+  // This shouldn't create another call to OnHistoryUpdated().
+  wallpaper_search_background_manager().RemoveObserver(observer.get());
+  history = base::Value::List().Append(base::Value::Dict().Set(
+      kWallpaperSearchHistoryId, base::Token::CreateRandom().ToString()));
+  pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
 }

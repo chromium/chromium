@@ -49,12 +49,15 @@ suite('WallpaperSearchTest', () => {
     return wallpaperSearchElement;
   }
 
-  async function createWallpaperSearchElementWithDescriptors() {
-    createWallpaperSearchElement({
-      descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-      descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-      descriptorC: ['foo', 'bar', 'baz'],
-    });
+  async function createWallpaperSearchElementWithDescriptors(
+      inspirationGroups: InspirationGroup[]|null = null) {
+    createWallpaperSearchElement(
+        {
+          descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+          descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+          descriptorC: ['foo', 'bar', 'baz'],
+        },
+        inspirationGroups);
   }
 
   function updateCrFeedbackButtons(option: CrFeedbackOption) {
@@ -961,6 +964,7 @@ suite('WallpaperSearchTest', () => {
       });
 
       test('reattempts failed descriptor fetch for generic error', async () => {
+        loadTimeData.overrideValues({genericErrorDescription: 'generic error'});
         createWallpaperSearchElement();
         await flushTasks();
 
@@ -970,7 +974,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Please try again later.');
+            'generic error');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
 
@@ -992,6 +996,8 @@ suite('WallpaperSearchTest', () => {
       });
 
       test('shows history description for generic error', async () => {
+        loadTimeData.overrideValues(
+            {genericErrorDescriptionWithHistory: 'generic error with history'});
         createWallpaperSearchElement();
 
         wallpaperSearchCallbackRouterRemote.setHistory([
@@ -1005,13 +1011,96 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Try again or select from one of the previously generated themes below.');
+            'generic error with history');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test('shows inspiration description for generic error', async () => {
+        loadTimeData.overrideValues({
+          wallpaperSearchInspirationCardEnabled: true,
+          genericErrorDescriptionWithInspiration:
+              'generic error with inspiration',
+        });
+        createWallpaperSearchElement(
+            /*descriptors=*/ null, /*inspirationGroups=*/[
+              {
+                descriptors: {
+                  subject: 'foobar',
+                  style: undefined,
+                  mood: undefined,
+                  color: undefined,
+                },
+                inspirations: [
+                  {
+                    id: {high: BigInt(10), low: BigInt(1)},
+                    description: 'Description',
+                    backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                    thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  },
+                ],
+              },
+            ]);
+        await flushTasks();
+
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'generic error with inspiration');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
 
       test(
+          'shows inspiration and history description for generic error',
+          async () => {
+            loadTimeData.overrideValues({
+              wallpaperSearchInspirationCardEnabled: true,
+              genericErrorDescriptionWithHistoryAndInspiration:
+                  'generic error with history and inspiration',
+            });
+            createWallpaperSearchElement(
+                /*descriptors=*/ null, /*inspirationGroups=*/[
+                  {
+                    descriptors: {
+                      subject: 'foobar',
+                      style: undefined,
+                      mood: undefined,
+                      color: undefined,
+                    },
+                    inspirations: [
+                      {
+                        id: {high: BigInt(10), low: BigInt(1)},
+                        description: 'Description',
+                        backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                        thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                      },
+                    ],
+                  },
+                ]);
+
+            wallpaperSearchCallbackRouterRemote.setHistory([
+              {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+              {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+            ]);
+            await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+            assertNotStyle(
+                $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+            assertEquals(
+                $$<HTMLElement>(
+                    wallpaperSearchElement, '#errorDescription')!.textContent,
+                'generic error with history and inspiration');
+            assertStyle(
+                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+                'none');
+          });
+
+      test(
           'reattempts failed descriptor fetch with offline error', async () => {
+            loadTimeData.overrideValues({offlineDescription: 'offline error'});
             windowProxy.setResultFor('onLine', false);
             createWallpaperSearchElement();
             await flushTasks();
@@ -1022,7 +1111,7 @@ suite('WallpaperSearchTest', () => {
             assertEquals(
                 $$<HTMLElement>(
                     wallpaperSearchElement, '#errorDescription')!.textContent,
-                'Check your internet and try again.');
+                'offline error');
             assertStyle(
                 $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
                 'none');
@@ -1048,6 +1137,8 @@ suite('WallpaperSearchTest', () => {
           });
 
       test('shows history description for offline error', async () => {
+        loadTimeData.overrideValues(
+            {offlineDescriptionWithHistory: 'offline error with history'});
         createWallpaperSearchElement();
 
         windowProxy.setResultFor('onLine', false);
@@ -1062,8 +1153,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Check your internet and try again. ' +
-                'You can still select from one of the previously generated themes below.');
+            'offline error with history');
       });
     });
 
@@ -1088,6 +1178,7 @@ suite('WallpaperSearchTest', () => {
       });
 
       test('shows error ui if browser offline', async () => {
+        loadTimeData.overrideValues({offlineDescription: 'offline error'});
         windowProxy.setResultFor('onLine', false);
         createWallpaperSearchElementWithDescriptors();
         await flushTasks();
@@ -1101,7 +1192,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Check your internet and try again.');
+            'offline error');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
@@ -1126,13 +1217,14 @@ suite('WallpaperSearchTest', () => {
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
 
-      [[WallpaperSearchStatus.kError, 'Please try again later.'],
-       [
-         WallpaperSearchStatus.kRequestThrottled,
-         'Please try again in a few minutes.',
-       ],
+      [[WallpaperSearchStatus.kError, 'generic error'],
+       [WallpaperSearchStatus.kRequestThrottled, 'throttle error'],
       ].forEach(([status, description]) => {
-        test(`shows error ${description} for status ${status}`, async () => {
+        test(`shows correct error for status ${status}`, async () => {
+          loadTimeData.overrideValues({
+            genericErrorDescription: 'generic error',
+            requestThrottledDescription: 'throttle error',
+          });
           handler.setResultFor(
               'getWallpaperSearchResults',
               Promise.resolve({status: status, results: []}));
@@ -1155,6 +1247,8 @@ suite('WallpaperSearchTest', () => {
       });
 
       test(`shows generic error if there is history`, async () => {
+        loadTimeData.overrideValues(
+            {genericErrorDescriptionWithHistory: 'generic error with history'});
         handler.setResultFor(
             'getWallpaperSearchResults',
             Promise.resolve(
@@ -1175,20 +1269,111 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Try again or select from one of the previously generated themes below.');
+            'generic error with history');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
+
+      test(`shows generic error if there is inspiration`, async () => {
+        loadTimeData.overrideValues({
+          wallpaperSearchInspirationCardEnabled: true,
+          genericErrorDescriptionWithInspiration:
+              'generic error with inspiration',
+        });
+        handler.setResultFor(
+            'getWallpaperSearchResults',
+            Promise.resolve(
+                {status: WallpaperSearchStatus.kError, results: []}));
+        createWallpaperSearchElementWithDescriptors([{
+          descriptors: {
+            subject: 'foobar',
+            style: undefined,
+            mood: undefined,
+            color: undefined,
+          },
+          inspirations: [
+            {
+              id: {high: BigInt(10), low: BigInt(1)},
+              description: 'Description',
+              backgroundUrl: {url: 'https://example.com/foo_1.png'},
+              thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+            },
+          ],
+        }]);
+        await flushTasks();
+
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertNotStyle(
+            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(
+            $$<HTMLElement>(
+                wallpaperSearchElement, '#errorDescription')!.textContent,
+            'generic error with inspiration');
+        assertStyle(
+            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+      });
+
+      test(
+          `shows generic error if there is history and inspiration`,
+          async () => {
+            loadTimeData.overrideValues({
+              wallpaperSearchInspirationCardEnabled: true,
+              genericErrorDescriptionWithHistoryAndInspiration:
+                  'generic error with history and inspiration',
+            });
+            handler.setResultFor(
+                'getWallpaperSearchResults',
+                Promise.resolve(
+                    {status: WallpaperSearchStatus.kError, results: []}));
+            createWallpaperSearchElementWithDescriptors([{
+              descriptors: {
+                subject: 'foobar',
+                style: undefined,
+                mood: undefined,
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description',
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            }]);
+            await flushTasks();
+
+            wallpaperSearchCallbackRouterRemote.setHistory([
+              {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+              {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+            ]);
+            await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+            wallpaperSearchElement.$.submitButton.click();
+            await waitAfterNextRender(wallpaperSearchElement);
+
+            assertNotStyle(
+                $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+            assertEquals(
+                $$<HTMLElement>(
+                    wallpaperSearchElement, '#errorDescription')!.textContent,
+                'generic error with history and inspiration');
+            assertStyle(
+                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+                'none');
+          });
     });
 
     test('maintains focus on error ui if error is unresolved', async () => {
+      loadTimeData.overrideValues({offlineDescription: 'offline error'});
       windowProxy.setResultFor('onLine', false);
       createWallpaperSearchElement();
       await flushTasks();
       assertEquals(
           $$<HTMLElement>(
               wallpaperSearchElement, '#errorDescription')!.textContent,
-          'Check your internet and try again.');
+          'offline error');
       assertEquals(
           wallpaperSearchElement.$.error,
           wallpaperSearchElement.shadowRoot!.activeElement);
@@ -1199,7 +1384,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           $$<HTMLElement>(
               wallpaperSearchElement, '#errorDescription')!.textContent,
-          'Check your internet and try again.');
+          'offline error');
       assertEquals(
           wallpaperSearchElement.$.error,
           wallpaperSearchElement.shadowRoot!.activeElement);
@@ -1757,7 +1942,113 @@ suite('WallpaperSearchTest', () => {
           handler.getArgs('setBackgroundToInspirationImage')[0][1].url);
     });
 
-    test('inspirations updates selected descriptors', async () => {
+    test('inspration group titles update selected descriptors', async () => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchDescriptorsChangedA11yMessage': 'Descriptors updated',
+      });
+      createWallpaperSearchElement(
+          /*descriptors=*/ {
+            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+            descriptorC: ['foo', 'bar', 'baz'],
+          },
+          /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'baz',
+                style: 'foo',
+                mood: 'bar',
+                color: {name: DescriptorDName.kYellow},
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description foo',
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+            {
+              descriptors: {
+                subject: 'bar',
+                mood: 'baz',
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description foo',
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+          ]);
+      await flushTasks();
+
+      const groupTitles = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          '.inspiration-title');
+      const firstGroupTitle = groupTitles[0];
+      const secondGroupTitle = groupTitles[1];
+      assertTrue(!!firstGroupTitle);
+      assertTrue(!!secondGroupTitle);
+
+      let loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      (firstGroupTitle as HTMLElement).click();
+      await flushTasks();
+
+      assertEquals(
+          'baz',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxA')!.value);
+      assertEquals(
+          'foo',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxB')!.value);
+      assertEquals(
+          'bar',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      const checkedColor =
+          $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
+      assertTrue(!!checkedColor);
+      assertEquals('Yellow', checkedColor!.parentElement!.title);
+      assertEquals(firstGroupTitle.getAttribute('aria-current'), 'true');
+      assertEquals(secondGroupTitle.getAttribute('aria-current'), 'false');
+      let loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
+
+      loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      (secondGroupTitle as HTMLElement)
+          .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+      await flushTasks();
+
+      assertEquals(
+          'bar',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxA')!.value);
+      assertEquals(
+          null,
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxB')!.value);
+      assertEquals(
+          'baz',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      assertFalse(
+          !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
+      assertEquals(firstGroupTitle.getAttribute('aria-current'), 'false');
+      assertEquals(secondGroupTitle.getAttribute('aria-current'), 'true');
+      loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
+    });
+
+    test('inspiration tiles updates selected descriptors', async () => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchDescriptorsChangedA11yMessage': 'Descriptors updated',
+      });
       createWallpaperSearchElement(
           /*descriptors=*/ {
             descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
@@ -1811,6 +2102,8 @@ suite('WallpaperSearchTest', () => {
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
 
+      let loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
       const inspirationGroupGrids =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
               '#inspirationCard cr-grid');
@@ -1836,7 +2129,11 @@ suite('WallpaperSearchTest', () => {
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
       assertEquals('Yellow', checkedColor!.parentElement!.title);
+      let loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
 
+      loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
       inspirationTile = inspirationGroupGrids[1]!.querySelector('.tile');
       assertTrue(!!inspirationTile);
       (inspirationTile as HTMLElement).click();
@@ -1856,6 +2153,8 @@ suite('WallpaperSearchTest', () => {
               wallpaperSearchElement, '#descriptorComboboxC')!.value);
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
+      loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
     });
 
     test('inspiration card toggles on click', async () => {
@@ -1866,9 +2165,9 @@ suite('WallpaperSearchTest', () => {
           $$<IronCollapseElement>(wallpaperSearchElement, 'iron-collapse')!;
       assertFalse(ironCollapse.opened);
       assertEquals(
-          'expand-carets',
+          'cr-icon expand-carets',
           wallpaperSearchElement.shadowRoot!
-              .querySelector('#inspirationToggle')!.className);
+              .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'false',
           $$<IronCollapseElement>(
@@ -1879,22 +2178,22 @@ suite('WallpaperSearchTest', () => {
 
       assertTrue(ironCollapse.opened);
       assertEquals(
-          'collapse-carets',
+          'cr-icon collapse-carets',
           wallpaperSearchElement.shadowRoot!
-              .querySelector('#inspirationToggle')!.className);
+              .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'true',
           $$<IronCollapseElement>(
               wallpaperSearchElement, '#inspirationToggle')!.ariaExpanded);
 
-      $$<CrIconButtonElement>(
-          wallpaperSearchElement, '#inspirationToggle')!.click();
+      $$<CrIconButtonElement>(wallpaperSearchElement, '#inspirationToggle')!
+          .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
 
       assertFalse(ironCollapse.opened);
       assertEquals(
-          'expand-carets',
+          'cr-icon expand-carets',
           wallpaperSearchElement.shadowRoot!
-              .querySelector('#inspirationToggle')!.className);
+              .querySelector('#inspirationToggle div')!.className);
       assertEquals(
           'false',
           $$<IronCollapseElement>(

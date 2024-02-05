@@ -13,7 +13,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager_observer.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class PrefRegistrySimple;
@@ -49,15 +51,23 @@ class WallpaperSearchBackgroundManager {
   virtual std::optional<base::Token> SaveCurrentBackgroundToHistory(
       const HistoryEntry& history_entry);
 
+  // Adds/Removes WallpaperSearchBackgroundManagerObserver observers.
+  virtual void AddObserver(WallpaperSearchBackgroundManagerObserver* observer);
+  void RemoveObserver(WallpaperSearchBackgroundManagerObserver* observer);
+
  private:
   void SetBackgroundToLocalResourceWithId(const base::Token& id,
                                           base::ElapsedTimer timer,
                                           const SkBitmap& bitmap,
                                           bool is_inspiration_image);
 
+  void NotifyAboutHistory();
+
+  PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+  base::ObserverList<WallpaperSearchBackgroundManagerObserver> observers_;
 
   base::WeakPtrFactory<WallpaperSearchBackgroundManager> weak_ptr_factory_{
       this};

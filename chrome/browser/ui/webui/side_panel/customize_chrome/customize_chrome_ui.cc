@@ -207,7 +207,14 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"wallpaperSearchHistoryResultLabelBC",
        IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C},
       {"showInspirationCardToggle",
-       IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_CARD_TOGGLE_TITLE}};
+       IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_CARD_TOGGLE_TITLE},
+      {"genericErrorDescriptionWithInspiration",
+       IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_INSPIRATION},
+      {"genericErrorDescriptionWithHistoryAndInspiration",
+       IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY_AND_INSPIRATION},
+      {"wallpaperSearchDescriptorsChangedA11yMessage",
+       IDS_NTP_WALLPAPER_SEARCH_DESCRIPTORS_CHANGED_A11Y_MESSAGE},
+  };
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddBoolean(

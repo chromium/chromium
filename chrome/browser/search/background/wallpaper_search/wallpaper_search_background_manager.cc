@@ -150,6 +150,11 @@ WallpaperSearchBackgroundManager::WallpaperSearchBackgroundManager(
       profile_(profile),
       pref_service_(profile_->GetPrefs()) {
   CHECK(ntp_custom_background_service_);
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kNtpWallpaperSearchHistory,
+      base::BindRepeating(&WallpaperSearchBackgroundManager::NotifyAboutHistory,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 WallpaperSearchBackgroundManager::~WallpaperSearchBackgroundManager() = default;
@@ -261,6 +266,16 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
   return std::nullopt;
 }
 
+void WallpaperSearchBackgroundManager::AddObserver(
+    WallpaperSearchBackgroundManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WallpaperSearchBackgroundManager::RemoveObserver(
+    WallpaperSearchBackgroundManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void WallpaperSearchBackgroundManager::SetBackgroundToLocalResourceWithId(
     const base::Token& id,
     base::ElapsedTimer timer,
@@ -275,4 +290,10 @@ void WallpaperSearchBackgroundManager::SetBackgroundToLocalResourceWithId(
           ? "NewTabPage.WallpaperSearch.SetInspirationThemeProcessingLatency"
           : "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency",
       timer.Elapsed());
+}
+
+void WallpaperSearchBackgroundManager::NotifyAboutHistory() {
+  for (auto& observer : observers_) {
+    observer.OnHistoryUpdated();
+  }
 }

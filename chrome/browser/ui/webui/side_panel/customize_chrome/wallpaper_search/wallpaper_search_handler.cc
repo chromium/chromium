@@ -130,11 +130,8 @@ WallpaperSearchHandler::WallpaperSearchHandler(
       session_id_(session_id),
       client_(std::move(pending_client)),
       receiver_(this, std::move(pending_handler)) {
-  pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kNtpWallpaperSearchHistory,
-      base::BindRepeating(&WallpaperSearchHandler::UpdateHistory,
-                          weak_ptr_factory_.GetWeakPtr()));
+  wallpaper_search_background_manager_observation_.Observe(
+      wallpaper_search_background_manager);
 }
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {
@@ -550,6 +547,10 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
       /*category_tag=*/"wallpaper_search",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+}
+
+void WallpaperSearchHandler::OnHistoryUpdated() {
+  WallpaperSearchHandler::UpdateHistory();
 }
 
 // This function is a wrapper around image_fetcher::ImageDecoder::DecodeImage()

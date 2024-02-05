@@ -145,7 +145,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       },
       errorState_: {
         type: Object,
-        computed: 'computeErrorState_(status_, history_)',
+        computed:
+            'computeErrorState_(status_, shouldShowHistory_, shouldShowInspiration_)',
       },
       emptyHistoryContainers_: Object,
       emptyResultContainers_: Object,
@@ -179,6 +180,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       selectedHue_: {
         type: Number,
         value: null,
+      },
+      shouldShowHistory_: {
+        type: Boolean,
+        computed: 'computeShouldShowHistory_(history_)',
+      },
+      shouldShowInspiration_: {
+        type: Boolean,
+        computed: 'computeShouldShowInspiration_(inspirationGroups_)',
       },
       status_: {
         type: WallpaperSearchStatus,
@@ -217,6 +226,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private selectedDescriptorD_: DescriptorDValue|null;
   private selectedFeedbackOption_: CrFeedbackOption;
   private selectedHue_: number|null;
+  private shouldShowHistory_: boolean;
+  private shouldShowInspiration_: boolean;
   private status_: WallpaperSearchStatus;
   private theme_: Theme|undefined;
 
@@ -257,7 +268,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
             (history: WallpaperSearchResult[]) => {
               this.history_ = history;
               this.emptyHistoryContainers_ = this.calculateEmptyTiles(history);
-              this.openInspirations_ = !this.shouldShowHistory_();
+              this.openInspirations_ = !this.shouldShowHistory_;
             });
     this.wallpaperSearchHandler_.updateHistory();
     this.loadingUiResizeObserver_ = new ResizeObserver(() => {
@@ -295,11 +306,21 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kOk:
         return null;
       case WallpaperSearchStatus.kError:
+        let errorDescription;
+        if (this.shouldShowHistory_ && this.shouldShowInspiration_) {
+          errorDescription =
+              this.i18n('genericErrorDescriptionWithHistoryAndInspiration');
+        } else if (this.shouldShowHistory_) {
+          errorDescription = this.i18n('genericErrorDescriptionWithHistory');
+        } else if (this.shouldShowInspiration_) {
+          errorDescription =
+              this.i18n('genericErrorDescriptionWithInspiration');
+        } else {
+          errorDescription = this.i18n('genericErrorDescription');
+        }
         return {
           title: this.i18n('genericErrorTitle'),
-          description: this.shouldShowHistory_() ?
-              this.i18n('genericErrorDescriptionWithHistory') :
-              this.i18n('genericErrorDescription'),
+          description: errorDescription,
           callToAction: this.i18n('tryAgain'),
         };
       case WallpaperSearchStatus.kRequestThrottled:
@@ -311,7 +332,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kOffline:
         return {
           title: this.i18n('offlineTitle'),
-          description: this.shouldShowHistory_() ?
+          description: this.shouldShowHistory_ ?
               this.i18n('offlineDescriptionWithHistory') :
               this.i18n('offlineDescription'),
           callToAction: this.i18n('ok'),
@@ -321,6 +342,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private computeInspirationToggleIcon_(): string {
     return this.openInspirations_ ? 'collapse-carets' : 'expand-carets';
+  }
+
+  private computeShouldShowHistory_(): boolean {
+    return this.history_.length > 0;
+  }
+
+  private computeShouldShowInspiration_(): boolean {
+    return !!this.inspirationGroups_ && this.inspirationGroups_.length > 0;
   }
 
   private expandCategoryForDescriptorA_(label: string) {
@@ -422,6 +451,19 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return this.selectedHue_ !== null ? 'true' : 'false';
   }
 
+  private getInspirationDescriptorsCheckedStatus_(
+      groupDescriptors: ResultDescriptors): string {
+    const groupDescriptorColor = groupDescriptors.color?.name !== undefined ?
+        descriptorDNameToHex(groupDescriptors.color!.name) :
+        undefined;
+    return (groupDescriptors.subject || null) === this.selectedDescriptorA_ &&
+            (groupDescriptors.style || null) === this.selectedDescriptorB_ &&
+            (groupDescriptors.mood || null) === this.selectedDescriptorC_ &&
+            groupDescriptorColor === this.selectedDefaultColor_ ?
+        'true' :
+        'false';
+  }
+
   private getInspirationGroupTitle_(descriptors: ResultDescriptors): string {
     // Filter out undefined or null values, then join the rest into a comma
     // separated string.
@@ -506,6 +548,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.dispatchEvent(new Event('back-click'));
   }
 
+  private onButtonKeydown_(e: KeyboardEvent) {
+    if (['Enter', ' '].includes(e.key)) {
+      e.preventDefault();
+      e.stopPropagation();
+      (e.target as HTMLElement).click();
+    }
+  }
+
   private onComboboxCategoryClick_(e: DomRepeatEvent<DescriptorA>) {
     const index = e.model.index;
     this.set(`expandedCategories_.${index}`, !this.expandedCategories_[index]);
@@ -580,6 +630,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         e.model.item.id, e.model.item.descriptors ?? {});
   }
 
+  private onInspirationGroupTitleClick_(e: DomRepeatEvent<InspirationGroup>) {
+    this.selectDescriptorsFromInspirationGroup_(e.model.item);
+  }
+
   private onInspirationToggleClick_() {
     this.openInspirations_ = !this.openInspirations_;
   }
@@ -596,24 +650,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         CustomizeChromeAction.WALLPAPER_SEARCH_INSPIRATION_THEME_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToInspirationImage(
         e.model.item.id, e.model.item.backgroundUrl);
-
-    const groupDescriptors = e.model.parentModel.item.descriptors;
-    this.selectedDescriptorA_ = groupDescriptors.subject || null;
-    this.selectedDescriptorB_ = groupDescriptors.style || null;
-    this.selectedDescriptorC_ = groupDescriptors.mood || null;
-
-    if (groupDescriptors.color?.name !== undefined) {
-      const hex = descriptorDNameToHex(groupDescriptors.color.name);
-      this.selectedDefaultColor_ = hex;
-      this.selectedHue_ = null;
-      this.selectedDescriptorD_ = {
-        color: hexColorToSkColor(this.selectedDefaultColor_),
-      };
-    } else {
-      this.selectedDefaultColor_ = undefined;
-      this.selectedHue_ = null;
-      this.selectedDescriptorD_ = null;
-    }
+    this.selectDescriptorsFromInspirationGroup_(e.model.parentModel.item);
   }
 
   private onLearnMoreClick_(e: Event) {
@@ -716,6 +753,29 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     }
   }
 
+  private selectDescriptorsFromInspirationGroup_(group: InspirationGroup) {
+    const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+    const groupDescriptors = group.descriptors;
+    this.selectedDescriptorA_ = groupDescriptors.subject || null;
+    this.selectedDescriptorB_ = groupDescriptors.style || null;
+    this.selectedDescriptorC_ = groupDescriptors.mood || null;
+
+    if (groupDescriptors.color?.name !== undefined) {
+      const hex = descriptorDNameToHex(groupDescriptors.color.name);
+      this.selectedDefaultColor_ = hex;
+      this.selectedHue_ = null;
+      this.selectedDescriptorD_ = {
+        color: hexColorToSkColor(this.selectedDefaultColor_),
+      };
+    } else {
+      this.selectedDefaultColor_ = undefined;
+      this.selectedHue_ = null;
+      this.selectedDescriptorD_ = null;
+    }
+    announcer.announce(
+        this.i18n('wallpaperSearchDescriptorsChangedA11yMessage'));
+  }
+
   private shouldShowDeleteSelectedHueButton_() {
     return this.selectedHue_ !== null;
   }
@@ -726,14 +786,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private shouldShowGrid_(): boolean {
     return this.results_.length > 0 || this.emptyResultContainers_.length > 0;
-  }
-
-  private shouldShowHistory_(): boolean {
-    return this.history_.length > 0;
-  }
-
-  private shouldShowInspiration_(): boolean {
-    return !!this.inspirationGroups_ && this.inspirationGroups_.length > 0;
   }
 }
 
