@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/input_method/editor_system_actuator.h"
 
+#include <memory>
+
 #include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/ash/input_method/editor_feedback.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
+#include "chrome/browser/ash/input_method/editor_text_insertion.h"
 #include "url/url_constants.h"
 
 namespace ash::input_method {
@@ -39,7 +42,7 @@ void EditorSystemActuator::InsertText(const std::string& text) {
   // The text cannot be immediately inserted as the target input is not focused
   // at this point, the WebUI is focused. After closing the WebUI focus will
   // return to the original text input.
-  inserter_.InsertTextOnNextFocus(text);
+  queued_text_insertion_ = std::make_unique<EditorTextInsertion>(text);
   system_->CloseUI();
 }
 
@@ -76,11 +79,10 @@ void EditorSystemActuator::SubmitFeedback(const std::string& description) {
 }
 
 void EditorSystemActuator::OnFocus(int context_id) {
-  inserter_.OnFocus(context_id);
-}
-
-void EditorSystemActuator::OnBlur() {
-  inserter_.OnBlur();
+  if (queued_text_insertion_ && (queued_text_insertion_->HasTimedOut() ||
+                                 queued_text_insertion_->Commit())) {
+    queued_text_insertion_ = nullptr;
+  }
 }
 
 }  // namespace ash::input_method

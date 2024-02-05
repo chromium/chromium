@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SYSTEM_ACTUATOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SYSTEM_ACTUATOR_H_
 
+#include <memory>
 #include <string>
 
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
-#include "chrome/browser/ash/input_method/editor_text_inserter.h"
+#include "chrome/browser/ash/input_method/editor_text_insertion.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -45,8 +46,8 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   void CloseUI() override;
   void SubmitFeedback(const std::string& description) override;
 
+  // Relevant input events
   void OnFocus(int context_id);
-  void OnBlur();
 
  private:
   raw_ptr<Profile> profile_;
@@ -55,7 +56,12 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
 
   // Not owned by this class.
   raw_ptr<System> system_;
-  EditorTextInserter inserter_;
+
+  // Possibly holds a queued text insertion operation. If a text insertion op
+  // has been queued, then it will be inserted in the next focused text field.
+  // Only one text insertion can be queued at a time, with new text insertions
+  // overwriting previously queued insertions.
+  std::unique_ptr<EditorTextInsertion> queued_text_insertion_;
 };
 
 }  // namespace ash::input_method

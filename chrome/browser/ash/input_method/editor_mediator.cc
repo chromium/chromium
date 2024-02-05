@@ -114,10 +114,6 @@ void EditorMediator::OnBlur() {
       panel_manager_.IsEditorMenuVisible()) {
     return;
   }
-
-  if (system_actuator_ != nullptr) {
-    system_actuator_->OnBlur();
-  }
 }
 
 void EditorMediator::OnActivateIme(std::string_view engine_id) {
