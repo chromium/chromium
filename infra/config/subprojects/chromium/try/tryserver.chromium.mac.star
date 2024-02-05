@@ -422,6 +422,7 @@ try_.builder(
             "reclient",
         ],
     ),
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
