@@ -309,6 +309,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     field_data().selected_text = selection;
   }
 
+  // Emulate selected text truncation performed by Autofill.
+  void SetSelectionWithTruncation(const std::u16string& selection,
+                                  size_t max_length) {
+    field_data().selected_text = selection.substr(0, max_length);
+  }
+
  protected:
   optimization_guide::proto::ComposePageMetadata ComposePageMetadata() {
     optimization_guide::proto::ComposePageMetadata page_metadata;
@@ -1116,6 +1122,21 @@ TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
   // URL.
   BindMojo();
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+}
+
+// Tests that an unpaired high surrogate resulting from truncation by substr is
+// properly removed.
+TEST_F(ChromeComposeClientTest, TestOpenDialogWithTruncatedSelectedText) {
+  std::u16string input(u".🦄🦄🦄");
+  field_data().value = input;
+  SetSelectionWithTruncation(input, 6);
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_EQ(".🦄🦄", result->initial_input);
 }
 
 // Tests that opening the dialog with user selected text will return that text

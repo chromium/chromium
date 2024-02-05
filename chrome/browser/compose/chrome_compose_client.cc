@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/third_party/icu/icu_utf.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_text_usage_logger.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -66,6 +67,16 @@ bool ShouldResumeSessionFromEntryPoint(
     case ChromeComposeClient::EntryPoint::kContextMenu:
       return false;
   }
+}
+
+std::u16string RemoveLastCharIfInvalid(std::u16string str) {
+  // TODO(b/323902463): Have Autofill send a valid string, i.e. truncated to a
+  // valid grapheme, in FormFieldData.selected_text to ensure greatest
+  // preservation of the original selected text.
+  if (!str.empty() && CBU16_IS_LEAD(str.back())) {
+    str.pop_back();
+  }
+  return str;
 }
 
 }  // namespace
@@ -280,7 +291,13 @@ void ChromeComposeClient::CreateOrUpdateSession(
   active_compose_ids_ = std::make_optional<
       std::pair<autofill::FieldGlobalId, autofill::FormGlobalId>>(
       trigger_field.global_id(), trigger_field.renderer_form_id());
-  std::string selected_text = base::UTF16ToUTF8(trigger_field.selected_text);
+  // The selected text received from Autofill is a UTF-16 string truncated using
+  // substr, which will result in a rendered invalid character in the Compose
+  // dialog if it splits a surrogate pair character. Ensure that any invalid
+  // characters are removed.
+  std::string selected_text =
+      base::UTF16ToUTF8(RemoveLastCharIfInvalid(trigger_field.selected_text));
+
   ComposeSession* current_session;
 
   // We only want to resume if the popup was clicked or the selection is empty.
