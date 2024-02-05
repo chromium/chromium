@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -124,7 +125,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void Start();
   void MaybeStartLoader(
       ServiceWorkerMainResourceLoaderInterceptor* interceptor,
-      scoped_refptr<network::SharedURLLoaderFactory> single_request_factory);
+      std::optional<NavigationLoaderInterceptor::Result> interceptor_result);
   void LoadFromNetwork();
   void CommitCompleted(const network::URLLoaderCompletionStatus& status);
 

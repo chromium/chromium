@@ -100,10 +100,11 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
                          BrowserContext* browser_context,
                          LoaderCallback callback,
                          FallbackCallback fallback_callback) override {
-    std::move(callback).Run(
+    std::move(callback).Run(NavigationLoaderInterceptor::Result(
         base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
             base::BindOnce(&TestNavigationLoaderInterceptor::StartLoader,
-                           base::Unretained(this))));
+                           base::Unretained(this))),
+        /*subresource_loader_params=*/std::nullopt));
   }
 
   void StartLoader(

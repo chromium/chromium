@@ -75,14 +75,13 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
                          BrowserContext* browser_context,
                          LoaderCallback callback,
                          FallbackCallback fallback_callback) override;
-  // Returns params with the ControllerServiceWorkerInfoPtr if we have found
-  // a matching controller service worker for the |request| that is given
-  // to MaybeCreateLoader(). Otherwise this returns std::nullopt.
-  std::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
-      override;
 
   // MaybeCreateLoaderForResponse() should NOT overridden here, because
   // `WorkerScriptLoader` assumes so.
+
+  static void CompleteWithoutLoader(
+      NavigationLoaderInterceptor::LoaderCallback loader_callback,
+      base::WeakPtr<ServiceWorkerContainerHost> container_host);
 
  private:
   friend class ServiceWorkerMainResourceLoaderInterceptorTest;

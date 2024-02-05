@@ -140,7 +140,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   ServiceWorkerContextCore* context_core =
       handle_->context_wrapper()->context();
   if (!context_core || !browser_context) {
-    std::move(loader_callback).Run(/*handler=*/{});
+    CompleteWithoutLoader(std::move(loader_callback),
+                          handle_->container_host());
     return;
   }
 
@@ -205,7 +206,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     // go through service worker interception. So just call the loader
     // callback now.
     if (inherit_controller_only) {
-      std::move(loader_callback).Run(/*handler=*/{});
+      CompleteWithoutLoader(std::move(loader_callback),
+                            handle_->container_host());
       return;
     }
   }
@@ -262,14 +264,19 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       std::move(loader_callback), std::move(fallback_callback));
 }
 
-std::optional<SubresourceLoaderParams>
-ServiceWorkerMainResourceLoaderInterceptor::
-    MaybeCreateSubresourceLoaderParams() {
-  if (!handle_) {
-    return std::nullopt;
+void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
+    LoaderCallback loader_callback,
+    base::WeakPtr<ServiceWorkerContainerHost> container_host) {
+  if (auto subresource_loader_params =
+          ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
+              container_host)) {
+    std::move(loader_callback)
+        .Run(NavigationLoaderInterceptor::Result(
+            /*factory=*/nullptr, std::move(subresource_loader_params)));
+    return;
   }
-  return ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
-      handle_->container_host());
+
+  std::move(loader_callback).Run(std::nullopt);
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::

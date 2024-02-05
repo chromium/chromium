@@ -89,7 +89,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     // the right partition, or at minimum to use it from that partition if they
     // happen to be the same, i.e., the URL remains within the same site as the
     // top-level document).
-    std::move(loader_callback_).Run({});
+    std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
@@ -145,14 +145,14 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   if (!reader) {
     // Do not intercept the request.
     redirect_reader_ = PrefetchContainer::Reader();
-    std::move(loader_callback_).Run({});
+    std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
   auto request_handler = reader.CreateRequestHandler();
   if (!request_handler) {
     redirect_reader_ = PrefetchContainer::Reader();
-    std::move(loader_callback_).Run({});
+    std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
@@ -182,17 +182,20 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   // `HeaderClientOption::kAllowed` should be used for `TerminalParams`, and
   // then how to utilize it.
   std::move(loader_callback_)
-      .Run(url_loader_factory::Create(
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          url_loader_factory::TerminalParams::ForNonNetwork(
-              std::move(single_request_url_loader_factory)),
-          url_loader_factory::ContentClientParams(
-              BrowserContextFromFrameTreeNodeId(frame_tree_node_id_),
-              render_frame_host, render_frame_host->GetProcess()->GetID(),
-              url::Origin(),
-              ukm::SourceIdObj::FromInt64(
-                  navigation_request->GetNextPageUkmSourceId()),
-              &bypass_redirect_checks, navigation_request->GetNavigationId())));
+      .Run(NavigationLoaderInterceptor::Result(
+          url_loader_factory::Create(
+              ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+              url_loader_factory::TerminalParams::ForNonNetwork(
+                  std::move(single_request_url_loader_factory)),
+              url_loader_factory::ContentClientParams(
+                  BrowserContextFromFrameTreeNodeId(frame_tree_node_id_),
+                  render_frame_host, render_frame_host->GetProcess()->GetID(),
+                  url::Origin(),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request->GetNextPageUkmSourceId()),
+                  &bypass_redirect_checks,
+                  navigation_request->GetNavigationId())),
+          /*subresource_loader_params=*/std::nullopt));
 }
 
 }  // namespace content

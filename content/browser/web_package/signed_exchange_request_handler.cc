@@ -53,7 +53,7 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
     LoaderCallback callback,
     FallbackCallback fallback_callback) {
   if (!signed_exchange_loader_) {
-    std::move(callback).Run({});
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -70,10 +70,11 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
 
   DCHECK(tentative_resource_request.url.EqualsIgnoringRef(
       *signed_exchange_loader_->inner_request_url()));
-  std::move(callback).Run(
+  std::move(callback).Run(NavigationLoaderInterceptor::Result(
       base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
           base::BindOnce(&SignedExchangeRequestHandler::StartResponse,
-                         weak_factory_.GetWeakPtr())));
+                         weak_factory_.GetWeakPtr())),
+      /*subresource_loader_params=*/std::nullopt));
 }
 
 bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(

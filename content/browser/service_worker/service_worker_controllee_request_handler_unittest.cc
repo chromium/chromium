@@ -102,9 +102,8 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
           nullptr,
           base::BindOnce(
               [](base::OnceClosure closure,
-                 scoped_refptr<network::SharedURLLoaderFactory>) {
-                std::move(closure).Run();
-              },
+                 std::optional<NavigationLoaderInterceptor::Result>
+                     interceptor_result) { std::move(closure).Run(); },
               loader_loop_.QuitClosure()),
           base::DoNothing());
     }
