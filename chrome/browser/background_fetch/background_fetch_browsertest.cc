@@ -596,8 +596,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   EXPECT_FALSE(offline_item.is_off_the_record);
 }
 
+// Flaky on multiple platforms (b/323879025)/
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       OfflineItemCollection_VerifyIconReceived) {
+                       DISABLED_OfflineItemCollection_VerifyIconReceived) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection. We then
   // verify that the expected icon is associated with the newly added offline
