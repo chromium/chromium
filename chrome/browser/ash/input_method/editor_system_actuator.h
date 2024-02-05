@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_TEXT_ACTUATOR_H_
-#define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_TEXT_ACTUATOR_H_
+#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SYSTEM_ACTUATOR_H_
+#define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SYSTEM_ACTUATOR_H_
 
 #include <string>
 
@@ -18,7 +18,7 @@
 
 namespace ash::input_method {
 
-class EditorTextActuator : public orca::mojom::TextActuator {
+class EditorSystemActuator : public orca::mojom::SystemActuator {
  public:
   class Delegate {
    public:
@@ -31,13 +31,13 @@ class EditorTextActuator : public orca::mojom::TextActuator {
     virtual size_t GetSelectedTextLength() = 0;
   };
 
-  EditorTextActuator(
+  EditorSystemActuator(
       Profile* profile,
-      mojo::PendingAssociatedReceiver<orca::mojom::TextActuator> receiver,
+      mojo::PendingAssociatedReceiver<orca::mojom::SystemActuator> receiver,
       Delegate* delegate);
-  ~EditorTextActuator() override;
+  ~EditorSystemActuator() override;
 
-  // orca::mojom::TextActuator overrides
+  // orca::mojom::SystemActuator overrides
   void InsertText(const std::string& text) override;
   void ApproveConsent() override;
   void DeclineConsent() override;
@@ -51,7 +51,8 @@ class EditorTextActuator : public orca::mojom::TextActuator {
 
  private:
   raw_ptr<Profile> profile_;
-  mojo::AssociatedReceiver<orca::mojom::TextActuator> text_actuator_receiver_;
+  mojo::AssociatedReceiver<orca::mojom::SystemActuator>
+      system_actuator_receiver_;
 
   // Not owned by this class.
   raw_ptr<Delegate> delegate_;
@@ -60,4 +61,4 @@ class EditorTextActuator : public orca::mojom::TextActuator {
 
 }  // namespace ash::input_method
 
-#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_TEXT_ACTUATOR_H_
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SYSTEM_ACTUATOR_H_

@@ -23,7 +23,8 @@ class EditorServiceConnector {
           editor_client_connector,
       mojo::PendingAssociatedReceiver<orca::mojom::EditorEventSink>
           editor_event_sink,
-      mojo::PendingAssociatedRemote<orca::mojom::TextActuator> text_actuator,
+      mojo::PendingAssociatedRemote<orca::mojom::SystemActuator>
+          system_actuator,
       mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
           text_query_provider);
 

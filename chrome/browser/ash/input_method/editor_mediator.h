@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/input_method/editor_service_connector.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
-#include "chrome/browser/ash/input_method/editor_text_actuator.h"
+#include "chrome/browser/ash/input_method/editor_system_actuator.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
@@ -35,7 +35,7 @@ namespace input_method {
 // providing an overall unified interface for the backend of the project.
 class EditorMediator : public EditorEventSink,
                        public EditorPanelManager::Delegate,
-                       public EditorTextActuator::Delegate,
+                       public EditorSystemActuator::Delegate,
                        public display::DisplayObserver,
                        public KeyedService {
  public:
@@ -79,7 +79,7 @@ class EditorMediator : public EditorEventSink,
   // display::DisplayObserver overrides
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  // EditorTextActuator::Delegate overrides
+  // EditorSystemActuator::Delegate overrides
   void OnTextInsertionRequested() override;
   void ProcessConsentAction(ConsentAction consent_action) override;
   void ShowUI() override;
@@ -127,7 +127,7 @@ class EditorMediator : public EditorEventSink,
   std::unique_ptr<EditorEventProxy> editor_event_proxy_;
   std::unique_ptr<EditorClientConnector> editor_client_connector_;
   std::unique_ptr<EditorTextQueryProvider> text_query_provider_;
-  std::unique_ptr<EditorTextActuator> text_actuator_;
+  std::unique_ptr<EditorSystemActuator> system_actuator_;
 
   SurroundingText surrounding_text_;
 

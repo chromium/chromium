@@ -34,11 +34,11 @@ void EditorServiceConnector::BindEditor(
         editor_client_connector,
     mojo::PendingAssociatedReceiver<orca::mojom::EditorEventSink>
         editor_event_sink,
-    mojo::PendingAssociatedRemote<orca::mojom::TextActuator> text_actuator,
+    mojo::PendingAssociatedRemote<orca::mojom::SystemActuator> system_actuator,
     mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
         text_query_provider) {
   remote_orca_service_connector_->BindEditor(
-      std::move(text_actuator), std::move(text_query_provider),
+      std::move(system_actuator), std::move(text_query_provider),
       std::move(editor_client_connector), std::move(editor_event_sink));
 }
 

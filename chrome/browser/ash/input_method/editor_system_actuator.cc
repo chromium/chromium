@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/editor_text_actuator.h"
+#include "chrome/browser/ash/input_method/editor_system_actuator.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/ash/input_method/editor_feedback.h"
@@ -20,17 +20,17 @@ bool IsUrlAllowed(const GURL& url) {
 
 }  // namespace
 
-EditorTextActuator::EditorTextActuator(
+EditorSystemActuator::EditorSystemActuator(
     Profile* profile,
-    mojo::PendingAssociatedReceiver<orca::mojom::TextActuator> receiver,
+    mojo::PendingAssociatedReceiver<orca::mojom::SystemActuator> receiver,
     Delegate* delegate)
     : profile_(profile),
-      text_actuator_receiver_(this, std::move(receiver)),
+      system_actuator_receiver_(this, std::move(receiver)),
       delegate_(delegate) {}
 
-EditorTextActuator::~EditorTextActuator() = default;
+EditorSystemActuator::~EditorSystemActuator() = default;
 
-void EditorTextActuator::InsertText(const std::string& text) {
+void EditorSystemActuator::InsertText(const std::string& text) {
   EditorMetricsRecorder* logger = delegate_->GetMetricsRecorder();
   logger->LogEditorState(EditorStates::kInsert);
   logger->LogNumberOfCharactersInserted(text.length());
@@ -42,15 +42,15 @@ void EditorTextActuator::InsertText(const std::string& text) {
   delegate_->OnTextInsertionRequested();
 }
 
-void EditorTextActuator::ApproveConsent() {
+void EditorSystemActuator::ApproveConsent() {
   delegate_->ProcessConsentAction(ConsentAction::kApproved);
 }
 
-void EditorTextActuator::DeclineConsent() {
+void EditorSystemActuator::DeclineConsent() {
   delegate_->ProcessConsentAction(ConsentAction::kDeclined);
 }
 
-void EditorTextActuator::OpenUrlInNewWindow(const GURL& url) {
+void EditorSystemActuator::OpenUrlInNewWindow(const GURL& url) {
   if (!IsUrlAllowed(url)) {
     mojo::ReportBadMessage("Invalid URL scheme. Only HTTPS is allowed.");
     return;
@@ -60,25 +60,25 @@ void EditorTextActuator::OpenUrlInNewWindow(const GURL& url) {
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-void EditorTextActuator::ShowUI() {
+void EditorSystemActuator::ShowUI() {
   delegate_->ShowUI();
 }
 
-void EditorTextActuator::CloseUI() {
+void EditorSystemActuator::CloseUI() {
   delegate_->GetMetricsRecorder()->LogEditorState(
       EditorStates::kClickCloseButton);
   delegate_->CloseUI();
 }
 
-void EditorTextActuator::SubmitFeedback(const std::string& description) {
+void EditorSystemActuator::SubmitFeedback(const std::string& description) {
   SendEditorFeedback(profile_, description);
 }
 
-void EditorTextActuator::OnFocus(int context_id) {
+void EditorSystemActuator::OnFocus(int context_id) {
   inserter_.OnFocus(context_id);
 }
 
-void EditorTextActuator::OnBlur() {
+void EditorSystemActuator::OnBlur() {
   inserter_.OnBlur();
 }
 
