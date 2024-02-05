@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] add float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] add float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] add float32 2D tensors / async
@@ -17,6 +19,8 @@ Found 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] add float32 broadcast 3D to 4D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] add float32 broadcast 4D to 4D / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] sub float32 1D constant tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] sub float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -36,6 +40,8 @@ Found 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] sub float32 broadcast 4D to 4D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] mul float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] mul float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] mul float32 2D tensors / async
@@ -53,6 +59,8 @@ Found 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] mul float32 broadcast 3D to 4D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] mul float32 broadcast 4D to 4D / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] div float32 1D constant tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] div float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -72,6 +80,8 @@ Found 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] div float32 broadcast 4D to 4D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] max float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] max float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] max float32 2D tensors / async
@@ -90,6 +100,8 @@ Found 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] max float32 broadcast 4D to 4D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] min float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] min float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] min float32 2D tensors / async
@@ -107,6 +119,8 @@ Found 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] min float32 broadcast 3D to 4D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] min float32 broadcast 4D to 4D / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] pow float32 constant 1D base tensor and 1D integer exponent tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] pow float32 1D base tensor and 1D integer exponent tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"

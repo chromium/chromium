@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 164 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] abs float32 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] abs float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] abs float32 2D tensor / sync
@@ -10,6 +12,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] abs float32 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] ceil float32 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] ceil float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] ceil float32 2D tensor / sync
@@ -19,6 +23,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ceil float32 4D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] ceil float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] cos float32 1D constant tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] cos float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -32,6 +38,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] erf float32 0D scalar / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] erf float32 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] erf float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] erf float32 2D tensor / sync
@@ -42,6 +50,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] erf float32 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] exp float32 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] exp float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] exp float32 2D tensor / sync
@@ -51,6 +61,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] exp float32 4D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] exp float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] floor float32 1D constant tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] floor float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -64,6 +76,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] identity float32 0D scalar / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] identity float32 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] identity float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] identity float32 2D tensor / sync
@@ -74,6 +88,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] identity float32 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] log float32 positive 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] log float32 positive 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] log float32 positive 2D tensor / sync
@@ -83,6 +99,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] log float32 positive 4D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] log float32 positive 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] neg float32 1D constant tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] neg float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -96,6 +114,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] reciprocal float32 0D scalar / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] reciprocal float32 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] reciprocal float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] reciprocal float32 2D tensor / sync
@@ -105,6 +125,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reciprocal float32 4D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] reciprocal float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] sin float32 1D constant tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] sin float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -118,6 +140,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] sqrt float32 0D scalar / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] sqrt float32 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] sqrt float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] sqrt float32 2D tensor / sync
@@ -127,6 +151,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] sqrt float32 4D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] sqrt float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] tan float32 1D constant tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] tan float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -138,6 +164,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] tan float32 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] abs float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] abs float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] abs float32 2D tensor / async
@@ -148,6 +176,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] abs float32 5D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] ceil float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] ceil float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] ceil float32 2D tensor / async
@@ -157,6 +187,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ceil float32 4D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] ceil float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cos float32 1D constant tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] cos float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -170,6 +202,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] erf float32 0D scalar / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] erf float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] erf float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] erf float32 2D tensor / async
@@ -180,6 +214,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] erf float32 5D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] exp float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] exp float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] exp float32 2D tensor / async
@@ -189,6 +225,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] exp float32 4D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] exp float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] floor float32 1D constant tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] floor float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -202,6 +240,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] identity float32 0D scalar / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] identity float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] identity float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] identity float32 2D tensor / async
@@ -212,6 +252,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] identity float32 5D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] log float32 positive 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] log float32 positive 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] log float32 positive 2D tensor / async
@@ -221,6 +263,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] log float32 positive 4D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] log float32 positive 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] neg float32 1D constant tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] neg float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -234,6 +278,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reciprocal float32 0D scalar / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reciprocal float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reciprocal float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reciprocal float32 2D tensor / async
@@ -243,6 +289,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reciprocal float32 4D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reciprocal float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sin float32 1D constant tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] sin float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -256,6 +304,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] sqrt float32 0D scalar / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sqrt float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] sqrt float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] sqrt float32 2D tensor / async
@@ -265,6 +315,8 @@ Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] sqrt float32 4D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] sqrt float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] tan float32 1D constant tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] tan float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

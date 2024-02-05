@@ -177,6 +177,19 @@
         },
         "is_try_builder": true
     },
+    "win11-arm64-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "win-win11-arm64",
+        "specifiers": [
+            "Win11-arm64",
+            "Release"
+        ],
+        "steps": {
+            "blink_web_tests (with patch)": {},
+            "blink_wpt_tests (with patch)": {}
+        },
+        "is_try_builder": true
+    },
     "win11-blink-rel": {
         "main": "tryserver.blink",
         "port_name": "win-win11",

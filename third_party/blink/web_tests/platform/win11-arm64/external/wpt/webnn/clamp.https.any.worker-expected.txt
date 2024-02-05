@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] clamp float32 1D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] clamp float32 1D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] clamp float32 2D tensor default options / sync
@@ -31,6 +33,8 @@ This is a testharness.js-based test.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] clamp float32 1D tensor specified both positive options.minValue and options.maxValue / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] clamp float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] clamp float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] clamp float32 2D tensor default options / async

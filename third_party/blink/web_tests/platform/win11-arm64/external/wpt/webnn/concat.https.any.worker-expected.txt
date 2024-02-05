@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 90 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] concat two float32 1D constant tensors of same shape along axis 0 / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] concat two float32 1D tensors of same shape along axis 0 / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] concat two float16 1D tensors of same shape along axis 0 / sync
@@ -88,6 +90,8 @@ Found 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] concat two float16 5D tensors of same others dimensions except different 5th dimension along axis 4 / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] concat two float32 1D constant tensors of same shape along axis 0 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] concat two float32 1D tensors of same shape along axis 0 / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] concat two float16 1D tensors of same shape along axis 0 / async

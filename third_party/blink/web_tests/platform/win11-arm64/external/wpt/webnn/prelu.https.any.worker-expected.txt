@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] prelu float32 1D constant tensors / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] prelu float32 1D tensors / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] prelu float32 2D tensors / sync
@@ -19,6 +21,8 @@ This is a testharness.js-based test.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] prelu float32 broadcast 4D x 4D slope / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] prelu float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] prelu float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] prelu float32 2D tensors / async

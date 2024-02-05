@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] slice float32 1D constant tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] slice float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] slice float32 2D tensor / sync
@@ -9,6 +11,8 @@ This is a testharness.js-based test.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] slice float32 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] slice float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] slice float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] slice float32 2D tensor / async
