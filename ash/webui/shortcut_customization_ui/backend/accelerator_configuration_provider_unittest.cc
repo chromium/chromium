@@ -1676,6 +1676,26 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadAccelerator) {
                           search_function_accelerator, &result);
   EXPECT_EQ(mojom::AcceleratorConfigResult::kSearchWithFunctionKeyNotAllowed,
             result->result);
+
+  // Brightness down key, typically in top-row.
+  const ui::Accelerator brightness_down_accelerator(ui::VKEY_BRIGHTNESS_DOWN,
+                                                    ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          brightness_down_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonStandardWithSearch,
+            result->result);
+
+  // Calculator key, typically not in top-row.
+  const ui::Accelerator mail_accelerator(ui::VKEY_MEDIA_LAUNCH_MAIL,
+                                         ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          mail_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kNonStandardWithSearch,
+            result->result);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorExceedsMaximum) {

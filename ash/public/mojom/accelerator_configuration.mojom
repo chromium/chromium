@@ -43,4 +43,6 @@ enum AcceleratorConfigResult {
   kSearchWithFunctionKeyNotAllowed = 12,
   // Error - reserved key is not allowed.
   kReservedKeyNotAllowed = 13,
+  // Error - non-standard key is used with the search modifier.
+  kNonStandardWithSearch = 14,
 };

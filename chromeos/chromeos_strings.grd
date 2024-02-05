@@ -4395,6 +4395,12 @@
             that includes a reserved key.">
           Shortcut not available. Press a new shortcut without <ph name="key">$1<ex>CapsLock</ex></ph>.
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_NON_STANDARD_KEY_WITH_SEARCH_MODIFIER"
+            desc="The status message that displays when user press a key combination
+            that includes a non-standard 101 key and the search modifier."
+            translateable="false">
+          <ph name="key">$1<ex>Volume Up</ex></ph> is not available with the <ph name="meta_key">$2<ex>search</ex></ph> key. Press a new shortcut.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_NON_SEARCH_SHORTCUT_WARNING"
             desc="The status (warning) message that displays when user attempts to input a shortcut that does not include the search/launcher key.">
           Shortcut without <ph name="meta_key">$1<ex>search</ex></ph> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="key">$1<ex>search</ex></ph> key.

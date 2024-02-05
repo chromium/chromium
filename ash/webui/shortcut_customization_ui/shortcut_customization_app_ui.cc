@@ -103,6 +103,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_NON_SEARCH_SHORTCUT_WARNING},
       {"reservedKeyNotAllowedStatusMessage",
        IDS_SHORTCUT_CUSTOMIZATION_RESERVED_KEY_NOT_ALLOWED_STATUS_MESSAGE},
+      {"nonStandardNotAllowedWithSearchMessage",
+       IDS_SHORTCUT_CUSTOMIZATION_NON_STANDARD_KEY_WITH_SEARCH_MODIFIER},
       {"searchNoResults", IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS},
       {"searchClearQueryLabel",
        IDS_SHORTCUT_CUSTOMIZATION_SEARCH_CLEAR_QUERY_LABEL},

@@ -928,6 +928,15 @@ suite('shortcutCustomizationAppTest', function() {
         acceleratorConfigResult, expectedErrorMessage);
   });
 
+  test('ValidateNonStandardWithSearch', async () => {
+    const acceleratorConfigResult =
+        AcceleratorConfigResult.kNonStandardWithSearch;
+    const expectedErrorMessage =
+        '] is not available with the launcher key. Press a new shortcut.';
+    await validateAcceleratorInDialog(
+        acceleratorConfigResult, expectedErrorMessage);
+  });
+
   test('DisableDefaultAccelerator', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
