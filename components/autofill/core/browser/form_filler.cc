@@ -192,13 +192,6 @@ FormFiller::GetFieldFillingSkipReasons(
   base::flat_map<FieldType, size_t> type_count;
   type_count.reserve(form_structure.field_count());
 
-  if (base::flat_set<FieldGlobalId> field_ids =
-          base::MakeFlatSet<FieldGlobalId>(form_structure, {},
-                                           &FormFieldData::global_id);
-      field_ids.size() != form_structure.field_count()) {
-    DumpWithoutCrashingForDuplicateIds(form_structure.ToFormData());
-  }
-
   CHECK_EQ(form.fields.size(), form_structure.field_count());
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
       base::MakeFlatMap<FieldGlobalId, FieldFillingSkipReason>(
