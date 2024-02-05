@@ -487,7 +487,7 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 // URLs.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kFledgeBiddingAndAuctionKeyConfig;
-// Configures FLEDGE to consider k-anononymity. If both
+// Configures FLEDGE to consider k-anonymity. If both
 // kFledgeConsiderKAnonymity and kFledgeEnforceKAnonymity are on it will be
 // enforced; if only kFledgeConsiderKAnonymity is on it will be simulated.
 //
@@ -518,8 +518,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // putting an ad tech in a restricted cooldown period.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeDebugReportSamplingRestrictedCooldownRandomMax;
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeDebugReportFilterAfterSampling);
+// Sets the time when to enable filtering debug reports. It's the time delta
+// since windows epoch. Lockout and cooldown collected before this time will be
+// ignored. This avoids locking out ad techs who used forDebuggingOnly API
+// before filtering was enabled. Set to zero to disable filtering debug reports.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kFledgeEnableFilteringDebugReportStartingFrom;
 
 // If enabled, the limit on number of component ads will be taken from
 // `kFledgeCustomMaxAuctionAdComponentsValue`

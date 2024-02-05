@@ -466,7 +466,9 @@ void TakePrivateAggregationRequestsForBidState(
 }
 
 // Returns true if `origin` is in cooldown or lockout to send forDebuggingOnly
-// reports.
+// reports. Ignore the cooldown or lockout if they started from a time which was
+// earlier than kFledgeEnableFilteringDebugReportStartingFrom (i.e., before the
+// time filtering debug report is enabled).
 bool IsOriginInDebugReportCooldownOrLockout(
     const url::Origin& origin,
     const std::optional<DebugReportLockoutAndCooldowns>&
@@ -475,11 +477,20 @@ bool IsOriginInDebugReportCooldownOrLockout(
     return false;
   }
   base::Time now = base::Time::Now();
-  if (debug_report_lockout_and_cooldowns->last_report_sent_time.has_value() &&
-      *debug_report_lockout_and_cooldowns->last_report_sent_time +
-              blink::features::kFledgeDebugReportLockout.Get() >=
-          now) {
-    return true;
+  base::Time filtering_starting_from = base::Time::FromDeltaSinceWindowsEpoch(
+      blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get()
+          .CeilToMultiple(base::Hours(1)));
+  if (debug_report_lockout_and_cooldowns->last_report_sent_time.has_value()) {
+    bool is_lockout_before_filtering_starting =
+        *debug_report_lockout_and_cooldowns->last_report_sent_time <
+        filtering_starting_from;
+    bool is_in_lockout =
+        *debug_report_lockout_and_cooldowns->last_report_sent_time +
+            blink::features::kFledgeDebugReportLockout.Get() >=
+        now;
+    if (!is_lockout_before_filtering_starting && is_in_lockout) {
+      return true;
+    }
   }
 
   const auto cooldown_it =
@@ -489,9 +500,14 @@ bool IsOriginInDebugReportCooldownOrLockout(
       debug_report_lockout_and_cooldowns->debug_report_cooldown_map.end()) {
     std::optional<base::TimeDelta> duration =
         ConvertDebugReportCooldownTypeToDuration(cooldown_it->second.type);
-    if (duration.has_value() &&
-        cooldown_it->second.starting_time + *duration >= now) {
-      return true;
+    if (duration.has_value()) {
+      bool is_cooldown_before_filtering_starting =
+          cooldown_it->second.starting_time < filtering_starting_from;
+      bool is_in_cooldown =
+          cooldown_it->second.starting_time + *duration >= now;
+      if (!is_cooldown_before_filtering_starting && is_in_cooldown) {
+        return true;
+      }
     }
   }
   return false;
@@ -555,7 +571,7 @@ bool SampleDebugReport(
 
 // Returns whether to keep the debug report or not. Returns true if flag
 // kFledgeSampleDebugReports is disabled, or sampling allows sending the report,
-// or flag kFledgeDebugReportFilterAfterSampling is disabled.
+// or kFledgeEnableFilteringDebugReportStartingFrom is zero.
 bool KeepDebugReport(
     const url::Origin& origin,
     std::optional<DebugReportLockoutAndCooldowns>&
@@ -571,13 +587,14 @@ bool KeepDebugReport(
           origin, debug_report_lockout_and_cooldowns) &&
       !IsOriginInDebugReportCooldownOrLockout(
           origin, new_debug_report_lockout_and_cooldowns)) {
-    // SampleDebugReport may modify the lockout and cooldown state.
+    // `SampleDebugReport()` may modify the lockout and cooldown state.
     can_send_debug_report =
         SampleDebugReport(origin, new_debug_report_lockout_and_cooldowns);
   }
-  return !base::FeatureList::IsEnabled(
-             blink::features::kFledgeDebugReportFilterAfterSampling) ||
-         can_send_debug_report;
+  bool filter_enabled =
+      blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
+      base::Milliseconds(0);
+  return !filter_enabled || can_send_debug_report;
 }
 
 // Adds debug reporting URLs for `bid_state` to `debug_win_report_urls` and

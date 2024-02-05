@@ -3324,16 +3324,19 @@ bool GetBidCount(sql::Database& db,
 
 void DoGetDebugReportLockout(
     sql::Database& db,
+    std::optional<base::Time> ignore_before,
     DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
   sql::Statement sent_time(
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT last_report_sent_time "
-                            "FROM lockout_debugging_only_report"));
+                            "FROM lockout_debugging_only_report "
+                            "WHERE last_report_sent_time > ?"));
   if (!sent_time.is_valid()) {
     DLOG(ERROR) << "GetLastDebugReportSentDate SQL statement did not compile: "
                 << db.GetErrorMessage();
     return;
   }
+  sent_time.BindTime(0, ignore_before.value_or(base::Time::Min()));
   if (sent_time.Step()) {
     debug_report_lockout_and_cooldowns.last_report_sent_time =
         sent_time.ColumnTime(0);
@@ -3342,20 +3345,22 @@ void DoGetDebugReportLockout(
 
 std::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
     sql::Database& db,
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    std::optional<base::Time> ignore_before) {
   sql::Statement cooldown_debugging_only_report(
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT starting_time, type "
                             "FROM cooldown_debugging_only_report "
-                            "WHERE origin = ?"));
+                            "WHERE origin = ? AND starting_time > ?"));
   if (!cooldown_debugging_only_report.is_valid()) {
     DLOG(ERROR) << "GetDebugReportCooldown SQL statement did not compile: "
                 << db.GetErrorMessage();
     return std::nullopt;
   }
   cooldown_debugging_only_report.BindString(0, Serialize(origin));
-  if (!cooldown_debugging_only_report.Step() ||
-      !cooldown_debugging_only_report.Succeeded()) {
+  cooldown_debugging_only_report.BindTime(
+      1, ignore_before.value_or(base::Time::Min()));
+  if (!cooldown_debugging_only_report.Step()) {
     return std::nullopt;
   }
 
@@ -3367,10 +3372,11 @@ std::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
 void DoGetDebugReportCooldowns(
     sql::Database& db,
     const base::flat_set<url::Origin>& origins,
+    std::optional<base::Time> ignore_before,
     DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
   for (const url::Origin& origin : origins) {
     std::optional<DebugReportCooldown> cooldown =
-        DoGetDebugReportCooldownForOrigin(db, origin);
+        DoGetDebugReportCooldownForOrigin(db, origin, ignore_before);
     if (cooldown.has_value()) {
       debug_report_lockout_and_cooldowns.debug_report_cooldown_map[origin] =
           *cooldown;
@@ -4490,8 +4496,23 @@ InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
     return std::nullopt;
   }
   DebugReportLockoutAndCooldowns debug_report_lockout_and_cooldowns;
-  DoGetDebugReportLockout(*db_, debug_report_lockout_and_cooldowns);
-  DoGetDebugReportCooldowns(*db_, std::move(origins),
+  // Ignore lockout and cooldowns whose start time is before
+  // kFledgeEnableFilteringDebugReportStartingFrom.
+  std::optional<base::Time> ignore_before;
+  if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
+      base::Milliseconds(0)) {
+    // Also ceil kFledgeEnableFilteringDebugReportStartingFrom to its nearest
+    // next hour, in the same way as lockout and cooldown start time are ceiled.
+    // Otherwise, it's possible that the ceiled lockout/cooldowns collected
+    // before this flag being greater than the flag, which caused them not being
+    // ignored when they should be.
+    ignore_before = base::Time::FromDeltaSinceWindowsEpoch(
+        blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get()
+            .CeilToMultiple(base::Hours(1)));
+  }
+  DoGetDebugReportLockout(*db_, ignore_before,
+                          debug_report_lockout_and_cooldowns);
+  DoGetDebugReportCooldowns(*db_, std::move(origins), ignore_before,
                             debug_report_lockout_and_cooldowns);
   return debug_report_lockout_and_cooldowns;
 }

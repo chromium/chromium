@@ -983,10 +983,11 @@ const base::FeatureParam<int>
     kFledgeDebugReportSamplingRestrictedCooldownRandomMax{
         &kFledgeSampleDebugReports,
         "fledge_debug_report_sampling_restricted_cooldown_random_max", 10};
-
-BASE_FEATURE(kFledgeDebugReportFilterAfterSampling,
-             "FledgeDebugReportFilterAfterSampling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kFledgeEnableFilteringDebugReportStartingFrom{
+        &kFledgeSampleDebugReports,
+        "fledge_enable_filtering_debug_report_starting_from",
+        base::Milliseconds(0)};
 
 BASE_FEATURE(kFledgeCustomMaxAuctionAdComponents,
              "FledgeCustomMaxAuctionAdComponents",
