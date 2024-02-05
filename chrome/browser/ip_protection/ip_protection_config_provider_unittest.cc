@@ -775,17 +775,19 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
+  chain->set_proxy_b("proxy1b");
   chain->set_chain_id(1);
   chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy2");
+  chain->set_proxy_b("proxy2b");
   chain->set_chain_id(2);
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"proxy1"}, 1),
-                                                 MakeChain({"proxy2"}, 2)};
+  std::vector<net::ProxyChain> exp_proxy_list = {
+      MakeChain({"proxy1", "proxy1b"}, 1), MakeChain({"proxy2", "proxy2b"}, 2)};
   EXPECT_THAT(proxy_list_future_.Get(),
               testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
 }
@@ -798,8 +800,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
+  chain->set_proxy_b("proxy1b");
   chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy2:80");
+  chain->set_proxy_b("proxy2");
   chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy3:0");
   chain->set_proxy_b("proxy4:443");
@@ -809,10 +813,13 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"proxy1"})};
-  exp_proxy_list.push_back(
-      net::ProxyChain::ForIpProtection({net::ProxyServer::FromSchemeHostAndPort(
-          net::ProxyServer::SCHEME_HTTPS, "proxy2", 80)}));
+  std::vector<net::ProxyChain> exp_proxy_list = {
+      MakeChain({"proxy1", "proxy1b"})};
+  exp_proxy_list.push_back(net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy2", 80),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy2", std::nullopt)}));
   exp_proxy_list.push_back(net::ProxyChain::ForIpProtection(
       {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxy3", "0"),
@@ -831,14 +838,16 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("]INVALID[");
+  chain->set_proxy_b("not-invalid");
   chain = response.add_proxy_chain();
   chain->set_proxy_a("valid");
+  chain->set_proxy_b("valid");
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"valid"})};
+  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"valid", "valid"})};
   EXPECT_THAT(proxy_list_future_.Get(),
               testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
 }

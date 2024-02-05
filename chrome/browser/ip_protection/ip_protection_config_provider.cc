@@ -283,11 +283,7 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
           ok && b_override != "") {
         ok = ok && add_server(proxies, b_override);
       } else {
-        // TODO(crbug.com/1491092): Remove check once proxy_b is
-        // populated by Phosphor.
-        if (!proxy_chain.proxy_b().empty()) {
-          ok = ok && add_server(proxies, proxy_chain.proxy_b());
-        }
+        ok = ok && add_server(proxies, proxy_chain.proxy_b());
       }
 
       // Create a new ProxyChain if the proxies were all valid.
