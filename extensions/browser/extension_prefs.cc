@@ -2258,6 +2258,8 @@ void ExtensionPrefs::RegisterProfilePrefs(
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   registry->RegisterBooleanPref(
       prefs::kSupervisedUserExtensionsMayRequestPermissions, false);
+  registry->RegisterBooleanPref(prefs::kSkipParentApprovalToInstallExtensions,
+                                false);
   registry->RegisterDictionaryPref(
       prefs::kSupervisedUserApprovedExtensions,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

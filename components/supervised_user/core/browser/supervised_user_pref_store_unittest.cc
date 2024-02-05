@@ -204,9 +204,6 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The custodian can allow sites and apps to request permissions.
   // Currently tested indirectly by enabling geolocation requests.
-  // TODO(crbug/1024646): Update Kids Management server to set a new bit for
-  // extension permissions and update this test.
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "SupervisedUsers.ExtensionsMayRequestPermissions", 0);
@@ -233,6 +230,18 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
       "SupervisedUsers.ExtensionsMayRequestPermissions", /*enabled=*/false, 1);
   histogram_tester.ExpectTotalCount(
       "SupervisedUsers.ExtensionsMayRequestPermissions", 2);
+
+  // The custodian allows extension installation without parental approval.
+  // TODO(b/321240396): test suitable metrics.
+  fixture.changed_prefs()->clear();
+
+  service_.SetLocalSetting(
+      supervised_user::kSkipParentApprovalToInstallExtensions,
+      base::Value(true));
+  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
+                  prefs::kSkipParentApprovalToInstallExtensions),
+              Optional(true));
 
 #endif
 }

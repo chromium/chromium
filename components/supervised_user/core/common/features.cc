@@ -90,6 +90,10 @@ BASE_FEATURE(kEnableManagedByParentUi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kEnableSupervisedUserSkipParentApprovalToInstallExtensions,
+             "EnableSupervisedUserSkipParentApprovalToInstallExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
              "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
