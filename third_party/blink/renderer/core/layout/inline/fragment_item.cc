@@ -734,39 +734,49 @@ const Font& FragmentItem::ScaledFont() const {
 }
 
 String FragmentItem::ToString() const {
-  // TODO(yosin): Once |NGPaintFragment| is removed, we should get rid of
-  // following if-statements.
-  // For ease of rebasing, we use same |DebugName()| as |NGPaintFrgment|.
-  if (Type() == FragmentItem::kBox) {
-    StringBuilder name;
-    name.Append("FragmentItem Box ");
-    name.Append(layout_object_->DebugName());
-    return name.ToString();
+  StringBuilder name;
+  name.Append("FragmentItem");
+  if (IsHiddenForPaint()) {
+    name.Append(" (hidden)");
   }
-  if (Type() == FragmentItem::kText) {
-    StringBuilder name;
-    name.Append("FragmentItem Text ");
-    const FragmentItems* fragment_items = nullptr;
-    if (const LayoutBlockFlow* block_flow =
-            layout_object_->FragmentItemsContainer()) {
-      for (unsigned i = 0; i < block_flow->PhysicalFragmentCount(); ++i) {
-        const PhysicalBoxFragment* containing_fragment =
-            block_flow->GetPhysicalFragment(i);
-        fragment_items = containing_fragment->Items();
-        if (fragment_items)
-          break;
+  switch (Type()) {
+    case FragmentItem::kBox:
+      name.Append(" Box ");
+      name.Append(layout_object_->DebugName());
+      break;
+    case FragmentItem::kText: {
+      name.Append(" Text ");
+      const FragmentItems* fragment_items = nullptr;
+      if (const LayoutBlockFlow* block_flow =
+              layout_object_->FragmentItemsContainer()) {
+        for (unsigned i = 0; i < block_flow->PhysicalFragmentCount(); ++i) {
+          const PhysicalBoxFragment* containing_fragment =
+              block_flow->GetPhysicalFragment(i);
+          fragment_items = containing_fragment->Items();
+          if (fragment_items) {
+            break;
+          }
+        }
       }
+      if (fragment_items) {
+        name.Append(Text(*fragment_items).ToString().EncodeForDebugging());
+      } else {
+        name.Append("\"(container not found)\"");
+      }
+      break;
     }
-    if (fragment_items)
-      name.Append(Text(*fragment_items).ToString().EncodeForDebugging());
-    else
-      name.Append("\"(container not found)\"");
-    return name.ToString();
+    case FragmentItem::kGeneratedText:
+      name.Append(" GeneratedText ");
+      name.Append(GeneratedText().EncodeForDebugging());
+      break;
+    case FragmentItem::kLine:
+      name.Append(" Line");
+      break;
+    case FragmentItem::kInvalid:
+      name.Append(" Invalid");
+      break;
   }
-  if (Type() == FragmentItem::kLine) {
-    return "FragmentItem Line";
-  }
-  return "FragmentItem";
+  return name.ToString();
 }
 
 PhysicalRect FragmentItem::LocalVisualRectFor(
