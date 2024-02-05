@@ -185,35 +185,6 @@ bool SetRequestedAdSize(v8::Isolate* isolate,
          SetDictMember(isolate, top_level_object, "requestedSize", size_object);
 }
 
-// Converts a vector of blink::InterestGroup::Ads into a v8 object.
-bool CreateAdVector(
-    AuctionV8Helper* v8_helper,
-    v8::Local<v8::Context> context,
-    base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
-    const std::vector<blink::InterestGroup::Ad>& ads,
-    v8::Local<v8::Value>& out_value) {
-  v8::Isolate* isolate = v8_helper->isolate();
-
-  v8::LocalVector<v8::Value> ads_vector(isolate);
-  for (const auto& ad : ads) {
-    if (is_ad_excluded.Run(ad.render_url())) {
-      continue;
-    }
-    v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
-    gin::Dictionary ad_dict(isolate, ad_object);
-    if (
-        // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
-        !SetRenderUrl(isolate, ad_object, ad.render_url()) ||
-        (ad.metadata && !v8_helper->InsertJsonValue(context, "metadata",
-                                                    *ad.metadata, ad_object))) {
-      return false;
-    }
-    ads_vector.emplace_back(std::move(ad_object));
-  }
-  out_value = v8::Array::New(isolate, ads_vector.data(), ads_vector.size());
-  return true;
-}
-
 bool HasKAnonFailureComponent(
     const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
   if (request->contribution->is_histogram_contribution()) {
@@ -1233,26 +1204,9 @@ BidderWorklet::V8State::GenerateSingleBid(
           : nullptr,
       &bidder_worklet_non_shared_params);
   if (!context_recycler->interest_group_lazy_filler()->FillInObject(
-          interest_group_object)) {
+          interest_group_object, should_exclude_ad_due_to_kanon,
+          should_exclude_component_ad_due_to_kanon)) {
     return std::nullopt;
-  }
-
-  v8::Local<v8::Value> ads;
-  if (!CreateAdVector(v8_helper_.get(), context, should_exclude_ad_due_to_kanon,
-                      *bidder_worklet_non_shared_params.ads, ads) ||
-      !v8_helper_->InsertValue("ads", std::move(ads), interest_group_object)) {
-    return std::nullopt;
-  }
-
-  if (bidder_worklet_non_shared_params.ad_components) {
-    v8::Local<v8::Value> ad_components;
-    if (!CreateAdVector(
-            v8_helper_.get(), context, should_exclude_component_ad_due_to_kanon,
-            *bidder_worklet_non_shared_params.ad_components, ad_components) ||
-        !v8_helper_->InsertValue("adComponents", std::move(ad_components),
-                                 interest_group_object)) {
-      return std::nullopt;
-    }
   }
 
   args.push_back(std::move(interest_group_object));

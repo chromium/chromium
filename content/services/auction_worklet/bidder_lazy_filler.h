@@ -5,13 +5,21 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_BIDDER_LAZY_FILLER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_BIDDER_LAZY_FILLER_H_
 
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "v8/include/v8-forward.h"
+
+class GURL;
 
 namespace auction_worklet {
 
@@ -35,10 +43,30 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public LazyFiller {
                     const mojom::BidderWorkletNonSharedParams*
                         bidder_worklet_non_shared_params);
 
-  bool FillInObject(v8::Local<v8::Object> object) override;
+  // Returns success/failure.
+  //
+  // `is_ad_excluded` and `is_ad_component_excluded` are used to filter the
+  // `ads` and `adComponents` arrays, respectively.
+  bool FillInObject(
+      v8::Local<v8::Object> object,
+      base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+      base::RepeatingCallback<bool(const std::string&)>
+          is_ad_component_excluded);
+
   void Reset() override;
 
  private:
+  // Converts a vector of blink::InterestGroup::Ads into a v8 object, and writes
+  // it to `object's` `name` field. Sets `deprecated_render_url_callback` as the
+  // lazy callback for the deprecated `renderUrl` field of each entry. Returns
+  // false on failure.
+  bool CreateAdVector(
+      v8::Local<v8::Object>& object,
+      std::string_view name,
+      base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+      const std::vector<blink::InterestGroup::Ad>& ads,
+      v8::Local<v8::ObjectTemplate>& lazy_filler_template);
+
   static void HandleUserBiddingSignals(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
@@ -96,6 +124,13 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public LazyFiller {
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
 
+  // Handles "renderUrl" for the ads and ad components arrays, which is
+  // deprecated.
+  // TODO(https://crbug.com/1441988): Remove this method.
+  static void HandleDeprecatedAdsRenderUrl(
+      v8::Local<v8::Name> name,
+      const v8::PropertyCallbackInfo<v8::Value>& info);
+
   raw_ptr<const GURL> bidding_logic_url_ = nullptr;
   raw_ptr<const GURL> bidding_wasm_helper_url_ = nullptr;
   raw_ptr<const GURL> trusted_bidding_signals_url_ = nullptr;
@@ -115,7 +150,9 @@ class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller : public LazyFiller {
   void ReInitialize(mojom::BiddingBrowserSignals* bidder_browser_signals,
                     base::Time auction_start_time);
 
-  bool FillInObject(v8::Local<v8::Object> object) override;
+  // Returns success/failure.
+  bool FillInObject(v8::Local<v8::Object> object);
+
   void Reset() override;
 
  private:

@@ -4,14 +4,21 @@
 
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-json.h"
+#include "v8/include/v8-template.h"
 
 namespace auction_worklet {
 
@@ -124,7 +131,11 @@ void InterestGroupLazyFiller::ReInitialize(
   bidder_worklet_non_shared_params_ = bidder_worklet_non_shared_params;
 }
 
-bool InterestGroupLazyFiller::FillInObject(v8::Local<v8::Object> object) {
+bool InterestGroupLazyFiller::FillInObject(
+    v8::Local<v8::Object> object,
+    base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+    base::RepeatingCallback<bool(const std::string&)>
+        is_ad_component_excluded) {
   if (bidder_worklet_non_shared_params_->user_bidding_signals &&
       !DefineLazyAttribute(object, "userBiddingSignals",
                            &HandleUserBiddingSignals)) {
@@ -169,6 +180,21 @@ bool InterestGroupLazyFiller::FillInObject(v8::Local<v8::Object> object) {
                            &HandleUseBiddingSignalsPrioritization)) {
     return false;
   }
+
+  v8::Local<v8::ObjectTemplate> lazy_filler_template;
+  if (bidder_worklet_non_shared_params_->ads &&
+      !CreateAdVector(object, "ads", is_ad_excluded,
+                      *bidder_worklet_non_shared_params_->ads,
+                      lazy_filler_template)) {
+    return false;
+  }
+  if (bidder_worklet_non_shared_params_->ad_components &&
+      !CreateAdVector(object, "adComponents", is_ad_component_excluded,
+                      *bidder_worklet_non_shared_params_->ad_components,
+                      lazy_filler_template)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -177,6 +203,43 @@ void InterestGroupLazyFiller::Reset() {
   bidding_wasm_helper_url_ = nullptr;
   trusted_bidding_signals_url_ = nullptr;
   bidder_worklet_non_shared_params_ = nullptr;
+}
+
+bool InterestGroupLazyFiller::CreateAdVector(
+    v8::Local<v8::Object>& object,
+    std::string_view name,
+    base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+    const std::vector<blink::InterestGroup::Ad>& ads,
+    v8::Local<v8::ObjectTemplate>& lazy_filler_template) {
+  v8::Isolate* isolate = v8_helper()->isolate();
+
+  v8::LocalVector<v8::Value> ads_vector(isolate);
+  for (const auto& ad : ads) {
+    if (is_ad_excluded.Run(ad.render_url())) {
+      continue;
+    }
+    v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
+    gin::Dictionary ad_dict(isolate, ad_object);
+
+    v8::Local<v8::Value> v8_url;
+    if (!gin::TryConvertToV8(isolate, ad.render_url(), &v8_url)) {
+      return false;
+    }
+    if (!ad_dict.Set("renderURL", v8_url) ||
+        // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+        !DefineLazyAttributeWithMetadata(ad_object, v8_url, "renderUrl",
+                                         &HandleDeprecatedAdsRenderUrl,
+                                         lazy_filler_template) ||
+        (ad.metadata &&
+         !v8_helper()->InsertJsonValue(isolate->GetCurrentContext(), "metadata",
+                                       *ad.metadata, ad_object))) {
+      return false;
+    }
+    ads_vector.emplace_back(std::move(ad_object));
+  }
+  return v8_helper()->InsertValue(
+      name, v8::Array::New(isolate, ads_vector.data(), ads_vector.size()),
+      object);
 }
 
 // static
@@ -394,6 +457,19 @@ void InterestGroupLazyFiller::HandleUseBiddingSignalsPrioritization(
   } else {
     SetResult(info, v8::Null(isolate));
   }
+}
+
+// static
+void InterestGroupLazyFiller::HandleDeprecatedAdsRenderUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Value> render_url;
+  InterestGroupLazyFiller* self =
+      GetSelfWithMetadata<InterestGroupLazyFiller>(info, render_url);
+  self->v8_logger_->LogConsoleWarning(
+      "AuctionAd.renderUrl is deprecated."
+      " Please use AuctionAd.renderURL instead.");
+  SetResult(info, render_url);
 }
 
 BiddingBrowserSignalsLazyFiller::BiddingBrowserSignalsLazyFiller(

@@ -1482,6 +1482,107 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
        "is neither object, null, nor undefined."});
 }
 
+// Check that accessing `renderUrl` of an entry in the ads array displays a
+// warning. Also checks that renderUrl works as expected.
+//
+// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, AdsRenderUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  interest_group_ads_.emplace_back(GURL("https://response2.test/"),
+                                   /*metadata=*/std::nullopt);
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          R"(if (interestGroup.ads[0].renderUrl !== "https://response.test/" ||
+             interestGroup.ads[1].renderUrl !== "https://response2.test/") {
+           return;
+         })"));
+
+  interest_group_enable_bidding_signals_prioritization_ = true;
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  // Each access of a different `renderUrl` value should have generated a
+  // separate warning.
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"AuctionAd.renderUrl is deprecated. Please use "
+      "AuctionAd.renderURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"AuctionAd.renderUrl is deprecated. Please use "
+      "AuctionAd.renderURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/5);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `renderURL` of an entry in the ads array does not
+// display a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+TEST_F(BidderWorkletTest, AdsRenderUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.ads[0].renderURL) return;"));
+
+  interest_group_enable_bidding_signals_prioritization_ = true;
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
   // ----------------------
   // No adComponents in IG.
@@ -1782,6 +1883,116 @@ TEST_F(BidderWorkletCustomAdComponentLimitTest, AdComponentsLimit) {
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid adComponents with over 25 "
        "items."});
+}
+
+// Check that accessing `renderUrl` of an entry in the adComponents array
+// displays a warning. Also checks that renderUrl works as expected.
+//
+// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, AdComponentsRenderUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  interest_group_ad_components_.emplace();
+  interest_group_ad_components_->emplace_back(GURL("https://component1.test/"),
+                                              /*metadata=*/std::nullopt);
+  interest_group_ad_components_->emplace_back(GURL("https://component2.test/"),
+                                              /*metadata=*/std::nullopt);
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          R"(if (interestGroup.adComponents[0].renderUrl !==
+                 "https://component1.test/" ||
+             interestGroup.adComponents[1].renderUrl !==
+                 "https://component2.test/") {
+           return;
+         })"));
+
+  interest_group_enable_bidding_signals_prioritization_ = true;
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  // Each access of a different `renderUrl` value should have generated a
+  // separate warning.
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"AuctionAd.renderUrl is deprecated. Please use "
+      "AuctionAd.renderURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"AuctionAd.renderUrl is deprecated. Please use "
+      "AuctionAd.renderURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/6);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `renderURL` of an entry in the ads array does not
+// display a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+TEST_F(BidderWorkletTest, AdComponentsRenderUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  interest_group_ad_components_.emplace();
+  interest_group_ad_components_->emplace_back(GURL("https://component1.test/"),
+                                              /*metadata=*/std::nullopt);
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.adComponents[0].renderURL) return;"));
+
+  interest_group_enable_bidding_signals_prioritization_ = true;
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignals) {
