@@ -2209,11 +2209,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
   if (!IsElementInControlElementSet(initiating_element, control_elements)) {
     return {};
   }
-  const bool num_elements_matches_num_fields =
-      control_elements.size() == fields.size();
-  UMA_HISTOGRAM_BOOLEAN("Autofill.NumElementsMatchesNumFields",
-                        num_elements_matches_num_fields);
-
   // This is the focused element that led to the filling. It might not exist in
   // scenarios like refills where no element is focused, but if it is then it
   // needs special treatment. See intended behavior comment below.

@@ -162,28 +162,8 @@ constexpr char kTestShippingFormString[] = R"(
     </form>
     )";
 
-constexpr std::string_view kNumElementsMatchesNumFields =
-    "Autofill.NumElementsMatchesNumFields";
-
 ACTION_P(InvokeClosure, closure) {
   closure.Run();
-}
-
-// Continuously merges histograms from all subprocesses and checks if the
-// histogram `histogram_name` got observed with `expected_count` and
-// `expected_sample`. Then runs `base::HistogramTester::ExpectUniqueSample`.
-bool WaitAndExpectUniqueSample(const base::HistogramTester* histogram_tester,
-                               const std::string_view histogram_name,
-                               const bool expected_sample,
-                               const int expected_count) {
-  bool expected_count_observed = base::test::RunUntil([&]() {
-    ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    return histogram_tester->GetBucketCount(histogram_name, expected_sample) ==
-           expected_count;
-  });
-  histogram_tester->ExpectUniqueSample(kNumElementsMatchesNumFields,
-                                       expected_sample, expected_count);
-  return expected_count_observed;
 }
 
 // Version of `kTestShippingFormString` which uses <selectlist> instead of
@@ -2595,12 +2575,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
-  // If only some form fields are tagged with autocomplete types, then the
-  // number of input elements will not match the number of fields when autofill
-  // tries to preview or fill.
-  ASSERT_TRUE(WaitAndExpectUniqueSample(&histogram_tester(),
-                                        kNumElementsMatchesNumFields, true, 2));
-
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
   EXPECT_EQ("TX", GetFieldValueById("state"));
@@ -2623,12 +2597,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
-  // If only some form fields are tagged with autocomplete types, then the
-  // number of input elements will not match the number of fields when autofill
-  // tries to preview or fill.
-  ASSERT_TRUE(WaitAndExpectUniqueSample(&histogram_tester(),
-                                        kNumElementsMatchesNumFields, true, 2));
-
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
   EXPECT_EQ("TX", GetFieldValueById("state"));
@@ -2647,11 +2615,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-
-  // If all form fields are tagged with autocomplete types, we make them all
-  // available to be filled.
-  ASSERT_TRUE(WaitAndExpectUniqueSample(&histogram_tester(),
-                                        kNumElementsMatchesNumFields, true, 2));
 
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));

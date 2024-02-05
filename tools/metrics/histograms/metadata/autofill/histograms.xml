@@ -2952,18 +2952,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.NumElementsMatchesNumFields" enum="Boolean"
-    expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records whether the number of fillable form elements matches the number of
-    fields in the form's description. Instances where this is recorded as False,
-    denote cases where autofill failed to preview/fill an autofill suggestion.
-    This can happen when a fields is filtered out of a formless form.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.NumericQuantityCollidesWithServerPrediction"
     enum="Boolean" expires_after="2024-12-12">
   <owner>koerber@google.com</owner>
