@@ -569,12 +569,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kModelExecutionMainToggleSettingState,
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  auto* prefs = browser()->profile()->GetPrefs();
-  EXPECT_EQ(
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled),
-      prefs->GetInteger(prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION)));
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
 }
@@ -591,13 +587,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-
-  auto* prefs = browser()->profile()->GetPrefs();
-  EXPECT_EQ(
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled),
-      prefs->GetInteger(prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION)));
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
