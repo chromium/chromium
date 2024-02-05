@@ -675,8 +675,8 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
       ignore_animation_ = true;
     } else {
       auto is_necessary_ancillary = [](const png_byte* chunk) {
-        for (const char* tag :
-             {"tRNS", "cHRM", "iCCP", "sRGB", "gAMA", "cICP", "cLLi", "mDCv"}) {
+        for (const char* tag : {"tRNS", "cHRM", "iCCP", "sRGB", "gAMA", "cICP",
+                                "cLLi", "mDCv", "eXIf"}) {
           if (IsChunk(chunk, tag)) {
             return true;
           }

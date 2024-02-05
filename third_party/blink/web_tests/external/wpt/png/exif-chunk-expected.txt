@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] test pixel values of a rotated PNG
-  assert_approx_equals: expected 0 +/- 2 but got 255
-Harness: the test ran to completion.
-
