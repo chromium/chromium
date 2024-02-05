@@ -1276,7 +1276,7 @@ TEST_F(WebStateListTest, MoveWebStateAt_KeepsPinnedWebStateWithinPinnedRange) {
   EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), kURL2);
   EXPECT_EQ(web_state_list_.GetWebStateAt(3)->GetVisibleURL().spec(), kURL3);
 
-  // Try to move first pinned WebState inside of the pinned WebStates range.
+  // Try to move first pinned WebState contains of the pinned WebStates range.
   web_state_list_.MoveWebStateAt(0, 2);
 
   // Try to move first pinned WebState outside of the pinned WebStates range.
@@ -1343,4 +1343,53 @@ TEST_F(WebStateListTest, WebStateListAsWeakPtr) {
   EXPECT_TRUE(weak_web_state_list);
   web_state_list.reset();
   EXPECT_FALSE(weak_web_state_list);
+}
+
+using WebStateListRangeTest = PlatformTest;
+
+TEST_F(WebStateListRangeTest, InvalidRange) {
+  WebStateList::Range range = WebStateList::Range::InvalidRange();
+
+  EXPECT_FALSE(range.IsValid());
+}
+
+TEST_F(WebStateListRangeTest, ZeroRange) {
+  WebStateList::Range range(0, 0);
+
+  EXPECT_TRUE(range.IsValid());
+  EXPECT_EQ(0, range.start());
+  EXPECT_EQ(0, range.count());
+  EXPECT_EQ(0, range.end());
+
+  EXPECT_FALSE(range.contains(-1));
+  EXPECT_FALSE(range.contains(0));
+  EXPECT_FALSE(range.contains(1));
+
+  EXPECT_EQ(WebStateList::Range(0, 0), range);
+  EXPECT_NE(WebStateList::Range(0, 1), range);
+  EXPECT_NE(WebStateList::Range(1, 0), range);
+  EXPECT_NE(WebStateList::Range(1, 1), range);
+  EXPECT_NE(WebStateList::Range::InvalidRange(), range);
+}
+
+TEST_F(WebStateListRangeTest, SomeRange) {
+  WebStateList::Range range(1, 2);
+
+  EXPECT_TRUE(range.IsValid());
+  EXPECT_EQ(1, range.start());
+  EXPECT_EQ(2, range.count());
+  EXPECT_EQ(3, range.end());
+
+  EXPECT_FALSE(range.contains(-1));
+  EXPECT_FALSE(range.contains(0));
+  EXPECT_TRUE(range.contains(1));
+  EXPECT_TRUE(range.contains(2));
+  EXPECT_FALSE(range.contains(3));
+
+  EXPECT_NE(WebStateList::Range(0, 0), range);
+  EXPECT_NE(WebStateList::Range(0, 1), range);
+  EXPECT_NE(WebStateList::Range(1, 0), range);
+  EXPECT_NE(WebStateList::Range(1, 1), range);
+  EXPECT_EQ(WebStateList::Range(1, 2), range);
+  EXPECT_NE(WebStateList::Range::InvalidRange(), range);
 }

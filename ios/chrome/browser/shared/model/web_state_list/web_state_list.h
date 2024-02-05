@@ -146,6 +146,41 @@ class WebStateList {
     raw_ptr<WebStateList> web_state_list_ = nullptr;
   };
 
+  // Represents a range in the WebStateList. Typically used for locating tab
+  // groups.
+  class Range {
+   public:
+    // Initializes the range with a start and count.
+    constexpr Range(int start, int count) : start_(start), count_(count) {
+      DCHECK_GE(count_, 0);
+    }
+
+    // Returns a range that is invalid, which is {kInvalidIndex, 0}.
+    static constexpr Range InvalidRange() { return Range(kInvalidIndex, 0); }
+
+    // Checks if the range is valid through comparison to InvalidRange(). If
+    // this is not valid, you must not call functions on this object.
+    constexpr bool IsValid() const { return *this != InvalidRange(); }
+
+    // Getters.
+    constexpr int start() const { return start_; }
+    constexpr int count() const { return count_; }
+
+    // End is the first index not in the range.
+    constexpr int end() const { return start_ + count_; }
+    // Whether the index is inside the range.
+    constexpr bool contains(int index) const {
+      return start_ <= index && index < start_ + count_;
+    }
+
+    constexpr bool operator==(const Range& other) const = default;
+    constexpr bool operator!=(const Range& other) const = default;
+
+   private:
+    const int start_;
+    const int count_;
+  };
+
   explicit WebStateList(WebStateListDelegate* delegate);
 
   WebStateList(const WebStateList&) = delete;
@@ -283,7 +318,7 @@ class WebStateList {
 
   // Locks the WebStateList for mutation. This methods checks that the list is
   // not currently mutated (as the class is not re-entrant it would lead to
-  // corruption of the internal state and ultimately to indefined behaviour).
+  // corruption of the internal state and ultimately to undefined behavior).
   base::AutoReset<bool> LockForMutation();
 
   // Inserts the specified WebState at the best position in the WebStateList
