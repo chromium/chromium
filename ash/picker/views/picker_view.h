@@ -63,6 +63,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   static views::UniqueWidgetPtr CreateWidget(
       const gfx::Rect& caret_bounds,
       const gfx::Point& cursor_point,
+      const gfx::Rect& focused_window_bounds,
       PickerViewDelegate* delegate,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 

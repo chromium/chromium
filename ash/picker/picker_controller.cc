@@ -19,10 +19,12 @@
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
+#include "ui/aura/window.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/input_method.h"
@@ -86,6 +88,14 @@ gfx::Rect GetCaretBounds() {
 // Gets the current cursor point in universal screen coordinates in DIP.
 gfx::Point GetCursorPoint() {
   return display::Screen::GetScreen()->GetCursorScreenPoint();
+}
+
+// Gets the bounds of the current focused window in universal screen coordinates
+// in DIP. Returns an empty rect if there is no currently focused window.
+gfx::Rect GetFocusedWindowBounds() {
+  return window_util::GetFocusedWindow()
+             ? window_util::GetFocusedWindow()->GetBoundsInScreen()
+             : gfx::Rect();
 }
 
 PickerInsertMediaRequest::MediaData ResultToInsertMediaData(
@@ -153,7 +163,8 @@ void PickerController::ToggleWidget(
   if (widget_) {
     widget_->Close();
   } else {
-    widget_ = PickerView::CreateWidget(GetCaretBounds(), GetCursorPoint(), this,
+    widget_ = PickerView::CreateWidget(GetCaretBounds(), GetCursorPoint(),
+                                       GetFocusedWindowBounds(), this,
                                        trigger_event_timestamp);
     widget_->Show();
 

@@ -66,11 +66,15 @@ std::unique_ptr<views::Separator> CreateSeparator() {
 
 // Gets the anchor bounds to use for positioning the Picker. We prefer to anchor
 // at `caret_bounds`, but may use `cursor_point` as a fallback. `caret_bounds`,
-// `cursor_point` and returned anchor bounds should be in screen coordinates.
+// `cursor_point`, `focused_window_bounds` and returned anchor bounds should be
+// in screen coordinates.
 gfx::Rect GetPickerAnchorBounds(const gfx::Rect& caret_bounds,
-                                const gfx::Point& cursor_point) {
-  return caret_bounds != gfx::Rect() ? caret_bounds
-                                     : gfx::Rect(cursor_point, gfx::Size());
+                                const gfx::Point& cursor_point,
+                                const gfx::Rect& focused_window_bounds) {
+  return caret_bounds != gfx::Rect() &&
+                 focused_window_bounds.Contains(caret_bounds)
+             ? caret_bounds
+             : gfx::Rect(cursor_point, gfx::Size());
 }
 
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
@@ -175,13 +179,14 @@ PickerView::~PickerView() = default;
 views::UniqueWidgetPtr PickerView::CreateWidget(
     const gfx::Rect& caret_bounds,
     const gfx::Point& cursor_point,
+    const gfx::Rect& focused_window_bounds,
     PickerViewDelegate* delegate,
     const base::TimeTicks trigger_event_timestamp) {
   // Create the Picker view and set its size. This will trigger a layout, so
   // that the position of the Picker view's search field can be used when
   // setting the Picker widget bounds below.
   const gfx::Rect anchor_bounds =
-      GetPickerAnchorBounds(caret_bounds, cursor_point);
+      GetPickerAnchorBounds(caret_bounds, cursor_point, focused_window_bounds);
   const PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
   auto picker_view = std::make_unique<PickerView>(
       delegate, trigger_event_timestamp, layout_type);
