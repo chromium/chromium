@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <deque>
 #include <map>
 #include <memory>
 #include <optional>
@@ -461,6 +462,9 @@ class CONTENT_EXPORT RenderThreadImpl
       bool enable_video_encode_accelerator);
 
   mojom::RenderMessageFilter* render_message_filter();
+  void RequestNewItemsForFrameRoutingCache();
+  void PopulateFrameRoutingCacheWithItems(
+      std::vector<mojom::FrameRoutingInfoPtr> infos);
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_memory_allocator_;
@@ -574,6 +578,17 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // Tracks the time the run loop started for this thread.
   base::TimeTicks run_loop_start_time_;
+
+  // A small cache of pending frame routing IDs/tokens so we do not need to make
+  // a synchronous IPC call to retrieve one most of the time. If the cache is
+  // empty a synchronous IPC call will be made. Once the cache only has two
+  // items an asynchronous request to populate it will also be made.
+  std::deque<mojom::FrameRoutingInfoPtr> cached_frame_routing_;
+
+  // Keep track of it we have requested items or not as we do not want to fire
+  // off only one asynchronous request.
+  bool cached_items_requested_ = false;
+  bool use_cached_routing_table_ = false;
 
   base::WeakPtrFactory<RenderThreadImpl> weak_factory_{this};
 };

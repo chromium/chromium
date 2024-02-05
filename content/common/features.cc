@@ -234,6 +234,14 @@ BASE_FEATURE(kForwardMemoryPressureEventsToGpuProcess,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Whether to use the Frame Routing Cache to avoid synchronous IPCs from the
+// renderer side for iframe creation.
+BASE_FEATURE(kFrameRoutingCache,
+             "FrameRoutingCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kFrameRoutingCacheResponseSize{
+    &kFrameRoutingCache, "responseSize", 4};
+
 // Adds "/prefetch:8" (which is the "other" category of process - i.e. not
 // browser, gpu, crashpad, etc.) to the info collection GPU process' command
 // line, in order to keep from polluting the GPU prefetch history.

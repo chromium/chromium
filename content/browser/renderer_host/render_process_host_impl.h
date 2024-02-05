@@ -362,8 +362,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Return the set of previously stored data for a `frame_token`.
   // The routing ID and frame tokens were stored on the IO thread via the
-  // RenderMessageFilter::GenerateFrameRoutingID mojo call. Returns false if
-  // `frame_token` was not found in the token table.
+  // RenderMessageFilter::GenerateSingleFrameRoutingInfo mojo call. Returns
+  // false if `frame_token` was not found in the token table.
   bool TakeStoredDataForFrameToken(const blink::LocalFrameToken& frame_token,
                                    int32_t& new_routing_id,
                                    base::UnguessableToken& devtools_frame_token,
