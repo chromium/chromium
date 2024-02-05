@@ -207,6 +207,9 @@ constexpr size_t must_not_be_dynamic_extent() {
 // - The deduction guides from a contiguous range are folded into a single one,
 //   and treat borrowed ranges correctly.
 //
+// Other differences:
+// - Using StrictNumeric<size_t> instead of size_t where possible.
+//
 // Additions beyond the C++ standard draft
 // - as_chars() function.
 // - as_writable_chars() function.
@@ -303,14 +306,14 @@ class GSL_POINTER span {
     return span<T, Count>(data() + (size() - Count), Count);
   }
 
-  constexpr span<T> first(size_t count) const noexcept {
-    CHECK_LE(count, size());
+  constexpr span<T> first(StrictNumeric<size_t> count) const noexcept {
+    CHECK_LE(size_t{count}, size());
     return {data(), count};
   }
 
-  constexpr span<T> last(size_t count) const noexcept {
-    CHECK_LE(count, size());
-    return {data() + (size() - count), count};
+  constexpr span<T> last(StrictNumeric<size_t> count) const noexcept {
+    CHECK_LE(size_t{count}, size());
+    return {data() + (size() - size_t{count}), count};
   }
 
   template <size_t Offset, size_t Count = dynamic_extent>
@@ -509,14 +512,14 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return span<T, Count>(data() + (size() - Count), Count);
   }
 
-  constexpr span<T> first(size_t count) const noexcept {
-    CHECK_LE(count, size());
+  constexpr span<T> first(StrictNumeric<size_t> count) const noexcept {
+    CHECK_LE(size_t{count}, size());
     return {data(), count};
   }
 
-  constexpr span<T> last(size_t count) const noexcept {
-    CHECK_LE(count, size());
-    return {data() + (size() - count), count};
+  constexpr span<T> last(StrictNumeric<size_t> count) const noexcept {
+    CHECK_LE(size_t{count}, size());
+    return {data() + (size() - size_t{count}), count};
   }
 
   template <size_t Offset, size_t Count = dynamic_extent>
