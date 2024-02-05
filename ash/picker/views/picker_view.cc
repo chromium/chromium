@@ -15,6 +15,7 @@
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
+#include "ash/style/system_shadow.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -32,6 +33,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_utils.h"
@@ -44,15 +46,14 @@ namespace {
 
 constexpr gfx::Size kPickerSize(320, 340);
 constexpr int kBorderRadius = 12;
-constexpr int kShadowElevation = 3;
+constexpr SystemShadow::Type kShadowType = SystemShadow::Type::kElevation12;
 constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevated;
 
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+      views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
   border->SetCornerRadius(kBorderRadius);
-  border->set_md_shadow_elevation(kShadowElevation);
   return border;
 }
 
@@ -81,14 +82,6 @@ PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
                      .bottom()
              ? PickerView::PickerLayoutType::kResultsBelowSearchField
              : PickerView::PickerLayoutType::kResultsAboveSearchField;
-}
-
-// Gets the preferred Picker widget bounds given the preferred client bounds
-// (i.e. Picker view bounds), in screen coordinates.
-gfx::Rect GetPickerWidgetBoundsForClientBounds(const gfx::Rect& client_bounds) {
-  gfx::Rect non_client_frame_view_bounds = client_bounds;
-  non_client_frame_view_bounds.Inset(-CreateBorder()->GetInsets());
-  return non_client_frame_view_bounds;
 }
 
 // Gets the preferred Picker view bounds in screen coordinates. We try to place
@@ -146,7 +139,13 @@ PickerView::PickerView(PickerViewDelegate* delegate,
                        PickerLayoutType layout_type)
     : session_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
-  SetBackground(views::CreateThemedSolidBackground(kBackgroundColor));
+  SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColor,
+                                                         kBorderRadius));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kBorderRadius, views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  shadow_ =
+      SystemShadow::CreateShadowOnNinePatchLayerForView(this, kShadowType);
+  shadow_->SetRoundedCornerRadius(kBorderRadius);
   SetPreferredSize(kPickerSize);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -194,8 +193,7 @@ views::UniqueWidgetPtr PickerView::CreateWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.type = views::Widget::InitParams::TYPE_BUBBLE;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.bounds = GetPickerWidgetBoundsForClientBounds(
-      picker_view->GetTargetBounds(anchor_bounds, layout_type));
+  params.bounds = picker_view->GetTargetBounds(anchor_bounds, layout_type);
   // TODO(b/309706053): Replace this with the finalized string.
   params.name = "Picker";
   params.delegate = picker_view.release();

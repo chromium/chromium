@@ -34,6 +34,7 @@ class PickerSearchResultsView;
 class PickerViewDelegate;
 class PickerZeroStateView;
 class PickerCategoryView;
+class SystemShadow;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView {
@@ -117,6 +118,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
 
   // Used to close the Picker widget when the user clicks outside of it.
   std::unique_ptr<BubbleEventFilter> bubble_event_filter_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   PickerSessionMetrics session_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;
