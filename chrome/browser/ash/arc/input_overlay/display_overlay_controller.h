@@ -10,6 +10,7 @@
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/property_change_reason.h"
@@ -17,6 +18,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class View;
@@ -47,7 +49,8 @@ class TouchInjectorObserver;
 // menu, and educational dialog. It also handles the visibility of the
 // `ActionEditMenu` and `MessageView` by listening to the `LocatedEvent`.
 class DisplayOverlayController : public ui::EventHandler,
-                                 public aura::WindowObserver {
+                                 public aura::WindowObserver,
+                                 public views::WidgetObserver {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
   DisplayOverlayController(const DisplayOverlayController&) = delete;
@@ -132,6 +135,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
 
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -141,6 +145,10 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   const TouchInjector* touch_injector() const { return touch_injector_; }
 
@@ -161,6 +169,8 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class MenuEntryViewTest;
   friend class OverlayViewTestBase;
   friend class RichNudgeTest;
+
+  class FocusCycler;
 
   // Display overlay is added for starting `display_mode`.
   void AddOverlay(DisplayMode display_mode);
@@ -243,6 +253,10 @@ class DisplayOverlayController : public ui::EventHandler,
 
   ButtonOptionsMenu* GetButtonOptionsMenu();
 
+  // Focus cycler operations.
+  void AddFocusCycler();
+  void RemoveFocusCycler();
+
   // Shows or removes target view when in or out button place mode.
   void AddTargetWidget(ActionType action_type);
   void RemoveTargetWidget();
@@ -274,6 +288,9 @@ class DisplayOverlayController : public ui::EventHandler,
 
   const raw_ptr<TouchInjector> touch_injector_;
 
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
+
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView, DanglingUntriaged> input_mapping_view_ = nullptr;
   raw_ptr<InputMenuView, DanglingUntriaged> input_menu_view_ = nullptr;
@@ -293,6 +310,8 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> action_highlight_widget_;
   raw_ptr<views::Widget> delete_edit_shortcut_widget_;
   raw_ptr<views::Widget> rich_nudge_widget_;
+
+  std::unique_ptr<FocusCycler> focus_cycler_;
 };
 
 }  // namespace arc::input_overlay

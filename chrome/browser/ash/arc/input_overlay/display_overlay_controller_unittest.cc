@@ -6,9 +6,15 @@
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "chrome/browser/ash/arc/input_overlay/test/game_controls_test_base.h"
+#include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/window.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
@@ -133,6 +139,148 @@ TEST_F(DisplayOverlayControllerTest, TestRemoveAllActions) {
                /*has_editing_list_widget=*/false);
   // `TouchInjector` stop rewriting events if there is no active action.
   EXPECT_FALSE(CanRewriteEvent());
+}
+
+// -----------------------------------------------------------------------------
+// EditModeDisplayOverlayControllerTest:
+// For test in the edit mode.
+class EditModeDisplayOverlayControllerTest : public OverlayViewTestBase {
+ public:
+  EditModeDisplayOverlayControllerTest() = default;
+  ~EditModeDisplayOverlayControllerTest() override = default;
+
+  void CheckWidgetsVisible(bool input_mapping_visible,
+                           bool editing_list_visible,
+                           bool button_options_visible,
+                           bool delete_edit_menu_visible) {
+    EXPECT_EQ(
+        input_mapping_visible,
+        input_mapping_view_ && input_mapping_view_->GetWidget()->IsVisible());
+
+    auto* editing_list = GetEditingList();
+    EXPECT_EQ(editing_list_visible,
+              editing_list && editing_list->GetWidget()->IsVisible());
+
+    auto* button_options_menu = GetButtonOptionsMenu();
+    EXPECT_EQ(
+        button_options_visible,
+        button_options_menu && button_options_menu->GetWidget()->IsVisible());
+
+    auto* delete_edit_view = GetDeleteEditShortcut();
+    EXPECT_EQ(delete_edit_menu_visible,
+              delete_edit_view && delete_edit_view->GetWidget()->IsVisible());
+  }
+
+  // Presses key tab until it focuses on the first focusable view in
+  // `contents_view` when `reverse` is true, or the last focusable view on
+  // `contents_view` when `reverse` is false.
+  void PressTabKeyToFirstOrLastElement(views::View* contents_view,
+                                       bool reverse) {
+    auto* event_generator = GetEventGenerator();
+    auto* focus_manager = contents_view->GetFocusManager();
+
+    while (true) {
+      auto* next_focus = focus_manager->GetNextFocusableView(
+          /*starting_view=*/focus_manager->GetFocusedView(),
+          /*starting_widget=*/contents_view->GetWidget(), reverse,
+          /*dont_loop=*/true);
+      if (!next_focus) {
+        break;
+      }
+      event_generator->PressAndReleaseKey(
+          ui::KeyboardCode::VKEY_TAB,
+          (reverse ? ui::EF_SHIFT_DOWN : ui::EF_NONE));
+      EXPECT_TRUE(focus_manager->GetFocusedView());
+    }
+  }
+};
+
+TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
+
+  // Case 1: in edit mode default view. The tab focus will cycle between the
+  // editing list and input mapping. Press key tab to the last element of the
+  // editing list.
+  auto* editing_list = GetEditingList();
+  PressTabKeyToFirstOrLastElement(editing_list, /*reverse=*/false);
+  auto* list_focus_manager = editing_list->GetFocusManager();
+  EXPECT_TRUE(list_focus_manager->GetFocusedView());
+
+  // Press key tab to focus on the input mapping.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  auto* mapping_focus_manager = input_mapping_view_->GetFocusManager();
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+
+  // Keep pressing key tap to the last element of the input mapping.
+  PressTabKeyToFirstOrLastElement(input_mapping_view_, /*reverse=*/false);
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+
+  // Press key tab to focus on the editing list.
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_TRUE(list_focus_manager->GetFocusedView());
+
+  // Press tab + shift and it focuses back to the input mapping.
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB,
+                                      ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+
+  // Case 2: show button options menu. The tab focus cycles between the
+  // button options menu and input mapping. (editing list is hidden when button
+  // options menu shows up.)
+  ShowButtonOptionsMenu(tap_action_);
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/false,
+      /*button_options_visible=*/true, /*delete_edit_menu_visible=*/false);
+  auto* button_options_menu = GetButtonOptionsMenu();
+  auto* options_focus_manager = button_options_menu->GetFocusManager();
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  EXPECT_FALSE(options_focus_manager->GetFocusedView());
+
+  // Keep pressing key tap to the last element of the button options menu.
+  PressTabKeyToFirstOrLastElement(button_options_menu, /*reverse=*/false);
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_TRUE(options_focus_manager->GetFocusedView());
+
+  // Press key tab to focus on the input mapping.
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(options_focus_manager->GetFocusedView());
+
+  // Close button options menu and editing list shows back.
+  PressDeleteButtonOnButtonOptionsMenu();
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
+
+  // Case 3: show delete-edit menu. The tab focus cycles among the delete-edit
+  // menu, editing list and input mapping.
+  HoverAtActionViewListItem(/*index=*/1u);
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/true);
+  auto* delete_edit_shortcut = GetDeleteEditShortcut();
+  auto* delete_edit_focus_manager = delete_edit_shortcut->GetFocusManager();
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  EXPECT_FALSE(delete_edit_focus_manager->GetFocusedView());
+
+  PressTabKeyToFirstOrLastElement(delete_edit_shortcut, /*reverse=*/false);
+  EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  EXPECT_TRUE(delete_edit_focus_manager->GetFocusedView());
+  // Press key tab to focus on the input mapping.
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_TRUE(mapping_focus_manager->GetFocusedView());
+  EXPECT_FALSE(list_focus_manager->GetFocusedView());
+  EXPECT_FALSE(delete_edit_focus_manager->GetFocusedView());
 }
 
 }  // namespace arc::input_overlay
