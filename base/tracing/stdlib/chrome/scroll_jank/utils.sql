@@ -15,7 +15,7 @@
 -- (1ns) divided by maximum value in denominator, giving 1e-9.
 
 -- Function : function takes scroll ids of frames to verify it's from
--- the same scroll, and makes sure the frame ts occured within the scroll
+-- the same scroll, and makes sure the frame ts occurred within the scroll
 -- timestamp of the neighbour and computes whether the frame was janky or not.
 CREATE PERFETTO FUNCTION _is_janky_frame(cur_gesture_id LONG,
                                       neighbour_gesture_id LONG,

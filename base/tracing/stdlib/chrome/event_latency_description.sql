@@ -146,7 +146,7 @@ VALUES
     'CompositorFrame.'),
   ('ReceiveCompositorFrameToStartDraw',
     'Interval between the first frame received to when all frames (or ' ||
-    'timeouts have occured) and we start drawing. It can be blocked by ' ||
+    'timeouts have occurred) and we start drawing. It can be blocked by ' ||
     'other processes (e.g to draw a toolbar it waiting for information from ' ||
     'the Browser) as it waits for timeouts or frames to be provided. This ' ||
     'is the tree of dependencies that the GPU VizCompositor is waiting for ' ||
