@@ -277,10 +277,6 @@ bool TestPersonalDataManager::ShouldSuggestServerPaymentMethods() const {
   return IsAutofillPaymentMethodsEnabled() && IsAutofillWalletImportEnabled();
 }
 
-std::string TestPersonalDataManager::CountryCodeForCurrentTimezone() const {
-  return timezone_country_code_;
-}
-
 void TestPersonalDataManager::ClearAllLocalData() {
   ClearProfiles();
   local_credit_cards_.clear();

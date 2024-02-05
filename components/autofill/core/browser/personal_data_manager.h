@@ -531,7 +531,7 @@ class PersonalDataManager : public KeyedService,
   // Returns our best guess for the country a user is in, for experiment group
   // purposes. The value is calculated once and cached, so it will only update
   // when Chrome is restarted.
-  virtual const std::string& GetCountryCodeForExperimentGroup() const;
+  const std::string& GetCountryCodeForExperimentGroup() const;
 
   // Returns all virtual card usage data linked to the credit card.
   virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
@@ -811,9 +811,6 @@ class PersonalDataManager : public KeyedService,
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
   virtual bool ShouldSuggestServerPaymentMethods() const;
-
-  // Overrideable for testing.
-  virtual std::string CountryCodeForCurrentTimezone() const;
 
   // Sets which PrefService to use and observe. |pref_service| is not owned by
   // this class and must outlive |this|.

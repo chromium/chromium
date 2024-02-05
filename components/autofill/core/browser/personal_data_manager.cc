@@ -1684,10 +1684,6 @@ bool PersonalDataManager::ShouldSuggestServerPaymentMethods() const {
   return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
 }
 
-std::string PersonalDataManager::CountryCodeForCurrentTimezone() const {
-  return base::CountryCodeForCurrentTimezone();
-}
-
 void PersonalDataManager::SetPrefService(PrefService* pref_service) {
   profile_enabled_pref_ = std::make_unique<BooleanPrefMember>();
   credit_card_enabled_pref_ = std::make_unique<BooleanPrefMember>();
@@ -1742,12 +1738,14 @@ const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
 const std::string& PersonalDataManager::GetCountryCodeForExperimentGroup()
     const {
   // Set to |variations_country_code_| if it exists.
-  if (experiment_country_code_.empty())
+  if (experiment_country_code_.empty()) {
     experiment_country_code_ = variations_country_code_;
+  }
 
   // Failing that, guess based on system timezone.
-  if (experiment_country_code_.empty())
-    experiment_country_code_ = CountryCodeForCurrentTimezone();
+  if (experiment_country_code_.empty()) {
+    experiment_country_code_ = base::CountryCodeForCurrentTimezone();
+  }
 
   // Failing that, guess based on locale. This returns "US" if there is no good
   // guess.
