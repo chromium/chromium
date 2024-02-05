@@ -220,6 +220,13 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
+    public void setSelectedType(@UserSelectableType int type, boolean isTypeOn) {
+        ThreadUtils.assertOnUiThread();
+        assert mSyncServiceAndroidBridge != 0;
+        SyncServiceImplJni.get().setSelectedType(mSyncServiceAndroidBridge, type, isTypeOn);
+    }
+
+    @Override
     public void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource) {
         ThreadUtils.assertOnUiThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -542,6 +549,11 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
                 long nativeSyncServiceAndroidBridge,
                 boolean syncEverything,
                 int[] userSelectableTypeArray);
+
+        void setSelectedType(
+                long nativeSyncServiceAndroidBridge,
+                @UserSelectableType int type,
+                boolean isTypeOn);
 
         boolean isCustomPassphraseAllowed(long nativeSyncServiceAndroidBridge);
 

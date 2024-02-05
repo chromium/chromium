@@ -57,6 +57,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
                         jboolean sync_everything,
                         const base::android::JavaParamRef<jintArray>&
                             user_selectable_type_selection);
+  void SetSelectedType(JNIEnv* env, jint type, jboolean is_type_on);
   jboolean IsCustomPassphraseAllowed(JNIEnv* env);
   jboolean IsEncryptEverythingEnabled(JNIEnv* env);
   jboolean IsPassphraseRequiredForPreferredDataTypes(JNIEnv* env);

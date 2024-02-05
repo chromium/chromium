@@ -16,6 +16,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncServiceImpl;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Date;
@@ -255,6 +256,11 @@ public class FakeSyncServiceImpl implements SyncService {
     @Override
     public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes) {
         mDelegate.setSelectedTypes(syncEverything, enabledTypes);
+    }
+
+    @Override
+    public void setSelectedType(@UserSelectableType int type, boolean isTypeOn) {
+        mDelegate.setSelectedType(type, isTypeOn);
     }
 
     @Override
