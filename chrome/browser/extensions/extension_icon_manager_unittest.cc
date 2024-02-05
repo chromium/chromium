@@ -20,6 +20,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display_list.h"
@@ -73,7 +74,7 @@ class ExtensionIconManagerTest : public testing::Test,
 
   ~ExtensionIconManagerTest() override = default;
 
-  void OnImageLoaded(const std::string& extension_id) override {
+  void OnImageLoaded(const ExtensionId& extension_id) override {
     unwaited_image_loads_++;
     if (waiting_) {
       std::move(quit_closure_).Run();
@@ -107,7 +108,7 @@ class ExtensionIconManagerTest : public testing::Test,
 // Returns the default icon that ExtensionIconManager gives when an extension
 // doesn't have an icon.
 gfx::Image GetDefaultIcon() {
-  std::string dummy_id = crx_file::id_util::GenerateId("whatever");
+  ExtensionId dummy_id = crx_file::id_util::GenerateId("whatever");
   ExtensionIconManager manager;
   return manager.GetIcon(dummy_id);
 }

@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 namespace content {
@@ -102,14 +103,14 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   bool NotifyEventTargets(const ui::Accelerator& accelerator);
 
   // Notifies appropriate parties that a command has been executed.
-  void CommandExecuted(const std::string& extension_id,
+  void CommandExecuted(const ExtensionId& extension_id,
                        const std::string& command);
 
   // Add event target (extension_id, command name) to the target list of
   // |accelerator|. Note that only media keys can have more than one event
   // target.
   void AddEventTarget(const ui::Accelerator& accelerator,
-                      const std::string& extension_id,
+                      const ExtensionId& extension_id,
                       const std::string& command_name);
 
   // Get the first event target by the given |accelerator|. For a valid
@@ -118,7 +119,7 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // set to the right target; otherwise, false is returned and |extension_id|,
   // |command_name| are unchanged.
   bool GetFirstTarget(const ui::Accelerator& accelerator,
-                      std::string* extension_id,
+                      ExtensionId* extension_id,
                       std::string* command_name) const;
 
   // Returns true if the |event_targets_| is empty; otherwise returns false.
@@ -129,9 +130,9 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
 
  private:
   // extensions::CommandService::Observer:
-  void OnExtensionCommandAdded(const std::string& extension_id,
+  void OnExtensionCommandAdded(const ExtensionId& extension_id,
                                const Command& command) override;
-  void OnExtensionCommandRemoved(const std::string& extension_id,
+  void OnExtensionCommandRemoved(const ExtensionId& extension_id,
                                  const Command& command) override;
   void OnCommandServiceDestroying() override;
 
@@ -153,7 +154,7 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // the corresponding extension. Returns true if at least one command was
   // executed.
   bool ExecuteCommands(const ui::Accelerator& accelerator,
-                       const std::string& extension_id);
+                       const ExtensionId& extension_id);
 
   // Returns true if any media keys are registered.
   bool IsListeningToAnyMediaKeys() const;
@@ -173,7 +174,7 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // commands, whereas on other platforms it does not. Note that normal
   // accelerator (which isn't media keys) has only one target, while the media
   // keys can have more than one.
-  typedef std::list<std::pair<std::string, std::string> > TargetList;
+  typedef std::list<std::pair<ExtensionId, std::string>> TargetList;
   typedef std::map<ui::Accelerator, TargetList> EventTargets;
   EventTargets event_targets_;
 

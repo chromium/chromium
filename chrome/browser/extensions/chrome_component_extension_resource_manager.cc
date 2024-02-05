@@ -20,6 +20,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -50,7 +51,7 @@ namespace extensions {
 class ChromeComponentExtensionResourceManager::Data {
  public:
   using TemplateReplacementMap =
-      std::map<std::string, ui::TemplateReplacements>;
+      std::map<ExtensionId, ui::TemplateReplacements>;
 
   Data();
   Data(const Data&) = delete;
@@ -207,7 +208,7 @@ bool ChromeComponentExtensionResourceManager::IsComponentExtensionResource(
 
 const ui::TemplateReplacements*
 ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   LazyInitData();

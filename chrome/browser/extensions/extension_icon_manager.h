@@ -7,10 +7,10 @@
 
 #include <map>
 #include <set>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "extensions/common/extension_id.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {
@@ -25,7 +25,7 @@ class ExtensionIconManager {
  public:
   class Observer {
    public:
-    virtual void OnImageLoaded(const std::string& extension_id) = 0;
+    virtual void OnImageLoaded(const extensions::ExtensionId& extension_id) = 0;
   };
 
   ExtensionIconManager();
@@ -42,26 +42,27 @@ class ExtensionIconManager {
   // This returns an image of width/height kFaviconSize, loaded either from an
   // entry specified in the extension's 'icon' section of the manifest, or a
   // default extension icon.
-  gfx::Image GetIcon(const std::string& extension_id);
+  gfx::Image GetIcon(const extensions::ExtensionId& extension_id);
 
   // Removes the extension's icon from memory.
-  void RemoveIcon(const std::string& extension_id);
+  void RemoveIcon(const extensions::ExtensionId& extension_id);
 
   void set_monochrome(bool value) { monochrome_ = value; }
   void set_observer(Observer* observer) { observer_ = observer; }
 
  private:
-  void OnImageLoaded(const std::string& extension_id, const gfx::Image& image);
+  void OnImageLoaded(const extensions::ExtensionId& extension_id,
+                     const gfx::Image& image);
 
   // Makes sure we've done one-time initialization of the default extension icon
   // default_icon_.
   void EnsureDefaultIcon();
 
   // Maps extension id to the icon for that extension.
-  std::map<std::string, gfx::Image> icons_;
+  std::map<extensions::ExtensionId, gfx::Image> icons_;
 
   // Set of extension IDs waiting for icons to load.
-  std::set<std::string> pending_icons_;
+  std::set<extensions::ExtensionId> pending_icons_;
 
   // The default icon we'll use if an extension doesn't have one.
   gfx::Image default_icon_;

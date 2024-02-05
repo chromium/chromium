@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
@@ -166,7 +167,7 @@ ContentVerifierKey ChromeContentVerifierDelegate::GetPublicKey() {
 }
 
 GURL ChromeContentVerifierDelegate::GetSignatureFetchUrl(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Version& version) {
   // TODO(asargent) Factor out common code from the extension updater's
   // ManifestFetchData class that can be shared for use here.
@@ -190,7 +191,7 @@ std::set<base::FilePath> ChromeContentVerifierDelegate::GetBrowserImagePaths(
 }
 
 void ChromeContentVerifierDelegate::VerifyFailed(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     ContentVerifyJob::FailureReason reason) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(context_);
   const Extension* extension =

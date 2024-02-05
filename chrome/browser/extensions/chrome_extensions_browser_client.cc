@@ -91,6 +91,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/url_request_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -144,7 +145,7 @@ class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
 };
 
 bool ShouldLogExtensionAction(content::BrowserContext* browser_context,
-                              const std::string& extension_id) {
+                              const ExtensionId& extension_id) {
   // We only send these IPCs if activity logging is enabled, but due to race
   // conditions (e.g. logging gets disabled but the renderer sends the message
   // before it gets updated), we still need this check here.
@@ -303,7 +304,7 @@ bool ChromeExtensionsBrowserClient::IsGuestSession(
 }
 
 bool ChromeExtensionsBrowserClient::IsExtensionIncognitoEnabled(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* context) const {
   return IsGuestSession(context) ||
          util::IsIncognitoEnabled(extension_id, context);
@@ -668,7 +669,7 @@ std::string ChromeExtensionsBrowserClient::GetApplicationLocale() {
 }
 
 bool ChromeExtensionsBrowserClient::IsExtensionEnabled(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* context) const {
   return ExtensionSystem::Get(context)->extension_service()->IsExtensionEnabled(
       extension_id);
@@ -722,7 +723,7 @@ void ChromeExtensionsBrowserClient::SetLastSaveFilePath(
 }
 
 bool ChromeExtensionsBrowserClient::HasIsolatedStorage(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* context) {
   return util::HasIsolatedStorage(extension_id, context);
 }

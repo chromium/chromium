@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -73,7 +74,7 @@ bool AshExtensionKeeplistManager::ShouldDisable(
   return false;
 }
 
-void AshExtensionKeeplistManager::Disable(const std::string& extension_id) {
+void AshExtensionKeeplistManager::Disable(const ExtensionId& extension_id) {
   DCHECK(should_enforce_keeplist_);
 
   extension_service_->DisableExtension(

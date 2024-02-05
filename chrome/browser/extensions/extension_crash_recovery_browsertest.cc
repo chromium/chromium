@@ -32,6 +32,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -70,7 +71,7 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     return GetExtensionRegistry()->terminated_extensions().size();
   }
 
-  void CrashExtension(const std::string& extension_id) {
+  void CrashExtension(const extensions::ExtensionId& extension_id) {
     const Extension* extension =
         GetExtensionRegistry()->enabled_extensions().GetByID(extension_id);
     ASSERT_TRUE(extension);
@@ -89,7 +90,7 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  void CheckExtensionConsistency(const std::string& extension_id) {
+  void CheckExtensionConsistency(const extensions::ExtensionId& extension_id) {
     const Extension* extension =
         GetExtensionRegistry()->enabled_extensions().GetByID(extension_id);
     ASSERT_TRUE(extension);
@@ -126,7 +127,7 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     CheckExtensionConsistency(second_extension_id_);
   }
 
-  void AcceptNotification(const std::string& extension_id) {
+  void AcceptNotification(const extensions::ExtensionId& extension_id) {
     extensions::TestExtensionRegistryObserver observer(GetExtensionRegistry());
     display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                     "app.background.crashed." + extension_id,
@@ -143,8 +144,8 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
         .size();
   }
 
-  std::string first_extension_id_;
-  std::string second_extension_id_;
+  extensions::ExtensionId first_extension_id_;
+  extensions::ExtensionId second_extension_id_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 };

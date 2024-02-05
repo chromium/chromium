@@ -33,6 +33,7 @@
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest.h"
@@ -132,7 +133,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
     return ExtensionRegistry::Get(profile());
   }
 
-  const std::string& last_loaded_extension_id() {
+  const extensions::ExtensionId& last_loaded_extension_id() {
     return last_loaded_extension_id_;
   }
 
@@ -248,7 +249,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
 
   // Same as above but passes an id to CrxInstaller and does not allow a
   // privilege increase.
-  const Extension* UpdateExtension(const std::string& id,
+  const Extension* UpdateExtension(const extensions::ExtensionId& id,
                                    const base::FilePath& path,
                                    std::optional<int> expected_change) {
     return InstallOrUpdateExtension(id, path, INSTALL_UI_TYPE_NONE,
@@ -257,7 +258,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
 
   // Same as UpdateExtension but waits for the extension to be idle first.
   const Extension* UpdateExtensionWaitForIdle(
-      const std::string& id,
+      const extensions::ExtensionId& id,
       const base::FilePath& path,
       std::optional<int> expected_change);
 
@@ -286,15 +287,15 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
         std::string(), path, INSTALL_UI_TYPE_CANCEL, 0);
   }
 
-  void ReloadExtension(const std::string& extension_id);
+  void ReloadExtension(const extensions::ExtensionId& extension_id);
 
-  void UnloadExtension(const std::string& extension_id);
+  void UnloadExtension(const extensions::ExtensionId& extension_id);
 
-  void UninstallExtension(const std::string& extension_id);
+  void UninstallExtension(const extensions::ExtensionId& extension_id);
 
-  void DisableExtension(const std::string& extension_id);
+  void DisableExtension(const extensions::ExtensionId& extension_id);
 
-  void EnableExtension(const std::string& extension_id);
+  void EnableExtension(const extensions::ExtensionId& extension_id);
 
   // Wait for the number of visible page actions to change to |count|.
   bool WaitForPageActionVisibilityChangeTo(int count) {
@@ -307,12 +308,12 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   }
 
   // Wait for the extension to be idle.
-  bool WaitForExtensionIdle(const std::string& extension_id) {
+  bool WaitForExtensionIdle(const extensions::ExtensionId& extension_id) {
     return observer_->WaitForExtensionIdle(extension_id);
   }
 
   // Wait for the extension to not be idle.
-  bool WaitForExtensionNotIdle(const std::string& extension_id) {
+  bool WaitForExtensionNotIdle(const extensions::ExtensionId& extension_id) {
     return observer_->WaitForExtensionNotIdle(extension_id);
   }
 
@@ -346,7 +347,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // if executing the script fails. The argument `script_user_activation`
   // determines if the script should be executed after a user activation.
   base::Value ExecuteScriptInBackgroundPage(
-      const std::string& extension_id,
+      const extensions::ExtensionId& extension_id,
       const std::string& script,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate);
@@ -358,13 +359,13 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // fails. The argument |script_user_activation| determines if the script
   // should be executed after a user activation.
   std::string ExecuteScriptInBackgroundPageDeprecated(
-      const std::string& extension_id,
+      const extensions::ExtensionId& extension_id,
       const std::string& script,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate);
 
   bool ExecuteScriptInBackgroundPageNoWait(
-      const std::string& extension_id,
+      const extensions::ExtensionId& extension_id,
       const std::string& script,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate);
@@ -409,25 +410,25 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
     INSTALL_UI_TYPE_AUTO_CONFIRM,
   };
 
-  const Extension* InstallOrUpdateExtension(const std::string& id,
+  const Extension* InstallOrUpdateExtension(const extensions::ExtensionId& id,
                                             const base::FilePath& path,
                                             InstallUIType ui_type,
                                             std::optional<int> expected_change);
   const Extension* InstallOrUpdateExtension(
-      const std::string& id,
+      const extensions::ExtensionId& id,
       const base::FilePath& path,
       InstallUIType ui_type,
       std::optional<int> expected_change,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags);
   const Extension* InstallOrUpdateExtension(
-      const std::string& id,
+      const extensions::ExtensionId& id,
       const base::FilePath& path,
       InstallUIType ui_type,
       std::optional<int> expected_change,
       mojom::ManifestLocation install_source);
   const Extension* InstallOrUpdateExtension(
-      const std::string& id,
+      const extensions::ExtensionId& id,
       const base::FilePath& path,
       InstallUIType ui_type,
       std::optional<int> expected_change,
@@ -486,7 +487,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
 
-  std::string last_loaded_extension_id_;
+  extensions::ExtensionId last_loaded_extension_id_;
 };
 
 }  // namespace extensions

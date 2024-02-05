@@ -99,7 +99,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
 #endif
   bool IsGuestSession(content::BrowserContext* context) const override;
   bool IsExtensionIncognitoEnabled(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::BrowserContext* context) const override;
   bool CanExtensionCrossIncognito(
       const Extension* extension,
@@ -180,7 +180,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   KioskDelegate* GetKioskDelegate() override;
   bool IsLockScreenContext(content::BrowserContext* context) override;
   std::string GetApplicationLocale() override;
-  bool IsExtensionEnabled(const std::string& extension_id,
+  bool IsExtensionEnabled(const ExtensionId& extension_id,
                           content::BrowserContext* context) const override;
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
@@ -192,7 +192,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   base::FilePath GetSaveFilePath(content::BrowserContext* context) override;
   void SetLastSaveFilePath(content::BrowserContext* context,
                            const base::FilePath& path) override;
-  bool HasIsolatedStorage(const std::string& extension_id,
+  bool HasIsolatedStorage(const ExtensionId& extension_id,
                           content::BrowserContext* context) override;
   bool IsScreenshotRestricted(
       content::WebContents* web_contents) const override;

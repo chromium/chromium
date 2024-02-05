@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/chrome_url_request_util.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -21,6 +22,7 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/url_request_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -55,7 +57,7 @@ void DetermineCharset(const std::string& mime_type,
 
 scoped_refptr<base::RefCountedMemory> GetResource(
     int resource_id,
-    const std::string& extension_id) {
+    const extensions::ExtensionId& extension_id) {
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   scoped_refptr<base::RefCountedMemory> bytes =
       rb.LoadDataResourceBytes(resource_id);

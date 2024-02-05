@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
 
@@ -58,29 +59,29 @@ class ComponentLoader {
   //
   //   ssh-keygen -t rsa -b 1024 -N '' -f /tmp/key.pem
   //   openssl rsa -pubout -outform DER < /tmp/key.pem 2>/dev/null | base64 -w 0
-  std::string Add(const base::StringPiece& manifest_contents,
+  ExtensionId Add(const base::StringPiece& manifest_contents,
                   const base::FilePath& root_directory);
 
   // Convenience method for registering a component extension by resource id.
-  std::string Add(int manifest_resource_id,
+  ExtensionId Add(int manifest_resource_id,
                   const base::FilePath& root_directory);
 
   // Convenience method for registering a component extension by parsed
   // manifest.
-  std::string Add(base::Value::Dict manifest,
+  ExtensionId Add(base::Value::Dict manifest,
                   const base::FilePath& root_directory);
 
   // Loads a component extension from file system. Replaces previously added
   // extension with the same ID.
-  std::string AddOrReplace(const base::FilePath& path);
+  ExtensionId AddOrReplace(const base::FilePath& path);
 
   // Returns true if an extension with the specified id has been added.
-  bool Exists(const std::string& id) const;
+  bool Exists(const ExtensionId& id) const;
 
   // Unloads a component extension and removes it from the list of component
   // extensions to be loaded.
   void Remove(const base::FilePath& root_directory);
-  void Remove(const std::string& id);
+  void Remove(const ExtensionId& id);
 
   // Call this during test setup to load component extensions that have
   // background pages for testing, which could otherwise interfere with tests.
@@ -101,10 +102,10 @@ class ComponentLoader {
   void AddDefaultComponentExtensionsForKioskMode(bool skip_session_components);
 
   // Reloads a registered component extension.
-  void Reload(const std::string& extension_id);
+  void Reload(const ExtensionId& extension_id);
 
   // Return ids of all registered extensions.
-  std::vector<std::string> GetRegisteredComponentExtensionsIds() const;
+  std::vector<ExtensionId> GetRegisteredComponentExtensionsIds() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add a component extension from a specific directory. Assumes that the
@@ -166,7 +167,7 @@ class ComponentLoader {
     base::FilePath root_directory;
 
     // The component extension's ID.
-    std::string extension_id;
+    ExtensionId extension_id;
   };
 
   // Parses the given JSON manifest. Returns `std::nullopt` if it cannot be
@@ -174,10 +175,10 @@ class ComponentLoader {
   std::optional<base::Value::Dict> ParseManifest(
       base::StringPiece manifest_contents) const;
 
-  std::string Add(const base::StringPiece& manifest_contents,
+  ExtensionId Add(const base::StringPiece& manifest_contents,
                   const base::FilePath& root_directory,
                   bool skip_allowlist);
-  std::string Add(base::Value::Dict parsed_manifest,
+  ExtensionId Add(base::Value::Dict parsed_manifest,
                   const base::FilePath& root_directory,
                   bool skip_allowlist);
 

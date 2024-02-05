@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -96,7 +97,7 @@ void ExtensionAllowlist::Init() {
 }
 
 AllowlistState ExtensionAllowlist::GetExtensionAllowlistState(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   int value = 0;
   if (!extension_prefs_->ReadPrefAsInteger(extension_id, kPrefAllowlist,
                                            &value)) {
@@ -112,7 +113,7 @@ AllowlistState ExtensionAllowlist::GetExtensionAllowlistState(
 }
 
 void ExtensionAllowlist::SetExtensionAllowlistState(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     AllowlistState state) {
   DCHECK_NE(state, ALLOWLIST_UNDEFINED);
 
@@ -127,7 +128,7 @@ void ExtensionAllowlist::SetExtensionAllowlistState(
 
 AllowlistAcknowledgeState
 ExtensionAllowlist::GetExtensionAllowlistAcknowledgeState(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   int value = 0;
   if (!extension_prefs_->ReadPrefAsInteger(extension_id,
                                            kPrefAllowlistAcknowledge, &value)) {
@@ -144,7 +145,7 @@ ExtensionAllowlist::GetExtensionAllowlistAcknowledgeState(
 }
 
 void ExtensionAllowlist::SetExtensionAllowlistAcknowledgeState(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     AllowlistAcknowledgeState state) {
   if (state != GetExtensionAllowlistAcknowledgeState(extension_id)) {
     extension_prefs_->SetIntegerPref(extension_id, kPrefAllowlistAcknowledge,
@@ -153,7 +154,7 @@ void ExtensionAllowlist::SetExtensionAllowlistAcknowledgeState(
 }
 
 void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Value::Dict& attributes) {
   const base::Value* allowlist_value = attributes.Find("_esbAllowlist");
 
@@ -209,7 +210,7 @@ void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
 }
 
 bool ExtensionAllowlist::ShouldDisplayWarning(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   if (!warnings_enabled_)
     return false;  // No warnings should be shown.
 
@@ -229,7 +230,7 @@ bool ExtensionAllowlist::ShouldDisplayWarning(
   return true;
 }
 
-void ExtensionAllowlist::OnExtensionInstalled(const std::string& extension_id,
+void ExtensionAllowlist::OnExtensionInstalled(const ExtensionId& extension_id,
                                               int install_flags) {
   // Check if a user clicked through the install friction and set the
   // acknowledge state accordingly.
@@ -255,7 +256,7 @@ void ExtensionAllowlist::SetAllowlistEnforcementFields() {
 // `ApplyEnforcement` can be called when an extension becomes not allowlisted or
 // when the allowlist enforcement is activated (for already not allowlisted
 // extensions).
-void ExtensionAllowlist::ApplyEnforcement(const std::string& extension_id) {
+void ExtensionAllowlist::ApplyEnforcement(const ExtensionId& extension_id) {
   DCHECK(should_auto_disable_extensions_);
   DCHECK_EQ(GetExtensionAllowlistState(extension_id),
             ALLOWLIST_NOT_ALLOWLISTED);
@@ -354,7 +355,7 @@ void ExtensionAllowlist::OnSafeBrowsingEnhancedChanged() {
 
 // ExtensionPrefsObserver::OnExtensionStateChanged override
 void ExtensionAllowlist::OnExtensionStateChanged(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool is_now_enabled) {
   // TODO(crbug.com/1192225): Can be removed when the bug is resolved. This
   // check is needed because `OnExtensionStateChanged` is called for all loaded
@@ -390,7 +391,7 @@ void ExtensionAllowlist::OnExtensionStateChanged(
 }
 
 void ExtensionAllowlist::NotifyExtensionAllowlistWarningStateChanged(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool show_warning) {
   for (auto& observer : observers_) {
     observer.OnExtensionAllowlistWarningStateChanged(extension_id,
