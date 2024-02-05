@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.identity_disc;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
@@ -12,12 +13,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -25,6 +28,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -371,8 +375,18 @@ public class IdentityDiscController
                 IdentityServicesProvider.get()
                         .getSigninManager(mProfileSupplier.get().getOriginalProfile());
         if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
-            SyncConsentActivityLauncherImpl.get()
-                    .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+            // TODO(crbug.com/1523958): Implement the new sign-in flow for automotive.
+            if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                    && !BuildInfo.getInstance().isAutomotive) {
+                Intent intent =
+                        SigninAndHistoryOptInActivity.createIntent(
+                                mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                mContext.startActivity(intent);
+            } else {
+                SyncConsentActivityLauncherImpl.get()
+                        .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+            }
         } else {
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);

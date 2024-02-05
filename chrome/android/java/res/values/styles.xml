@@ -107,6 +107,19 @@ found in the LICENSE file.
         <item name="actionBarTheme">@style/ManageSpaceActionBarTheme</item>
     </style>
 
+    <!-- Style for the semi-transparent sign-in & history sync opt-in activity.
+    The background is translucent since the parent activity content should be
+    visible when the bottom sheet or the non-full-screen history sync opt-in
+    dialog is shown on tablet. -->
+    <style name="Theme.Chromium.SigninAndHistoryOptInActivity"
+        parent="Theme.Chromium.Activity.Fullscreen">
+        <item name="android:windowBackground">@color/default_scrim_color</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <!-- Trusted Web Activities -->
     <style name="Theme.Chromium.ClearDataDialogActivity"
         parent="Theme.Chromium.Activity.Fullscreen.Transparent">

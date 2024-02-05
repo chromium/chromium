@@ -606,6 +606,11 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
         {% endif %}
+        <activity android:name="org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity"
+            android:theme="@style/Theme.Chromium.SigninAndHistoryOptInActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+            android:exported="false">
+        </activity>
         <activity android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
