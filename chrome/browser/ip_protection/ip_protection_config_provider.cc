@@ -172,10 +172,10 @@ void IpProtectionConfigProvider::RequestOAuthToken(
           /*consumer_name=*/"IpProtectionService", identity_manager_, scopes,
           mode, signin::ConsentLevel::kSignin);
   auto* oauth_token_fetcher_ptr = oauth_token_fetcher.get();
-  oauth_token_fetcher_ptr->Start(base::BindOnce(
-      &IpProtectionConfigProvider::OnRequestOAuthTokenCompleted,
-      weak_ptr_factory_.GetWeakPtr(), std::move(oauth_token_fetcher),
-      std::move(callback)));
+  oauth_token_fetcher_ptr->Start(
+      base::BindOnce(&IpProtectionConfigProvider::OnRequestOAuthTokenCompleted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(oauth_token_fetcher), std::move(callback)));
 }
 
 void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
@@ -270,9 +270,11 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
   for (const auto& proxy_chain : response->proxy_chain()) {
     std::vector<net::ProxyServer> proxies;
     bool ok = true;
+    bool overridden = false;
     if (const std::string a_override =
             net::features::kIpPrivacyProxyAHostnameOverride.Get();
         a_override != "") {
+      overridden = true;
       ok = ok && add_server(proxies, a_override);
     } else {
       ok = ok && add_server(proxies, proxy_chain.proxy_a());
@@ -280,6 +282,7 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
     if (const std::string b_override =
             net::features::kIpPrivacyProxyBHostnameOverride.Get();
         ok && b_override != "") {
+      overridden = true;
       ok = ok && add_server(proxies, b_override);
     } else {
       ok = ok && add_server(proxies, proxy_chain.proxy_b());
@@ -287,11 +290,13 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
 
     // Create a new ProxyChain if the proxies were all valid.
     if (ok) {
-      // If the `chain_id` is out of range, use the proxy chain anyway, but
-      // with the default `chain_id`. This allows adding new IDs on the server
-      // side without breaking older browsers.
+      // If the `chain_id` is out of range or local features overrode the
+      // chain, use the proxy chain anyway, but with the default `chain_id`.
+      // This allows adding new IDs on the server side without breaking older
+      // browsers.
       int chain_id = proxy_chain.chain_id();
-      if (chain_id < 0 || chain_id > net::ProxyChain::kMaxIpProtectionChainId) {
+      if (overridden || chain_id < 0 ||
+          chain_id > net::ProxyChain::kMaxIpProtectionChainId) {
         chain_id = net::ProxyChain::kDefaultIpProtectionChainId;
       }
       proxy_list.push_back(
