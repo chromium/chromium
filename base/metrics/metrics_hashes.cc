@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/hash/sha1.h"
 #include "base/sys_byteorder.h"
@@ -40,13 +41,13 @@ uint64_t HashMetricName(base::StringPiece name) {
   //   struct.unpack('>Q', hashlib.md5(name.encode('utf-8')).digest()[:8])[0]
   //
   base::MD5Digest digest;
-  base::MD5Sum(name.data(), name.size(), &digest);
+  base::MD5Sum(base::as_byte_span(name), &digest);
   return DigestToUInt64(digest);
 }
 
 uint32_t HashMetricNameAs32Bits(base::StringPiece name) {
   base::MD5Digest digest;
-  base::MD5Sum(name.data(), name.size(), &digest);
+  base::MD5Sum(base::as_byte_span(name), &digest);
   return DigestToUInt32(digest);
 }
 

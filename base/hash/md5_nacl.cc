@@ -23,6 +23,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/strings/string_number_conversions.h"
 
@@ -271,16 +272,17 @@ std::string MD5DigestToBase16(const MD5Digest& digest) {
   return ret;
 }
 
-void MD5Sum(const void* data, size_t length, MD5Digest* digest) {
+void MD5Sum(span<const uint8_t> data, MD5Digest* digest) {
   MD5Context ctx;
   MD5Init(&ctx);
-  MD5Update(&ctx, StringPiece(reinterpret_cast<const char*>(data), length));
+  span<const char> chars = as_chars(data);
+  MD5Update(&ctx, StringPiece(chars.data(), chars.size()));
   MD5Final(digest, &ctx);
 }
 
 std::string MD5String(const StringPiece& str) {
   MD5Digest digest;
-  MD5Sum(str.data(), str.length(), &digest);
+  MD5Sum(as_byte_span(str), &digest);
   return MD5DigestToBase16(digest);
 }
 

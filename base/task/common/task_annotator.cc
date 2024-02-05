@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -314,7 +315,7 @@ TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
 uint32_t TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
     base::StringPiece name) {
   base::MD5Digest digest;
-  base::MD5Sum(name.data(), name.size(), &digest);
+  base::MD5Sum(base::as_byte_span(name), &digest);
   uint32_t value;
   DCHECK_GE(sizeof(digest.a), sizeof(value));
   memcpy(&value, digest.a, sizeof(value));

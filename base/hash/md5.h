@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -57,9 +58,20 @@ BASE_EXPORT void MD5Final(MD5Digest* digest, MD5Context* context);
 // Converts a digest into human-readable hexadecimal.
 BASE_EXPORT std::string MD5DigestToBase16(const MD5Digest& digest);
 
+// Computes the MD5 sum of the given `data`.
+// The 'digest' structure will be filled with the result.
+BASE_EXPORT void MD5Sum(base::span<const uint8_t> data, MD5Digest* digest);
+
 // Computes the MD5 sum of the given data buffer with the given length.
 // The given 'digest' structure will be filled with the result data.
-BASE_EXPORT void MD5Sum(const void* data, size_t length, MD5Digest* digest);
+//
+// TODO(https://crbug.com.1490484): Remove this overload, in favor of the one
+// taking `span` (see above).
+BASE_EXPORT inline void MD5Sum(const void* data,
+                               size_t length,
+                               MD5Digest* digest) {
+  MD5Sum(span(static_cast<const uint8_t*>(data), length), digest);
+}
 
 // Returns the MD5 (in hexadecimal) of a string.
 BASE_EXPORT std::string MD5String(const StringPiece& str);

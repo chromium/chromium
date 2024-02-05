@@ -25,13 +25,13 @@ std::string MD5DigestToBase16(const MD5Digest& digest) {
   return ToLowerASCII(HexEncode(digest.a, MD5_DIGEST_LENGTH));
 }
 
-void MD5Sum(const void* data, size_t length, MD5Digest* digest) {
-  MD5(reinterpret_cast<const uint8_t*>(data), length, digest->a);
+void MD5Sum(base::span<const uint8_t> data, MD5Digest* digest) {
+  MD5(data.data(), data.size(), digest->a);
 }
 
 std::string MD5String(const StringPiece& str) {
   MD5Digest digest;
-  MD5Sum(str.data(), str.size(), &digest);
+  MD5Sum(base::as_byte_span(str), &digest);
   return MD5DigestToBase16(digest);
 }
 }  // namespace base
