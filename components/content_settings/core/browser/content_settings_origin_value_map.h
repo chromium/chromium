@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <variant>
 
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
