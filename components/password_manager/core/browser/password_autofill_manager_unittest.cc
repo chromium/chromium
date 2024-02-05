@@ -609,8 +609,7 @@ TEST_F(PasswordAutofillManagerTest, ShowOptInAndFillButton) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
-      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
-      gfx::RectF());
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::PopupItemId::kPasswordEntry,
@@ -638,8 +637,7 @@ TEST_F(PasswordAutofillManagerTest, SuppressManageAllWithoutPasswords) {
   EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi).WillOnce(Return(true));
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
-      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
-      gfx::RectF());
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::PopupItemId::kPasswordAccountStorageOptIn));
@@ -660,8 +658,7 @@ TEST_F(PasswordAutofillManagerTest, ShowResigninButton) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
-      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
-      gfx::RectF());
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::PopupItemId::kPasswordEntry,
@@ -1105,8 +1102,8 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT, u"xyz",
-      autofill::SHOW_ALL, element_bounds);
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT, u"", 0,
+      element_bounds);
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorMainTextsAre(
@@ -2302,8 +2299,7 @@ TEST_F(PasswordAutofillManagerTest,
           autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions));
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
-      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
-      gfx::RectF());
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
 }
 
 // Test that the AutofillSuggestionAvailability is set according to the popup
@@ -2323,8 +2319,7 @@ TEST_F(PasswordAutofillManagerTest,
           autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable));
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
-      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
-      gfx::RectF());
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -97,7 +97,7 @@ void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
   data->password_field_index = 1ul;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
   data->typed_username = u"username";
-  data->options = SHOW_ALL | IS_PASSWORD_FIELD | ACCEPTS_WEBAUTHN_CREDENTIALS;
+  data->options = IS_PASSWORD_FIELD | ACCEPTS_WEBAUTHN_CREDENTIALS;
   data->form_data = test::CreateTestAddressFormData();
 }
 

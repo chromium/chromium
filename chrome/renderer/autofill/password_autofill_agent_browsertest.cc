@@ -766,16 +766,12 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   // is the expected flag for the PasswordAutofillManager, whether to show all
   // suggestions, or only those starting with `typed_username`.
   void CheckSuggestions(const std::u16string& typed_username, bool show_all) {
-    auto show_all_matches = [show_all](int options) {
-      return show_all == ((options & autofill::SHOW_ALL) != 0);
-    };
+    std::u16string expected_username = show_all ? u"" : typed_username;
 
     EXPECT_CALL(fake_driver_,
                 ShowPasswordSuggestions(AllOf(
                     Field(&autofill::PasswordSuggestionRequest::typed_username,
-                          typed_username),
-                    Field(&autofill::PasswordSuggestionRequest::options,
-                          Truly(show_all_matches)))))
+                          expected_username))))
         .Times(testing::AtLeast(1));
     base::RunLoop().RunUntilIdle();
   }

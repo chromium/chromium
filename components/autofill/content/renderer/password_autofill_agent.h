@@ -109,7 +109,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                               public mojom::PasswordAutofillAgent {
  public:
   using UseFallbackData = base::StrongAlias<class UseFallbackDataTag, bool>;
-  using ShowAll = base::StrongAlias<class ShowAllTag, bool>;
 
   PasswordAutofillAgent(content::RenderFrame* render_frame,
                         blink::AssociatedInterfaceRegistry* registry);
@@ -194,15 +193,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 #endif
 
   // Queries password suggestions for the given `element` and `trigger_source`.
-  // If `show_all` is `true`, will show all possible suggestions for that
-  // element, otherwise shows suggestions based on current value of `element`.
   // If `generation_popup_showing` is true, this function will return false
   // as both UIs should not be shown at the same time. This function should
   // still be called in this situation so that UMA stats can be logged.
   // Returns true if any suggestions were shown, false otherwise.
   bool ShowSuggestions(const blink::WebInputElement& element,
-                       AutofillSuggestionTriggerSource trigger_source,
-                       ShowAll show_all);
+                       AutofillSuggestionTriggerSource trigger_source);
 
   // Called when new form controls are inserted.
   void OnDynamicFormsSeen();
@@ -357,7 +353,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void ShowSuggestionPopup(const std::u16string& typed_username,
                            const blink::WebInputElement& user_input,
                            AutofillSuggestionTriggerSource trigger_source,
-                           ShowAll show_all,
                            OnPasswordField show_on_password_field);
 
   // Finds the PasswordInfo, username and password fields corresponding to the

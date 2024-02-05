@@ -36,6 +36,7 @@
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/prefilled_values_detector.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
+#include "components/autofill/content/renderer/suggestion_properties.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -767,8 +768,7 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
 
   // Show the popup with the list of available usernames.
   return ShowSuggestions(element,
-                         AutofillSuggestionTriggerSource::kTextFieldDidChange,
-                         ShowAll(false));
+                         AutofillSuggestionTriggerSource::kTextFieldDidChange);
 }
 
 void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
@@ -1125,8 +1125,7 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
 
 bool PasswordAutofillAgent::ShowSuggestions(
     const WebInputElement& element,
-    AutofillSuggestionTriggerSource trigger_source,
-    ShowAll show_all) {
+    AutofillSuggestionTriggerSource trigger_source) {
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
@@ -1166,14 +1165,19 @@ bool PasswordAutofillAgent::ShowSuggestions(
   // If a username element is focused, show suggestions unless all possible
   // usernames are filtered.
   if (!element.IsPasswordFieldForAutofill()) {
-    if (show_all ||
-        (password_info && CanShowUsernameSuggestion(password_info->fill_data,
-                                                    element.Value().Utf16()))) {
-      ShowSuggestionPopup(element.Value().Utf16(), element, trigger_source,
-                          show_all, OnPasswordField(false));
-      return true;
+    std::u16string username_prefix;
+    if (!ShouldShowFullSuggestionListForPasswordManager(trigger_source,
+                                                        element)) {
+      if (!password_info ||
+          !CanShowUsernameSuggestion(password_info->fill_data,
+                                     element.Value().Utf16())) {
+        return false;
+      }
+      username_prefix = element.Value().Utf16();
     }
-    return false;
+    ShowSuggestionPopup(username_prefix, element, trigger_source,
+                        OnPasswordField(false));
+    return true;
   }
 
   // If the element is a password field, do not to show a popup if the user has
@@ -1189,7 +1193,7 @@ bool PasswordAutofillAgent::ShowSuggestions(
     return false;
   }
 
-  ShowSuggestionPopup(std::u16string(), element, trigger_source, show_all,
+  ShowSuggestionPopup(std::u16string(), element, trigger_source,
                       OnPasswordField(true));
   return true;
 }
@@ -1543,8 +1547,7 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
     // time.
     ShowSuggestions(
         focused_input_element,
-        autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-        ShowAll(false));
+        autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked);
   }
 }
 
@@ -1641,7 +1644,6 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     const std::u16string& typed_username,
     const WebInputElement& user_input,
     AutofillSuggestionTriggerSource trigger_source,
-    ShowAll show_all,
     OnPasswordField show_on_password_field) {
   username_query_prefix_ = typed_username;
   auto [form, field] =
@@ -1650,8 +1652,6 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
           .value_or(std::make_pair(FormData(), FormFieldData()));
 
   int options = 0;
-  if (show_all)
-    options |= SHOW_ALL;
   if (show_on_password_field)
     options |= IS_PASSWORD_FIELD;
   if (field.parsed_autocomplete && field.parsed_autocomplete->webauthn)

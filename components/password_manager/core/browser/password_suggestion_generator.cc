@@ -169,15 +169,14 @@ void AppendSuggestionIfMatching(
     const std::u16string& field_contents,
     const gfx::Image& custom_icon,
     const std::string& signon_realm,
-    bool show_all,
     bool is_password_field,
     bool from_account_store,
     size_t password_length,
     std::vector<autofill::Suggestion>* suggestions) {
   std::u16string lower_suggestion = base::i18n::ToLower(field_suggestion);
   std::u16string lower_contents = base::i18n::ToLower(field_contents);
-  if (show_all || base::StartsWith(lower_suggestion, lower_contents,
-                                   base::CompareCase::SENSITIVE)) {
+  if (base::StartsWith(lower_suggestion, lower_contents,
+                       base::CompareCase::SENSITIVE)) {
     bool replaced_username;
     autofill::Suggestion suggestion(
         ReplaceEmptyUsername(field_suggestion, &replaced_username));
@@ -221,17 +220,15 @@ void AppendSuggestionIfMatching(
 }
 
 // This function attempts to fill |suggestions| from |fill_data| based on
-// |current_username| that is the current value of the field. If |show_all|
-// is true, we do not match suggestions with field content.
+// |current_username| that is the current value of the field.
 void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                     const std::u16string& current_username,
                     const gfx::Image& custom_icon,
-                    bool show_all,
                     bool is_password_field,
                     std::vector<autofill::Suggestion>* suggestions) {
   AppendSuggestionIfMatching(
       fill_data.preferred_login.username_value, current_username, custom_icon,
-      fill_data.preferred_login.realm, show_all, is_password_field,
+      fill_data.preferred_login.realm, is_password_field,
       fill_data.preferred_login.uses_account_store,
       fill_data.preferred_login.password_value.size(), suggestions);
 
@@ -239,8 +236,8 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
 
   for (const auto& login : fill_data.additional_logins) {
     AppendSuggestionIfMatching(login.username_value, current_username,
-                               custom_icon, login.realm, show_all,
-                               is_password_field, login.uses_account_store,
+                               custom_icon, login.realm, is_password_field,
+                               login.uses_account_store,
                                login.password_value.size(), suggestions);
   }
 
@@ -264,7 +261,6 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
     const gfx::Image& page_favicon,
     const std::u16string& username_filter,
     ForPasswordField for_password_field,
-    ShowAllPasswords show_all_passwords,
     OffersGeneration offers_generation,
     ShowPasswordSuggestions show_password_suggestions,
     ShowWebAuthnCredentials show_webauthn_credentials) const {
@@ -314,8 +310,7 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
   // Add password suggestions if they exist and were requested.
   if (show_password_suggestions && fill_data.has_value()) {
     GetSuggestions(*fill_data, username_filter, page_favicon,
-                   show_all_passwords.value(), for_password_field.value(),
-                   &suggestions);
+                   for_password_field.value(), &suggestions);
   }
 
 #if !BUILDFLAG(IS_ANDROID)

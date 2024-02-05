@@ -370,8 +370,8 @@ void PasswordAutofillManager::OnAddPasswordFillData(
       fill_data, page_favicon_, std::u16string(),
       ForPasswordField(AreSuggestionForPasswordField(
           autofill_client_->GetPopupSuggestions())),
-      ShowAllPasswords(true), OffersGeneration(false),
-      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false)));
+      OffersGeneration(false), ShowPasswordSuggestions(true),
+      ShowWebAuthnCredentials(false)));
 }
 
 void PasswordAutofillManager::OnNoCredentialsFound() {
@@ -411,7 +411,6 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
                 suggestion_generator_.GetSuggestionsForDomain(
                     fill_data_.get(), page_favicon_, typed_username,
                     ForPasswordField(options & autofill::IS_PASSWORD_FIELD),
-                    ShowAllPasswords(options & autofill::SHOW_ALL),
                     OffersGeneration(false), ShowPasswordSuggestions(true),
                     ShowWebAuthnCredentials(
                         options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS)));
@@ -426,12 +425,12 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
 bool PasswordAutofillManager::MaybeShowPasswordSuggestions(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
-  return ShowPopup(bounds, text_direction,
-                   suggestion_generator_.GetSuggestionsForDomain(
-                       fill_data_.get(), page_favicon_, std::u16string(),
-                       ForPasswordField(true), ShowAllPasswords(true),
-                       OffersGeneration(false), ShowPasswordSuggestions(true),
-                       ShowWebAuthnCredentials(false)));
+  return ShowPopup(
+      bounds, text_direction,
+      suggestion_generator_.GetSuggestionsForDomain(
+          fill_data_.get(), page_favicon_, std::u16string(),
+          ForPasswordField(true), OffersGeneration(false),
+          ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false)));
 }
 
 bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
@@ -441,8 +440,7 @@ bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
   return ShowPopup(bounds, text_direction,
                    suggestion_generator_.GetSuggestionsForDomain(
                        fill_data_.get(), page_favicon_, std::u16string(),
-                       ForPasswordField(true), ShowAllPasswords(true),
-                       OffersGeneration(true),
+                       ForPasswordField(true), OffersGeneration(true),
                        ShowPasswordSuggestions(show_password_suggestions),
                        ShowWebAuthnCredentials(false)));
 }

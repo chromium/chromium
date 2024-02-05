@@ -37,18 +37,15 @@ class PasswordSuggestionGenerator {
   // specifies the value typed into the username form field. This value is empty
   // if the suggestions are triggered on a password field. `for_password_field`
   // specifies whether suggestions were triggered on a password field.
-  // `show_all_passwords` specifies whether suggestions should be filtered based
-  // on the `username_filter`. `offers_generation` specifies whether password
-  // generation suggestion should be added. `show_password_suggestions`
-  // specifies whether suggestions should be specified from the `fill_data`.
-  // `show_webauthn_credentials` specifies whether web auth credential
-  // suggestion should be added.
+  // `offers_generation` specifies whether password generation suggestion should
+  // be added. `show_password_suggestions` specifies whether suggestions should
+  // be specified from the `fill_data`. `show_webauthn_credentials` specifies
+  // whether web auth credential suggestion should be added.
   std::vector<autofill::Suggestion> GetSuggestionsForDomain(
       base::optional_ref<const autofill::PasswordFormFillData> fill_data,
       const gfx::Image& page_favicon,
       const std::u16string& username_filter,
       ForPasswordField for_password_field,
-      ShowAllPasswords show_all_passwords,
       OffersGeneration offers_generation,
       ShowPasswordSuggestions show_password_suggestions,
       ShowWebAuthnCredentials show_webauthn_credentials) const;

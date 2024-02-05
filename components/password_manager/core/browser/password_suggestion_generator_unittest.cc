@@ -45,8 +45,8 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
 TEST_F(PasswordSuggestionGeneratorTest, NoPasswordFormFillData) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       {}, favicon(), /*username_filter=*/u"", ForPasswordField(false),
-      ShowAllPasswords(false), OffersGeneration(false),
-      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false));
+      OffersGeneration(false), ShowPasswordSuggestions(true),
+      ShowWebAuthnCredentials(false));
 
   EXPECT_TRUE(suggestions.empty());
 }

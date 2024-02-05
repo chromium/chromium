@@ -951,11 +951,8 @@ void AutofillAgent::ShowSuggestions(
       is_popup_possibly_visible_ = true;
       return;
     }
-    if (password_autofill_agent_->ShowSuggestions(
-            input_element, trigger_source,
-            PasswordAutofillAgent::ShowAll(
-                ShouldShowFullSuggestionListForPasswordManager(trigger_source,
-                                                               element)))) {
+    if (password_autofill_agent_->ShowSuggestions(input_element,
+                                                  trigger_source)) {
       is_popup_possibly_visible_ = true;
       return;
     }
