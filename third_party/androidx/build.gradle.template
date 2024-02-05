@@ -30,6 +30,11 @@ dependencies.constraints {
             attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
         }
     }
+    androidTestCompile("androidx.lifecycle:lifecycle-runtime") {
+        attributes {
+            attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
+        }
+    }
 }
 
 dependencies {
