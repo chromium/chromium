@@ -988,6 +988,14 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
       ApplyDefaultSearchChange(url ? &url->data() : nullptr,
                                DefaultSearchManager::FROM_USER);
       selection_added = true;
+    } else {
+      // When we are setting the search engine choice from choice screens,
+      // the DSP source is expected to allow the search engine to be changed by
+      // the user. So we are guaranteed to not drop one of the choices coming
+      // from these screens here.
+      // TODO(crbug.com/323905627): Remove milestone if no hits by then.
+      CHECK_NE(choice_made_location, search_engines::ChoiceMadeLocation::kOther,
+               base::NotFatalUntil::M124);
     }
   } else {
     // We rely on the DefaultSearchManager to call ApplyDefaultSearchChange if,
