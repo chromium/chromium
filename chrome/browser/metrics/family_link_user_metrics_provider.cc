@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/family_link_user_log_record.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -23,7 +24,7 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
   // session, so guarantee it will never crash.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   std::vector<Profile*> profile_list = profile_manager->GetLoadedProfiles();
-  std::vector<supervised_user::LogSegment> log_segments;
+  std::vector<supervised_user::FamilyLinkUserLogRecord> records;
   for (Profile* profile : profile_list) {
 #if !BUILDFLAG(IS_ANDROID)
     // TODO(b/274889379): Mock call to GetBrowserCount().
@@ -35,12 +36,9 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
       continue;
     }
 #endif
-    std::optional<supervised_user::LogSegment> log_segment =
-        supervised_user::SupervisionStatusForUser(
-            IdentityManagerFactory::GetForProfile(profile));
-    if (log_segment.has_value()) {
-      log_segments.push_back(log_segment.value());
-    }
+
+    records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
+        IdentityManagerFactory::GetForProfile(profile)));
   }
-  return supervised_user::EmitLogSegmentHistogram(log_segments);
+  return supervised_user::EmitLogRecordHistograms(records);
 }

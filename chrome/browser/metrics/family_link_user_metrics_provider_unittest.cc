@@ -106,7 +106,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::LogSegment::kSupervisionEnabledByPolicy,
+      supervised_user::FamilyLinkUserLogRecord::Segment::
+          kSupervisionEnabledByPolicy,
       /*expected_bucket_count=*/1);
 }
 
@@ -122,7 +123,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::LogSegment::kSupervisionEnabledByUser,
+      supervised_user::FamilyLinkUserLogRecord::Segment::
+          kSupervisionEnabledByUser,
       /*expected_bucket_count=*/1);
 }
 
@@ -138,7 +140,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::LogSegment::kUnsupervised,
+      supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised,
       /*expected_bucket_count=*/1);
 }
 
@@ -157,7 +159,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::LogSegment::kMixedProfile,
+      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/1);
 }
 
@@ -182,7 +184,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::LogSegment::kMixedProfile,
+      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/1);
 }
 
@@ -193,7 +195,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::LogSegment::kMixedProfile,
+      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/0);
 }
 
@@ -207,6 +209,6 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::LogSegment::kUnsupervised,
+      supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised,
       /*expected_count=*/1);
 }
