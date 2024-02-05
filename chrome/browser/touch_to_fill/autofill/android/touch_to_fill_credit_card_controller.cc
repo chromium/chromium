@@ -126,19 +126,25 @@ void TouchToFillCreditCardController::OnDismissed(JNIEnv* env,
 }
 
 void TouchToFillCreditCardController::ScanCreditCard(JNIEnv* env) {
-  delegate_->ScanCreditCard();
+  if (delegate_) {
+    delegate_->ScanCreditCard();
+  }
 }
 
 void TouchToFillCreditCardController::ShowCreditCardSettings(JNIEnv* env) {
-  delegate_->ShowCreditCardSettings();
+  if (delegate_) {
+    delegate_->ShowCreditCardSettings();
+  }
 }
 
 void TouchToFillCreditCardController::SuggestionSelected(
     JNIEnv* env,
     base::android::JavaParamRef<jstring> unique_id,
     bool is_virtual) {
-  delegate_->SuggestionSelected(
-      base::android::ConvertJavaStringToUTF8(env, unique_id), is_virtual);
+  if (delegate_) {
+    delegate_->SuggestionSelected(
+        base::android::ConvertJavaStringToUTF8(env, unique_id), is_virtual);
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>
