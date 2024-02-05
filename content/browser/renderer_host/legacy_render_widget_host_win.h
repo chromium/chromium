@@ -7,6 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 
+// Must be included before <atlapp.h>.
+#include "base/win/atl.h"  // NOLINT(build/include_order)
+
+#include <atlapp.h>
+#include <atlcrack.h>
 #include <oleacc.h>
 #include <wrl/client.h>
 
@@ -18,8 +23,6 @@
 #include "ui/base/win/internal_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/win/msg_util.h"
-#include "ui/gfx/win/window_impl.h"
 
 namespace ui {
 class AXFragmentRootWin;
@@ -53,9 +56,18 @@ class RenderWidgetHostViewAura;
 // HWND instead of the DesktopWindowTreeHostWin. It also maintains a ViewProp to
 // associate the parent's aura::WindowTreeHost with this HWND for lookup.
 class CONTENT_EXPORT LegacyRenderWidgetHostHWND
-    : public gfx::WindowImpl,
+    : public ATL::CWindowImpl<LegacyRenderWidgetHostHWND,
+                              ATL::CWindow,
+                              ATL::CWinTraits<WS_CHILD>>,
       public ui::AXFragmentRootDelegateWin {
  public:
+  DECLARE_WND_CLASS_EX(ui::kLegacyRenderWidgetHostHwnd, CS_DBLCLKS, 0)
+
+  typedef ATL::CWindowImpl<LegacyRenderWidgetHostHWND,
+                           ATL::CWindow,
+                           ATL::CWinTraits<WS_CHILD>>
+      Base;
+
   // Creates and returns an instance of the LegacyRenderWidgetHostHWND class on
   // successful creation of a child window parented to the parent window passed
   // in.
@@ -69,33 +81,34 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Destroys the HWND managed by this class.
   void Destroy();
 
-  CR_BEGIN_MSG_MAP_EX(LegacyRenderWidgetHostHWND)
-    CR_MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
-    CR_MESSAGE_RANGE_HANDLER_EX(WM_KEYFIRST, WM_KEYLAST, OnKeyboardRange)
-    CR_MESSAGE_HANDLER_EX(WM_PAINT, OnPaint)
-    CR_MESSAGE_HANDLER_EX(WM_NCPAINT, OnNCPaint)
-    CR_MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkGnd)
-    CR_MESSAGE_HANDLER_EX(WM_INPUT, OnInput)
-    CR_MESSAGE_RANGE_HANDLER_EX(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseRange)
-    CR_MESSAGE_HANDLER_EX(WM_MOUSELEAVE, OnMouseLeave)
-    CR_MESSAGE_HANDLER_EX(WM_MOUSEACTIVATE, OnMouseActivate)
-    CR_MESSAGE_HANDLER_EX(WM_SETCURSOR, OnSetCursor)
-    CR_MESSAGE_HANDLER_EX(WM_TOUCH, OnTouch)
-    CR_MESSAGE_HANDLER_EX(WM_POINTERDOWN, OnPointer)
-    CR_MESSAGE_HANDLER_EX(WM_POINTERUPDATE, OnPointer)
-    CR_MESSAGE_HANDLER_EX(WM_POINTERUP, OnPointer)
-    CR_MESSAGE_HANDLER_EX(WM_POINTERENTER, OnPointer)
-    CR_MESSAGE_HANDLER_EX(WM_POINTERLEAVE, OnPointer)
-    CR_MESSAGE_HANDLER_EX(WM_HSCROLL, OnScroll)
-    CR_MESSAGE_HANDLER_EX(WM_VSCROLL, OnScroll)
-    CR_MESSAGE_HANDLER_EX(WM_NCHITTEST, OnNCHitTest)
-    CR_MESSAGE_RANGE_HANDLER_EX(WM_NCMOUSEMOVE, WM_NCXBUTTONDBLCLK,
-                                OnMouseRange)
-    CR_MESSAGE_HANDLER_EX(WM_NCCALCSIZE, OnNCCalcSize)
-    CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
-    CR_MESSAGE_HANDLER_EX(WM_DESTROY, OnDestroy)
-    CR_MESSAGE_HANDLER_EX(DM_POINTERHITTEST, OnPointerHitTest)
-  CR_END_MSG_MAP()
+  BEGIN_MSG_MAP_EX(LegacyRenderWidgetHostHWND)
+    MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
+    MESSAGE_RANGE_HANDLER(WM_KEYFIRST, WM_KEYLAST, OnKeyboardRange)
+    MESSAGE_HANDLER_EX(WM_PAINT, OnPaint)
+    MESSAGE_HANDLER_EX(WM_NCPAINT, OnNCPaint)
+    MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkGnd)
+    MESSAGE_HANDLER_EX(WM_INPUT, OnInput)
+    MESSAGE_RANGE_HANDLER(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseRange)
+    MESSAGE_HANDLER_EX(WM_MOUSELEAVE, OnMouseLeave)
+    MESSAGE_HANDLER_EX(WM_MOUSEACTIVATE, OnMouseActivate)
+    MESSAGE_HANDLER_EX(WM_SETCURSOR, OnSetCursor)
+    MESSAGE_HANDLER_EX(WM_TOUCH, OnTouch)
+    MESSAGE_HANDLER_EX(WM_POINTERDOWN, OnPointer)
+    MESSAGE_HANDLER_EX(WM_POINTERUPDATE, OnPointer)
+    MESSAGE_HANDLER_EX(WM_POINTERUP, OnPointer)
+    MESSAGE_HANDLER_EX(WM_POINTERENTER, OnPointer)
+    MESSAGE_HANDLER_EX(WM_POINTERLEAVE, OnPointer)
+    MESSAGE_HANDLER_EX(WM_HSCROLL, OnScroll)
+    MESSAGE_HANDLER_EX(WM_VSCROLL, OnScroll)
+    MESSAGE_HANDLER_EX(WM_NCHITTEST, OnNCHitTest)
+    MESSAGE_RANGE_HANDLER(WM_NCMOUSEMOVE, WM_NCXBUTTONDBLCLK, OnMouseRange)
+    MESSAGE_HANDLER_EX(WM_NCCALCSIZE, OnNCCalcSize)
+    MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
+    MESSAGE_HANDLER_EX(WM_DESTROY, OnDestroy)
+    MESSAGE_HANDLER_EX(DM_POINTERHITTEST, OnPointerHitTest)
+  END_MSG_MAP()
+
+  HWND hwnd() { return m_hWnd; }
 
   // Called when the child window is to be reparented to a new window.
   // The |parent| parameter contains the new parent window.
@@ -134,9 +147,15 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   LRESULT OnEraseBkGnd(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnGetObject(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnInput(UINT message, WPARAM w_param, LPARAM l_param);
-  LRESULT OnKeyboardRange(UINT message, WPARAM w_param, LPARAM l_param);
+  LRESULT OnKeyboardRange(UINT message,
+                          WPARAM w_param,
+                          LPARAM l_param,
+                          BOOL& handled);
   LRESULT OnMouseLeave(UINT message, WPARAM w_param, LPARAM l_param);
-  LRESULT OnMouseRange(UINT message, WPARAM w_param, LPARAM l_param);
+  LRESULT OnMouseRange(UINT message,
+                       WPARAM w_param,
+                       LPARAM l_param,
+                       BOOL& handled);
   LRESULT OnMouseActivate(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnPointer(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnTouch(UINT message, WPARAM w_param, LPARAM l_param);
@@ -186,8 +205,6 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
 
   // Instruct aura::WindowTreeHost to use the HWND's parent for lookup.
   std::unique_ptr<ui::ViewProp> window_tree_host_prop_;
-
-  CR_MSG_MAP_CLASS_DECLARATIONS(LegacyRenderWidgetHostHWND)
 
   base::WeakPtrFactory<LegacyRenderWidgetHostHWND> weak_factory_{this};
 };
