@@ -30,9 +30,7 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -53,15 +51,6 @@ constexpr char kUndoWindowShowSettingCount[] = "undo_window.show_setting_count";
 bool IsVkAutocorrect() {
   return ChromeKeyboardControllerClient::HasInstance() &&
          ChromeKeyboardControllerClient::Get()->is_keyboard_enabled();
-}
-
-bool IsCurrentInputMethodExperimentalMultilingual() {
-  auto* input_method_manager = InputMethodManager::Get();
-  if (!input_method_manager) {
-    return false;
-  }
-  return extension_ime_util::IsExperimentalMultilingual(
-      input_method_manager->GetActiveIMEState()->GetCurrentInputMethod().id());
 }
 
 bool IsUsEnglishId(const std::string& engine_id) {
@@ -163,10 +152,6 @@ void LogAutocorrectAppCompatibilityUkm(AutocorrectActions action,
 void LogAssistiveAutocorrectDelay(base::TimeDelta delay) {
   base::UmaHistogramMediumTimes("InputMethod.Assistive.Autocorrect.Delay",
                                 delay);
-  if (IsCurrentInputMethodExperimentalMultilingual()) {
-    base::UmaHistogramMediumTimes(
-        "InputMethod.MultilingualExperiment.Autocorrect.Delay", delay);
-  }
 }
 
 void LogAssistiveAutocorrectActionLatency(
@@ -530,11 +515,6 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
     }
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.AutocorrectV2.Actions.PK", action);
-  }
-
-  if (IsCurrentInputMethodExperimentalMultilingual()) {
-    base::UmaHistogramEnumeration(
-        "InputMethod.MultilingualExperiment.Autocorrect.Actions", action);
   }
 }
 

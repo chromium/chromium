@@ -130,11 +130,6 @@
 #include "ui/wm/core/ime_util_chromeos.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/ash/extension_ime_util.h"
-#include "ui/base/ime/ash/input_method_manager.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #endif
@@ -1752,19 +1747,6 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.Autocorrect.Count",
         TextInputClient::SubClass::kRenderWidgetHostViewAura);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
-    if (input_method_manager &&
-        ash::extension_ime_util::IsExperimentalMultilingual(
-            input_method_manager->GetActiveIMEState()
-                ->GetCurrentInputMethod()
-                .id())) {
-      base::UmaHistogramEnumeration(
-          "InputMethod.MultilingualExperiment.Autocorrect.Count",
-          TextInputClient::SubClass::kRenderWidgetHostViewAura);
-    }
-#endif
   }
 
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
