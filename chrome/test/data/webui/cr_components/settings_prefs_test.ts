@@ -80,7 +80,7 @@ suite('CrSettingsPrefs', function() {
 
     prefs = document.createElement('settings-prefs');
     document.body.appendChild(prefs);
-    prefs.initialize(fakeApi as unknown as typeof chrome.settingsPrivate);
+    prefs.initialize(fakeApi);
 
     // getAllPrefs is asynchronous, so return the prefs promise.
     return CrSettingsPrefs.initialized;

@@ -10,11 +10,11 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertLT, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
-import {FakeSettingsPrivate} from '../fake_settings_private.js';
 import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
 
 import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
@@ -56,8 +56,7 @@ suite('<os-settings-languages-page-v2>', () => {
         window.trustedTypes.emptyHTML as unknown as string;
 
     settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs()) as
-        unknown as typeof chrome.settingsPrivate;
+    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
     settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;

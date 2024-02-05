@@ -23,8 +23,7 @@ suite('<os-settings-japanese-clear-ime-data-dialog>', () => {
 
   setup(() => {
     settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs()) as
-        unknown as typeof chrome.settingsPrivate;
+    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
     settingsPrefs.initialize(settingsPrivate);
 
     clearPersonalizedDataPage =

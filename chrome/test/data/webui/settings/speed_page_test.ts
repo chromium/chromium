@@ -35,8 +35,7 @@ suite('SpeedPage', function() {
 
   setup(function() {
     settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs()) as
-        unknown as typeof chrome.settingsPrivate;
+    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
     settingsPrefs.initialize(settingsPrivate);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
