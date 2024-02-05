@@ -1167,7 +1167,9 @@ bool PasswordAutofillAgent::ShowSuggestions(
   if (!element.IsPasswordFieldForAutofill()) {
     std::u16string username_prefix;
     if (!ShouldShowFullSuggestionListForPasswordManager(trigger_source,
-                                                        element)) {
+                                                        element) &&
+        !base::FeatureList::IsEnabled(
+            password_manager::features::kNoPasswordSuggestionFiltering)) {
       if (!password_info ||
           !CanShowUsernameSuggestion(password_info->fill_data,
                                      element.Value().Utf16())) {
