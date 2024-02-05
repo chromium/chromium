@@ -122,18 +122,15 @@ source_set("unit_tests") {
   }
 }
 
-if (fuzztest_supported) {
-  test("bmp_image_decoder_fuzztests") {
-    fuzztests = [ "BMPImageDecoderFuzzer.Decode" ]
-
-    sources = [ "bmp/bmp_image_decoder_fuzzer.cc" ]
-
-    deps = [
-      ":image_decoders",
-      "//base",
-      "//third_party/blink/renderer/platform:image_headers",
-      "//third_party/blink/renderer/platform/wtf",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
-  }
+fuzzer_test("blink_bmp_image_decoder_fuzzer") {
+  sources = [ "bmp/bmp_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":image_decoders",
+    "//base",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/blink/renderer/platform:image_headers",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/bmp-suite/good" ]
 }

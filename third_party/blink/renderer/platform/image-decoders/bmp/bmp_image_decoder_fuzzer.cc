@@ -2,53 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Compile with:
+// $ gn gen out/Fuzz '--args=use_libfuzzer=true is_asan=true is_debug=false \
+//       is_ubsan_security=true use_remoteexec=true' --check
+// $ ninja -C out/Fuzz blink_bmp_image_decoder_fuzzer
+//
+// Run with:
+// $ out/Fuzz/blink_bmp_image_decoder_fuzzer \
+//       third_party/blink/web_tests/images/bmp-suite/good/
+//
+// Alternatively, it can be run with:
+// $ out/Fuzz/blink_bmp_image_decoder_fuzzer \
+//       ~/another_dir_to_store_corpus \
+//       third_party/blink/web_tests/images/bmp-suite/good/
+//
+// In this case, the fuzzer will read both passed-in directories, but all newly-
+// generated testcases will go into ~/another_dir_to_store_corpus.
+
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
-#include <memory>
-#include <string_view>
-#include <tuple>
-#include <vector>
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  using blink::BMPImageDecoder;
+  using blink::ColorBehavior;
+  using blink::ImageDecoder;
+  using WTF::SharedBuffer;
 
-namespace blink {
-namespace {
+  static blink::BlinkFuzzerTestSupport test_support;
 
-// This is a valid 1x1 BMP which displays a red pixel.
-constexpr char kBitmapFile[] =
-    "\x42\x4d\x1e\x00\x00\x00\x00\x00\x00\x00\x1a\x00"
-    "\x00\x00\x0c\x00\x00\x00\x01\x00\x01\x00\x01\x00"
-    "\x18\x00\x00\x00\xff\x00";
+  scoped_refptr<SharedBuffer> buf = SharedBuffer::Create(data, size);
 
-std::unique_ptr<ImageDecoder> CreateBMPDecoder() {
-  return std::make_unique<BMPImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
-      ImageDecoder::kNoDecodedImageByteLimit);
+  BMPImageDecoder decoder{ImageDecoder::kAlphaNotPremultiplied,
+                          ColorBehavior::kTransformToSRGB,
+                          ImageDecoder::kNoDecodedImageByteLimit};
+  decoder.SetData(buf, /*all_data_received=*/true);
+  decoder.DecodeFrameBufferAtIndex(0);
+  return 0;
 }
-
-void Decode(std::string_view input) {
-  scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(input.data(), input.size());
-
-  std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
-  decoder->SetData(data.get(), /*all_data_received=*/true);
-  decoder->DecodeFrameBufferAtIndex(0);
-}
-
-FUZZ_TEST(BMPImageDecoderFuzzer, Decode)
-    .WithSeeds([]() -> std::vector<std::tuple<std::string_view>> {
-      WTF::Partitions::Initialize();
-
-      // We need to explicitly pass a size to the std::string_view constructor,
-      // because the bitmap data contains zero bytes in the middle; these would
-      // terminate the string.
-      return {{std::string_view(kBitmapFile, std::size(kBitmapFile))}};
-    });
-
-}  // namespace
-}  // namespace blink
