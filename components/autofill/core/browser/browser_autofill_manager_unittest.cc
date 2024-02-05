@@ -2975,12 +2975,25 @@ TEST_F(BrowserAutofillManagerTest,
        features::kAutofillSkipPreFilledFields},
       {});
 
+  AutofillProfile* profile =
+      personal_data().GetProfileByGUID(kElvisProfileGuid);
+  ASSERT_TRUE(profile);
+  const std::u16string kToBeFilledState =
+      profile->GetRawInfo(ADDRESS_HOME_STATE);
+  const std::u16string kSelectedState = u"NC (filled)";
   FormData form = test::GetFormData(
-      {.fields = {{.role = NAME_FIRST, .value = u"Triggering field (filled)"},
-                  {.role = NAME_LAST, .value = u"Placeholder (filled)"},
-                  {.role = EMAIL_ADDRESS, .value = u"No data (skipped)"},
-                  {.role = ADDRESS_HOME_LINE1,
-                   .value = u"No placeholder (skipped)"}}});
+      {.fields = {
+           {.role = NAME_FIRST, .value = u"Triggering field (filled)"},
+           {.role = NAME_LAST, .value = u"Placeholder (filled)"},
+           {.role = EMAIL_ADDRESS, .value = u"No data (skipped)"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"No placeholder (skipped)"},
+           {.role = ADDRESS_HOME_STATE,
+            .value = kSelectedState,
+            .form_control_type = FormControlType::kSelectOne,
+            .select_options = {SelectOption{.value = kSelectedState,
+                                            .content = kSelectedState},
+                               SelectOption{.value = kToBeFilledState,
+                                            .content = kToBeFilledState}}}}});
   FormsSeen({form});
 
   FormStructure* form_structure = nullptr;
@@ -2990,10 +3003,7 @@ TEST_F(BrowserAutofillManagerTest,
   form_structure->fields()[0]->set_may_use_prefilled_placeholder(true);
   form_structure->fields()[1]->set_may_use_prefilled_placeholder(true);
   form_structure->fields()[3]->set_may_use_prefilled_placeholder(false);
-
-  AutofillProfile* profile =
-      personal_data().GetProfileByGUID(kElvisProfileGuid);
-  ASSERT_TRUE(profile);
+  form_structure->fields()[4]->set_may_use_prefilled_placeholder(std::nullopt);
 
   FormData filled_form;
   EXPECT_CALL(*autofill_driver_, ApplyFormAction)
@@ -3013,6 +3023,57 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_EQ(filled_fields[2].value, form.fields[2].value);
   EXPECT_FALSE(filled_fields[3].is_autofilled);
   EXPECT_EQ(filled_fields[3].value, form.fields[3].value);
+  EXPECT_TRUE(filled_fields[4].is_autofilled);
+  EXPECT_EQ(filled_fields[4].value, kToBeFilledState);
+}
+
+TEST_F(BrowserAutofillManagerTest, OnlySkipRefillIfFieldIsPreFilled) {
+  base::test::ScopedFeatureList placeholders_features;
+  placeholders_features.InitWithFeatures(
+      {features::kAutofillOverwritePlaceholdersOnly,
+       features::kAutofillSkipPreFilledFields},
+      {});
+
+  const std::string kCreditCardGuid = MakeGuid(4);
+  TestCardFillData card_fill_data = kElvisCardFillData;
+  card_fill_data.card_number = "Pre-filled (skipped)";
+  card_fill_data.use_month_type = true;
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true);
+  form.fields[1].value = base::UTF8ToUTF16(card_fill_data.card_number);
+
+  FormsSeen({form});
+  FormData first_filled_form = FillAutofillFormDataAndGetResults(
+      form, *form.fields.begin(), kCreditCardGuid);
+
+  ExpectFilledForm(first_filled_form, /*address_fill_data=*/std::nullopt,
+                   card_fill_data);
+
+  // Prepare intercepting the filling operation to the driver and capture
+  // the re-filled form data.
+  FormData refilled_form;
+  EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+      .Times(1)
+      .WillOnce(DoAll(SaveArg<2>(&refilled_form),
+                      Return(std::vector<FieldGlobalId>{})));
+
+  // Simulate that JavaScript modifies the expiration date field.
+  FormData form_after_js_modification = first_filled_form;
+  form_after_js_modification.fields[2].value = u"04 / 29";
+  browser_autofill_manager_->OnJavaScriptChangedAutofilledValue(
+      form_after_js_modification, form_after_js_modification.fields[2],
+      u"04/2999");
+
+  testing::Mock::VerifyAndClearExpectations(autofill_driver_.get());
+
+  ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley",
+                    FormControlType::kInputText, refilled_form.fields[0]);
+  ExpectFilledField("Card Number", "cardnumber", card_fill_data.card_number,
+                    FormControlType::kInputText, refilled_form.fields[1]);
+  ExpectFilledField("Expiration Date", "ccmonth", "04 / 99",
+                    FormControlType::kInputMonth, refilled_form.fields[2]);
+  ExpectFilledField("CVC", "cvc", "", FormControlType::kInputText,
+                    refilled_form.fields[3]);
 }
 
 TEST_F(BrowserAutofillManagerTest, UndoSavesFormFillingData) {

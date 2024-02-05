@@ -362,8 +362,12 @@ FormFiller::GetFieldFillingSkipReasons(
       continue;
     }
 
-    // Don't fill meaningfully pre-filled fields but do fill placeholders.
-    if (!is_triggering_field && !form.fields[i].value.empty() &&
+    // Don't fill meaningfully pre-filled fields but overwrite placeholders.
+    // TODO(b/40227496): 'autofill_field->value' should be the initial value of
+    // the field.
+    if (!is_triggering_field &&
+        !autofill_field->IsSelectOrSelectListElement() &&
+        !autofill_field->value.empty() &&
         (IsNotAPlaceholder(autofill_field) ||
          IsMeaningfullyPreFilled(autofill_field))) {
       skip_reasons[field_id] = FieldFillingSkipReason::kValuePrefilled;
