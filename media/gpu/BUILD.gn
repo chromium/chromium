@@ -472,6 +472,7 @@ if (use_v4l2_codec || use_vaapi) {
   source_set("video_frame_mapper_common") {
     defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
     sources = [
+      "video_frame_mapper.cc",
       "video_frame_mapper.h",
       "video_frame_mapper_factory.h",
     ]
@@ -481,6 +482,8 @@ if (use_v4l2_codec || use_vaapi) {
       "//base",
       "//media",
     ]
+
+    deps = [ "//media/gpu/chromeos:video_frame_resource" ]
   }
 }
 

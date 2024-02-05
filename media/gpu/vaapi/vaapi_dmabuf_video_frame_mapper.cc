@@ -55,7 +55,7 @@ void ConvertP010ToP016LE(const uint16_t* src,
 }
 
 void DeallocateBuffers(std::unique_ptr<ScopedVAImage> va_image,
-                       scoped_refptr<const VideoFrame> /* video_frame */) {
+                       scoped_refptr<const FrameResource> /* video_frame */) {
   // The |video_frame| will be released here and it will be returned to pool if
   // client uses video frame pool.
   // Destructing ScopedVAImage releases its owned memory.
@@ -63,7 +63,7 @@ void DeallocateBuffers(std::unique_ptr<ScopedVAImage> va_image,
 }
 
 scoped_refptr<VideoFrame> CreateMappedVideoFrame(
-    scoped_refptr<const VideoFrame> src_video_frame,
+    scoped_refptr<const FrameResource> src_video_frame,
     std::unique_ptr<ScopedVAImage> va_image) {
   DCHECK(va_image);
   // ScopedVAImage manages the resource of mapped data. That is, ScopedVAImage's
@@ -174,8 +174,8 @@ VaapiDmaBufVideoFrameMapper::VaapiDmaBufVideoFrameMapper(
 
 VaapiDmaBufVideoFrameMapper::~VaapiDmaBufVideoFrameMapper() {}
 
-scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::Map(
-    scoped_refptr<const VideoFrame> video_frame,
+scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::MapFrame(
+    scoped_refptr<const FrameResource> video_frame,
     int permissions) const {
   DCHECK(vaapi_wrapper_);
   if (!video_frame) {
@@ -215,7 +215,7 @@ scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::Map(
   }
 
   scoped_refptr<gfx::NativePixmap> pixmap =
-      CreateNativePixmapDmaBuf(video_frame.get());
+      video_frame->CreateNativePixmapDmaBuf();
   if (!pixmap) {
     VLOGF(1) << "Failed to create NativePixmap from VideoFrame";
     return nullptr;

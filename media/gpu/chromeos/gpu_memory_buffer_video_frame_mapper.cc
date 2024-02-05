@@ -23,8 +23,8 @@ GpuMemoryBufferVideoFrameMapper::GpuMemoryBufferVideoFrameMapper(
     VideoPixelFormat format)
     : VideoFrameMapper(format) {}
 
-scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::Map(
-    scoped_refptr<const VideoFrame> video_frame,
+scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
+    scoped_refptr<const FrameResource> video_frame,
     int permissions) const {
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";
@@ -95,7 +95,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::Map(
   // Pass |video_frame| so that it outlives |mapped_frame| and the mapped buffer
   // is unmapped on destruction.
   mapped_frame->AddDestructionObserver(base::BindOnce(
-      [](scoped_refptr<const VideoFrame> frame) {
+      [](scoped_refptr<const FrameResource> frame) {
         DCHECK(frame->HasGpuMemoryBuffer());
         frame->GetGpuMemoryBuffer()->Unmap();
       },

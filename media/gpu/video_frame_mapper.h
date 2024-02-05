@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -25,10 +26,17 @@ class MEDIA_GPU_EXPORT VideoFrameMapper {
   // Maps data referred by |video_frame| and creates a VideoFrame whose dtor
   // unmap the mapped memory. The |permissions| parameter is a bitwise OR of the
   // permissions the mapping needs if it uses mmap. Valid flags for this
-  // parameter are combinations of |PROT_READ| and |PROT_WRITE|.
-  virtual scoped_refptr<VideoFrame> Map(
-      scoped_refptr<const VideoFrame> video_frame,
+  // parameter are combinations of |PROT_READ| and |PROT_WRITE|. This doesn't
+  // map into a FrameResource. Callers can wrap this with a VideoFrameResource
+  // if needed.
+  virtual scoped_refptr<VideoFrame> MapFrame(
+      scoped_refptr<const FrameResource> video_frame,
       int permissions) const = 0;
+
+  // VideoFrame version of Map(). This wraps the VideoFrame in a FrameResource
+  // and calls Map(scoped_refpr<FrameResource> ...).
+  scoped_refptr<VideoFrame> Map(scoped_refptr<const VideoFrame> video_frame,
+                                int permissions) const;
 
   // Returns the allowed pixel format of video frames on Map().
   VideoPixelFormat pixel_format() const { return format_; }
