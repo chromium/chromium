@@ -40,7 +40,7 @@ namespace android {
 class OptimizationGuideBridge;
 }  // namespace android
 class ChromeHintsManager;
-class ModelExecutionEnterprisePolicyBrowserTest;
+class ModelExecutionEnabledBrowserTest;
 class ModelExecutionLiveTest;
 class ModelExecutionManager;
 class ModelInfo;
@@ -188,7 +188,7 @@ class OptimizationGuideKeyedService
   friend class OptimizationGuideKeyedServiceBrowserTest;
   friend class OptimizationGuideMessageHandler;
   friend class OptimizationGuideWebContentsObserver;
-  friend class optimization_guide::ModelExecutionEnterprisePolicyBrowserTest;
+  friend class optimization_guide::ModelExecutionEnabledBrowserTest;
   friend class optimization_guide::ModelExecutionLiveTest;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
   friend class optimization_guide::PredictionModelDownloadClient;
