@@ -438,10 +438,19 @@ TEST_F(SearchEngineChoiceServiceTest, ShowChoiceScreenWithTriggerFeature) {
                 template_url_service()),
             SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
 #else
+#if BUILDFLAG(IS_IOS)
+  // The profile tag check is not performed for iOS, so the dialog can be
+  // displayed.
+  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
+                policy_service(), /*is_regular_profile=*/true,
+                template_url_service()),
+            SearchEngineChoiceScreenConditions::kEligible);
+#else
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/true,
                 template_url_service()),
             SearchEngineChoiceScreenConditions::kProfileOutOfScope);
+#endif
   EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
                 template_url_service()),
             SearchEngineChoiceScreenConditions::kEligible);

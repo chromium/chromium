@@ -180,10 +180,16 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
 
+#if !BUILDFLAG(IS_IOS)
+  // `prefs::kDefaultSearchProviderChoicePending` does not get set on
+  // iOS. Instead, the iOS-specific wrapper
+  // `ShouldDisplaySearchEngineChoiceScreen()` handles checking whether
+  // the screen should be displayed based on the promo type.
   if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
       !profile_prefs_->GetBoolean(prefs::kDefaultSearchProviderChoicePending)) {
     return SearchEngineChoiceScreenConditions::kProfileOutOfScope;
   }
+#endif
 
   if (!is_regular_profile) {
     // Naming not exactly accurate, but still reflect the fact that incognito,
