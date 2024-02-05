@@ -2559,6 +2559,9 @@ crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removin
 crbug.com/626703 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/mathml/relations/html5-tree/href-click-001.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/mathml/relations/html5-tree/href-click-002.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/mathml/relations/html5-tree/link-color-001.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/direction/direction-overall-003.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackGenerator-pipes-data-in-worker.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-002.html [ Failure ]
@@ -6702,7 +6705,7 @@ crbug.com/1505556 [ Mac ] http/tests/inspector-protocol/bfcache/report-back-forw
 crbug.com/1521140 [ Mac ] inspector-protocol/timeline/render-blocking-style.js [ Failure Pass ]
 
 # Gardener: 2024-02-05
-crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-domainhint.https.html [ Timeout Pass ]
-crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-error-basic.https.html [ Timeout Pass ]
+crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-domainhint.https.html [ Pass Timeout ]
+crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-error-basic.https.html [ Pass Timeout ]
 crbug.com/41496645 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html [ Failure Pass ]
 crbug.com/323752584 [ Win11-arm64 ] external/wpt/webnn/* [ Failure Pass ]
