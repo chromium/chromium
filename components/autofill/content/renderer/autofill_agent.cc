@@ -1641,6 +1641,17 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
     if (std::optional<FormData> extracted_form_data =
             form_util::ExtractFormData(document, WebFormElement(),
                                        field_data_manager())) {
+      auto has_been_user_edited = [this](const FormFieldData& field) {
+        return formless_elements_user_edited_.contains(field.renderer_id);
+      };
+      if (base::FeatureList::IsEnabled(
+              features::
+                  kAutofillPreferProvisionalFormWhenFormlessFormIsRemoved) &&
+          !formless_elements_user_edited_.empty() &&
+          base::ranges::none_of(extracted_form_data->fields,
+                                has_been_user_edited)) {
+        return last_interacted_.saved_state;
+      }
       return extracted_form_data;
     }
     return last_interacted_.saved_state;
