@@ -717,7 +717,11 @@ void SavedTabGroupBar::UpdateOverflowMenu() {
   }
 
   if (overflow_menu_->GetWidget()) {
-    bubble_delegate_->SizeToContents();
+    if (overflow_menu_->children().empty()) {
+      overflow_menu_->GetWidget()->Close();
+    } else {
+      bubble_delegate_->SizeToContents();
+    }
   }
 }
 
