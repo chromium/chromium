@@ -111,7 +111,7 @@ void ManagePasswordsBubbleController::RequestFavicon(
       &favicon_tracker_);
 }
 
-password_manager::SyncState
+password_manager::sync_util::SyncState
 ManagePasswordsBubbleController::GetPasswordSyncState() {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());

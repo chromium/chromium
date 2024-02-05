@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -115,15 +116,16 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   IsSyncing is_syncing{false};
   bool in_account_store = (in_stores & PasswordForm::Store::kAccountStore) ==
                           PasswordForm::Store::kAccountStore;
-  switch (client_->GetPasswordSyncState()) {
-    case SyncState::kNotSyncing:
+  const syncer::SyncService* sync_service = client_->GetSyncService();
+  switch (sync_util::GetPasswordSyncState(sync_service)) {
+    case sync_util::SyncState::kNotActive:
       break;
-    case SyncState::kAccountPasswordsActiveNormalEncryption:
-    case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
+    case sync_util::SyncState::kAccountPasswordsActiveNormalEncryption:
+    case sync_util::SyncState::kAccountPasswordsActiveWithCustomPassphrase:
       is_syncing = IsSyncing(in_account_store);
       break;
-    case SyncState::kSyncingWithCustomPassphrase:
-    case SyncState::kSyncingNormalEncryption:
+    case sync_util::SyncState::kSyncingWithCustomPassphrase:
+    case sync_util::SyncState::kSyncingNormalEncryption:
       is_syncing = IsSyncing(true);
       break;
   }

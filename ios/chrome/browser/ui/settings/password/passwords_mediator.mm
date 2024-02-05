@@ -127,9 +127,9 @@ using password_manager::WarningType;
   _currentState = _passwordCheckManager->GetPasswordCheckState();
   [self updateConsumerPasswordCheckState:_currentState];
   [self.consumer
-      setSavingPasswordsToAccount:password_manager::sync_util::
-                                      GetPasswordSyncState(_syncService) !=
-                                  password_manager::SyncState::kNotSyncing];
+      setSavingPasswordsToAccount:
+          password_manager::sync_util::GetPasswordSyncState(_syncService) !=
+          password_manager::sync_util::SyncState::kNotActive];
 }
 
 - (void)disconnect {
@@ -398,9 +398,9 @@ using password_manager::WarningType;
 
 - (void)onSyncStateChanged {
   [self.consumer
-      setSavingPasswordsToAccount:password_manager::sync_util::
-                                      GetPasswordSyncState(_syncService) !=
-                                  password_manager::SyncState::kNotSyncing];
+      setSavingPasswordsToAccount:
+          password_manager::sync_util::GetPasswordSyncState(_syncService) !=
+          password_manager::sync_util::SyncState::kNotActive];
 }
 
 @end

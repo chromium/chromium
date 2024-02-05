@@ -107,26 +107,21 @@ std::optional<std::string> GetAccountForSaving(
   return std::nullopt;
 }
 
-password_manager::SyncState GetPasswordSyncState(
-    const syncer::SyncService* sync_service) {
-  // TODO(crbug.com/1509058): On Android, we might want to return
-  // kAccountPasswordsActive for syncing users. Possibly rename the enum values.
+SyncState GetPasswordSyncState(const syncer::SyncService* sync_service) {
   if (!sync_service ||
       !sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS)) {
-    return password_manager::SyncState::kNotSyncing;
+    return SyncState::kNotActive;
   }
 
   if (sync_service->IsSyncFeatureActive()) {
     return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
-               ? password_manager::SyncState::kSyncingWithCustomPassphrase
-               : password_manager::SyncState::kSyncingNormalEncryption;
+               ? SyncState::kSyncingWithCustomPassphrase
+               : SyncState::kSyncingNormalEncryption;
   }
 
   return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
-             ? password_manager::SyncState::
-                   kAccountPasswordsActiveWithCustomPassphrase
-             : password_manager::SyncState::
-                   kAccountPasswordsActiveNormalEncryption;
+             ? SyncState::kAccountPasswordsActiveWithCustomPassphrase
+             : SyncState::kAccountPasswordsActiveNormalEncryption;
 }
 
 }  // namespace sync_util

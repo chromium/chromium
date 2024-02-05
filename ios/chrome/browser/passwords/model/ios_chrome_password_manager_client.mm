@@ -53,19 +53,7 @@ using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
-using password_manager::SyncState;
 using password_manager::metrics_util::PasswordType;
-
-namespace {
-
-// Used for callbacks that expect a const pointer, since base::Callback isn't
-// smart enough to allow binding the SyncServiceFactory method directly.
-const syncer::SyncService* GetConstSyncServicePtr(
-    ChromeBrowserState* browser_state) {
-  return SyncServiceFactory::GetForBrowserStateIfExists(browser_state);
-}
-
-}  // namespace
 
 IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
     id<IOSChromePasswordManagerClientBridge> bridge)
@@ -74,9 +62,7 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
           GetPrefs(),
           GetLocalStatePrefs(),
           SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState)),
-      credentials_filter_(
-          this,
-          base::BindRepeating(&GetConstSyncServicePtr, bridge_.browserState)),
+      credentials_filter_(this),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
@@ -87,12 +73,6 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
 }
 
 IOSChromePasswordManagerClient::~IOSChromePasswordManagerClient() = default;
-
-SyncState IOSChromePasswordManagerClient::GetPasswordSyncState() const {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(bridge_.browserState);
-  return password_manager::sync_util::GetPasswordSyncState(sync_service);
-}
 
 bool IOSChromePasswordManagerClient::PromptUserToChooseCredentials(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
@@ -182,7 +162,7 @@ PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
 
 const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
     const {
-  return GetConstSyncServicePtr(bridge_.browserState);
+  return SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState);
 }
 
 PasswordStoreInterface*

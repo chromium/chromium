@@ -60,8 +60,9 @@ PasswordForm SimpleForm(const char* signon_realm, const char* username) {
 
 class FakePasswordManagerClient : public StubPasswordManagerClient {
  public:
-  explicit FakePasswordManagerClient(signin::IdentityManager* identity_manager)
-      : identity_manager_(identity_manager) {
+  FakePasswordManagerClient(signin::IdentityManager* identity_manager,
+                            const syncer::SyncService* sync_service)
+      : identity_manager_(identity_manager), sync_service_(sync_service) {
     if (!base::FeatureList::IsEnabled(
             features::kPasswordReuseDetectionEnabled)) {
       return;
@@ -93,6 +94,9 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   url::Origin GetLastCommittedOrigin() const override {
     return last_committed_origin_;
   }
+  const syncer::SyncService* GetSyncService() const override {
+    return sync_service_;
+  }
   MockPasswordStoreInterface* GetProfilePasswordStore() const override {
     return password_store_.get();
   }
@@ -119,7 +123,8 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
   std::optional<std::vector<PasskeyCredential>> passkeys_;
   bool is_incognito_ = false;
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<const syncer::SyncService> sync_service_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
 };
 
@@ -131,7 +136,8 @@ class CredentialsFilterTest : public SyncUsernameTestBase {
   enum class LoginState { NEW, EXISTING };
 
   CredentialsFilterTest() {
-    client_ = std::make_unique<FakePasswordManagerClient>(identity_manager());
+    client_ = std::make_unique<FakePasswordManagerClient>(identity_manager(),
+                                                          sync_service());
     signin::IdentityManager::RegisterProfilePrefs(
         client_->GetPrefs()->registry());
     form_manager_ = std::make_unique<PasswordFormManager>(
@@ -140,9 +146,7 @@ class CredentialsFilterTest : public SyncUsernameTestBase {
             /*profile_form_saver=*/std::make_unique<StubFormSaver>(),
             /*account_form_saver=*/nullptr),
         nullptr /* metrics_recorder */);
-    filter_ = std::make_unique<SyncCredentialsFilter>(
-        client_.get(), base::BindRepeating(&SyncUsernameTestBase::sync_service,
-                                           base::Unretained(this)));
+    filter_ = std::make_unique<SyncCredentialsFilter>(client_.get());
 
     fetcher_.Fetch();
   }
@@ -208,10 +212,14 @@ TEST_F(CredentialsFilterTest, ShouldSave_SignedInWithSyncServiceNull) {
   SetSyncingPasswords(false);
 
   // Create a new filter that uses a null SyncService.
-  filter_ = std::make_unique<SyncCredentialsFilter>(
-      client_.get(), base::BindRepeating([]() -> const syncer::SyncService* {
-        return nullptr;
-      }));
+  filter_.reset();
+  form_manager_.reset();
+  client_ =
+      std::make_unique<FakePasswordManagerClient>(identity_manager(),
+                                                  /*sync_service=*/nullptr);
+  signin::IdentityManager::RegisterProfilePrefs(
+      client_->GetPrefs()->registry());
+  filter_ = std::make_unique<SyncCredentialsFilter>(client_.get());
 
   // Non-Gaia forms should always offer saving.
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm(kPrimaryAccountEmail)));

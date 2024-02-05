@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
@@ -199,22 +200,23 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
       /*types=*/syncer::UserSelectableTypeSet());
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kNotSyncing);
+            password_manager::sync_util::SyncState::kNotActive);
 
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPasswords});
-  EXPECT_EQ(
-      controller()->GetPasswordSyncState(),
-      password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);
+  EXPECT_EQ(controller()->GetPasswordSyncState(),
+            password_manager::sync_util::SyncState::
+                kAccountPasswordsActiveNormalEncryption);
 
   sync_service()->SetHasSyncConsent(true);
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kSyncingNormalEncryption);
+            password_manager::sync_util::SyncState::kSyncingNormalEncryption);
 
   sync_service()->SetIsUsingExplicitPassphrase(true);
-  EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kSyncingWithCustomPassphrase);
+  EXPECT_EQ(
+      controller()->GetPasswordSyncState(),
+      password_manager::sync_util::SyncState::kSyncingWithCustomPassphrase);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {

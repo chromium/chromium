@@ -91,17 +91,6 @@ class PasswordStoreInterface;
 class WebAuthnCredentialsDelegate;
 struct PasswordForm;
 
-enum class SyncState {
-  kNotSyncing,
-  kSyncingNormalEncryption,
-  kSyncingWithCustomPassphrase,
-  // Sync is disabled but the user is signed in and opted in to passwords
-  // account storage.
-  kAccountPasswordsActiveNormalEncryption,
-  // Same as above but the account has a custom passphrase set.
-  kAccountPasswordsActiveWithCustomPassphrase,
-};
-
 enum class ErrorMessageFlowType { kSaveFlow, kFillFlow };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -341,10 +330,6 @@ class PasswordManagerClient {
 
   // Returns the PasswordReuseManager associated with this instance.
   virtual PasswordReuseManager* GetPasswordReuseManager() const = 0;
-
-  // Reports whether and how passwords are synced in the embedder. The default
-  // implementation always returns kNotSyncing.
-  virtual SyncState GetPasswordSyncState() const;
 
   // Returns true if last navigation page had HTTP error i.e 5XX or 4XX
   virtual bool WasLastNavigationHTTPError() const;

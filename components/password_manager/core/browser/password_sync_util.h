@@ -17,10 +17,20 @@ class IdentityManager;
 
 namespace password_manager {
 
-enum class SyncState;
 struct PasswordForm;
 
 namespace sync_util {
+
+enum class SyncState {
+  kNotActive,
+  kSyncingNormalEncryption,
+  kSyncingWithCustomPassphrase,
+  // Sync is disabled but the user is signed in and opted in to passwords
+  // account storage.
+  kAccountPasswordsActiveNormalEncryption,
+  // Same as above but the account has a custom passphrase set.
+  kAccountPasswordsActiveWithCustomPassphrase,
+};
 
 // Uses `sync_service` to determine whether the user is signed in with
 // sync-the-feature turned on, and if so, return the e-mail representing the
@@ -77,9 +87,10 @@ std::optional<std::string> GetAccountForSaving(
     const syncer::SyncService* sync_service);
 
 // Reports whether and how passwords are currently synced. In particular, for a
-// null `sync_service` returns NOT_SYNCING.
-password_manager::SyncState GetPasswordSyncState(
-    const syncer::SyncService* sync_service);
+// null `sync_service` returns kNotActive.
+// TODO(b/1488793): Revisit this function and avoid distinguishing account
+// passwords from full sync.
+SyncState GetPasswordSyncState(const syncer::SyncService* sync_service);
 
 }  // namespace sync_util
 

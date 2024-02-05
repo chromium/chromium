@@ -72,9 +72,9 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, true);
 
-  ASSERT_EQ(
-      password_manager::sync_util::GetPasswordSyncState(&sync_service_),
-      password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);
+  ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
+            password_manager::sync_util::SyncState::
+                kAccountPasswordsActiveNormalEncryption);
 
   EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
 }
@@ -88,7 +88,7 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfSyncing) {
       syncer::UserSelectableType::kPasswords, true);
 
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::kSyncingNormalEncryption);
+            password_manager::sync_util::SyncState::kSyncingNormalEncryption);
 
   EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
 }
@@ -108,7 +108,7 @@ TEST_F(PasswordFeatureManagerImplTest,
       syncer::UserSelectableType::kPasswords, false);
 
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::kNotSyncing);
+            password_manager::sync_util::SyncState::kNotActive);
 
   // The user must be eligible for account storage opt in now.
   ASSERT_TRUE(password_feature_manager_.ShouldShowAccountStorageOptIn());
@@ -134,7 +134,7 @@ TEST_F(PasswordFeatureManagerImplTest,
       /*types=*/syncer::UserSelectableTypeSet());
 
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::kNotSyncing);
+            password_manager::sync_util::SyncState::kNotActive);
 
   EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
@@ -154,7 +154,7 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSignedOut) {
       /*types=*/syncer::UserSelectableTypeSet());
 
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::kNotSyncing);
+            password_manager::sync_util::SyncState::kNotActive);
 
   EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
@@ -168,7 +168,7 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSyncPaused) {
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::kNotSyncing);
+            password_manager::sync_util::SyncState::kNotActive);
 
   EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }

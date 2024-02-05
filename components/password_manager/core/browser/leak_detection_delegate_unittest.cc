@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -29,6 +30,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,6 +70,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const std::u16string&,
                bool in_account_store),
               (override));
+  MOCK_METHOD(const syncer::SyncService*, GetSyncService, (), (const override));
   MOCK_METHOD(PasswordStoreInterface*,
               GetAccountPasswordStore,
               (),
@@ -76,7 +79,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetProfilePasswordStore,
               (),
               (const override));
-  MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const override));
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
 };
 
@@ -118,6 +120,7 @@ class LeakDetectionDelegateTest : public testing::Test {
   MockPasswordManagerClient& client() { return client_; }
   MockLeakDetectionCheckFactory& factory() { return *mock_factory_; }
   LeakDetectionDelegate& delegate() { return delegate_; }
+  syncer::TestSyncService* sync_service() { return &test_sync_service_; }
   MockPasswordStoreInterface* profile_store() {
     return mock_profile_store_.get();
   }
@@ -181,6 +184,7 @@ class LeakDetectionDelegateTest : public testing::Test {
   base::test::ScopedFeatureList features_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  testing::NiceMock<syncer::TestSyncService> test_sync_service_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_ =
       base::MakeRefCounted<testing::StrictMock<MockPasswordStoreInterface>>();
@@ -354,10 +358,13 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
-  ON_CALL(client(), GetPasswordSyncState)
-      .WillByDefault(Return(SyncState::kSyncingNormalEncryption));
-  EXPECT_CALL(client(), GetProfilePasswordStore())
-      .WillRepeatedly(Return(profile_store()));
+  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
+  ON_CALL(client(), GetProfilePasswordStore())
+      .WillByDefault(Return(profile_store()));
+
+  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
+            sync_util::SyncState::kSyncingNormalEncryption);
+
   ExpectPasswords({form});
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
@@ -381,13 +388,17 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForAccountStoreUser) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
-  ON_CALL(client(), GetPasswordSyncState)
-      .WillByDefault(
-          Return(SyncState::kAccountPasswordsActiveNormalEncryption));
-  EXPECT_CALL(client(), GetAccountPasswordStore())
-      .WillRepeatedly(Return(account_store()));
-  EXPECT_CALL(client(), GetProfilePasswordStore())
-      .WillRepeatedly(Return(profile_store()));
+  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
+  ON_CALL(client(), GetAccountPasswordStore())
+      .WillByDefault(Return(account_store()));
+  ON_CALL(client(), GetProfilePasswordStore())
+      .WillByDefault(Return(profile_store()));
+
+  sync_service()->GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
+
+  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
+            sync_util::SyncState::kAccountPasswordsActiveNormalEncryption);
+
   ExpectPasswords({form}, /*store=*/account_store());
   ExpectPasswords({}, /*store=*/profile_store());
   EXPECT_CALL(factory(), TryCreateLeakCheck)
@@ -413,13 +424,17 @@ TEST_F(LeakDetectionDelegateTest,
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
-  ON_CALL(client(), GetPasswordSyncState)
-      .WillByDefault(
-          Return(SyncState::kAccountPasswordsActiveNormalEncryption));
-  EXPECT_CALL(client(), GetAccountPasswordStore())
-      .WillRepeatedly(Return(account_store()));
-  EXPECT_CALL(client(), GetProfilePasswordStore())
-      .WillRepeatedly(Return(profile_store()));
+  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
+  ON_CALL(client(), GetAccountPasswordStore())
+      .WillByDefault(Return(account_store()));
+  ON_CALL(client(), GetProfilePasswordStore())
+      .WillByDefault(Return(profile_store()));
+
+  sync_service()->GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
+
+  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
+            sync_util::SyncState::kAccountPasswordsActiveNormalEncryption);
+
   ExpectPasswords({}, /*store=*/account_store());
   ExpectPasswords({form}, /*store=*/profile_store());
   EXPECT_CALL(factory(), TryCreateLeakCheck)

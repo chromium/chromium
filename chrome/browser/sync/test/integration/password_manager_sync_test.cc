@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
             SyncTest::kDefaultUserEmail);
   EXPECT_EQ(
       password_manager::sync_util::GetPasswordSyncState(GetSyncService(0)),
-      password_manager::SyncState::kSyncingNormalEncryption);
+      password_manager::sync_util::SyncState::kSyncingNormalEncryption);
 
   // Enter a persistent auth error state.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
@@ -1159,7 +1159,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
           GetSyncService(0)));
   EXPECT_EQ(
       password_manager::sync_util::GetPasswordSyncState(GetSyncService(0)),
-      password_manager::SyncState::kNotSyncing);
+      password_manager::sync_util::SyncState::kNotActive);
 
   // In the current implementation, the APIs below treat sync as enabled/active
   // even while paused.

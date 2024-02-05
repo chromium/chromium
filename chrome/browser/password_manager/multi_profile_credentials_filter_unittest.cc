@@ -63,12 +63,21 @@ class TestPasswordManagerClient
     return identity_manager_;
   }
 
+  const syncer::SyncService* GetSyncService() const override {
+    return sync_service_;
+  }
+
   void set_identity_manager(signin::IdentityManager* manager) {
     identity_manager_ = manager;
   }
 
+  void set_sync_service(const syncer::SyncService* sync_service) {
+    sync_service_ = sync_service;
+  }
+
  private:
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 };
 
 }  // namespace
@@ -76,14 +85,7 @@ class TestPasswordManagerClient
 class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
  public:
   MultiProfileCredentialsFilterTest()
-      : sync_filter_(&test_password_manager_client_, GetSyncServiceCallback()) {
-  }
-
-  password_manager::SyncCredentialsFilter::SyncServiceFactoryFunction
-  GetSyncServiceCallback() {
-    return base::BindRepeating(&MultiProfileCredentialsFilterTest::sync_service,
-                               base::Unretained(this));
-  }
+      : sync_filter_(&test_password_manager_client_) {}
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_profile_adaptor_->identity_test_env();
@@ -131,6 +133,7 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
 
     test_password_manager_client_.set_identity_manager(
         identity_test_env()->identity_manager());
+    test_password_manager_client_.set_sync_service(&sync_service_);
 
     // If features::kEnablePasswordsAccountStorage is enabled, then the browser
     // never asks to save the primary account's password. So fake-signin an
@@ -160,13 +163,11 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  const syncer::SyncService* sync_service() { return &sync_service_; }
-
   network::TestURLLoaderFactory test_url_loader_factory_;
+  syncer::TestSyncService sync_service_;
   TestPasswordManagerClient test_password_manager_client_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-  syncer::TestSyncService sync_service_;
   password_manager::SyncCredentialsFilter sync_filter_;
   std::unique_ptr<DiceWebSigninInterceptor> dice_web_signin_interceptor_;
 };
@@ -181,7 +182,7 @@ TEST_F(MultiProfileCredentialsFilterTest, SyncCredentialsFilter) {
 
   ASSERT_FALSE(sync_filter_.ShouldSave(form));
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
+      password_manager_client(),
       /*dice_web_signin_interceptor=*/nullptr);
   EXPECT_FALSE(multi_profile_filter.ShouldSave(form));
 }
@@ -193,7 +194,7 @@ TEST_F(MultiProfileCredentialsFilterTest, NullInterceptor) {
           "user@example.org");
   ASSERT_TRUE(sync_filter_.ShouldSave(form));
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
+      password_manager_client(),
       /*dice_web_signin_interceptor=*/nullptr);
   EXPECT_TRUE(multi_profile_filter.ShouldSave(form));
 }
@@ -206,8 +207,7 @@ TEST_F(MultiProfileCredentialsFilterTest, NonGaia) {
   ASSERT_TRUE(sync_filter_.ShouldSave(form));
 
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
-      dice_web_signin_interceptor());
+      password_manager_client(), dice_web_signin_interceptor());
   EXPECT_TRUE(multi_profile_filter.ShouldSave(form));
 }
 
@@ -223,8 +223,7 @@ TEST_F(MultiProfileCredentialsFilterTest, InvalidEmail) {
   ASSERT_TRUE(sync_filter_.ShouldSave(form));
 
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
-      dice_web_signin_interceptor());
+      password_manager_client(), dice_web_signin_interceptor());
   EXPECT_FALSE(multi_profile_filter.ShouldSave(form));
 }
 
@@ -240,8 +239,7 @@ TEST_F(MultiProfileCredentialsFilterTest, UsernameWithNoDomain) {
   ASSERT_TRUE(sync_filter_.ShouldSave(form));
 
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
-      dice_web_signin_interceptor());
+      password_manager_client(), dice_web_signin_interceptor());
   EXPECT_TRUE(multi_profile_filter.ShouldSave(form));
 }
 
@@ -263,8 +261,7 @@ TEST_F(MultiProfileCredentialsFilterTest, InterceptInProgress) {
   ASSERT_TRUE(dice_web_signin_interceptor_->is_interception_in_progress());
 
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
-      dice_web_signin_interceptor());
+      password_manager_client(), dice_web_signin_interceptor());
   EXPECT_FALSE(multi_profile_filter.ShouldSave(form));
 }
 
@@ -284,8 +281,7 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninIntercepted) {
             SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
 
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
-      dice_web_signin_interceptor());
+      password_manager_client(), dice_web_signin_interceptor());
   EXPECT_FALSE(multi_profile_filter.ShouldSave(form));
 }
 
@@ -305,8 +301,7 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninInterceptionUnknown) {
       /*is_new_account=*/true, /*is_sync_signin=*/false, kFormEmail));
 
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
-      dice_web_signin_interceptor());
+      password_manager_client(), dice_web_signin_interceptor());
   EXPECT_FALSE(multi_profile_filter.ShouldSave(form));
 }
 
@@ -332,7 +327,6 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninNotIntercepted) {
   // Not interception, credentials should be saved.
   ASSERT_FALSE(dice_web_signin_interceptor_->is_interception_in_progress());
   MultiProfileCredentialsFilter multi_profile_filter(
-      password_manager_client(), GetSyncServiceCallback(),
-      dice_web_signin_interceptor());
+      password_manager_client(), dice_web_signin_interceptor());
   EXPECT_TRUE(multi_profile_filter.ShouldSave(form));
 }
