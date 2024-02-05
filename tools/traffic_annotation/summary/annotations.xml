@@ -276,7 +276,7 @@ Refer to README.md for content description and update process.
  <item id="tachyon_ice_config_fetcher" added_in_milestone="98" content_hash_code="01e878b0" os_list="chromeos" file_path="chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.cc" />
  <item id="launcher_item_suggest" added_in_milestone="98" content_hash_code="04a4041e" os_list="chromeos" file_path="chrome/browser/ash/file_suggest/item_suggest_cache.cc" />
  <item id="ambient_client" added_in_milestone="98" content_hash_code="062d821f" os_list="chromeos" file_path="chrome/browser/ui/ash/ambient/ambient_client_impl.cc" />
- <item id="calendar_get_events" added_in_milestone="98" content_hash_code="0298bde5" os_list="chromeos" file_path="chrome/browser/ui/ash/calendar/calendar_keyed_service.cc" />
+ <item id="calendar_get_events" added_in_milestone="98" content_hash_code="0757d834" os_list="chromeos" file_path="chrome/browser/ui/ash/calendar/calendar_keyed_service.cc" />
  <item id="edu_account_login_profile_image_fetcher" added_in_milestone="98" content_hash_code="0689301c" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/edu_account_login_handler.cc" />
  <item id="management_ui_customer_logo" added_in_milestone="98" content_hash_code="01a17a58" os_list="chromeos" file_path="chrome/browser/ui/webui/management/management_ui_handler_chromeos.cc" />
  <item id="gaia_reauth_token_fetcher" added_in_milestone="98" content_hash_code="04ff463d" os_list="chromeos" file_path="chrome/browser/ash/login/gaia_reauth_token_fetcher.cc" />
@@ -326,7 +326,6 @@ Refer to README.md for content description and update process.
  <item id="pending_beacon_api" added_in_milestone="105" content_hash_code="02288864" os_list="linux,windows,android,chromeos" file_path="content/browser/renderer_host/pending_beacon_service.cc" />
  <item id="printing_server_printers_query" added_in_milestone="106" content_hash_code="06f4759c" os_list="chromeos" file_path="chrome/browser/ash/printing/server_printers_fetcher.cc" />
  <item id="download_bubble_retry_download" added_in_milestone="105" content_hash_code="000b1439" os_list="linux,windows,chromeos" file_path="chrome/browser/download/bubble/download_bubble_ui_controller.cc" />
- <item id="wilco_dtc_supportd" added_in_milestone="108" content_hash_code="068635d9" os_list="chromeos" file_path="chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service.cc" />
  <item id="quick_answers_loader" added_in_milestone="105" content_hash_code="06f129c2" os_list="chromeos" file_path="chromeos/components/quick_answers/result_loader.cc" />
  <item id="chrome_search_suggest_service" added_in_milestone="105" content_hash_code="04d973c6" os_list="linux,windows,android,chromeos" file_path="components/search/start_suggest_service.cc" />
  <item id="speculation_rules_prefetch_probe" added_in_milestone="105" content_hash_code="04341e21" os_list="linux,windows,android,chromeos" file_path="content/browser/preloading/prefetch/prefetch_origin_prober.cc" />
