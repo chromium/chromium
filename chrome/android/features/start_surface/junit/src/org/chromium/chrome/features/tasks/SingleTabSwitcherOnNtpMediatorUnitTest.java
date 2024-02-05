@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
@@ -94,6 +93,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private UiConfig mUiConfig;
     @Mock private ModuleDelegate mModuleDelegate;
+    @Mock Callback<Integer> mSingleTabClickedCallback;
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
     @Captor private ArgumentCaptor<ConfigurationChangedObserver> mConfigurationChangedObserver;
 
@@ -133,7 +133,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTabListFaviconProvider,
                         mTab,
                         false,
-                        null,
+                        mSingleTabClickedCallback,
                         null,
                         null,
                         isTablet,
@@ -153,7 +153,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);
 
-        verify(mNormalTabModel).setIndex(0, TabSelectionType.FROM_USER, false);
+        verify(mSingleTabClickedCallback).onResult(eq(mTabId));
 
         mediator.setVisibility(false);
 
@@ -188,7 +188,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         mTabListFaviconProvider,
                         mTab,
                         false,
-                        null,
+                        mSingleTabClickedCallback,
                         mTabContentManager,
                         null,
                         isTablet,
@@ -229,7 +229,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
         assertNotNull(mPropertyModel.get(TAB_THUMBNAIL));
-        verify(mNormalTabModel).setIndex(0, TabSelectionType.FROM_USER, false);
+        verify(mSingleTabClickedCallback).onResult(eq(mTabId));
 
         mediator.setVisibility(false);
 
@@ -533,7 +533,9 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
 
     @Test
     public void testSingleTabCardClickCallback() {
-        Runnable callback = Mockito.mock(Runnable.class);
+        Callback<Integer> callback = Mockito.mock(Callback.class);
+        int tabId = 3;
+        when(mTab3.getId()).thenReturn(tabId);
         new SingleTabSwitcherOnNtpMediator(
                 ContextUtils.getApplicationContext(),
                 mPropertyModel,
@@ -547,10 +549,10 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                 null,
                 true,
                 null);
-        verify(callback, never()).run();
+        verify(callback, never()).onResult(anyInt());
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);
-        verify(callback).run();
+        verify(callback).onResult(eq(tabId));
     }
 
     @Test

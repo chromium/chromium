@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -1862,7 +1863,7 @@ class StartSurfaceMediator
     }
 
     @Override
-    public void onTabSelected(int tabId) {
+    public void onTabSelected(int tabId, @ModuleType int moduleType) {
         mOnTabSelectingListener.onTabSelecting(tabId);
     }
 

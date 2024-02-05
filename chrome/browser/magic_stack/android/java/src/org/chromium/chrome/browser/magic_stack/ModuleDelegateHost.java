@@ -9,6 +9,7 @@ import android.graphics.Point;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -40,8 +41,9 @@ public interface ModuleDelegateHost {
      * Called when the user clicks a module to select a Tab.
      *
      * @param tabId The id of the Tab to select.
+     * @param moduleType The type of the module on which the Tab is selected.
      */
-    void onTabSelected(int tabId);
+    void onTabSelected(int tabId, @ModuleType int moduleType);
 
     /** Called when the capture thumbnail status changed. */
     default void onCaptureThumbnailStatusChanged() {}

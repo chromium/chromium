@@ -220,8 +220,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     @Override
-    public void onTabClicked(int tabId, int moduleType) {
-        mModuleDelegateHost.onTabSelected(tabId);
+    public void onTabClicked(int tabId, @ModuleType int moduleType) {
+        mModuleDelegateHost.onTabSelected(tabId, moduleType);
         onModuleClicked(moduleType);
     }
 

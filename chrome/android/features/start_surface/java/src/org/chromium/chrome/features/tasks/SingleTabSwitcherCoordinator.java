@@ -66,7 +66,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
             boolean isTablet,
             boolean isScrollableMvtEnabled,
             Tab mostRecentTab,
-            @Nullable Runnable singleTabCardClickedCallback,
+            @Nullable Callback<Integer> singleTabCardClickedCallback,
             @Nullable Runnable snapshotParentViewRunnable,
             @Nullable TabContentManager tabContentManager,
             @Nullable UiConfig uiConfig,
@@ -102,6 +102,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                             tabModelSelector,
                             mTabListFaviconProvider,
                             mIsSurfacePolishEnabled ? tabContentManager : null,
+                            singleTabCardClickedCallback,
                             mIsSurfacePolishEnabled,
                             moduleDelegate);
             mMediatorOnNtp = null;
