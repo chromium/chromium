@@ -539,8 +539,9 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, IeemSitelistInvalidUrl) {
   EXPECT_FALSE(fetch_happened);
 }
 
+// TODO(crbug.com/323787135): Times out flakily on CI.
 IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
-                       IeemFetchAndParseAfterStartup) {
+                       DISABLED_IeemFetchAndParseAfterStartup) {
   SetUseIeSitelist(true);
   BrowserSwitcherServiceWin::SetIeemSitelistUrlForTesting(kAValidUrl);
 
