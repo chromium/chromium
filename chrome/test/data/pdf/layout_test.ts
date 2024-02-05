@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PdfScriptingApi} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
 import {PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 // Tests common to all PDFs.
@@ -49,11 +48,8 @@ const perLayoutTests: {[name: string]: Array<() => void>} = {
   ],
 };
 
-const scriptingAPI = new PdfScriptingApi(window, window);
-scriptingAPI.setLoadCompleteCallback((success) => {
-  if (success && document.title in perLayoutTests) {
-    chrome.test.runTests(tests.concat(perLayoutTests[document.title]!));
-  } else {
-    chrome.test.fail(document.title);
-  }
-});
+if (document.title in perLayoutTests) {
+  chrome.test.runTests(tests.concat(perLayoutTests[document.title]!));
+} else {
+  chrome.test.fail(document.title);
+}
