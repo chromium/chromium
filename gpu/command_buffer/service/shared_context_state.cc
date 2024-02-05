@@ -404,11 +404,6 @@ bool SharedContextState::InitializeGanesh(
     CHECK_EQ(gr_context_type_, GrContextType::kVulkan);
 #if BUILDFLAG(ENABLE_VULKAN)
     if (vk_context_provider_) {
-      // TODO(vasilyt): Remove this if there is no problem with caching.
-      if (!base::FeatureList::IsEnabled(
-              features::kEnableGrShaderCacheForVulkan))
-        options.fPersistentCache = nullptr;
-
       if (!vk_context_provider_->InitializeGrContext(options)) {
         LOG(ERROR) << "Failed to initialize GrContext for Vulkan.";
         return false;
