@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bundle_locations.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 
@@ -23,14 +22,6 @@ std::string MacNotificationStyleSuffix(NotificationStyle notification_style) {
       return "AppShim";
   }
   NOTREACHED();
-}
-
-void LogMacNotificationActionReceived(NotificationStyle notification_style,
-                                      bool is_valid) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"Notifications.macOS.ActionReceived.",
-                    MacNotificationStyleSuffix(notification_style)}),
-      is_valid);
 }
 
 }  // namespace mac_notifications

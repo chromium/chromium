@@ -454,18 +454,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.macOS.ActionReceived.{Style}"
-    enum="BooleanValid" expires_after="M96">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Whether the received notification action data is valid or not. If it is, we
-    will continue to pass along the event. Logged on every action received by
-    the system (click or close) on any {Style} style notification.
-  </summary>
-  <token key="Style" variants="MacOSNotificationStyle"/>
-</histogram>
-
 <histogram name="Notifications.macOS.LaunchedViaNotificationAction"
     enum="NotificationActionSource" expires_after="M97">
   <owner>knollr@chromium.org</owner>
