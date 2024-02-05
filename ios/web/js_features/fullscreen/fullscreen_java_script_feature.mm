@@ -6,6 +6,10 @@
 
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
+#import "ios/web/web_state/web_state_impl.h"
 
 namespace {
 const char kScriptName[] = "fullscreen";
@@ -28,11 +32,12 @@ FullscreenJavaScriptFeature::FullscreenJavaScriptFeature()
           ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
-              FeatureScript::InjectionTime::kDocumentStart,
+              FeatureScript::InjectionTime::kDocumentEnd,
               FeatureScript::TargetFrames::kMainFrame,
               FeatureScript::ReinjectionBehavior::
                   kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+          {web::java_script_features::GetCommonJavaScriptFeature(),
+           web::java_script_features::GetMessageJavaScriptFeature()}) {}
 FullscreenJavaScriptFeature::~FullscreenJavaScriptFeature() = default;
 
 std::optional<std::string>
@@ -49,12 +54,26 @@ void FullscreenJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  std::optional<bool> viewport_fit_cover =
-      script_dict->FindBool(kScriptMessageViewportFitCoverKey);
-  if (viewport_fit_cover) {
-    // TODO(crbug.com/1394631): Implement logic to correctly handle
-    // viewport-fit:cover.
+  if (!script_message.is_main_frame()) {
+    return;
   }
+
+  const std::string* frame_id = script_dict->FindString("frame_id");
+  if (!frame_id) {
+    return;
+  }
+
+  WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
+  std::string main_frame_id = main_frame ? main_frame->GetFrameId() : "";
+  if (main_frame_id != *frame_id) {
+    // Frame has changed, do not send message to the web controller as it would
+    // update the incorrect navigation item.
+    return;
+  }
+  auto cover = script_dict->FindBool(kScriptMessageViewportFitCoverKey).value();
+  CRWWebController* web_controller =
+      WebStateImpl::FromWebState(web_state)->GetWebController();
+  [web_controller handleViewportFit:static_cast<BOOL>(cover)];
 }
 
 }  // namespace web

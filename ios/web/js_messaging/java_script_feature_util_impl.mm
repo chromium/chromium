@@ -80,6 +80,7 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),
+      FullscreenJavaScriptFeature::GetInstance(),
       GetFaviconJavaScriptFeature(),
       GetScrollHelperJavaScriptFeature(),
       GetWindowErrorJavaScriptFeature(),
