@@ -82,9 +82,7 @@ ClientTraceReport::ClientTraceReport() = default;
 ClientTraceReport::~ClientTraceReport() = default;
 
 TraceReportDatabase::TraceReportDatabase()
-    : database_(sql::DatabaseOptions{.exclusive_locking = true,
-                                     .page_size = 4096,
-                                     .cache_size = 128}) {
+    : database_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128}) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

@@ -244,8 +244,8 @@ bool BrowsingTopicsSiteDataStorage::LazyInit() {
   if (db_init_status_ != InitStatus::kUnattempted)
     return db_init_status_ == InitStatus::kSuccess;
 
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{.page_size = 4096, .cache_size = 32});
   db_->set_histogram_tag("BrowsingTopics");
 
   // base::Unretained is safe here because this BrowsingTopicsSiteDataStorage

@@ -40,7 +40,6 @@ static const int kSizeThresholdForFlush = 200;
 ActivityDatabase::ActivityDatabase(ActivityDatabase::Delegate* delegate)
     : delegate_(delegate),
       db_({
-          .exclusive_locking = true,
           .page_size = 4096,
           .cache_size = 32,
           // TODO(pwnall): Add a meta table and remove this option.

@@ -467,9 +467,7 @@ AttributionStorageSql::AttributionStorageSql(
     : path_to_database_(user_data_directory.empty()
                             ? base::FilePath()
                             : DatabasePath(user_data_directory)),
-      db_(sql::DatabaseOptions{.exclusive_locking = true,
-                               .page_size = 4096,
-                               .cache_size = 32}),
+      db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 32}),
       delegate_(std::move(delegate)),
       rate_limit_table_(delegate_.get()) {
   DCHECK(delegate_);

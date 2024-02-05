@@ -90,10 +90,6 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
           db_task_runner)),
       db_task_runner_(db_task_runner),
       backing_database_(std::make_unique<sql::Database>(sql::DatabaseOptions{
-          // As they work on deleting the feature (crbug.com/1120969), sql/
-          // owners prefer to see which clients are explicitly okay with using
-          // exclusive locking (the default).
-          .exclusive_locking = true,
           .page_size = 4096,
           .cache_size = 500,
           // TODO(pwnall): Add a meta table and remove this option.

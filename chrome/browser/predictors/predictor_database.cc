@@ -100,8 +100,6 @@ PredictorDatabaseInternal::~PredictorDatabaseInternal() {
 
 void PredictorDatabaseInternal::Initialize() {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(tburkard): figure out if we need this.
-  //  db_->set_exclusive_locking();
   if (autocomplete_table_->IsCancelled() ||
       resource_prefetch_tables_->IsCancelled()) {
     return;
