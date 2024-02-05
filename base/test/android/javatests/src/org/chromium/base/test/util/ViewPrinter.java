@@ -31,6 +31,7 @@ public class ViewPrinter {
         private String mLogTag = "ViewPrinter";
         private boolean mPrintNonVisibleViews;
         private boolean mPrintResourcePackage;
+        public boolean mPrintViewBounds;
 
         public Options setLogTag(String logTag) {
             mLogTag = logTag;
@@ -44,6 +45,11 @@ public class ViewPrinter {
 
         public Options setPrintResourcePackage(boolean printResourcePackage) {
             mPrintResourcePackage = printResourcePackage;
+            return this;
+        }
+
+        public Options setPrintViewBounds(boolean printViewBounds) {
+            mPrintViewBounds = printViewBounds;
             return this;
         }
     }
@@ -145,6 +151,20 @@ public class ViewPrinter {
         }
 
         stringBuilder.append(rootView.getClass().getSimpleName());
+
+        if (options.mPrintViewBounds) {
+            int[] locationOnScreen = new int[2];
+            rootView.getLocationOnScreen(locationOnScreen);
+            stringBuilder.append(" | [l ");
+            stringBuilder.append(locationOnScreen[0]);
+            stringBuilder.append(", t ");
+            stringBuilder.append(locationOnScreen[1]);
+            stringBuilder.append(", w ");
+            stringBuilder.append(rootView.getWidth());
+            stringBuilder.append(", h ");
+            stringBuilder.append(rootView.getHeight());
+            stringBuilder.append("]");
+        }
 
         stringBuilder.append('\n');
 
