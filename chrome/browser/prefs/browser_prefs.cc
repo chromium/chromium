@@ -997,6 +997,12 @@ constexpr char kUpdateNotificationLastShownMilestone[] =
     "update_notification_last_shown_milestone";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 02/2024.
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kSavePasswordsSuspendedByError[] =
+    "profile.save_passwords_suspended_by_error";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1414,6 +1420,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 01/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kUpdateNotificationLastShownMilestone, -10);
+#endif
+
+  // Deprecated 02/2024.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kSavePasswordsSuspendedByError, false);
 #endif
 }
 
@@ -2679,6 +2690,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Deprecated 01/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kUpdateNotificationLastShownMilestone);
+#endif
+
+  // Deprecated 01/2024.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kSavePasswordsSuspendedByError);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

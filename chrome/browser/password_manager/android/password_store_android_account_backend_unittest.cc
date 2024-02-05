@@ -170,8 +170,6 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
 
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
-    prefs_.registry()->RegisterBooleanPref(
-        prefs::kSavePasswordsSuspendedByError, false);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
     prefs_.registry()->RegisterIntegerPref(
@@ -1125,13 +1123,14 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
        OnExternalAuthErrorNotCausingExperimentUnenrollmentButSuspendsSaving) {
+  base::HistogramTester histogram_tester;
   backend().InitBackend(/*affiliated_match_helper=*/nullptr,
                         PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
                         base::NullCallback(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
   ASSERT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_TRUE(backend().IsAbleToSavePasswords());
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
@@ -1151,7 +1150,9 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", 0, 1);
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
@@ -1160,18 +1161,28 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
                         PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
                         base::NullCallback(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
-  prefs()->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
+
+  EXPECT_TRUE(backend().IsAbleToSavePasswords());
+
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(base::DoNothing());
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  error.api_error_code =
+      static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable);
+  consumer().OnError(kJobId, std::move(error));
+
+  EXPECT_FALSE(backend().IsAbleToSavePasswords());
 
   // Simulate a successful logins call.
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(mock_reply, Run(_));
+  EXPECT_CALL(mock_reply, Run);
   task_environment_.FastForwardBy(kTestLatencyDelta);
   consumer().OnCompleteWithLogins(kJobId, {});
   RunUntilIdle();
 
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_TRUE(backend().IsAbleToSavePasswords());
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
@@ -1207,7 +1218,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_EQ(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_TRUE(backend().IsAbleToSavePasswords());
   EXPECT_EQ(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
   histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kBackendApiErrorMetric,
@@ -1252,7 +1263,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
   EXPECT_NE(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_FALSE(backend().IsAbleToSavePasswords());
   histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kBackendApiErrorMetric,
                                      kPassphraseRequiredErrorCode, 1);
@@ -1995,10 +2006,9 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
   if (IsRetriableError()) {
-    EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+    EXPECT_TRUE(backend().IsAbleToSavePasswords());
   } else {
-    EXPECT_EQ(!ShouldUnenroll(),
-              prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+    EXPECT_EQ(ShouldUnenroll(), backend().IsAbleToSavePasswords());
   }
 }
 
@@ -2033,10 +2043,9 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
   if (IsRetriableError()) {
-    EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+    EXPECT_TRUE(backend().IsAbleToSavePasswords());
   } else {
-    EXPECT_EQ(!ShouldUnenroll(),
-              prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+    EXPECT_EQ(ShouldUnenroll(), backend().IsAbleToSavePasswords());
   }
 }
 
@@ -2060,8 +2069,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_EQ(ShouldUnenroll(),
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(!ShouldUnenroll(),
-            prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_EQ(ShouldUnenroll(), backend().IsAbleToSavePasswords());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
@@ -2088,8 +2096,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_EQ(ShouldUnenroll(),
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(!ShouldUnenroll(),
-            prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_EQ(ShouldUnenroll(), backend().IsAbleToSavePasswords());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
@@ -2116,8 +2123,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_EQ(ShouldUnenroll(),
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(!ShouldUnenroll(),
-            prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_EQ(ShouldUnenroll(), backend().IsAbleToSavePasswords());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
@@ -2136,8 +2142,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_EQ(ShouldUnenroll(),
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(!ShouldUnenroll(),
-            prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_EQ(ShouldUnenroll(), backend().IsAbleToSavePasswords());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
@@ -2156,8 +2161,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_EQ(ShouldUnenroll(),
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(!ShouldUnenroll(),
-            prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_EQ(ShouldUnenroll(), backend().IsAbleToSavePasswords());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
@@ -2176,8 +2180,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_EQ(ShouldUnenroll(),
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(!ShouldUnenroll(),
-            prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  EXPECT_EQ(ShouldUnenroll(), backend().IsAbleToSavePasswords());
 }
 
 INSTANTIATE_TEST_SUITE_P(

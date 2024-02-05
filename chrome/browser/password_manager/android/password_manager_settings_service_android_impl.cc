@@ -79,19 +79,6 @@ bool HasChosenToSyncPreferences(const syncer::SyncService* sync_service) {
              syncer::UserSelectableType::kPreferences);
 }
 
-// In error cases, the UPM can set the kSavePasswordsSuspendedByError
-// pref to temporarily prevent password saves. If the user doesn't use GMS,
-// saving keeps working and only the syncing of changes is delayed.
-bool ShouldSuspendPasswordSavingDueToError(PrefService* pref_service,
-                                           syncer::SyncService* sync_service) {
-  // Ensure the user is still enrolled. Evicted users can still save normally.
-  bool is_pwd_sync_enabled =
-      IsSyncFeatureEnabledIncludingPasswords(sync_service);
-  return is_pwd_sync_enabled && !IsCurrentUserEvicted(pref_service) &&
-         pref_service->GetBoolean(
-             password_manager::prefs::kSavePasswordsSuspendedByError);
-}
-
 }  // namespace
 
 PasswordManagerSettingsServiceAndroidImpl::
@@ -134,16 +121,6 @@ PasswordManagerSettingsServiceAndroidImpl::
 
 bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
     PasswordManagerSetting setting) const {
-  if (setting == PasswordManagerSetting::kOfferToSavePasswords) {
-    bool should_disable_saving =
-        ShouldSuspendPasswordSavingDueToError(pref_service_, sync_service_);
-    base::UmaHistogramBoolean(
-        "PasswordManager.PasswordSavingDisabledDueToGMSCoreError",
-        should_disable_saving);
-    if (should_disable_saving) {
-      return false;
-    }
-  }
   const PrefService::Preference* regular_pref =
       GetRegularPrefFromSetting(pref_service_, setting);
   CHECK(regular_pref);

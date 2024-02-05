@@ -124,6 +124,8 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   // Nullable.
   const TryFixPassphraseErrorCb try_fix_passphrase_error_cb_;
 
+  bool should_disable_saving_due_to_error_ = false;
+
   base::WeakPtrFactory<PasswordStoreAndroidAccountBackend> weak_ptr_factory_{
       this};
 };

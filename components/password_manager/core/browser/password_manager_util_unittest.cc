@@ -136,8 +136,6 @@ class PasswordManagerUtilTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
     pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kSavePasswordsSuspendedByError, false);
-    pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutoSignInEnabledGMS, true);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,

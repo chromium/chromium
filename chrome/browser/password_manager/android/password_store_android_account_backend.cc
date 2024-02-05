@@ -205,7 +205,10 @@ void PasswordStoreAndroidAccountBackend::Shutdown(
 }
 
 bool PasswordStoreAndroidAccountBackend::IsAbleToSavePasswords() {
-  return sync_service_ != nullptr;
+  base::UmaHistogramBoolean(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError",
+      should_disable_saving_due_to_error_);
+  return sync_service_ != nullptr && !should_disable_saving_due_to_error_;
 }
 
 void PasswordStoreAndroidAccountBackend::GetAllLoginsAsync(
@@ -371,14 +374,14 @@ PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
       try_fix_passphrase_error_cb_.Run(sync_service_);
       ABSL_FALLTHROUGH_INTENDED;
     case ActionOnApiError::kDisableSaving:
-      prefs()->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
+      should_disable_saving_due_to_error_ = true;
       return PasswordStoreBackendErrorRecoveryType::kRecoverable;
   }
 }
 
 void PasswordStoreAndroidAccountBackend::OnCallToGMSCoreSucceeded() {
   // Since the API call has succeeded, it's safe to reenable saving.
-  prefs()->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
+  should_disable_saving_due_to_error_ = false;
 }
 
 std::string PasswordStoreAndroidAccountBackend::GetAccountToRetryOperation() {

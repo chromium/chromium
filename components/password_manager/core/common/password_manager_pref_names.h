@@ -64,18 +64,6 @@ inline constexpr char kEmptyProfileStoreLoginDatabase[] =
 inline constexpr char kOfferToSavePasswordsEnabledGMS[] =
     "profile.save_passwords_enabed_gms";
 
-// Boolean that disables saving by overriding kOfferToSavePasswordsEnabledGMS.
-// If there are errors that prevent successful saves, this pref will be true and
-// users should act as if kOfferToSavePasswordsEnabledGMS was disabled. If this
-// pref is false, the value of kOfferToSavePasswordsEnabledGMS applies. This
-// pref is not synced since errors presumably affect only the local client. Its
-// value is set automatically whenever communication with GMS succeeds or fails.
-//
-// This pref doesn't have a policy mapped to it. It is temporary in nature and
-// can only be stricter than any policy applied
-inline constexpr char kSavePasswordsSuspendedByError[] =
-    "profile.save_passwords_suspended_by_error";
-
 // Boolean value indicating whether the regular prefs that apply to the local
 // password store were migrated to UPM settings. It will be set to true
 // automatically if there is nothing to migrate.
