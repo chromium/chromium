@@ -29,8 +29,8 @@ class ChromeRLZTrackerWebContentsObserverTest
 
   void TearDown() override {
     rlz::RLZTracker::SetRlzChromeHomePageSearchRecordedForTesting(false);
-    rlz::RLZTracker::ClearRlzDelegateForTesting();
     delegate_ = nullptr;
+    rlz::RLZTracker::ClearRlzDelegateForTesting();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
