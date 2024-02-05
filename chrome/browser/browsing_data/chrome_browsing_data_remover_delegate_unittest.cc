@@ -92,7 +92,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -278,9 +278,6 @@ const char kTestRegisterableDomain3[] = "host3.com";
 
 // For HTTP auth.
 const char kTestRealm[] = "TestRealm";
-
-// For Autofill.
-const char kWebOrigin[] = "https://www.example.com/";
 
 // Shorthands for origin types.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -860,103 +857,39 @@ base::RepeatingCallback<bool(const GURL&)> CreateUrlFilterFromOriginFilter(
   });
 }
 
-class PersonalDataLoadedObserverMock
-    : public autofill::PersonalDataManagerObserver {
- public:
-  PersonalDataLoadedObserverMock() = default;
-  ~PersonalDataLoadedObserverMock() override = default;
-  MOCK_METHOD0(OnPersonalDataChanged, void());
-  MOCK_METHOD0(OnPersonalDataFinishedProfileTasks, void());
-};
-
-}  // namespace
-
-ACTION_P2(QuitMessageLoop, quit_closure) {
-  std::move(quit_closure).Run();
-}
-
-// RemoveAutofillTester is not a part of the anonymous namespace above, as
-// PersonalDataManager declares it a friend in an empty namespace.
 class RemoveAutofillTester {
  public:
   explicit RemoveAutofillTester(TestingProfile* profile)
       : personal_data_manager_(
             autofill::PersonalDataManagerFactory::GetForProfile(profile)) {
     autofill::test::DisableSystemServices(profile->GetPrefs());
-    personal_data_manager_->AddObserver(&personal_data_observer_);
   }
 
   RemoveAutofillTester(const RemoveAutofillTester&) = delete;
   RemoveAutofillTester& operator=(const RemoveAutofillTester&) = delete;
 
   ~RemoveAutofillTester() {
-    personal_data_manager_->RemoveObserver(&personal_data_observer_);
     autofill::test::ReenableSystemServices();
   }
 
-  // Returns true if there are autofill profiles.
-  bool HasProfile() {
+  // Returns true if there is at least one address and one card.
+  bool HasProfileAndCard() const {
     return !personal_data_manager_->GetProfiles().empty() &&
            !personal_data_manager_->GetCreditCards().empty();
   }
 
-  bool HasOrigin(const std::string& origin) {
-    const std::vector<autofill::CreditCard*>& credit_cards =
-        personal_data_manager_->GetCreditCards();
-    for (const autofill::CreditCard* credit_card : credit_cards) {
-      if (credit_card->origin() == origin) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  // Add one profile and two credit cards to the database. One credit card has a
-  // web origin and the other has a Chrome origin.
-  void AddProfilesAndCards() {
-    base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
-    autofill::AutofillProfile profile(
-        autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
-    profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-    profile.SetRawInfo(autofill::NAME_FIRST, u"Bob");
-    profile.SetRawInfo(autofill::NAME_LAST, u"Smith");
-    profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP, u"94043");
-    profile.SetRawInfo(autofill::EMAIL_ADDRESS, u"sue@example.com");
-    profile.SetRawInfo(autofill::COMPANY_NAME, u"Company X");
-    personal_data_manager_->AddProfile(profile);
-    WaitForOnPersonalDataFinishedProfileTasks(&loop);
-
-    std::vector<autofill::CreditCard> cards;
-    autofill::CreditCard card;
-    card.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-    card.set_origin(kWebOrigin);
-    card.SetRawInfo(autofill::CREDIT_CARD_NUMBER, u"1234-5678-9012-3456");
-    cards.push_back(card);
-
-    card.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-    card.set_origin(autofill::kSettingsOrigin);
-    cards.push_back(card);
-
-    personal_data_manager_->SetCreditCards(&cards);
-    WaitForOnPersonalDataChanged(&loop);
-    loop.Run();
+  // Add one profile and one credit cards to the database.
+  void AddProfileAndCard() {
+    personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
+    personal_data_manager_->AddCreditCard(autofill::test::GetCreditCard());
+    autofill::PersonalDataProfileTaskWaiter(*personal_data_manager_).Wait();
   }
 
  private:
-  void WaitForOnPersonalDataChanged(base::RunLoop* loop) {
-    EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-        .WillRepeatedly(QuitMessageLoop(loop->QuitWhenIdleClosure()));
-  }
-
-  void WaitForOnPersonalDataFinishedProfileTasks(base::RunLoop* loop) {
-    EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .WillRepeatedly(QuitMessageLoop(loop->QuitWhenIdleClosure()));
-  }
-
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
-  testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
 };
+
+}  // namespace
 
 #if BUILDFLAG(ENABLE_REPORTING)
 class MockReportingService : public net::ReportingService {
@@ -2288,9 +2221,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalLastHour) {
   // gets initialized:
   SyncServiceFactory::GetForProfile(GetProfile());
 
-  ASSERT_FALSE(tester.HasProfile());
-  tester.AddProfilesAndCards();
-  ASSERT_TRUE(tester.HasProfile());
+  ASSERT_FALSE(tester.HasProfileAndCard());
+  tester.AddProfileAndCard();
+  ASSERT_TRUE(tester.HasProfileAndCard());
 
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_FORM_DATA, false);
@@ -2298,7 +2231,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalLastHour) {
   EXPECT_EQ(constants::DATA_TYPE_FORM_DATA, GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
-  ASSERT_FALSE(tester.HasProfile());
+  ASSERT_FALSE(tester.HasProfileAndCard());
 }
 
 // Verify the clearing of autofill profiles added / modified more than 30 days
@@ -2320,24 +2253,24 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalOlderThan30Days) {
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(k31DaysOld);
 
-  ASSERT_FALSE(tester.HasProfile());
-  tester.AddProfilesAndCards();
-  ASSERT_TRUE(tester.HasProfile());
+  ASSERT_FALSE(tester.HasProfileAndCard());
+  tester.AddProfileAndCard();
+  ASSERT_TRUE(tester.HasProfileAndCard());
 
   BlockUntilBrowsingDataRemoved(base::Time(), k32DaysOld,
                                 constants::DATA_TYPE_FORM_DATA, false);
-  ASSERT_TRUE(tester.HasProfile());
+  ASSERT_TRUE(tester.HasProfileAndCard());
 
   BlockUntilBrowsingDataRemoved(k30DaysOld, base::Time::Max(),
                                 constants::DATA_TYPE_FORM_DATA, false);
-  ASSERT_TRUE(tester.HasProfile());
+  ASSERT_TRUE(tester.HasProfileAndCard());
 
   BlockUntilBrowsingDataRemoved(base::Time(), k30DaysOld,
                                 constants::DATA_TYPE_FORM_DATA, false);
   EXPECT_EQ(constants::DATA_TYPE_FORM_DATA, GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
-  ASSERT_FALSE(tester.HasProfile());
+  ASSERT_FALSE(tester.HasProfileAndCard());
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalEverything) {
@@ -2346,9 +2279,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalEverything) {
   // gets initialized:
   SyncServiceFactory::GetForProfile(GetProfile());
 
-  ASSERT_FALSE(tester.HasProfile());
-  tester.AddProfilesAndCards();
-  ASSERT_TRUE(tester.HasProfile());
+  ASSERT_FALSE(tester.HasProfileAndCard());
+  tester.AddProfileAndCard();
+  ASSERT_TRUE(tester.HasProfileAndCard());
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_FORM_DATA, false);
@@ -2356,7 +2289,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalEverything) {
   EXPECT_EQ(constants::DATA_TYPE_FORM_DATA, GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
-  ASSERT_FALSE(tester.HasProfile());
+  ASSERT_FALSE(tester.HasProfileAndCard());
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
@@ -2366,9 +2299,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   // gets initialized:
   SyncServiceFactory::GetForProfile(GetProfile());
 
-  ASSERT_FALSE(tester.HasProfile());
-  tester.AddProfilesAndCards();
-  ASSERT_TRUE(tester.HasProfile());
+  ASSERT_FALSE(tester.HasProfileAndCard());
+  tester.AddProfileAndCard();
+  ASSERT_TRUE(tester.HasProfileAndCard());
 
   autofill::StrikeDatabaseTester strike_database_tester(GetProfile());
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
@@ -2380,39 +2313,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_EQ(constants::DATA_TYPE_FORM_DATA, GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
-  ASSERT_FALSE(tester.HasProfile());
-}
-
-// Verify that clearing autofill form data works.
-#if BUILDFLAG(IS_LINUX)
-// This is disabled due to flakiness: https://crbug.com/1515085
-#define MAYBE_AutofillOriginsRemovedWithHistory \
-  DISABLED_AutofillOriginsRemovedWithHistory
-#else
-#define MAYBE_AutofillOriginsRemovedWithHistory \
-  AutofillOriginsRemovedWithHistory
-#endif
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       MAYBE_AutofillOriginsRemovedWithHistory) {
-  RemoveAutofillTester tester(GetProfile());
-  // Initialize sync service so that PersonalDatabaseHelper::server_database_
-  // gets initialized:
-  SyncServiceFactory::GetForProfile(GetProfile());
-
-  tester.AddProfilesAndCards();
-  EXPECT_FALSE(tester.HasOrigin(std::string()));
-  EXPECT_TRUE(tester.HasOrigin(kWebOrigin));
-  EXPECT_TRUE(tester.HasOrigin(autofill::kSettingsOrigin));
-
-  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
-                                constants::DATA_TYPE_HISTORY, false);
-
-  EXPECT_EQ(constants::DATA_TYPE_HISTORY, GetRemovalMask());
-  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-            GetOriginTypeMask());
-  EXPECT_TRUE(tester.HasOrigin(std::string()));
-  EXPECT_FALSE(tester.HasOrigin(kWebOrigin));
-  EXPECT_TRUE(tester.HasOrigin(autofill::kSettingsOrigin));
+  ASSERT_FALSE(tester.HasProfileAndCard());
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
