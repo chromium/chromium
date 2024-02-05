@@ -86,6 +86,10 @@ namespace media {
 
 namespace {
 
+BASE_FEATURE(kAddSharedImageRasterUsageWithNonOOPR,
+             "AddSharedImageRasterUsageWithNonOOPR",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Return the full-range RGB component of the color space of this frame's
 // content. This will replace several color spaces (Rec601, Rec709, and
 // Apple's Rec709) with sRGB, for compatibility with existing behavior.
@@ -1847,6 +1851,13 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     } else {
       usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+      // RASTER_WRITE usage should be included as these SharedImages are written
+      // via raster, but historically this usage was included only for OOP-R.
+      // Currently in the process of adding with a killswitch.
+      // TODO(crbug.com/1524353): Remove this killswitch post-safe rollout.
+      if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageWithNonOOPR)) {
+        usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+      }
     }
 
     yuv_cache_.shared_image = sii->CreateSharedImage(
