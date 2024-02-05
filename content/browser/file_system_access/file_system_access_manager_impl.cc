@@ -455,6 +455,22 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     return;
   }
 
+  // Don't show the file picker if there is an already active file picker for
+  // this render frame host.
+  GlobalRenderFrameHostId global_rfh_id = rfh->GetGlobalId();
+  if (rfhs_with_active_file_pickers_.contains(global_rfh_id)) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kPermissionDenied,
+            "File picker already active."),
+        std::vector<blink::mojom::FileSystemAccessEntryPtr>());
+    return;
+  }
+  rfhs_with_active_file_pickers_.insert(global_rfh_id);
+  ChooseEntriesCallback wrapped_callback = std::move(callback).Then(
+      base::BindOnce(&FileSystemAccessManagerImpl::FilePickerDeactivated,
+                     weak_factory_.GetWeakPtr(), global_rfh_id));
+
   if (!options->start_in_options.is_null() &&
       options->start_in_options->is_directory_token() &&
       options->start_in_options->get_directory_token().is_valid()) {
@@ -464,12 +480,19 @@ void FileSystemAccessManagerImpl::ChooseEntries(
         std::move(token),
         base::BindOnce(&FileSystemAccessManagerImpl::ResolveDefaultDirectory,
                        weak_factory_.GetWeakPtr(), context, std::move(options),
-                       std::move(callback)));
+                       std::move(wrapped_callback)));
     return;
   }
 
-  ResolveDefaultDirectory(context, std::move(options), std::move(callback),
+  ResolveDefaultDirectory(context, std::move(options),
+                          std::move(wrapped_callback),
                           /*resolved_directory_token=*/nullptr);
+}
+
+void FileSystemAccessManagerImpl::FilePickerDeactivated(
+    GlobalRenderFrameHostId global_rfh_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  rfhs_with_active_file_pickers_.erase(global_rfh_id);
 }
 
 void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
