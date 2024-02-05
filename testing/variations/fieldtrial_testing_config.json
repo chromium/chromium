@@ -1815,6 +1815,28 @@
             ]
         }
     ],
+    "AutofillPreFilledFieldsCorrectly": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_OverwritePlaceholdersOnly",
+                    "enable_features": [
+                        "AutofillOverwritePlaceholdersOnly",
+                        "AutofillSkipPreFilledFields"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRelaxCreditCardImport": [
         {
             "platforms": [
