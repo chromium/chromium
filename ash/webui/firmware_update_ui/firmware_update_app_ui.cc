@@ -72,6 +72,8 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
       {"versionText", IDS_FIRMWARE_VERSION_TEXT},
       {"proceedConfirmationText", IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION},
       {"confirmationDisclaimer", IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT},
+      {"confirmationDisclaimerIconAriaLabel",
+       IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_ICON_ARIA_LABEL},
       {"requestIdRemoveReplug", IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG},
       {"requestIdRemoveUsbCable", IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE},
       {"requestIdInsertUsbCable", IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE},
