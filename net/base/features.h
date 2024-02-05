@@ -436,10 +436,6 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass;
 // $PSK`.
 NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyBPsk;
 
-// If true, use the `proxy_chains` provided by Phosphor. Otherwise, use the
-// `first_hop_hostnames` (and thus always single-proxy chains).
-NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseProxyChains;
-
 // If true, pass OAuth token to Phosphor in GetProxyConfig API for IP
 // Protection.
 NET_EXPORT extern const base::FeatureParam<bool>

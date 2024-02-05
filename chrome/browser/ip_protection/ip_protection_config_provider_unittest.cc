@@ -724,54 +724,10 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   check(kFailedBSA400, getter_->kBugBackoff, true);
 }
 
-TEST_F(IpProtectionConfigProviderTest, GetProxyListFirstHopHostnames) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "false"}});
-  ip_protection::GetProxyConfigResponse response;
-  response.add_first_hop_hostnames("proxy1");
-  response.add_first_hop_hostnames("proxy2");
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
-
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"proxy1"}),
-                                                 MakeChain({"proxy2"})};
-  EXPECT_THAT(proxy_list_future_.Get(),
-              testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
-}
-
-TEST_F(IpProtectionConfigProviderTest,
-       GetProxyListFirstHopHostnamesWithOAuthTokenFlag) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "false"},
-       {net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.name,
-        "true"}});
-  ip_protection::GetProxyConfigResponse response;
-  response.add_first_hop_hostnames("proxy1");
-  response.add_first_hop_hostnames("proxy2");
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
-
-  primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  GetProxyListWithOAuthToken();
-
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"proxy1"}),
-                                                 MakeChain({"proxy2"})};
-  EXPECT_THAT(proxy_list_future_.Get(),
-              testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
-}
-
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
@@ -794,9 +750,8 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
@@ -832,9 +787,8 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("]INVALID[");
@@ -854,9 +808,8 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalidChainId) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxya");
@@ -883,7 +836,6 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy,
       {
-          {net::features::kIpPrivacyUseProxyChains.name, "true"},
           {net::features::kIpPrivacyProxyAHostnameOverride.name,
            "proxyAOverride"},
           {net::features::kIpPrivacyProxyBHostnameOverride.name,

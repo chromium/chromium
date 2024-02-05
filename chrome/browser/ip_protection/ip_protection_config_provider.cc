@@ -267,46 +267,35 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
   };
 
   std::vector<net::ProxyChain> proxy_list;
-  if (net::features::kIpPrivacyUseProxyChains.Get()) {
-    for (const auto& proxy_chain : response->proxy_chain()) {
-      std::vector<net::ProxyServer> proxies;
-      bool ok = true;
-      if (const std::string a_override =
-              net::features::kIpPrivacyProxyAHostnameOverride.Get();
-          a_override != "") {
-        ok = ok && add_server(proxies, a_override);
-      } else {
-        ok = ok && add_server(proxies, proxy_chain.proxy_a());
-      }
-      if (const std::string b_override =
-              net::features::kIpPrivacyProxyBHostnameOverride.Get();
-          ok && b_override != "") {
-        ok = ok && add_server(proxies, b_override);
-      } else {
-        ok = ok && add_server(proxies, proxy_chain.proxy_b());
-      }
-
-      // Create a new ProxyChain if the proxies were all valid.
-      if (ok) {
-        // If the `chain_id` is out of range, use the proxy chain anyway, but
-        // with the default `chain_id`. This allows adding new IDs on the server
-        // side without breaking older browsers.
-        int chain_id = proxy_chain.chain_id();
-        if (chain_id < 0 ||
-            chain_id > net::ProxyChain::kMaxIpProtectionChainId) {
-          chain_id = net::ProxyChain::kDefaultIpProtectionChainId;
-        }
-        proxy_list.push_back(
-            net::ProxyChain::ForIpProtection(std::move(proxies), chain_id));
-      }
+  for (const auto& proxy_chain : response->proxy_chain()) {
+    std::vector<net::ProxyServer> proxies;
+    bool ok = true;
+    if (const std::string a_override =
+            net::features::kIpPrivacyProxyAHostnameOverride.Get();
+        a_override != "") {
+      ok = ok && add_server(proxies, a_override);
+    } else {
+      ok = ok && add_server(proxies, proxy_chain.proxy_a());
     }
-  } else {
-    for (const auto& hostname : response->first_hop_hostnames()) {
-      std::vector<net::ProxyServer> proxies;
-      if (add_server(proxies, hostname)) {
-        proxy_list.push_back(
-            net::ProxyChain::ForIpProtection(std::move(proxies)));
+    if (const std::string b_override =
+            net::features::kIpPrivacyProxyBHostnameOverride.Get();
+        ok && b_override != "") {
+      ok = ok && add_server(proxies, b_override);
+    } else {
+      ok = ok && add_server(proxies, proxy_chain.proxy_b());
+    }
+
+    // Create a new ProxyChain if the proxies were all valid.
+    if (ok) {
+      // If the `chain_id` is out of range, use the proxy chain anyway, but
+      // with the default `chain_id`. This allows adding new IDs on the server
+      // side without breaking older browsers.
+      int chain_id = proxy_chain.chain_id();
+      if (chain_id < 0 || chain_id > net::ProxyChain::kMaxIpProtectionChainId) {
+        chain_id = net::ProxyChain::kDefaultIpProtectionChainId;
       }
+      proxy_list.push_back(
+          net::ProxyChain::ForIpProtection(std::move(proxies), chain_id));
     }
   }
 
