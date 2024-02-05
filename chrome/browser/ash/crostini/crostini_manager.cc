@@ -1344,9 +1344,6 @@ void CrostiniManager::CheckConciergeAvailable() {
 void CrostiniManager::CheckVmLaunchAllowed(bool service_is_available) {
   if (service_is_available) {
     vm_tools::concierge::GetVmLaunchAllowedRequest request;
-    request.set_run_as_untrusted(false);
-    request.set_is_trusted_image(true);
-    request.set_has_custom_kernel_params(false);
     GetConciergeClient()->GetVmLaunchAllowed(
         std::move(request),
         base::BindOnce(&CrostiniManager::OnCheckVmLaunchAllowed,
