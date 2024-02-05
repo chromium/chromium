@@ -13,7 +13,6 @@
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
-#include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/style/system_shadow.h"
@@ -279,8 +278,6 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 
 void PickerView::SelectCategory(PickerCategory category) {
   selected_category_ = category;
-  search_field_view_->SetPlaceholderText(
-      GetSearchFieldPlaceholderTextForPickerCategory(category));
   contents_view_->SetActivePage(category_view_);
   delegate_->GetResultsForCategory(
       category, base::BindRepeating(&PickerView::PublishCategoryResults,
