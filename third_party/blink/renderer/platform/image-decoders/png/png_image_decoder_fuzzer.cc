@@ -1,9 +1,6 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// TODO (scroggo): Move this to
-// third_party/blink/renderer/platform/image-decoders ?
 
 // Compile with:
 // gn gen out/Fuzz '--args=use_libfuzzer=true is_asan=true
@@ -20,35 +17,35 @@
 //
 // so the fuzzer will read both directories passed, but all new generated
 // testcases will go into ~/another_dir_to_store_corpus
-//
-// For more details, see
-// https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md
+
+#include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
 
+#include "third_party/blink/renderer/platform/graphics/color_behavior.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
-std::unique_ptr<ImageDecoder> CreateDecoder(
-    ImageDecoder::AlphaOption alpha_option) {
+std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
+  // TODO(b/323934468): Initialize decoder settings dynamically using fuzzer
+  // input
   return std::make_unique<PNGImageDecoder>(
-      alpha_option, ImageDecoder::kDefaultBitDepth,
+      ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit);
 }
 
-int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static BlinkFuzzerTestSupport test_support;
   auto buffer = SharedBuffer::Create(data, size);
-  // TODO (scroggo): Also test ImageDecoder::AlphaNotPremultiplied?
-  auto decoder = CreateDecoder(ImageDecoder::kAlphaPremultiplied);
-  const bool kAllDataReceived = true;
+  auto decoder = CreatePNGDecoder();
+  static constexpr bool kAllDataReceived = true;
   decoder->SetData(buffer.get(), kAllDataReceived);
-  decoder->FrameCount();
-  if (decoder->Failed())
-    return 0;
-  for (size_t frame = 0; frame < decoder->FrameCount(); frame++) {
+  for (wtf_size_t frame = 0; frame < decoder->FrameCount(); ++frame) {
     decoder->DecodeFrameBufferAtIndex(frame);
     if (decoder->Failed())
       return 0;
@@ -57,7 +54,3 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 }
 
 }  // namespace blink
-
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  return blink::LLVMFuzzerTestOneInput(data, size);
-}

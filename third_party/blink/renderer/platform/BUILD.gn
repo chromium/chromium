@@ -2614,7 +2614,7 @@ fuzzer_test("web_icon_sizes_fuzzer") {
 }
 
 fuzzer_test("blink_png_decoder_fuzzer") {
-  sources = [ "png_fuzzer.cc" ]
+  sources = [ "image-decoders/png/png_image_decoder_fuzzer.cc" ]
   deps = [
     ":blink_fuzzer_test_support",
     ":platform",
@@ -2626,6 +2626,7 @@ fuzzer_test("blink_png_decoder_fuzzer") {
     "//third_party/blink/web_tests/images/png-suite/samples",
     "//third_party/blink/web_tests/images/resources/pngfuzz",
   ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
 }
 
 fuzzer_test("blink_jpeg_decoder_fuzzer") {
