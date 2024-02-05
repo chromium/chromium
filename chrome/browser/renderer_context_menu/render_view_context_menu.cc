@@ -949,8 +949,8 @@ void RenderViewContextMenu::AppendAllExtensionItems() {
   std::map<std::u16string, std::vector<const Extension*>>
       title_to_extensions_map;
   for (const auto& id : menu_manager->ExtensionIds()) {
-    const Extension* extension = registry->GetExtensionById(
-        id.extension_id, extensions::ExtensionRegistry::ENABLED);
+    const Extension* extension =
+        registry->enabled_extensions().GetByID(id.extension_id);
     // Platform apps have their context menus created directly in
     // AppendPlatformAppItems.
     if (extension && !extension->is_platform_app()) {
