@@ -3640,6 +3640,7 @@ if (!is_android) {
         "../browser/extensions/background_script_executor_browsertest.cc",
         "../browser/extensions/background_scripts_apitest.cc",
         "../browser/extensions/background_xhr_browsertest.cc",
+        "../browser/extensions/cache_wasm_extension_browsertest.cc",
         "../browser/extensions/calculator_app_browsertest.cc",
         "../browser/extensions/chrome_app_api_browsertest.cc",
         "../browser/extensions/chrome_test_extension_loader_browsertest.cc",
@@ -3984,6 +3985,7 @@ if (!is_android) {
       data += [
         "//chrome/test/data/extensions/",
         "//extensions/test/data/",
+        "//third_party/blink/web_tests/http/tests/wasm/resources/large.wasm",
       ]
 
       if (enable_plugins) {
