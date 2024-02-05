@@ -12,9 +12,6 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -39,13 +36,6 @@ PasswordModelTypeController::PasswordModelTypeController(
       identity_manager_(identity_manager),
       sync_service_(sync_service) {
   identity_manager_observation_.Observe(identity_manager_);
-#if BUILDFLAG(IS_ANDROID)
-  // Unretained() is safe because this object outlives `local_upm_pref_`.
-  local_upm_pref_.Init(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores, pref_service_,
-      base::BindRepeating(&PasswordModelTypeController::OnLocalUpmPrefChanged,
-                          base::Unretained(this)));
-#endif
 }
 
 PasswordModelTypeController::~PasswordModelTypeController() = default;
@@ -55,18 +45,11 @@ void PasswordModelTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
   syncer::ConfigureContext overridden_context = configure_context;
-#if BUILDFLAG(IS_ANDROID)
-  switch (GetLocalUpmPrefValue()) {
-    case prefs::UseUpmLocalAndSeparateStoresState::kOff:
-      break;
-    case prefs::UseUpmLocalAndSeparateStoresState::kOn:
-      overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
-      break;
-    case prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
-      // Disallowed by GetPreconditionState().
-      NOTREACHED_NORETURN();
+  if (features_util::CanCreateAccountStore(pref_service_) &&
+      base::FeatureList::IsEnabled(
+          syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
+    overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
   }
-#endif
   ModelTypeController::LoadModels(overridden_context, model_load_callback);
 }
 
@@ -74,20 +57,6 @@ void PasswordModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                        StopCallback callback) {
   DCHECK(CalledOnValidThread());
   ModelTypeController::Stop(fate, std::move(callback));
-}
-
-syncer::DataTypeController::PreconditionState
-PasswordModelTypeController::GetPreconditionState() const {
-#if BUILDFLAG(IS_ANDROID)
-  // If the local UPM migration is pending, wait until it succeeds/fails, so
-  // LoadModels() knows whether to override SyncMode to kTransportOnly or not.
-  return GetLocalUpmPrefValue() == prefs::UseUpmLocalAndSeparateStoresState::
-                                       kOffAndMigrationPending
-             ? PreconditionState::kMustStopAndKeepData
-             : PreconditionState::kPreconditionsMet;
-#else
-  return PreconditionState::kPreconditionsMet;
-#endif
 }
 
 void PasswordModelTypeController::OnAccountsInCookieUpdated(
@@ -120,25 +89,5 @@ void PasswordModelTypeController::OnAccountsCookieDeletedByUserAction() {
   features_util::KeepAccountStorageSettingsOnlyForUsers(pref_service_, {});
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
-
-#if BUILDFLAG(IS_ANDROID)
-prefs::UseUpmLocalAndSeparateStoresState
-PasswordModelTypeController::GetLocalUpmPrefValue() const {
-  auto value = static_cast<prefs::UseUpmLocalAndSeparateStoresState>(
-      local_upm_pref_.GetValue());
-  switch (value) {
-    case prefs::UseUpmLocalAndSeparateStoresState::kOff:
-    case prefs::UseUpmLocalAndSeparateStoresState::kOn:
-    case prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
-      return value;
-  }
-  NOTREACHED_NORETURN();
-}
-
-void PasswordModelTypeController::OnLocalUpmPrefChanged() {
-  // No-ops are fine.
-  sync_service_->DataTypePreconditionChanged(type());
-}
-#endif
 
 }  // namespace password_manager
