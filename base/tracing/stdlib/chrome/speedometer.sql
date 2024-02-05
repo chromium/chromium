@@ -33,7 +33,7 @@
 -- @column suite_name    Suite name
 -- @column test_name     Test name
 -- @column mark_type     Type of mark (start, sync-end, async-end)
-CREATE PERFETTO VIEW internal_chrome_speedometer_mark
+CREATE PERFETTO VIEW _chrome_speedometer_mark
 AS
 WITH
   speedometer_21_suite_name(suite_name) AS (
@@ -132,7 +132,7 @@ WITH
       COUNT()
         OVER (PARTITION BY iteration, suite_name, test_name ORDER BY ts ASC)
         AS mark_count
-    FROM internal_chrome_speedometer_mark
+    FROM _chrome_speedometer_mark
     JOIN slice
       USING (slice_id)
   ),

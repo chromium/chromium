@@ -71,7 +71,7 @@ CREATE PERFETTO VIEW chrome_cpu_power_slice(
     ORDER BY ts ASC;
 
 -- We do not want scheduler slices with utid = 0 (the 'swapper' kernel thread).
-CREATE PERFETTO VIEW internal_cpu_power_valid_sched_slice AS
+CREATE PERFETTO VIEW _cpu_power_valid_sched_slice AS
   SELECT *
   FROM sched_slice
   WHERE utid != 0;
@@ -90,10 +90,10 @@ CREATE PERFETTO VIEW internal_cpu_power_valid_sched_slice AS
 --
 -- Here threads T1 and T2 executed in CPU power slice [A,B].  The
 -- time between F and G represents time between threads in the kernel.
-CREATE VIRTUAL TABLE internal_cpu_power_and_sched_slice
+CREATE VIRTUAL TABLE _cpu_power_and_sched_slice
 USING
   SPAN_JOIN(chrome_cpu_power_slice PARTITIONED cpu,
-            internal_cpu_power_valid_sched_slice PARTITIONED cpu);
+            _cpu_power_valid_sched_slice PARTITIONED cpu);
 
 -- The Linux scheduler slices that executed immediately after a
 -- CPU power up.
@@ -121,7 +121,7 @@ SELECT
   utid,
   previous_power_state,
   powerup_id
-FROM internal_cpu_power_and_sched_slice
+FROM _cpu_power_and_sched_slice
 WHERE power_state = 0     -- Power-ups only.
 GROUP BY cpu, powerup_id
 HAVING ts = MIN(ts)       -- There will only be one MIN sched slice
@@ -137,7 +137,7 @@ ORDER BY ts ASC;
 --   slice_id  The slice_id for the top-level slice.
 --   ts        Starting timestamp for the slice.
 --   dur       The duration for the slice.
-CREATE PERFETTO VIEW internal_cpu_power_thread_and_toplevel_slice AS
+CREATE PERFETTO VIEW _cpu_power_thread_and_toplevel_slice AS
   SELECT
     t.utid AS utid,
     s.id AS slice_id,
@@ -164,7 +164,7 @@ CREATE PERFETTO VIEW internal_cpu_power_thread_and_toplevel_slice AS
 CREATE VIRTUAL TABLE chrome_cpu_power_post_powerup_slice
 USING
   SPAN_JOIN(chrome_cpu_power_first_sched_slice_after_powerup PARTITIONED utid,
-            internal_cpu_power_thread_and_toplevel_slice PARTITIONED utid);
+            _cpu_power_thread_and_toplevel_slice PARTITIONED utid);
 
 -- The first top-level slice that ran after a CPU power-up.
 CREATE PERFETTO VIEW chrome_cpu_power_first_toplevel_slice_after_powerup(

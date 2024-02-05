@@ -8,7 +8,7 @@ INCLUDE PERFETTO MODULE common.slices;
 -- If TimeToFirstVisibleContent is available, then this event will be the
 -- main event of the startup. Otherwise, the event for the start timestamp will
 -- be used.
-CREATE PERFETTO VIEW internal_startup_start_events AS
+CREATE PERFETTO VIEW _startup_start_events AS
 WITH
 starts AS (
   SELECT
@@ -60,7 +60,7 @@ FROM activity_ids
 
 -- Chrome launch causes, not recorded at start time; use the activity id to
 -- join with the actual startup events.
-CREATE PERFETTO VIEW internal_launch_causes AS
+CREATE PERFETTO VIEW _launch_causes AS
 SELECT
   EXTRACT_ARG(arg_set_id, 'startup.activity_id') AS activity_id,
   EXTRACT_ARG(arg_set_id, 'startup.launch_cause') AS launch_cause,
@@ -93,6 +93,6 @@ SELECT
   start_events.first_visible_content_ts,
   launches.launch_cause,
   start_events.browser_upid
-FROM internal_startup_start_events start_events
-  LEFT JOIN internal_launch_causes launches
+FROM _startup_start_events start_events
+  LEFT JOIN _launch_causes launches
   USING(activity_id, browser_upid);

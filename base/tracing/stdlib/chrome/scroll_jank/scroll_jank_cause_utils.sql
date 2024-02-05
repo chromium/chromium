@@ -4,7 +4,7 @@
 
 -- Function to retrieve the upid for a surfaceflinger, as these are attributed
 -- to the GPU but are recorded on a different data source (and track group).
-CREATE PERFETTO FUNCTION internal_get_process_id_for_surfaceflinger()
+CREATE PERFETTO FUNCTION _get_process_id_for_surfaceflinger()
 -- The process id for surfaceflinger.
 RETURNS INT AS
 SELECT
@@ -15,7 +15,7 @@ LIMIT 1;
 
 -- Map a generic process type to a specific name or substring of a name that
 -- can be found in the trace process table.
-CREATE PERFETTO TABLE internal_process_type_to_name (
+CREATE PERFETTO TABLE _process_type_to_name (
   -- The process type: one of 'Browser' or 'GPU'.
   process_type STRING,
   -- The process name for Chrome traces.
@@ -38,7 +38,7 @@ SELECT
   process_glob
 FROM process_names;
 
-CREATE PERFETTO FUNCTION internal_get_process_name(
+CREATE PERFETTO FUNCTION _get_process_name(
   -- The process type: one of 'Browser' or 'GPU'.
   type STRING
 )
@@ -46,11 +46,11 @@ CREATE PERFETTO FUNCTION internal_get_process_name(
 RETURNS STRING AS
 SELECT
     process_name
-FROM internal_process_type_to_name
+FROM _process_type_to_name
 WHERE process_type = $type
 LIMIT 1;
 
-CREATE PERFETTO FUNCTION internal_get_process_glob(
+CREATE PERFETTO FUNCTION _get_process_glob(
   -- The process type: one of 'Browser' or 'GPU'.
   type STRING
 )
@@ -58,7 +58,7 @@ CREATE PERFETTO FUNCTION internal_get_process_glob(
 RETURNS STRING AS
 SELECT
     process_glob
-FROM internal_process_type_to_name
+FROM _process_type_to_name
 WHERE process_type = $type
 LIMIT 1;
 
@@ -67,8 +67,8 @@ LIMIT 1;
 -- Function to retrieve the chrome process ID for a specific process type. Does
 -- not retrieve the Renderer process, as this is determined when the
 -- EventLatency is known. See function
--- internal_get_renderer_upid_for_event_latency below.
-CREATE PERFETTO FUNCTION internal_get_process_id_by_type(
+-- _get_renderer_upid_for_event_latency below.
+CREATE PERFETTO FUNCTION _get_process_id_by_type(
   -- The process type: one of 'Browser' or 'GPU'.
   type STRING
 )
@@ -79,12 +79,12 @@ RETURNS TABLE (
 SELECT
   upid
 FROM process
-WHERE name = internal_get_process_name($type)
-  OR name GLOB internal_get_process_glob($type);
+WHERE name = _get_process_name($type)
+  OR name GLOB _get_process_glob($type);
 
 -- Function to retrieve the chrome process ID that a given EventLatency slice
 -- occurred on. This is the Renderer process.
-CREATE PERFETTO FUNCTION internal_get_renderer_upid_for_event_latency(
+CREATE PERFETTO FUNCTION _get_renderer_upid_for_event_latency(
   -- The slice id for an EventLatency slice.
   id INT
 )
@@ -97,7 +97,7 @@ WHERE id = $id;
 
 -- Helper function to retrieve all of the upids for a given process, thread,
 -- or EventLatency.
-CREATE PERFETTO FUNCTION internal_processes_by_type_for_event_latency(
+CREATE PERFETTO FUNCTION _processes_by_type_for_event_latency(
   -- The process type that the thread is on: one of 'Browser', 'Renderer' or
   -- 'GPU'.
   type STRING,
@@ -114,7 +114,7 @@ WITH all_upids AS (
     $type AS process,
     $thread AS thread,
     $event_latency_id AS event_latency_id,
-    internal_get_renderer_upid_for_event_latency($event_latency_id) AS upid
+    _get_renderer_upid_for_event_latency($event_latency_id) AS upid
   WHERE $type = 'Renderer'
   UNION ALL
   -- surfaceflinger upids
@@ -122,7 +122,7 @@ WITH all_upids AS (
     $type AS process,
     $thread AS thread,
     $event_latency_id AS event_latency_id,
-    internal_get_process_id_for_surfaceflinger() AS upid
+    _get_process_id_for_surfaceflinger() AS upid
   WHERE $type = 'GPU' AND $thread = 'surfaceflinger'
   UNION ALL
   -- Generic Browser and GPU process upids
@@ -131,7 +131,7 @@ WITH all_upids AS (
     $thread AS thread,
     $event_latency_id AS event_latency_id,
     upid
-  FROM internal_get_process_id_by_type($type)
+  FROM _get_process_id_by_type($type)
   WHERE $type = 'Browser'
     OR ($type = 'GPU' AND $thread != 'surfaceflinger')
 )
@@ -162,7 +162,7 @@ WITH threads AS (
     (
       SELECT DISTINCT
         upid
-      FROM internal_processes_by_type_for_event_latency(
+      FROM _processes_by_type_for_event_latency(
         $process_type,
         $thread_name,
         $event_latency_id)

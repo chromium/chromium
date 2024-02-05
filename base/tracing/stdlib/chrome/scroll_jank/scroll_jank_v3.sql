@@ -36,7 +36,7 @@ SELECT
 FROM slice
 WHERE name = "InputLatency::GestureScrollUpdate" AND dur != -1;
 
-CREATE PERFETTO TABLE internal_non_coalesced_gesture_scrolls AS
+CREATE PERFETTO TABLE _non_coalesced_gesture_scrolls AS
 SELECT
   id,
   ts,
@@ -73,7 +73,7 @@ scroll_updates_with_coalesce_info as MATERIALIZED (
     -- presented scroll update they have been coalesced into.
     (
       SELECT id
-      FROM internal_non_coalesced_gesture_scrolls non_coalesced
+      FROM _non_coalesced_gesture_scrolls non_coalesced
       WHERE non_coalesced.ts <= scroll_update.ts
       ORDER BY ts DESC
       LIMIT 1
@@ -91,13 +91,13 @@ SELECT
     FROM scroll_updates_with_coalesce_info coalesce_info
     WHERE
       coalesce_info.coalesced_to_scroll_update_slice_id =
-        internal_non_coalesced_gesture_scrolls.id
+        _non_coalesced_gesture_scrolls.id
     ORDER BY ts DESC
     LIMIT 1
   ) as last_coalesced_input_ts,
   scroll_update_id,
   scroll_id
-FROM internal_non_coalesced_gesture_scrolls;
+FROM _non_coalesced_gesture_scrolls;
 
 -- Associate every trace_id with it's perceived delta_y on the screen after
 -- prediction.
