@@ -4,9 +4,9 @@
 
 /**
  * @fileoverview Definitions for chrome.contextMenus API
- * Generated from: chrome/common/extensions/api/context_menus.json
+ * Partially generated from: chrome/common/extensions/api/context_menus.json
  * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/context_menus.json -g definitions` to
+ * chrome/common/extensions/api/context_menus.json -g ts_definitions` to
  * regenerate.
  */
 
@@ -57,19 +57,21 @@ declare global {
         checked?: boolean;
       }
 
-      export function create(createProperties: {
-        type?: ItemType,
-        id?: string,
-        title?: string,
-        checked?: boolean,
-        contexts?: ContextType[],
-        visible?: boolean,
-        onclick?: (info: OnClickData, tab: tabs.Tab) => void,
-        parentId?: number|string,
-        documentUrlPatterns?: string[],
-        targetUrlPatterns?: string[],
-        enabled?: boolean,
-      }): number|string;
+      export interface CreateProperties {
+        type?: ItemType;
+        id?: string;
+        title?: string;
+        checked?: boolean;
+        contexts?: ContextType[];
+        visible?: boolean;
+        onclick?: (info: OnClickData, tab: tabs.Tab) => void;
+        parentId?: number|string;
+        documentUrlPatterns?: string[];
+        targetUrlPatterns?: string[];
+        enabled?: boolean;
+      }
+
+      export function create(createProperties: CreateProperties): number|string;
 
       export function update(id: number|string, updateProperties: {
         type?: ItemType,
