@@ -160,8 +160,8 @@ class TestChildLauncher::TestChildPortProvider final : public PortProvider {
   TestChildPortProvider(const TestChildPortProvider&) = delete;
   TestChildPortProvider& operator=(const TestChildPortProvider&) = delete;
 
-  mach_port_t TaskForPid(ProcessHandle process) const final {
-    return process == handle_ ? port_.get() : MACH_PORT_NULL;
+  mach_port_t TaskForHandle(ProcessHandle process_handle) const final {
+    return process_handle == handle_ ? port_.get() : MACH_PORT_NULL;
   }
 
  private:

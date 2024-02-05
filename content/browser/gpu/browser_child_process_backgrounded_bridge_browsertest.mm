@@ -61,7 +61,8 @@ class BrowserChildProcessBackgroundedBridgeTest
   // Waits until the port for the GPU process is available.
   void WaitForPort() {
     auto* port_provider = content::BrowserChildProcessHost::GetPortProvider();
-    DCHECK(port_provider->TaskForPid(
+    // Note: On macOS, a process id and a process handle are the same thing.
+    DCHECK(port_provider->TaskForHandle(
                content::GpuProcessHost::Get()->process_id()) == MACH_PORT_NULL);
     port_provider->AddObserver(this);
     base::RunLoop run_loop;

@@ -80,21 +80,21 @@ bool GetPowerInfo(mach_port_t task, task_power_info* power_info_data) {
 }  // namespace
 
 // Implementations of ProcessMetrics class shared by Mac and iOS.
-mach_port_t ProcessMetrics::TaskForPid(ProcessHandle process) const {
+mach_port_t ProcessMetrics::TaskForHandle(ProcessHandle process_handle) const {
   mach_port_t task = MACH_PORT_NULL;
 #if BUILDFLAG(IS_MAC)
   if (port_provider_) {
-    task = port_provider_->TaskForPid(process_);
+    task = port_provider_->TaskForHandle(process_);
   }
 #endif
-  if (task == MACH_PORT_NULL && process_ == getpid()) {
+  if (task == MACH_PORT_NULL && process_handle == getpid()) {
     task = mach_task_self();
   }
   return task;
 }
 
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
-  mach_port_t task = TaskForPid(process_);
+  mach_port_t task = TaskForHandle(process_);
   if (task == MACH_PORT_NULL) {
     return TimeDelta();
   }
@@ -144,7 +144,7 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
 }
 
 int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {
-  mach_port_t task = TaskForPid(process_);
+  mach_port_t task = TaskForHandle(process_);
   task_power_info power_info_data;
 
   GetPowerInfo(task, &power_info_data);
@@ -164,7 +164,7 @@ int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {
 }
 
 int ProcessMetrics::GetIdleWakeupsPerSecond() {
-  mach_port_t task = TaskForPid(process_);
+  mach_port_t task = TaskForHandle(process_);
   task_power_info power_info_data;
 
   GetPowerInfo(task, &power_info_data);

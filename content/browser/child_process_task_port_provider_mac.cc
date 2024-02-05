@@ -29,22 +29,23 @@ ChildProcessTaskPortProvider* ChildProcessTaskPortProvider::GetInstance() {
 }
 
 void ChildProcessTaskPortProvider::OnChildProcessLaunched(
-    base::ProcessHandle pid,
+    base::ProcessHandle process_handle,
     mojom::ChildProcess* child_process) {
   if (!ShouldRequestTaskPorts())
     return;
 
   child_process->GetTaskPort(
       base::BindOnce(&ChildProcessTaskPortProvider::OnTaskPortReceived,
-                     base::Unretained(this), pid));
+                     base::Unretained(this), process_handle));
 }
 
-mach_port_t ChildProcessTaskPortProvider::TaskForPid(
-    base::ProcessHandle pid) const {
+mach_port_t ChildProcessTaskPortProvider::TaskForHandle(
+    base::ProcessHandle process_handle) const {
   base::AutoLock lock(lock_);
-  PidToTaskPortMap::const_iterator it = pid_to_task_port_.find(pid);
-  if (it == pid_to_task_port_.end())
+  auto it = handle_to_task_port_.find(process_handle);
+  if (it == handle_to_task_port_.end()) {
     return MACH_PORT_NULL;
+  }
   return it->second.get();
 }
 
@@ -92,11 +93,12 @@ bool ChildProcessTaskPortProvider::ShouldRequestTaskPorts() const {
 }
 
 void ChildProcessTaskPortProvider::OnTaskPortReceived(
-    base::ProcessHandle pid,
+    base::ProcessHandle process_handle,
     mojo::PlatformHandle task_port) {
   DCHECK(ShouldRequestTaskPorts());
   if (!task_port.is_mach_send()) {
-    DLOG(ERROR) << "Invalid handle received as task port for pid " << pid;
+    DLOG(ERROR) << "Invalid handle received as task port for pid "
+                << base::GetProcId(process_handle);
     return;
   }
   base::apple::ScopedMachSendRight port = task_port.TakeMachSendRight();
@@ -114,14 +116,14 @@ void ChildProcessTaskPortProvider::OnTaskPortReceived(
     return;
   }
 
-  DVLOG(1) << "Received task port for PID=" << pid
+  DVLOG(1) << "Received task port for PID=" << base::GetProcId(process_handle)
            << ", port name=" << port.get();
 
   {
     base::AutoLock lock(lock_);
-    auto it = pid_to_task_port_.find(pid);
-    if (it == pid_to_task_port_.end()) {
-      pid_to_task_port_.emplace(pid, std::move(port));
+    auto it = handle_to_task_port_.find(process_handle);
+    if (it == handle_to_task_port_.end()) {
+      handle_to_task_port_.emplace(process_handle, std::move(port));
     } else {
       // If a task port already exists for the PID, then reset it if the port
       // is of a different name. The port name may be the same when running in
@@ -133,7 +135,7 @@ void ChildProcessTaskPortProvider::OnTaskPortReceived(
     }
   }
 
-  NotifyObservers(pid);
+  NotifyObservers(process_handle);
 }
 
 void ChildProcessTaskPortProvider::OnTaskPortDied() {
@@ -158,9 +160,9 @@ void ChildProcessTaskPortProvider::OnTaskPortDied() {
   base::apple::ScopedMachSendRight dead_port(notification.not_port);
 
   base::AutoLock lock(lock_);
-  std::erase_if(pid_to_task_port_, [&dead_port](const auto& pair) {
+  std::erase_if(handle_to_task_port_, [&dead_port](const auto& pair) {
     if (pair.second.get() == dead_port.get()) {
-      DVLOG(1) << "Task died, PID=" << pair.first
+      DVLOG(1) << "Task died, PID=" << base::GetProcId(pair.first)
                << ", task port name=" << dead_port.get();
       return true;
     }

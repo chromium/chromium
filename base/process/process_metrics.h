@@ -250,7 +250,7 @@ class BASE_EXPORT ProcessMetrics {
       uint64_t absolute_package_idle_wakeups);
 
   // Queries the port provider if it's set.
-  mach_port_t TaskForPid(ProcessHandle process) const;
+  mach_port_t TaskForHandle(ProcessHandle process_handle) const;
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -58,7 +58,7 @@ constexpr int kDummyExitCode = 42;
 // Fake port provider that returns the calling process's
 // task port, ignoring its argument.
 class FakePortProvider : public base::PortProvider {
-  mach_port_t TaskForPid(base::ProcessHandle process) const override {
+  mach_port_t TaskForHandle(base::ProcessHandle process_handle) const override {
     return mach_task_self();
   }
 };
