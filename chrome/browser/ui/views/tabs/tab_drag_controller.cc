@@ -2831,7 +2831,9 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
           ->browser();
   SavedTabGroupKeyedService* const saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
-  if (!saved_tab_group_service->model()->Contains(group_.value())) {
+
+  if (!saved_tab_group_service ||
+      !saved_tab_group_service->model()->Contains(group_.value())) {
     return;
   }
 
@@ -2853,6 +2855,10 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
           ->browser();
   SavedTabGroupKeyedService* const saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+
+  if (!saved_tab_group_service) {
+    return;
+  }
 
   saved_tab_group_service->ResumeTrackingLocalTabGroup(
       paused_saved_group_id_.value(), group_.value());
