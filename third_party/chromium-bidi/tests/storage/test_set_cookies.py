@@ -143,6 +143,7 @@ async def test_cookie_set_partition_user_context(websocket, context_id):
     }
 
 
+@pytest.mark.asyncio
 async def test_cookie_set_partition_browsing_context_from_user_context(
         websocket, create_context, user_context_id):
     context_id = await create_context(user_context_id)
