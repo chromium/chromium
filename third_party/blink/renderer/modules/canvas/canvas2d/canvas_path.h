@@ -123,16 +123,9 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
 
   virtual ExecutionContext* GetTopExecutionContext() const = 0;
 
-  const Path GetPath() const {
+  const Path& GetPath() const {
     UpdatePathFromLineIfNecessary();
-    Path path;
-    if (!completed_path_.IsEmpty()) {
-      path.AddPath(completed_path_, AffineTransform());
-    }
-    if (!sub_path_.IsEmpty()) {
-      path.AddPath(sub_path_, AffineTransform());
-    }
-    return path;
+    return path_;
   }
 
   // Returns true if the CanvasPath represents a line. In some cases (such as
@@ -146,23 +139,16 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
     return line_builder_.line();
   }
 
-  bool IsEmpty() const {
-    return line_builder_.IsEmpty() && completed_path_.IsEmpty() &&
-           sub_path_.IsEmpty();
-  }
+  bool IsEmpty() const { return line_builder_.IsEmpty() && path_.IsEmpty(); }
 
   gfx::RectF BoundingRect() const;
 
   void Trace(Visitor*) const override;
 
  protected:
-  CanvasPath() {
-    completed_path_.SetIsVolatile(true);
-    sub_path_.SetIsVolatile(true);
-  }
-  explicit CanvasPath(const Path& path) : completed_path_(path) {
-    completed_path_.SetIsVolatile(true);
-    sub_path_.SetIsVolatile(true);
+  CanvasPath() { path_.SetIsVolatile(true); }
+  explicit CanvasPath(const Path& path) : path_(path) {
+    path_.SetIsVolatile(true);
   }
   ALWAYS_INLINE void SetIsTransformInvertible(bool val) {
     is_transform_invertible_ = val;
@@ -170,13 +156,12 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
 
   void Clear() {
     line_builder_.Clear();
-    completed_path_.Clear();
-    sub_path_.Clear();
+    path_.Clear();
   }
 
   Path& GetModifiablePath() {
     UpdatePathFromLineIfNecessaryForMutation();
-    return sub_path_;
+    return path_;
   }
 
   // This mirrors state that is stored in CanvasRenderingContext2DState.  We
@@ -242,12 +227,11 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
   };
 
   bool DoesPathNeedUpdatingFromLine() const {
-    return !line_builder_.IsEmpty() && sub_path_.IsEmpty() &&
-           completed_path_.IsEmpty();
+    return !line_builder_.IsEmpty() && path_.IsEmpty();
   }
 
-  // Updates `sub_path_` from `line_builder_` if necessary. Returns true if
-  // `sub_path_` changed (false means `sub_path_` was already up to date).
+  // Updates `path_` from `line_builder_` if necessary. Returns true if `path_`
+  // changed (false means `path_` was already up to date).
   bool UpdatePathFromLineIfNecessary() const;
 
   // Same as UpdatePathFromLineIfNecessary(), but also clears resets
@@ -256,10 +240,8 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
 
   LineBuilder line_builder_;
 
-  // `sub_path_` is lazily updated from `line_builder_`, so it needs to be
-  // mutable.
-  mutable Path completed_path_;
-  mutable Path sub_path_;
+  // `path_` is lazily updated from `line_builder_`, so it needs to be mutable.
+  mutable Path path_;
 };
 
 ALWAYS_INLINE bool CanvasPath::IsTransformInvertible() const {
