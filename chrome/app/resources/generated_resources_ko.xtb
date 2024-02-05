@@ -522,7 +522,7 @@
 <translation id="1415708812149920388">클립 보드 읽기 액세스 거부됨</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" />(확장 프로그램 ID '<ph name="EXTENSION_ID" />')은(는) 이 세션 유형에서 허용되지 않습니다.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{앱 삭제}other{앱 삭제}}</translation>
-<translation id="1417497355604638350">진단 및 사용 데이터 전송</translation>
+<translation id="1417497355604638350">진단 및 사용 데이터 전송.</translation>
 <translation id="1418552618736477642">알림 및 앱</translation>
 <translation id="1418559532423038045"><ph name="DEVICE_TYPE" />에서 <ph name="VM_NAME" />가 삭제됩니다. 이렇게 하면 가상 머신의 모든 앱과 데이터가 삭제됩니다.</translation>
 <translation id="1418882096915998312">기업용 등록 진행 중</translation>
@@ -1002,7 +1002,7 @@
 <translation id="1768278914020124551">로그온 서버에 연결하는 중에 문제가 발생했습니다. 네트워크 연결 및 도메인 이름을 확인한 다음 다시 시도하세요.</translation>
 <translation id="1769104665586091481">새 창에서 링크 열기(&amp;W)</translation>
 <translation id="1770407692401984718">여기로 이미지를 드래그하거나</translation>
-<translation id="177053719077591686">Google Drive에 Android 앱을 백업하세요</translation>
+<translation id="177053719077591686">Google Drive에 Android 앱 백업.</translation>
 <translation id="1771075623623424448">브라우저 기기 로그 페이지를 찾고 계신가요? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />에서 확인하세요.</translation>
 <translation id="1773329206876345543"><ph name="DEVICE_TYPE" />의 모바일 데이터를 사용해 다른 기기에 인터넷을 제공하는 Wi-Fi 핫스팟을 만드세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">호스팅된 앱 데이터</translation>
@@ -1145,7 +1145,7 @@
 <translation id="186612162884103683">'<ph name="EXTENSION" />'은(는) 선택된 위치에서 이미지, 동영상 및 사운드 파일을 읽고 쓸 수 있습니다.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" />에서 설치 완료 준비가 되었습니다.</translation>
 <translation id="1868553836791672080">Chromium에서 비밀번호 확인 기능을 사용할 수 없습니다.</translation>
-<translation id="1868617395637139709">Android 앱과 서비스에 위치를 사용하세요</translation>
+<translation id="1868617395637139709">Android 앱과 서비스에 위치 사용.</translation>
 <translation id="1869433484041798909">북마크 버튼</translation>
 <translation id="1871098866036088250">Chrome 브라우저에서 열기</translation>
 <translation id="1871131409931646355">전체 다운로드 기록</translation>
@@ -2410,7 +2410,7 @@
 <translation id="2811205483104563968">계정</translation>
 <translation id="2811564570599779918">스팸 및 사기 감소</translation>
 <translation id="2812049959647166806">Thunderbolt가 지원되지 않음</translation>
-<translation id="2812171980080389735">즉시 연결할 수 있도록 네트워크 및 비밀번호 저장</translation>
+<translation id="2812171980080389735">즉시 연결할 수 있도록 저장된 네트워크 및 비밀번호</translation>
 <translation id="2813094189969465044">자녀 보호 기능</translation>
 <translation id="2813765525536183456">새 프로필 추가(&amp;A)</translation>
 <translation id="281390819046738856">요청을 서명할 수 없습니다.</translation>
