@@ -2278,18 +2278,6 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
-       ShouldNotShowAutocompleteSuggestionAfterDialogIsClosed) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::
-                   kShowPromptAfterDialogClosedNonManualFallback);
-
-  EXPECT_CALL(client(), ShowAutofillPopup).Times(0);
-
-  external_delegate().OnSuggestionsReturned(
-      queried_form_triggering_field_id_,
-      {Suggestion{PopupItemId::kAutocompleteEntry}});
-}
-
 class AutofillExternalDelegate_RemoveSuggestionTest
     : public AutofillExternalDelegateUnitTest,
       public ::testing::WithParamInterface<PopupItemId> {

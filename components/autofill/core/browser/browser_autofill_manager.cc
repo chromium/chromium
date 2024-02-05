@@ -987,7 +987,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // Check if other suggestion sources should be queried. Manual fallbacks can't
   // trigger different suggestion types.
   const bool should_offer_other_suggestions =
-      suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source);
+      suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source) &&
+      trigger_source != AutofillSuggestionTriggerSource::
+                            kShowPromptAfterDialogClosedNonManualFallback;
 
   if (should_offer_other_suggestions &&
       (field.form_control_type == FormControlType::kTextArea ||

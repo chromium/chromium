@@ -189,16 +189,6 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     return;
   }
 
-  bool has_autofill_suggestions = base::ranges::any_of(
-      input_suggestions, IsAutofillAndFirstLayerSuggestionId,
-      &Suggestion::popup_item_id);
-  if (trigger_source_ == AutofillSuggestionTriggerSource::
-                             kShowPromptAfterDialogClosedNonManualFallback &&
-      !has_autofill_suggestions) {
-    // User changed or deleted the only Autofill profile shown in the popup,
-    // avoid showing any other suggestions in this case.
-    return;
-  }
 #if BUILDFLAG(IS_IOS)
   if (!manager_->client().IsLastQueriedField(field_id)) {
     return;

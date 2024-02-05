@@ -1893,6 +1893,21 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       GetProfileSuggestions_DialogClosedByUser_NoData) {
+  personal_data().ClearProfiles();
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  GetAutofillSuggestions(form, form.fields.back(),
+                         AutofillSuggestionTriggerSource::
+                             kShowPromptAfterDialogClosedNonManualFallback);
+
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  external_delegate()->CheckNoSuggestions(form.fields.back().global_id());
+}
+
 // Test that single field suggestions are not queries when autofill is triggered
 // manually by the user.
 TEST_F(BrowserAutofillManagerTest,
