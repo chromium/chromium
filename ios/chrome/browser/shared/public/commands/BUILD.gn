@@ -4,6 +4,7 @@
 
 source_set("commands") {
   sources = [
+    "account_picker_commands.h",
     "activity_service_commands.h",
     "application_commands.h",
     "autofill_bottom_sheet_commands.h",
@@ -23,6 +24,7 @@ source_set("commands") {
     "help_commands.h",
     "lens_commands.h",
     "load_query_commands.h",
+    "manage_storage_alert_commands.h",
     "mini_map_commands.h",
     "new_tab_page_commands.h",
     "omnibox_commands.h",

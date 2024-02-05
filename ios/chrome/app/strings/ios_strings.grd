@@ -2248,6 +2248,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MAGIC_STACK_SEE_MORE" desc="The See More button in Magic Stack modules to show a detailed view. [Length: 10em]">
         See More
       </message>
+      <message name="IDS_IOS_MANAGE_STORAGE_ALERT_TITLE" desc="Title of an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. [iOS only]">
+        Your Storage is Full
+      </message>
+      <message name="IDS_IOS_MANAGE_STORAGE_ALERT_MESSAGE" desc="Message of an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. [iOS only]">
+        To download files, photos, and more you need more storage space.
+      </message>
+      <message name="IDS_IOS_MANAGE_STORAGE_ALERT_MANAGE_STORAGE_BUTTON" desc="Label of the primary action button in an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. The button opens a page where the user can manage their storage space. [iOS only] [Length: 12em]" meaning="Label of the primary action button in an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. The button opens a page where the user can manage their storage space. [iOS only] [Length: 12em]">
+        Manage Storage
+      </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_ACCEPT_UNITY" desc="Label on the button to proceed with signout and clear all Chrome data.[Length: 30em].">
         Clear
       </message>
