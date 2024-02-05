@@ -86,7 +86,10 @@ class ScopedMLTraceTest : public testing::Test {
       const std::string* trace_type = dict.FindString("ph");
       CHECK(trace_type);
       // Count both the "BEGIN" and "END" traces.
-      if (*trace_type != "E" && *trace_type != "e") {
+      if (*trace_type == "n") {
+        ((event_counts)[*name].first)++;
+        ((event_counts)[*name].second)++;
+      } else if (*trace_type != "E" && *trace_type != "e") {
         ((event_counts)[*name].first)++;
       } else {
         ((event_counts)[*name].second)++;
