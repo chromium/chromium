@@ -491,7 +491,8 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     observed_events_mask_ = events_mask;
   }
 
-  void QueryServiceState(QueryServiceStateCallback) override {
+  void QueryServiceState(QueryServiceStateArgs,
+                         QueryServiceStateCallback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement service state querying.
     NOTREACHED();
@@ -509,7 +510,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     NOTREACHED();
   }
 
-  void CloneSession(perfetto::TracingSessionID) override {
+  void CloneSession(perfetto::TracingSessionID, CloneSessionArgs) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Not implemented yet.
     NOTREACHED();
