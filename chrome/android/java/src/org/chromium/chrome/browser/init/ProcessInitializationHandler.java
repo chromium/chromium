@@ -430,7 +430,7 @@ public class ProcessInitializationHandler {
                     public void run() {
                         SigninCheckerProvider.get(Profile.getLastUsedRegularProfile())
                                 .onMainActivityStart();
-                        RevenueStats.getInstance();
+                        RevenueStats.getInstance().retrieveAndApplyTrackingIds();
                     }
                 });
 
