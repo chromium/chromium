@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -13,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -74,15 +72,9 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
         final @Nullable String accountEmail =
                 defaultAccount == null ? null : defaultAccount.getEmail();
         boolean isChild = getPageDelegate().getProperties().getBoolean(IS_CHILD_ACCOUNT, false);
-        final Bundle arguments;
         // TODO(crbug.com/1491387): Avoid sending `accountEmail` to create arguments. This class
         // uses the primary account from IdentityManager.
-        if (!isChild && ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
-            arguments = createArgumentsForTangibleSync(SigninAccessPoint.START_PAGE, accountEmail);
-        } else {
-            arguments = createArguments(SigninAccessPoint.START_PAGE, accountEmail, isChild);
-        }
-        setArguments(arguments);
+        setArguments(createArguments(SigninAccessPoint.START_PAGE, accountEmail, isChild));
     }
 
     @Override
@@ -154,10 +146,7 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
         // Ignore calls before view is created.
         if (getView() == null) return;
 
-        @Nullable View title = getView().findViewById(R.id.signin_title);
-        if (title == null) {
-            title = getView().findViewById(R.id.sync_consent_title);
-        }
+        View title = getView().findViewById(R.id.signin_title);
         title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 

@@ -53,11 +53,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -264,7 +261,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
     @DisabledTest(message = "https://crbug.com/1459076")
     public void acceptingSyncEndsFreAndEnablesSync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
@@ -283,26 +279,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
-    @DisabledTest(message = "https://crbug.com/1459076")
-    public void acceptingSyncEndsFreAndEnablesSync_tangibleSyncEnabled() {
-        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        clickButton(R.id.signin_fre_continue_button);
-        completeAutoDeviceLockIfNeeded();
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
-
-        clickMoreThenClickButton(R.id.positive_button);
-
-        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
-        SyncTestUtil.waitForSyncFeatureEnabled();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
     @DisabledTest(message = "https://crbug.com/1459076")
     public void refusingSyncEndsFreAndDoesNotEnableSync() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
@@ -313,25 +289,6 @@ public class FirstRunActivitySigninAndSyncTest {
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
         clickMoreThenClickButton(R.id.button_secondary);
-
-        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
-
-        assertFalse(SyncTestUtil.canSyncFeatureStart());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
-    @DisabledTest(message = "https://crbug.com/1459076")
-    public void refusingSyncEndsFreAndDoesNotEnableSync_tangibleSyncEnabled() {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        clickButton(R.id.signin_fre_continue_button);
-        completeAutoDeviceLockIfNeeded();
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
-
-        clickMoreThenClickButton(R.id.negative_button);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 

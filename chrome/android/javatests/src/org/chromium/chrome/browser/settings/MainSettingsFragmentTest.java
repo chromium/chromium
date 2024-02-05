@@ -127,7 +127,6 @@ import java.util.HashSet;
 /** Test for {@link MainSettings}. Main purpose is to have a quick confidence check on the xml. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
-@DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";

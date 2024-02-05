@@ -3079,32 +3079,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_TITLE" desc="Title for the screen that asks users to sign-in and turn on Sync. [CHAR_LIMIT=27]">
         Turn on sync?
       </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_A" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. The value proposition of sync here is to allow a user to proceed their web navigation on a different device. The tone should be informative and inviting. [CHAR_LIMIT=35]">
-        Pick up where you left off
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_B" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Devices include phones, tables and computers. The tone should be informative and inviting. [CHAR_LIMIT=35]">
-        Browse across devices
-      </message>
       <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_C" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Typing refers to typing urls in the address bar. The tone should be informative and inviting. [CHAR_LIMIT=35]">
         Save time and type less
       </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_D" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Suggestions refers to suggested entries in the address bar. The tone should be informative and inviting. [CHAR_LIMIT=35]">
-        Get better suggestions
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_E" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. The tone should be informative and inviting. [CHAR_LIMIT=35]">
-        Sync your tabs and history
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_A" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. Devices include phones, tablets and computers. The tone should be informative and inviting. [CHAR_LIMIT=100]">
-        To continue browsing on another device, sync your tabs and history
-      </message>
       <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_C" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. The tone should be informative and inviting. [CHAR_LIMIT=100]">
         To quickly get back to sites you’ve visited, sync your tabs and history
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_D" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. The tone should be informative and inviting. [CHAR_LIMIT=100]">
-        To see better suggestions in your address bar, sync your tabs and history
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_E" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. Devices include phones, tablets and computers. The tone should be informative and inviting. [CHAR_LIMIT=100]">
-        To get back to the sites you’ve visited on other devices, sync your tabs and history
       </message>
       <message name="IDS_SIGNIN_SYNC_TITLE" desc="Title of Sync feature for the screen that asks users to sign-in and turn on Sync.">
         Sync your passwords, history &amp; more on all devices

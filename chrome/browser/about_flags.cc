@@ -917,26 +917,6 @@ const FeatureEntry::FeatureVariation kQueryTilesVariations[] = {
      std::size(kShowSingleRowMVTiles), nullptr},
     {"(show two rows of MV tiles)", kShowTwoRowsMVTiles,
      std::size(kShowTwoRowsMVTiles), nullptr}};
-
-const FeatureEntry::FeatureParam kTangibleSyncGroupA[] = {{"group_id", "1"}};
-const FeatureEntry::FeatureParam kTangibleSyncGroupB[] = {{"group_id", "2"}};
-const FeatureEntry::FeatureParam kTangibleSyncGroupC[] = {{"group_id", "3"}};
-const FeatureEntry::FeatureParam kTangibleSyncGroupD[] = {{"group_id", "4"}};
-const FeatureEntry::FeatureParam kTangibleSyncGroupE[] = {{"group_id", "5"}};
-const FeatureEntry::FeatureParam kTangibleSyncGroupF[] = {{"group_id", "6"}};
-const FeatureEntry::FeatureVariation kTangibleSyncVariations[] = {
-    {"(pick up where you left off)", kTangibleSyncGroupA,
-     std::size(kTangibleSyncGroupA), nullptr},
-    {"(browse across devices)", kTangibleSyncGroupB,
-     std::size(kTangibleSyncGroupB), nullptr},
-    {"(save time and type less)", kTangibleSyncGroupC,
-     std::size(kTangibleSyncGroupC), nullptr},
-    {"(get better suggestions)", kTangibleSyncGroupD,
-     std::size(kTangibleSyncGroupD), nullptr},
-    {"(sync your tabs and history)", kTangibleSyncGroupE,
-     std::size(kTangibleSyncGroupE), nullptr},
-    {"(Turn on sync?)", kTangibleSyncGroupF, std::size(kTangibleSyncGroupF),
-     nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
@@ -7457,12 +7437,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
-
-    {"tangible-sync", flag_descriptions::kTangibleSyncName,
-     flag_descriptions::kTangibleSyncDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kTangibleSync,
-                                    kTangibleSyncVariations,
-                                    "TangibleSyncVariations")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"gainmap-hdr-images", flag_descriptions::kGainmapHdrImagesName,
