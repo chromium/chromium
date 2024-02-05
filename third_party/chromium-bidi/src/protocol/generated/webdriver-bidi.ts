@@ -1337,13 +1337,11 @@ export namespace Script {
 export namespace Script {
   export type SharedWorkerRealmInfo = Script.BaseRealmInfo & {
     type: 'shared-worker';
-    owners: [Script.Realm, ...Script.Realm[]];
   };
 }
 export namespace Script {
   export type ServiceWorkerRealmInfo = Script.BaseRealmInfo & {
     type: 'service-worker';
-    owners: [...Script.Realm[]];
   };
 }
 export namespace Script {

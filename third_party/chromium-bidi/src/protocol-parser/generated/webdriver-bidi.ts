@@ -1691,7 +1691,6 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('shared-worker'),
-        owners: z.array(Script.RealmSchema).min(1),
       })
     )
   );
@@ -1701,7 +1700,6 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('service-worker'),
-        owners: z.array(Script.RealmSchema),
       })
     )
   );
