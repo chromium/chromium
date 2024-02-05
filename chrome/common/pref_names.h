@@ -3301,6 +3301,8 @@ inline constexpr char kCreatePasskeysInICloudKeychain[] =
 // latter if necessary. The timestamp therefore represents the "freshness" of
 // the CWS information saved.
 inline constexpr char kCWSInfoTimestamp[] = "extensions.cws_info_timestamp";
+inline constexpr char kCWSInfoFetchErrorTimestamp[] =
+    "extensions.cws_info_fetch_error_timestamp";
 
 // A bool value for running GarbageCollectStoragePartitionCommand.
 inline constexpr char kShouldGarbageCollectStoragePartitions[] =

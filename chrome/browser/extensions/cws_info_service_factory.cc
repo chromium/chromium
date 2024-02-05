@@ -61,6 +61,7 @@ bool CWSInfoServiceFactory::ServiceIsNULLWhileTesting() const {
 void CWSInfoServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kCWSInfoTimestamp, base::Time());
+  registry->RegisterTimePref(prefs::kCWSInfoFetchErrorTimestamp, base::Time());
 }
 
 }  // namespace extensions

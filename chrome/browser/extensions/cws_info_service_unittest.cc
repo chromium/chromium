@@ -209,7 +209,7 @@ TEST_F(CWSInfoServiceTest, IgnoresNonCWSExtensions) {
   EXPECT_EQ(0u, test_url_loader_factory_.pending_requests()->size());
 }
 
-TEST_F(CWSInfoServiceTest, IgnoresNetworkErrorAndBadServerResponse) {
+TEST_F(CWSInfoServiceTest, HandlesNetworkErrorAndBadServerResponse) {
   base::HistogramTester histogram_tester;
   scoped_refptr<const Extension> test1 =
       AddExtension("test1", /* updates_from_cws= */ true);
@@ -218,6 +218,7 @@ TEST_F(CWSInfoServiceTest, IgnoresNetworkErrorAndBadServerResponse) {
   cws_info_service_->CheckAndMaybeFetchInfo();
   task_environment_.FastForwardBy(base::Seconds(0));
 
+  // Verify an errored response was received.
   EXPECT_TRUE(VerifyStats(/*requests=*/1, /*responses=*/0, /*changes=*/0,
                           /*errors=*/1));
   histogram_tester.ExpectBucketCount(
@@ -226,7 +227,14 @@ TEST_F(CWSInfoServiceTest, IgnoresNetworkErrorAndBadServerResponse) {
   histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
                                      false, 1);
   EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == std::nullopt);
+  // Verify that the fetch error timestamp was recorded.
+  EXPECT_EQ(base::Time::Now(),
+            cws_info_service_->GetCWSInfoFetchErrorTimestampForTesting());
 
+  // After a response error, the next fetch request is only made after
+  // another fetch interval has elapsed. Advance the time by that amount.
+  task_environment_.FastForwardBy(
+      base::Seconds(cws_info_service_->GetFetchIntervalForTesting()));
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         "bad response");
   cws_info_service_->CheckAndMaybeFetchInfo();
@@ -357,17 +365,25 @@ TEST_F(CWSInfoServiceTest, SchedulesStartupAndPeriodicInfoChecks) {
       GURL(cws_info_service_->GetRequestURLForTesting()));
   task_environment_.FastForwardBy(
       base::Seconds(cws_info_service_->GetStartupDelayForTesting()));
+  // Verify that a request was sent and an errored response was received.
   EXPECT_TRUE(VerifyStats(/*requests=*/1, /*responses=*/0, /*changes=*/0,
                           /*errors=*/1));
-
   // Verify that the subsequent info check is scheduled with the regular check
   // interval.
   EXPECT_EQ(cws_info_service_->GetCheckIntervalForTesting(),
             GetTimerCurrentDelay());
+
+  // Advance the time by check interval and verify that a request is not sent
+  // because of the previous fetch response error.
   task_environment_.FastForwardBy(
       base::Seconds(cws_info_service_->GetCheckIntervalForTesting()));
-  EXPECT_TRUE(VerifyStats(/*requests=*/2, /*responses=*/0, /*changes=*/0,
-                          /*errors=*/2));
+  EXPECT_TRUE(VerifyStats(/*requests=*/1, /*responses=*/0, /*changes=*/0,
+                          /*errors=*/1));
+  // Check that nothing was written to extension prefs.
+  EXPECT_EQ(base::Time(), cws_info_service_->GetCWSInfoTimestampForTesting());
+
+  // Verify that the subsequent info check is scheduled with the regular check
+  // interval.
   EXPECT_EQ(cws_info_service_->GetCheckIntervalForTesting(),
             GetTimerCurrentDelay());
 
@@ -380,23 +396,22 @@ TEST_F(CWSInfoServiceTest, SchedulesStartupAndPeriodicInfoChecks) {
   ASSERT_TRUE(!response_str.empty());
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         response_str);
+  // Forward time by the fetch interval since CWSInfoService will wait that
+  // long after a fetch error before sending another request.
   task_environment_.FastForwardBy(
-      base::Seconds(cws_info_service_->GetCheckIntervalForTesting()));
+      base::Seconds(cws_info_service_->GetFetchIntervalForTesting()));
   // Verify that the request was sent, response was received and the data was
   // saved to extension prefs.
-  EXPECT_TRUE(VerifyStats(/*requests=*/3, /*responses=*/1, /*changes=*/1,
-                          /*errors=*/2));
-  EXPECT_EQ(base::Time::Now(),
-            cws_info_service_->GetCWSInfoTimestampForTesting());
+  EXPECT_TRUE(VerifyStats(/*requests=*/2, /*responses=*/1, /*changes=*/1,
+                          /*errors=*/1));
+  EXPECT_NE(base::Time(), cws_info_service_->GetCWSInfoTimestampForTesting());
   // Verify that the next check is scheduled with the regular check interval.
   EXPECT_EQ(cws_info_service_->GetCheckIntervalForTesting(),
             GetTimerCurrentDelay());
 }
 
-// The service only makes requests to the CWS server if:
-// - there are extensions that are missing the store metadata info OR
-// - enough time (fetch interval) has elapsed since the last update
-// This test verifies the latter condition.
+// If there are no new extensions installed, CWS Info is only
+// requested after a fetch interval has elapsed.
 TEST_F(CWSInfoServiceTest, UpdatesExistingInfoAtUpdateIntervals) {
   // Add an extension to cause queries to CWS.
   scoped_refptr<const Extension> test1 =
