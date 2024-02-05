@@ -3142,6 +3142,68 @@
           You can only create wallpapers with AI for personal and non-commercial use. When you get wallpaper help, text is sent to Google AI servers to generate wallpaper suggestions, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY">&lt;a target="_blank" href="https://policies.google.com/privacy"&gt;</ph>Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="https://support.google.com/chromebook?p=copyeditor"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
         </message>
 
+        <!-- Sea Pen Templates -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_FLOWER" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          Airbrushed
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_FLOWER" desc="Template used to generate an image of a flower. Users can select the variables from a drop-down menu.">
+          A radiant <ph name="FLOWER_COLOR">$1<ex>pink</ex></ph> <ph name="FLOWER_TYPE">$2<ex>garden rose</ex></ph> in bloom
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_ROSE" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          garden rose
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_CALLA_LILY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          calla lily
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_WINDFLOWER" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          windflower
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_TULIP" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          tulip
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_LILY_OF_THE_VALLEY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          lily of the valley
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_BIRD_OF_PARADISE" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          bird of paradise
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_ORCHID" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          orchid
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_RANUNCULUS" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          ranunculus
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_DAISY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          daisy
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_HYDRANGEA" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          hydrangea
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_PINK" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_PURPLE" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          light purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_BLUE" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          light blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_WHITE" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_CORAL" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          coral
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_YELLOW" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          pastel yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_GREEN" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          light green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_RED" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          dark red
+        </message>
+
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
           Unknown

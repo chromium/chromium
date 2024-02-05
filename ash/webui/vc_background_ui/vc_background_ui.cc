@@ -11,6 +11,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/sea_pen_provider.h"
 #include "ash/webui/common/sea_pen_resources.h"
+#include "ash/webui/common/sea_pen_resources_generated.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_vc_background_resources.h"
 #include "ash/webui/grit/ash_vc_background_resources_map.h"
@@ -36,6 +37,7 @@ void AddStrings(content::WebUIDataSource* source) {
   // TODO(b/311416410) real translated title.
   source->AddString("vcBackgroundTitle", u"VC Background");
   ::ash::common::AddSeaPenStrings(source);
+  ::ash::common::AddSeaPenVcBackgroundTemplateStrings(source);
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();

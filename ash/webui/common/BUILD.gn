@@ -40,6 +40,8 @@ source_set("sea_pen") {
     "sea_pen_provider.h",
     "sea_pen_resources.cc",
     "sea_pen_resources.h",
+    "sea_pen_resources_generated.cc",
+    "sea_pen_resources_generated.h",
   ]
 
   deps = [
