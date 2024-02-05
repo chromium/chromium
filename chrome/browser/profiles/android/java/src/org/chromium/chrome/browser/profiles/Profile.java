@@ -165,7 +165,11 @@ public class Profile implements BrowserContextHandle {
 
     /**
      * @return Whether the profile is signed in to a child account.
+     * @deprecated Please use {@link
+     *     org.chromium.components.signin.base.AccountCapabilities#isSubjectToParentalControls}
+     *     instead.
      */
+    @Deprecated
     public boolean isChild() {
         return ProfileJni.get().isChild(mNativeProfileAndroid, Profile.this);
     }
