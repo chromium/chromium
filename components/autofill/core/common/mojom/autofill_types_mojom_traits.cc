@@ -469,6 +469,7 @@ bool StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
 
   return data.ReadElementId(&out->element_id) &&
          data.ReadFormData(&out->form_data) &&
+         data.ReadTriggerSource(&out->trigger_source) &&
          data.ReadTextDirection(&out->text_direction) &&
          data.ReadTypedUsername(&out->typed_username) &&
          data.ReadBounds(&out->bounds);

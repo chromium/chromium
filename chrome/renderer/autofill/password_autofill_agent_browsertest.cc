@@ -671,7 +671,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   }
 
   // Helper to simulate that KeyboardReplacingSurface was closed in order to
-  // test regular popups, e.g. |ShowPasswordSuggestions|.
+  // test regular popups, e.g. `ShowPasswordSuggestions`.
   void SimulateClosingKeyboardReplacingSurfaceIfAndroid(
       const std::string& element_id) {
     // Put the build guard here to save space in the caller test.

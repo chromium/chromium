@@ -505,6 +505,7 @@ struct PasswordGenerationUIData {
 struct PasswordSuggestionRequest {
   FieldRendererId element_id;
   FormData form_data;
+  AutofillSuggestionTriggerSource trigger_source;
   uint64 username_field_index;
   uint64 password_field_index;
   mojo_base.mojom.TextDirection text_direction;

@@ -766,7 +766,9 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
   }
 
   // Show the popup with the list of available usernames.
-  return ShowSuggestions(element, ShowAll(false));
+  return ShowSuggestions(element,
+                         AutofillSuggestionTriggerSource::kTextFieldDidChange,
+                         ShowAll(false));
 }
 
 void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
@@ -1121,8 +1123,10 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
 }
 #endif
 
-bool PasswordAutofillAgent::ShowSuggestions(const WebInputElement& element,
-                                            ShowAll show_all) {
+bool PasswordAutofillAgent::ShowSuggestions(
+    const WebInputElement& element,
+    AutofillSuggestionTriggerSource trigger_source,
+    ShowAll show_all) {
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
@@ -1146,10 +1150,10 @@ bool PasswordAutofillAgent::ShowSuggestions(const WebInputElement& element,
     return false;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Don't call ShowSuggestionPopup if a keyboard replacing surface is currently
-  // showing. Since a keyboard replacing surface in spirit is very similar to a
-  // suggestion pop-up, return true so that the AutofillAgent does not try to
-  // show other autofill suggestions instead.
+  // Don't call `ShowSuggestionPopup` if a keyboard replacing surface is
+  // currently showing. Since a keyboard replacing surface in spirit is very
+  // similar to a suggestion pop-up, return true so that the AutofillAgent does
+  // not try to show other autofill suggestions instead.
   if (keyboard_replacing_surface_state_ ==
       KeyboardReplacingSurfaceState::kIsShowing) {
     return true;
@@ -1165,8 +1169,8 @@ bool PasswordAutofillAgent::ShowSuggestions(const WebInputElement& element,
     if (show_all ||
         (password_info && CanShowUsernameSuggestion(password_info->fill_data,
                                                     element.Value().Utf16()))) {
-      ShowSuggestionPopup(element.Value().Utf16(), element, show_all,
-                          OnPasswordField(false));
+      ShowSuggestionPopup(element.Value().Utf16(), element, trigger_source,
+                          show_all, OnPasswordField(false));
       return true;
     }
     return false;
@@ -1185,7 +1189,7 @@ bool PasswordAutofillAgent::ShowSuggestions(const WebInputElement& element,
     return false;
   }
 
-  ShowSuggestionPopup(std::u16string(), element, show_all,
+  ShowSuggestionPopup(std::u16string(), element, trigger_source, show_all,
                       OnPasswordField(true));
   return true;
 }
@@ -1537,7 +1541,10 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
     // This is limited to the keyboard accessory, as otherwise it would result
     // in a flickering of the popup, due to showing the keyboard at the same
     // time.
-    ShowSuggestions(focused_input_element, ShowAll(false));
+    ShowSuggestions(
+        focused_input_element,
+        autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+        ShowAll(false));
   }
 }
 
@@ -1633,6 +1640,7 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
 void PasswordAutofillAgent::ShowSuggestionPopup(
     const std::u16string& typed_username,
     const WebInputElement& user_input,
+    AutofillSuggestionTriggerSource trigger_source,
     ShowAll show_all,
     OnPasswordField show_on_password_field) {
   username_query_prefix_ = typed_username;
@@ -1657,7 +1665,8 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
                              &password_info);
 
   GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
-      field.renderer_id, form, GetIndexOfElement(form, username_element),
+      field.renderer_id, form, trigger_source,
+      GetIndexOfElement(form, username_element),
       GetIndexOfElement(form, password_element), field.text_direction,
       typed_username, options,
       render_frame()->ElementBoundsInWindow(user_input)));

@@ -193,14 +193,16 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormControlElement& control_element);
 #endif
 
-  // Shows an Autofill popup with username suggestions for `element`. If
-  // `show_all` is `true`, will show all possible suggestions for that element,
-  // otherwise shows suggestions based on current value of `element`.
+  // Queries password suggestions for the given `element` and `trigger_source`.
+  // If `show_all` is `true`, will show all possible suggestions for that
+  // element, otherwise shows suggestions based on current value of `element`.
   // If `generation_popup_showing` is true, this function will return false
   // as both UIs should not be shown at the same time. This function should
   // still be called in this situation so that UMA stats can be logged.
   // Returns true if any suggestions were shown, false otherwise.
-  bool ShowSuggestions(const blink::WebInputElement& element, ShowAll show_all);
+  bool ShowSuggestions(const blink::WebInputElement& element,
+                       AutofillSuggestionTriggerSource trigger_source,
+                       ShowAll show_all);
 
   // Called when new form controls are inserted.
   void OnDynamicFormsSeen();
@@ -354,6 +356,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // username value will be shown in the pop-up.
   void ShowSuggestionPopup(const std::u16string& typed_username,
                            const blink::WebInputElement& user_input,
+                           AutofillSuggestionTriggerSource trigger_source,
                            ShowAll show_all,
                            OnPasswordField show_on_password_field);
 

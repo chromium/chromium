@@ -397,10 +397,15 @@ void PasswordAutofillManager::DeleteFillData() {
 
 void PasswordAutofillManager::OnShowPasswordSuggestions(
     autofill::FieldRendererId element_id,
+    autofill::AutofillSuggestionTriggerSource trigger_source,
     base::i18n::TextDirection text_direction,
     const std::u16string& typed_username,
     int options,
     const gfx::RectF& bounds) {
+  if (autofill::IsAutofillManuallyTriggered(trigger_source)) {
+    // TODO(b/321678448): Implement manual fallback suggestion generation.
+    return;
+  }
   bool autofill_available =
       ShowPopup(bounds, text_direction,
                 suggestion_generator_.GetSuggestionsForDomain(

@@ -76,6 +76,9 @@ const char16_t kAliceUsername[] = u"alice";
 const char16_t kAlicePassword[] = u"password";
 const char16_t kAliceAccountStoredPassword[] = u"account-stored-password";
 
+constexpr auto kDefaultTriggerSource =
+    autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked;
+
 using autofill::FillingProduct;
 using autofill::Suggestion;
 using autofill::SuggestionVectorIconsAre;
@@ -474,8 +477,8 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
     int show_suggestion_options =
         is_suggestion_on_password_field ? autofill::IS_PASSWORD_FIELD : 0;
     password_autofill_manager_->OnShowPasswordSuggestions(
-        kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-        show_suggestion_options, gfx::RectF());
+        kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+        std::u16string(), show_suggestion_options, gfx::RectF());
     ASSERT_GE(open_args.suggestions.size(), 1u);
     EXPECT_THAT(
         open_args.suggestions,
@@ -551,7 +554,8 @@ TEST_F(PasswordAutofillManagerTest,
     EXPECT_CALL(autofill_client, ShowAutofillPopup)
         .WillOnce(testing::SaveArg<0>(&open_args));
     password_autofill_manager_->OnShowPasswordSuggestions(
-        kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
+        kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+        std::u16string(),
         is_suggestion_on_password_field
             ? autofill::IS_PASSWORD_FIELD
             : autofill::ShowPasswordSuggestionsOptions(),
@@ -604,8 +608,9 @@ TEST_F(PasswordAutofillManagerTest, ShowOptInAndFillButton) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::PopupItemId::kPasswordEntry,
@@ -632,8 +637,9 @@ TEST_F(PasswordAutofillManagerTest, SuppressManageAllWithoutPasswords) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi).WillOnce(Return(true));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::PopupItemId::kPasswordAccountStorageOptIn));
@@ -653,8 +659,9 @@ TEST_F(PasswordAutofillManagerTest, ShowResigninButton) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::PopupItemId::kPasswordEntry,
@@ -1019,8 +1026,9 @@ TEST_F(PasswordAutofillManagerTest,
       kCredentialsCountFromAccountStoreAfterUnlockHistogram, 1, 1);
 }
 
-// Test that OnShowPasswordSuggestions correctly matches the given FormFieldData
-// to the known PasswordFormFillData, and extracts the right suggestions.
+// Test that `OnShowPasswordSuggestions` correctly matches the given
+// FormFieldData to the known PasswordFormFillData, and extracts the right
+// suggestions.
 TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
@@ -1053,8 +1061,9 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::ShowPasswordSuggestionsOptions(), element_bounds);
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::ShowPasswordSuggestionsOptions(),
+      element_bounds);
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorMainTextsAre(
@@ -1080,7 +1089,7 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, u"John",
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT, u"John",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(
@@ -1096,8 +1105,8 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, u"xyz", autofill::SHOW_ALL,
-      element_bounds);
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT, u"xyz",
+      autofill::SHOW_ALL, element_bounds);
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorMainTextsAre(
@@ -1135,8 +1144,9 @@ TEST_F(PasswordAutofillManagerTest, PrettifiedAndroidRealmsAreShownAsLabels) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::ShowPasswordSuggestionsOptions(), gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::ShowPasswordSuggestionsOptions(),
+      gfx::RectF());
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorLabelsContains(std::vector<std::vector<Suggestion::Text>>{
@@ -1168,8 +1178,8 @@ TEST_F(PasswordAutofillManagerTest, FillSuggestionPasswordField) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, test_username_,
-      autofill::IS_PASSWORD_FIELD, element_bounds);
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      test_username_, autofill::IS_PASSWORD_FIELD, element_bounds);
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorMainTextsAre(
@@ -1207,8 +1217,9 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup);
   gfx::RectF element_bounds;
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::ShowPasswordSuggestionsOptions(), element_bounds);
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::ShowPasswordSuggestionsOptions(),
+      element_bounds);
 
   // Check that preview of the empty username works.
   EXPECT_CALL(*client.mock_driver(),
@@ -1254,8 +1265,8 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnPasswordField) {
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, test_username_,
-      autofill::IS_PASSWORD_FIELD, element_bounds);
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      test_username_, autofill::IS_PASSWORD_FIELD, element_bounds);
   histograms.ExpectUniqueSample(kDropdownShownHistogram,
                                 metrics_util::PasswordDropdownState::kStandard,
                                 1);
@@ -1321,8 +1332,9 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnNonPasswordField) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, test_username_,
-      autofill::ShowPasswordSuggestionsOptions(), element_bounds);
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      test_username_, autofill::ShowPasswordSuggestionsOptions(),
+      element_bounds);
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorMainTextsAre(
@@ -1508,8 +1520,9 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::ShowPasswordSuggestionsOptions(), element_bounds);
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::ShowPasswordSuggestionsOptions(),
+      element_bounds);
   ASSERT_THAT(open_args.suggestions.size(),
               testing::Ge(1u));  // No footer on Android.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1549,8 +1562,8 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
     int show_suggestion_options =
         is_suggestion_on_password_field ? autofill::IS_PASSWORD_FIELD : 0;
     password_autofill_manager_->OnShowPasswordSuggestions(
-        kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-        show_suggestion_options, gfx::RectF());
+        kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+        std::u16string(), show_suggestion_options, gfx::RectF());
     ASSERT_GE(open_args.suggestions.size(), 1u);
     EXPECT_THAT(
         open_args.suggestions,
@@ -1612,8 +1625,8 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
     int show_suggestion_options =
         is_suggestion_on_password_field ? autofill::IS_PASSWORD_FIELD : 0;
     password_autofill_manager_->OnShowPasswordSuggestions(
-        kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-        show_suggestion_options, gfx::RectF());
+        kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+        std::u16string(), show_suggestion_options, gfx::RectF());
     ASSERT_GE(open_args.suggestions.size(), 1u);
     EXPECT_THAT(
         open_args.suggestions,
@@ -1683,8 +1696,8 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
     int show_suggestion_options =
         is_suggestion_on_password_field ? autofill::IS_PASSWORD_FIELD : 0;
     password_autofill_manager_->OnShowPasswordSuggestions(
-        kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-        show_suggestion_options, gfx::RectF());
+        kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+        std::u16string(), show_suggestion_options, gfx::RectF());
     ASSERT_GE(open_args.suggestions.size(), 1u);
     EXPECT_THAT(
         open_args.suggestions,
@@ -1747,8 +1760,8 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
   ASSERT_GE(open_args.suggestions.size(), 1u);
   EXPECT_THAT(
       open_args.suggestions,
@@ -1802,8 +1815,8 @@ TEST_F(PasswordAutofillManagerTest,
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
   ASSERT_GE(open_args.suggestions.size(), 1u);
   EXPECT_THAT(
       open_args.suggestions,
@@ -1858,8 +1871,8 @@ TEST_F(PasswordAutofillManagerTest,
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
   ASSERT_GE(open_args.suggestions.size(), 1u);
   EXPECT_THAT(
       open_args.suggestions,
@@ -1908,8 +1921,8 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::IS_PASSWORD_FIELD, gfx::RectF());
   ExpectAndAllowAuthentication(authenticator_ptr);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1958,7 +1971,8 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
 
   // Show the popup.
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(), 0, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), 0, gfx::RectF());
 
   // The authenticator exists and is available.
   base::OnceCallback<void(bool)> auth_callback;
@@ -2027,7 +2041,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   gfx::RectF element_bounds;
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT,
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
       /*typed_username=*/std::u16string(),
       autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
       element_bounds);
@@ -2103,7 +2117,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   gfx::RectF element_bounds;
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT,
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
       /*typed_username=*/std::u16string(),
       autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
       element_bounds);
@@ -2141,7 +2155,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   gfx::RectF element_bounds;
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT,
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
       /*typed_username=*/std::u16string(),
       autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
       element_bounds);
@@ -2192,7 +2206,7 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   gfx::RectF element_bounds;
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT,
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
       /*typed_username=*/std::u16string(),
       autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
       element_bounds);
@@ -2232,7 +2246,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
       .WillOnce(testing::SaveArg<0>(&open_args));
   gfx::RectF element_bounds;
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT,
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
       /*typed_username=*/std::u16string(),
       autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
       element_bounds);
@@ -2287,8 +2301,9 @@ TEST_F(PasswordAutofillManagerTest,
           kElementId,
           autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
 }
 
 // Test that the AutofillSuggestionAvailability is set according to the popup
@@ -2307,8 +2322,9 @@ TEST_F(PasswordAutofillManagerTest,
           kElementId,
           autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
-      autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD, gfx::RectF());
+      kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      std::u16string(), autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

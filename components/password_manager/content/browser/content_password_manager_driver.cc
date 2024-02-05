@@ -494,8 +494,8 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   GetPasswordAutofillManager()->OnShowPasswordSuggestions(
-      request.element_id, request.text_direction, request.typed_username,
-      request.options,
+      request.element_id, request.trigger_source, request.text_direction,
+      request.typed_username, request.options,
       TransformToRootCoordinates(render_frame_host_, request.bounds));
 }
 

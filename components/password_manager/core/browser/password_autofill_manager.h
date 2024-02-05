@@ -73,11 +73,13 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // Handles a request from the renderer to show a popup with the suggestions
   // from the password manager. |options| should be a bitwise mask of
   // autofill::ShowPasswordSuggestionsOptions values.
-  void OnShowPasswordSuggestions(autofill::FieldRendererId element_id,
-                                 base::i18n::TextDirection text_direction,
-                                 const std::u16string& typed_username,
-                                 int options,
-                                 const gfx::RectF& bounds);
+  void OnShowPasswordSuggestions(
+      autofill::FieldRendererId element_id,
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      base::i18n::TextDirection text_direction,
+      const std::u16string& typed_username,
+      int options,
+      const gfx::RectF& bounds);
 
   // If there are relevant credentials for the current frame show them and
   // return true. Otherwise, return false.

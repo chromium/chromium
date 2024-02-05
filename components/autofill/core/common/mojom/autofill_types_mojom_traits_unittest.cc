@@ -91,6 +91,8 @@ void CreatePasswordGenerationUIData(
 void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
   data->element_id = FieldRendererId(123);
   data->form_data = test::CreateTestAddressFormData();
+  data->trigger_source =
+      AutofillSuggestionTriggerSource::kFormControlElementClicked;
   data->username_field_index = 0ul;
   data->password_field_index = 1ul;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
@@ -130,6 +132,7 @@ void CheckEqualPasswordSuggestionRequest(
   EXPECT_EQ(expected.element_id, actual.element_id);
   EXPECT_TRUE(test::WithoutUnserializedData(expected.form_data)
                   .SameFormAs(actual.form_data));
+  EXPECT_EQ(expected.trigger_source, actual.trigger_source);
   EXPECT_EQ(expected.username_field_index, actual.username_field_index);
   EXPECT_EQ(expected.password_field_index, actual.password_field_index);
   EXPECT_EQ(expected.text_direction, actual.text_direction);
