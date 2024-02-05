@@ -61,6 +61,7 @@ public class NotificationSuspenderUnitTest {
     private static final String TEST_NOTIFICATION_ID_SUBDOMAIN =
             "p#https://subdomain.example.com#10";
     private static final String TEST_NOTIFICATION_ID_OTHER_DOMAIN = "p#https://not-example.com#10";
+    private static final String TEST_NOTIFICATION_ID_INVALID = "p##10";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
 
@@ -323,5 +324,34 @@ public class NotificationSuspenderUnitTest {
                                         TEST_ORIGIN_SUBDOMAIN,
                                         TEST_ORIGIN_OTHER_PORT,
                                         TEST_OTHER_ORIGIN)));
+    }
+
+    /**
+     * Verifies that storeNotificationResourcesFromOrigins correctly ignores notifications with
+     * invalid IDs and does not crash.
+     */
+    @SmallTest
+    @Test
+    public void testStoreNotificationResourcesFromOrigins_InvalidIdsAreIgnored() {
+        for (String notificationId :
+                new String[] {
+                    TEST_NOTIFICATION_ID,
+                    TEST_NOTIFICATION_ID_INVALID,
+                    "", /* empty id */
+                    null, /* null id */
+                }) {
+            NotificationBuilderBase builder = new StandardNotificationBuilder(getContext());
+            mFakeNotificationManager.notify(
+                    builder.build(
+                            new NotificationMetadata(
+                                    NotificationUmaTracker.SystemNotificationType.SITES,
+                                    notificationId,
+                                    NotificationPlatformBridge.PLATFORM_ID)));
+        }
+
+        MatcherAssert.assertThat(
+                mNotificationSuspender.storeNotificationResourcesFromOrigins(
+                        Collections.singletonList(Uri.parse(TEST_ORIGIN))),
+                containsInAnyOrder(TEST_NOTIFICATION_ID));
     }
 }

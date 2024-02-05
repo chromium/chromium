@@ -191,7 +191,7 @@ public class NotificationSuspender {
             if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) continue;
             String tag = notification.getTag();
             String origin = NotificationPlatformBridge.getOriginFromNotificationTag(tag);
-            if (!origins.contains(Uri.parse(origin))) continue;
+            if (origin == null || !origins.contains(Uri.parse(origin))) continue;
             NotificationMetadata metadata =
                     new NotificationMetadata(
                             NotificationUmaTracker.SystemNotificationType.SITES,
