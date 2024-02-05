@@ -384,6 +384,7 @@ public class BackPressManagerUnitTest {
     @Test
     public void testOnBackPressProgressed() {
         BackPressManager manager = new BackPressManager();
+        manager.setIsGestureNavEnabledSupplier(() -> true);
         EmptyBackPressHandler h1 = Mockito.spy(new EmptyBackPressHandler());
         EmptyBackPressHandler h2 = Mockito.spy(new EmptyBackPressHandler());
         manager.addHandler(h1, 0);
