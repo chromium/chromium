@@ -82,9 +82,9 @@ class TabResumptionPageHandlerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(TabResumptionPageHandlerTest, GetTabs) {
-  const int kSampleSessionsCount = 3;
+  const size_t kSampleSessionsCount = 3;
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
-  for (int i = 0; i < kSampleSessionsCount; i++) {
+  for (size_t i = 0; i < kSampleSessionsCount; i++) {
     sample_sessions.push_back(SampleSession(
         "Test Name", ("Test Tag " + base::NumberToString(i)).c_str(), 1, 1));
   }
@@ -160,7 +160,100 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
 
   ASSERT_EQ(3u, tabs_mojom.size());
 
-  for (unsigned int i = 0; i < kSampleSessionsCount; i++) {
+  for (size_t i = 0; i < kSampleSessionsCount; i++) {
+    const auto& tab_mojom = tabs_mojom[i];
+    ASSERT_TRUE(tab_mojom);
+    ASSERT_EQ("Test Tag " + base::NumberToString(i), tab_mojom->session_tag);
+    ASSERT_EQ(GURL(kSampleUrl), tab_mojom->url);
+  }
+}
+
+TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
+  const size_t kSampleSessionsCount = 3;
+  std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
+  for (size_t i = 0; i < kSampleSessionsCount; i++) {
+    sample_sessions.push_back(SampleSession(
+        "Test Name", ("Test Tag " + base::NumberToString(i)).c_str(), 1, 1));
+  }
+
+  EXPECT_CALL(*mock_session_sync_service().GetOpenTabsUIDelegate(),
+              GetAllForeignSessions(testing::_))
+      .WillOnce(testing::Invoke(
+          [&sample_sessions](
+              std::vector<vector_experimental_raw_ptr<
+                  const sync_sessions::SyncedSession>>* sessions) {
+            for (auto& sample_session : sample_sessions) {
+              sessions->push_back(sample_session.get());
+            }
+            return true;
+          }));
+
+  std::vector<history::mojom::TabPtr> tabs_mojom;
+  base::MockCallback<TabResumptionPageHandler::GetTabsCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&tabs_mojom](std::vector<history::mojom::TabPtr> tabs_arg) {
+            tabs_mojom = std::move(tabs_arg);
+          }));
+
+  EXPECT_CALL(mock_history_service(),
+              QueryURLs(testing::_, true, testing::_, testing::_))
+      .WillOnce(
+          (testing::Invoke([&](const std::vector<GURL>& urls, bool want_visits,
+                               MockHistoryService::QueryURLsCallback callback,
+                               base::CancelableTaskTracker* tracker) {
+            std::vector<history::QueryURLResult> results;
+            for (auto url : urls) {
+              history::QueryURLResult result;
+              result.success = true;
+              result.row.set_url(url);
+              result.row.set_last_visit(base::Time::Now());
+              history::VisitVector visits;
+              history::VisitRow visit;
+              visits.push_back(visit);
+              result.visits = visits;
+              results.push_back(result);
+            }
+            std::move(callback).Run(results);
+            return base::CancelableTaskTracker::TaskId();
+          })));
+
+  EXPECT_CALL(mock_history_service(),
+              ToAnnotatedVisits(testing::_, false, testing::_, testing::_))
+      .WillOnce((testing::Invoke(
+          [&](const history::VisitVector& visit_rows,
+              bool compute_redirect_chain_start_properties,
+              MockHistoryService::ToAnnotatedVisitsCallback callback,
+              base::CancelableTaskTracker* tracker) {
+            std::vector<history::AnnotatedVisit> annotated_visits;
+            for (auto visit : visit_rows) {
+              history::URLRow url_row;
+              url_row.set_url(GURL(kSampleUrl));
+              history::AnnotatedVisit annotated_visit;
+              annotated_visit.url_row = url_row;
+              history::VisitContentModelAnnotations model_annotations;
+              model_annotations.visibility_score = 1.0;
+              history::VisitContentAnnotations content_annotations;
+              content_annotations.model_annotations = model_annotations;
+              annotated_visit.content_annotations = content_annotations;
+              annotated_visits.push_back(annotated_visit);
+            }
+            history::VisitContentModelAnnotations::Category category;
+            category.id = "/g/11b76fyj2r";
+            annotated_visits[kSampleSessionsCount - 1]
+                .content_annotations.model_annotations.categories.push_back(
+                    category);
+            std::move(callback).Run(annotated_visits);
+            return base::CancelableTaskTracker::TaskId();
+          })));
+
+  handler().GetTabs(callback.Get());
+
+  // Last visit has a blocked category so it should be excluded
+  ASSERT_EQ(2u, tabs_mojom.size());
+
+  for (size_t i = 0; i < kSampleSessionsCount - 1; i++) {
     const auto& tab_mojom = tabs_mojom[i];
     ASSERT_TRUE(tab_mojom);
     ASSERT_EQ("Test Tag " + base::NumberToString(i), tab_mojom->session_tag);

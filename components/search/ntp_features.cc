@@ -396,6 +396,10 @@ BASE_FEATURE(kNtpTabResumptionModule,
              "NtpTabResumptionModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNtpTabResumptionModuleCategories,
+             "NtpTabResumptionModuleCategories",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =
@@ -467,6 +471,8 @@ const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
 const char kNtpHistoryClustersModuleScoreThresholdParam[] =
     "NtpHistoryClustersModuleScoreThresholdParam";
 const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
+const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
+    "NtpTabResumptionModuleCategoriesBlocklistParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =

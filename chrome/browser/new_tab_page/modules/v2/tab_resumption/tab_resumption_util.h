@@ -15,8 +15,12 @@ std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
     const char session_tag[],
     int num_windows,
     int num_tabs);
-std::unique_ptr<sync_sessions::SyncedSessionWindow> SampleSessionWindow(
-    int num_tabs);
-std::unique_ptr<sessions::SessionTab> SampleSessionTab(int tab_id);
+
+base::flat_set<std::string> GetTabResumptionCategories(
+    const char* feature_param,
+    base::span<const std::string_view> default_categories);
+
+bool IsVisitInCategories(const history::AnnotatedVisit& annotated_visit,
+                         const base::flat_set<std::string>& categories);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_TAB_RESUMPTION_TAB_RESUMPTION_UTIL_H_

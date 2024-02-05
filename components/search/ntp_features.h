@@ -95,6 +95,7 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModule);
+BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
@@ -203,6 +204,9 @@ extern const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[];
 extern const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[];
 extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
+// Parameter for determining the categories a tab must not fall into
+// to be shown.
+extern const char kNtpTabResumptionModuleCategoriesBlocklistParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
 extern const char kNtpTabResumptionModuleVisibilityThresholdDataParam[];
 // Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
