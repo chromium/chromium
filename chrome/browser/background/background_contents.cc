@@ -49,7 +49,6 @@ BackgroundContents::BackgroundContents(
       opener ? opener->GetProcess()->GetID() : MSG_ROUTING_NONE;
   create_params.opener_render_frame_id =
       opener ? opener->GetRoutingID() : MSG_ROUTING_NONE;
-  create_params.is_never_visible = true;
 
   if (session_storage_namespace) {
     content::SessionStorageNamespaceMap session_storage_namespace_map;

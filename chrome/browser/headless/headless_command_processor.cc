@@ -41,7 +41,6 @@ void ProcessHeadlessCommands(
 
   // Create web contents to run the command processing in.
   content::WebContents::CreateParams create_params(browser_context);
-  create_params.is_never_visible = true;
   auto web_contents = content::WebContents::Create(create_params);
 
   // Navigate web contents to the command processor page.
