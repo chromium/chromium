@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -29,9 +30,6 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 
 namespace autofill {
-
-using base::TimeTicks;
-using mojom::SubmissionSource;
 
 namespace {
 
@@ -174,63 +172,6 @@ std::optional<base::TimeTicks> FormFiller::GetOriginalFillingTime(
   FillingContext* filling_context = GetFillingContext(form_id);
   return filling_context ? std::optional(filling_context->original_fill_time)
                          : std::nullopt;
-}
-
-void FormFiller::MaybeTriggerRefillForExpirationDate(
-    const FormData& form,
-    const FormFieldData& field,
-    const FormStructure& form_structure,
-    const std::u16string& old_value,
-    const AutofillTriggerDetails& trigger_details) {
-  // We currently support a single case of refilling credit card expiration
-  // dates: If we filled the expiration date in a format "05/2023" and the
-  // website turned it into "05 / 20" (i.e. it broke the year by cutting the
-  // last two digits instead of stripping the first two digits).
-  constexpr size_t kSupportedLength = std::string_view("MM/YYYY").size();
-  if (old_value.length() != kSupportedLength) {
-    return;
-  }
-  if (old_value == field.value) {
-    return;
-  }
-  static constexpr char16_t kFormatRegEx[] =
-      uR"(^(\d\d)(\s?[/-]?\s?)?(\d\d|\d\d\d\d)$)";
-  std::vector<std::u16string> old_groups;
-  if (!MatchesRegex<kFormatRegEx>(old_value, &old_groups)) {
-    return;
-  }
-  DCHECK_EQ(old_groups.size(), 4u);
-
-  std::vector<std::u16string> new_groups;
-  if (!MatchesRegex<kFormatRegEx>(field.value, &new_groups)) {
-    return;
-  }
-  DCHECK_EQ(new_groups.size(), 4u);
-
-  int old_month, old_year, new_month, new_year;
-  if (!base::StringToInt(old_groups[1], &old_month) ||
-      !base::StringToInt(old_groups[3], &old_year) ||
-      !base::StringToInt(new_groups[1], &new_month) ||
-      !base::StringToInt(new_groups[3], &new_year) ||
-      old_groups[3].size() != 4 || new_groups[3].size() != 2 ||
-      old_month != new_month ||
-      // We need to refill if the first two digits of the year were preserved.
-      old_year / 100 != new_year) {
-    return;
-  }
-  std::u16string refill_value = field.value;
-  CHECK(refill_value.size() >= 2);
-  refill_value[refill_value.size() - 1] = '0' + (old_year % 10);
-  refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
-
-  if (ShouldTriggerRefill(form_structure,
-                          RefillTriggerReason::kExpirationDateFormatted)) {
-    FillingContext* filling_context =
-        GetFillingContext(form_structure.global_id());
-    DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
-    filling_context->forced_fill_values[field.global_id()] = refill_value;
-    ScheduleRefill(form, form_structure, trigger_details);
-  }
 }
 
 base::flat_map<FieldGlobalId, FieldFillingSkipReason>
@@ -394,7 +335,7 @@ FormFiller::GetFieldFillingSkipReasons(
   return skip_reasons;
 }
 
-FillingProduct FormFiller::UndoAutofillImpl(
+FillingProduct FormFiller::UndoAutofill(
     mojom::ActionPersistence action_persistence,
     FormData form,
     FormStructure& form_structure,
@@ -470,15 +411,14 @@ FillingProduct FormFiller::UndoAutofillImpl(
   return filling_product;
 }
 
-void FormFiller::FillOrPreviewFieldImpl(
-    mojom::ActionPersistence action_persistence,
-    mojom::TextReplacement text_replacement,
-    const FormData& form,
-    const FormFieldData& field,
-    FormStructure* form_structure,
-    AutofillField* autofill_field,
-    const std::u16string& value,
-    PopupItemId popup_item_id) {
+void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                                    mojom::TextReplacement text_replacement,
+                                    const FormData& form,
+                                    const FormFieldData& field,
+                                    FormStructure* form_structure,
+                                    AutofillField* autofill_field,
+                                    const std::u16string& value,
+                                    PopupItemId popup_item_id) {
   if (autofill_field && action_persistence == mojom::ActionPersistence::kFill &&
       (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
        popup_item_id == PopupItemId::kAddressFieldByFieldFilling)) {
@@ -502,7 +442,7 @@ void FormFiller::FillOrPreviewFieldImpl(
                                       field.global_id(), value);
 }
 
-void FormFiller::FillOrPreviewDataModelForm(
+void FormFiller::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
     const FormFieldData& field,
@@ -852,107 +792,6 @@ void FormFiller::FillOrPreviewDataModelForm(
       profile_or_credit_card, trigger_details, is_refill);
 }
 
-FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
-    const AutofillField& autofill_field,
-    const absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
-    const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-    const FormFieldData& field_data,
-    const std::u16string& cvc,
-    mojom::ActionPersistence action_persistence,
-    std::string* failure_to_fill) {
-  auto it = forced_fill_values.find(field_data.global_id());
-  bool value_is_an_override = it != forced_fill_values.end();
-  const auto& [value_to_fill, filling_type] =
-      value_is_an_override
-          ? std::make_pair(it->second, autofill_field.Type().GetStorableType())
-      : absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)
-          ? GetFillingValueAndTypeForProfile(
-                *absl::get<const AutofillProfile*>(profile_or_credit_card),
-                app_locale_, autofill_field.Type(), field_data,
-                manager_->client().GetAddressNormalizer(), failure_to_fill)
-          : std::make_pair(
-                GetFillingValueForCreditCard(
-                    *absl::get<const CreditCard*>(profile_or_credit_card), cvc,
-                    app_locale_, action_persistence, autofill_field,
-                    failure_to_fill),
-                autofill_field.Type().GetStorableType());
-  return {value_to_fill, filling_type, value_is_an_override};
-}
-
-bool FormFiller::FillField(
-    AutofillField& autofill_field,
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
-    const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-    FormFieldData& field_data,
-    bool should_notify,
-    const std::u16string& cvc,
-    uint32_t profile_form_bitmask,
-    mojom::ActionPersistence action_persistence,
-    std::string* failure_to_fill) {
-  const FieldFillingData filling_content = GetFieldFillingData(
-      autofill_field, profile_or_credit_card, forced_fill_values, field_data,
-      cvc, action_persistence, failure_to_fill);
-
-  // Do not attempt to fill empty values as it would skew the metrics.
-  if (filling_content.value_to_fill.empty()) {
-    if (failure_to_fill) {
-      *failure_to_fill += "No value to fill available. ";
-    }
-    return false;
-  }
-  field_data.value = filling_content.value_to_fill;
-  field_data.force_override = filling_content.value_is_an_override;
-
-  if (failure_to_fill) {
-    *failure_to_fill = "Decided to fill";
-  }
-  if (action_persistence == mojom::ActionPersistence::kFill) {
-    // Mark the cached field as autofilled, so that we can detect when a
-    // user edits an autofilled field (for metrics).
-    autofill_field.is_autofilled = true;
-    if (const AutofillProfile** profile =
-            absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
-      autofill_field.set_autofill_source_profile_guid((*profile)->guid());
-    }
-    autofill_field.set_autofilled_type(filling_content.field_type);
-  }
-
-  // Mark the field as autofilled when a non-empty value is assigned to
-  // it. This allows the renderer to distinguish autofilled fields from
-  // fields with non-empty values, such as select-one fields.
-  field_data.is_autofilled = true;
-  AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::FIELD_WAS_AUTOFILLED, autofill_field.Type().group(),
-      manager_->client().GetSecurityLevelForUmaHistograms(),
-      profile_form_bitmask);
-
-  if (should_notify) {
-    DCHECK(absl::holds_alternative<const AutofillProfile*>(
-        profile_or_credit_card));
-    const AutofillProfile* profile =
-        absl::get<const AutofillProfile*>(profile_or_credit_card);
-    manager_->client().DidFillOrPreviewField(
-        /*autofilled_value=*/profile->GetInfo(autofill_field.Type(),
-                                              app_locale_),
-        /*profile_full_name=*/profile->GetInfo(AutofillType(NAME_FULL),
-                                               app_locale_));
-  }
-  return true;
-}
-
-void FormFiller::SetFillingContext(FormGlobalId form_id,
-                                   std::unique_ptr<FillingContext> context) {
-  filling_context_[form_id] = std::move(context);
-}
-
-FormFiller::FillingContext* FormFiller::GetFillingContext(
-    FormGlobalId form_id) {
-  auto it = filling_context_.find(form_id);
-  return it != filling_context_.end() ? it->second.get() : nullptr;
-}
-
 bool FormFiller::ShouldTriggerRefill(
     const FormStructure& form_structure,
     RefillTriggerReason refill_trigger_reason) {
@@ -1055,21 +894,179 @@ void FormFiller::TriggerRefill(const FormData& form,
     const auto& [credit_card, cvc] =
         absl::get<std::pair<CreditCard, std::u16string>>(
             filling_context->profile_or_credit_card_with_cvc);
-    FillOrPreviewDataModelForm(mojom::ActionPersistence::kFill, form, field,
-                               &credit_card, &cvc, form_structure,
-                               autofill_field, trigger_details,
-                               /*is_refill=*/true);
+    FillOrPreviewForm(mojom::ActionPersistence::kFill, form, field,
+                      &credit_card, &cvc, form_structure, autofill_field,
+                      trigger_details,
+                      /*is_refill=*/true);
   } else if (absl::holds_alternative<AutofillProfile>(
                  filling_context->profile_or_credit_card_with_cvc)) {
-    FillOrPreviewDataModelForm(
-        mojom::ActionPersistence::kFill, form, field,
-        &absl::get<AutofillProfile>(
-            filling_context->profile_or_credit_card_with_cvc),
-        /*cvc=*/std::nullopt, form_structure, autofill_field, trigger_details,
-        /*is_refill=*/true);
+    FillOrPreviewForm(mojom::ActionPersistence::kFill, form, field,
+                      &absl::get<AutofillProfile>(
+                          filling_context->profile_or_credit_card_with_cvc),
+                      /*cvc=*/std::nullopt, form_structure, autofill_field,
+                      trigger_details,
+                      /*is_refill=*/true);
   } else {
     NOTREACHED();
   }
+}
+
+void FormFiller::MaybeTriggerRefillForExpirationDate(
+    const FormData& form,
+    const FormFieldData& field,
+    const FormStructure& form_structure,
+    const std::u16string& old_value,
+    const AutofillTriggerDetails& trigger_details) {
+  // We currently support a single case of refilling credit card expiration
+  // dates: If we filled the expiration date in a format "05/2023" and the
+  // website turned it into "05 / 20" (i.e. it broke the year by cutting the
+  // last two digits instead of stripping the first two digits).
+  constexpr size_t kSupportedLength = std::string_view("MM/YYYY").size();
+  if (old_value.length() != kSupportedLength) {
+    return;
+  }
+  if (old_value == field.value) {
+    return;
+  }
+  static constexpr char16_t kFormatRegEx[] =
+      uR"(^(\d\d)(\s?[/-]?\s?)?(\d\d|\d\d\d\d)$)";
+  std::vector<std::u16string> old_groups;
+  if (!MatchesRegex<kFormatRegEx>(old_value, &old_groups)) {
+    return;
+  }
+  DCHECK_EQ(old_groups.size(), 4u);
+
+  std::vector<std::u16string> new_groups;
+  if (!MatchesRegex<kFormatRegEx>(field.value, &new_groups)) {
+    return;
+  }
+  DCHECK_EQ(new_groups.size(), 4u);
+
+  int old_month, old_year, new_month, new_year;
+  if (!base::StringToInt(old_groups[1], &old_month) ||
+      !base::StringToInt(old_groups[3], &old_year) ||
+      !base::StringToInt(new_groups[1], &new_month) ||
+      !base::StringToInt(new_groups[3], &new_year) ||
+      old_groups[3].size() != 4 || new_groups[3].size() != 2 ||
+      old_month != new_month ||
+      // We need to refill if the first two digits of the year were preserved.
+      old_year / 100 != new_year) {
+    return;
+  }
+  std::u16string refill_value = field.value;
+  CHECK(refill_value.size() >= 2);
+  refill_value[refill_value.size() - 1] = '0' + (old_year % 10);
+  refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
+
+  if (ShouldTriggerRefill(form_structure,
+                          RefillTriggerReason::kExpirationDateFormatted)) {
+    FillingContext* filling_context =
+        GetFillingContext(form_structure.global_id());
+    DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
+    filling_context->forced_fill_values[field.global_id()] = refill_value;
+    ScheduleRefill(form, form_structure, trigger_details);
+  }
+}
+
+void FormFiller::SetFillingContext(FormGlobalId form_id,
+                                   std::unique_ptr<FillingContext> context) {
+  filling_context_[form_id] = std::move(context);
+}
+
+FormFiller::FillingContext* FormFiller::GetFillingContext(
+    FormGlobalId form_id) {
+  auto it = filling_context_.find(form_id);
+  return it != filling_context_.end() ? it->second.get() : nullptr;
+}
+
+FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
+    const AutofillField& autofill_field,
+    const absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+    const FormFieldData& field_data,
+    const std::u16string& cvc,
+    mojom::ActionPersistence action_persistence,
+    std::string* failure_to_fill) {
+  auto it = forced_fill_values.find(field_data.global_id());
+  bool value_is_an_override = it != forced_fill_values.end();
+  const auto& [value_to_fill, filling_type] =
+      value_is_an_override
+          ? std::make_pair(it->second, autofill_field.Type().GetStorableType())
+      : absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)
+          ? GetFillingValueAndTypeForProfile(
+                *absl::get<const AutofillProfile*>(profile_or_credit_card),
+                app_locale_, autofill_field.Type(), field_data,
+                manager_->client().GetAddressNormalizer(), failure_to_fill)
+          : std::make_pair(
+                GetFillingValueForCreditCard(
+                    *absl::get<const CreditCard*>(profile_or_credit_card), cvc,
+                    app_locale_, action_persistence, autofill_field,
+                    failure_to_fill),
+                autofill_field.Type().GetStorableType());
+  return {value_to_fill, filling_type, value_is_an_override};
+}
+
+bool FormFiller::FillField(
+    AutofillField& autofill_field,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+    FormFieldData& field_data,
+    bool should_notify,
+    const std::u16string& cvc,
+    uint32_t profile_form_bitmask,
+    mojom::ActionPersistence action_persistence,
+    std::string* failure_to_fill) {
+  const FieldFillingData filling_content = GetFieldFillingData(
+      autofill_field, profile_or_credit_card, forced_fill_values, field_data,
+      cvc, action_persistence, failure_to_fill);
+
+  // Do not attempt to fill empty values as it would skew the metrics.
+  if (filling_content.value_to_fill.empty()) {
+    if (failure_to_fill) {
+      *failure_to_fill += "No value to fill available. ";
+    }
+    return false;
+  }
+  field_data.value = filling_content.value_to_fill;
+  field_data.force_override = filling_content.value_is_an_override;
+
+  if (failure_to_fill) {
+    *failure_to_fill = "Decided to fill";
+  }
+  if (action_persistence == mojom::ActionPersistence::kFill) {
+    // Mark the cached field as autofilled, so that we can detect when a
+    // user edits an autofilled field (for metrics).
+    autofill_field.is_autofilled = true;
+    if (const AutofillProfile** profile =
+            absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
+      autofill_field.set_autofill_source_profile_guid((*profile)->guid());
+    }
+    autofill_field.set_autofilled_type(filling_content.field_type);
+  }
+
+  // Mark the field as autofilled when a non-empty value is assigned to
+  // it. This allows the renderer to distinguish autofilled fields from
+  // fields with non-empty values, such as select-one fields.
+  field_data.is_autofilled = true;
+  AutofillMetrics::LogUserHappinessMetric(
+      AutofillMetrics::FIELD_WAS_AUTOFILLED, autofill_field.Type().group(),
+      manager_->client().GetSecurityLevelForUmaHistograms(),
+      profile_form_bitmask);
+
+  if (should_notify) {
+    DCHECK(absl::holds_alternative<const AutofillProfile*>(
+        profile_or_credit_card));
+    const AutofillProfile* profile =
+        absl::get<const AutofillProfile*>(profile_or_credit_card);
+    manager_->client().DidFillOrPreviewField(
+        /*autofilled_value=*/profile->GetInfo(autofill_field.Type(),
+                                              app_locale_),
+        /*profile_full_name=*/profile->GetInfo(AutofillType(NAME_FULL),
+                                               app_locale_));
+  }
+  return true;
 }
 
 }  // namespace autofill

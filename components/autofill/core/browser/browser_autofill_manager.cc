@@ -1152,7 +1152,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     }
   }
 
-  form_filler_->FillOrPreviewDataModelForm(
+  form_filler_->FillOrPreviewForm(
       action_persistence, form, field, &credit_card_,
       /*cvc=*/std::nullopt, form_structure, autofill_field, trigger_details);
 }
@@ -1168,9 +1168,9 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewDataModelForm(
-      action_persistence, form, field, &profile,
-      /*cvc=*/std::nullopt, form_structure, autofill_field, trigger_details);
+  form_filler_->FillOrPreviewForm(action_persistence, form, field, &profile,
+                                  /*cvc=*/std::nullopt, form_structure,
+                                  autofill_field, trigger_details);
 }
 
 void BrowserAutofillManager::FillOrPreviewField(
@@ -1183,9 +1183,9 @@ void BrowserAutofillManager::FillOrPreviewField(
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   GetCachedFormAndField(form, field, &form_structure, &autofill_field);
-  form_filler_->FillOrPreviewFieldImpl(action_persistence, text_replacement,
-                                       form, field, form_structure,
-                                       autofill_field, value, popup_item_id);
+  form_filler_->FillOrPreviewField(action_persistence, text_replacement, form,
+                                   field, form_structure, autofill_field, value,
+                                   popup_item_id);
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -1198,7 +1198,7 @@ void BrowserAutofillManager::UndoAutofill(
   }
   // This will apply the undo operation and return information about the
   // operation being undone, for metric purposes.
-  FillingProduct filling_product = form_filler_->UndoAutofillImpl(
+  FillingProduct filling_product = form_filler_->UndoAutofill(
       action_persistence, form, *form_structure, trigger_field);
 
   // The remaining logic is only relevant for filling.
@@ -1225,10 +1225,10 @@ void BrowserAutofillManager::FillCreditCardForm(
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewDataModelForm(
-      mojom::ActionPersistence::kFill, form, field, &credit_card, &cvc,
-      form_structure, autofill_field, trigger_details,
-      /*is_refill=*/false);
+  form_filler_->FillOrPreviewForm(mojom::ActionPersistence::kFill, form, field,
+                                  &credit_card, &cvc, form_structure,
+                                  autofill_field, trigger_details,
+                                  /*is_refill=*/false);
 }
 
 void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(

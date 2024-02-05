@@ -35,7 +35,6 @@ std::u16string GetFillingValueForCreditCard(
 // `autofill_fields`. `form_fields` are used to check if the cached field
 // is still present in the form on the renderer side.
 // TODO(crbug.com/1331312): Remove FormFieldData parameter.
-// TODO(crbug.com/1517894): Move to FormFiller
 bool WillFillCreditCardNumber(
     base::span<const FormFieldData> form_fields,
     base::span<const std::unique_ptr<AutofillField>> autofill_fields,

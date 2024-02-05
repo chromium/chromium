@@ -29,6 +29,28 @@ enum class RefillTriggerReason {
   kExpirationDateFormatted,
 };
 
+// Whether and why filling for a field was skipped during autofill.
+enum class FieldFillingSkipReason : uint8_t {
+  // Values are recorded as metrics and must not change or be reused.
+  kUnknown = 0,
+  kNotSkipped = 1,
+  kNotInFilledSection = 2,
+  kNotFocused = 3,
+  kFormChanged = 4,
+  kInvisibleField = 5,
+  kValuePrefilled = 6,
+  kUserFilledFields = 7,
+  kAutofilledFieldsNotRefill = 8,
+  kNoFillableGroup = 9,
+  kRefillNotInInitialFill = 10,
+  kExpiredCards = 11,
+  kFillingLimitReachedType = 12,
+  kUnrecognizedAutocompleteAttribute = 13,
+  kFieldDoesNotMatchTargetFieldsSet = 14,
+  kFieldTypeUnrelated = 15,
+  kMaxValue = kFieldTypeUnrelated
+};
+
 // Helper class responsible for [re]filling forms and fields.
 //
 // It is privately owned by the BrowserAutofillManager, which is the only
@@ -52,46 +74,6 @@ enum class RefillTriggerReason {
 // It holds any state that is only relevant for [re]filling.
 class FormFiller {
  public:
-  // Keeps track of the filling context for a form, used to make refill
-  // attempts.
-  struct FillingContext {
-    // |profile_or_credit_card| contains either AutofillProfile or CreditCard
-    // and must be non-null.
-    // If |profile_or_credit_card| contains a CreditCard, |optional_cvc| may be
-    // non-null.
-    FillingContext(const AutofillField& field,
-                   absl::variant<const AutofillProfile*, const CreditCard*>
-                       profile_or_credit_card,
-                   base::optional_ref<const std::u16string> optional_cvc);
-    ~FillingContext();
-
-    // Whether a refill attempt was made.
-    bool attempted_refill = false;
-    // The profile or credit card that was used for the initial fill.
-    // The std::string associated with the credit card is the CVC, which may be
-    // empty.
-    absl::variant<std::pair<CreditCard, std::u16string>, AutofillProfile>
-        profile_or_credit_card_with_cvc;
-    // Possible identifiers of the field that was focused when the form was
-    // initially filled. A refill shall be triggered from the same field.
-    const FieldGlobalId filled_field_id;
-    const FieldSignature filled_field_signature;
-    // The security origin from which the field was filled.
-    url::Origin filled_origin;
-    // The time at which the initial fill occurred.
-    const base::TimeTicks original_fill_time;
-    // The timer used to trigger a refill.
-    base::OneShotTimer on_refill_timer;
-    // The field type groups that were initially filled.
-    DenseSet<FieldTypeGroup> type_groups_originally_filled;
-    // If populated, this map determines which values will be filled into a
-    // field (it does not matter whether the field already contains a value).
-    std::map<FieldGlobalId, std::u16string> forced_fill_values;
-    // The form filled in the first attempt for filling. Used to check whether
-    // a refill should be attempted upon parsing an updated FormData.
-    std::optional<FormData> filled_form;
-  };
-
   FormFiller(BrowserAutofillManager& manager,
              LogManager* log_manager,
              const std::string& app_locale);
@@ -142,24 +124,24 @@ class FormFiller {
   // `trigger_field`. `renderer_action` denotes whether this is an actual
   // filling or a preview operation on the renderer side. Returns the filling
   // product of the operation being undone.
-  FillingProduct UndoAutofillImpl(mojom::ActionPersistence action_persistence,
-                                  FormData form,
-                                  FormStructure& form_structure,
-                                  const FormFieldData& trigger_field);
+  FillingProduct UndoAutofill(mojom::ActionPersistence action_persistence,
+                              FormData form,
+                              FormStructure& form_structure,
+                              const FormFieldData& trigger_field);
 
   // Records filling information if possible and routes back to the renderer.
-  void FillOrPreviewFieldImpl(mojom::ActionPersistence action_persistence,
-                              mojom::TextReplacement text_replacement,
-                              const FormData& form,
-                              const FormFieldData& field,
-                              FormStructure* form_structure,
-                              AutofillField* autofill_field,
-                              const std::u16string& value,
-                              PopupItemId popup_item_id);
+  void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                          mojom::TextReplacement text_replacement,
+                          const FormData& form,
+                          const FormFieldData& field,
+                          FormStructure* form_structure,
+                          AutofillField* autofill_field,
+                          const std::u16string& value,
+                          PopupItemId popup_item_id);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.
-  void FillOrPreviewDataModelForm(
+  void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FormFieldData& field,
@@ -170,6 +152,86 @@ class FormFiller {
       AutofillField* autofill_field,
       const AutofillTriggerDetails& trigger_details,
       bool is_refill = false);
+
+  // Whether there should be an attempts to refill the form. Returns true if all
+  // the following are satisfied:
+  // - There have been no refills on this page yet.
+  // - A non-empty form name was recorded in a previous fill
+  // - That form name matched the currently parsed form name
+  // - It's been less than kLimitBeforeRefill since the original fill.
+  // - `refill_trigger_reason != kFormChanged`, or `form_structure` and the
+  //   previously filled form have different structures.
+  bool ShouldTriggerRefill(const FormStructure& form_structure,
+                           RefillTriggerReason refill_trigger_reason);
+
+  // Schedules a call of TriggerRefill. Virtual for testing.
+  virtual void ScheduleRefill(const FormData& form,
+                              const FormStructure& form_structure,
+                              const AutofillTriggerDetails& trigger_details);
+
+  // Attempts to refill the form that was changed dynamically. Should only be
+  // called if ShouldTriggerRefill returns true.
+  void TriggerRefill(const FormData& form,
+                     const AutofillTriggerDetails& trigger_details);
+
+  // This function is called by JavaScriptChangedAutofilledValue and may trigger
+  // a refill in case the website used JavaScript to reformat an expiration date
+  // like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last
+  // two digits instead of stripping the first two digits).
+  void MaybeTriggerRefillForExpirationDate(
+      const FormData& form,
+      const FormFieldData& field,
+      const FormStructure& form_structure,
+      const std::u16string& old_value,
+      const AutofillTriggerDetails& trigger_details);
+
+ private:
+  friend class BrowserAutofillManagerTestApi;
+
+  // Keeps track of the filling context for a form, used to make refill
+  // attempts.
+  struct FillingContext {
+    // |profile_or_credit_card| contains either AutofillProfile or CreditCard
+    // and must be non-null.
+    // If |profile_or_credit_card| contains a CreditCard, |optional_cvc| may be
+    // non-null.
+    FillingContext(const AutofillField& field,
+                   absl::variant<const AutofillProfile*, const CreditCard*>
+                       profile_or_credit_card,
+                   base::optional_ref<const std::u16string> optional_cvc);
+    ~FillingContext();
+
+    // Whether a refill attempt was made.
+    bool attempted_refill = false;
+    // The profile or credit card that was used for the initial fill.
+    // The std::string associated with the credit card is the CVC, which may be
+    // empty.
+    absl::variant<std::pair<CreditCard, std::u16string>, AutofillProfile>
+        profile_or_credit_card_with_cvc;
+    // Possible identifiers of the field that was focused when the form was
+    // initially filled. A refill shall be triggered from the same field.
+    const FieldGlobalId filled_field_id;
+    const FieldSignature filled_field_signature;
+    // The security origin from which the field was filled.
+    url::Origin filled_origin;
+    // The time at which the initial fill occurred.
+    const base::TimeTicks original_fill_time;
+    // The timer used to trigger a refill.
+    base::OneShotTimer on_refill_timer;
+    // The field type groups that were initially filled.
+    DenseSet<FieldTypeGroup> type_groups_originally_filled;
+    // If populated, this map determines which values will be filled into a
+    // field (it does not matter whether the field already contains a value).
+    std::map<FieldGlobalId, std::u16string> forced_fill_values;
+    // The form filled in the first attempt for filling. Used to check whether
+    // a refill should be attempted upon parsing an updated FormData.
+    std::optional<FormData> filled_form;
+  };
+
+  void SetFillingContext(FormGlobalId form_id,
+                         std::unique_ptr<FillingContext> context);
+
+  FillingContext* GetFillingContext(FormGlobalId form_id);
 
   // Stores the value to be filled into a field, along with its field type and
   // if it's an override.
@@ -208,46 +270,6 @@ class FormFiller {
       uint32_t profile_form_bitmask,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
-
-  void SetFillingContext(FormGlobalId form_id,
-                         std::unique_ptr<FillingContext> context);
-
-  FillingContext* GetFillingContext(FormGlobalId form_id);
-
-  // Whether there should be an attempts to refill the form. Returns true if all
-  // the following are satisfied:
-  // - There have been no refills on this page yet.
-  // - A non-empty form name was recorded in a previous fill
-  // - That form name matched the currently parsed form name
-  // - It's been less than kLimitBeforeRefill since the original fill.
-  // - `refill_trigger_reason != kFormChanged`, or `form_structure` and the
-  //   previously filled form have different structures.
-  bool ShouldTriggerRefill(const FormStructure& form_structure,
-                           RefillTriggerReason refill_trigger_reason);
-
-  // Schedules a call of TriggerRefill. Virtual for testing.
-  virtual void ScheduleRefill(const FormData& form,
-                              const FormStructure& form_structure,
-                              const AutofillTriggerDetails& trigger_details);
-
-  // Attempts to refill the form that was changed dynamically. Should only be
-  // called if ShouldTriggerRefill returns true.
-  void TriggerRefill(const FormData& form,
-                     const AutofillTriggerDetails& trigger_details);
-
-  // This function is called by JavaScriptChangedAutofilledValue and may trigger
-  // a refill in case the website used JavaScript to reformat an expiration date
-  // like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last
-  // two digits instead of stripping the first two digits).
-  void MaybeTriggerRefillForExpirationDate(
-      const FormData& form,
-      const FormFieldData& field,
-      const FormStructure& form_structure,
-      const std::u16string& old_value,
-      const AutofillTriggerDetails& trigger_details);
-
- private:
-  friend class BrowserAutofillManagerTestApi;
 
   const std::string& app_locale() const { return app_locale_; }
 

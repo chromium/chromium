@@ -10,12 +10,13 @@
 #include <optional>
 #include <string>
 
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
+
+class AutofillField;
 
 // Holds history of Autofill filling operations so that they can be undone
 // later. The class is used to add, remove and access filling operations, which

@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
+#include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -29,28 +30,6 @@ enum class OptionalBoolean : uint8_t {
 OptionalBoolean& operator|=(OptionalBoolean& a, OptionalBoolean b);
 OptionalBoolean ToOptionalBoolean(bool value);
 bool OptionalBooleanToBool(OptionalBoolean value);
-
-// Whether and why filling for a field was skipped during autofill.
-enum class FieldFillingSkipReason : uint8_t {
-  // Values are recorded as metrics and must not change or be reused.
-  kUnknown = 0,
-  kNotSkipped = 1,
-  kNotInFilledSection = 2,
-  kNotFocused = 3,
-  kFormChanged = 4,
-  kInvisibleField = 5,
-  kValuePrefilled = 6,
-  kUserFilledFields = 7,
-  kAutofilledFieldsNotRefill = 8,
-  kNoFillableGroup = 9,
-  kRefillNotInInitialFill = 10,
-  kExpiredCards = 11,
-  kFillingLimitReachedType = 12,
-  kUnrecognizedAutocompleteAttribute = 13,
-  kFieldDoesNotMatchTargetFieldsSet = 14,
-  kFieldTypeUnrelated = 15,
-  kMaxValue = kFieldTypeUnrelated
-};
 
 // Enum for different data types filled during autofill filling events,
 // including those of the SingleFieldFormFiller.
