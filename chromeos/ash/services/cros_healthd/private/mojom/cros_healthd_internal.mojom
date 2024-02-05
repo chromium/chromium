@@ -27,7 +27,8 @@ interface ChromiumDataCollector {
   // privacy screen state is updated, or false if the request is rejected.
   [MinVersion=1] SetPrivacyScreenState@2(bool state) => (bool success);
   // Mute control of audio output device.
-  [MinVersion=2] SetAudioOutputMute@3(bool mute_on) => (bool success);
+  [MinVersion=2] DEPRECATED_SetAudioOutputMute@3(bool mute_on)
+      => (bool success);
 };
 
 // Data of a touch screen device in chromium.
