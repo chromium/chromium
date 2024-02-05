@@ -16,36 +16,29 @@
  *     'quickStartTextkey' - ID of localized string to be used as button text.
  */
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeI18nBehavior} from './behaviors/oobe_i18n_behavior.js';
-import {OobeModalDialog} from './dialogs/oobe_modal_dialog.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
+import {getTemplate} from './quick_start_entry_point.html.js';
+
 const QuickStartEntryPointBase =
-    mixinBehaviors([OobeI18nBehavior], PolymerElement);
+    mixinBehaviors([OobeI18nBehavior], PolymerElement) as {
+      new (): PolymerElement
+      & OobeI18nBehaviorInterface,
+    };
 
-/**
- * @typedef {{
- *  quickStartBluetoothDialog: OobeModalDialog
- * }}
- */
-QuickStartEntryPointBase.$;
-
-/** @polymer */
 export class QuickStartEntryPoint extends QuickStartEntryPointBase {
   static get is() {
-    return 'quick-start-entry-point';
+    return 'quick-start-entry-point' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       quickStartTextKey: {
         type: String,
@@ -54,7 +47,9 @@ export class QuickStartEntryPoint extends QuickStartEntryPointBase {
     };
   }
 
-  quickStartButtonClicked_() {
+  private quickStartTextKey: string;
+
+  quickStartButtonClicked(): void {
     this.dispatchEvent(new CustomEvent('activate-quick-start', {
       bubbles: true,
       composed: true,
@@ -62,6 +57,12 @@ export class QuickStartEntryPoint extends QuickStartEntryPointBase {
     }));
   }
 
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [QuickStartEntryPoint.is]: QuickStartEntryPoint;
+  }
 }
 
 customElements.define(QuickStartEntryPoint.is, QuickStartEntryPoint);
