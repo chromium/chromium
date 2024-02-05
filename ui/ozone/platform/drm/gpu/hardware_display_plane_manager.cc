@@ -240,6 +240,14 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     hw_plane->set_owning_crtc(crtc_id);
     hw_plane->set_in_use(true);
   }
+
+  // This assumes that all planes have the same primaries. This assumption will
+  // need to be enforced in the compositor's overlay processor.
+  if (!overlay_list.empty()) {
+    SetColorSpaceForAllPlanes(crtc_id,
+                              overlay_list[0].color_space.GetPrimaries());
+  }
+
   return true;
 }
 
@@ -296,6 +304,40 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
   }
 
   return valid_ids;
+}
+
+void HardwareDisplayPlaneManager::SetOutputColorSpace(
+    uint32_t crtc_id,
+    const SkColorSpacePrimaries& primaries) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  if (crtc_state->output_primaries == primaries) {
+    return;
+  }
+
+  LOG(ERROR) << "Output SkColorSpacePrimaries";
+  LOG(ERROR) << skia::SkColorSpacePrimariesToString(primaries);
+
+  crtc_state->output_primaries = primaries;
+  UpdateAndCommitCrtcState(crtc_id, crtc_state);
+}
+
+void HardwareDisplayPlaneManager::SetColorSpaceForAllPlanes(
+    uint32_t crtc_id,
+    const SkColorSpacePrimaries& primaries) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  if (crtc_state->planes_primaries == primaries) {
+    return;
+  }
+
+  LOG(ERROR) << "Plane SkColorSpacePrimaries";
+  LOG(ERROR) << skia::SkColorSpacePrimariesToString(primaries);
+
+  crtc_state->planes_primaries = primaries;
+  UpdateAndCommitCrtcState(crtc_id, crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetColorTemperatureAdjustment(
@@ -514,13 +556,30 @@ void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
     CrtcState* crtc_state) {
   CrtcProperties* crtc_props = &crtc_state->properties;
 
-  // Set the CTM to the concatenation of the color profile matrix and the color
-  // temperature adjustment matrix.
-  // TODO(https://crbug.com/1505062): This is incorrect if the color profile
-  // DEGAMMA/GAMMA curves are ever not the identity.
-  const skcms_Matrix3x3 ctm = skcms_Matrix3x3_concat(
-      &crtc_state->color_calibration.srgb_to_device_matrix,
-      &crtc_state->color_temperature_adjustment.srgb_matrix);
+  // Set the CTM to convert from the planes' color space primaries to the
+  // output color space primaries, followed by application of the color
+  // temperature adjustment matrix. This is wrong in the following ways:
+  //   * The primary conversion should be done in linear space. This can only
+  //     be done if both DEGAMMA and GAMMA are functional, but DEGAMMA is
+  //     very often broken.
+  //   * The color temperature adjustment matrix is computed to be applied in
+  //     sRGB space, not the output space.
+  skcms_Matrix3x3 ctm = SkNamedGamut::kXYZ;  // Start with the identity
+  {
+    skcms_Matrix3x3 plane_to_xyzd50;
+    crtc_state->planes_primaries.toXYZD50(&plane_to_xyzd50);
+
+    skcms_Matrix3x3 output_to_xyzd50;
+    crtc_state->output_primaries.toXYZD50(&output_to_xyzd50);
+
+    skcms_Matrix3x3 xyzd50_to_output;
+    skcms_Matrix3x3_invert(&output_to_xyzd50, &xyzd50_to_output);
+
+    ctm = skcms_Matrix3x3_concat(&plane_to_xyzd50, &ctm);
+    ctm = skcms_Matrix3x3_concat(&xyzd50_to_output, &ctm);
+    ctm = skcms_Matrix3x3_concat(
+        &crtc_state->color_temperature_adjustment.srgb_matrix, &ctm);
+  }
   if (crtc_state->properties.ctm.id) {
     ScopedDrmColorCtmPtr ctm_blob_data = CreateCTMBlob(ctm);
     crtc_state->pending_ctm_blob =
@@ -548,7 +607,6 @@ void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
 
   // Set the GAMMA curve to the concatenation of the color profile with the
   // gamma adjustment.
-  // TODO(https://crbug.com/1505062):
   const auto gamma_curve = display::GammaCurve::MakeConcat(
       crtc_state->color_calibration.linear_to_device,
       crtc_state->gamma_adjustment.curve);

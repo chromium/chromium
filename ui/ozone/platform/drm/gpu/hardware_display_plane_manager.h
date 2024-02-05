@@ -108,6 +108,13 @@ class HardwareDisplayPlaneManager {
     display::ColorCalibration color_calibration;
     display::GammaAdjustment gamma_adjustment;
 
+    // The color space of all input planes. This assumes that all planes have
+    // the same color space.
+    SkColorSpacePrimaries planes_primaries = SkNamedPrimariesExt::kSRGB;
+
+    // The color space of the output.
+    SkColorSpacePrimaries output_primaries = SkNamedPrimariesExt::kSRGB;
+
     // Cached blobs for the properties to commit in CommitCrtcProperties.
     // * If a property is `absl::nullopt`, then it should be left unchanged.
     // * If a property is `nullptr` then it should be set to 0.
@@ -140,6 +147,15 @@ class HardwareDisplayPlaneManager {
   // Clears old frame state out. Must be called before any AssignOverlayPlanes
   // calls.
   void BeginFrame(HardwareDisplayPlaneList* plane_list);
+
+  // Sets the input color space for all planes. This assumes that all planes on
+  // a CRTC have the same color space.
+  void SetColorSpaceForAllPlanes(uint32_t crtc_id,
+                                 const SkColorSpacePrimaries& primaries);
+
+  // Sets the output color space for the given CRTC.
+  void SetOutputColorSpace(uint32_t crtc_id,
+                           const SkColorSpacePrimaries& primaries);
 
   // Sets the color temperature adjustment for a given CRTC.
   void SetColorTemperatureAdjustment(
