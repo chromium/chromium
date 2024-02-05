@@ -12,7 +12,11 @@
     width: 100%;
   }
 
-  .topic-toggle {
+  .topic-toggle-row:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  .topic-toggle-row {
     align-items: center;
     display: flex;
     width: 100%
@@ -32,7 +36,7 @@
   $i18nRaw{manageTopicsPageDescription}
 </div>
 <template is="dom-repeat" items="[[firstLevelTopicsList_]]">
-  <div class="topic-toggle">
+  <div class="topic-toggle-row" on-click="onToggleRowClick_" actionable>
     <div class="outer-row">
       <span class="icon">
         <iron-icon slot="icon"

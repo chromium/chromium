@@ -149,7 +149,20 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
     });
   }
 
+  // When the user clicks anywhere on the toggle row, we click the toggle itself
+  // here to trigger its on-change event.
+  private onToggleRowClick_(e: DomRepeatEvent<PrivacySandboxInterest>) {
+    e.stopPropagation();
+    assert(e.model.item?.topic);
+    const toggleId = `#toggle-${e.model.item.topic.topicId}`;
+    const toggleBeingChanged =
+        this.shadowRoot!.querySelector<CrToggleElement>(toggleId);
+    assert(toggleBeingChanged);
+    toggleBeingChanged!.click();
+  }
+
   private async onToggleChange_(e: DomRepeatEvent<PrivacySandboxInterest>) {
+    e.stopPropagation();
     this.topicBeingToggled_ = e.model.item;
     assert(this.topicBeingToggled_);
     assert(this.topicBeingToggled_.topic);
@@ -157,8 +170,9 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
     const toggleBeingChanged =
         this.shadowRoot!.querySelector<CrToggleElement>(toggleId);
     assert(toggleBeingChanged);
-    // If the toggle is checked, then the First Level Topic needs to be
-    // updated to be unblocked.
+    // At this point, the toggle checked state has already changed. If the
+    // toggle is now checked, then the First Level Topic needs to be updated to
+    // be unblocked.
     if (toggleBeingChanged.checked) {
       this.updateTopicState_({blocked: false});
       return;
