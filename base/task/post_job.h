@@ -207,19 +207,6 @@ CreateJob(const Location& from_here,
           RepeatingCallback<void(JobDelegate*)> worker_task,
           MaxConcurrencyCallback max_concurrency_callback);
 
-namespace internal {
-
-// Helper which creates a JobTaskSourceNew or JobTaskSourceOld depending on the
-// UseNewJobImplementation feature. Exposed for testing.
-scoped_refptr<JobTaskSource> BASE_EXPORT
-CreateJobTaskSource(const Location& from_here,
-                    const TaskTraits& traits,
-                    RepeatingCallback<void(JobDelegate*)> worker_task,
-                    MaxConcurrencyCallback max_concurrency_callback,
-                    PooledTaskRunnerDelegate* delegate);
-
-}  // namespace internal
-
 }  // namespace base
 
 #endif  // BASE_TASK_POST_JOB_H_

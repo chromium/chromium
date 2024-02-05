@@ -829,10 +829,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, the network service will send TransferSizeUpdatedIPC IPC only when"
                         + " DevTools is attached or the request is for an ad request."),
         Flag.baseFeature(
-                BaseFeatures.USE_NEW_JOB_IMPLEMENTATION,
-                "Uses a thread pool job implementation which leverages atomics to minimize lock"
-                        + " contention."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_BACK_FORWARD_CACHE,
                 "Controls if back/forward cache is enabled."),
         Flag.baseFeature(

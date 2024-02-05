@@ -417,10 +417,6 @@ class BASE_EXPORT ThreadGroup {
     // capacity.
     TimeDelta blocked_workers_poll_period;
 
-    // Whether EnsureEnoughWorkersLockRequired() should be called at the end of
-    // GetWork() instead of at the beginning.
-    bool ensure_enough_workers_at_end_of_get_work = false;
-
     // The max number of workers that a ThreadGroupSemaphore will create in any
     // one EnsureEnoughWorkers() call.
     int max_num_workers_created = 2;
