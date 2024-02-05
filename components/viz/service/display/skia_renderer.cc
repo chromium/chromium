@@ -566,10 +566,6 @@ struct SkiaRenderer::RenderPassOverlayParams {
   SharedQuadState shared_quad_state;
   cc::FilterOperations filters;
   cc::FilterOperations backdrop_filters;
-
-  // Represents the number of |OverlayLock|s (i.e. number of distinct frames)
-  // that reference this.
-  int ref_count = 0;
 };
 #endif
 
@@ -1234,16 +1230,15 @@ void SkiaRenderer::SwapBuffersComplete(
   MaybeDecrementSolidColorBuffers(committed_overlay_locks_);
 #endif  // BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(IS_APPLE)
-  // On macOS, we don't want to release |committed_overlay_locks_| right away
-  // because CoreAnimation can hold the overlay images for potentially several
-  // frames. We depend on the output device to signal the return of overlays via
-  // |DidReceiveReleasedOverlays| to know when it's safe to release the locks.
+  // Right now, only macOS and Ozone need to return mailboxes of released
+  // overlays, so we should not release |committed_overlay_locks_| here. The
+  // resources in it will be released in DidReceiveReleasedOverlays() later.
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   for (auto lock_iter = committed_overlay_locks_.begin();
        lock_iter != read_fence_lock_iter; ++lock_iter) {
     awaiting_release_overlay_locks_.insert(std::move(*lock_iter));
   }
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
   // Current pending locks should have been committed by the next time
   // SwapBuffers() is completed.
@@ -1267,25 +1262,39 @@ void SkiaRenderer::BuffersPresented() {
 
 void SkiaRenderer::DidReceiveReleasedOverlays(
     const std::vector<gpu::Mailbox>& released_overlays) {
-#if BUILDFLAG(IS_APPLE)
   DisplayResourceProvider::ScopedBatchReturnResources returner(
       resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
 
+  // This method is only called on macOS and Ozone right now.
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   for (const auto& mailbox : released_overlays) {
+    // If this mailbox is for render pass overlay, mark the released render pass
+    // overlay backing as available to be re-used.
+    auto it =
+        base::ranges::find(in_flight_render_pass_overlay_backings_, mailbox,
+                           [](const RenderPassOverlayParams& overlay) {
+                             return overlay.render_pass_backing.mailbox;
+                           });
+    if (it != in_flight_render_pass_overlay_backings_.end()) {
+      available_render_pass_overlay_backings_.push_back(*it);
+      in_flight_render_pass_overlay_backings_.erase(it);
+    }
+
     auto iter = base::ranges::find(awaiting_release_overlay_locks_, mailbox,
                                    &OverlayLock::mailbox);
     if (iter == awaiting_release_overlay_locks_.end()) {
+// TODO(crbug.com/1299794): Re-enable this DCHECK on Ozone.
+#if !BUILDFLAG(IS_OZONE)
       // The released overlay should always be found as awaiting to be released.
       DLOG(FATAL) << "Got an unexpected mailbox";
+#endif  // !BUILDFLAG(IS_OZONE)
       continue;
     }
     awaiting_release_overlay_locks_.erase(iter);
   }
 #else
-  // Only macOS has the requirement of polling the OS compositor to check if the
-  // overlay images have been released.
   NOTREACHED();
-#endif
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 }
 
 bool SkiaRenderer::FlippedFramebuffer() const {
@@ -2892,12 +2901,10 @@ void SkiaRenderer::ScheduleOverlays() {
       continue;
     }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE)
     if (overlay.rpdq) {
       PrepareRenderPassOverlay(&overlay);
-      if (!overlay.mailbox.IsZero()) {
-        locks.emplace_back(this, overlay.mailbox);
-      }
+      locks.emplace_back(overlay.mailbox);
       continue;
     }
 #else
@@ -2918,7 +2925,7 @@ void SkiaRenderer::ScheduleOverlays() {
         overlay.resource_size_in_pixels = gfx::Size(1, 1);
         // This can now be treated as a regular overlay with a mailbox backing.
         overlay.is_solid_color = false;
-        locks.emplace_back(this, overlay.mailbox);
+        locks.emplace_back(overlay.mailbox);
       }
 #else
       // All other platforms that support solid color overlays don't need fake
@@ -4127,75 +4134,6 @@ void SkiaRenderer::MaybeDecrementSolidColorBuffers(
 }
 #endif  // BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
-    ScopedInFlightRenderPassOverlayBackingRef(SkiaRenderer* renderer,
-                                              const gpu::Mailbox& mailbox)
-    : renderer_(renderer), mailbox_(mailbox) {
-  CHECK(renderer_);
-  CHECK(!mailbox_.IsZero());
-
-  auto it =
-      base::ranges::find(renderer_->in_flight_render_pass_overlay_backings_,
-                         mailbox_, [](const RenderPassOverlayParams& overlay) {
-                           return overlay.render_pass_backing.mailbox;
-                         });
-  CHECK(it != renderer_->in_flight_render_pass_overlay_backings_.end());
-
-  it->ref_count++;
-}
-
-SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
-    ~ScopedInFlightRenderPassOverlayBackingRef() {
-  if (!renderer_ && mailbox_.IsZero()) {
-    return;
-  }
-
-  auto it =
-      base::ranges::find(renderer_->in_flight_render_pass_overlay_backings_,
-                         mailbox_, [](const RenderPassOverlayParams& overlay) {
-                           return overlay.render_pass_backing.mailbox;
-                         });
-  CHECK(it != renderer_->in_flight_render_pass_overlay_backings_.end());
-
-  // Render pass overlay backings can be reused across multiple frames so we
-  // only want to mark them as available when we're releasing lock holding the
-  // last reference.
-  CHECK_GT(it->ref_count, 0);
-  it->ref_count--;
-  if (it->ref_count == 0) {
-    renderer_->available_render_pass_overlay_backings_.push_back(*it);
-    renderer_->in_flight_render_pass_overlay_backings_.erase(it);
-  }
-}
-
-SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
-    ScopedInFlightRenderPassOverlayBackingRef(
-        SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&& other) {
-  // This is an RAII type so we depend on the move operators to clear the
-  // |other| binding so we don't to unintentional work in the dtor. We need to
-  // manually implement the move operators since neither |raw_ptr| nor
-  // |gpu::Mailbox| guarantees a move operation that default initializes the
-  // original binding.
-  renderer_ = other.renderer_;
-  other.renderer_ = nullptr;
-  mailbox_ = other.mailbox_;
-  other.mailbox_ = gpu::Mailbox();
-}
-
-SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&
-SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
-    ScopedInFlightRenderPassOverlayBackingRef::operator=(
-        SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&& other) {
-  // Manually implemented, see move ctor.
-  renderer_ = other.renderer_;
-  other.renderer_ = nullptr;
-  mailbox_ = other.mailbox_;
-  other.mailbox_ = gpu::Mailbox();
-  return *this;
-}
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-
 SkiaRenderer::OverlayLock::OverlayLock(
     DisplayResourceProvider* resource_provider,
     ResourceId resource_id) {
@@ -4224,18 +4162,15 @@ SkiaRenderer::OverlayLock& SkiaRenderer::OverlayLock::OverlayLock::operator=(
 }
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer* renderer,
-                                       const gpu::Mailbox& mailbox) {
-  render_pass_lock.emplace(renderer, mailbox);
+SkiaRenderer::OverlayLock::OverlayLock(gpu::Mailbox mailbox) {
+  render_pass_lock.emplace(mailbox);
 }
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(IS_APPLE)
 bool SkiaRenderer::OverlayLockComparator::operator()(
     const OverlayLock& lhs,
     const OverlayLock& rhs) const {
   return lhs.mailbox() < rhs.mailbox();
 }
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
 }  // namespace viz
