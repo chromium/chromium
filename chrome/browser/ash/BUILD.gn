@@ -178,6 +178,8 @@ source_set("ash") {
     "app_mode/metrics/periodic_metrics_service.h",
     "app_mode/pref_names.cc",
     "app_mode/pref_names.h",
+    "app_mode/repeating_time_interval_task_executor.cc",
+    "app_mode/repeating_time_interval_task_executor.h",
     "app_mode/retry_runner.cc",
     "app_mode/retry_runner.h",
     "app_mode/startup_app_launcher.cc",
