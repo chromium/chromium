@@ -464,11 +464,6 @@ class RightPaneView : public NonAccessibleView {
 
   ~RightPaneView() override = default;
 
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override {
-    return GetLayoutManager()->GetPreferredSize(this, available_size);
-  }
-
   void UpdateForUser(const LoginUserInfo& user) {
     DCHECK_EQ(user.basic_user_info.type,
               user_manager::UserType::kPublicAccount);
