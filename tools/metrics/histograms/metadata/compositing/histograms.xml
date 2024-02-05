@@ -368,38 +368,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Display.OverlayCombinationCache.NumIdsEvicted"
-    units="units" expires_after="2023-06-04">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Logged zero or one times per frame, the number of stale candidate ids we are
-    evicting from the OverlayCombinationCache this frame. If this number is high
-    the CandidateIds or the candidates proposed are likely less stable than they
-    should be.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported"
-    units="units" expires_after="2023-08-20">
+    units="units" expires_after="2024-06-30">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <summary>
     This is logged every time a valid HardwareCapabilities is received from DRM
     when display configuration may have changed. It records the number of
     overlay planes we have available on this device including the primary plane.
-  </summary>
-</histogram>
-
-<histogram
-    name="Compositing.Display.OverlayProcessorUsingStrategy.CandidateCombinationPreviouslySucceeded"
-    enum="Boolean" expires_after="2023-08-20">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Logged zero or one times per frame, whether or not the candidate combination
-    being tested this frame was successfully promoted to overlays on the
-    previous frame.
+    Note: this metric was expired from 2023-08-20 to 2024-02-05.
   </summary>
 </histogram>
 
@@ -471,12 +448,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.NumQuadsConsidered"
-    units="units" expires_after="2023-06-18">
+    units="units" expires_after="2024-06-30">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <summary>
     Logged once per frame, the number of quads considered for promotion to
-    overlay.
+    overlay. Note: this metric was expired from 2023-06-18 to 2024-02-05.
   </summary>
 </histogram>
 
@@ -783,20 +760,6 @@ chromium-metrics-reviews@google.com.
     Time spent copying quads during surface aggregation. This is a subset of the
     time recorded for Compositing.SurfaceAggregator.AggregateUs and is logged
     once per frame.
-
-    Warning: This metric does not include reports from clients with
-    low-resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.SurfaceAggregator.DeclareResourcesUs"
-    units="microseconds" expires_after="2024-02-01">
-  <owner>kylechar@chromium.org</owner>
-  <owner>jonross@chromium.org</owner>
-  <summary>
-    Time spent declaring resources as used during surface aggregation. This is a
-    subset of the time recorded for Compositing.SurfaceAggregator.AggregateUs
-    and is logged once per frame.
 
     Warning: This metric does not include reports from clients with
     low-resolution clocks.

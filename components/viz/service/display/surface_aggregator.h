@@ -134,7 +134,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
     int orphaned_render_pass = 0;
     base::TimeDelta prewalk_time;
     base::TimeDelta copy_time;
-    base::TimeDelta declare_resources_time;
   };
 
   // SurfaceObserver implementation.

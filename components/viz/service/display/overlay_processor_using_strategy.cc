@@ -950,11 +950,6 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
                                          first_candidate_without_masks,
                                          test_candidates);
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.Display.OverlayProcessorUsingStrategy."
-      "CandidateCombinationPreviouslySucceeded",
-      result.previously_succeeded);
-
   bool testing_underlay = false;
   // We'll keep track of the underlays that we're testing so we can assign their
   // `plane_z_order`s based on their order in the QuadList.
