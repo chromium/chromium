@@ -18,6 +18,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -77,6 +78,7 @@ public class MenuItem extends FrameLayout {
             int itemId,
             int iconId,
             String label,
+            @Nullable String header,
             @Action int action) {
         super(context);
         mMenu = parentMenu;
@@ -97,6 +99,13 @@ public class MenuItem extends FrameLayout {
             icon.setImageResource(iconId);
             // Icon is GONE by default.
             icon.setVisibility(View.VISIBLE);
+        }
+        TextView localeView = layout.findViewById(R.id.item_header);
+        if (header == null) {
+            localeView.setVisibility(View.GONE);
+        } else {
+            localeView.setVisibility(View.VISIBLE);
+            localeView.setText(header);
         }
 
         ((TextView) layout.findViewById(R.id.item_label)).setText(label);

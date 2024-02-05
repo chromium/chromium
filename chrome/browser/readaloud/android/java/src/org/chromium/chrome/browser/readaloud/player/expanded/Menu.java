@@ -9,6 +9,8 @@ import android.util.AttributeSet;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.readaloud.player.R;
 
@@ -35,11 +37,16 @@ public class Menu extends LinearLayout {
         mLastItemIndex = -1;
     }
 
-    public MenuItem addItem(int itemId, int iconId, String label, @MenuItem.Action int action) {
+    public MenuItem addItem(
+            int itemId,
+            int iconId,
+            String label,
+            @Nullable String header,
+            @MenuItem.Action int action) {
         if (mItemsContainer == null) {
             mItemsContainer = (LinearLayout) findViewById(R.id.items_container);
         }
-        MenuItem item = new MenuItem(mContext, this, itemId, iconId, label, action);
+        MenuItem item = new MenuItem(mContext, this, itemId, iconId, label, header, action);
         mItemsContainer.addView(
                 item,
                 /* width= */ LayoutParams.MATCH_PARENT,

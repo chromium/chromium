@@ -121,6 +121,7 @@ android_resources("java_resources") {
     "java/res/layout/readaloud_mini_player_layout.xml",
     "java/res/layout/readaloud_radio_button.xml",
     "java/res/layout/readaloud_toggle_switch.xml",
+    "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
@@ -240,6 +241,7 @@ android_library("player_java") {
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/ExpandedPlayerMediator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/ExpandedPlayerSheetContent.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/ExpandedPlayerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/expanded/MaxHeightScrollView.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/Menu.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/MenuItem.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/MenuSheetContent.java",
