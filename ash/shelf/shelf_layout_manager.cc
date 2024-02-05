@@ -2063,6 +2063,10 @@ void ShelfLayoutManager::UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
     shelf_->hotseat_widget()->UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
+    if (features::IsDeskButtonEnabled()) {
+      shelf_->desk_button_widget()->UpdateTargetBoundsForGesture(
+          adjusted_shelf_position);
+    }
     shelf_->navigation_widget()->UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
     shelf_->status_area_widget()->UpdateTargetBoundsForGesture(
