@@ -4775,6 +4775,32 @@
       },
     },
 
+    'ondevice_stability_tests': {
+      'ondevice_stability_tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'linux_args': [
+          '--chromedriver',
+          'chromedriver',
+          '--binary',
+          'chrome',
+        ],
+        'mac_args': [
+          '--chromedriver',
+          'chromedriver',
+          '--binary',
+          'Google Chrome.app/Contents/MacOS/Google Chrome',
+        ],
+        'win_args': [
+          '--chromedriver',
+          'chromedriver.exe',
+          '--binary',
+          'Chrome.exe',
+        ],
+      },
+    },
+
     'optimization_guide_android_gtests': {
       'optimization_guide_components_unittests': {
         'test': 'components_unittests',
@@ -7901,15 +7927,6 @@
       },
     },
 
-    'model_validation_tests_full': {
-      'model_validation_tests': {
-        'variants': [
-          'MODEL_VALIDATION_BASE',
-          'MODEL_VALIDATION_TRUNK',
-        ],
-      },
-    },
-
     'optimization_guide_linux_gtests': {
       'optimization_guide_gpu_gtests': {
         'variants': [
@@ -7919,9 +7936,33 @@
       'optimization_guide_nogpu_gtests': {},
     },
 
+    'optimization_guide_linux_script_tests': {
+      'model_validation_tests': {
+        'variants': [
+          'MODEL_VALIDATION_BASE',
+          'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+      'ondevice_stability_tests': {
+        'variants': [
+          'INTEL_UHD_630',
+        ],
+      },
+    },
+
     'optimization_guide_mac_gtests': {
       'optimization_guide_gpu_gtests': {},
       'optimization_guide_nogpu_gtests': {},
+    },
+
+    'optimization_guide_mac_script_tests': {
+      'model_validation_tests': {
+        'variants': [
+          'MODEL_VALIDATION_BASE',
+          'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+      'ondevice_stability_tests': {},
     },
 
     'optimization_guide_win_gtests': {
@@ -7932,6 +7973,15 @@
         ],
       },
       'optimization_guide_nogpu_gtests': {},
+    },
+
+    'optimization_guide_win_script_tests': {
+      'model_validation_tests': {
+        'variants': [
+          'MODEL_VALIDATION_BASE',
+          'MODEL_VALIDATION_TRUNK',
+        ],
+      },
     },
 
     'webview_trichrome_10_cts_tests_gtest': {

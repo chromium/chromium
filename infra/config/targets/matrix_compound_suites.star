@@ -1335,7 +1335,21 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "model_validation_tests_full",
+    name = "optimization_guide_linux_gtests",
+    basic_suites = {
+        "optimization_guide_nogpu_gtests": None,
+        "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
+            # TODO(b:322815244): Add AMD and NVIDIA variants once driver issues
+            # are resolved.
+            variants = [
+                "INTEL_UHD_630",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_linux_script_tests",
     basic_suites = {
         "model_validation_tests": targets.legacy_matrix_config(
             variants = [
@@ -1343,16 +1357,7 @@ targets.legacy_matrix_compound_suite(
                 "MODEL_VALIDATION_TRUNK",
             ],
         ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "optimization_guide_linux_gtests",
-    basic_suites = {
-        "optimization_guide_nogpu_gtests": None,
-        "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
-            # TODO(b:322815244): Add AMD and NVIDIA variants once driver issues
-            # are resolved.
+        "ondevice_stability_tests": targets.legacy_matrix_config(
             variants = [
                 "INTEL_UHD_630",
             ],
@@ -1369,6 +1374,19 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_mac_script_tests",
+    basic_suites = {
+        "model_validation_tests": targets.legacy_matrix_config(
+            variants = [
+                "MODEL_VALIDATION_BASE",
+                "MODEL_VALIDATION_TRUNK",
+            ],
+        ),
+        "ondevice_stability_tests": None,
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "optimization_guide_win_gtests",
     basic_suites = {
         "optimization_guide_nogpu_gtests": None,
@@ -1377,6 +1395,18 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "AMD_RADEON_RX_5500_XT",
                 "INTEL_UHD_630",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_win_script_tests",
+    basic_suites = {
+        "model_validation_tests": targets.legacy_matrix_config(
+            variants = [
+                "MODEL_VALIDATION_BASE",
+                "MODEL_VALIDATION_TRUNK",
             ],
         ),
     },

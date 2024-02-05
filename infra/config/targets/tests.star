@@ -1614,6 +1614,10 @@ targets.tests.gtest_test(
     name = "notification_helper_unittests",
 )
 
+targets.tests.isolated_script_test(
+    name = "ondevice_stability_tests",
+)
+
 targets.tests.gtest_test(
     name = "oobe_only_browser_tests",
     args = [

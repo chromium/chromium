@@ -6636,7 +6636,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_linux_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_linux_script_tests',
         },
         'os_type': 'linux',
       },
@@ -6651,7 +6651,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_mac_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_mac_script_tests',
         },
         'os_type': 'mac',
       },
@@ -6666,7 +6666,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_mac_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_mac_script_tests',
         },
         'os_type': 'mac',
       },
@@ -6681,7 +6681,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_win_script_tests',
         },
         'os_type': 'win',
       },
@@ -6697,7 +6697,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_win_script_tests',
 
         },
         'os_type': 'win',
