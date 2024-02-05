@@ -52,6 +52,11 @@ chromium-metrics-reviews@google.com.
   <variant name="PasswordFieldOnFocus" summary="on focus event"/>
 </variants>
 
+<variants name="PasswordStoreAndroidBackendType">
+  <variant name="Account" summary="account store"/>
+  <variant name="Local" summary="local store"/>
+</variants>
+
 <variants name="PasswordStoreBackendFunction">
   <variant name="AddLoginAsync" summary="AddLoginAsync()"/>
   <variant name="DisableAutoSignInForOriginsAsync"
@@ -2699,6 +2704,51 @@ chromium-metrics-reviews@google.com.
   <token key="Operation" variants="RetriedOperation"/>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.{Type}.{Function}"
+    enum="PasswordStoreAndroidBackendRequestStatus" expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records each {Function} call by the PasswordStoreAndroidBackend for the
+    {Type}. Recorded twice: 1) when the store issues the request, and 2) as the
+    asynchronous job has finished or times out. The first bucket may exceed
+    others if Chrome closes before the request finishes. This histogram is
+    recording the metric separately for local and account store.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+  <token key="Function" variants="PasswordStoreBackendFunction"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.{Type}.{Function}.Latency"
+    units="ms" expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to {Function} in
+    PasswordStoreAndroidBackend. Recorded when the asynchronous job has
+    returned. This histogram is recording the metric separately for local and
+    account store.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+  <token key="Function" variants="PasswordStoreBackendFunction"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.{Type}.{Function}.Success"
+    enum="BooleanSuccess" expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records whether {Function} succeeded in AndroidBackend. Recorded when the
+    asynchronous job has returned. False is emitted if an error occurs;
+    otherwise true is emitted. This histogram is recording the metric separately
+    for local and account store.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+  <token key="Function" variants="PasswordStoreBackendFunction"/>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.APIError"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2024-06-30">
@@ -2708,7 +2758,8 @@ chromium-metrics-reviews@google.com.
   <owner>fhorschig@chromium.org</owner>
   <summary>
     The error codes returned by the GMS Core ChromeSync 1P API{Function}.
-    Recorded when the asynchronous job has returned.
+    Recorded when the asynchronous job has returned. This is an overall
+    histogram that includes records for both local and account store.
   </summary>
   <token key="Function">
     <variant name=""/>
@@ -2735,7 +2786,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The connection result status code returned by the GMS Core ChromeSync 1P
     API{Function}. Recorded when the asynchronous job has returned with error
-    and only if ConnectionResult was set on the returned error.
+    and only if ConnectionResult was set on the returned error. This is an
+    overall histogram that includes records for both local and account store.
   </summary>
   <token key="Function">
     <variant name=""/>
@@ -2783,6 +2835,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.PasswordStoreAndroidBackend{Function}.{Type}.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P API{Function}.
+    Recorded when the asynchronous job has returned. This histogram is recording
+    the metric separately for local and account store.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+  <token key="Function" variants="PasswordStoreBackendFunction"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend{Function}.{Type}.ConnectionResultCode"
+    enum="PasswordStoreAndroidBackendConnectionResultCode"
+    expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The connection result status code returned by the GMS Core ChromeSync 1P
+    API{Function}. Recorded when the asynchronous job has returned with error
+    and only if ConnectionResult was set on the returned error. This histogram
+    is recording the metric separately for local and account store.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+  <token key="Function" variants="PasswordStoreBackendFunction"/>
+</histogram>
+
+<histogram
     name="PasswordManager.PasswordStoreBuiltInBackend.RemoveLoginsCreatedBetween.KeychainLatency"
     units="ms" expires_after="M125">
   <owner>vasilii@chromium.org</owner>
@@ -2817,7 +2899,8 @@ chromium-metrics-reviews@google.com.
     Records each {Function} call by the PasswordStore {Backend}. Recorded twice:
     1) when the store issues the request, and 2) as the asynchronous job has
     finished or times out. The first bucket may exceed others if Chrome closes
-    before the request finishes.
+    before the request finishes. In case of Android backend, this is an overall
+    histogram that includes records for both local and account store.
   </summary>
   <token key="Backend">
     <variant name="AndroidBackend" summary="Android backend"/>
@@ -2835,7 +2918,9 @@ chromium-metrics-reviews@google.com.
   <owner>fhorschig@chromium.org</owner>
   <summary>
     Real-time duration of the asynchronous call to {Function} in {Backend}.
-    Recorded when the asynchronous job has returned.
+    Recorded when the asynchronous job has returned. In case of Android backend,
+    this is an overall histogram that includes records for both local and
+    account store.
   </summary>
   <token key="Backend">
     <variant name="AndroidBackend" summary="Android backend"/>
@@ -2854,7 +2939,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether {Function} succeeded in {Backend}. Recorded when the
     asynchronous job has returned. False is emitted if an error occurs;
-    otherwise true is emitted.
+    otherwise true is emitted. In case of Android backend, this is an overall
+    histogram that includes records for both local and account store.
   </summary>
   <token key="Backend">
     <variant name="AndroidBackend" summary="Android backend"/>
