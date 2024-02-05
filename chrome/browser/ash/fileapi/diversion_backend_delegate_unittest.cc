@@ -117,16 +117,18 @@ class DiversionBackendDelegateTest : public testing::Test,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // The int returned by GetParam() ranges from 0 to (1 << kNumParamBits).
-  static constexpr int kNumParamBits = 2;
+  static constexpr int kNumParamBits = 3;
   bool ShouldCopy() const { return (1 << 0) & GetParam(); }
-  bool ShouldDivert() const { return (1 << 1) & GetParam(); }
+  bool ShouldDestExists() const { return (1 << 1) & GetParam(); }
+  bool ShouldDivert() const { return (1 << 2) & GetParam(); }
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
     return base::StrCat({
         "Should",
         (((1 << 0) & info.param) ? "CopyAnd" : "MoveAnd"),
-        (((1 << 1) & info.param) ? "Divert" : "NotDivert"),
+        (((1 << 1) & info.param) ? "DestExistsAnd" : "NotDestExistsAnd"),
+        (((1 << 2) & info.param) ? "Divert" : "NotDivert"),
     });
   }
 
@@ -214,6 +216,12 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   storage::FileSystemURL fs_url1 = CreateFSURL("diversion.dat");
   ASSERT_EQ(ShouldDivert(), delegate.ShouldDivertForTesting(fs_url0));
 
+  // The final state should be indifferent to whether or not fs_url1 already
+  // exists and, if it does, whether it's longer than expected_contents.
+  if (ShouldDestExists()) {
+    ASSERT_TRUE(base::WriteFile(fs_url1.path(), std::string(100, 'x')));
+  }
+
   // The storage backends are generally happier, when calling
   // CreateFileStreamWriter, if the file already 'exists'. This doesn't
   // necessarily mean existence from the kernel's point of view, just from the
@@ -282,7 +290,7 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   // (instead of passing through) that FileSystemURL.
   {
     EXPECT_NE(ShouldDivert(), base::PathExists(fs_url0.path()));
-    EXPECT_FALSE(base::PathExists(fs_url1.path()));
+    EXPECT_EQ(ShouldDestExists(), base::PathExists(fs_url1.path()));
   }
 
   // Copying or moving that fs_url0 file to fs_url1 should materialize it (if
