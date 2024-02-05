@@ -765,7 +765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.LoadTiming.MainFrame.MainResource.InitialServiceWorkerStatus{NavigationType}{FrameTreeNodeType}"
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.InitialServiceWorkerStatus{NavigationType}{FrameTreeNodeType}{BrowserStartupCompleted}"
     enum="InitialServiceWorkerStatus" expires_after="2024-06-30">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -776,7 +776,7 @@ chromium-metrics-reviews@google.com.
     fetch event handler and the fetch event was successfully dispatched to the
     service worker.
 
-    {NavigationType}{FrameTreeNodeType}
+    {NavigationType}{FrameTreeNodeType}{BrowserStartupCompleted}
   </summary>
   <token key="NavigationType" variants="NavigationType"/>
   <token key="FrameTreeNodeType">
@@ -791,6 +791,13 @@ chromium-metrics-reviews@google.com.
         summary="Navigation is recorded only when it is not possible to
                  determine whether it occurs in the outermost main frame or
                  not."/>
+  </token>
+  <token key="BrowserStartupCompleted">
+    <variant name="" summary=""/>
+    <variant name=".BrowserStartupCompleted"
+        summary="The browser startup has been completed already."/>
+    <variant name=".BrowserStartupNotCompleted"
+        summary="The browser startup has not been completed yet."/>
   </token>
 </histogram>
 

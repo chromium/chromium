@@ -287,6 +287,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
     kMaxValue = kWarmedUp,
   };
   std::optional<InitialServiceWorkerStatus> initial_service_worker_status_;
+  const bool is_browser_startup_completed_;
   enum class FrameTreeNodeType {
     kOutermostMainFrame = 0,
     kNotOutermostMainFrame = 1,

@@ -158,6 +158,8 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     : fallback_callback_(std::move(fallback_callback)),
       container_host_(std::move(container_host)),
       frame_tree_node_id_(frame_tree_node_id),
+      is_browser_startup_completed_(
+          GetContentClient()->browser()->IsBrowserStartupComplete()),
       find_registration_start_time_(std::move(find_registration_start_time)) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
@@ -1238,6 +1240,15 @@ void ServiceWorkerMainResourceLoader::
                     "InitialServiceWorkerStatus.",
                     "AnyOriginNavigation.", GetFrameTreeNodeTypeString()}),
       *initial_service_worker_status_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ServiceWorker.LoadTiming.MainFrame.MainResource."
+                    "InitialServiceWorkerStatus.",
+                    ComposeNavigationTypeString(resource_request_), ".",
+                    GetFrameTreeNodeTypeString(),
+                    is_browser_startup_completed_
+                        ? ".BrowserStartupCompleted"
+                        : ".BrowserStartupNotCompleted"}),
+      *initial_service_worker_status_);
 }
 
 void ServiceWorkerMainResourceLoader::
@@ -1263,6 +1274,9 @@ void ServiceWorkerMainResourceLoader::
   const net::LoadTimingInfo& load_timing = response_head_->load_timing;
   const std::string navigation_type_string =
       ComposeNavigationTypeString(resource_request_);
+  const std::string is_browser_startup_completed_str =
+      is_browser_startup_completed_ ? "BrowserStartupCompleted"
+                                    : "BrowserStartupNotCompleted";
   base::TimeDelta time = load_timing.service_worker_ready_time -
                          load_timing.service_worker_start_time;
   base::UmaHistogramMediumTimes(
@@ -1288,7 +1302,8 @@ void ServiceWorkerMainResourceLoader::
       "ServiceWorker",
       base::StrCat({"ForwardServiceWorkerToWorkerReady.",
                     GetInitialServiceWorkerStatusString(), ".",
-                    navigation_type_string})
+                    navigation_type_string, ".",
+                    is_browser_startup_completed_str})
           .c_str(),
       this, load_timing.service_worker_start_time,
       "initial_service_worker_status", GetInitialServiceWorkerStatusString());
@@ -1296,7 +1311,8 @@ void ServiceWorkerMainResourceLoader::
       "ServiceWorker",
       base::StrCat({"ForwardServiceWorkerToWorkerReady.",
                     GetInitialServiceWorkerStatusString(), ".",
-                    navigation_type_string})
+                    navigation_type_string, ".",
+                    is_browser_startup_completed_str})
           .c_str(),
       this, load_timing.service_worker_ready_time);
 }
