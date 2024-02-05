@@ -105,7 +105,6 @@ class FakeChromeUserManager : public ChromeUserManager {
                             const std::string& display_email) override;
   void SaveUserType(const user_manager::User* user) override;
   std::optional<std::string> GetOwnerEmail() override;
-  bool IsCurrentUserOwner() const override;
   bool IsCurrentUserCryptohomeDataEphemeral() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool CanCurrentUserLock() const override;
@@ -145,7 +144,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   void KioskAppLoggedIn(user_manager::User* user) override;
   void PublicAccountUserLoggedIn(user_manager::User* user) override;
   // Just make it public for tests.
-  void SetOwnerId(const AccountId& account_id) override;
+  using UserManagerBase::SetOwnerId;
 
   // UserManagerInterface override.
   MultiProfileUserController* GetMultiProfileUserController() override;

@@ -653,8 +653,7 @@ bool UserManagerBase::IsEphemeralUser(const User* user) const {
 
 bool UserManagerBase::IsCurrentUserOwner() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return owner_account_id_.has_value() && active_user_ &&
-         active_user_->GetAccountId() == *owner_account_id_;
+  return IsOwnerUser(active_user_);
 }
 
 bool UserManagerBase::IsCurrentUserNew() const {

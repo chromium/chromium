@@ -57,10 +57,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void SetUserNonCryptohomeDataEphemeral(const AccountId& account_id,
                                          bool is_ephemeral);
 
-  void set_is_current_user_owner(bool is_current_user_owner) {
-    is_current_user_owner_ = is_current_user_owner;
-  }
-
   // UserManager overrides.
   const UserList& GetUsers() const override;
   UserList GetUsersAllowedForMultiProfile() const override;
@@ -101,7 +97,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override {}
   std::optional<std::string> GetOwnerEmail() override;
-  bool IsCurrentUserOwner() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool CanCurrentUserLock() const override;
   bool IsUserLoggedIn() const override;
@@ -146,6 +141,9 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
       const AccountId& account_id) const override;
   void KioskAppLoggedIn(User* user) override {}
   void PublicAccountUserLoggedIn(User* user) override {}
+  // Just make it public for tests.
+  using UserManagerBase::ResetOwnerId;
+  using UserManagerBase::SetOwnerId;
 
  protected:
   // If set this is the active user. If empty, the first created user is the
@@ -163,8 +161,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
 
   // stub. Always empty.
   gfx::ImageSkia empty_image_;
-
-  bool is_current_user_owner_ = false;
 
   // Contains AccountIds for which IsCurrentUserNonCryptohomeDataEphemeral will
   // return true.

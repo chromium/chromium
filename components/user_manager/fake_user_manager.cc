@@ -274,10 +274,6 @@ std::optional<std::string> FakeUserManager::GetOwnerEmail() {
   return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
 }
 
-bool FakeUserManager::IsCurrentUserOwner() const {
-  return is_current_user_owner_;
-}
-
 bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
   return false;
 }

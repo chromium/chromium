@@ -279,10 +279,6 @@ user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
   return result;
 }
 
-void FakeChromeUserManager::SetOwnerId(const AccountId& account_id) {
-  UserManagerBase::SetOwnerId(account_id);
-}
-
 void FakeChromeUserManager::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   NOTIMPLEMENTED();
@@ -473,10 +469,6 @@ void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
 
 std::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {
   return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
-}
-
-bool FakeChromeUserManager::IsCurrentUserOwner() const {
-  return active_user_ && GetOwnerAccountId() == active_user_->GetAccountId();
 }
 
 bool FakeChromeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
