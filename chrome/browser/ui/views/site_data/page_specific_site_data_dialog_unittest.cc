@@ -705,34 +705,3 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, ServiceWorkerAccessed) {
   ValidateAllowedUnpartitionedSites(delegate.get(),
                                     {current_url, third_party_url});
 }
-
-class PageSpecificSiteDataDialogStorageUnitTest
-    : public PageSpecificSiteDataDialogUnitTest,
-      public testing::WithParamInterface<StorageType> {};
-
-TEST_P(PageSpecificSiteDataDialogStorageUnitTest, StorageAccessed) {
-  // Verify that storage access through CookiesTreeModel is correctly
-  // displayed in the dialog.
-  auto* content_settings = GetContentSettings();
-
-  content_settings->OnStorageAccessed(
-      GetParam(), CreateUnpartitionedStorageKey(GURL(kCurrentUrl)),
-      /*blocked_by_policy=*/false);
-  content_settings->OnStorageAccessed(
-      GetParam(), CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
-      /*blocked_by_policy=*/false);
-
-  auto delegate =
-      std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
-  ValidateAllowedUnpartitionedSites(delegate.get(),
-                                    {GURL(kCurrentUrl), GURL(kThirdPartyUrl)});
-}
-
-INSTANTIATE_TEST_SUITE_P(PageSpecificSiteDataDialogStorageUnitTestInstance,
-                         PageSpecificSiteDataDialogStorageUnitTest,
-                         testing::Values(StorageType::DATABASE,
-                                         StorageType::LOCAL_STORAGE,
-                                         StorageType::SESSION_STORAGE,
-                                         StorageType::FILE_SYSTEM,
-                                         StorageType::INDEXED_DB,
-                                         StorageType::CACHE));
