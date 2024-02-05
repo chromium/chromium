@@ -15,6 +15,20 @@
 
 namespace blink {
 
+namespace {
+
+// Returns true if, when converted to Rec2020 space, all components of `color`
+// are in the interval [-1/255, 256/255].
+bool IsInGamutRec2020(Color color) {
+  const float kEpsilon = 1 / 255.f;
+  color.ConvertToColorSpace(Color::ColorSpace::kRec2020);
+  return -kEpsilon <= color.Param0() && color.Param0() <= 1.f + kEpsilon &&
+         -kEpsilon <= color.Param1() && color.Param1() <= 1.f + kEpsilon &&
+         -kEpsilon <= color.Param2() && color.Param2() <= 1.f + kEpsilon;
+}
+
+}  // namespace
+
 static Color::ColorSpace CSSValueIDToColorSpace(const CSSValueID& id) {
   switch (id) {
     case CSSValueID::kRgb:
@@ -543,6 +557,36 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
   if (is_relative_color_) {
     context.Count(WebFeature::kCSSRelativeColor);
+  } else {
+    switch (color_space_) {
+      case Color::ColorSpace::kSRGB:
+      case Color::ColorSpace::kSRGBLinear:
+      case Color::ColorSpace::kDisplayP3:
+      case Color::ColorSpace::kA98RGB:
+      case Color::ColorSpace::kProPhotoRGB:
+      case Color::ColorSpace::kRec2020:
+        context.Count(WebFeature::kCSSColor_SpaceRGB);
+        if (!IsInGamutRec2020(result)) {
+          context.Count(WebFeature::kCSSColor_SpaceRGB_outOfRec2020);
+        }
+        break;
+      case Color::ColorSpace::kOklab:
+      case Color::ColorSpace::kOklch:
+        context.Count(WebFeature::kCSSColor_SpaceOkLxx);
+        if (!IsInGamutRec2020(result)) {
+          context.Count(WebFeature::kCSSColor_SpaceOkLxx_OutOfRange);
+        }
+        break;
+      case Color::ColorSpace::kXYZD50:
+      case Color::ColorSpace::kXYZD65:
+      case Color::ColorSpace::kLab:
+      case Color::ColorSpace::kLch:
+      case Color::ColorSpace::kSRGBLegacy:
+      case Color::ColorSpace::kHSL:
+      case Color::ColorSpace::kHWB:
+      case Color::ColorSpace::kNone:
+        break;
+    }
   }
 
   return true;
