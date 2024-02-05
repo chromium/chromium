@@ -434,17 +434,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.CloudExtensionRequestDialogAction"
-    enum="BooleanSent" expires_after="2023-10-01">
-  <owner>zmin@chromium.org</owner>
-  <owner>hur.ims@navercorp.com</owner>
-  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
-  <summary>
-    Recorded once each time the extension request prompt dialog is accepted or
-    aborted.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.CloudExtensionRequestUpdated"
     enum="EnterpriseCloudExtensionRequestListUpdate" expires_after="2024-10-01">
   <owner>zmin@chromium.org</owner>

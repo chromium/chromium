@@ -92,11 +92,6 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // Enables the install button and updates the dialog buttons.
   void EnableInstallButton();
 
-  // Updates the histogram that holds cloud extension request accepted/aborted
-  // decision made by user on the specific prompt dialog.
-  void UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(
-      bool accepted) const;
-
   raw_ptr<Profile> profile_;
   std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
