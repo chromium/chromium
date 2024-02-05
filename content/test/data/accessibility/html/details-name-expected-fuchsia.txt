@@ -12,7 +12,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++STATIC_TEXT hidden label='<newline>    '
 ++++++++++STATIC_TEXT hidden label='<newline>    '
 ++++++++++PARAGRAPH hidden
-++++++++++++STATIC_TEXT hidden label='The details, shown when expanded.'
 ++++++++++STATIC_TEXT hidden label='<newline>  '
 ++++++UNKNOWN
 ++++++++UNKNOWN
@@ -37,7 +36,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++++STATIC_TEXT hidden label='<newline>      '
 ++++++++++++STATIC_TEXT hidden label='<newline>      '
 ++++++++++++PARAGRAPH hidden
-++++++++++++++STATIC_TEXT hidden label='Info about how big it is.'
 ++++++++++++STATIC_TEXT hidden label='<newline>    '
 ++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
@@ -50,5 +48,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++STATIC_TEXT hidden label='<newline>      '
 ++++++++++++STATIC_TEXT hidden label='<newline>      '
 ++++++++++++PARAGRAPH hidden
-++++++++++++++STATIC_TEXT hidden label='Info about where it was built.'
 ++++++++++++STATIC_TEXT hidden label='<newline>    '

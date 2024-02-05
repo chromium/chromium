@@ -1722,8 +1722,8 @@ TEST_F(AccessibilityTest, StitchChildTree) {
         <p id="paragraph">Ignored text.</P>
       </div>
       <input id="button" type="button" value="Test"
-          style="display: none;">
-      <canvas id="canvas" aria-hidden="true">
+          style="display: none;" lang="fr-CA">  <!-- lang includes in tree -->
+      <canvas id="canvas" aria-hidden="true" lang="fr-CA">
         <input id="ignoredButton" type="button" aria-hidden="false" value="Test">
         <p aria-hidden="false>More fallback content.</p>
       </canvas>)HTML");

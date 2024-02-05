@@ -841,6 +841,8 @@ data/accessibility/aria/aria-heading-expected-mac.txt
 data/accessibility/aria/aria-heading-expected-win.txt
 data/accessibility/aria/aria-heading.html
 data/accessibility/aria/aria-hidden-changed-expected-blink.txt
+data/accessibility/aria/aria-hidden-changed-on-buttons-expected-blink.txt
+data/accessibility/aria/aria-hidden-changed-on-buttons.html
 data/accessibility/aria/aria-hidden-changed.html
 data/accessibility/aria/aria-hidden-descendant-tabindex-change-expected-blink.txt
 data/accessibility/aria/aria-hidden-descendant-tabindex-change.html
@@ -889,6 +891,8 @@ data/accessibility/aria/aria-hidden-labelled-by-expected-blink.txt
 data/accessibility/aria/aria-hidden-labelled-by-expected-uia-win.txt
 data/accessibility/aria/aria-hidden-labelled-by-expected-win.txt
 data/accessibility/aria/aria-hidden-labelled-by.html
+data/accessibility/aria/aria-hidden-line-breaking-objects-expected-blink.txt
+data/accessibility/aria/aria-hidden-line-breaking-objects.html
 data/accessibility/aria/aria-hidden-single-descendant-display-none-expected-blink.txt
 data/accessibility/aria/aria-hidden-single-descendant-display-none.html
 data/accessibility/aria/aria-hidden-single-descendant-expected-blink.txt

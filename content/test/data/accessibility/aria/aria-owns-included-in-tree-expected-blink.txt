@@ -36,4 +36,3 @@ rootWebArea
 ++++++++none ignored
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
-++++++genericContainer ignored invisible

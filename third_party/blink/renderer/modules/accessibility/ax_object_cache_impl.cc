@@ -1464,7 +1464,7 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
       }
       ax_ancestor->SetNeedsToUpdateChildren();
     }
-  };
+  }
 
   // The first included ancestor needs to update its children.
   ax_included_ancestor->ChildrenChangedWithCleanLayout();
@@ -2420,11 +2420,11 @@ void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Node* node) {
     // Elements that are hidden but focusable are not ignored. Therefore, if a
     // hidden element's focusable state changes, it's ignored state must be
     // recomputed. It may be newly included in the tree, which means the
-    // parents must be updated.
-    // TODO(accessibility) Is this necessary? We have other places in the code
-    // that automatically do a children changed on parents of nodes whose
-    // ignored or included states change.
-    ChildrenChangedWithCleanLayout(obj->CachedParentObject());
+    // parents must be updated. We invalidate the entire subtree so that
+    // the inclusion state is recomputed for all nodes potentially in a name
+    // from contents computation.
+    RemoveSubtreeWhenSafe(node);
+    return;
   }
 
   // Refresh the focusable state and State::kIgnored on the exposed object.
@@ -3732,6 +3732,14 @@ bool AXObjectCacheImpl::MayHaveHTMLLabel(const HTMLElement& elem) {
   return Traversal<HTMLLabelElement>::FirstAncestor(elem);
 }
 
+bool AXObjectCacheImpl::IsLabelOrDescription(Element& element) {
+  if (IsA<HTMLLabelElement>(element)) {
+    return true;
+  }
+  CHECK(relation_cache_);
+  return relation_cache_ && relation_cache_->IsARIALabelOrDescription(element);
+}
+
 void AXObjectCacheImpl::CheckedStateChanged(Node* node) {
   PostNotification(node, ax::mojom::blink::Event::kCheckedStateChanged);
 }
@@ -3918,10 +3926,15 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
   CHECK(relation_cache_);
   relation_cache_->UpdateRelatedTree(&node, obj);
 
-  if (!obj)
+  // |obj| can become detached in UpdateRelatedTree(), while processing
+  // aria_owns relations, if it is determined that |obj| is part of a pruned
+  // subtree.
+  if (!obj || obj->IsDetached()) {
     return;
+  }
 
-  DCHECK_EQ(obj->GetNode(), &node);
+  CHECK_EQ(obj->GetNode(), &node)
+      << "\nMismatched object and node: " << obj->ToString(true, true);
 
   // Process completed relations for new ids. These are relations where
   // the target AXObject didn't exist when the relation was initially cached.
@@ -4151,7 +4164,12 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   } else if (attr_name == html_names::kForAttr) {
     if (relation_cache_) {
       if (HTMLLabelElement* label = DynamicTo<HTMLLabelElement>(element)) {
-        MarkElementDirty(relation_cache_->LabelChanged(*label));
+        if (Node* label_target = relation_cache_->LabelChanged(*label)) {
+          // If label_target's subtree was ignored because it was hidden, it
+          // will no longer be, because labels must be unignored to partake
+          // in name calculations.
+          MarkElementDirty(label_target);
+        }
       }
     }
   } else if (attr_name == html_names::kIdAttr) {
@@ -4393,21 +4411,8 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
 }
 
 void AXObjectCacheImpl::IdChangedWithCleanLayout(Node* node) {
-  if (AXObject* obj = Get(node)) {
-    // The id attribute has changed, which can change an object's ignored
-    // state, because an object backed with an element having an id attribute
-    // is always unignored, since it could be the end point of a relation.
-    // Call UpdateCachedAttributeValuesIfNeeded() to force the ignored state
-    // and included states to be recomputed, and if it tree inclusion changes,
-    // this call will also recompute the tree structure.
-    // TODO(aleventhal) This should no longer be necessary, because queuing this
-    // method via DefertreeUpdate() should have already marked the node dirty,
-    // and any next call for an cached value will call
-    // UpdateCachedAttributeValuesIfNeeded().
-    obj->UpdateCachedAttributeValuesIfNeeded();
-    // When the id attribute changes, the relations its in may also change.
-    MaybeNewRelationTarget(*node, obj);
-  }
+  // When the id attribute changes, the relations its in may also change.
+  MaybeNewRelationTarget(*node, Get(node));
 }
 
 void AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout(Node* node) {

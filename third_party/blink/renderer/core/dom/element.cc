@@ -1055,6 +1055,14 @@ void Element::SetElementArrayAttribute(
     stored_elements->insert(element);
   }
 
+  // This |Set| call must occur after our call to |setAttribute| above.
+  //
+  // |setAttribute| will call through to |AttributeChanged| which calls
+  // |SynchronizeContentAttributeAndElementReference| erasing the entry for
+  // |name| from the map.
+  element_attribute_map->Set(name, stored_elements);
+
+  // |HandleAttributeChanged| must be called after updating the attribute map.
   if (isConnected()) {
     if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
       cache->HandleAttributeChanged(name, this);

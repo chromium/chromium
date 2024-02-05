@@ -3,5 +3,3 @@ rootWebArea name='done'
 ++++genericContainer ignored
 ++++++genericContainer ignored invisible
 ++++++++heading ignored invisible
-++++++++++staticText ignored invisible name='Browser'
-++++++++genericContainer ignored invisible

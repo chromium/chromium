@@ -168,6 +168,10 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void SelectionChanged(Node*) override;
 
+  // Uses the relation cache to check whether the current element is pointed to
+  // by aria-labelledby or aria-describedby.
+  bool IsLabelOrDescription(Element&);
+
   // Effects a ChildrenChanged() on the passed-in object, if unignored,
   // otherwise, uses the first unignored ancestor. Returns the object that the
   // children changed occurs on.
@@ -823,6 +827,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     ax::mojom::blink::Action event_from_action;
     BlinkAXEventIntentsSet event_intents;
 
+    virtual ~TreeUpdateParams() = default;
     void Trace(Visitor* visitor) const { visitor->Trace(node); }
   };
 

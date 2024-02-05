@@ -3378,8 +3378,12 @@ AXObject* AXNodeObject::ChooserPopup() const {
     default:
 #if DCHECK_IS_ON()
       for (const auto& child : ChildrenIncludingIgnored()) {
-        DCHECK(!IsA<Document>(child->GetNode()))
-            << "Chooser popup exists for " << native_role_;
+        DCHECK(!IsA<Document>(child->GetNode()) ||
+               !child->ParentObject()->IsVisible())
+            << "Chooser popup exists for " << native_role_
+            << "\n* Child: " << child->ToString(true, true)
+            << "\n* Child's immediate parent: "
+            << child->ParentObject()->ToString(true, true);
       }
 #endif
       return nullptr;

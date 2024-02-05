@@ -521,6 +521,17 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool AccessibilityIsIgnoredButIncludedInTree() const;
   // Is visibility:hidden or display:none being used to hide this element.
   bool IsHiddenViaStyle() const;
+  // Whether this is part of the label or description for another element.
+  // This is used to ensure hidden objects are included in the tree, and the
+  // implementation currently only ensures that an element's ancestor was part
+  // of a label or description at some point during the lifetime of the page, as
+  // the relation cache does not bother clear old aria-labelledby/describedby
+  // ids. However, for purposes of preventing too many hidden objects from being
+  // serialized, it works well.
+  bool IsUsedForLabelOrDescription() const;
+  bool CachedIsUsedForLabelOrDescription() const {
+    return cached_is_used_for_label_or_description_;
+  }
 
   // Whether objects are included in the tree. Nodes that are included in the
   // tree are serialized, even if they are ignored. This allows browser-side
@@ -1176,6 +1187,19 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // highlighted via a "*" notation.
   std::string GetAXTreeForThis() const;
   void ShowAXTreeForThis() const;
+
+  // Starting from |this|, make sure there is an included parent path
+  // to the root, and that it's also possible to reach the included object
+  // by traversing downwards through included children.
+  void CheckIncludedObjectConnectedToRoot() const;
+#endif
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // Check that all objects in the subtree, even unincluded ones, are flagged as
+  // being part of a name or description, so that the algorithm for determining
+  // whether ignored objects should be included can return true for hidden nodes
+  // needed for label or description computations.
+  void CheckSubtreeIsForLabelOrDescription(const AXObject*) const;
 #endif
 
   // Get or create the first ancestor that's not accessibility ignored.
@@ -1510,6 +1534,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool cached_is_aria_hidden_ : 1 = false;
   mutable bool cached_is_hidden_by_child_tree_ : 1 = false;
   mutable bool cached_is_hidden_via_style_ : 1 = false;
+  mutable bool cached_is_used_for_label_or_description_ : 1;
   mutable bool cached_is_descendant_of_disabled_node_ : 1 = false;
   mutable bool cached_can_set_focus_attribute_ : 1 = false;
 
@@ -1527,6 +1552,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   unsigned ComputeAriaRowIndex() const;
   const ComputedStyle* GetComputedStyle() const;
   bool ComputeIsHiddenViaStyle(const ComputedStyle*) const;
+  bool ComputeIsUsedForLabelOrDescription() const;
   bool ComputeIsInertViaStyle(const ComputedStyle*,
                               IgnoredReasons* = nullptr) const;
 

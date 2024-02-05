@@ -6,15 +6,11 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <h4 id="d1">Item1</h4>
-  <h4 id="d2" aria-hidden="true">Item2</h4>
-  <h4 id="d3" aria-hidden="false">Item3</h4>
-  <h4 id="d4" aria-hidden="true">Item4</h4>
+  <h4 id="d2" aria-hidden="true">Item1</h4>
+  <h4 id="d3" aria-hidden="false">Item2</h4>
+  <h4 id="d4" aria-hidden="true">Item3</h4>
   <script>
     function go() {
-      // Set aria-hidden from [removed]->false; should not fire an event.
-      document.getElementById('d1').setAttribute('aria-hidden', 'false');
-
       // Set aria-hidden from true->false; should fire an event.
       document.getElementById('d2').setAttribute('aria-hidden', 'false');
 

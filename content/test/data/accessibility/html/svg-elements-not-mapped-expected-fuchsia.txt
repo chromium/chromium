@@ -2,77 +2,36 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++IMAGE label='animate should not be exposed'
-++++++++UNKNOWN hidden
 ++++++IMAGE label='animateMotion should not be exposed'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
 ++++++IMAGE label='animateTransform should not be exposed'
-++++++++UNKNOWN hidden
 ++++++IMAGE label='clipPath should not be exposed'
 ++++++IMAGE label='cursor should not be exposed'
-++++++++UNKNOWN hidden
 ++++++IMAGE label='defs should not be exposed'
-++++++++UNKNOWN hidden
 ++++++IMAGE label='discard should not be exposed'
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
 ++++++IMAGE label='filter and filter effect elements should not be exposed'
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
 ++++++IMAGE label='hatch should not be exposed'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
 ++++++IMAGE label='hatchpath should not be exposed'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
 ++++++IMAGE label='image which lacks criteria for inclusion should not be exposed'
 ++++++IMAGE label='linearGradient should not be exposed'
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
 ++++++IMAGE label='marker should not be exposed'
 ++++++IMAGE label='mask should not be exposed'
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
 ++++++IMAGE label='metadata should not be exposed'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden
 ++++++IMAGE label='mpath should not be exposed'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
 ++++++IMAGE label='pattern should not be exposed'
 ++++++IMAGE label='radialGradient should not be exposed'
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
 ++++++IMAGE label='solidColor should not be exposed'
-++++++++UNKNOWN hidden
 ++++++IMAGE label='stop should not be exposed'
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
 ++++++UNKNOWN label='style and set should not be exposed'
 ++++++++UNKNOWN actions='{DEFAULT}'
-++++++++++UNKNOWN hidden
 ++++++UNKNOWN label='switch should not be exposed'
-++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='Ciao!'
-++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='Hola!'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Hey!'
 ++++++++++++UNKNOWN label='Hey!'
 ++++++IMAGE label='view should not be exposed'
-++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden
 ++++++IMAGE label='desc should not be exposed as accessible object' secondary_label='abc'
-++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='abc'
 ++++++IMAGE label='title should not be exposed as accessible object' secondary_label='abc'
-++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='abc'
 ++++++IMAGE label='circle which lacks criteria for inclusion should not be exposed'
 ++++++IMAGE label='ellipse which lacks criteria for inclusion should not be exposed'
 ++++++UNKNOWN label='foreignObject which lacks criteria for inclusion should not be exposed'

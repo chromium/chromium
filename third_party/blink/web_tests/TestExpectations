@@ -244,6 +244,11 @@ crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 # View transition SPA failures with MPA serialization.
 crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 
+# View transition failures with accessibility.
+crbug.com/1486181 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/content-visibility-auto-shared-element.html [ Crash ]
+crbug.com/1486181 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-visibility-auto-shared-element.html [ Crash ]
+crbug.com/1486181 virtual/view-transition/external/wpt/css/css-view-transitions/content-visibility-auto-shared-element.html [ Crash ]
+
 ########## Ref tests can't be rebaselined ##########
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
 

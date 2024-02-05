@@ -262,6 +262,25 @@ void AXRelationCache::UpdateReverseTextRelations(
   Vector<String> ids;
   AXObject::TokenVectorFromAttribute(&relation_source, ids, attr_name);
   UpdateReverseTextRelations(relation_source, ids);
+
+  // Process relations such as element.ariaDescribedByElements.
+  ExplicitlySetAttrElementsMap* element_attribute_map =
+      relation_source.GetDocument().GetExplicitlySetAttrElementsMap(
+          &relation_source);
+  auto it = element_attribute_map->find(attr_name);
+  if (it == element_attribute_map->end()) {
+    return;
+  }
+
+  HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_target_elements =
+      it->value;
+  for (Element* target : *explicitly_set_target_elements) {
+    explicitly_set_text_relations_from_element_attributes_.insert(
+        target->GetDomNodeId());
+    // Mark root of label dirty so that we can change inclusion states as
+    // necessary (label subtrees are included in the tree even if hidden).
+    object_cache_->MarkElementDirty(target);
+  }
 }
 
 void AXRelationCache::UpdateReverseTextRelations(
@@ -278,6 +297,28 @@ void AXRelationCache::UpdateReverseTextRelations(
   // Update the target ids so that the point back to the relation source node.
   UpdateReverseRelations(id_attr_to_text_relation_mapping_, &relation_source,
                          target_ids);
+
+  // Mark all of the new text relation targets dirty.
+  TreeScope& scope = relation_source.GetTreeScope();
+  for (const String& id : new_target_ids) {
+    if (Element* target = scope.getElementById(AtomicString(id))) {
+      // Mark root of label dirty so that we can change inclusion states as
+      // necessary (label subtrees are included in the tree even if hidden).
+      if (object_cache_->IsProcessingDeferredEvents()) {
+        // WHen the relation cache is first initialized, we are already in
+        // processing deferred events, and must manually invalidate the
+        // cached values (is_used_for_label_or_description may have changed).
+        if (AXObject* ax_target = Get(target)) {
+          ax_target->InvalidateCachedValues();
+        }
+        // Must use clean layout method.
+        object_cache_->MarkElementDirtyWithCleanLayout(target);
+      } else {
+        // This will automatically invalidate the cached values of the target.
+        object_cache_->MarkElementDirty(target);
+      }
+    }
+  }
 }
 
 void AXRelationCache::UpdateReverseActiveDescendantRelations(
@@ -514,6 +555,12 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
         object_cache_->MarkAXObjectDirtyWithCleanLayout(
             original_parent->ParentObject());
       }
+      // Now that we're replacing the parent, we need to update cached values
+      // for the added child's subtree, because some cached values are inherited
+      // from the parent. Invalidating the cached values at the root of the
+      // subtree is enough, as changed inherited values will propagate down.
+      // Example: the cached_is_used_for_label_or_description_ flag.
+      added_child->InvalidateCachedValues();
     }
     // Now that the child is owned, it's "included in tree" state must be
     // recomputed because owned children are always included in the tree.
@@ -707,6 +754,25 @@ bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
   return all_previously_seen_label_target_ids_.Contains(id);
 }
 
+bool AXRelationCache::IsARIALabelOrDescription(Element& element) {
+  // Labels and descriptions set by ariaLabelledByElements,
+  // ariaDescribedByElements.
+  if (explicitly_set_text_relations_from_element_attributes_.find(
+          element.GetDomNodeId()) !=
+      explicitly_set_text_relations_from_element_attributes_.end()) {
+    return true;
+  }
+
+  // Labels and descriptions set by aria-labelledby, aria-describedby.
+  const AtomicString& id_value = element.GetIdAttribute();
+  if (id_value.IsNull()) {
+    return false;
+  }
+
+  return id_attr_to_text_relation_mapping_.find(id_value) !=
+         id_attr_to_text_relation_mapping_.end();
+}
+
 // Fill source_objects with AXObjects for relations pointing to target.
 void AXRelationCache::GetReverseRelated(
     Node* target,
@@ -807,6 +873,13 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
 }
 
 void AXRelationCache::UpdateRelatedText(Node* node) {
+  if (AXObject* obj = Get(node)) {
+    if (!obj->IsUsedForLabelOrDescription()) {
+      // Nothing to do, because this node is not part of a label or description.
+      return;
+    }
+  }
+
   // Walk up ancestor chain from node and refresh text of any related content.
   // TODO(crbug.com/1109265): It's very likely this loop should only walk the
   // unignored AXObject chain, but doing so breaks a number of tests related to

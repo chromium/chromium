@@ -15,7 +15,6 @@ rootWebArea
 ++++++++++staticText ignored invisible name='Aria hidden paragraph in fallback content'
 ++++++++staticText name='<newline>    '
 ++++++++heading ignored invisible
-++++++++++staticText ignored invisible name='Display none text in fallback content '
 ++++++++staticText name='<newline>    '
 ++++++++heading ignored invisible
 ++++++++++staticText ignored invisible name='Visibility hidden paragraph in fallback content'

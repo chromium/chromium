@@ -2,11 +2,5 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++UNKNOWN
-++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='Click me!'
 ++++++++BUTTON label='Click me!'
-++++++++++UNKNOWN hidden
-++++++++++++STATIC_TEXT hidden label='Click me!'
 ++++++++BUTTON label='Click me!'
-++++++++++UNKNOWN hidden
-++++++++++++STATIC_TEXT hidden label='Click me!'

@@ -50,10 +50,16 @@ class AXRelationCache {
   // Return true if any label ever pointed to the element via the for attribute.
   bool MayHaveHTMLLabelViaForAttribute(const HTMLElement&);
 
-  // Given an element in the DOM tree that was either just added or whose id
-  // just changed, check to see if another object wants to be its parent due to
-  // aria-owns. If so, add it to a queue of ids to process later during
-  // ProcessUpdatesWithCleanLayout.
+  // True if any aria-describedy or aria-labelledby ever pointed to the element.
+  bool IsARIALabelOrDescription(Element&);
+
+  // Process an element in the DOM tree that was either just added or whose id
+  // just changed:
+  // * Check to see if another object wants to be its parent due to
+  //   aria-owns. If so, add it to a queue of ids to process later during
+  //   ProcessUpdatesWithCleanLayout.
+  // * Update accessible objects for nodes that are related via
+  //   label or description attributes.
   // |node| is not optional.
   // |obj| is optional. If provided, it must match the AXObject for |node|.
   // Returns AXObject* of owner if an aria-owns relation to |obj| exists.
@@ -227,8 +233,12 @@ class AXRelationCache {
   // name calculation to be optimized.
   HashSet<AtomicString> all_previously_seen_label_target_ids_;
 
-  // A set of IDs that need to be updated during the kInAccessibility
-  // lifecycle phase. For each of these, the new set of owned children
+  // Labels and descriptions set by ariaLabelledByElements,
+  // ariaDescribedByElements as opposed to aria-labelledby.describedy="[id]".
+  HashSet<DOMNodeId> explicitly_set_text_relations_from_element_attributes_;
+
+  // A set of IDs that need to be update when layout is clean.
+  // For each of these, the new set of owned children
   // will be computed, and if it's different than before, ChildrenChanged
   // will be fired on all affected nodes.
   HashSet<AXID> owner_ids_to_update_;

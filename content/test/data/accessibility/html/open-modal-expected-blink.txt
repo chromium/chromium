@@ -4,9 +4,6 @@ rootWebArea
 ++++++staticText name='some text'
 ++++++++inlineTextBox name='some text'
 ++++++genericContainer ignored
-++++++++dialog ignored invisible
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='Some Text'
 === Start Continuation ===
 rootWebArea
 ++genericContainer ignored invisible

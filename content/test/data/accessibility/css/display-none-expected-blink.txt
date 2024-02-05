@@ -1,8 +1,3 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer ignored invisible
-++++++++link ignored invisible
-++++++++++staticText ignored invisible name='One'
-++++++++link ignored invisible
-++++++++++staticText ignored invisible name='Two'

@@ -849,7 +849,6 @@ void AXObject::SetParent(AXObject* new_parent) const {
 
 #endif
   parent_ = new_parent;
-  // TODO(accessibility) Is it necessary to do this while updating the tree?
   if (AXObjectCache().UpdatingTree()) {
     // If updating tree, tell the newly included parent to iterate through
     // all of its children to look for the has dirty descendants flag.
@@ -3088,6 +3087,14 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // before the included in tree computation, which depends on focusability.
   cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
 
+  // This depends on cached_can_set_focus_attribute_.
+  bool is_used_for_label_or_description = ComputeIsUsedForLabelOrDescription();
+  if (is_used_for_label_or_description !=
+      cached_is_used_for_label_or_description_) {
+    is_changing_inherited_values = true;
+    cached_is_used_for_label_or_description_ = is_used_for_label_or_description;
+  }
+
   bool is_ignored = ComputeAccessibilityIsIgnored();
   bool is_ignored_but_included_in_tree =
       is_ignored && ComputeAccessibilityIsIgnoredButIncludedInTree();
@@ -3298,13 +3305,6 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
       ignored_reasons->emplace_back(kAXHiddenByChildTree);
     }
     return true;
-  }
-
-  // aria-hidden=false is meant to override visibility as the determinant in
-  // AX hierarchy inclusion, but only for the element it is specified, and not
-  // the entire subtree. See https://w3c.github.io/aria/#aria-hidden.
-  if (AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty::kHidden)) {
-    return false;
   }
 
   if (cached_is_hidden_via_style_) {
@@ -3748,6 +3748,7 @@ bool AXObject::IsExcludedByFormControlsFilter() const {
 }
 
 bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
+  // TODO(accessibility) Remove this flag, we never want to expose all nodes.
   if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled())
     return true;
 
@@ -3894,44 +3895,53 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return false;
   }
 
-  if (IsExcludedByFormControlsFilter()) {
-    return false;
+  if (IsUsedForLabelOrDescription()) {
+    // We identify nodes in display none subtrees, or nodes that are display
+    // locked, because they lack a layout object.
+    if (!GetLayoutObject()) {
+      // Datalists and options inside them will never a layout object. They
+      // match the condition above, but we don't need them for accessible
+      // naming nor have any other use in the accessibility tree, so we exclude
+      // them specifically. What's more, including them breaks the browser test
+      // SelectToSpeakKeystrokeSelectionTest.textFieldWithComboBoxSimple.
+      // Selection and position code takes into account ignored nodes, and it
+      // looks like including ignored nodes for datalists and options is totally
+      // unexpected, making selections misbehave.
+      if (!IsA<HTMLDataListElement>(node) && !IsA<HTMLOptionElement>(node)) {
+        return true;
+      }
+    } else {  // GetLayoutObject() != nullptr.
+      // We identify hidden or collapsed nodes by their associated style values.
+      if (IsHiddenViaStyle()) {
+        return true;
+      }
+
+      // Allow the browser side ax tree to access "aria-hidden" nodes.
+      // This is useful for APIs that return the node referenced by
+      // aria-labeledby and aria-describedby.
+      // Exception: iframes. Do not expose aria-hidden iframes, where
+      // there is no possibility for the content within to know it's
+      // aria-hidden, and therefore the entire iframe must be hidden from the
+      // outer document.
+      if (IsAriaHidden()) {
+        return !IsEmbeddingElement();
+      }
+    }
+  } else if (IsAriaHidden() && GetLayoutObject() && !IsHiddenViaStyle() &&
+             CanSetFocusAttribute()) {
+    // Use aria-hidden nodes that are actually visible, and focusable.
+    // Note: in the future it is expected that the ARIA spec will change to
+    // specify that the aria-hidden property must be ignored if it receives
+    // focus as if the property was not set at all (aria-hidden elements that
+    // receive focus at any point not be treated as invisible/ignored at all).
+    // The implementation for that will end up acting as if the element that
+    // received focus (and its subtree) are not aria-hidden, and the condition
+    // here will no longer be necessary.
+    return true;
   }
 
-  // Allow the browser side ax tree to access "visibility: [hidden|collapse]"
-  // and "display: none" nodes. This is useful for APIs that return the node
-  // referenced by aria-labeledby and aria-describedby.
-  // The conditions are oversimplified, we will include more nodes than
-  // strictly necessary for aria-labelledby and aria-describedby but we
-  // avoid performing very complicated checks that could impact performance.
-
-  // We identify nodes in display none subtrees, or nodes that are display
-  // locked, because they lack a layout object.
-  if (!GetLayoutObject()) {
-    // Datalists and options inside them will never a layout object. They
-    // match the condition above, but we don't need them for accessible
-    // naming nor have any other use in the accessibility tree, so we exclude
-    // them specifically. What's more, including them breaks the browser test
-    // SelectToSpeakKeystrokeSelectionTest.textFieldWithComboBoxSimple.
-    // Selection and position code takes into account ignored nodes, and it
-    // looks like including ignored nodes for datalists and options is totally
-    // unexpected, making selections misbehave.
-    if (!IsA<HTMLDataListElement>(node) && !IsA<HTMLOptionElement>(node))
-      return true;
-
-  } else {  // GetLayoutObject() != null
-    // We identify hidden or collapsed nodes by their associated style values.
-    if (GetLayoutObject()->Style()->Visibility() != EVisibility::kVisible)
-      return true;
-
-    // Allow the browser side ax tree to access "aria-hidden" nodes.
-    // This is useful for APIs that return the node referenced by
-    // aria-labeledby and aria-describedby.
-    // Exception: iframes, in order to stop exposing aria-hidden iframes, where
-    // there is no possibility for the content within to know it's aria-hidden.
-    if (IsAriaHidden()) {
-      return !IsEmbeddingElement();
-    }
+  if (IsExcludedByFormControlsFilter()) {
+    return false;
   }
 
   if (!element)
@@ -3951,10 +3961,16 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
+  // Expose menus even if hidden, enabling event generation as they open.
+  if (RoleValue() == ax::mojom::blink::Role::kMenu) {
+    return true;
+  }
+
   // Always pass through Line Breaking objects, this is necessary to
   // detect paragraph edges, which are defined as hard-line breaks.
-  if (IsLineBreakingObject())
+  if (IsLineBreakingObject()) {
     return true;
+  }
 
   // Ruby annotations (i.e. <rt> elements) need to be included because they are
   // used for calculating an accessible description for the ruby. We explicitly
@@ -4508,15 +4524,76 @@ bool AXObject::IsHiddenForTextAlternativeCalculation(
     // bad authoring correction.
     if (!CanSetFocusAttribute())
       return true;
-  } else {
-    // When IsAriaHidden() returns false, we only know the node is not in an
-    // aria-hidden="true" subtree. We need to check for the case where
-    // aria-hidden="false" specifically.
-    if (AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty::kHidden))
-      return false;
   }
 
   return IsHiddenViaStyle();
+}
+
+bool AXObject::IsUsedForLabelOrDescription() const {
+  UpdateCachedAttributeValuesIfNeeded();
+  return cached_is_used_for_label_or_description_;
+}
+
+bool AXObject::ComputeIsUsedForLabelOrDescription() const {
+  if (GetElement()) {
+    // Return true if a <label> or the target of a naming/description
+    // relation (<aria-labelledby or aria-describedby).
+    if (AXObjectCache().IsLabelOrDescription(*GetElement())) {
+      return true;
+    }
+    // Also return true if a visible, focusable object that gets its name
+    // from contents. Requires visibility because a hidden node can only partake
+    // in a name or description in the relation case. Note: objects that are
+    // visible and focused but aria-hidden can still compute their name from
+    // contents as a repair.
+    if (CanSetFocusAttribute() && !IsHiddenViaStyle() &&
+        SupportsNameFromContents(/*recursive*/ false)) {
+      // Descendants of nodes that label themselves via their inner contents
+      // and are visible are effectively part of the label for that node.
+      return true;
+    }
+  }
+
+  if (RoleValue() == ax::mojom::blink::Role::kGroup) {
+    // Groups do not contribute to ancestor names. There are other roles that
+    // don't (listed in SupportsNameFromContents()), but it is not worth
+    // the complexity to list each case. Group is relatively common, and
+    // also prevents us from considering the popup document (which has kGroup)
+    // from returning true.
+    return false;
+  }
+
+  // Finally, return true if an ancetor is part of a label or description and
+  // visibility hasn't changed from visible to hidden
+  if (AXObject* parent = ParentObject()) {
+    if (parent->IsUsedForLabelOrDescription()) {
+      // The parent was part of a label or description. If this object is not
+      // hidden, or the parent was also hidden, continue the label/description
+      // state into the child.
+      bool is_hidden = IsHiddenViaStyle() || IsAriaHidden();
+      bool is_parent_hidden =
+          parent->IsHiddenViaStyle() || parent->IsAriaHidden();
+      if (!is_hidden || is_parent_hidden) {
+        return true;
+      }
+      // Visibility has changed to hidden, where the parent was visible.
+      // Iterate through the ancestors that are part of a label/description.
+      // If any are part of a label/description relation, consider the hidden
+      // node as also part of the label/description, because label and
+      // descriptions computed from relations include hidden nodes.
+      while (parent && parent->IsUsedForLabelOrDescription()) {
+        // It's possible for parent->GetElement() to be null in the case of an
+        // AXMenuListPopup. In that case, continue and check its ancestors.
+        if (parent->GetElement() &&
+            AXObjectCache().IsLabelOrDescription(*parent->GetElement())) {
+          return true;
+        }
+        parent = parent->ParentObject();
+      }
+    }
+  }
+
+  return false;
 }
 
 String AXObject::AriaTextAlternative(
@@ -4623,6 +4700,51 @@ String AXObject::AriaTextAlternative(
   return text_alternative;
 }
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
+void AXObject::CheckSubtreeIsForLabelOrDescription(const AXObject* obj) const {
+  DCHECK(obj->IsUsedForLabelOrDescription())
+      << "This object is being used for a label or description, but isn't "
+         "flagged as such, which will cause problems for determining whether "
+         "invisible nodes should be included in the tree."
+      << obj->ToString(true, true);
+
+  // Set of all children, whether in included or not.
+  HeapHashSet<Member<AXObject>> children;
+
+  // If the current object is included, check its children.
+  if (obj->AccessibilityIsIncludedInTree()) {
+    for (const auto& child : obj->ChildrenIncludingIgnored()) {
+      children.insert(child);
+    }
+  }
+
+  if (obj->GetNode()) {
+    // Also check unincluded children.
+    for (Node* child_node =
+             LayoutTreeBuilderTraversal::FirstChild(*obj->GetNode());
+         child_node;
+         child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
+      // Get the child object that should be detached from this parent.
+      // Do not invalidate from layout, because it may be unsafe to check layout
+      // at this time. However, do allow invalidations if an object changes its
+      // display locking (content-visibility: auto) status, as this may be the
+      // only chance to do that, and it's safe to do now.
+      AXObject* ax_child_from_node = obj->AXObjectCache().Get(child_node);
+      if (ax_child_from_node &&
+          ax_child_from_node->CachedParentObject() == this) {
+        children.insert(ax_child_from_node);
+      }
+    }
+  }
+
+  for (const auto& ax_child : children) {
+    if (ax_child->SupportsNameFromContents(/*recursive*/ false)) {
+      CheckSubtreeIsForLabelOrDescription(ax_child);
+    }
+  }
+}
+#endif
+
 String AXObject::TextFromElements(
     bool in_aria_labelledby_traversal,
     AXObjectSet& visited,
@@ -4635,6 +4757,9 @@ String AXObject::TextFromElements(
   for (const auto& element : elements) {
     AXObject* ax_element = AXObjectCache().Get(element);
     if (ax_element) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+      CheckSubtreeIsForLabelOrDescription(ax_element);
+#endif
       found_valid_element = true;
       AXObject* aria_labelled_by_node = nullptr;
       if (in_aria_labelledby_traversal)
@@ -5773,6 +5898,46 @@ void AXObject::UpdateChildrenIfNecessary() {
 bool AXObject::NeedsToUpdateChildren() const {
   return children_dirty_;
 }
+
+#if DCHECK_IS_ON()
+void AXObject::CheckIncludedObjectConnectedToRoot() const {
+  if (!LastKnownIsIncludedInTreeValue() || IsRoot()) {
+    return;
+  }
+
+  const AXObject* included_child = this;
+  const AXObject* ancestor = nullptr;
+  const AXObject* included_parent = nullptr;
+  for (ancestor = CachedParentObject(); ancestor;
+       ancestor = ancestor->CachedParentObject()) {
+    if (ancestor->LastKnownIsIncludedInTreeValue()) {
+      included_parent = ancestor;
+      if (included_parent->CachedChildrenIncludingIgnored().Find(
+              included_child) == kNotFound) {
+        if (AXObject* parent_for_repair = ComputeParent()) {
+          parent_for_repair->CheckIncludedObjectConnectedToRoot();
+        }
+
+        NOTREACHED() << "Cannot find included child in parents children:\n"
+                     << "\n* Child: " << included_child->ToString(true, true)
+                     << "\n* Parent:  " << included_parent->ToString(true, true)
+                     << "\n--------------\n"
+                     << included_parent->GetAXTreeForThis();
+      }
+      if (included_parent->IsRoot()) {
+        return;
+      }
+      included_child = included_parent;
+    }
+  }
+
+  NOTREACHED() << "Did not find included parent path to root:"
+               << "\n* Last found included parent: "
+               << (included_parent ? included_parent->ToString(true, true)
+                                   : "null")
+               << "\n* Current object in tree: " << GetAXTreeForThis();
+}
+#endif
 
 void AXObject::SetNeedsToUpdateChildren(bool update) const {
   CHECK(!IsDetached()) << "Cannot update children on a detached node: "
@@ -7791,6 +7956,11 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     }
     if (!GetLayoutObject())
       string_builder = string_builder + " missingLayout";
+
+    if (cached_values_only ? cached_is_used_for_label_or_description_
+                           : IsUsedForLabelOrDescription()) {
+      string_builder = string_builder + " inLabelOrDesc";
+    }
 
     if (!cached_values_only)
       string_builder = string_builder + " name=";

@@ -1015,8 +1015,10 @@ TEST_F(AccessibilityTest, PositionInHTMLLabelIgnored) {
 //
 
 TEST_F(AccessibilityTest, PositionInIgnoredObject) {
+  // Note: aria-describedby adds hidden target subtrees to the a11y tree as
+  // "ignored but included in tree".
   SetBodyInnerHTML(R"HTML(
-      <div id="hidden" hidden>Hidden.</div><p id="visible">Visible.</p>
+      <div id="hidden" hidden aria-describedby="hidden">Hidden.</div><p id="visible">Visible.</p>
       )HTML");
 
   const Node* hidden = GetElementById("hidden");
@@ -1106,8 +1108,10 @@ TEST_F(AccessibilityTest, PositionInIgnoredObject) {
 //
 
 TEST_F(AccessibilityTest, BeforePositionInARIAHiddenShouldNotSkipARIAHidden) {
+  // Note: aria-describedby adds hidden target subtrees to the a11y tree as
+  // "ignored but included in tree".
   SetBodyInnerHTML(R"HTML(
-      <div role="main" id="container">
+      <div role="main" id="container" aria-describedby="ariaHidden">
         <p id="before">Before aria-hidden.</p>
         <p id="ariaHidden" aria-hidden="true">Aria-hidden.</p>
         <p id="after">After aria-hidden.</p>
@@ -1144,9 +1148,11 @@ TEST_F(AccessibilityTest, BeforePositionInARIAHiddenShouldNotSkipARIAHidden) {
 
 TEST_F(AccessibilityTest,
        PreviousPositionAfterARIAHiddenShouldNotSkipARIAHidden) {
+  // Note: aria-describedby adds hidden target subtrees to the a11y tree as
+  // "ignored but included in tree".
   SetBodyInnerHTML(R"HTML(
       <p id="before">Before aria-hidden.</p>
-      <p id="ariaHidden" aria-hidden="true">Aria-hidden.</p>
+      <p id="ariaHidden" aria-describedby="ariaHidden" aria-hidden="true">Aria-hidden.</p>
       <p id="after">After aria-hidden.</p>
       )HTML");
 
@@ -1186,10 +1192,12 @@ TEST_F(AccessibilityTest,
 }
 
 TEST_F(AccessibilityTest, FromPositionInARIAHidden) {
+  // Note: aria-describedby adds hidden target subtrees to the a11y tree as
+  // "ignored but included in tree".
   SetBodyInnerHTML(R"HTML(
       <div role="main" id="container">
         <p id="before">Before aria-hidden.</p>
-        <p id="ariaHidden" aria-hidden="true">Aria-hidden.</p>
+        <p id="ariaHidden" aria-describedby="ariaHidden" aria-hidden="true">Aria-hidden.</p>
         <p id="after">After aria-hidden.</p>
       </div>
       )HTML");

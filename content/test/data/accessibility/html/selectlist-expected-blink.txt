@@ -16,7 +16,6 @@ rootWebArea focusable
 ++++++++++++++listBoxOption focusable ignored invisible
 ++++++++++++++listBoxOption focusable ignored invisible
 ++++++++++++++listBoxOption focusable ignored invisible
-++++++++genericContainer ignored invisible
 ++++++genericContainer
 ++++++++genericContainer ignored
 ++++++++++comboBoxMenuButton collapsed focusable value='Option 1' haspopup=listbox
@@ -24,4 +23,3 @@ rootWebArea focusable
 ++++++++++++++inlineTextBox name='Custom selectlist button'
 ++++++++genericContainer ignored
 ++++++++++listBox ignored invisible
-++++++++genericContainer ignored invisible

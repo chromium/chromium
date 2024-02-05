@@ -648,10 +648,12 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
 }
 
 TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
+  // Using aria-describedby ensures rhe ignored button is included in the tree.
   constexpr char html[] = R"HTML(
       <body>
         <a id="link" tabindex=0>link</a>
-        <button id="button" style="visibility:hidden" tabindex=0>button</button>
+        <button id="button" style="visibility:hidden" tabindex=0
+                aria-describedby="button">button</button>
         <script>
           link.addEventListener("click", () => {
             button.style.visibility = "visible";

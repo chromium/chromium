@@ -5,13 +5,11 @@ rootWebArea name='done'
 ++++++++rowGroup ignored
 ++++++++++row
 ++++++++++++cell ignored invisible
-++++++++++++++staticText ignored invisible name='AB'
 ++++++++++++cell name='B' ariaCellColumnIndex=1 tableCellColumnIndex=0
 ++++++++++++++staticText name='B'
 ++++++++++++++++inlineTextBox name='B'
 ++++++++++row
 ++++++++++++cell ignored invisible
-++++++++++++++staticText ignored invisible name='CD'
 ++++++++++++cell name='D' ariaCellColumnIndex=1 tableCellColumnIndex=0
 ++++++++++++++staticText name='D'
 ++++++++++++++++inlineTextBox name='D'

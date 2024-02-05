@@ -1,3 +1,1 @@
-StructureChanged/ChildRemoved on role=document
 === Start Continuation ===
-StructureChanged/ChildAdded on role=document
