@@ -278,10 +278,8 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
   MockAlternativeStateNameMapUpdater mock_alternative_state_name_updater(
       run_loop.QuitClosure(), autofill_client_.GetPrefs(),
       &personal_data_manager_);
-  personal_data_manager_.AddObserver(&mock_alternative_state_name_updater);
   personal_data_manager_.AddProfile(profile);
   run_loop.Run();
-  personal_data_manager_.RemoveObserver(&mock_alternative_state_name_updater);
 
   EXPECT_FALSE(
       AlternativeStateNameMap::GetInstance()->IsLocalisedStateNamesMapEmpty());

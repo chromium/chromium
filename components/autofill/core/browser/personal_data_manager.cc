@@ -397,7 +397,6 @@ void PersonalDataManager::Init(
 
   alternative_state_name_map_updater_ =
       std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
-  AddObserver(alternative_state_name_map_updater_.get());
 
   // Listen for URL deletions from browsing history.
   history_service_ = history_service;
@@ -459,9 +458,6 @@ PersonalDataManager::~PersonalDataManager() {
   CancelPendingLocalQuery(&pending_synced_local_profiles_query_);
   CancelPendingLocalQuery(&pending_creditcards_query_);
   CancelPendingServerQueries();
-
-  if (alternative_state_name_map_updater_)
-    RemoveObserver(alternative_state_name_map_updater_.get());
 }
 
 void PersonalDataManager::Shutdown() {
