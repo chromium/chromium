@@ -62,12 +62,6 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
   return task_state ? task_state->GetTask() : running_task_.Get();
 }
 
-TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
-    ScriptState* script_state) const {
-  CHECK(script_state);
-  return RunningTask(script_state->GetIsolate());
-}
-
 bool TaskAttributionTrackerImpl::IsAncestor(const TaskAttributionInfo& task,
                                             TaskAttributionId ancestor_id) {
   const TaskAttributionInfo* ancestor_task = nullptr;
@@ -126,7 +120,7 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   for (Observer* observer : observers_) {
     if (observer->GetExecutionContext() == execution_context) {
-      observer->OnCreateTaskScope(*running_task_, script_state);
+      observer->OnCreateTaskScope(*running_task_);
     }
   }
 

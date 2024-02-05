@@ -177,7 +177,7 @@ void SetCurrentTaskAsCallbackParent(
   ScriptState* script_state = callback->CallbackRelevantScriptState();
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (tracker && script_state->World().IsMainWorld()) {
-    callback->SetParentTask(tracker->RunningTask(script_state));
+    callback->SetParentTask(tracker->RunningTask(script_state->GetIsolate()));
   }
 }
 

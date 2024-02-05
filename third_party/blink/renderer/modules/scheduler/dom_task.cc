@@ -112,7 +112,7 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
   if (script_state->World().IsMainWorld()) {
     if (auto* tracker =
             ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-      parent_task_ = tracker->RunningTask(script_state);
+      parent_task_ = tracker->RunningTask(script_state->GetIsolate());
     }
   }
 

@@ -553,9 +553,7 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
 }
 
 void SoftNavigationHeuristics::OnCreateTaskScope(
-    scheduler::TaskAttributionInfo& task,
-    ScriptState* script_state) {
-  CHECK(script_state);
+    scheduler::TaskAttributionInfo& task) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   CHECK(scheduler);
   auto* tracker = scheduler->GetTaskAttributionTracker();

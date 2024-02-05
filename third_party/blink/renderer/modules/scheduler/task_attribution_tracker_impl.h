@@ -40,7 +40,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   TaskAttributionTrackerImpl();
 
   TaskAttributionInfo* RunningTask(v8::Isolate*) const override;
-  TaskAttributionInfo* RunningTask(ScriptState*) const override;
 
   bool IsAncestor(const TaskAttributionInfo& task,
                   TaskAttributionId ancestor_id) override;
@@ -59,8 +58,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
       TaskScopeType type,
       AbortSignal* abort_source,
       DOMTaskSignal* priority_source) override;
-
-  void TaskScopeCompleted(ScriptState*, TaskAttributionId);
 
   bool RegisterObserverIfNeeded(
       TaskAttributionTracker::Observer* observer) override {

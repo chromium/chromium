@@ -230,7 +230,7 @@ void History::go(ScriptState* script_state,
     scheduler::TaskAttributionInfo* task = nullptr;
     if (tracker && script_state->World().IsMainWorld() &&
         frame->IsOutermostMainFrame()) {
-      task = tracker->RunningTask(script_state);
+      task = tracker->RunningTask(script_state->GetIsolate());
       tracker->AddSameDocumentNavigationTask(task);
     }
     DCHECK(frame->Client());

@@ -95,7 +95,7 @@ blink::scheduler::TaskAttributionInfo* GetRunningTask(
   if (!script_state || !script_state->World().IsMainWorld() || !tracker) {
     return nullptr;
   }
-  return tracker->RunningTask(script_state);
+  return tracker->RunningTask(script_state->GetIsolate());
 }
 
 }  // namespace

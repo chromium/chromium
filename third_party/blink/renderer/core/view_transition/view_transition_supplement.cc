@@ -99,7 +99,7 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionInternal(
     // Set the parent task ID if we're not in an extension task (as extensions
     // are not currently supported in TaskAttributionTracker).
     if (tracker && script_state->World().IsMainWorld()) {
-      callback->SetParentTask(tracker->RunningTask(script_state));
+      callback->SetParentTask(tracker->RunningTask(script_state->GetIsolate()));
     }
   }
   return supplement->StartTransition(document, callback, types,

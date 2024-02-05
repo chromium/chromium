@@ -38,7 +38,7 @@ class V8IdleTask : public IdleTask {
     ScriptState* script_state = callback_->CallbackRelevantScriptState();
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (tracker && script_state->World().IsMainWorld()) {
-      parent_task_ = tracker->RunningTask(script_state);
+      parent_task_ = tracker->RunningTask(script_state->GetIsolate());
     }
   }
 
