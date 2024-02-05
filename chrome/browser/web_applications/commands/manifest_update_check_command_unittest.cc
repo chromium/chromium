@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
@@ -39,6 +40,16 @@ namespace web_app {
 
 static const int kUnimportantIconSize1 = 4;
 static const int kUnimportantIconSize2 = 8;
+
+namespace {
+apps::FileHandlers CreateFileHandlersFromManifest(
+    const std::vector<blink::mojom::ManifestFileHandlerPtr>& file_handler,
+    const GURL& app_scope) {
+  WebAppInstallInfo web_app_info;
+  PopulateFileHandlerInfoFromManifest(file_handler, app_scope, &web_app_info);
+  return web_app_info.file_handlers;
+}
+}  // namespace
 
 class ManifestUpdateCheckUtilsTest : public testing::Test {
  public:

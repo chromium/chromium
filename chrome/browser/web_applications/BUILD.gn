@@ -270,6 +270,8 @@ source_set("web_applications") {
     "web_app_icon_generator.h",
     "web_app_icon_manager.cc",
     "web_app_icon_manager.h",
+    "web_app_icon_operations.cc",
+    "web_app_icon_operations.h",
     "web_app_id_constants.h",
     "web_app_install_finalizer.cc",
     "web_app_install_finalizer.h",

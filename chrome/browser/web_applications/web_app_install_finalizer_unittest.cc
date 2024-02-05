@@ -481,8 +481,8 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
   // Update the app, adding a file handler.
   std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
   AddFileHandler(&file_handlers);
-  info->file_handlers =
-      CreateFileHandlersFromManifest(file_handlers, info->start_url);
+  PopulateFileHandlerInfoFromManifest(file_handlers, info->start_url,
+                                      info.get());
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode,
                          OsHooksErrors>

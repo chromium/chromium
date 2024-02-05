@@ -89,27 +89,6 @@ constexpr int kMaxIcons = 20;
 constexpr SquareSizePx kMaxIconSize =
     webapps::InstallableEvaluator::kMaximumIconSizeInPx;
 
-// Returns whether the home tab icons exist.
-bool HomeTabIconsExistInTabStrip(const WebAppInstallInfo* web_app_info) {
-  if (!web_app_info->tab_strip.has_value()) {
-    return false;
-  }
-
-  if (!absl::holds_alternative<blink::Manifest::HomeTabParams>(
-          web_app_info->tab_strip.value().home_tab)) {
-    return false;
-  }
-
-  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
-      web_app_info->tab_strip.value().home_tab);
-
-  if (home_tab.icons.empty()) {
-    return false;
-  }
-
-  return true;
-}
-
 // Append non-empty square icons from |icons_map| onto the |square_icons| list.
 void AddSquareIconsFromMap(std::vector<SkBitmap>* square_icons,
                            const IconsMap& icons_map) {
@@ -154,8 +133,9 @@ void AddSquareIconsFromBitmaps(
 
 // Populate |web_app_info|'s shortcuts_menu_item_infos vector using the
 // blink::Manifest's shortcuts vector.
-std::vector<WebAppShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
-    const std::vector<blink::Manifest::ShortcutItem>& shortcuts) {
+void PopulateWebAppShortcutsMenuItemInfos(
+    const std::vector<blink::Manifest::ShortcutItem>& shortcuts,
+    WebAppInstallInfo* web_app_info) {
   std::vector<WebAppShortcutsMenuItemInfo> web_app_shortcut_infos;
   web_app_shortcut_infos.reserve(shortcuts.size());
   int num_shortcut_icons = 0;
@@ -178,6 +158,12 @@ std::vector<WebAppShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
 
         WebAppShortcutsMenuItemInfo::Icon info;
 
+        if (base::Contains(icon.sizes, gfx::Size()) &&
+            icon.src.spec().find(".svg") != std::string::npos) {
+          web_app_info->icons_with_size_any.shortcut_menu_icons[purpose] =
+              icon.src;
+        }
+
         // Filter out non-square or too large icons.
         auto valid_size_it =
             base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
@@ -189,6 +175,19 @@ std::vector<WebAppShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
         // TODO(https://crbug.com/1071308): Take the declared icon density and
         // sizes into account.
         info.square_size_px = valid_size_it->width();
+
+        // Keep track of the sizes passed in via the manifest which will be
+        // later used to compute how many SVG icons of size:any we need to
+        // download.
+        if (!web_app_info->icons_with_size_any.shortcut_menu_icons.empty()) {
+          for (const auto& icon_size : icon.sizes) {
+            if (icon_size == gfx::Size()) {
+              continue;
+            }
+            web_app_info->icons_with_size_any.shortcut_menu_icons_provided_sizes
+                .emplace(icon_size);
+          }
+        }
 
         DCHECK_LE(num_shortcut_icons, kMaxIcons);
         if (num_shortcut_icons < kMaxIcons) {
@@ -209,7 +208,7 @@ std::vector<WebAppShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
     web_app_shortcut_infos.push_back(std::move(shortcut_info));
   }
 
-  return web_app_shortcut_infos;
+  web_app_info->shortcuts_menu_item_infos = std::move(web_app_shortcut_infos);
 }
 
 std::vector<SquareSizePx> GetSquareSizePxs(
@@ -376,14 +375,28 @@ void PopulateShortcutItemIcons(WebAppInstallInfo* web_app_info,
       for (const auto& icon :
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
         auto it = icons_map.find(icon.url);
+        // Resize bitmaps only if the icon size is non-zero. The alternative
+        // happens mostly for icons with a size of ANY passed in via the
+        // manifest, for which we do not need to resize since it is downloaded
+        // in all sizes..
         if (it != icons_map.end()) {
-          std::set<SquareSizePx> sizes_to_generate;
-          sizes_to_generate.emplace(icon.square_size_px);
-          SizeToBitmap resized_bitmaps(
-              ConstrainBitmapsToSizes(it->second, sizes_to_generate));
+          if (icon.square_size_px != 0) {
+            std::set<SquareSizePx> sizes_to_generate;
+            sizes_to_generate.emplace(icon.square_size_px);
+            SizeToBitmap resized_bitmaps(
+                ConstrainBitmapsToSizes(it->second, sizes_to_generate));
 
-          // Don't overwrite as a shortcut item could have multiple icon urls.
-          bitmaps.insert(resized_bitmaps.begin(), resized_bitmaps.end());
+            // Don't overwrite as a shortcut item could have multiple icon urls.
+            bitmaps.insert(resized_bitmaps.begin(), resized_bitmaps.end());
+          } else {
+            // For icons that do not need resizing, pass in the bitmaps as it
+            // is, barring ones that have no intrinsic size.
+            for (const auto& bitmap : it->second) {
+              if (!bitmap.empty()) {
+                bitmaps[bitmap.width()] = bitmap;
+              }
+            }
+          }
         }
       }
       shortcut_icon_bitmaps.SetBitmapsForPurpose(purpose, std::move(bitmaps));
@@ -423,9 +436,11 @@ void PopulateFileHandlingIcons(WebAppInstallInfo* web_app_info,
         continue;
 
       for (const SkBitmap& bitmap : downloaded_bitmaps_for_url->second) {
-        // Filter out non-square or too large icons.
-        if (bitmap.width() != bitmap.height() || bitmap.width() > kMaxIconSize)
+        // Filter out bitmaps that are empty, non-square or are too large.
+        if (bitmap.empty() || bitmap.width() != bitmap.height() ||
+            bitmap.width() > kMaxIconSize) {
           continue;
+        }
 
         // Add the size to the FileHandler icon metadata.
         apps::IconInfo icon_info_with_size(icon_info_without_size);
@@ -447,7 +462,7 @@ void PopulateFileHandlingIcons(WebAppInstallInfo* web_app_info,
 void PopulateHomeTabIcons(WebAppInstallInfo* web_app_info,
                           const IconsMap& icons_map,
                           IconsMap& other_icon_bitmaps) {
-  if (!HomeTabIconsExistInTabStrip(web_app_info)) {
+  if (!HomeTabIconsExistInTabStrip(*web_app_info)) {
     return;
   }
 
@@ -469,8 +484,9 @@ void PopulateHomeTabIcons(WebAppInstallInfo* web_app_info,
     }
 
     for (const SkBitmap& bitmap : downloaded_bitmaps_for_url->second) {
-      // Filter out non-square or too large icons
-      if (bitmap.width() != bitmap.height() || bitmap.width() > kMaxIconSize) {
+      // Filter out bitmaps that are empty, non-square or are too large.
+      if (bitmap.empty() || bitmap.width() != bitmap.height() ||
+          bitmap.width() > kMaxIconSize) {
         continue;
       }
 
@@ -510,49 +526,11 @@ ToWebAppTranslations(
 
 }  // namespace
 
-IconUrlWithSize IconUrlWithSize::CreateForUnspecifiedSize(
-    const GURL& icon_url) {
-  return IconUrlWithSize(icon_url, gfx::Size());
-}
-
-IconUrlWithSize IconUrlWithSize::Create(const GURL& icon_url,
-                                        const gfx::Size& size) {
-  CHECK(!size.IsZero());
-  return IconUrlWithSize(icon_url, size);
-}
-
-IconUrlWithSize::IconUrlWithSize(GURL url, gfx::Size size)
-    : url(url), size(size) {}
-
-IconUrlWithSize::~IconUrlWithSize() = default;
-
-IconUrlWithSize::IconUrlWithSize(const IconUrlWithSize& icon_urls_with_size) =
-    default;
-
-IconUrlWithSize::IconUrlWithSize(IconUrlWithSize&& icon_urls_with_size) =
-    default;
-
-IconUrlWithSize& IconUrlWithSize::operator=(
-    const IconUrlWithSize& icon_urls_with_size) = default;
-
-bool IconUrlWithSize::operator<(const IconUrlWithSize& rhs) const {
-  if (url != rhs.url) {
-    return url < rhs.url;
-  }
-
-  if (size.width() != rhs.size.width()) {
-    return size.width() < rhs.size.width();
-  }
-
-  return size.height() < rhs.size.height();
-}
-
-bool IconUrlWithSize::operator==(const IconUrlWithSize& rhs) const = default;
-
-apps::FileHandlers CreateFileHandlersFromManifest(
+void PopulateFileHandlerInfoFromManifest(
     const std::vector<blink::mojom::ManifestFileHandlerPtr>&
         manifest_file_handlers,
-    const GURL& app_scope) {
+    const GURL& app_scope,
+    WebAppInstallInfo* web_app_info) {
   apps::FileHandlers web_app_file_handlers;
 
   for (const auto& manifest_file_handler : manifest_file_handlers) {
@@ -580,9 +558,28 @@ apps::FileHandlers CreateFileHandlersFromManifest(
           icon_info.url = image_resource.src;
           icon_info.purpose =
               ManifestPurposeToIconInfoPurpose(manifest_purpose);
+          if (base::Contains(image_resource.sizes, gfx::Size()) &&
+              image_resource.src.spec().find(".svg") != std::string::npos) {
+            web_app_info->icons_with_size_any
+                .file_handling_icons[manifest_purpose] = image_resource.src;
+          }
+
           web_app_file_handler.downloaded_icons.push_back(std::move(icon_info));
           // The list will be pruned and the sizes will be filled in when images
           // are actually downloaded.
+        }
+
+        // Keep track of the sizes passed in via the manifest which will be
+        // later used to compute how many SVG icons of size:any we need to
+        // download.
+        if (!web_app_info->icons_with_size_any.file_handling_icons.empty()) {
+          for (const auto& icon_size : image_resource.sizes) {
+            if (icon_size == gfx::Size()) {
+              continue;
+            }
+            web_app_info->icons_with_size_any.file_handling_icon_provided_sizes
+                .emplace(icon_size);
+          }
         }
       }
     }
@@ -590,13 +587,16 @@ apps::FileHandlers CreateFileHandlersFromManifest(
     web_app_file_handlers.push_back(std::move(web_app_file_handler));
   }
 
-  return web_app_file_handlers;
+  web_app_info->file_handlers = std::move(web_app_file_handlers);
 }
 
-// Create the WebAppInstallInfo icons list *outside* of |web_app_info|, so
-// that we can decide later whether or not to replace the existing icons.
-std::vector<apps::IconInfo> CreateWebAppInstallInfoIcons(
-    const std::vector<blink::Manifest::ImageResource> icons) {
+// Construct a list of icons from the parsed icons field of the manifest
+// *outside* of |web_app_info|, and update the current web_app_info if found.
+// If any icons are correctly specified in the manifest, they take precedence
+// over any we picked up from web page metadata.
+void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
+    const std::vector<blink::Manifest::ImageResource> icons,
+    WebAppInstallInfo* web_app_info) {
   std::vector<apps::IconInfo> web_app_icons;
   for (const auto& icon : icons) {
     // An icon's purpose vector should never be empty (the manifest parser
@@ -607,6 +607,11 @@ std::vector<apps::IconInfo> CreateWebAppInstallInfoIcons(
       apps::IconInfo info;
 
       if (!icon.sizes.empty()) {
+        if (base::Contains(icon.sizes, gfx::Size()) &&
+            icon.src.spec().find(".svg") != std::string::npos) {
+          web_app_info->icons_with_size_any.manifest_icons[purpose] = icon.src;
+        }
+
         // Filter out non-square or too large icons.
         auto valid_size =
             base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
@@ -616,6 +621,7 @@ std::vector<apps::IconInfo> CreateWebAppInstallInfoIcons(
         if (valid_size == icon.sizes.end()) {
           continue;
         }
+
         // TODO(https://crbug.com/1071308): Take the declared icon density and
         // sizes into account.
         info.square_size_px = valid_size->width();
@@ -627,11 +633,36 @@ std::vector<apps::IconInfo> CreateWebAppInstallInfoIcons(
 
       // Limit the number of icons we store on the user's machine.
       if (web_app_icons.size() == kMaxIcons) {
-        return web_app_icons;
+        break;
       }
     }
+
+    // Keep track of the sizes passed in via the manifest which will be
+    // later used to compute how many SVG icons of size:any we need to
+    // download.
+    // This is handled outside the loop above to reduce the number of iterations
+    // so that purpose and size metadata is parsed sequentially one after the
+    // other.
+    if (!web_app_info->icons_with_size_any.manifest_icons.empty()) {
+      for (const auto& icon_size : icon.sizes) {
+        if (icon_size == gfx::Size()) {
+          continue;
+        }
+        web_app_info->icons_with_size_any.manifest_icon_provided_sizes.emplace(
+            icon_size);
+      }
+    }
+
+    if (web_app_icons.size() == kMaxIcons) {
+      break;
+    }
   }
-  return web_app_icons;
+
+  // If any icons have been found from the manifest, set them inside the
+  // |web_app_info|.
+  if (!web_app_icons.empty()) {
+    web_app_info->manifest_icons = std::move(web_app_icons);
+  }
 }
 
 // Create the WebAppInstallInfo icons list *outside* of |web_app_info|, so
@@ -639,15 +670,23 @@ std::vector<apps::IconInfo> CreateWebAppInstallInfoIcons(
 // home tab icons.
 // Icons are replaced if we filter out icons that are too large or non-square
 // which limits the number of icons.
-std::vector<blink::Manifest::ImageResource> FilterWebAppHomeTabIcons(
-    const std::vector<blink::Manifest::ImageResource>& icons) {
+void PopulateHomeTabIconsFromHomeTabManifestParams(
+    WebAppInstallInfo* web_app_info) {
+  auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+      web_app_info->tab_strip->home_tab);
   std::vector<blink::Manifest::ImageResource> home_tab_icons;
-  for (const auto& icon : icons) {
+  for (const auto& icon : home_tab.icons) {
     // An icon's purpose vector should never be empty (the manifest parser
     // should have added ANY if there was no purpose specified in the manifest).
     DCHECK(!icon.purpose.empty());
 
     if (!icon.sizes.empty()) {
+      if (base::Contains(icon.sizes, gfx::Size()) &&
+          icon.src.spec().find(".svg") != std::string::npos) {
+        for (const auto& purpose : icon.purpose) {
+          web_app_info->icons_with_size_any.home_tab_icons[purpose] = icon.src;
+        }
+      }
       // Filter out non-square or too large icons.
       auto valid_size =
           base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
@@ -656,6 +695,19 @@ std::vector<blink::Manifest::ImageResource> FilterWebAppHomeTabIcons(
           });
       if (valid_size == icon.sizes.end()) {
         continue;
+      }
+
+      // Keep track of the sizes passed in via the manifest which will be
+      // later used to compute how many SVG icons of size:any we need to
+      // download.
+      if (!web_app_info->icons_with_size_any.home_tab_icons.empty()) {
+        for (const auto& icon_size : icon.sizes) {
+          if (icon_size == gfx::Size()) {
+            continue;
+          }
+          web_app_info->icons_with_size_any.home_tab_icon_provided_sizes
+              .emplace(icon_size);
+        }
       }
     }
 
@@ -666,7 +718,9 @@ std::vector<blink::Manifest::ImageResource> FilterWebAppHomeTabIcons(
       break;
     }
   }
-  return home_tab_icons;
+
+  home_tab.icons = std::move(home_tab_icons);
+  web_app_info->tab_strip->home_tab = home_tab;
 }
 
 void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
@@ -731,19 +785,12 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   if (!manifest.display_override.empty())
     web_app_info->display_override = manifest.display_override;
 
-  // Create the WebAppInstallInfo icons list *outside* of |web_app_info|, so
-  // that we can decide later whether or not to replace the existing icons.
-  std::vector<apps::IconInfo> web_app_icons =
-      CreateWebAppInstallInfoIcons(manifest.icons);
-
-  // If any icons are correctly specified in the manifest, they take precedence
-  // over any we picked up from web page metadata.
-  if (!web_app_icons.empty())
-    web_app_info->manifest_icons = std::move(web_app_icons);
+  UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest.icons,
+                                                   web_app_info);
 
   // TODO(crbug.com/1218210): Confirm incoming icons to write to web_app_info.
-  web_app_info->file_handlers = CreateFileHandlersFromManifest(
-      manifest.file_handlers, web_app_info->scope);
+  PopulateFileHandlerInfoFromManifest(manifest.file_handlers,
+                                      web_app_info->scope, web_app_info);
 
   web_app_info->share_target = ToWebAppShareTarget(manifest.share_target);
 
@@ -772,8 +819,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   }
 
   DCHECK(web_app_info->shortcuts_menu_item_infos.empty());
-  web_app_info->shortcuts_menu_item_infos =
-      ToWebAppShortcutsMenuItemInfos(manifest.shortcuts);
+  PopulateWebAppShortcutsMenuItemInfos(manifest.shortcuts, web_app_info);
 
   web_app_info->capture_links = manifest.capture_links;
 
@@ -801,12 +847,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   web_app_info->tab_strip = manifest.tab_strip;
 
-  if (HomeTabIconsExistInTabStrip(web_app_info)) {
-    auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
-        web_app_info->tab_strip->home_tab);
-
-    home_tab.icons = FilterWebAppHomeTabIcons(home_tab.icons);
-    web_app_info->tab_strip->home_tab = home_tab;
+  if (HomeTabIconsExistInTabStrip(*web_app_info)) {
+    PopulateHomeTabIconsFromHomeTabManifestParams(web_app_info);
   }
 }
 
@@ -816,92 +858,6 @@ WebAppInstallInfo CreateWebAppInfoFromManifest(
   WebAppInstallInfo info(manifest.id);
   UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
   return info;
-}
-
-namespace {
-
-std::vector<IconUrlWithSize> GetAppIconUrls(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> urls;
-
-  for (const apps::IconInfo& info : web_app_info.manifest_icons) {
-    urls.emplace_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
-  }
-
-  return urls;
-}
-
-std::vector<IconUrlWithSize> GetShortcutIcons(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> urls;
-  for (const WebAppShortcutsMenuItemInfo& shortcut :
-       web_app_info.shortcuts_menu_item_infos) {
-    for (IconPurpose purpose : kIconPurposes) {
-      for (const WebAppShortcutsMenuItemInfo::Icon& icon :
-           shortcut.GetShortcutIconInfosForPurpose(purpose)) {
-        urls.emplace_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.url));
-      }
-    }
-  }
-
-  return urls;
-}
-
-std::vector<IconUrlWithSize> GetFileHandlingIcons(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> urls;
-
-  for (const apps::FileHandler& file_handler : web_app_info.file_handlers) {
-    for (const apps::IconInfo& icon : file_handler.downloaded_icons) {
-      urls.emplace_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.url));
-    }
-  }
-
-  return urls;
-}
-
-std::vector<IconUrlWithSize> GetHomeTabIcons(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> urls;
-
-  if (!HomeTabIconsExistInTabStrip(&web_app_info)) {
-    return urls;
-  }
-
-  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
-      web_app_info.tab_strip.value().home_tab);
-
-  for (const auto& icon : home_tab.icons) {
-    urls.emplace_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.src));
-  }
-
-  return urls;
-}
-
-IconUrlSizeSet RemoveDuplicates(std::vector<IconUrlWithSize> from_urls) {
-  return IconUrlSizeSet{from_urls};
-}
-
-void RemoveInvalidUrls(std::vector<IconUrlWithSize>& urls) {
-  std::erase_if(urls, [](const IconUrlWithSize& url_with_size) {
-    return !url_with_size.url.is_valid();
-  });
-}
-
-}  // namespace
-
-IconUrlSizeSet GetValidIconUrlsToDownload(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> icon_urls;
-
-  base::Extend(icon_urls, GetAppIconUrls(web_app_info));
-  base::Extend(icon_urls, GetShortcutIcons(web_app_info));
-  base::Extend(icon_urls, GetFileHandlingIcons(web_app_info));
-  base::Extend(icon_urls, GetHomeTabIcons(web_app_info));
-
-  RemoveInvalidUrls(std::ref(icon_urls));
-
-  return RemoveDuplicates(std::move(icon_urls));
 }
 
 void PopulateOtherIcons(WebAppInstallInfo* web_app_info,
@@ -1391,6 +1347,26 @@ void ApplyParamsToFinalizeOptions(
         install_params.system_app_type.value();
   }
 #endif
+}
+
+bool HomeTabIconsExistInTabStrip(const WebAppInstallInfo& web_app_info) {
+  if (!web_app_info.tab_strip.has_value()) {
+    return false;
+  }
+
+  if (!absl::holds_alternative<blink::Manifest::HomeTabParams>(
+          web_app_info.tab_strip.value().home_tab)) {
+    return false;
+  }
+
+  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+      web_app_info.tab_strip.value().home_tab);
+
+  if (home_tab.icons.empty()) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace web_app

@@ -1218,6 +1218,143 @@ TEST(WebAppInstallUtils, PopulateHomeTabIcons_TabStrip) {
   EXPECT_EQ(1U, web_app_info.other_icon_bitmaps.size());
 }
 
+// Tests proper parsing of ManifestImageResource icons from the manifest into
+// |icons_with_size_any| based on the absence of a size parameter.
+TEST(WebAppInstallUtils, PopulateAnyIconsCorrectlyManifestParsingSVGOnly) {
+  WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(/*value=*/true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
+
+  WebAppInstallInfo web_app_info;
+  // Generate expected data structure for |icons_with_size_any|.
+  IconsWithSizeAny expected_icon_metadata;
+
+  const GURL manifest_icon_no_size_url(
+      "https://www.example.com/manifest_image_no_size.svg");
+  const GURL manifest_icon_size_url(
+      "https://www.example.com/manifest_image_size.svg");
+  const GURL file_handling_no_size_url(
+      "https://www.example.com/file_handling_no_size.svg");
+  const GURL file_handling_size_url(
+      "https://www.example.com/file_handling_size.png");
+  const GURL shortcut_icon_no_size_url(
+      "https://www.example.com/shortcut_menu_icon_no_size.svg");
+  const GURL shortcut_icon_size_url(
+      "https://www.example.com/shortcut_menu_icon_size.svg");
+  const GURL tab_strip_icon_no_size_url(
+      "https://www.example.com/tab_strip_icon_no_size.svg");
+  const GURL tab_strip_icon_size_url(
+      "https://www.example.com/tab_strip_icon_size.jpg");
+
+  blink::mojom::Manifest manifest;
+
+  // Sample manifest icons, one with a size specified, one without.
+  blink::Manifest::ImageResource manifest_icon_no_size;
+  manifest_icon_no_size.src = manifest_icon_no_size_url;
+  manifest_icon_no_size.sizes = {{0, 0}, {196, 196}};
+  manifest_icon_no_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY,
+      blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+  manifest.icons.push_back(std::move(manifest_icon_no_size));
+
+  // Set up the expected icon metadata for manifest icons.
+  expected_icon_metadata.manifest_icons[IconPurpose::ANY] =
+      manifest_icon_no_size_url;
+  expected_icon_metadata.manifest_icons[IconPurpose::MONOCHROME] =
+      manifest_icon_no_size_url;
+  expected_icon_metadata.manifest_icon_provided_sizes.emplace(196, 196);
+
+  blink::Manifest::ImageResource manifest_icon_size;
+  manifest_icon_size.src = manifest_icon_size_url;
+  manifest_icon_size.sizes = {{24, 24}};
+  manifest_icon_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest.icons.push_back(std::move(manifest_icon_size));
+  expected_icon_metadata.manifest_icon_provided_sizes.emplace(24, 24);
+
+  // Sample file handler with no size specified for icons.
+  auto file_handler = blink::mojom::ManifestFileHandler::New();
+  file_handler->action = GURL("https://www.action.com/");
+  file_handler->name = u"Random File";
+  file_handler->accept[u"text/html"] = {u".html"};
+
+  blink::Manifest::ImageResource file_handling_icon_no_size;
+  file_handling_icon_no_size.src = file_handling_no_size_url;
+  file_handling_icon_no_size.sizes = {{0, 0}};
+  file_handling_icon_no_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+  file_handler->icons.push_back(std::move(file_handling_icon_no_size));
+
+  // Set up the expected icon metadata for file handling icons.
+  expected_icon_metadata.file_handling_icons[IconPurpose::MASKABLE] =
+      file_handling_no_size_url;
+
+  blink::Manifest::ImageResource file_handling_icon_size;
+  file_handling_icon_size.src = file_handling_size_url;
+  file_handling_icon_size.sizes = {{64, 64}};
+  file_handling_icon_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+  file_handler->icons.push_back(std::move(file_handling_icon_size));
+  manifest.file_handlers.push_back(std::move(file_handler));
+  expected_icon_metadata.file_handling_icon_provided_sizes.emplace(64, 64);
+
+  // Sample shortcut menu item info with no size specified for icons.
+  blink::Manifest::ShortcutItem shortcut_item;
+  shortcut_item.name = u"Shortcut Name";
+  shortcut_item.url = GURL("https://www.example.com");
+
+  blink::Manifest::ImageResource shortcut_icon_no_size;
+  shortcut_icon_no_size.src = shortcut_icon_no_size_url;
+  shortcut_icon_no_size.sizes = {{0, 0}, {512, 512}};
+  shortcut_icon_no_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY};
+  shortcut_item.icons.push_back(std::move(shortcut_icon_no_size));
+
+  // Set up the expected icon metadata for shortcut menu icons.
+  expected_icon_metadata.shortcut_menu_icons[IconPurpose::ANY] =
+      shortcut_icon_no_size_url;
+  expected_icon_metadata.shortcut_menu_icons_provided_sizes.emplace(512, 512);
+
+  blink::Manifest::ImageResource shortcut_icon_with_size;
+  shortcut_icon_with_size.src = shortcut_icon_size_url;
+  shortcut_icon_with_size.sizes = {{48, 48}};
+  shortcut_icon_with_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+  shortcut_item.icons.push_back(std::move(shortcut_icon_with_size));
+  manifest.shortcuts.push_back(std::move(shortcut_item));
+  expected_icon_metadata.shortcut_menu_icons_provided_sizes.emplace(48, 48);
+
+  // Sample home tab strip metadata with no size specified for icons.
+  TabStrip tab_strip;
+  blink::Manifest::HomeTabParams home_tab_params;
+
+  blink::Manifest::ImageResource tab_strip_icon_no_size;
+  tab_strip_icon_no_size.src = tab_strip_icon_no_size_url;
+  tab_strip_icon_no_size.sizes = {{0, 0}};
+  tab_strip_icon_no_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+  home_tab_params.icons.push_back(std::move(tab_strip_icon_no_size));
+
+  blink::Manifest::ImageResource tab_strip_icon_size;
+  tab_strip_icon_size.src = tab_strip_icon_size_url;
+  tab_strip_icon_size.sizes = {{16, 16}};
+  tab_strip_icon_size.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY};
+  home_tab_params.icons.push_back(std::move(tab_strip_icon_size));
+  tab_strip.home_tab = std::move(home_tab_params);
+  manifest.tab_strip = std::move(tab_strip);
+
+  // Set up the expected icon metadata for home tab icons.
+  expected_icon_metadata.home_tab_icons[IconPurpose::MONOCHROME] =
+      tab_strip_icon_no_size_url;
+  expected_icon_metadata.home_tab_icon_provided_sizes.emplace(16, 16);
+
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("https://www.random_manifest.com"), &web_app_info);
+
+  ASSERT_EQ(expected_icon_metadata, web_app_info.icons_with_size_any);
+}
+
 class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {
  public:
   FileHandlersFromManifestTest() {
@@ -1287,8 +1424,10 @@ TEST_P(FileHandlersFromManifestTest, Basic) {
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
       CreateManifestFileHandlers(6);
 
-  apps::FileHandlers file_handlers =
-      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+  WebAppInstallInfo web_app_info;
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
+  const apps::FileHandlers& file_handlers = web_app_info.file_handlers;
   ASSERT_EQ(file_handlers.size(), 6U);
   for (unsigned i = 0; i < 6U; ++i) {
     EXPECT_EQ(file_handlers[i].action, MakeActionUrl(i));
@@ -1331,8 +1470,8 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
       CreateManifestFileHandlers(1);
   WebAppInstallInfo web_app_info;
-  web_app_info.file_handlers =
-      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
 
   const GURL first_image_url = MakeImageUrl(0);
   const GURL second_image_url = MakeImageUrlForSecondImage(0);
@@ -1452,8 +1591,8 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlingAndHomeTabIcons) {
   // Put icons in for file handlers
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
       CreateManifestFileHandlers(1);
-  web_app_info.file_handlers =
-      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
 
   const GURL kFileHandlerIconUrl1 = MakeImageUrlForSecondImage(0);
   const GURL kFileHandlerIconUrl2 = MakeImageUrl(0);
