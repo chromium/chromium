@@ -1698,6 +1698,50 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       CookiesAccessReportedCorrectly) {
+  if (!IsDeprecateCookiesTreeModelEnabled()) {
+    return;
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  // Validate that the allowed browsing data model is empty.
+  auto* allowed_browsing_data_model =
+      content_settings->allowed_browsing_data_model();
+  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+
+  SetDataForType("Cookie", web_contents());
+  WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
+
+  // Validate that cookie is fetched to browsing data model.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  std::unique_ptr<net::CanonicalCookie> data_key = net::CanonicalCookie::Create(
+      testOrigin.GetURL(), "foo=bar; Path=/browsing_data", base::Time::Now(),
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  ValidateBrowsingDataEntries(allowed_browsing_data_model,
+                              {{kTestHost,
+                                *(data_key.get()),
+                                {{BrowsingDataModel::StorageType::kCookie},
+                                 /*storage_size=*/0,
+                                 /*cookie_count=*/1}}});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
+
+  // Remove cookie entry.
+  RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+  ASSERT_FALSE(HasDataForType("Cookie", web_contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        FederatedIdentityHandledCorrectly) {
   // Setup identity provider (IDP).
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());

@@ -784,7 +784,9 @@ void BrowsingDataModel::AddBrowsingData(const DataKey& data_key,
   auto& entry = browsing_data_entries_[data_owner][data_key];
 
   entry.storage_size += storage_size;
-  entry.cookie_count += cookie_count;
+  // Per canonical cookie the count should always be 1, otherwise this count is
+  // irrelevant.
+  entry.cookie_count = cookie_count;
   entry.storage_types.Put(storage_type);
 }
 

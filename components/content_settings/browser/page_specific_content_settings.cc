@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/cookie_helper.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -982,11 +983,27 @@ void PageSpecificContentSettings::OnCookiesAccessed(
   originating_page = originating_page ? originating_page : &page();
   if (details.cookie_list.empty())
     return;
+
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    auto& model = details.blocked_by_policy ? blocked_browsing_data_model_
+                                            : allowed_browsing_data_model_;
+    for (const auto& cookie : details.cookie_list) {
+      // The size isn't relevant here and won't be displayed in the UI.
+      model->AddBrowsingData(cookie, BrowsingDataModel::StorageType::kCookie,
+                             /*storage_size=*/0,
+                             /*cookie_count=*/1);
+    }
+  } else {
+    auto& local_shared_objects = details.blocked_by_policy
+                                     ? blocked_local_shared_objects_
+                                     : allowed_local_shared_objects_;
+    local_shared_objects.cookies()->AddCookies(details);
+  }
+
   if (details.blocked_by_policy) {
-    blocked_local_shared_objects_.cookies()->AddCookies(details);
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
-    allowed_local_shared_objects_.cookies()->AddCookies(details);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
