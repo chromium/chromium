@@ -170,6 +170,7 @@ Most common flags are:
 |------|-------------|
 | max_len | Maximum length of test input. |
 | timeout | Timeout of seconds. Units slower than this value will be reported as bugs. |
+| rss_limit_mb | Memory usage limit in Mb, default 2048. Some Chrome targets, such as Blink, require more than the default to initialize. |
 
 Full list of options can be found at [libFuzzer options] page and by running
 the binary with `-help=1`.
