@@ -53,6 +53,13 @@ Verdict RulesService::GetPasteVerdict(
   return rules_manager_.GetVerdict(Rule::Restriction::kClipboard, context);
 }
 
+Verdict RulesService::GetCopyRestrictedBySourceVerdict(
+    const GURL& source) const {
+  return rules_manager_.GetVerdict(
+      Rule::Restriction::kClipboard,
+      {.source = {.url = source, .incognito = profile_->IsIncognitoProfile()}});
+}
+
 Verdict RulesService::GetCopyToOSClipboardVerdict(const GURL& source) const {
   return rules_manager_.GetVerdict(
       Rule::Restriction::kClipboard,
