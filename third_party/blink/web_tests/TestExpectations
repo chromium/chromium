@@ -6695,3 +6695,7 @@ crbug.com/1505556 [ Mac ] http/tests/inspector-protocol/bfcache/report-back-forw
 
 # Flaky test
 crbug.com/1521140 [ Mac ] inspector-protocol/timeline/render-blocking-style.js [ Failure Pass ]
+
+# Gardener: 2024-02-05
+crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-domainhint.https.html [ Timeout Pass ]
+crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-error-basic.https.html [ Timeout Pass ]
