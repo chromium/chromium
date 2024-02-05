@@ -628,15 +628,8 @@ class HoldingSpaceUiDragAndDropBrowserTest
   raw_ptr<DropTargetView> drop_target_view_ = nullptr;
 };
 
-// Flaky on ChromeOS bots: crbug.com/1338054
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragAndDrop DISABLED_DragAndDrop
-#else
-#define MAYBE_DragAndDrop DragAndDrop
-#endif
 // Verifies that drag-and-drop of holding space items works.
-IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
-                       MAYBE_DragAndDrop) {
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
