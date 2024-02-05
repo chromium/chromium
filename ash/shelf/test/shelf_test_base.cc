@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/test/ash_test_util.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 
@@ -57,6 +58,16 @@ void ShelfTestBase::AddAppShortcutsUntilOverflow(bool use_alternative_color) {
                              ? icon_color_generator_.GetAlternativeColor()
                              : icon_color_generator_.default_color());
   }
+}
+
+ShelfItem ShelfTestBase::AddWebAppShortcut() {
+  const int icon_dimension = 28;
+  const int badge_icon_dimension = 18;
+  ShelfItem item = ShelfTestUtil::AddWebAppShortcut(
+      "shortcut_id", true,
+      gfx::test::CreateImageSkia(icon_dimension, SK_ColorRED),
+      gfx::test::CreateImageSkia(badge_icon_dimension, SK_ColorCYAN));
+  return item;
 }
 
 ShelfID ShelfTestBase::AddAppShortcutWithIconColor(ShelfItemType item_type,

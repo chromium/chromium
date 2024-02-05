@@ -4237,6 +4237,7 @@ test("ash_pixeltests") {
     "scalable_iph/scalable_iph_pixeltest.cc",
     "shelf/login_shelf_view_pixeltest.cc",
     "shelf/scrollable_shelf_view_pixeltest.cc",
+    "shelf/shelf_app_button_pixeltest.cc",
     "shelf/shelf_layout_manager_pixeltest.cc",
     "system/accessibility/accessibility_detailed_view_pixeltest.cc",
     "system/audio/audio_detailed_view_pixeltest.cc",
