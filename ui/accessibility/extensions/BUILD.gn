@@ -92,6 +92,36 @@ locale_files = [
 ]
 
 #
+# Animation Policy
+#
+
+group("animation") {
+  deps = [
+    ":animation_copy",
+    ":animation_strings",
+  ]
+}
+
+grit("animation_strings") {
+  source = "strings/accessibility_extensions_strings.grd"
+  outputs = locale_files
+  output_dir = "$root_out_dir/animation"
+  resource_ids = ""
+}
+
+animation_files = [
+  "animation/animation.png",
+  "animation/manifest.json",
+  "animation/popup.html",
+  "animation/popup.js",
+]
+
+copy("animation_copy") {
+  sources = animation_files
+  outputs = [ "$root_out_dir/{{source_target_relative}}" ]
+}
+
+#
 # Color Enhancer
 #
 
