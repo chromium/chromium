@@ -378,6 +378,13 @@
        {}
       ]
      ],
+     "remaining-invalid-objects.html": [
+      "fe117040665cc04041b70af3dcfc3ef593923b76",
+      [
+       null,
+       {}
+      ]
+     ],
      "removed-from-flat-tree.html": [
       "bc5726fed367a22b551fd3e8e00329a35e822fe8",
       [
@@ -295053,6 +295060,10 @@
      "f1c2a17f287945caa185475f439de706f11d56b7",
      []
     ],
+    "console-log-symbol.any.shadowrealm-expected.txt": [
+     "f1c2a17f287945caa185475f439de706f11d56b7",
+     []
+    ],
     "console-tests-historical.any.shadowrealm-expected.txt": [
      "f1c2a17f287945caa185475f439de706f11d56b7",
      []
@@ -383189,10 +383200,6 @@
       ]
      }
     },
-    "exif-chunk-expected.txt": [
-     "b9caa68bebc7717d8dcbed5c4a9974617597b9a5",
-     []
-    ],
     "support": {
      "cicp-display-p3.png": [
       "8fa0ce2123c4f876a71b1ca80e04931614f3b87f",
@@ -398682,7 +398689,7 @@
      []
     ],
     "RTCConfiguration-iceServers-expected.txt": [
-     "36da29c385bebb933d8be144dd8159297b1db217",
+     "01eaf2bfe8b46ab1ed8234690e4b562b5e838c79",
      []
     ],
     "RTCDTMFSender-helper.js": [
@@ -429750,6 +429757,42 @@
      [
       "console/console-label-conversion.any.worker.html",
       {}
+     ]
+    ],
+    "console-log-symbol.any.js": [
+     "a2facb6c64e86428383260735ed2df3e88c2c809",
+     [
+      "console/console-log-symbol.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
+     ],
+     [
+      "console/console-log-symbol.any.shadowrealm.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
+     ],
+     [
+      "console/console-log-symbol.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
      ]
     ],
     "console-namespace-object-class-string.any.js": [
@@ -670797,7 +670840,7 @@
      ]
     ],
     "RTCConfiguration-iceServers.html": [
-     "1893ba02f3042abe14db2cce50903f917b9280ff",
+     "d344cce9f862a07034aeaeb96ab4012f0bab6eca",
      [
       null,
       {}
