@@ -20,9 +20,9 @@ namespace ash::input_method {
 
 class EditorSystemActuator : public orca::mojom::SystemActuator {
  public:
-  class Delegate {
+  class System {
    public:
-    virtual ~Delegate() = default;
+    virtual ~System() = default;
     virtual void OnTextInsertionRequested() = 0;
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
@@ -34,7 +34,7 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   EditorSystemActuator(
       Profile* profile,
       mojo::PendingAssociatedReceiver<orca::mojom::SystemActuator> receiver,
-      Delegate* delegate);
+      System* system);
   ~EditorSystemActuator() override;
 
   // orca::mojom::SystemActuator overrides
@@ -55,7 +55,7 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
       system_actuator_receiver_;
 
   // Not owned by this class.
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<System> system_;
   EditorTextInserter inserter_;
 };
 

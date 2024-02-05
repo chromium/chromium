@@ -35,7 +35,7 @@ namespace input_method {
 // providing an overall unified interface for the backend of the project.
 class EditorMediator : public EditorEventSink,
                        public EditorPanelManager::Delegate,
-                       public EditorSystemActuator::Delegate,
+                       public EditorSystemActuator::System,
                        public display::DisplayObserver,
                        public KeyedService {
  public:
@@ -79,7 +79,7 @@ class EditorMediator : public EditorEventSink,
   // display::DisplayObserver overrides
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  // EditorSystemActuator::Delegate overrides
+  // EditorSystemActuator::System overrides
   void OnTextInsertionRequested() override;
   void ProcessConsentAction(ConsentAction consent_action) override;
   void ShowUI() override;

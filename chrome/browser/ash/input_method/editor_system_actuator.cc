@@ -23,31 +23,31 @@ bool IsUrlAllowed(const GURL& url) {
 EditorSystemActuator::EditorSystemActuator(
     Profile* profile,
     mojo::PendingAssociatedReceiver<orca::mojom::SystemActuator> receiver,
-    Delegate* delegate)
+    System* system)
     : profile_(profile),
       system_actuator_receiver_(this, std::move(receiver)),
-      delegate_(delegate) {}
+      system_(system) {}
 
 EditorSystemActuator::~EditorSystemActuator() = default;
 
 void EditorSystemActuator::InsertText(const std::string& text) {
-  EditorMetricsRecorder* logger = delegate_->GetMetricsRecorder();
+  EditorMetricsRecorder* logger = system_->GetMetricsRecorder();
   logger->LogEditorState(EditorStates::kInsert);
   logger->LogNumberOfCharactersInserted(text.length());
   logger->LogNumberOfCharactersSelectedForInsert(
-      delegate_->GetSelectedTextLength());
+      system_->GetSelectedTextLength());
   // We queue the text to be inserted here rather then insert it directly into
   // the input.
   inserter_.InsertTextOnNextFocus(text);
-  delegate_->OnTextInsertionRequested();
+  system_->OnTextInsertionRequested();
 }
 
 void EditorSystemActuator::ApproveConsent() {
-  delegate_->ProcessConsentAction(ConsentAction::kApproved);
+  system_->ProcessConsentAction(ConsentAction::kApproved);
 }
 
 void EditorSystemActuator::DeclineConsent() {
-  delegate_->ProcessConsentAction(ConsentAction::kDeclined);
+  system_->ProcessConsentAction(ConsentAction::kDeclined);
 }
 
 void EditorSystemActuator::OpenUrlInNewWindow(const GURL& url) {
@@ -61,13 +61,13 @@ void EditorSystemActuator::OpenUrlInNewWindow(const GURL& url) {
 }
 
 void EditorSystemActuator::ShowUI() {
-  delegate_->ShowUI();
+  system_->ShowUI();
 }
 
 void EditorSystemActuator::CloseUI() {
-  delegate_->GetMetricsRecorder()->LogEditorState(
+  system_->GetMetricsRecorder()->LogEditorState(
       EditorStates::kClickCloseButton);
-  delegate_->CloseUI();
+  system_->CloseUI();
 }
 
 void EditorSystemActuator::SubmitFeedback(const std::string& description) {
