@@ -3104,6 +3104,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.WiFi.Ap80211uANQPSupport"
+    enum="WiFiAp80211uANQPSupport" expires_after="2024-12-31">
+  <owner>damiendejean@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric sampling the number of Wireless Access Points that
+    support ANQP request protocol, sampled on successful connections to an AP.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.WiFi.Ap80211vBSSMaxIdlePeriodSupport"
     enum="WiFiAp80211vBSSMaxIdlePeriodSupport" expires_after="2024-12-31">
   <owner>matthewmwang@chromium.org</owner>

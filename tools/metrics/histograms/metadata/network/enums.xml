@@ -2387,6 +2387,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Supports Over-the-DS FT Roaming"/>
 </enum>
 
+<enum name="WiFiAp80211uANQPSupport">
+  <int value="0" label="Does not support 802.11u ANQP"/>
+  <int value="1" label="Supports ANQP"/>
+</enum>
+
 <enum name="WiFiAp80211vBSSMaxIdlePeriodSupport">
   <int value="0" label="Does not support 802.11v BSS Max idle period"/>
   <int value="1" label="Supports BSS Max idle period"/>
