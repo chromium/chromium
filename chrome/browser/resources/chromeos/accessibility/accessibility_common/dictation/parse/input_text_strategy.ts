@@ -4,20 +4,19 @@
 
 import {InputController} from '../input_controller.js';
 import {InputTextViewMacro} from '../macros/input_text_view_macro.js';
+import {Macro} from '../macros/macro.js';
 
 import {ParseStrategy} from './parse_strategy.js';
 
 /** A parsing strategy that tells text to be input as-is. */
 export class InputTextStrategy extends ParseStrategy {
-  /** @param {!InputController} inputController */
-  constructor(inputController) {
+  constructor(inputController: InputController) {
     super(inputController);
     // InputTextStrategy is always enabled.
     this.enabled = true;
   }
 
-  /** @override */
-  async parse(text) {
+  override async parse(text: string): Promise<Macro|null> {
     return new InputTextViewMacro(text, this.getInputController());
   }
 }
