@@ -6927,6 +6927,18 @@ New install
 
       <!-- Picker -->
       <!-- TODO: b/309706053 - Finalize these strings and then mark them as these as translateable -->
+      <message name="IDS_PICKER_EMOJIS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show emoji results.">
+        Emojis
+      </message>
+      <message name="IDS_PICKER_SYMBOLS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show symbol results.">
+        Symbols
+      </message>
+      <message name="IDS_PICKER_EMOTICONS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show emoticon results.">
+        Emoticons
+      </message>
+      <message name="IDS_PICKER_GIFS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show gif results.">
+        Gifs
+      </message>
       <message name="IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
         Search to insert
       </message>

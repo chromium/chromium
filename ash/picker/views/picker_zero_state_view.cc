@@ -14,6 +14,7 @@
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -42,7 +43,7 @@ PickerZeroStateView::PickerZeroStateView(
   for (auto category : PickerModel().GetAvailableCategories()) {
     auto item_view = std::make_unique<PickerItemView>(
         base::BindRepeating(select_category_callback, category));
-    item_view->SetPrimaryText(GetStringForPickerCategory(category));
+    item_view->SetPrimaryText(GetLabelForPickerCategory(category));
     item_view->SetLeadingIcon(GetIconForPickerCategory(category));
     section_view->AddListItem(std::move(item_view));
   }
