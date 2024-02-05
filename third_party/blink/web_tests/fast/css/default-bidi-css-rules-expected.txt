@@ -41,15 +41,15 @@ PASS styleOf("output", {"dir":"auto"}).unicodeBidi is "isolate"
 PASS styleOf("output", {"dir":""}).direction is "ltr"
 PASS styleOf("output", {"dir":""}).unicodeBidi is "isolate"
 PASS styleOf("bdo", {}).direction is "ltr"
-PASS styleOf("bdo", {}).unicodeBidi is "bidi-override"
+FAIL styleOf("bdo", {}).unicodeBidi should be isolate-override. Was bidi-override.
 PASS styleOf("bdo", {"dir":"ltr"}).direction is "ltr"
-PASS styleOf("bdo", {"dir":"ltr"}).unicodeBidi is "bidi-override"
+FAIL styleOf("bdo", {"dir":"ltr"}).unicodeBidi should be isolate-override. Was bidi-override.
 PASS styleOf("bdo", {"dir":"rtl"}).direction is "rtl"
-PASS styleOf("bdo", {"dir":"rtl"}).unicodeBidi is "bidi-override"
+FAIL styleOf("bdo", {"dir":"rtl"}).unicodeBidi should be isolate-override. Was bidi-override.
 PASS styleOf("bdo", {"dir":"auto"}).direction is "ltr"
-FAIL styleOf("bdo", {"dir":"auto"}).unicodeBidi should be bidi-override isolate. Was isolate.
+FAIL styleOf("bdo", {"dir":"auto"}).unicodeBidi should be isolate-override. Was isolate.
 PASS styleOf("bdo", {"dir":""}).direction is "ltr"
-PASS styleOf("bdo", {"dir":""}).unicodeBidi is "bidi-override"
+FAIL styleOf("bdo", {"dir":""}).unicodeBidi should be isolate-override. Was bidi-override.
 PASS styleOf("textarea", {}).direction is "ltr"
 PASS styleOf("textarea", {}).unicodeBidi is "normal"
 PASS styleOf("textarea", {"dir":"ltr"}).direction is "ltr"

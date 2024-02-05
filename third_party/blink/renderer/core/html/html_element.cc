@@ -357,9 +357,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kDirection, "ltr");
       }
-      if (!HasTagName(html_names::kBdiTag) &&
-          !HasTagName(html_names::kBdoTag) &&
-          !HasTagName(html_names::kOutputTag)) {
+      if (!HasTagName(html_names::kBdoTag)) {
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kUnicodeBidi, CSSValueID::kIsolate);
       }

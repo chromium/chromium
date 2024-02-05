@@ -44,11 +44,12 @@ var tests = [
     ['output', {'dir': 'auto'}, 'ltr', 'isolate'],
     ['output', {'dir': ''}, 'ltr', 'isolate'],
 
-    ['bdo', {}, 'ltr', 'bidi-override'],
-    ['bdo', {'dir': 'ltr'}, 'ltr', 'bidi-override'],
-    ['bdo', {'dir': 'rtl'}, 'rtl', 'bidi-override'],
-    ['bdo', {'dir': 'auto'}, 'ltr', 'bidi-override isolate'],
-    ['bdo', {'dir': ''}, 'ltr', 'bidi-override'],
+    // https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering
+    ['bdo', {}, 'ltr', 'isolate-override'],
+    ['bdo', {'dir': 'ltr'}, 'ltr', 'isolate-override'],
+    ['bdo', {'dir': 'rtl'}, 'rtl', 'isolate-override'],
+    ['bdo', {'dir': 'auto'}, 'ltr', 'isolate-override'],
+    ['bdo', {'dir': ''}, 'ltr', 'isolate-override'],
 
     ['textarea', {}, 'ltr', 'normal'],
     ['textarea', {'dir': 'ltr'}, 'ltr', 'isolate'],
