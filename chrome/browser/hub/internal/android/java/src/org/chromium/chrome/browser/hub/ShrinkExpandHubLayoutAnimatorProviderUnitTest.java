@@ -84,7 +84,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
         ShadowLooper.runUiThreadTasks();
-        mAnimationDataSupplier = new SyncOneshotSupplierImpl<ShrinkExpandAnimationData>();
+        mAnimationDataSupplier = new SyncOneshotSupplierImpl<>();
     }
 
     private void onActivityCreated(Activity activity) {
@@ -401,7 +401,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
     @Test
     @SmallTest
-    public void testImageViewWeakRefBitmapCallbackGargbageCollection() {
+    public void testImageViewWeakRefBitmapCallbackGarbageCollection() {
         ImageView imageView = new ImageView(mActivity);
         WeakReference<ImageView> imageViewWeakRef = new WeakReference<>(imageView);
         Runnable runnable =
