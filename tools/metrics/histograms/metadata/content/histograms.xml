@@ -1476,21 +1476,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.Engaged"
-    units="follows" expires_after="2024-06-30">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Replaced with the ContentSuggestions.{FeedType}.FollowCount.Engaged2
-    histogram pattern because this one had a misleading name. It will be
-    effectively obsoleted in the future.
-
-    Android: The number of web feeds the user is following. Reported at most
-    once per feed visit, when the user engages (FeedEngagementType.Engaged) with
-    either the For-You or Following Feeds.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.{Event}"
     units="follows" expires_after="2024-07-28">
   <owner>harringtond@chromium.org</owner>

@@ -308,12 +308,6 @@ void ReportCombinedSubscriptionCountAtEngagementTime(int subscription_count) {
   base::UmaHistogramSparse(
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
       subscription_count);
-  // TODO(b/228342051): The histogram below is being obsoleted because it has a
-  // misleading name. Once the new *.Engaged2 series collects a large enough
-  // sample history, it will be effectively removed/obsoleted.
-  base::UmaHistogramSparse(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged",
-      subscription_count);
 }
 
 bool IsGoodExplicitInteraction(FeedUserActionType action) {

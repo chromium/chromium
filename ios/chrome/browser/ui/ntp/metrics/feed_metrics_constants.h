@@ -316,8 +316,6 @@ extern const char kFollowCountFollowingNoContentShown[];
 extern const char kFollowCountAfterFollow[];
 // After unfollowing a channel.
 extern const char kFollowCountAfterUnfollow[];
-// After engaging with the Following feed.
-extern const char kFollowCountWhenEngaged[];
 
 // Histogram name for last visible card when switching from Discover to
 // Following feed.

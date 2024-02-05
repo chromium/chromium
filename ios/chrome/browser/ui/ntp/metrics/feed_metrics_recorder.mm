@@ -617,7 +617,7 @@ using feed::FeedUserActionType;
       base::UmaHistogramSparse(kFollowCountAfterUnfollow, followCount);
       break;
     case FollowCountLogReasonEngaged:
-      base::UmaHistogramSparse(kFollowCountWhenEngaged, followCount);
+      // TODO(b/323593501): Report on-feed-engagement follow count.
       break;
   }
 }
