@@ -26,6 +26,8 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -79,6 +81,11 @@ gfx::Rect GetCaretBounds() {
   }
 
   return input_method->GetTextInputClient()->GetCaretBounds();
+}
+
+// Gets the current cursor point in universal screen coordinates in DIP.
+gfx::Point GetCursorPoint() {
+  return display::Screen::GetScreen()->GetCursorScreenPoint();
 }
 
 PickerInsertMediaRequest::MediaData ResultToInsertMediaData(
@@ -146,7 +153,7 @@ void PickerController::ToggleWidget(
   if (widget_) {
     widget_->Close();
   } else {
-    widget_ = PickerView::CreateWidget(GetCaretBounds(), this,
+    widget_ = PickerView::CreateWidget(GetCaretBounds(), GetCursorPoint(), this,
                                        trigger_event_timestamp);
     widget_->Show();
 

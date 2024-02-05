@@ -63,11 +63,20 @@ std::unique_ptr<views::Separator> CreateSeparator() {
       .Build();
 }
 
-// Gets the preferred layout to use given `caret_bounds` in screen coordinates.
-PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& caret_bounds) {
-  return caret_bounds.bottom() + kPickerSize.height() <=
+// Gets the anchor bounds to use for positioning the Picker. We prefer to anchor
+// at `caret_bounds`, but may use `cursor_point` as a fallback. `caret_bounds`,
+// `cursor_point` and returned anchor bounds should be in screen coordinates.
+gfx::Rect GetPickerAnchorBounds(const gfx::Rect& caret_bounds,
+                                const gfx::Point& cursor_point) {
+  return caret_bounds != gfx::Rect() ? caret_bounds
+                                     : gfx::Rect(cursor_point, gfx::Size());
+}
+
+// Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
+PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
+  return anchor_bounds.bottom() + kPickerSize.height() <=
                  display::Screen::GetScreen()
-                     ->GetDisplayMatching(caret_bounds)
+                     ->GetDisplayMatching(anchor_bounds)
                      .work_area()
                      .bottom()
              ? PickerView::PickerLayoutType::kResultsBelowSearchField
@@ -83,42 +92,42 @@ gfx::Rect GetPickerWidgetBoundsForClientBounds(const gfx::Rect& client_bounds) {
 }
 
 // Gets the preferred Picker view bounds in screen coordinates. We try to place
-// the Picker view close to `caret_bounds`, while taking into account
+// the Picker view close to `anchor_bounds`, while taking into account
 // `layout_type`, `picker_view_size` and available space on the screen.
 // `picker_view_search_field_vertical_offset` is the vertical offset from the
 // top of the Picker view to the center of the search field, which we use to try
-// to align the search field with the center of the caret bounds.
-gfx::Rect GetPickerViewBounds(const gfx::Rect& caret_bounds,
+// to vertically align the search field with the center of the anchor bounds.
+// `anchor_bounds` and returned bounds should be in screen coordinates.
+gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
                               PickerView::PickerLayoutType layout_type,
                               const gfx::Size& picker_view_size,
                               int picker_view_search_field_vertical_offset) {
-  // Place the Picker in available screen space near the caret bounds.
   const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(caret_bounds)
+                                         ->GetDisplayMatching(anchor_bounds)
                                          .work_area();
   gfx::Rect picker_view_bounds(picker_view_size);
-  if (caret_bounds.right() + picker_view_size.width() <=
+  if (anchor_bounds.right() + picker_view_size.width() <=
       screen_work_area.right()) {
-    // If there is space, place the Picker to the right of the caret, vertically
-    // aligning the center of the Picker search field with the center of the
-    // caret.
-    picker_view_bounds.set_origin(caret_bounds.right_center());
+    // If there is space, place the Picker to the right of the anchor,
+    // vertically aligning the center of the Picker search field with the center
+    // of the anchor.
+    picker_view_bounds.set_origin(anchor_bounds.right_center());
     picker_view_bounds.Offset(0, -picker_view_search_field_vertical_offset);
   } else {
     switch (layout_type) {
       case PickerView::PickerLayoutType::kResultsBelowSearchField:
-        // Try to place the Picker at the right edge of the screen, below
-        // the caret.
+        // Try to place the Picker at the right edge of the screen, below the
+        // anchor.
         picker_view_bounds.set_origin(
             {screen_work_area.right() - picker_view_size.width(),
-             caret_bounds.bottom()});
+             anchor_bounds.bottom()});
         break;
       case PickerView::PickerLayoutType::kResultsAboveSearchField:
-        // Try to place the Picker at the right edge of the screen, above
-        // the caret.
+        // Try to place the Picker at the right edge of the screen, above the
+        // anchor.
         picker_view_bounds.set_origin(
             {screen_work_area.right() - picker_view_size.width(),
-             caret_bounds.y() - picker_view_size.height()});
+             anchor_bounds.y() - picker_view_size.height()});
         break;
     }
   }
@@ -166,12 +175,15 @@ PickerView::~PickerView() = default;
 
 views::UniqueWidgetPtr PickerView::CreateWidget(
     const gfx::Rect& caret_bounds,
+    const gfx::Point& cursor_point,
     PickerViewDelegate* delegate,
     const base::TimeTicks trigger_event_timestamp) {
   // Create the Picker view and set its size. This will trigger a layout, so
   // that the position of the Picker view's search field can be used when
   // setting the Picker widget bounds below.
-  const auto layout_type = GetLayoutType(caret_bounds);
+  const gfx::Rect anchor_bounds =
+      GetPickerAnchorBounds(caret_bounds, cursor_point);
+  const PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
   auto picker_view = std::make_unique<PickerView>(
       delegate, trigger_event_timestamp, layout_type);
   picker_view->SetSize(kPickerSize);
@@ -183,7 +195,7 @@ views::UniqueWidgetPtr PickerView::CreateWidget(
   params.type = views::Widget::InitParams::TYPE_BUBBLE;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.bounds = GetPickerWidgetBoundsForClientBounds(
-      picker_view->GetTargetBounds(caret_bounds, layout_type));
+      picker_view->GetTargetBounds(anchor_bounds, layout_type));
   // TODO(b/309706053): Replace this with the finalized string.
   params.name = "Picker";
   params.delegate = picker_view.release();
@@ -231,9 +243,9 @@ void PickerView::RemovedFromWidget() {
   bubble_event_filter_.reset();
 }
 
-gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& caret_bounds,
+gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                       PickerLayoutType layout_type) {
-  return GetPickerViewBounds(caret_bounds, layout_type, size(),
+  return GetPickerViewBounds(anchor_bounds, layout_type, size(),
                              search_field_view_->bounds().CenterPoint().y());
 }
 
