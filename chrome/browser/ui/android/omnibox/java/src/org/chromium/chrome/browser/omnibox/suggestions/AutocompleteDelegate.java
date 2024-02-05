@@ -4,10 +4,20 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
 /** Provides the additional functionality to trigger and interact with autocomplete suggestions. */
 public interface AutocompleteDelegate extends UrlBarDelegate {
+
+    /** Called when loadUrl is done on a {@link Tab}. */
+    interface AutocompleteLoadCallback {
+        void onLoadUrl(LoadUrlParams params, LoadUrlResult loadUrlResult);
+    }
+
     /** Notified that the URL text has changed. */
     void onUrlTextChanged();
 
@@ -48,6 +58,23 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
     void loadUrl(String url, @PageTransition int transition, long inputStart, boolean openInNewTab);
 
     /**
+     * Requests that the given URL be loaded in the current tab or in a new tab.
+     *
+     * @param url The URL to be loaded.
+     * @param transition The transition type associated with the url load.
+     * @param inputStart The time the input started for the load request.
+     * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
+     *     will be loaded in a new tab. If {@code false}, The URL will be loaded in the current tab.
+     * @param callback A callback that will be called when loadUrl is done on a {@link Tab}.
+     */
+    void loadUrl(
+            String url,
+            @PageTransition int transition,
+            long inputStart,
+            boolean openInNewTab,
+            @Nullable AutocompleteLoadCallback callback);
+
+    /**
      * Requests that the given URL be loaded in the current tab.
      *
      * @param url The URL to be loaded.
@@ -63,6 +90,25 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
             long inputStart,
             String postDataType,
             byte[] postData);
+
+    /**
+     * Requests that the given URL be loaded in the current tab.
+     *
+     * @param url The URL to be loaded.
+     * @param transition The transition type associated with the url load.
+     * @param inputStart The time the input started for the load request.
+     * @param postDataType postData type.
+     * @param postData Post-data to include in the tab URL's request body, ex. bitmap when image
+     *     search.
+     * @param callback A callback that will be called when loadUrl is done on a {@link Tab}.
+     */
+    void loadUrlWithPostData(
+            String url,
+            @PageTransition int transition,
+            long inputStart,
+            String postDataType,
+            byte[] postData,
+            @Nullable AutocompleteLoadCallback callback);
 
     /**
      * @return Whether the omnibox was focused via the NTP fakebox.

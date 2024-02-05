@@ -51,12 +51,15 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -513,7 +516,16 @@ class LocationBarMediator
     }
 
     /* package */ void loadUrl(String url, int transition, long inputStart, boolean openInNewTab) {
-        loadUrlWithPostData(url, transition, inputStart, null, null, openInNewTab);
+        loadUrl(url, transition, inputStart, openInNewTab, null);
+    }
+
+    /* package */ void loadUrl(
+            String url,
+            int transition,
+            long inputStart,
+            boolean openInNewTab,
+            @Nullable AutocompleteLoadCallback callback) {
+        loadUrlWithPostData(url, transition, inputStart, null, null, openInNewTab, callback);
     }
 
     /* package */ void loadUrlWithPostData(
@@ -523,6 +535,18 @@ class LocationBarMediator
             String postDataType,
             byte[] postData,
             boolean openInNewTab) {
+        loadUrlWithPostData(
+                url, transition, inputStart, postDataType, postData, openInNewTab, null);
+    }
+
+    /* package */ void loadUrlWithPostData(
+            String url,
+            int transition,
+            long inputStart,
+            String postDataType,
+            byte[] postData,
+            boolean openInNewTab,
+            @Nullable AutocompleteLoadCallback callback) {
         assert mLocationBarDataProvider != null;
         Tab currentTab = mLocationBarDataProvider.getTab();
 
@@ -550,6 +574,18 @@ class LocationBarMediator
                 // Since the NTP has no url, pressing enter while clicking on the URL bar should
                 // refresh the page as it does when you click and press enter on any other site.
                 if (url.isEmpty()) url = currentTab.getUrl().getSpec();
+            }
+
+            if (callback != null) {
+                currentTab.addObserver(
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onLoadUrl(
+                                    Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
+                                callback.onLoadUrl(params, loadUrlResult);
+                                tab.removeObserver(this);
+                            }
+                        });
             }
         }
 
