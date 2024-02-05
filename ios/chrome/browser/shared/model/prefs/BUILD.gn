@@ -97,6 +97,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/tips_notifications/model:client",
     "//ios/chrome/browser/ui/app_store_rating",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/history_sync",

@@ -19,6 +19,9 @@ extern NSString* const kTipsNotificationId;
 // Key for tips notification type in UserInfo dictionary.
 extern NSString* const kNotificationTypeKey;
 
+// Pref that stores which notifications have been sent.
+extern const char kTipsNotificationsSentPref[];
+
 // The type of Tips Notification, for an individual notification.
 enum class TipsNotificationType {
   kDefaultBrowser = 0,
