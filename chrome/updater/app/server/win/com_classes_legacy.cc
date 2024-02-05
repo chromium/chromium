@@ -375,31 +375,32 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
     auto result = base::MakeRefCounted<RegisterAppResult>();
     AppServerWin::PostRpcTask(base::BindOnce(
-        [](AppWebImplPtr obj, const std::wstring& brand_code,
-           const std::wstring& ap, scoped_refptr<RegisterAppResult> result) {
+        [](AppWebImplPtr obj, scoped_refptr<RegisterAppResult> result) {
           const base::ScopedClosureRunner signal_event(base::BindOnce(
               [](scoped_refptr<RegisterAppResult> result) {
                 result->completion_event.Signal();
               },
               result));
 
-          scoped_refptr<PersistedData> persisted_data =
-              GetAppServerWinInstance()->config()->GetUpdaterPersistedData();
-          if (persisted_data->GetProductVersion(obj->app_id_).IsValid()) {
-            return;
-          }
-
-          // Pre-register the app if there is no registration for it. This app
-          // registration is removed later if the app install does not happen.
-          result->new_install = true;
+          // Always update ap.
           RegistrationRequest request;
           request.app_id = obj->app_id_;
-          request.version = base::Version(kNullVersion);
-          request.brand_code = base::WideToASCII(brand_code);
-          request.ap = base::WideToASCII(ap);
+          request.ap = obj->ap_;
+
+          // Pre-register the app with a version of "0.0.0.0" if there is no
+          // registration for it. This app registration is removed later if
+          // the app install does not happen.
+          scoped_refptr<PersistedData> persisted_data =
+              GetAppServerWinInstance()->config()->GetUpdaterPersistedData();
+          if (!persisted_data->GetProductVersion(obj->app_id_).IsValid()) {
+            result->new_install = true;
+            request.brand_code = obj->brand_code_;
+            request.version = base::Version(kNullVersion);
+          }
+
           persisted_data->RegisterApp(request);
         },
-        AppWebImplPtr(this), brand_code, ap, result));
+        AppWebImplPtr(this), result));
 
     if (!result->completion_event.TimedWait(base::Seconds(60))) {
       return E_FAIL;

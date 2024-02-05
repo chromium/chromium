@@ -41,7 +41,8 @@ Google-branded builds assume the first case.
 
 ##### Brand code
 The brand code is a string of up to 4 characters long. The brand code is
-persisted during the install, over-installs, and updates.
+persisted during the first install of the app. Over-installs and updates do not
+modify the brand code.
 
 On macOS, the brand code (as well as AP parameter and the app version) can be
 specified using a path to a plist file and a key within that plist file. When
