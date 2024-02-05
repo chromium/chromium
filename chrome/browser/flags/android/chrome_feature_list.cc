@@ -262,6 +262,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripGroupIndicatorsAndroid,
     &kTabEngagementReportingAndroid,
     &kTabGroupParityAndroid,
+    &kTabletTabSwitcherLongPressMenu,
     &kTabletToolbarIncognitoStatus,
     &kTabletToolbarReordering,
     &kTabResumptionModuleAndroid,
@@ -807,6 +808,10 @@ BASE_FEATURE(kTabStripGroupIndicatorsAndroid,
 BASE_FEATURE(kTabStateFlatBuffer,
              "TabStateFlatBuffer",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabletTabSwitcherLongPressMenu,
+             "TabletTabSwitcherLongPressMenu",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabletToolbarIncognitoStatus,
              "TabletToolbarIncognitoStatus",

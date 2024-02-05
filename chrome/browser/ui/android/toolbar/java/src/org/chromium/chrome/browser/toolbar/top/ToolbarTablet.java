@@ -675,6 +675,13 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
+    void setOnTabSwitcherLongClickHandler(OnLongClickListener listener) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TABLET_TAB_SWITCHER_LONG_PRESS_MENU)) {
+            mSwitcherButton.setOnTabSwitcherLongClickHandler(listener);
+        }
+    }
+
+    @Override
     void onHomeButtonUpdate(boolean homeButtonEnabled) {
         mHomeButton.setVisibility(homeButtonEnabled ? VISIBLE : GONE);
     }

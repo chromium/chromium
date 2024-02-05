@@ -43,6 +43,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -572,6 +573,19 @@ public final class ToolbarTabletUnitTest {
             Assert.assertEquals(
                     ToolbarSnapshotDifference.BOOKMARK_BUTTON, result.snapshotDifference);
         }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TABLET_TAB_SWITCHER_LONG_PRESS_MENU)
+    public void longPressTabSwitcherMenu() {
+        CallbackHelper callback = new CallbackHelper();
+        mToolbarTablet.setOnTabSwitcherLongClickHandler(
+                (v) -> {
+                    callback.notifyCalled();
+                    return true;
+                });
+        mTabSwitcherButton.performLongClick();
+        Assert.assertEquals("Long press callback not triggered.", 1, callback.getCallCount());
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {
