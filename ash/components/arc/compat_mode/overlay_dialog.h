@@ -22,9 +22,9 @@ class View;
 namespace arc {
 
 class OverlayDialog : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(OverlayDialog);
+  METADATA_HEADER(OverlayDialog, views::FlexLayoutView)
 
+ public:
   OverlayDialog(const OverlayDialog&) = delete;
   OverlayDialog& operator=(const OverlayDialog&) = delete;
   ~OverlayDialog() override;

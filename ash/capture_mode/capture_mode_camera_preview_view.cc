@@ -89,7 +89,7 @@ void CameraPreviewResizeButton::PseudoBlur() {
   camera_preview_view_->ScheduleRefreshResizeButtonVisibility();
 }
 
-BEGIN_METADATA(CameraPreviewResizeButton, IconButton)
+BEGIN_METADATA(CameraPreviewResizeButton)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -469,7 +469,7 @@ void CameraPreviewView::BlurA11yFocus() {
   UpdateA11yOverrideWindow();
 }
 
-BEGIN_METADATA(CameraPreviewView, views::View)
+BEGIN_METADATA(CameraPreviewView)
 END_METADATA
 
 }  // namespace ash

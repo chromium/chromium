@@ -40,9 +40,9 @@ class ScopedA11yOverrideWindowSetter;
 class CameraPreviewResizeButton
     : public IconButton,
       public CaptureModeSessionFocusCycler::HighlightableView {
- public:
-  METADATA_HEADER(CameraPreviewResizeButton);
+  METADATA_HEADER(CameraPreviewResizeButton, IconButton)
 
+ public:
   CameraPreviewResizeButton(CameraPreviewView* camera_preview_view,
                             views::Button::PressedCallback callback,
                             const gfx::VectorIcon& icon);
@@ -66,9 +66,9 @@ class CameraPreviewView
     : public views::View,
       public CaptureModeSessionFocusCycler::HighlightableView,
       public AccessibilityObserver {
- public:
-  METADATA_HEADER(CameraPreviewView);
+  METADATA_HEADER(CameraPreviewView, views::View)
 
+ public:
   CameraPreviewView(
       CaptureModeCameraController* camera_controller,
       const CameraId& camera_id,

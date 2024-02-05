@@ -200,7 +200,7 @@ class EditInBrowserButton : public views::LabelButton {
   }
 };
 
-BEGIN_METADATA(EditInBrowserButton, views::LabelButton)
+BEGIN_METADATA(EditInBrowserButton)
 END_METADATA
 
 }  // namespace
@@ -525,7 +525,7 @@ void GlanceablesTaskViewV2::OnSaved(const api::Task* task) {
   }
 }
 
-BEGIN_METADATA(GlanceablesTaskViewV2, views::View)
+BEGIN_METADATA(GlanceablesTaskViewV2)
 END_METADATA
 
 }  // namespace ash

@@ -400,7 +400,7 @@ void NonClientFrameViewAsh::UpdateDefaultFrameColors() {
   frame_window->SetProperty(kFrameInactiveColorKey, dialog_title_bar_color);
 }
 
-BEGIN_METADATA(NonClientFrameViewAsh, views::NonClientFrameView)
+BEGIN_METADATA(NonClientFrameViewAsh)
 END_METADATA
 
 }  // namespace ash

@@ -31,9 +31,9 @@ class FPSGraphPageView : public GraphPageViewBase,
                          public ui::CompositorObserver,
                          public views::WidgetObserver,
                          public aura::WindowObserver {
- public:
-  METADATA_HEADER(FPSGraphPageView);
+  METADATA_HEADER(FPSGraphPageView, GraphPageViewBase)
 
+ public:
   explicit FPSGraphPageView(const base::TimeDelta refresh_interval);
   FPSGraphPageView(const FPSGraphPageView&) = delete;
   FPSGraphPageView& operator=(const FPSGraphPageView&) = delete;

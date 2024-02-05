@@ -487,7 +487,7 @@ void GlanceablesTasksView::OnTaskSaved(
                                 kMaximumTasks);
 }
 
-BEGIN_METADATA(GlanceablesTasksView, views::View)
+BEGIN_METADATA(GlanceablesTasksView)
 END_METADATA
 
 }  // namespace ash

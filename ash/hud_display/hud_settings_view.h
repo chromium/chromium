@@ -37,9 +37,9 @@ class HUDActionButton;
 class HUDSettingsView : public AshTracingManager::Observer,
                         public views::View,
                         public ui::EventObserver {
- public:
-  METADATA_HEADER(HUDSettingsView);
+  METADATA_HEADER(HUDSettingsView, views::View)
 
+ public:
   explicit HUDSettingsView(HUDDisplayView* hud_display);
   ~HUDSettingsView() override;
 

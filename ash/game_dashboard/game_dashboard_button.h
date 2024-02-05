@@ -43,9 +43,9 @@ namespace ash {
 // true will replace the second "icon_view" with an the up arrow. Called with
 // false, it will show the down arrow.
 class GameDashboardButton : public views::Button {
- public:
-  METADATA_HEADER(GameDashboardButton);
+  METADATA_HEADER(GameDashboardButton, views::Button)
 
+ public:
   explicit GameDashboardButton(PressedCallback callback);
   GameDashboardButton(const GameDashboardButton&) = delete;
   GameDashboardButton& operator=(const GameDashboardButton&) = delete;

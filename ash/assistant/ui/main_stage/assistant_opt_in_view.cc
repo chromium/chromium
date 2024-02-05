@@ -187,7 +187,7 @@ void AssistantOptInView::OnButtonPressed() {
   delegate_->OnOptInButtonPressed();
 }
 
-BEGIN_METADATA(AssistantOptInView, views::View)
+BEGIN_METADATA(AssistantOptInView)
 END_METADATA
 
 }  // namespace ash

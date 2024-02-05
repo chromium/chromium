@@ -27,9 +27,9 @@ class AssistantViewDelegate;
 
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
     : public views::Button {
- public:
-  METADATA_HEADER(AssistantOnboardingSuggestionView);
+  METADATA_HEADER(AssistantOnboardingSuggestionView, views::Button)
 
+ public:
   AssistantOnboardingSuggestionView(
       AssistantViewDelegate* delegate,
       const assistant::AssistantSuggestion& suggestion,

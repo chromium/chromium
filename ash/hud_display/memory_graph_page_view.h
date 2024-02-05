@@ -16,9 +16,9 @@ class ReferenceLines;
 
 // MemoryGraphPageView class draws memory graphs.
 class MemoryGraphPageView : public GraphPageViewBase {
- public:
-  METADATA_HEADER(MemoryGraphPageView);
+  METADATA_HEADER(MemoryGraphPageView, GraphPageViewBase)
 
+ public:
   explicit MemoryGraphPageView(const base::TimeDelta refresh_interval);
   MemoryGraphPageView(const MemoryGraphPageView&) = delete;
   MemoryGraphPageView& operator=(const MemoryGraphPageView&) = delete;

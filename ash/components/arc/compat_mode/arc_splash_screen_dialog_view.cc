@@ -419,7 +419,7 @@ void ArcSplashScreenDialogView::Show(aura::Window* parent,
   views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))->Show();
 }
 
-BEGIN_METADATA(ArcSplashScreenDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ArcSplashScreenDialogView)
 END_METADATA
 
 }  // namespace arc

@@ -190,7 +190,7 @@ void GameDashboardButton::SetTitle(const std::u16string& title_text) {
   title_view_->SetText(title_text);
 }
 
-BEGIN_METADATA(GameDashboardButton, views::Button)
+BEGIN_METADATA(GameDashboardButton)
 END_METADATA
 
 }  // namespace ash

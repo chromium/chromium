@@ -21,9 +21,9 @@ class ToolbarDragHandler;
 // window. It contains various quick action tiles for users to access without
 // having to open the entire main menu view.
 class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(GameDashboardToolbarView);
+  METADATA_HEADER(GameDashboardToolbarView, views::BoxLayoutView)
 
+ public:
   explicit GameDashboardToolbarView(GameDashboardContext* context);
   GameDashboardToolbarView(const GameDashboardToolbarView&) = delete;
   GameDashboardToolbarView& operator=(const GameDashboardToolbarView) = delete;

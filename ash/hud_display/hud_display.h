@@ -20,9 +20,9 @@ class HUDSettingsView;
 
 // HUDDisplayView class can be used to display a system monitoring overview.
 class HUDDisplayView : public views::View {
- public:
-  METADATA_HEADER(HUDDisplayView);
+  METADATA_HEADER(HUDDisplayView, views::View)
 
+ public:
   HUDDisplayView();
   HUDDisplayView(const HUDDisplayView&) = delete;
   HUDDisplayView& operator=(const HUDDisplayView&) = delete;

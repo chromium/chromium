@@ -34,7 +34,7 @@ void GetDataSnapshotOnThreadPool(DataSource* data_source,
 ////////////////////////////////////////////////////////////////////////////////
 // GraphsContainerView, public:
 
-BEGIN_METADATA(GraphsContainerView, views::View)
+BEGIN_METADATA(GraphsContainerView)
 END_METADATA
 
 GraphsContainerView::GraphsContainerView()

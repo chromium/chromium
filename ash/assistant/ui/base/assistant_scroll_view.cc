@@ -94,7 +94,7 @@ void AssistantScrollView::InitLayout() {
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 }
 
-BEGIN_METADATA(AssistantScrollView, views::ScrollView)
+BEGIN_METADATA(AssistantScrollView)
 END_METADATA
 
 }  // namespace ash

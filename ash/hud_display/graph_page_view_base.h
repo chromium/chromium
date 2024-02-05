@@ -23,9 +23,9 @@ class ReferenceLines;
 
 // Interface for a single graph page.
 class GraphPageViewBase : public views::View {
- public:
-  METADATA_HEADER(GraphPageViewBase);
+  METADATA_HEADER(GraphPageViewBase, views::View)
 
+ public:
   GraphPageViewBase();
   GraphPageViewBase(const GraphPageViewBase&) = delete;
   GraphPageViewBase& operator=(const GraphPageViewBase&) = delete;

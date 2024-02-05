@@ -88,7 +88,7 @@ OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,
   }
 }
 
-BEGIN_METADATA(OverlayDialog, views::FlexLayoutView)
+BEGIN_METADATA(OverlayDialog)
 END_METADATA
 
 }  // namespace arc

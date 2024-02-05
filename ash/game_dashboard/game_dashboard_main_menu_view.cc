@@ -827,7 +827,7 @@ void GameDashboardMainMenuView::OnThemeChanged() {
       cros_tokens::kCrosSysSystemBaseElevatedOpaque));
 }
 
-BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(GameDashboardMainMenuView)
 END_METADATA
 
 }  // namespace ash

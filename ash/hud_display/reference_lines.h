@@ -25,9 +25,9 @@ namespace hud_display {
 
 // Draws opaque reference lines on top of the graphs.
 class ReferenceLines : public views::View {
- public:
-  METADATA_HEADER(ReferenceLines);
+  METADATA_HEADER(ReferenceLines, views::View)
 
+ public:
   // |left|, |top|, |right|, |bottom| are labels to be attached to the axes.
   // |x_unit|, |y_unit| - dimentional labels, like "s", "Gb", ...
   // To draw horizontal ticks, graph data is assumed to have

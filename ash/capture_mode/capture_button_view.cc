@@ -241,7 +241,7 @@ CaptureButtonView::CreateFocusRingPath(views::View* view,
       insets, kDropDownButtonRoundedCorners);
 }
 
-BEGIN_METADATA(CaptureButtonView, views::View)
+BEGIN_METADATA(CaptureButtonView)
 END_METADATA
 
 }  // namespace ash

@@ -33,9 +33,9 @@ constexpr int kMinMaxButtonBorder = 5;
 
 // ImageButton with underline
 class MinMaxButton : public views::ImageButton {
- public:
-  METADATA_HEADER(MinMaxButton);
+  METADATA_HEADER(MinMaxButton, views::ImageButton)
 
+ public:
   explicit MinMaxButton(views::Button::PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
     SetBorder(views::CreateEmptyBorder(kMinMaxButtonBorder));
@@ -70,7 +70,7 @@ class MinMaxButton : public views::ImageButton {
   }
 };
 
-BEGIN_METADATA(MinMaxButton, views::ImageButton)
+BEGIN_METADATA(MinMaxButton)
 END_METADATA
 
 void SetMinimizeIconToButton(views::ImageButton* button) {
@@ -89,7 +89,7 @@ void SetRestoreIconToButton(views::ImageButton* button) {
 
 }  // namespace
 
-BEGIN_METADATA(GraphPageViewBase, views::View)
+BEGIN_METADATA(GraphPageViewBase)
 END_METADATA
 
 GraphPageViewBase::GraphPageViewBase() {

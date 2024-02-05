@@ -30,8 +30,9 @@ using ResizeConfirmationCallback = base::OnceCallback<void(bool, bool)>;
 
 class ResizeConfirmationDialogView : public views::BubbleDialogDelegateView,
                                      public views::WidgetObserver {
+  METADATA_HEADER(ResizeConfirmationDialogView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ResizeConfirmationDialogView);
   // TestApi is used only in tests to get internal views.
   class TestApi {
    public:

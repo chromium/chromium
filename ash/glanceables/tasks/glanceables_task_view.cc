@@ -326,7 +326,7 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
   UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
 }
 
-BEGIN_METADATA(GlanceablesTaskView, views::View)
+BEGIN_METADATA(GlanceablesTaskView)
 END_METADATA
 
 }  // namespace ash

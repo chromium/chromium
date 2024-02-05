@@ -234,7 +234,7 @@ void AssistantWebContainerView::UpdateBackground() {
   SetBackground(views::CreateRoundedRectBackground(color, background_radii_));
 }
 
-BEGIN_METADATA(AssistantWebContainerView, views::WidgetDelegateView)
+BEGIN_METADATA(AssistantWebContainerView)
 END_METADATA
 
 }  // namespace ash

@@ -261,7 +261,7 @@ void AssistantOnboardingSuggestionView::OnButtonPressed() {
   delegate_->OnSuggestionPressed(suggestion_id_);
 }
 
-BEGIN_METADATA(AssistantOnboardingSuggestionView, views::Button)
+BEGIN_METADATA(AssistantOnboardingSuggestionView)
 END_METADATA
 
 }  // namespace ash

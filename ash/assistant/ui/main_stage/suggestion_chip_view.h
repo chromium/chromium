@@ -19,10 +19,10 @@ class AssistantViewDelegate;
 
 // View representing a suggestion chip for Assistant.
 class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public ChipView {
+  METADATA_HEADER(SuggestionChipView, ChipView)
+
  public:
   using AssistantSuggestion = assistant::AssistantSuggestion;
-
-  METADATA_HEADER(SuggestionChipView);
 
   SuggestionChipView(AssistantViewDelegate* delegate,
                      const AssistantSuggestion& suggestion);

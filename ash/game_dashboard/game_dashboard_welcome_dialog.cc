@@ -173,7 +173,7 @@ void GameDashboardWelcomeDialog::AddShortcutInfoRow() {
       gfx::Insets::VH(kShortcutTextBorder, kShortcutTextBorder)));
 }
 
-BEGIN_METADATA(GameDashboardWelcomeDialog, views::FlexLayoutView)
+BEGIN_METADATA(GameDashboardWelcomeDialog)
 END_METADATA
 
 }  // namespace ash

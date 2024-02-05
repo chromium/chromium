@@ -71,9 +71,9 @@ void ConfigureIconView(views::ImageView* icon_view, bool is_visible) {
 class CaptureModeMenuHeader
     : public views::View,
       public CaptureModeSessionFocusCycler::HighlightableView {
- public:
-  METADATA_HEADER(CaptureModeMenuHeader);
+  METADATA_HEADER(CaptureModeMenuHeader, views::View)
 
+ public:
   CaptureModeMenuHeader(const gfx::VectorIcon& icon,
                         std::u16string header_laber,
                         bool managed_by_policy)
@@ -132,7 +132,7 @@ class CaptureModeMenuHeader
   raw_ptr<views::ImageView> managed_icon_view_;
 };
 
-BEGIN_METADATA(CaptureModeMenuHeader, views::View)
+BEGIN_METADATA(CaptureModeMenuHeader)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -143,9 +143,9 @@ END_METADATA
 class CaptureModeMenuItem
     : public views::Button,
       public CaptureModeSessionFocusCycler::HighlightableView {
- public:
-  METADATA_HEADER(CaptureModeMenuItem);
+  METADATA_HEADER(CaptureModeMenuItem, views::Button)
 
+ public:
   // If `indented` is true, the content of this menu item will have some extra
   // padding from the left so that it appears indented. This is useful when this
   // item is added to a group that has a header, and it's desired to make it
@@ -176,7 +176,7 @@ class CaptureModeMenuItem
   raw_ptr<views::Label> label_view_;
 };
 
-BEGIN_METADATA(CaptureModeMenuItem, views::Button)
+BEGIN_METADATA(CaptureModeMenuItem)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -189,9 +189,9 @@ END_METADATA
 class CaptureModeOption
     : public views::Button,
       public CaptureModeSessionFocusCycler::HighlightableView {
- public:
-  METADATA_HEADER(CaptureModeOption);
+  METADATA_HEADER(CaptureModeOption, views::Button)
 
+ public:
   // If `indented` is true, the content of this option will have some extra
   // padding from the left so that it appears indented. This is useful when this
   // option is added to a group that has a header, and it's desired to make it
@@ -341,7 +341,7 @@ class CaptureModeOption
   const int id_;
 };
 
-BEGIN_METADATA(CaptureModeOption, views::Button)
+BEGIN_METADATA(CaptureModeOption)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -505,7 +505,7 @@ void CaptureModeMenuGroup::HandleOptionClick(int option_id) {
   RefreshOptionsSelections();
 }
 
-BEGIN_METADATA(CaptureModeMenuGroup, views::View)
+BEGIN_METADATA(CaptureModeMenuGroup)
 END_METADATA
 
 }  // namespace ash

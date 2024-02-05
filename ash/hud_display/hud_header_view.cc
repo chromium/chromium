@@ -159,7 +159,7 @@ void HUDHeaderLayout::Layout(views::View* host) {
 ////////////////////////////////////////////////////////////////////////////////
 // HUDHeaderView
 
-BEGIN_METADATA(HUDHeaderView, views::View)
+BEGIN_METADATA(HUDHeaderView)
 END_METADATA
 
 HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {

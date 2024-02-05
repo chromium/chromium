@@ -24,9 +24,9 @@ class Switch;
 // dashboard button.
 class ASH_EXPORT GameDashboardMainMenuView
     : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(GameDashboardMainMenuView);
+  METADATA_HEADER(GameDashboardMainMenuView, views::BubbleDialogDelegateView)
 
+ public:
   explicit GameDashboardMainMenuView(GameDashboardContext* context);
 
   GameDashboardMainMenuView(const GameDashboardMainMenuView&) = delete;

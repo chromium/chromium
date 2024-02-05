@@ -73,9 +73,9 @@ bool g_hud_overlay_mode = true;
 // ClientView that return HTNOWHERE by default. A child view can receive event
 // by setting kHitTestComponentKey property to HTCLIENT.
 class HTClientView : public views::ClientView {
- public:
-  METADATA_HEADER(HTClientView);
+  METADATA_HEADER(HTClientView, views::ClientView)
 
+ public:
   HTClientView(HUDDisplayView* hud_display,
                views::Widget* widget,
                views::View* contents_view)
@@ -96,7 +96,7 @@ class HTClientView : public views::ClientView {
   raw_ptr<HUDDisplayView> hud_display_;
 };
 
-BEGIN_METADATA(HTClientView, views::ClientView)
+BEGIN_METADATA(HTClientView)
 END_METADATA
 
 std::unique_ptr<views::ClientView> MakeClientView(views::Widget* widget) {
@@ -118,7 +118,7 @@ void InitializeFrameView(views::WidgetDelegate* delegate) {
 ////////////////////////////////////////////////////////////////////////////////
 // HUDDisplayView, public:
 
-BEGIN_METADATA(HUDDisplayView, views::View)
+BEGIN_METADATA(HUDDisplayView)
 END_METADATA
 
 // static

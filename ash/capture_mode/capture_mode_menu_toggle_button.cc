@@ -60,7 +60,7 @@ void CaptureModeMenuToggleButton::OnThemeChanged() {
       color_provider->GetColor(kColorAshSwitchTrackColorInactive));
 }
 
-BEGIN_METADATA(CaptureModeMenuToggleButton, views::View)
+BEGIN_METADATA(CaptureModeMenuToggleButton)
 END_METADATA
 
 }  // namespace ash

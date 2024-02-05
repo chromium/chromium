@@ -23,7 +23,7 @@ namespace hud_display {
 ////////////////////////////////////////////////////////////////////////////////
 // MemoryGraphPageView, public:
 
-BEGIN_METADATA(MemoryGraphPageView, GraphPageViewBase)
+BEGIN_METADATA(MemoryGraphPageView)
 END_METADATA
 
 MemoryGraphPageView::MemoryGraphPageView(const base::TimeDelta refresh_interval)

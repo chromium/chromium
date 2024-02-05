@@ -299,7 +299,7 @@ void GlanceablesClassroomItemView::Layout(PassKey) {
   views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }
 
-BEGIN_METADATA(GlanceablesClassroomItemView, views::View)
+BEGIN_METADATA(GlanceablesClassroomItemView)
 END_METADATA
 
 }  // namespace ash

@@ -29,9 +29,9 @@ class CaptureModeOption;
 // independent section in the settings menu. Each group can be created with a
 // header that has an icon and a label for the group, or be header-less.
 class ASH_EXPORT CaptureModeMenuGroup : public views::View {
- public:
-  METADATA_HEADER(CaptureModeMenuGroup);
+  METADATA_HEADER(CaptureModeMenuGroup, views::View)
 
+ public:
   class Delegate {
    public:
     // Called when user selects an option.

@@ -373,7 +373,7 @@ bool AnimatedContainerView::FadeOutObserverCallback(
   return true;
 }
 
-BEGIN_METADATA(AnimatedContainerView, AssistantScrollView)
+BEGIN_METADATA(AnimatedContainerView)
 END_METADATA
 
 }  // namespace ash

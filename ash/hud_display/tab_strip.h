@@ -28,6 +28,8 @@ class HUDDisplayView;
 class HUDTabStrip;
 
 class HUDTabButton : public views::LabelButton {
+  METADATA_HEADER(HUDTabButton, views::LabelButton)
+
  public:
   // Defines tab paint style.
   enum class Style {
@@ -35,8 +37,6 @@ class HUDTabButton : public views::LabelButton {
     ACTIVE,  // Active tab.
     RIGHT,   // Tab to the right of the active tab.
   };
-
-  METADATA_HEADER(HUDTabButton);
 
   HUDTabButton(Style style,
                const HUDDisplayMode display_mode,
@@ -62,9 +62,9 @@ class HUDTabButton : public views::LabelButton {
 };
 
 class HUDTabStrip : public views::View {
- public:
-  METADATA_HEADER(HUDTabStrip);
+  METADATA_HEADER(HUDTabStrip, views::View)
 
+ public:
   explicit HUDTabStrip(HUDDisplayView* hud);
 
   HUDTabStrip(const HUDTabStrip&) = delete;
