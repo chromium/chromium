@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.autofill.settings.SettingsLauncherHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -81,6 +82,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_SEARCH_ENGINE = "search_engine";
     public static final String PREF_PASSWORDS = "passwords";
     public static final String PREF_HOMEPAGE = "homepage";
+    public static final String PREF_HOME_MODULES_CONFIG = "home_modules_config";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_PRIVACY = "privacy";
@@ -289,6 +291,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
         setOnOffSummary(homepagePref, HomepageManager.isHomepageEnabled());
+
+        if (ModuleRegistry.getInstance().hasCustomizableModule()) {
+            addPreferenceIfAbsent(PREF_HOME_MODULES_CONFIG);
+        } else {
+            removePreferenceIfPresent(PREF_HOME_MODULES_CONFIG);
+        }
 
         if (NightModeUtils.isNightModeSupported()) {
             addPreferenceIfAbsent(PREF_UI_THEME)

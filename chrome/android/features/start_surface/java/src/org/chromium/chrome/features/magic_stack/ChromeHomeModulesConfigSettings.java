@@ -29,7 +29,8 @@ public class ChromeHomeModulesConfigSettings extends ChromeBaseSettingsFragment 
         ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
         Set<Integer> moduleTypeRegistered = moduleRegistry.getRegisteredModuleTypes();
         for (@ModuleType int moduleType : moduleTypeRegistered) {
-            if (moduleType == ModuleType.SINGLE_TAB) continue;
+            if (!moduleRegistry.isModuleConfigurable(moduleType)
+                    || !moduleRegistry.isModuleEligibleToBuild(moduleType)) continue;
 
             ChromeSwitchPreference currentSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
