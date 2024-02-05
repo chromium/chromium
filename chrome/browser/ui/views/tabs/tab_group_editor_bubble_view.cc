@@ -75,6 +75,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -765,6 +766,8 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupSaved"));
     saved_tab_group_service->SaveGroup(group_);
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kTabGroupSavedCustomEventId, save_group_toggle_);
   } else {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
