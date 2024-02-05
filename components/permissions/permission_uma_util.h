@@ -564,8 +564,10 @@ class PermissionUmaUtil {
                                     content::WebContents* web_contents,
                                     const GURL& requesting_origin);
 
-  static void RecordTimeElapsedBetweenGrantAndUse(ContentSettingsType type,
-                                                  base::TimeDelta delta);
+  static void RecordTimeElapsedBetweenGrantAndUse(
+      ContentSettingsType type,
+      base::TimeDelta delta,
+      content_settings::SettingSource source);
 
   static void RecordTimeElapsedBetweenGrantAndRevoke(ContentSettingsType type,
                                                      base::TimeDelta delta);
