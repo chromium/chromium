@@ -68,6 +68,7 @@ constexpr int kOverflowTablePadding = 2;
 constexpr int kOverflowTableSize = 20;
 constexpr int kOverflowBackgroundRounding = 20;
 constexpr int kOverflowCountBackgroundRounding = 9;
+constexpr int kOverflowTwoWindowPadding = 11;
 constexpr gfx::Size kOverflowIconPreferredSize(20, 20);
 constexpr gfx::Size kOverflowCountPreferredSize(18, 18);
 
@@ -212,6 +213,8 @@ class PineItemsOverflowView : public views::BoxLayoutView {
   explicit PineItemsOverflowView(const PineContentsView::AppsData& apps) {
     const int elements = static_cast<int>(apps.size());
     CHECK_GE(elements, kOverflowMinElements);
+    // TODO(http://b/322361588): Remove after the 3-window case is added.
+    CHECK_NE(elements, 3);
 
     // TODO(hewer): Fix margins so the icons and text are aligned with
     // `PineItemView` elements.
@@ -219,35 +222,45 @@ class PineItemsOverflowView : public views::BoxLayoutView {
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
-    // Create a 2x2 table view to display the icons for 4 or more windows, or
-    // the count of the remaining windows, rather than a single icon.
-    views::TableLayoutView* table_layout_view;
-    AddChildView(
-        views::Builder<views::TableLayoutView>()
-            .CopyAddressTo(&table_layout_view)
-            .AddColumn(
-                views::LayoutAlignment::kCenter,
-                views::LayoutAlignment::kCenter, views::TableLayout::kFixedSize,
-                views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0)
-            .AddPaddingColumn(views::TableLayout::kFixedSize,
-                              kOverflowTablePadding)
-            .AddColumn(
-                views::LayoutAlignment::kCenter,
-                views::LayoutAlignment::kCenter, views::TableLayout::kFixedSize,
-                views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0)
-            .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
-            .AddPaddingRow(views::TableLayout::kFixedSize,
-                           kOverflowTablePadding)
-            .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
-            .SetBackground(views::CreateRoundedRectBackground(
-                SK_ColorLTGRAY, kOverflowBackgroundRounding))
-            .Build());
+    // TODO(hewer): Fix the styling to make the background smaller than the
+    // contents.
+    views::Builder<views::TableLayoutView> table_builder;
+    table_builder
+        .SetBackground(views::CreateRoundedRectBackground(
+            SK_ColorLTGRAY, kOverflowBackgroundRounding))
+        .AddColumn(
+            views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+            views::TableLayout::kFixedSize,
+            views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0)
+        .AddPaddingColumn(views::TableLayout::kFixedSize, kOverflowTablePadding)
+        .AddColumn(
+            views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+            views::TableLayout::kFixedSize,
+            views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0);
+    if (elements >= kOverflowMaxElements) {
+      // Create a 2x2 table view to display the icons for 4 or more windows, or
+      // the count of the remaining windows, rather than a single icon.
+      table_builder
+          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
+          .AddPaddingRow(views::TableLayout::kFixedSize, kOverflowTablePadding)
+          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize);
+    } else if (elements == kOverflowMinElements) {
+      // Create a 1x2 table view to display the icons for 2 windows, centered
+      // vertically.
+      table_builder
+          .AddPaddingRow(views::TableLayout::kFixedSize,
+                         kOverflowTwoWindowPadding)
+          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
+          .AddPaddingRow(views::TableLayout::kFixedSize,
+                         kOverflowTwoWindowPadding);
+    }
+    views::TableLayoutView* table_layout_view =
+        AddChildView(std::move(table_builder).Build());
 
     // TODO(sammiequon): Handle case where the app is not ready or installed.
     auto* delegate = Shell::Get()->saved_desk_delegate();
 
     // Add the overflow apps to the table.
-    // TODO(http://b/322361367): Handle case where there are 2 overflow windows.
     // TODO(http://b/322361588): Handle case where there are 3 overflow windows.
     for (int i = kOverflowMinThreshold; i < elements; ++i) {
       // If there are 5 or more overflow windows, save the last spot in the
@@ -466,10 +479,6 @@ PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
         {"odknhmnlageboeamepcngndbggdpaobj", {}},  // Settings
         {"fkiggjmkendpmbegkagpmagjepfkpmeb", {}},  // Files
         {"oabkinaljpjeilageghcdlnekhphhphl", {}},  // Calculator
-        {"agimnkijcaahngcdmfeangaknmldooml", {}},  // YouTube
-        {"kefjledonklijopmnomlcbpllchaibag", {}},  // Google Slides
-        {"mgndgikekgjfcpckkfioiadnlibdjbkf",       // Chrome
-         {"https://www.reddit.com/"}},
     };
     PineItemsContainerView* container_view = AddChildView(
         std::make_unique<PineItemsContainerView>(kTestingAppsData));
