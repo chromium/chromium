@@ -179,6 +179,8 @@ component("network_service") {
     "shared_dictionary/shared_dictionary_writer_in_memory.h",
     "shared_dictionary/shared_dictionary_writer_on_disk.cc",
     "shared_dictionary/shared_dictionary_writer_on_disk.h",
+    "shared_dictionary/simple_url_pattern_matcher.cc",
+    "shared_dictionary/simple_url_pattern_matcher.h",
     "slop_bucket.cc",
     "slop_bucket.h",
     "socket_data_pump.cc",
@@ -327,6 +329,7 @@ component("network_service") {
     "//components/prefs",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//components/url_matcher",
+    "//components/url_pattern",
     "//components/web_package",
     "//components/webrtc:fake_ssl_socket",
     "//mojo/public/cpp/bindings",
@@ -344,6 +347,8 @@ component("network_service") {
     "//services/network/trust_tokens",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
+    "//third_party/liburlpattern",
+    "//third_party/re2",
     "//url",
   ]
 
@@ -468,6 +473,7 @@ source_set("tests") {
     "shared_dictionary/shared_dictionary_on_disk_unittest.cc",
     "shared_dictionary/shared_dictionary_writer_in_memory_unittest.cc",
     "shared_dictionary/shared_dictionary_writer_on_disk_unittest.cc",
+    "shared_dictionary/simple_url_pattern_matcher_unittest.cc",
     "socket_data_pump_unittest.cc",
     "ssl_config_service_mojo_unittest.cc",
     "tcp_bound_socket_unittest.cc",

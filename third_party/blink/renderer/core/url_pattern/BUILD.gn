@@ -16,6 +16,7 @@ blink_core_sources("url_pattern") {
   ]
 
   public_deps = [
+    "//components/url_pattern",
     "//third_party/blink/renderer/platform",
     "//third_party/liburlpattern",
   ]

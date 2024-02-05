@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 include_rules = [
+    "+components/url_pattern/url_pattern_util.h",
     "+third_party/liburlpattern",
     "+url/url_canon.h",
     "+url/url_util.h",

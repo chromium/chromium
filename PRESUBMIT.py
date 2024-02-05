@@ -998,6 +998,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       True,
       [
         # Needed to use liburlpattern API.
+        r'components/url_pattern/.*',
+        r'services/network/shared_dictionary/simple_url_pattern_matcher\.cc',
         r'third_party/blink/renderer/core/url_pattern/.*',
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
         # Needed to use QUICHE API.
