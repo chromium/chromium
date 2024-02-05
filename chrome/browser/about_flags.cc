@@ -11102,6 +11102,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabGroupStableIds)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Controls the view mode for (history) sync screen.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+    {"minor-mode-restrictions-for-history-sync-opt-in",
+     flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInName,
+     flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,
+     kOsLinux | kOsMac | kOsWin | kOsAndroid,
+     FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

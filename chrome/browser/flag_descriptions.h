@@ -1307,6 +1307,9 @@ extern const char kUndoAutofillDescription[];
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 
+extern const char kMinorModeRestrictionsForHistorySyncOptInName[];
+extern const char kMinorModeRestrictionsForHistorySyncOptInDescription[];
+
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 
