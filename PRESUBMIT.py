@@ -6282,10 +6282,10 @@ def CheckStrings(input_api, output_api):
         """
         valid_types = {
             'plural': (frozenset(
-                ['=0', '=1', 'zero', 'one', 'two', 'few', 'many',
+                ['=0', '=1', '=2', '=3', 'zero', 'one', 'two', 'few', 'many',
                  'other']), frozenset(['=1', 'other'])),
             'selectordinal': (frozenset(
-                ['=0', '=1', 'zero', 'one', 'two', 'few', 'many',
+                ['=0', '=1', '=2', '=3', 'zero', 'one', 'two', 'few', 'many',
                  'other']), frozenset(['one', 'other'])),
             'select': (frozenset(), frozenset(['other'])),
         }
