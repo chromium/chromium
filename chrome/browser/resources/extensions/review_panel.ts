@@ -206,7 +206,6 @@ export class ExtensionsReviewPanelElement extends
   }
 
   private computeShouldShowUnsafeExtensions_(): boolean {
-    ExtensionsHatsBrowserProxyImpl.getInstance().triggerSurvey();
     const updatedUnsafeExtensions =
         this.getUnsafeExtensions_(this.extensions) || [];
     if (updatedUnsafeExtensions.length !== 0) {
@@ -215,8 +214,10 @@ export class ExtensionsReviewPanelElement extends
       }
       this.completionMetricLogged_ = false;
       this.reviewPanelShown_ = true;
+      ExtensionsHatsBrowserProxyImpl.getInstance().panelShown(true);
       return true;
     } else {
+      ExtensionsHatsBrowserProxyImpl.getInstance().panelShown(false);
       return false;
     }
   }

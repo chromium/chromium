@@ -9,7 +9,7 @@ export class TestExtensionsHatsBrowserProxy extends TestBrowserProxy implements
     ExtensionsHatsBrowserProxy {
   constructor() {
     super([
-      'triggerSurvey',
+      'panelShown',
       'extensionKeptAction',
       'extensionRemovedAction',
       'nonTriggerExtensionRemovedAction',
@@ -17,8 +17,8 @@ export class TestExtensionsHatsBrowserProxy extends TestBrowserProxy implements
     ]);
   }
 
-  triggerSurvey() {
-    this.methodCalled('triggerSurvey');
+  panelShown() {
+    this.methodCalled('panelShown');
   }
 
   extensionKeptAction() {
