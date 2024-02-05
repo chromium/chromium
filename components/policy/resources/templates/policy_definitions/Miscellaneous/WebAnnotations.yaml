@@ -88,8 +88,8 @@ schema:
       - longpressonly
       type: string
   type: object
-future_on:
-- ios
+supported_on:
+- ios:123-
 tags: []
 type: dict
 
