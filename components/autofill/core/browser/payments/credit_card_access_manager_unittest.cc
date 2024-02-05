@@ -3057,7 +3057,9 @@ class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
   base::test::ScopedFeatureList feature_list_{
       features::kAutofillEnableFpanRiskBasedAuthentication};
 
-  void MockRiskBasedAuthSucceedsWithoutPanReturned(CreditCard* card) {
+  void MockRiskBasedAuthSucceedsWithoutPanReturned(
+      CreditCard* card,
+      std::string context_token = "fake_context_token") {
     credit_card_access_manager().FetchCreditCard(
         card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                              accessor_->GetWeakPtr()));
@@ -3075,7 +3077,7 @@ class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
             .with_result(CreditCardRiskBasedAuthenticator::
                              RiskBasedAuthenticationResponse::Result::
                                  kAuthenticationRequired)
-            .with_context_token("fake_context_token"));
+            .with_context_token(context_token));
   }
 };
 
@@ -3217,6 +3219,24 @@ TEST_F(
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
   ASSERT_FALSE(autofill_client_.risk_based_authentication_invoked());
+}
+
+TEST_F(
+    CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+    RiskBasedMaskedServerCardUnmasking_CvcAuthenticationRequired_ContextTokenSetCorrectly) {
+  std::string context_token = "context_token";
+  CreditCard* masked_server_card =
+      CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
+
+  MockRiskBasedAuthSucceedsWithoutPanReturned(masked_server_card,
+                                              context_token);
+
+  // Expect the context_token is set in the full card request.
+  EXPECT_EQ(GetCvcAuthenticator()
+                ->GetFullCardRequest()
+                ->GetUnmaskRequestDetailsForTesting()
+                ->context_token,
+            context_token);
 }
 
 // Ensures the authentication is delegated to the CVC authenticator when

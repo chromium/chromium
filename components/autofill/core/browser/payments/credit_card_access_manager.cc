@@ -577,6 +577,11 @@ void CreditCardAccessManager::Authenticate(
             card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_,
             virtual_card_unmask_response_details_.context_token,
             *selected_challenge_option_);
+      } else if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+        CHECK(!risk_based_authentication_response_.context_token.empty());
+        client_->GetCvcAuthenticator()->Authenticate(
+            card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_,
+            risk_based_authentication_response_.context_token);
       } else {
         client_->GetCvcAuthenticator()->Authenticate(
             card_.get(), weak_ptr_factory_.GetWeakPtr(),

@@ -183,6 +183,27 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateServerCardSuccess) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(CreditCardCvcAuthenticatorTest,
+       AuthenticateServerCardWithContextTokenSuccess) {
+  base::HistogramTester histogram_tester;
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+
+  cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
+                                   &personal_data_manager_,
+                                   "test_context_token");
+
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
+  EXPECT_TRUE((*requester_->did_succeed()));
+  EXPECT_EQ(kTestNumber16, requester_->number());
+  histogram_tester.ExpectUniqueSample("Autofill.CvcAuth.ServerCard.Attempt",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CvcAuth.ServerCard.Result",
+      /*sample=*/autofill_metrics::CvcAuthEvent::kSuccess,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateVirtualCardSuccess) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);

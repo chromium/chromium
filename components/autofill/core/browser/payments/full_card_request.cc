@@ -49,12 +49,13 @@ void FullCardRequest::GetFullCard(
     AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::WeakPtr<UIDelegate> ui_delegate,
-    const url::Origin& merchant_domain_for_footprints) {
+    const url::Origin& merchant_domain_for_footprints,
+    std::optional<std::string> context_token) {
   DCHECK(ui_delegate);
   GetFullCardImpl(card, reason, result_delegate, ui_delegate,
                   /*fido_assertion_info=*/std::nullopt,
                   /*last_committed_primary_main_frame_origin=*/std::nullopt,
-                  /*context_token=*/std::nullopt,
+                  /*context_token=*/std::move(context_token),
                   /*selected_challenge_option=*/std::nullopt,
                   merchant_domain_for_footprints);
 }
