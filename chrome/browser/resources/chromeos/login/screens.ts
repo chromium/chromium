@@ -82,10 +82,17 @@ import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.js';
 import './screens/oobe/update.js';
 
+export type ScreensList = Array<{
+  tag: string,
+  id: string,
+  condition?: string,
+  extra_classes?: string[],
+}>;
+
 /**
  * List of screens that are used for both `oobe` and `login` flows.
  */
-export const commonScreensList = [
+export const commonScreensList: ScreensList = [
   {tag: 'adb-sideloading-element', id: 'adb-sideloading'},
   {tag: 'add-child-element', id: 'add-child'},
   {tag: 'app-downloading-element', id: 'app-downloading'},
@@ -200,7 +207,7 @@ export const commonScreensList = [
 /**
  * List of screens that are used during the `login` flow only.
  */
-export const loginScreensList = [
+export const loginScreensList: ScreensList = [
   {
     tag: 'arc-vm-data-migration-element',
     id: 'arc-vm-data-migration',
@@ -231,7 +238,7 @@ export const loginScreensList = [
 /**
  * List of screens that are used during the `oobe` flow only.
  */
-export const oobeScreensList = [
+export const oobeScreensList: ScreensList = [
   {tag: 'auto-enrollment-check-element', id: 'auto-enrollment-check'},
   {
     tag: 'consumer-update-element',
