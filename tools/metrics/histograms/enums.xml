@@ -13369,6 +13369,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="kParsingFailue"/>
   <int value="7" label="kIdentityFailure"/>
   <int value="8" label="kEndorsementFailure"/>
+  <int value="9" label="kIOFailure"/>
+  <int value="10" label="kHwsecFailure"/>
 </enum>
 
 <enum name="IDNA2008DeviationCharacter">
