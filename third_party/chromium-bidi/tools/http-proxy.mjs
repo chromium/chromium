@@ -23,9 +23,14 @@
 
 import http from 'node:http';
 
+function log(...args) {
+  // eslint-disable-next-line no-console
+  console.log(...args);
+}
+
 const proxyServer = http
   .createServer((originalRequest, originalResponse) => {
-    console.log(originalRequest.url);
+    log(originalRequest.url);
     const proxyRequest = http.request(
       originalRequest.url,
       {
@@ -45,6 +50,4 @@ const proxyServer = http
   })
   .listen();
 
-console.log(
-  `http://${process.argv[2] || 'localhost'}:${proxyServer.address().port}`
-);
+log(`http://${process.argv[2] || 'localhost'}:${proxyServer.address().port}`);

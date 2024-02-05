@@ -40,14 +40,14 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v2.4.0
+    rev: v3.1.0
     hooks:
       # Most common ones: [build, chore, ci, docs, feat, fix, refactor, test]
       # https://conventionalcommits.org
       - id: conventional-pre-commit
         stages: [commit-msg]
   - repo: https://github.com/PyCQA/flake8.git
-    rev: 6.1.0
+    rev: 7.0.0
     hooks:
       - id: flake8
   - repo: https://github.com/google/yapf
@@ -59,11 +59,11 @@ repos:
       - id: yapf
         args: [--in-place, --parallel]
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.6.1
+    rev: v1.8.0
     hooks:
       - id: mypy
         additional_dependencies: [types-requests]
@@ -73,7 +73,7 @@ repos:
       - id: pyupgrade
         args: [--py310-plus]
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
+    rev: 1.7.7
     hooks:
       - id: bandit
         args: [--ini, .bandit]
@@ -90,7 +90,7 @@ repos:
           [--skip=package-lock.json, --skip=tests/screenshot/test_screenshot.py]
         exclude_types: [pem]
   - repo: https://github.com/google/keep-sorted
-    rev: v0.1.1
+    rev: v0.3.0
     hooks:
       - id: keep-sorted
   - repo: local
