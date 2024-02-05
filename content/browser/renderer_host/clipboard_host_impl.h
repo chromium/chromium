@@ -212,15 +212,18 @@ class CONTENT_EXPORT ClipboardHostImpl
   bool IsRendererPasteAllowed(ui::ClipboardBuffer clipboard_buffer,
                               RenderFrameHost& render_frame_host);
 
-  using CopyAllowedCallback = base::OnceCallback<void()>;
-  void CopyIfAllowed(size_t data_size_in_bytes, CopyAllowedCallback callback);
+  // Helpers to be used when checking if data is allowed to be copied.
+  // If `replacement_data` is null, `clipboard_writer_` will be used to write
+  // the corresponding text/markup data to the clipboard. If it is not, instead
+  // write the replacement string to the clipboard as plaintext. This can be
+  // called asynchronously.
+  void OnCopyTextAllowedResult(const std::u16string& text,
+                               std::optional<std::u16string> replacement_data);
+  void OnCopyHtmlAllowedResult(const GURL& url,
+                               const std::u16string& markup,
+                               std::optional<std::u16string> replacement_data);
 
-  // If `replacement_data` is null, calls `callback` to copy data to the
-  // clipboard. If it is not, instead write the replacement string to the
-  // clipboard. This can be called asynchronously and should only be called by
-  // `CopyIfAllowed`.
-  void OnCopyAllowedResult(CopyAllowedCallback callback,
-                           std::optional<std::u16string> replacement_data);
+  using CopyAllowedCallback = base::OnceCallback<void()>;
 
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,
@@ -228,6 +231,9 @@ class CONTENT_EXPORT ClipboardHostImpl
 
   // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
+
+  // Creates a `content::ClipboardEndpoint` representing the last committed URL.
+  ClipboardEndpoint CreateClipboardEndpoint();
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 

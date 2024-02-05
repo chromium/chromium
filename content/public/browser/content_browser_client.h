@@ -297,10 +297,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       std::optional<ClipboardPasteData> clipboard_paste_data)>;
 
   // Callback used with the `IsClipboardCopyAllowedByPolicy()` method.
-  // If the copy is allowed, nullopt is passed to the callback. Otherwise, the
-  // data that should be put in the clipboard instead is passed to the callback.
+  // If the copy is allowed, nullopt is passed to the callback and `data` is
+  // expected to be copied. Otherwise, `replacement_data` should be written in
+  // plaintext to the clipboard.
   using IsClipboardCopyAllowedCallback =
-      base::OnceCallback<void(std::optional<std::u16string> replacement_data)>;
+      base::OnceCallback<void(const std::u16string& data,
+                              std::optional<std::u16string> replacement_data)>;
 
   virtual ~ContentBrowserClient() = default;
 
@@ -2473,9 +2475,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // implementation might show UX to the user and call `callback`
   // asynchronously.
   virtual void IsClipboardCopyAllowedByPolicy(
-      content::BrowserContext* browser_context,
-      const GURL& url,
-      size_t data_size_in_bytes,
+      const ClipboardEndpoint& source,
+      const ClipboardMetadata& metadata,
+      const std::u16string& data,
       IsClipboardCopyAllowedCallback callback);
 
 #if BUILDFLAG(ENABLE_VR)

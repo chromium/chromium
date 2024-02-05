@@ -845,9 +845,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       IsClipboardPasteAllowedCallback callback) override;
 
   void IsClipboardCopyAllowedByPolicy(
-      content::BrowserContext* browser_context,
-      const GURL& url,
-      size_t data_size_in_bytes,
+      const content::ClipboardEndpoint& source,
+      const content::ClipboardMetadata& metadata,
+      const std::u16string& data,
       IsClipboardCopyAllowedCallback callback) override;
 
 #if BUILDFLAG(ENABLE_VR)

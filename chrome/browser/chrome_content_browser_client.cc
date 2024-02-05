@@ -7401,22 +7401,24 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
 }
 
 void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
-    content::BrowserContext* browser_context,
-    const GURL& url,
-    size_t data_size_in_bytes,
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const std::u16string& data,
     IsClipboardCopyAllowedCallback callback) {
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
-      browser_context, url, data_size_in_bytes, std::move(callback));
+      source, metadata, data, std::move(callback));
 #else
   std::u16string replacement_data;
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
-          browser_context);
-  if (service->IsUrlAllowedToCopy(url, data_size_in_bytes, &replacement_data)) {
-    std::move(callback).Run(std::nullopt);
+          source.browser_context());
+  if (service->IsUrlAllowedToCopy(*source.data_transfer_endpoint()->GetURL(),
+                                  metadata.size.value_or(0),
+                                  &replacement_data)) {
+    std::move(callback).Run(data, std::nullopt);
   } else {
-    std::move(callback).Run(std::move(replacement_data));
+    std::move(callback).Run(data, std::move(replacement_data));
   }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 }

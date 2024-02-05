@@ -38,9 +38,9 @@ void PasteIfAllowedByPolicy(
 // If the copy is not allowed, `callback` is called with a replacement string
 // that should instead be put into the OS clipboard.
 void IsClipboardCopyAllowedByPolicy(
-    content::BrowserContext* browser_context,
-    const GURL& url,
-    size_t data_size_in_bytes,
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const std::u16string& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
 
 }  // namespace enterprise_data_protection

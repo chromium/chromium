@@ -252,34 +252,40 @@ void PasteIfAllowedByPolicy(
 }
 
 void IsClipboardCopyAllowedByPolicy(
-    content::BrowserContext* browser_context,
-    const GURL& url,
-    size_t data_size_in_bytes,
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const std::u16string& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  DCHECK(source.web_contents());
+  DCHECK(source.browser_context());
+  DCHECK(source.data_transfer_endpoint());
+  DCHECK(source.data_transfer_endpoint()->IsUrlType());
+  const GURL& url = *source.data_transfer_endpoint()->GetURL();
+
   std::u16string replacement_data;
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
-          browser_context);
-  if (!service->IsUrlAllowedToCopy(url, data_size_in_bytes,
+          source.browser_context());
+  if (!service->IsUrlAllowedToCopy(url, metadata.size.value_or(0),
                                    &replacement_data)) {
-    std::move(callback).Run(std::move(replacement_data));
+    std::move(callback).Run(data, std::move(replacement_data));
     return;
   }
 
-  auto verdict =
-      data_controls::RulesServiceFactory::GetForBrowserContext(browser_context)
-          ->GetCopyToOSClipboardVerdict(url);
+  auto verdict = data_controls::RulesServiceFactory::GetForBrowserContext(
+                     source.browser_context())
+                     ->GetCopyToOSClipboardVerdict(url);
 
   // TODO(b/302340176): Add support for verdicts other than "block".
   // TODO(b/303640183): Add reporting logic.
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     replacement_data = l10n_util::GetStringUTF16(
         IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
-    std::move(callback).Run(std::move(replacement_data));
+    std::move(callback).Run(data, std::move(replacement_data));
     return;
   }
 
-  std::move(callback).Run(std::nullopt);
+  std::move(callback).Run(data, std::nullopt);
 }
 
 }  // namespace enterprise_data_protection

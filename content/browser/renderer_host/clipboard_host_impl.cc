@@ -493,18 +493,28 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
 }
 
 void ClipboardHostImpl::WriteText(const std::u16string& text) {
-  CopyIfAllowed(
-      text.size() * sizeof(std::u16string::value_type),
-      base::BindOnce(&ui::ScopedClipboardWriter::WriteText,
-                     base::Unretained(clipboard_writer_.get()), text));
+  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
+      CreateClipboardEndpoint(),
+      {
+          .size = text.size() * sizeof(std::u16string::value_type),
+          .format_type = ui::ClipboardFormatType::PlainTextType(),
+      },
+      text,
+      base::BindOnce(&ClipboardHostImpl::OnCopyTextAllowedResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
                                   const GURL& url) {
-  CopyIfAllowed(markup.size() * sizeof(std::u16string::value_type),
-                base::BindOnce(&ui::ScopedClipboardWriter::WriteHTML,
-                               base::Unretained(clipboard_writer_.get()),
-                               markup, url.spec()));
+  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
+      CreateClipboardEndpoint(),
+      {
+          .size = markup.size() * sizeof(std::u16string::value_type),
+          .format_type = ui::ClipboardFormatType::HtmlType(),
+      },
+      markup,
+      base::BindOnce(&ClipboardHostImpl::OnCopyHtmlAllowedResult,
+                     weak_ptr_factory_.GetWeakPtr(), url));
 }
 
 void ClipboardHostImpl::WriteSvg(const std::u16string& markup) {
@@ -658,18 +668,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
       .IsClipboardPasteAllowedByPolicy(
           ClipboardEndpoint(ui::Clipboard::GetForCurrentThread()->GetSource(
               clipboard_buffer)),
-          ClipboardEndpoint(
-              CreateDataEndpoint().get(),
-              base::BindRepeating(
-                  [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
-                    auto* rfh = RenderFrameHost::FromID(rfh_id);
-                    if (!rfh) {
-                      return nullptr;
-                    }
-                    return rfh->GetBrowserContext();
-                  },
-                  render_frame_host().GetGlobalId()),
-              render_frame_host()),
+          CreateClipboardEndpoint(),
           {
               .size = data_size,
               .format_type = data_type,
@@ -690,26 +689,30 @@ void ClipboardHostImpl::FinishPasteIfAllowed(
   request.Complete(std::move(clipboard_paste_data));
 }
 
-void ClipboardHostImpl::CopyIfAllowed(size_t data_size_in_bytes,
-                                      CopyAllowedCallback callback) {
-  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
-      render_frame_host().GetBrowserContext(),
-      render_frame_host().GetLastCommittedURL(), data_size_in_bytes,
-      base::BindOnce(&ClipboardHostImpl::OnCopyAllowedResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ClipboardHostImpl::OnCopyAllowedResult(
-    CopyAllowedCallback callback,
+void ClipboardHostImpl::OnCopyTextAllowedResult(
+    const std::u16string& text,
     std::optional<std::u16string> replacement_data) {
   if (replacement_data) {
     clipboard_writer_->WriteText(std::move(*replacement_data));
   } else {
-    // Set the source of the clipboard text/html
     clipboard_writer_->SetDataSourceURL(
         render_frame_host().GetMainFrame()->GetLastCommittedURL(),
         render_frame_host().GetLastCommittedURL());
-    std::move(callback).Run();
+    clipboard_writer_->WriteText(text);
+  }
+}
+
+void ClipboardHostImpl::OnCopyHtmlAllowedResult(
+    const GURL& source_url,
+    const std::u16string& markup,
+    std::optional<std::u16string> replacement_data) {
+  if (replacement_data) {
+    clipboard_writer_->WriteText(std::move(*replacement_data));
+  } else {
+    clipboard_writer_->SetDataSourceURL(
+        render_frame_host().GetMainFrame()->GetLastCommittedURL(),
+        render_frame_host().GetLastCommittedURL());
+    clipboard_writer_->WriteHTML(markup, source_url.spec());
   }
 }
 
@@ -729,4 +732,20 @@ ClipboardHostImpl::CreateDataEndpoint() {
       render_frame_host().GetBrowserContext()->IsOffTheRecord(),
       render_frame_host().HasTransientUserActivation());
 }
+
+ClipboardEndpoint ClipboardHostImpl::CreateClipboardEndpoint() {
+  return ClipboardEndpoint(
+      CreateDataEndpoint().get(),
+      base::BindRepeating(
+          [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
+            auto* rfh = RenderFrameHost::FromID(rfh_id);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          render_frame_host().GetGlobalId()),
+      render_frame_host());
+}
+
 }  // namespace content
