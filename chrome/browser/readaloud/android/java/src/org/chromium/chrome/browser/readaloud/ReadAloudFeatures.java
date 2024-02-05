@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import android.app.Activity;
+
 import androidx.annotation.Nullable;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -121,6 +124,13 @@ public final class ReadAloudFeatures {
     /** Returns true if Read Aloud entrypoint can be added to overflow menu in CCT. */
     public static boolean isEnabledForOverflowMenuInCCT() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT);
+    }
+
+    // TODO: b/323238277 Move this check into isAllowed()
+    /** Returns true if in multi-window and ReadAloud is disabled for multi-window. */
+    public static boolean isInMultiWindowAndDisabled(Activity activity) {
+        return ApiCompatibilityUtils.isInMultiWindowMode(activity)
+                && !ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_MULTI_WINDOW);
     }
 
     /** Returns the API key override feature param if present, or null otherwise. */
