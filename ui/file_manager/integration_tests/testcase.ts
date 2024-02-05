@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as androidPhotosTests from './file_manager/android_photos.js';
+import * as filesTooltipTests from './file_manager/files_tooltip.js';
 
 export type TestFunctionName = string;
 export type TestFunction = (() => void)|(() => Promise<void>);
@@ -12,4 +13,5 @@ export type TestFunction = (() => void)|(() => Promise<void>);
  */
 export const testcase: Record<TestFunctionName, TestFunction> = {
   ...androidPhotosTests,
+  ...filesTooltipTests,
 };

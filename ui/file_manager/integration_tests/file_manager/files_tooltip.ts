@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {ENTRIES, getCaller, pending, repeatUntil, RootPath, wait} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -24,31 +23,26 @@ const tooltipShowTimeout = 500;  // ms
 /**
  * Waits until the element by |id| is the document.activeElement.
  *
- * @param {string} appId The Files app windowId.
- * @param {string} id The element id.
- * @return {!Promise<void>}
+ * @param appId The Files app windowId.
+ * @param id The element id.
  */
-function getActiveElementById(appId, id) {
+function getActiveElementById(appId: string, id: string): Promise<void> {
   const caller = getCaller();
-  // @ts-ignore: error TS7030: Not all code paths return a value.
   return repeatUntil(async () => {
     const element =
         await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
     if (!element || element.attributes['id'] !== id) {
       return pending(caller, 'Waiting for active element by id #%s.', id);
     }
+    return undefined;
   });
 }
 
 /**
  * Tests that tooltip is displayed when focusing an element with tooltip.
  */
-// @ts-ignore: error TS4111: Property 'filesTooltipFocus' comes from an index
-// signature, so it must be accessed with ['filesTooltipFocus'].
-testcase.filesTooltipFocus = async () => {
+export async function filesTooltipFocus() {
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -82,17 +76,13 @@ testcase.filesTooltipFocus = async () => {
   label =
       await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
   chrome.test.assertEq('Cancel selection', label.text);
-};
+}
 
 /**
  * Tests that tooltip is displayed when focusing an element with tooltip.
  */
-// @ts-ignore: error TS4111: Property 'filesTooltipLabelChange' comes from an
-// index signature, so it must be accessed with ['filesTooltipLabelChange'].
-testcase.filesTooltipLabelChange = async () => {
+export async function filesTooltipLabelChange() {
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -117,17 +107,13 @@ testcase.filesTooltipLabelChange = async () => {
   label =
       await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
   chrome.test.assertEq('Switch to list view', label.text);
-};
+}
 
 /**
  * Tests that tooltips display when hovering an element that has a tooltip.
  */
-// @ts-ignore: error TS4111: Property 'filesTooltipMouseOver' comes from an
-// index signature, so it must be accessed with ['filesTooltipMouseOver'].
-testcase.filesTooltipMouseOver = async () => {
+export async function filesTooltipMouseOver() {
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -157,18 +143,13 @@ testcase.filesTooltipMouseOver = async () => {
   const lastElement =
       await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
   chrome.test.assertEq('Search', lastElement.text);
-};
+}
 
 /**
  * Tests that tooltips stay open when hovering over the tooltip.
  */
-// @ts-ignore: error TS4111: Property 'filesTooltipMouseOverStaysOpen' comes
-// from an index signature, so it must be accessed with
-// ['filesTooltipMouseOverStaysOpen'].
-testcase.filesTooltipMouseOverStaysOpen = async () => {
+export async function filesTooltipMouseOverStaysOpen() {
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -198,17 +179,13 @@ testcase.filesTooltipMouseOverStaysOpen = async () => {
 
   // Check: the tooltip should hide.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
-};
+}
 
 /**
  * Tests that tooltip is hidden when clicking on body (or anything else).
  */
-// @ts-ignore: error TS4111: Property 'filesTooltipClickHides' comes from an
-// index signature, so it must be accessed with ['filesTooltipClickHides'].
-testcase.filesTooltipClickHides = async () => {
+export async function filesTooltipClickHides() {
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -229,17 +206,13 @@ testcase.filesTooltipClickHides = async () => {
 
   // Check: the tooltip should hide.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
-};
+}
 
 /**
  * Tests that card tooltip is hidden when clicking on body (or anything else).
  */
-// @ts-ignore: error TS4111: Property 'filesCardTooltipClickHides' comes from an
-// index signature, so it must be accessed with ['filesCardTooltipClickHides'].
-testcase.filesCardTooltipClickHides = async () => {
+export async function filesCardTooltipClickHides() {
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Click the 'Android files' volume tab in the directory tree.
@@ -273,18 +246,13 @@ testcase.filesCardTooltipClickHides = async () => {
 
   // Check: the tooltip should hide.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
-};
+}
 
 /**
  * Tests that the tooltip should hide when the window resizes.
  */
-// @ts-ignore: error TS4111: Property 'filesTooltipHidesOnWindowResize' comes
-// from an index signature, so it must be accessed with
-// ['filesTooltipHidesOnWindowResize'].
-testcase.filesTooltipHidesOnWindowResize = async () => {
+export async function filesTooltipHidesOnWindowResize() {
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
@@ -305,15 +273,12 @@ testcase.filesTooltipHidesOnWindowResize = async () => {
 
   // Check: the tooltip should hide.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
-};
+}
 
 /**
  * Tests that the tooltip is hidden after the delete confirm dialog closes.
  */
-// @ts-ignore: error TS4111: Property 'filesTooltipHidesOnDeleteDialogClosed'
-// comes from an index signature, so it must be accessed with
-// ['filesTooltipHidesOnDeleteDialogClosed'].
-testcase.filesTooltipHidesOnDeleteDialogClosed = async () => {
+export async function filesTooltipHidesOnDeleteDialogClosed() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.beautiful, ENTRIES.photos]);
 
@@ -374,4 +339,4 @@ testcase.filesTooltipHidesOnDeleteDialogClosed = async () => {
 
   // Check: the tooltip should be hidden.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
-};
+}

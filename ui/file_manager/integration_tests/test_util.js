@@ -157,7 +157,7 @@ export function pending(caller, message, ..._var_args) {
  * Waits until the checkFunction returns a value but a pending marker.
  * @param {function():*} checkFunction Function to check a condition. It can
  *     return a pending marker created by a pending function.
- * @return {!Promise<unknown>} Promise to be fulfilled with the return value of
+ * @return {!Promise<any>} Promise to be fulfilled with the return value of
  *     checkFunction when the checkFunction returns a value but a pending
  *     marker.
  */

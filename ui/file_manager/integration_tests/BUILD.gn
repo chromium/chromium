@@ -27,7 +27,6 @@ js_files = [
   "file_manager/file_display.js",
   "file_manager/file_list.js",
   "file_manager/file_transfer_connector.js",
-  "file_manager/files_tooltip.js",
   "file_manager/folder_shortcuts.js",
   "file_manager/format_dialog.js",
   "file_manager/gear_menu.js",
@@ -69,6 +68,7 @@ js_files = [
 ]
 
 ts_files = [
+  "file_manager/files_tooltip.ts",
   "file_manager/android_photos.ts",
   "testcase.ts",
 
