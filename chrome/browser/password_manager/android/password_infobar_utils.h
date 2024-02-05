@@ -15,7 +15,7 @@ class WebContents;
 
 namespace password_manager {
 
-AccountInfo GetAccountInfoForPasswordMessages(Profile* profile);
+std::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile);
 
 std::string GetDisplayableAccountName(content::WebContents* web_contents);
 

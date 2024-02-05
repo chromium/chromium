@@ -61,7 +61,7 @@ class PasswordEditDialog {
       const std::vector<std::u16string>& usernames,
       const std::u16string& username,
       const std::u16string& password,
-      const std::string& account_email) = 0;
+      const std::optional<std::string>& account_email) = 0;
 
   // Dismisses displayed dialog. The owner of PassworDeidtDialogBridge should
   // call this function to correctly dismiss and destroy the dialog. The object
@@ -86,10 +86,11 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   PasswordEditDialogBridge& operator=(const PasswordEditDialogBridge&) = delete;
 
   // Calls Java side of the bridge to display password edit modal dialog.
-  void ShowPasswordEditDialog(const std::vector<std::u16string>& usernames,
-                              const std::u16string& username,
-                              const std::u16string& password,
-                              const std::string& account_email) override;
+  void ShowPasswordEditDialog(
+      const std::vector<std::u16string>& usernames,
+      const std::u16string& username,
+      const std::u16string& password,
+      const std::optional<std::string>& account_email) override;
 
   // Dismisses displayed dialog. The owner of PassworDeidtDialogBridge should
   // call this function to correctly dismiss and destroy the dialog. The object

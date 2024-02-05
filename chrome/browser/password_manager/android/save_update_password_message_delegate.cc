@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
+#include <optional>
 #include <utility>
 
 #include "base/android/build_info.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -27,6 +29,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -35,6 +38,8 @@
 #include "url/origin.h"
 
 namespace {
+
+using password_manager_android_util::UsesSplitStoresAndUPMForLocal;
 
 // Duration of message before timeout; 20 seconds.
 const int kMessageDismissDurationMs = 20000;
@@ -188,13 +193,9 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
     passwords_state_.OnPendingPassword(std::move(form_to_save));
   }
 
-  if (account_info.has_value()) {
-    account_email_ = account_info->CanHaveEmailAddressDisplayed()
-                         ? account_info.value().email
-                         : account_info.value().full_name;
-  } else {
-    account_email_ = std::string();
-  }
+  account_email_ = GetAccountForMessageDescription(
+      account_info, passwords_state_.form_manager()->GetPendingCredentials(),
+      update_password);
 
   CreateMessage(update_password);
   RecordMessageShownMetrics();
@@ -303,17 +304,38 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick(
 std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
     const password_manager::PasswordForm& pending_credentials,
     bool update_password) {
-  if (!account_email_.empty()) {
+  if (account_email_.has_value()) {
     return l10n_util::GetStringFUTF16(
         update_password
             ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION
             : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
-        base::UTF8ToUTF16(account_email_));
+        base::UTF8ToUTF16(account_email_.value()));
   }
   return l10n_util::GetStringUTF16(
       update_password
           ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION
           : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION);
+}
+
+std::optional<std::string>
+SaveUpdatePasswordMessageDelegate::GetAccountForMessageDescription(
+    const std::optional<AccountInfo>& account_info,
+    const password_manager::PasswordForm& pending_credentials,
+    bool update_password) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  if (!account_info.has_value()) {
+    return std::nullopt;
+  }
+  // If password is being updated in the profile storage, don't show the account
+  // even if it's available.
+  if (update_password && UsesSplitStoresAndUPMForLocal(profile->GetPrefs()) &&
+      pending_credentials.IsUsingProfileStore()) {
+    return std::nullopt;
+  }
+  return account_info->CanHaveEmailAddressDisplayed()
+             ? account_info.value().email
+             : account_info.value().full_name;
 }
 
 int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
@@ -388,10 +410,10 @@ void SaveUpdatePasswordMessageDelegate::HandleUpdateButtonClicked() {
 
 void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
     bool update_password) {
-  const std::u16string& current_username =
-      passwords_state_.form_manager()->GetPendingCredentials().username_value;
-  const std::u16string& current_password =
-      passwords_state_.form_manager()->GetPendingCredentials().password_value;
+  const password_manager::PasswordForm& password_form =
+      passwords_state_.form_manager()->GetPendingCredentials();
+  const std::u16string& current_username = password_form.username_value;
+  const std::u16string& current_password = password_form.password_value;
 
   CreatePasswordEditDialog();
 

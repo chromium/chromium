@@ -121,6 +121,13 @@ class SaveUpdatePasswordMessageDelegate {
       const password_manager::PasswordForm& pending_credentials,
       bool update_password);
 
+  // Gets account name or email that should be displayed in the description
+  // messages. Returns a nullopt if account info should not be displayed.
+  std::optional<std::string> GetAccountForMessageDescription(
+      const std::optional<AccountInfo>& account_info,
+      const password_manager::PasswordForm& pending_credentials,
+      bool update_password);
+
   // Returns string id for the message primary button. Takes into account
   // whether this is save or update password scenario and whether the update
   // message will be followed by a username confirmation dialog.
@@ -169,8 +176,8 @@ class SaveUpdatePasswordMessageDelegate {
 
   raw_ptr<content::WebContents> web_contents_ = nullptr;
 
-  // Can be the empty string, the account email, or the account full name.
-  std::string account_email_;
+  // Can be a nullopt, the account email, or the account full name.
+  std::optional<std::string> account_email_;
   bool update_password_ = false;
 
   // ManagePasswordsState maintains the password form that is being

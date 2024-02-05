@@ -35,6 +35,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/web_contents_tester.h"
@@ -129,7 +130,7 @@ class MockPasswordEditDialog : public PasswordEditDialog {
               (const std::vector<std::u16string>& usernames,
                const std::u16string& username,
                const std::u16string& password,
-               const std::string& account_email),
+               const std::optional<std::string>& account_email),
               (override));
   MOCK_METHOD(void, Dismiss, (), (override));
 };
@@ -148,7 +149,9 @@ class SaveUpdatePasswordMessageDelegateTest
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
           best_matches);
   void RecordPasswordSaved();
-  void SetPendingCredentials(std::u16string username, std::u16string password);
+  void SetPendingCredentials(std::u16string username,
+                             std::u16string password,
+                             bool is_account_store = false);
   static PasswordForm CreatePasswordForm(std::u16string username,
                                          std::u16string password);
 
@@ -307,9 +310,13 @@ void SaveUpdatePasswordMessageDelegateTest::RecordPasswordSaved() {
 
 void SaveUpdatePasswordMessageDelegateTest::SetPendingCredentials(
     std::u16string username,
-    std::u16string password) {
+    std::u16string password,
+    bool is_account_store) {
   pending_credentials_.username_value = std::move(username);
   pending_credentials_.password_value = std::move(password);
+  pending_credentials_.in_store =
+      is_account_store ? password_manager::PasswordForm::Store::kAccountStore
+                       : password_manager::PasswordForm::Store::kProfileStore;
 }
 
 // static
@@ -1308,6 +1315,56 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
     EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, is_signed_in,
                                                kAccountEmail16),
               GetMessageWrapper()->GetDescription());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the description is set correctly when the signed in user updated
+// the password in the local store.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SignedInDescription_UpdatePasswordInAccountStore) {
+  // Enables using split storages (local and account).
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  const bool is_signed_in = true;
+  const bool is_update = true;
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/is_signed_in,
+                 /*update_password=*/is_update);
+
+  EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, is_signed_in,
+                                             kAccountEmail16),
+            GetMessageWrapper()->GetDescription());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the description is set correctly when the signed in user updated
+// the password in the local store.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SignedOutDescription_UpdatePasswordInLocalStore) {
+  // Enables using split storages (local and account).
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  const bool is_update = true;
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/is_update);
+
+  // Should display signed out message for updating the password in the local
+  // store (even when the user is signed in).
+  EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, false, kAccountEmail16),
+            GetMessageWrapper()->GetDescription());
 
   DismissMessage(messages::DismissReason::UNKNOWN);
 }

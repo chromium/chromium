@@ -47,7 +47,7 @@ void PasswordEditDialogBridge::ShowPasswordEditDialog(
     const std::vector<std::u16string>& saved_usernames,
     const std::u16string& username,
     const std::u16string& password,
-    const std::string& account_email) {
+    const std::optional<std::string>& account_email) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   base::android::ScopedJavaLocalRef<jobjectArray> j_saved_usernames =
@@ -57,7 +57,9 @@ void PasswordEditDialogBridge::ShowPasswordEditDialog(
   base::android::ScopedJavaLocalRef<jstring> j_password =
       base::android::ConvertUTF16ToJavaString(env, password);
   base::android::ScopedJavaLocalRef<jstring> j_account_email =
-      base::android::ConvertUTF8ToJavaString(env, account_email);
+      account_email.has_value()
+          ? base::android::ConvertUTF8ToJavaString(env, account_email.value())
+          : nullptr;
 
   Java_PasswordEditDialogBridge_showPasswordEditDialog(
       env, java_password_dialog_, j_saved_usernames, j_username, j_password,
