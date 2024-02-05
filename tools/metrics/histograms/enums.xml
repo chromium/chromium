@@ -29281,6 +29281,7 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Failed, Invalid HTTP response code"/>
   <int value="5" label="Failed, Invalid change in network context"/>
   <int value="6" label="Failed, Redirect was ineligible"/>
+  <int value="7" label="Failed, Insufficient referrer policy"/>
 </enum>
 
 <enum name="PrefetchStreamingURLLoaderStatus">
