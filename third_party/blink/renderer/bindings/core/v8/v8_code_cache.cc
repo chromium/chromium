@@ -91,12 +91,14 @@ enum class DetailFlags : uint64_t {
 bool V8CodeCache::HasHotTimestamp(const CachedMetadataHandler* cache_handler) {
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(
-          V8CodeCache::TagForTimeStamp(cache_handler));
+          V8CodeCache::TagForTimeStamp(cache_handler),
+          CachedMetadataHandler::kAllowUnchecked);
   if (cached_metadata) {
     return TimestampIsRecent(cached_metadata.get());
   }
   cached_metadata = cache_handler->GetCachedMetadata(
-      V8CodeCache::TagForCompileHints(cache_handler));
+      V8CodeCache::TagForCompileHints(cache_handler),
+      CachedMetadataHandler::kAllowUnchecked);
   if (cached_metadata) {
     return TimestampIsRecent(cached_metadata.get());
   }
