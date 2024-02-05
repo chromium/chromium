@@ -233,13 +233,16 @@ void UsageScenarioDataStoreImpl::OnVideoStopsInVisibleTab() {
 
 void UsageScenarioDataStoreImpl::OnUkmSourceBecameVisible(
     const ukm::SourceId& source,
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    extensions::ExtensionIdSet extensions_with_content_scripts) {
   DCHECK_NE(ukm::kInvalidSourceId, source);
   auto& origin_map_iter = origin_info_map_[origin];
   auto& source_id_iter = origin_map_iter[source];
 
   DCHECK(source_id_iter.visible_timestamp.is_null());
   source_id_iter.visible_timestamp = tick_clock_->NowTicks();
+
+  extensions_with_content_scripts_.merge(extensions_with_content_scripts);
 }
 
 void UsageScenarioDataStoreImpl::OnUkmSourceBecameHidden(
@@ -298,6 +301,10 @@ void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
 
   interval_data_.time_since_last_user_interaction_with_browser =
       now - last_interaction_with_browser_timestamp_;
+
+  interval_data_.num_extensions_with_content_scripts =
+      extensions_with_content_scripts_.size();
+  extensions_with_content_scripts_.clear();
 
   base::TimeDelta origin_visible_for_longest_time_duration;
   // Finalize the interval data and find the origin that has been visible for

@@ -333,6 +333,37 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Browser.MainThreadsCongestion.ExtensionContentScripts.{NumExtensions}"
+    units="janks" expires_after="2024-06-02">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    This metric is emitted every 30 seconds after main message loop start, when
+    there is user activity. Each 30 second duration is divided into 100ms
+    intervals. This metric counts the number of these intervals that were
+    &quot;congested&quot;. An interval is congested if during it the UI or IO
+    thread executes an &quot;important&quot; task that was queued more than 100
+    ms ago, or a non-important task or a native event handler that started
+    executing more than 100 ms ago. See
+    https://docs.google.com/document/d/1vDSGFvJblh7yJ3U3RVB_7qZLubyfTbQdQjuN1GoUNkc/edit
+    for more details.
+
+    This metric is split by the estimated number of extensions that ran content
+    scripts in the pages that were visible during the interval. It is only
+    recorded if there were visible pages. This version is used for
+    {NumExtensions}.
+  </summary>
+  <token key="NumExtensions">
+    <variant name="0" summary="0 extensions"/>
+    <variant name="1" summary="1 extension"/>
+    <variant name="2" summary="2 or 3 extensions"/>
+    <variant name="4" summary="4 to 7 extensions"/>
+    <variant name="8" summary="8 to 15 extensions"/>
+    <variant name="16" summary="16 or more extensions"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.MainThreadsCongestion.Used" units="janks"
     expires_after="2024-06-02">
   <owner>pmonette@chromium.org</owner>

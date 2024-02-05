@@ -6,8 +6,12 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/script_injection_tracker.h"
+#include "extensions/common/extension_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/display/screen.h"
 #include "url/origin.h"
@@ -30,6 +34,55 @@ int GetNumDisplays() {
   auto* screen = display::Screen::GetScreen();
   DCHECK(screen);
   return screen->GetNumDisplays();
+}
+
+extensions::ExtensionIdSet GetExtensionsThatRanContentScriptsInWebContents(
+    content::WebContents* contents) {
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+  if (!main_frame) {
+    // WebContents is being destroyed.
+    return {};
+  }
+  // Find the complete set of processes in the WebContents' frame tree first so
+  // that each is only handled once.
+  std::set<content::RenderProcessHost*> processes;
+  processes.insert(main_frame->GetProcess());
+  main_frame->ForEachRenderFrameHost(
+      [&processes](content::RenderFrameHost* frame) {
+        processes.insert(frame->GetProcess());
+      });
+
+  // Find the set of extensions that ran scripts in these processes.
+  //
+  // The result may include extra extensions for the following reasons:
+  //
+  // * ScriptInjectionTracker returns all extensions that have injected scripts
+  //   into a process. Multiple pages on the same domain might share a process
+  //   so we can't be sure which pages the extension affected.
+  // * It also returns extensions that have EVER injected scripts into the
+  //   process, even if the extension is no longer active (eg. after navigating
+  //   to a new page or removing the extension).
+  // * There are renderer-side permission checks that might cause a page to
+  //   refuse to inject a script, which ScriptInjectionTracker isn't aware of so
+  //   assumes the script was injected.
+  //
+  // In the first two points, the extension COULD still be affecting pages
+  // loaded in the process (due to bugs or malicious code, or just because
+  // changes the extension made to the page content had lingering effects).
+  //
+  // It may also miss extensions for the following reasons:
+  //
+  // * ScriptInjectionTracker only includes extensions that inject Javascript.
+  //   It doesn't track injected CSS scripts, declarative web requests, or
+  //   anything else an extension might do that could affect the page content.
+  // * The set of processes for the page includes only those that hosted frames,
+  //   not workers.
+  extensions::ExtensionIdSet extensions;
+  for (const auto* process : processes) {
+    extensions.merge(extensions::ScriptInjectionTracker::
+                         GetExtensionsThatRanContentScriptsInProcess(*process));
+  }
+  return extensions;
 }
 
 }  // namespace
@@ -204,8 +257,9 @@ void TabUsageScenarioTracker::OnPrimaryMainFrameNavigationCommitted(
 
     iter->second = GetNavigationInfoForContents(web_contents);
     if (iter->second.first != ukm::kInvalidSourceId) {
-      usage_scenario_data_store_->OnUkmSourceBecameVisible(iter->second.first,
-                                                           iter->second.second);
+      usage_scenario_data_store_->OnUkmSourceBecameVisible(
+          iter->second.first, iter->second.second,
+          GetExtensionsThatRanContentScriptsInWebContents(web_contents));
     }
   }
 }
@@ -298,7 +352,8 @@ void TabUsageScenarioTracker::InsertContentsInMapOfVisibleTabs(
                                     GetNavigationInfoForContents(web_contents));
   if (iter.first->second.first != ukm::kInvalidSourceId) {
     usage_scenario_data_store_->OnUkmSourceBecameVisible(
-        iter.first->second.first, iter.first->second.second);
+        iter.first->second.first, iter.first->second.second,
+        GetExtensionsThatRanContentScriptsInWebContents(web_contents));
   }
 }
 

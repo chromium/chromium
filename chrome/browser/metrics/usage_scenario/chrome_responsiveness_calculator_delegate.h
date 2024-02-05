@@ -45,6 +45,7 @@ class ChromeResponsivenessCalculatorDelegate
   std::unique_ptr<UsageScenarioTracker> usage_scenario_tracker_;
   raw_ptr<UsageScenarioDataStore> usage_scenario_data_store_;
   std::optional<ScenarioParams> interval_scenario_params_;
+  std::optional<size_t> extensions_with_content_scripts_in_interval_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_USAGE_SCENARIO_CHROME_RESPONSIVENESS_CALCULATOR_DELEGATE_H_

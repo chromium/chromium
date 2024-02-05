@@ -306,7 +306,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsDuringIntervalSingleURL) {
 
   // Interval with one SourceID visible the entire time.
   const ukm::SourceId kSource1 = 42;
-  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin, {});
   task_environment_.FastForwardBy(kShortDelay);
   data = ResetIntervalData();
   EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
@@ -318,7 +318,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsDuringIntervalSingleURL) {
   const ukm::SourceId kSource2 = 43;
   task_environment_.FastForwardBy(2 * kShortDelay);
   data_store()->OnUkmSourceBecameHidden(kSource1, kOrigin);
-  data_store()->OnUkmSourceBecameVisible(kSource2, kOrigin);
+  data_store()->OnUkmSourceBecameVisible(kSource2, kOrigin, {});
   task_environment_.FastForwardBy(kShortDelay);
   data = ResetIntervalData();
   EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
@@ -328,10 +328,10 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsDuringIntervalSingleURL) {
 
   // Interval with 3 different visible SourceID, |kSource1| and |kSource2| are
   // visible for the same amount of time.
-  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin, {});
   const ukm::SourceId kSource3 = 44;
   task_environment_.FastForwardBy(kShortDelay);
-  data_store()->OnUkmSourceBecameVisible(kSource3, kOrigin);
+  data_store()->OnUkmSourceBecameVisible(kSource3, kOrigin, {});
   task_environment_.FastForwardBy(kShortDelay);
   data = ResetIntervalData();
   EXPECT_TRUE(data.source_id_for_longest_visible_origin == kSource1 ||
@@ -363,15 +363,15 @@ TEST_F(UsageScenarioDataStoreTest, SourceIDVisibleMultipleTimesDuringInterval) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.com"));
 
   const ukm::SourceId kSource1 = 42;
-  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin, {});
   task_environment_.FastForwardBy(kShortDelay);
   data_store()->OnUkmSourceBecameHidden(kSource1, kOrigin);
   task_environment_.FastForwardBy(kShortDelay);
-  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin, {});
   task_environment_.FastForwardBy(kShortDelay);
   data_store()->OnUkmSourceBecameHidden(kSource1, kOrigin);
   task_environment_.FastForwardBy(kShortDelay);
-  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin);
+  data_store()->OnUkmSourceBecameVisible(kSource1, kOrigin, {});
   auto data = ResetIntervalData();
   EXPECT_EQ(kSource1, data.source_id_for_longest_visible_origin);
   EXPECT_EQ(2 * kShortDelay,
@@ -398,9 +398,9 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
   // be one associated with |kOrigin1| as the cumulative visibility time for its
   // sourceIDs is the greatest.
 
-  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId1, kOrigin1);
-  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId2, kOrigin1);
-  data_store()->OnUkmSourceBecameVisible(kOrigin2SourceId, kOrigin2);
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId1, kOrigin1, {});
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId2, kOrigin1, {});
+  data_store()->OnUkmSourceBecameVisible(kOrigin2SourceId, kOrigin2, {});
   task_environment_.FastForwardBy(kShortDelay);
   auto data = ResetIntervalData();
   EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin1SourceId1 ||
@@ -412,7 +412,7 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
   // same time, which is greater than the cumulative visibility time for the
   // sourceIDs associated with |kOrigin1|.
   data_store()->OnUkmSourceBecameHidden(kOrigin1SourceId1, kOrigin1);
-  data_store()->OnUkmSourceBecameVisible(kOrigin3SourceId, kOrigin3);
+  data_store()->OnUkmSourceBecameVisible(kOrigin3SourceId, kOrigin3, {});
   task_environment_.FastForwardBy(kShortDelay);
   data_store()->OnUkmSourceBecameHidden(kOrigin1SourceId2, kOrigin1);
   task_environment_.FastForwardBy(kShortDelay);
@@ -427,10 +427,10 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
   // cumulative time for the source ID associated with |kOrigin1| is also equal
   // to 5 time units.
   data_store()->OnUkmSourceBecameHidden(kOrigin3SourceId, kOrigin3);
-  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId1, kOrigin1);
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId1, kOrigin1, {});
   task_environment_.FastForwardBy(3 * kShortDelay);
   data_store()->OnUkmSourceBecameHidden(kOrigin1SourceId1, kOrigin1);
-  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId2, kOrigin1);
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId2, kOrigin1, {});
   task_environment_.FastForwardBy(2 * kShortDelay);
   data = ResetIntervalData();
   EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin2SourceId);
@@ -452,13 +452,13 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleTabsSameOrigin) {
   const ukm::SourceId kOrigin2SourceId = 44;
   const ukm::SourceId kOrigin3SourceId = 45;
 
-  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId, kOrigin1);
+  data_store()->OnUkmSourceBecameVisible(kOrigin1SourceId, kOrigin1, {});
   task_environment_.FastForwardBy(kShortDelay);
-  data_store()->OnUkmSourceBecameVisible(kOrigin2SourceId, kOrigin2);
+  data_store()->OnUkmSourceBecameVisible(kOrigin2SourceId, kOrigin2, {});
   task_environment_.FastForwardBy(kShortDelay);
   data_store()->OnUkmSourceBecameHidden(kOrigin1SourceId, kOrigin1);
   data_store()->OnUkmSourceBecameHidden(kOrigin2SourceId, kOrigin2);
-  data_store()->OnUkmSourceBecameVisible(kOrigin3SourceId, kOrigin3);
+  data_store()->OnUkmSourceBecameVisible(kOrigin3SourceId, kOrigin3, {});
   task_environment_.FastForwardBy(kShortDelay);
   auto data = ResetIntervalData();
   EXPECT_TRUE(data.source_id_for_longest_visible_origin == kOrigin1SourceId);
