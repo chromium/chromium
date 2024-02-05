@@ -127,7 +127,8 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   WorkerThread(ThreadType thread_type_hint,
                TrackedRef<TaskTracker> task_tracker,
                size_t sequence_num,
-               const CheckedLock* predecessor_lock = nullptr);
+               const CheckedLock* predecessor_lock = nullptr,
+               void* flow_terminator = nullptr);
 
   WorkerThread(const WorkerThread&) = delete;
   WorkerThread& operator=(const WorkerThread&) = delete;
@@ -254,6 +255,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   virtual bool join_called_for_testing() const = 0;
 
   const size_t sequence_num_;
+
+  // Used to terminate WorkerThread::WakeUp trace event flows.
+  const intptr_t flow_terminator_;
 
   // Service thread task runner.
   scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;

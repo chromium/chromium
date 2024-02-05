@@ -31,11 +31,13 @@ WorkerThreadSemaphore::WorkerThreadSemaphore(
     std::unique_ptr<Delegate> delegate,
     TrackedRef<TaskTracker> task_tracker,
     size_t sequence_num,
-    const CheckedLock* predecessor_lock)
+    const CheckedLock* predecessor_lock,
+    void* flow_terminator)
     : WorkerThread(thread_type_hint,
                    task_tracker,
                    sequence_num,
-                   predecessor_lock),
+                   predecessor_lock,
+                   flow_terminator),
       delegate_(std::move(delegate)) {
   DCHECK(delegate_);
 }

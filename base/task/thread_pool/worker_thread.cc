@@ -138,12 +138,16 @@ TimeDelta WorkerThread::Delegate::GetSleepTimeBeforePurge(
 WorkerThread::WorkerThread(ThreadType thread_type_hint,
                            TrackedRef<TaskTracker> task_tracker,
                            size_t sequence_num,
-                           const CheckedLock* predecessor_lock)
+                           const CheckedLock* predecessor_lock,
+                           void* flow_terminator)
     : thread_lock_(predecessor_lock),
       task_tracker_(std::move(task_tracker)),
       thread_type_hint_(thread_type_hint),
       current_thread_type_(GetDesiredThreadType()),
-      sequence_num_(sequence_num) {
+      sequence_num_(sequence_num),
+      flow_terminator_(flow_terminator == nullptr
+                           ? reinterpret_cast<intptr_t>(this)
+                           : reinterpret_cast<intptr_t>(flow_terminator)) {
   DCHECK(task_tracker_);
   DCHECK(CanUseBackgroundThreadTypeForWorkerThread() ||
          thread_type_hint_ != ThreadType::kBackground);
@@ -398,7 +402,8 @@ void WorkerThread::RunWorker() {
     hang_watch_scope.reset();
     delegate()->WaitForWork();
     TRACE_EVENT_BEGIN("base", "WorkerThread active",
-                      perfetto::TerminatingFlow::FromPointer(this));
+                      perfetto::TerminatingFlow::FromPointer(
+                          reinterpret_cast<void*>(flow_terminator_)));
 
     // Don't GetWork() in the case where we woke up for Cleanup().
     if (ShouldExit()) {
