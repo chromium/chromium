@@ -92,6 +92,7 @@ if (include_mediapipe_task_vision_files_for_facegaze) {
 }
 
 ts_definitions = [
+  "dictation/parse/pumpkin/pumpkin_tagger_externs.d.ts",
   "../definitions/accessibility_features_mv2.d.ts",
   "../definitions/accessibility_private_mv2.d.ts",
   "../definitions/audio.d.ts",
