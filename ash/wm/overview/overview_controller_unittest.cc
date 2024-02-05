@@ -215,13 +215,12 @@ TEST_F(OverviewControllerTest,
   resizer->CompleteDrag();
 }
 
-// TODO(https://crbug.com/1472403): Investigate test flakiness and reenable.
-TEST_F(OverviewControllerTest, DISABLED_OcclusionTest) {
+TEST_F(OverviewControllerTest, OcclusionTest) {
   using OcclusionState = aura::Window::OcclusionState;
 
   Shell::Get()
       ->overview_controller()
-      ->set_occlusion_pause_duration_for_end_for_test(base::Milliseconds(100));
+      ->set_occlusion_pause_duration_for_end_for_test(base::Milliseconds(500));
   TestOverviewObserver observer(/*should_monitor_animation_state = */ true);
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
