@@ -42,7 +42,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    pdf::PdfViewerStreamManager::CreateForWebContents(web_contents());
+    pdf::PdfViewerStreamManager::Create(web_contents());
 
     // For testing purposes, `main_rfh()` represents the extension's
     // embedder's frame host, while `extension_host` represents the
@@ -74,7 +74,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
     content::RenderFrameHost* embedder_host =
         content::NavigationSimulator::NavigateAndCommitFromDocument(
             GURL("https://original_url1"), main_rfh());
-    pdf::PdfViewerStreamManager::CreateForWebContents(web_contents());
+    pdf::PdfViewerStreamManager::Create(web_contents());
 
     auto* manager = pdf_viewer_stream_manager();
     manager->AddStreamContainer(

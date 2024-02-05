@@ -57,7 +57,7 @@ class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
     // Create `PdfViewerStreamManager` if it doesn't exist already. If `host` is
     // the primary main frame, then the previous `PdfViewerStreamManager` may
     // have been deleted as part of the above navigation.
-    PdfViewerStreamManager::CreateForWebContents(
+    PdfViewerStreamManager::Create(
         ChromeRenderViewHostTestHarness::web_contents());
     return new_host;
   }

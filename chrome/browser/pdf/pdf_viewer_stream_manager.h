@@ -51,6 +51,8 @@ namespace pdf {
 // `extensions::StreamContainer` objects are stored from
 // `PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse()` until
 // the PDF viewer is no longer in use.
+//
+// Use `PdfViewerStreamManager::Create()` to create an instance.
 // Use `PdfViewerStreamManager::FromWebContents()` to get an instance.
 class PdfViewerStreamManager
     : public content::WebContentsObserver,
@@ -71,6 +73,13 @@ class PdfViewerStreamManager
     int frame_tree_node_id;
     content::GlobalRenderFrameHostId global_id;
   };
+
+  // Creates a `PdfViewerStreamManager` for `contents`, if one doesn't already
+  // exist.
+  static void Create(content::WebContents* contents);
+
+  // Use `Create()` to create an instance instead.
+  static void CreateForWebContents(content::WebContents*) = delete;
 
   PdfViewerStreamManager(const PdfViewerStreamManager&) = delete;
   PdfViewerStreamManager& operator=(const PdfViewerStreamManager&) = delete;
@@ -189,6 +198,7 @@ class PdfViewerStreamManager
     bool plugin_can_save_ = false;
   };
 
+  // Use `Create()` to create an instance instead.
   explicit PdfViewerStreamManager(content::WebContents* contents);
 
   // Returns the stream info claimed by `embedder_host`, or nullptr if there's

@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -101,6 +102,19 @@ PdfViewerStreamManager::PdfViewerStreamManager(content::WebContents* contents)
       content::WebContentsUserData<PdfViewerStreamManager>(*contents) {}
 
 PdfViewerStreamManager::~PdfViewerStreamManager() = default;
+
+// static
+void PdfViewerStreamManager::Create(content::WebContents* contents) {
+  if (FromWebContents(contents)) {
+    return;
+  }
+
+  // TODO(crbug.com/1445746): Use a factory to create
+  // `TestPdfViewerStreamManager` instances for testing.
+  // Using `new` to access a non-public constructor.
+  contents->SetUserData(UserDataKey(),
+                        base::WrapUnique(new PdfViewerStreamManager(contents)));
+}
 
 // static
 PdfViewerStreamManager* PdfViewerStreamManager::FromRenderFrameHost(
