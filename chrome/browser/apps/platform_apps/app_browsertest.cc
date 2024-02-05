@@ -1371,8 +1371,9 @@ class PlatformAppIncognitoBrowserTest : public PlatformAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
                        MAYBE_IncognitoComponentApp) {
   // Get the file manager app.
-  const Extension* file_manager = extension_registry()->GetExtensionById(
-      extension_misc::kFilesManagerAppId, ExtensionRegistry::ENABLED);
+  const Extension* file_manager =
+      extension_registry()->enabled_extensions().GetByID(
+          extension_misc::kFilesManagerAppId);
   ASSERT_TRUE(file_manager != nullptr);
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
