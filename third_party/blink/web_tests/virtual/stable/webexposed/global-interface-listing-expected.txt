@@ -6312,7 +6312,9 @@ interface PerformanceScriptTiming : PerformanceEntry
     getter invoker
     getter invokerType
     getter pauseDuration
-    getter sourceLocation
+    getter sourceCharPosition
+    getter sourceFunctionName
+    getter sourceURL
     getter window
     getter windowAttribution
     method constructor

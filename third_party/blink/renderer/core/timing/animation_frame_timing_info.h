@@ -34,7 +34,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   struct ScriptSourceLocation {
     WTF::String url;
     WTF::String function_name;
-    int start_position = 0;
+    int char_position = -1;
   };
 
   ScriptTimingInfo(ExecutionContext* context,
