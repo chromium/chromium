@@ -1692,16 +1692,16 @@ void ContainerNode::CheckSoftNavigationHeuristicsTracking(
     return;
   }
 
-  SoftNavigationHeuristics* heuristics =
-      SoftNavigationHeuristics::From(*window);
-  DCHECK(heuristics);
-  // TODO(crbug.com/1521100): This does not filter out updates from isolated
-  // worlds. Should it?
-  if (heuristics->ModifiedDOM()) {
-    if (inserted_node.IsHTMLElement()) {
-      inserted_node.SetIsModifiedBySoftNavigation();
-    } else {
-      SetIsModifiedBySoftNavigation();
+  if (SoftNavigationHeuristics* heuristics =
+          SoftNavigationHeuristics::From(*window)) {
+    // TODO(crbug.com/1521100): This does not filter out updates from isolated
+    // worlds. Should it?
+    if (heuristics->ModifiedDOM()) {
+      if (inserted_node.IsHTMLElement()) {
+        inserted_node.SetIsModifiedBySoftNavigation();
+      } else {
+        SetIsModifiedBySoftNavigation();
+      }
     }
   }
 }

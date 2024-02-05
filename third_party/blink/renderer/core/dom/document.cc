@@ -1942,14 +1942,11 @@ uint32_t Document::softNavigations() const {
   if (!window) {
     return 0;
   }
-  LocalFrame* frame = window->GetFrame();
-  if (!frame || !frame->IsMainFrame()) {
-    return 0;
+  if (SoftNavigationHeuristics* heuristics =
+          SoftNavigationHeuristics::From(*window)) {
+    return heuristics->SoftNavigationCount();
   }
-  SoftNavigationHeuristics* heuristics =
-      SoftNavigationHeuristics::From(*window);
-  DCHECK(heuristics);
-  return heuristics->SoftNavigationCount();
+  return 0;
 }
 
 bool Document::hidden() const {

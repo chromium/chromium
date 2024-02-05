@@ -613,14 +613,14 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
   LocalFrame* frame = window_->GetFrame();
   scheduler::TaskAttributionInfo* task = nullptr;
   if (frame->IsOutermostMainFrame()) {
-    SoftNavigationHeuristics* heuristics =
-        SoftNavigationHeuristics::From(*window_);
-
-    heuristics->SameDocumentNavigationStarted();
-    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-    if (tracker && script_state->World().IsMainWorld()) {
-      task = tracker->RunningTask(script_state->GetIsolate());
-      tracker->AddSameDocumentNavigationTask(task);
+    if (SoftNavigationHeuristics* heuristics =
+            SoftNavigationHeuristics::From(*window_)) {
+      heuristics->SameDocumentNavigationStarted();
+      auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+      if (tracker && script_state->World().IsMainWorld()) {
+        task = tracker->RunningTask(script_state->GetIsolate());
+        tracker->AddSameDocumentNavigationTask(task);
+      }
     }
   }
   frame->GetLocalFrameHostRemote().NavigateToNavigationApiKey(
@@ -834,16 +834,16 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   // SoftNavigationEventScope until the event handler runs.
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
   if (base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
-    auto* soft_navigation_heuristics = SoftNavigationHeuristics::From(*window_);
-    if (soft_navigation_heuristics && init->userInitiated() &&
-        !init->downloadRequest() && init->canIntercept()) {
-      // If these conditions are met, create a SoftNavigationEventScope to
-      // consider this a "user initiated click", and the dispatched event
-      // handlers as potential soft navigation tasks.
-      soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
-          soft_navigation_heuristics,
-          SoftNavigationHeuristics::EventScopeType::kNavigate,
-          /*is_new_interaction=*/true);
+    if (auto* heuristics = SoftNavigationHeuristics::From(*window_)) {
+      if (init->userInitiated() && !init->downloadRequest() &&
+          init->canIntercept()) {
+        // If these conditions are met, create a SoftNavigationEventScope to
+        // consider this a "user initiated click", and the dispatched event
+        // handlers as potential soft navigation tasks.
+        soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
+            heuristics, SoftNavigationHeuristics::EventScopeType::kNavigate,
+            /*is_new_interaction=*/true);
+      }
     }
   }
   auto* navigate_event = NavigateEvent::Create(

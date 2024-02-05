@@ -1003,7 +1003,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     CHECK(frame_->DomWindow());
     heuristics = SoftNavigationHeuristics::From(*frame_->DomWindow());
-    if (is_browser_initiated) {
+    if (is_browser_initiated && heuristics) {
       // For browser-initiated navigations, we never started the soft
       // navigation (as this is the first we hear of it in the renderer). We
       // need to do that now.

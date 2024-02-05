@@ -95,13 +95,18 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow& window)
 
 SoftNavigationHeuristics* SoftNavigationHeuristics::From(
     LocalDOMWindow& window) {
-  // TODO(yoav): Ensure all callers don't have spurious IsMainFrame checks.
   if (!window.GetFrame()->IsMainFrame()) {
     return nullptr;
   }
   SoftNavigationHeuristics* heuristics =
       Supplement<LocalDOMWindow>::From<SoftNavigationHeuristics>(window);
   if (!heuristics) {
+    if (Document* document = window.document()) {
+      // Don't measure soft navigations in devtools.
+      if (document->Url().ProtocolIs("devtools")) {
+        return nullptr;
+      }
+    }
     heuristics = MakeGarbageCollected<SoftNavigationHeuristics>(window);
     ProvideTo(window, heuristics);
   }
@@ -340,6 +345,16 @@ void SoftNavigationHeuristics::RecordPaint(
     LocalFrame* frame,
     uint64_t painted_area,
     bool is_modified_by_soft_navigation) {
+  if (!initial_interaction_encountered_ && is_modified_by_soft_navigation) {
+    // TODO(crbug.com/41496928): Paints can be reported for Nodes which had
+    // is_modified... flag set but a different instance of a
+    // SoftNavigationHeuristics class.  This happens when Nodes are re-parented
+    // into a new document, e.g. into an open() window.
+    // Instead of just ignoring the worst case of this issue as we do here, we
+    // should support this use case.  Either by clearing the flag on nodes, or,
+    // by staring an interaction/navigation id on Node, rathan than boolean.
+    return;
+  }
   if (!initial_interaction_encountered_) {
     // We haven't seen an interaction yet, so we are still measuring initial
     // paint area.

@@ -57,10 +57,11 @@ void ReportURLChange(LocalDOMWindow* window,
                      const String& url) {
   DCHECK(window);
   DCHECK(window->GetFrame());
-  if (window->GetFrame()->IsMainFrame() && window->Url() != url) {
-    SoftNavigationHeuristics* heuristics =
-        SoftNavigationHeuristics::From(*window);
-    heuristics->SameDocumentNavigationStarted();
+  if (window->Url() != url) {
+    if (SoftNavigationHeuristics* heuristics =
+            SoftNavigationHeuristics::From(*window)) {
+      heuristics->SameDocumentNavigationStarted();
+    }
   }
 }
 }  // namespace
