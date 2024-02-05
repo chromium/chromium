@@ -470,6 +470,95 @@ TEST_F(WindowTreeHostWithThrottleTest, CallHideDirectly) {
   EXPECT_FALSE(host()->compositor()->IsVisible());
 }
 
+class WindowTreeHostWithThrottleAndReleaseTest : public test::AuraTestBase {
+ public:
+  // AuraTestBase:
+  void SetUp() override {
+    // Disable the headless check as the bots run with CHROME_HEADLESS set.
+    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kCalculateNativeWinOcclusion, {}},
+            {features::kApplyNativeOcclusionToCompositor,
+             {{features::kApplyNativeOcclusionToCompositorType,
+               features::
+                   kApplyNativeOcclusionToCompositorTypeThrottleAndRelease}}},
+        },
+        {});
+    AuraTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    test::AuraTestBase::TearDown();
+    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WindowTreeHostWithThrottleAndReleaseTest, ToggleOccluded) {
+  host()->Show();
+  // This test needs to drive native occlusion. If native occlusion is
+  // used, it'll conflict with this test.
+  NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host());
+  ASSERT_TRUE(NativeWindowOcclusionTracker::
+                  IsNativeWindowOcclusionTrackingAlwaysEnabled(host()));
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
+  EXPECT_FALSE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(base::Contains(test::GetThrottledHosts(), host()));
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE, {});
+  EXPECT_TRUE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+}
+
+TEST_F(WindowTreeHostWithThrottleAndReleaseTest, ToggleHidden) {
+  host()->Show();
+  // This test needs to drive native occlusion. If native occlusion is
+  // used, it'll conflict with this test.
+  NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host());
+  ASSERT_TRUE(NativeWindowOcclusionTracker::
+                  IsNativeWindowOcclusionTrackingAlwaysEnabled(host()));
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::HIDDEN, {});
+  EXPECT_FALSE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE, {});
+  EXPECT_TRUE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+}
+
+TEST_F(WindowTreeHostWithThrottleAndReleaseTest,
+       VideoCaptureLockForcesVisible) {
+  ASSERT_TRUE(NativeWindowOcclusionTracker::
+                  IsNativeWindowOcclusionTrackingAlwaysEnabled(host()));
+  // This test needs to drive native occlusion. If native occlusion is
+  // used, it'll conflict with this test.
+  NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host());
+  host()->Show();
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
+  EXPECT_FALSE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(base::Contains(test::GetThrottledHosts(), host()));
+  std::unique_ptr<WindowTreeHost::VideoCaptureLock> lock =
+      host()->CreateVideoCaptureLock();
+  EXPECT_TRUE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE, {});
+  EXPECT_TRUE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
+  EXPECT_TRUE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+  lock.reset();
+  EXPECT_FALSE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(base::Contains(test::GetThrottledHosts(), host()));
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE, {});
+  EXPECT_TRUE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace aura

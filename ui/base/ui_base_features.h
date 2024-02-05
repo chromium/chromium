@@ -51,6 +51,8 @@ extern const char kApplyNativeOcclusionToCompositorTypeRelease[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kApplyNativeOcclusionToCompositorTypeThrottle[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kCalculateNativeWinOcclusion);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kInputPaneOnScreenKeyboard);

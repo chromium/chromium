@@ -408,10 +408,18 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
 
   void DecrementVideoCaptureCount();
   void MaybeUpdateComposibleVisibilityForVideoLockCountChange();
+  void MaybeUpdateCompositorVisibilityForNativeOcclusion();
   bool CalculateCompositorVisibilityFromOcclusionState() const;
 
   // See `kApplyNativeOcclusionToCompositorTypeThrottle` for details.
-  bool ShouldThrottleWhenOccluded() const;
+  bool NativeOcclusionAffectsThrottle() const;
+
+  // True if native occlusion only affects throttle, not compositor visibility.
+  bool NativeOcclusionAffectsVisibility() const;
+
+  // True if we should throttle, assuming the native occlusion settings allow
+  // it.
+  bool ShouldThrottle() const;
 
   static const base::flat_set<WindowTreeHost*>& GetThrottledHostsForTesting();
 

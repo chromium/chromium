@@ -64,7 +64,9 @@ bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
       features::kApplyNativeOcclusionToCompositor,
       features::kApplyNativeOcclusionToCompositorType);
   return type == features::kApplyNativeOcclusionToCompositorTypeRelease ||
-         type == features::kApplyNativeOcclusionToCompositorTypeThrottle;
+         type == features::kApplyNativeOcclusionToCompositorTypeThrottle ||
+         type ==
+             features::kApplyNativeOcclusionToCompositorTypeThrottleAndRelease;
 #else
   return false;
 #endif

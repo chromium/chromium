@@ -41,6 +41,9 @@ const char kApplyNativeOcclusionToCompositorType[] = "type";
 const char kApplyNativeOcclusionToCompositorTypeRelease[] = "release";
 // When the WindowTreeHost is occluded the frame rate is throttled.
 const char kApplyNativeOcclusionToCompositorTypeThrottle[] = "throttle";
+// Release when hidden, throttle when occluded.
+const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[] =
+    "throttle_and_release";
 
 // If enabled, calculate native window occlusion - Windows-only.
 BASE_FEATURE(kCalculateNativeWinOcclusion,

@@ -112,6 +112,7 @@ const char WindowTreeHost::kWindowTreeHostUsesParent[] =
 
 WindowTreeHost::~WindowTreeHost() {
   DCHECK(!compositor_) << "compositor must be destroyed before root window";
+  DCHECK(!base::Contains(HostFrameRateThrottler::GetInstance().hosts(), this));
 }
 
 // static
@@ -372,26 +373,11 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
 
   occlusion_state_ = state;
   occluded_region_ = occluded_region;
+  MaybeUpdateCompositorVisibilityForNativeOcclusion();
 
-  if (compositor() && accelerated_widget_made_visible_ &&
-      NativeWindowOcclusionTracker::
-          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
-    if (ShouldThrottleWhenOccluded()) {
-      // Throttling doesn't update the visibility.
-      if (occlusion_state_ == Window::OcclusionState::OCCLUDED)
-        HostFrameRateThrottler::GetInstance().AddHost(this);
-      else
-        HostFrameRateThrottler::GetInstance().RemoveHost(this);
-    } else {
-      const bool visible = CalculateCompositorVisibilityFromOcclusionState();
-      if (visible != compositor()->IsVisible()) {
-        UpdateCompositorVisibility(visible);
-      }
-    }
-  }
-
-  for (WindowTreeHostObserver& observer : observers_)
+  for (WindowTreeHostObserver& observer : observers_) {
     observer.OnOcclusionStateChanged(this, state, occluded_region);
+  }
 }
 
 void WindowTreeHost::UpdateRootWindowSize() {
@@ -448,9 +434,6 @@ WindowTreeHost::CreateVideoCaptureLock() {
           IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
     return nullptr;
   }
-  // Throtting doesn't actually change the visibility, so no need for the lock.
-  if (ShouldThrottleWhenOccluded())
-    return nullptr;
 
   ++video_capture_count_;
   MaybeUpdateComposibleVisibilityForVideoLockCountChange();
@@ -480,11 +463,11 @@ void WindowTreeHost::UpdateCompositorVisibility(bool visible) {
   if (!compositor())
     return;
 
-  if (ShouldThrottleWhenOccluded()) {
-    // If ShouldThrottleWhenOccluded() is true, then this function should only
-    // be called if visibility is changed externally. In this case, assume
-    // `occlusion_state_` is being ignored, and that throtting should be
-    // disabled. For the most part, if ShouldThrottleWhenOccluded() is true,
+  if (NativeOcclusionAffectsThrottle()) {
+    // If NativeOcclusionAffectsThrottle() is true, then this function should
+    // only be called if visibility is changed externally. In this case, assume
+    // `occlusion_state_` is being ignored, and that throttling should be
+    // disabled. For the most part, if NativeOcclusionAffectsThrottle() is true,
     // the handling of occlusion changing is done in
     // SetNativeWindowOcclusionState().
     HostFrameRateThrottler::GetInstance().RemoveHost(this);
@@ -681,21 +664,39 @@ void WindowTreeHost::DecrementVideoCaptureCount() {
 }
 
 void WindowTreeHost::MaybeUpdateComposibleVisibilityForVideoLockCountChange() {
-  // Should only be called if the occlusion is applied to the compositor.
-  DCHECK(!ShouldThrottleWhenOccluded());
-
   // Only need to check for changes when transitioning between lock and no lock.
-  if (video_capture_count_ > 1 || !compositor() ||
-      !accelerated_widget_made_visible_) {
+  if (video_capture_count_ > 1) {
+    return;
+  }
+  MaybeUpdateCompositorVisibilityForNativeOcclusion();
+}
+
+void WindowTreeHost::MaybeUpdateCompositorVisibilityForNativeOcclusion() {
+  if (!compositor() || !accelerated_widget_made_visible_ ||
+      !NativeWindowOcclusionTracker::
+          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
     return;
   }
   const bool visible = CalculateCompositorVisibilityFromOcclusionState();
   if (visible != compositor()->IsVisible()) {
     UpdateCompositorVisibility(visible);
   }
+
+  if (NativeOcclusionAffectsThrottle()) {
+    if (ShouldThrottle()) {
+      HostFrameRateThrottler::GetInstance().AddHost(this);
+    } else {
+      HostFrameRateThrottler::GetInstance().RemoveHost(this);
+    }
+  }
 }
 
 bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
+  // For example, visibility should not be changed if we should only change
+  // throttle status.
+  if (!NativeOcclusionAffectsVisibility()) {
+    return true;
+  }
   switch (occlusion_state_) {
     case Window::OcclusionState::UNKNOWN:
       return true;
@@ -706,14 +707,13 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
       return video_capture_count_ != 0;
     }
     case Window::OcclusionState::HIDDEN:
-      // TODO: this should really return true if `video_capture_count_` is
-      // not zero, but this likely needs other changes to really work (such
-      // as on windows when an HWND is iconified it is sized to 0x0).
-      return false;
+      // TODO: On windows, this likely needs other changes to really work
+      // (such as when an HWND is iconified it is sized to 0x0).
+      return video_capture_count_ != 0;
   }
 }
 
-bool WindowTreeHost::ShouldThrottleWhenOccluded() const {
+bool WindowTreeHost::NativeOcclusionAffectsThrottle() const {
 #if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
@@ -724,10 +724,39 @@ bool WindowTreeHost::ShouldThrottleWhenOccluded() const {
   const std::string type = base::GetFieldTrialParamValueByFeature(
       features::kApplyNativeOcclusionToCompositor,
       features::kApplyNativeOcclusionToCompositorType);
-  return type == features::kApplyNativeOcclusionToCompositorTypeThrottle;
+  return type == features::kApplyNativeOcclusionToCompositorTypeThrottle ||
+         type ==
+             features::kApplyNativeOcclusionToCompositorTypeThrottleAndRelease;
 #else
   return false;
 #endif
+}
+
+bool WindowTreeHost::NativeOcclusionAffectsVisibility() const {
+#if BUILDFLAG(IS_WIN)
+  if (!base::FeatureList::IsEnabled(
+          features::kApplyNativeOcclusionToCompositor) ||
+      !IsNativeWindowOcclusionEnabled()) {
+    return false;
+  }
+
+  const std::string type = base::GetFieldTrialParamValueByFeature(
+      features::kApplyNativeOcclusionToCompositor,
+      features::kApplyNativeOcclusionToCompositorType);
+  return type == features::kApplyNativeOcclusionToCompositorTypeRelease ||
+         type ==
+             features::kApplyNativeOcclusionToCompositorTypeThrottleAndRelease;
+#else
+  return false;
+#endif
+}
+
+bool WindowTreeHost::ShouldThrottle() const {
+  // Only throttle if allowed and there are no video captures and we are
+  // occluded.
+  DCHECK(NativeOcclusionAffectsThrottle());
+  return video_capture_count_ == 0 &&
+         occlusion_state_ == Window::OcclusionState::OCCLUDED;
 }
 
 // static
