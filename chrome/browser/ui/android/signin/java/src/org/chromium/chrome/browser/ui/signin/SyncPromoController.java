@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
@@ -45,6 +46,7 @@ import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
@@ -517,8 +519,22 @@ public class SyncPromoController {
 
     private void signinWithDefaultAccount(Context context) {
         recordShowCountHistogram(UserAction.CONTINUED);
-        mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
-                context, mAccessPoint, mProfileData.getAccountEmail());
+        if (mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER
+                && SyncFeatureMap.isEnabled(
+                        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+            // TODO(crbug.com/1520798): Update this when the new sign-in flow is ready.
+            AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
+            CoreAccountInfo defaultAccount =
+                    accountManagerFacade.getCoreAccountInfos().getResult().get(0);
+            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+            signinManager.signin(defaultAccount, SigninAccessPoint.BOOKMARK_MANAGER, null);
+            SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+            syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
+            syncService.setSelectedType(UserSelectableType.READING_LIST, true);
+        } else {
+            mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
+                    context, mAccessPoint, mProfileData.getAccountEmail());
+        }
     }
 
     private void signinWithNotDefaultAccount(Context context) {
