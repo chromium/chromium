@@ -343,4 +343,10 @@ blink::WebAXObject AccessibilityController::GetAccessibilityObjectForMainFrame()
       web_view()->MainFrame()->ToWebLocalFrame()->GetDocument());
 }
 
+void AccessibilityController::Remove(unsigned axid) {
+  if (IsInstalled()) {
+    elements_->Remove(axid);
+  }
+}
+
 }  // namespace content
