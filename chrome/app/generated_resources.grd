@@ -9222,7 +9222,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Try out experimental AI features
       </message>
       <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO_BODY" desc="The body text of the IPH promo for experimental AI." translateable="false">
-        Get help organizing tabs and creating custom themes
+        Get help writing, organizing tabs and creating custom themes
       </message>
       <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO_BUTTON_CONTINUE" desc="The text of the continue button for the experimental AI IPH promo." translateable="false">
         Continue
