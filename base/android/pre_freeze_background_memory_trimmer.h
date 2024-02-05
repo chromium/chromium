@@ -14,7 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 
-namespace base {
+namespace base::android {
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kOnPreFreezeMemoryTrim);
 
@@ -103,11 +103,16 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   void OnPreFreezeInternal();
 
+  void PostMetricsTask(std::optional<uint64_t> pmf_before);
+
   mutable base::Lock lock_;
   std::deque<std::unique_ptr<BackgroundTask>> background_tasks_
       GUARDED_BY(lock_);
+  // Keeps track of whether any tasks have been registered so far (set to true
+  // once the first task is registered).
+  bool did_register_task_ GUARDED_BY(lock_) = false;
   bool is_respecting_modern_trim_;
 };
-}  // namespace base
+}  // namespace base::android
 
 #endif  // BASE_ANDROID_PRE_FREEZE_BACKGROUND_MEMORY_TRIMMER_H_

@@ -1712,14 +1712,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Memory.PreFreeze{Process}.PrivateMemoryFootprint.{Timing}"
+<histogram name="Memory.PreFreeze2{Process}.PrivateMemoryFootprint.{Timing}"
     units="MiB" expires_after="2025-02-01">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
     The private memory footprint of {Process}, recorded when we get a
     notification that the application is about to be frozen. {Timing} Recorded
-    only on Android U+.
+    only on Android 14+, and only recorded if at least one task has been
+    registered with PreFreeze.
   </summary>
   <token key="Process" variants="ProfiledProcess"/>
   <token key="Timing" variants="RecordedTiming"/>
