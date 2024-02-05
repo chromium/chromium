@@ -40,6 +40,7 @@ import java.util.Map;
  */
 public class CachedFlag extends Flag {
     private final boolean mDefaultValue;
+    private String mPreferenceKey;
 
     public CachedFlag(FeatureMap featureMap, String featureName, boolean defaultValue) {
         super(featureMap, featureName);
@@ -125,7 +126,11 @@ public class CachedFlag extends Flag {
     }
 
     String getSharedPreferenceKey() {
-        return CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(mFeatureName);
+        // Create the key only once to avoid String concatenation every flag check.
+        if (mPreferenceKey == null) {
+            mPreferenceKey = CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(mFeatureName);
+        }
+        return mPreferenceKey;
     }
 
     /**
