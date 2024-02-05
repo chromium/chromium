@@ -100,6 +100,7 @@ class SaveCardBubbleControllerImpl
   const CreditCard& GetCard() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
+  ui::ImageModel GetCreditCardImage() const override;
 
   void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
                         user_provided_card_details) override;

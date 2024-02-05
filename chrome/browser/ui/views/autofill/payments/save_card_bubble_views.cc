@@ -139,7 +139,8 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
     explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
 
-  // Add the card network icon, last four digits and expiration date.
+  // Add the card network or card art image, last four digits and expiration
+  // date or CVC icon.
   auto* description_view =
       view->AddChildView(std::make_unique<views::BoxLayoutView>());
   description_view->SetBetweenChildSpacing(
@@ -147,9 +148,7 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
 
   const CreditCard& card = controller_->GetCard();
   auto* const card_network_icon = description_view->AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromImage(
-          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-              CreditCard::IconResourceId(card.network())))));
+      std::make_unique<views::ImageView>(controller_->GetCreditCardImage()));
   card_network_icon->SetTooltipText(card.NetworkForDisplay());
   auto* card_identifier_view =
       description_view->AddChildView(GetCardIdentifierView());

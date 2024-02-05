@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -69,6 +70,11 @@ class SaveCardBubbleController {
   // Returns whether the dialog should include a pair of dropdown lists
   // allowing the user to provide expiration date.
   virtual bool ShouldRequestExpirationDateFromUser() const = 0;
+
+  // Returns the customized credit card image. If no card art image has been
+  // cached, an asynchronous request will be sent to fetch the image and this
+  // function will return the network image.
+  virtual ui::ImageModel GetCreditCardImage() const = 0;
 
   // Interaction.
   // OnSaveButton takes in a struct representing the cardholder name,
