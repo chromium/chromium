@@ -2301,6 +2301,127 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
   EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
 
+  // Nodes are empty at the end of the tree.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetCurrentText_OpeningPunctuationIgnored) {
+  std::u16string sentence1 = u"And I am almost there.";
+  std::u16string sentence2 = u"[2]";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  update.nodes = {static_text1, static_text2};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+
+  // The first segment was returned correctly.
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+
+  // The second segment was returned correctly.
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetCurrentText_OpeningPunctuationIncludedWhenEntireNode) {
+  // Simulate breaking up the brackets across a link.
+  std::u16string sentence1 = u"And I am almost there.";
+  std::u16string sentence2 = u"[";
+  std::u16string sentence3 = u"2";
+  std::u16string sentence4 = u"]";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+
+  ui::AXNodeData static_text4;
+  static_text4.id = 12;
+  static_text4.role = ax::mojom::Role::kStaticText;
+  static_text4.SetNameChecked(sentence4);
+
+  ui::AXNodeData superscript;
+  superscript.id = 13;
+  superscript.role = ax::mojom::Role::kSuperscript;
+  superscript.child_ids = {static_text2.id, static_text3.id, static_text4.id};
+
+  ui::AXNodeData root;
+  root.id = 10;
+  root.child_ids = {static_text1.id, superscript.id};
+  update.root_id = root.id;
+
+  update.nodes = {root,         static_text1, superscript,
+                  static_text2, static_text3, static_text4};
+  OnActiveAXTreeIDChanged(id_1);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled(id_1, {root.id, static_text1.id, superscript.id,
+                           static_text2.id, static_text3.id, static_text4.id});
+  InitAXPosition(static_text1.id);
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+
+  // The first segment was returned correctly.
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // The next segment contains the entire superscript '[2]' with both opening
+  // and closing brackets so neither bracket is read out-of-context.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 3);
+
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  EXPECT_EQ(next_node_ids[1], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[1]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[1]), (int)sentence3.length());
+
+  EXPECT_EQ(next_node_ids[2], static_text4.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[2]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[2]), (int)sentence4.length());
+
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ((int)next_node_ids.size(), 0);

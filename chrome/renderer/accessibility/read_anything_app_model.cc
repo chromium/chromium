@@ -1186,6 +1186,30 @@ ReadAnythingAppModel::GetNextNodes() {
       // Get the index of the next sentence if we're looking at the combined
       // previous and current node text.
       int combined_sentence_index = GetNextSentence(combined_text);
+
+      bool is_opening_punctuation = false;
+      // The code that checks for accessible text boundaries sometimes
+      // incorrectly includes opening punctuation (i.e. '(', '<', etc.) as part
+      // of the prior sentence.
+      // e.g. "This is a sentence.[2]" will return a sentence boundary for
+      // "This is a sentence.[", splitting the opening and closing punctuation.
+      // When opening punctuation is split like this in Read Aloud, text will
+      // be read out for the punctuation e.g. "opening square bracket," which
+      // we want to avoid.
+      // Therefore, this is a workaround that prevents adding text from the
+      // next node to the current segment if that text is a single character
+      // and also opening punctuation. The opening punctuation will then be
+      // read out as part of the next segment. If the opening punctuation is
+      // followed by text and closing punctuation, the punctuation will not be
+      // read out directly- just the text content.
+      // TODO(crbug.com/1474951): See if it's possible to fix the code
+      // in FindAccessibleTextBoundary instead so that this workaround isn't
+      // needed.
+      if (combined_sentence_index == (int)current_text.length() + 1) {
+        char c = combined_text[combined_sentence_index - 1];
+        is_opening_punctuation = IsOpeningPunctuation(c);
+      }
+
       // If the combined_sentence_index is the same as the current_text length,
       // the new node should not be considered part of the current sentence.
       // If these values differ, add the current node's text to the list of
@@ -1203,7 +1227,8 @@ ReadAnythingAppModel::GetNextNodes() {
       //    The current text length is 6, and the next sentence index of
       //    "Hello. Goodbye." is still 6, so the current node's text shouldn't
       //    be added to the current sentence.
-      if ((int)current_text.length() < combined_sentence_index) {
+      if (((int)current_text.length() < combined_sentence_index) &&
+          !is_opening_punctuation) {
         anchor_node = GetNodeFromCurrentPosition();
         // Calculate the new sentence index.
         int index_in_new_node = combined_sentence_index - current_text.length();
@@ -1403,4 +1428,7 @@ bool ReadAnythingAppModel::IsTextForReadAnything(
     ui::AXNodeID ax_node_id) const {
   // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
   return (GetHtmlTag(ax_node_id).length() == 0);
+}
+bool ReadAnythingAppModel::IsOpeningPunctuation(char c) {
+  return (c == '(' || c == '{' || c == '[' || c == '<');
 }

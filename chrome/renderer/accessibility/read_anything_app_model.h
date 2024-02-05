@@ -351,6 +351,8 @@ class ReadAnythingAppModel {
       ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
       ui::AXNodeID id);
 
+  bool IsOpeningPunctuation(char c);
+
   // State.
   // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
   std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>> tree_managers_;
