@@ -6705,3 +6705,4 @@ crbug.com/1521140 [ Mac ] inspector-protocol/timeline/render-blocking-style.js [
 crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-domainhint.https.html [ Timeout Pass ]
 crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-error-basic.https.html [ Timeout Pass ]
 crbug.com/41496645 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html [ Failure Pass ]
+crbug.com/323752584 [ Win11-arm64 ] external/wpt/webnn/* [ Failure Pass ]
