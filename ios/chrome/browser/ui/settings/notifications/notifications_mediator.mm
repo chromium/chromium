@@ -266,7 +266,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       if (!value) {
         break;
       }
-      [self.presenter presentTipsNotificationPermissionAlert];
+      [self.presenter presentPushNotificationPermissionAlert];
       break;
     }
     case ItemTypeTipsNotifications: {

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_PUSH_NOTIFICATION_NOTIFICATIONS_OPT_IN_ALERT_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_PUSH_NOTIFICATION_NOTIFICATIONS_OPT_IN_ALERT_COORDINATOR_H_
 
+#import <optional>
+
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 enum class PushNotificationClientId;
@@ -36,7 +38,7 @@ enum class NotificationsOptInAlertResult {
 
 // The client id of the push notification client that the user is
 // opting-in for.
-@property(nonatomic, assign) PushNotificationClientId clientId;
+@property(nonatomic, assign) std::optional<PushNotificationClientId> clientId;
 
 // The confirmation message to show in a Snackbar when notifications have been
 // enabled.

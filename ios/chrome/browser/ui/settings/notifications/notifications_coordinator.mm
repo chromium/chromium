@@ -8,11 +8,13 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NotificationsCoordinator () <
@@ -99,8 +102,11 @@
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  _optInAlertCoordinator.clientId = PushNotificationClientId::kContent;
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
+  _optInAlertCoordinator.confirmationMessage =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE);
   [_optInAlertCoordinator start];
 }
 
@@ -109,8 +115,12 @@
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  _optInAlertCoordinator.clientId = PushNotificationClientId::kTips;
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_TIPS_NOTIFICATIONS_SETTINGS_ALERT_SUBTITLE);
+  _optInAlertCoordinator.confirmationMessage = l10n_util::GetNSStringF(
+      IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
+      l10n_util::GetStringUTF16(content_suggestions::SetUpListTitleStringID()));
   [_optInAlertCoordinator start];
 }
 
