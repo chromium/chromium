@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -925,6 +926,8 @@ class ContentVerifierPolicyTest : public ContentVerifierTest {
 // force installed extension. So we set that up in the PRE test here.
 IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
                        PRE_PolicyCorruptedOnStartup) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   TestExtensionRegistryObserver registry_observer(registry, id_);
 
@@ -953,7 +956,9 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
                        MAYBE_PolicyCorruptedOnStartup) {
-  // Depdending on timing, the extension may have already been reinstalled
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
+  // Depending on timing, the extension may have already been reinstalled
   // between SetUpInProcessBrowserTestFixture and now (usually not during local
   // testing on a developer machine, but sometimes on a heavily loaded system
   // such as the build waterfall / trybots). If the reinstall didn't already
@@ -971,6 +976,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, Backoff) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   ExtensionSystem* system = ExtensionSystem::Get(profile());
   ContentVerifier* verifier = system->content_verifier();
@@ -1018,6 +1025,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, Backoff) {
 // corrupted policy extensions. For example: if network is unavailable,
 // CheckForExternalUpdates() will fail.
 IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, FailedUpdateRetries) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   ExtensionSystem* system = ExtensionSystem::Get(profile());
   ContentVerifier* verifier = system->content_verifier();
