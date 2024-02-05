@@ -456,6 +456,8 @@ WindowTreeHost::WindowTreeHost(std::unique_ptr<Window> window)
   native_window_occlusion_enabled_ =
       !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless) &&
       base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  native_window_occlusion_enabled_ = true;
 #endif
 }
 
@@ -650,8 +652,7 @@ gfx::Rect WindowTreeHost::GetTransformedRootWindowBoundsFromPixelSize(
 void WindowTreeHost::SetNativeWindowOcclusionEnabled(bool enable) {
   native_window_occlusion_enabled_ = enable;
   // TODO(crbug.com/1051306) If enabled is false, make this
-  // turn off native window occlusion on this window. Only Windows has
-  // native window occlusion currently.
+  // turn off native window occlusion on this window.
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -703,6 +704,8 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
     case Window::OcclusionState::VISIBLE:
       return true;
     case Window::OcclusionState::OCCLUDED: {
+      // TODO(crbug.com/1278648): For lacros, make sure non-maximized but
+      // occluded windows are visible.
       // The compositor needs to be visible when capturing video.
       return video_capture_count_ != 0;
     }
@@ -714,7 +717,7 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
 }
 
 bool WindowTreeHost::NativeOcclusionAffectsThrottle() const {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
       !IsNativeWindowOcclusionEnabled()) {
@@ -733,7 +736,7 @@ bool WindowTreeHost::NativeOcclusionAffectsThrottle() const {
 }
 
 bool WindowTreeHost::NativeOcclusionAffectsVisibility() const {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
       !IsNativeWindowOcclusionEnabled()) {

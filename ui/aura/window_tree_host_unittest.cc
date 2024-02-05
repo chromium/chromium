@@ -26,10 +26,6 @@
 #include "ui/events/test/test_event_rewriter.h"
 #include "ui/platform_window/stub/stub_window.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/aura/native_window_occlusion_tracker_win.h"
-#endif
-
 namespace aura {
 
 namespace {
@@ -335,16 +331,20 @@ TEST_F(WindowTreeHostTest, LostCaptureDuringTearDown) {
   TestWindowTreeHost host;
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 class WindowTreeHostWithReleaseTest : public test::AuraTestBase {
  public:
   // AuraTestBase:
   void SetUp() override {
+#if BUILDFLAG(IS_WIN)
     // Disable the headless check as the bots run with CHROME_HEADLESS set.
     NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
+#endif
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
+#if BUILDFLAG(IS_WIN)
             {features::kCalculateNativeWinOcclusion, {}},
+#endif
             {features::kApplyNativeOcclusionToCompositor,
              {{features::kApplyNativeOcclusionToCompositorType,
                features::kApplyNativeOcclusionToCompositorTypeRelease}}},
@@ -355,7 +355,9 @@ class WindowTreeHostWithReleaseTest : public test::AuraTestBase {
 
   void TearDown() override {
     test::AuraTestBase::TearDown();
+#if BUILDFLAG(IS_WIN)
     NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(true);
+#endif
   }
 
  private:
@@ -414,11 +416,15 @@ class WindowTreeHostWithThrottleTest : public test::AuraTestBase {
  public:
   // AuraTestBase:
   void SetUp() override {
+#if BUILDFLAG(IS_WIN)
     // Disable the headless check as the bots run with CHROME_HEADLESS set.
     NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
+#endif
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
+#if BUILDFLAG(IS_WIN)
             {features::kCalculateNativeWinOcclusion, {}},
+#endif
             {features::kApplyNativeOcclusionToCompositor,
              {{features::kApplyNativeOcclusionToCompositorType,
                features::kApplyNativeOcclusionToCompositorTypeThrottle}}},
@@ -429,7 +435,9 @@ class WindowTreeHostWithThrottleTest : public test::AuraTestBase {
 
   void TearDown() override {
     test::AuraTestBase::TearDown();
+#if BUILDFLAG(IS_WIN)
     NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(true);
+#endif
   }
 
  private:
@@ -474,11 +482,15 @@ class WindowTreeHostWithThrottleAndReleaseTest : public test::AuraTestBase {
  public:
   // AuraTestBase:
   void SetUp() override {
+#if BUILDFLAG(IS_WIN)
     // Disable the headless check as the bots run with CHROME_HEADLESS set.
     NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
+#endif
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
+#if BUILDFLAG(IS_WIN)
             {features::kCalculateNativeWinOcclusion, {}},
+#endif
             {features::kApplyNativeOcclusionToCompositor,
              {{features::kApplyNativeOcclusionToCompositorType,
                features::
@@ -490,7 +502,9 @@ class WindowTreeHostWithThrottleAndReleaseTest : public test::AuraTestBase {
 
   void TearDown() override {
     test::AuraTestBase::TearDown();
+#if BUILDFLAG(IS_WIN)
     NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(true);
+#endif
   }
 
  private:
@@ -559,6 +573,6 @@ TEST_F(WindowTreeHostWithThrottleAndReleaseTest,
   EXPECT_TRUE(test::GetThrottledHosts().empty());
 }
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace aura

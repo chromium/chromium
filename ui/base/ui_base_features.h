@@ -43,16 +43,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kElasticOverscroll);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kApplyNativeOccludedRegionToWindowTracker);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kApplyNativeOcclusionToCompositor);
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorType[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorTypeRelease[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorTypeThrottle[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kCalculateNativeWinOcclusion);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kInputPaneOnScreenKeyboard);
@@ -63,6 +53,19 @@ BASE_DECLARE_FEATURE(kScreenPowerListenerForNativeWinOcclusion);
 // Returns true if the system should use WM_POINTER events for touch events.
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUsingWMPointerForTouch();
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kApplyNativeOcclusionToCompositor);
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kApplyNativeOcclusionToCompositorType[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kApplyNativeOcclusionToCompositorTypeRelease[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kApplyNativeOcclusionToCompositorTypeThrottle[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(UI_BASE_FEATURES)

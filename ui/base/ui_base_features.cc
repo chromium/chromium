@@ -27,6 +27,20 @@ BASE_FEATURE(kApplyNativeOccludedRegionToWindowTracker,
              "ApplyNativeOccludedRegionToWindowTracker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, calculate native window occlusion - Windows-only.
+BASE_FEATURE(kCalculateNativeWinOcclusion,
+             "CalculateNativeWinOcclusion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, listen for screen power state change and factor into the native
+// window occlusion detection - Windows-only.
+BASE_FEATURE(kScreenPowerListenerForNativeWinOcclusion,
+             "ScreenPowerListenerForNativeWinOcclusion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Once enabled, the exact behavior is dictated by the field trial param
 // name `kApplyNativeOcclusionToCompositorType`.
 BASE_FEATURE(kApplyNativeOcclusionToCompositor,
@@ -44,19 +58,7 @@ const char kApplyNativeOcclusionToCompositorTypeThrottle[] = "throttle";
 // Release when hidden, throttle when occluded.
 const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[] =
     "throttle_and_release";
-
-// If enabled, calculate native window occlusion - Windows-only.
-BASE_FEATURE(kCalculateNativeWinOcclusion,
-             "CalculateNativeWinOcclusion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, listen for screen power state change and factor into the native
-// window occlusion detection - Windows-only.
-BASE_FEATURE(kScreenPowerListenerForNativeWinOcclusion,
-             "ScreenPowerListenerForNativeWinOcclusion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Integrate input method specific settings to Chrome OS settings page.
