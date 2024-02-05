@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/model/document_download_tab_helper.h"
@@ -310,5 +311,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   if (!is_off_the_record) {
     PriceNotificationsTabHelper::CreateForWebState(web_state);
+  }
+
+  if (IsContextualPanelEnabled()) {
+    ContextualPanelTabHelper::CreateForWebState(web_state);
   }
 }
