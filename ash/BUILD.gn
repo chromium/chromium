@@ -4229,6 +4229,7 @@ test("ash_pixeltests") {
     "ambient/ui/ambient_slideshow_pixeltest.cc",
     "app_list/views/app_list_item_view_pixeltest.cc",
     "app_list/views/app_list_view_pixeltest.cc",
+    "app_list/views/search_result_view_pixeltest.cc",
     "fullscreen_pixeltest.cc",
     "glanceables/glanceables_pixeltest.cc",
     "glanceables/tasks/glanceables_task_view_pixeltest.cc",
