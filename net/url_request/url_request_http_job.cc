@@ -1726,16 +1726,16 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     return;
 
   base::TimeDelta total_time = base::TimeTicks::Now() - start_time_;
-  UMA_HISTOGRAM_TIMES("Net.HttpJob.TotalTime", total_time);
+  base::UmaHistogramTimes("Net.HttpJob.TotalTime", total_time);
 
   if (reason == FINISHED) {
-    UmaHistogramTimes(
+    base::UmaHistogramTimes(
         base::StringPrintf("Net.HttpJob.TotalTimeSuccess.Priority%d",
                            request()->priority()),
         total_time);
-    UMA_HISTOGRAM_TIMES("Net.HttpJob.TotalTimeSuccess", total_time);
+    base::UmaHistogramTimes("Net.HttpJob.TotalTimeSuccess", total_time);
   } else {
-    UMA_HISTOGRAM_TIMES("Net.HttpJob.TotalTimeCancel", total_time);
+    base::UmaHistogramTimes("Net.HttpJob.TotalTimeCancel", total_time);
   }
 
   // These metrics are intended to replace some of the later IP
@@ -1760,19 +1760,19 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
                                GetTotalSentBytes() == 0 &&
                                GetTotalReceivedBytes() == 0;
   if (!bypassedNetwork) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.BytesSent2", GetTotalSentBytes(),
-                                1, 50000000, 50);
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.BytesReceived2",
-                                GetTotalReceivedBytes(), 1, 50000000, 50);
+    base::UmaHistogramCustomCounts("Net.HttpJob.BytesSent2",
+                                   GetTotalSentBytes(), 1, 50000000, 50);
+    base::UmaHistogramCustomCounts("Net.HttpJob.BytesReceived2",
+                                   GetTotalReceivedBytes(), 1, 50000000, 50);
     // Having a transaction_ does not imply having a response_info_. This is
     // particularly the case in some aborted/cancelled jobs. The transaction is
     // the primary source of MDL match information.
     if ((transaction_ && transaction_->IsMdlMatchForMetrics()) ||
         (response_info_ && response_info_->was_mdl_match)) {
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
+      base::UmaHistogramCustomCounts(
           "Net.HttpJob.IpProtection.AllowListMatch.BytesSent2",
           GetTotalSentBytes(), 1, 50000000, 50);
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
+      base::UmaHistogramCustomCounts(
           "Net.HttpJob.IpProtection.AllowListMatch.BytesReceived2",
           GetTotalReceivedBytes(), 1, 50000000, 50);
     }
@@ -1786,8 +1786,8 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     bool used_quic = response_info_->DidUseQuic();
     if (is_https_google) {
       if (used_quic) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpJob.TotalTime.Secure.Quic",
-                                   total_time);
+        base::UmaHistogramMediumTimes("Net.HttpJob.TotalTime.Secure.Quic",
+                                      total_time);
       }
     }
 
@@ -1800,54 +1800,54 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
       base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13.Google", total_time);
     }
 
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead",
-                                prefilter_bytes_read(), 1, 50000000, 50);
+    base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead",
+                                   prefilter_bytes_read(), 1, 50000000, 50);
     if (response_info_->was_cached) {
-      UMA_HISTOGRAM_TIMES("Net.HttpJob.TotalTimeCached", total_time);
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead.Cache",
-                                  prefilter_bytes_read(), 1, 50000000, 50);
+      base::UmaHistogramTimes("Net.HttpJob.TotalTimeCached", total_time);
+      base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead.Cache",
+                                     prefilter_bytes_read(), 1, 50000000, 50);
     } else {
-      UMA_HISTOGRAM_TIMES("Net.HttpJob.TotalTimeNotCached", total_time);
+      base::UmaHistogramTimes("Net.HttpJob.TotalTimeNotCached", total_time);
       if (response_info_->was_mdl_match) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
+        base::UmaHistogramCustomCounts(
             "Net.HttpJob.IpProtection.AllowListMatch.BytesSent",
             GetTotalSentBytes(), 1, 50000000, 50);
 
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
+        base::UmaHistogramCustomCounts(
             "Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net",
             prefilter_bytes_read(), 1, 50000000, 50);
       }
       if (response_info_->proxy_chain.is_for_ip_protection()) {
-        UMA_HISTOGRAM_TIMES("Net.HttpJob.IpProtection.TotalTimeNotCached",
-                            total_time);
+        base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached",
+                                total_time);
         // Log specific times for non-zero chains. The zero chain is the
         // default and is still counted in the base `TotalTimeNotCached`.
         int chain_id = response_info_->proxy_chain.ip_protection_chain_id();
         if (chain_id != ProxyChain::kNotIpProtectionChainId) {
-          UMA_HISTOGRAM_TIMES(
+          UmaHistogramTimes(
               base::StrCat({"Net.HttpJob.IpProtection.TotalTimeNotCached.Chain",
                             base::NumberToString(chain_id)}),
               total_time);
         }
 
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.IpProtection.BytesSent",
-                                    GetTotalSentBytes(), 1, 50000000, 50);
+        base::UmaHistogramCustomCounts("Net.HttpJob.IpProtection.BytesSent",
+                                       GetTotalSentBytes(), 1, 50000000, 50);
 
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
+        base::UmaHistogramCustomCounts(
             "Net.HttpJob.IpProtection.PrefilterBytesRead.Net",
             prefilter_bytes_read(), 1, 50000000, 50);
       }
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead.Net",
-                                  prefilter_bytes_read(), 1, 50000000, 50);
+      base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead.Net",
+                                     prefilter_bytes_read(), 1, 50000000, 50);
 
       if (request_->ad_tagged()) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead.Ads.Net",
-                                    prefilter_bytes_read(), 1, 50000000, 50);
+        base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead.Ads.Net",
+                                       prefilter_bytes_read(), 1, 50000000, 50);
       }
 
       if (is_https_google && used_quic) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpJob.TotalTimeNotCached.Secure.Quic",
-                                   total_time);
+        base::UmaHistogramMediumTimes(
+            "Net.HttpJob.TotalTimeNotCached.Secure.Quic", total_time);
       }
     }
   }
