@@ -11,13 +11,12 @@
 
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_model.h"
+#include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
@@ -29,9 +28,6 @@ namespace {
 
 const std::u16string kPlaceholderCategorySectionTitle =
     u"Placeholder Categories";
-
-// TODO: b/322905189 - Get a relevant icon for each category.
-const gfx::VectorIcon& kPlaceholderIcon = kImeMenuEmoticonIcon;
 
 }  // namespace
 
@@ -47,8 +43,7 @@ PickerZeroStateView::PickerZeroStateView(
     auto item_view = std::make_unique<PickerItemView>(
         base::BindRepeating(select_category_callback, category));
     item_view->SetPrimaryText(GetStringForPickerCategory(category));
-    item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-        kPlaceholderIcon, cros_tokens::kCrosSysOnSurface));
+    item_view->SetLeadingIcon(GetIconForPickerCategory(category));
     section_view->AddListItem(std::move(item_view));
   }
   section_views_.push_back(section_view);
