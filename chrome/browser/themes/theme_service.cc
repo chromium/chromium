@@ -816,9 +816,7 @@ void ThemeService::MigrateTheme() {
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
   const extensions::Extension* extension =
-      registry ? registry->GetExtensionById(
-                     GetThemeID(), extensions::ExtensionRegistry::ENABLED)
-               : nullptr;
+      registry ? registry->enabled_extensions().GetByID(GetThemeID()) : nullptr;
   if (extension) {
     // Theme migration is done on the UI thread. Blocking the UI from appearing
     // until it's ready is deemed better than showing a blip of the default
