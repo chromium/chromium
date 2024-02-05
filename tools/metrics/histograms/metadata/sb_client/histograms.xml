@@ -616,6 +616,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.LiveClientPhishingModelCountAtCreation"
+    units="models" expires_after="2024-04-01">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Record how many ClientPhishingModels are alive. This is logged each time a
+    new ClientPhishingModel is created. This is temporarily logged to
+    investigate https://crbug.com/1515348.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.LiveScorersAtCreation" units="models"
+    expires_after="2024-04-01">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Record how many Scorers are alive within a single renderer process. This is
+    logged each time a new Scorer is created. This is temporarily logged to
+    investigate https://crbug.com/1515348.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing"
     enum="BooleanIsPhishing" expires_after="2024-06-30">
   <owner>drubery@chromium.org</owner>
