@@ -2972,7 +2972,7 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/binary/002.html?wss [ S
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wss [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/Create-extensions-empty.any.html?wpt_flags=h2 [ Skip Timeout ]
 crbug.com/626703 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment.html [ Failure Skip Timeout ]
-crbug.com/1520703 [ Mac ] wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Failure ]
+crbug.com/1520703 wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Failure ]
 crbug.com/1520703 wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Failure ]
 crbug.com/1520703 [ Mac ] wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Failure ]
 crbug.com/1520703 [ Mac ] wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Failure ]
