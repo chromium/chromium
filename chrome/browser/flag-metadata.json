@@ -1552,6 +1552,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "css-gamut-mapping",
+    "owners": ["ccameron@google.com", "aaronhk@google.com", "chrome-canvas-team@google.com"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "cups-ipp-printing-backend",
     "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
     "expiry_milestone": 124

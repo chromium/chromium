@@ -20587,6 +20587,7 @@ from previous Chrome versions.
   <int value="-45067971" label="NewPrintPreview:disabled"/>
   <int value="-44632486" label="PrivacyGuide2:enabled"/>
   <int value="-44325492" label="PdfUnseasoned:enabled"/>
+  <int value="-44192707" label="BakedGamutMapping:enabled"/>
   <int value="-43980455" label="MobileIdentityConsistencyFRE:enabled"/>
   <int value="-43650386" label="WindowsFollowCursor:enabled"/>
   <int value="-43566818" label="WebRtcApmDownmixCaptureAudioMethod:disabled"/>
@@ -23694,6 +23695,7 @@ from previous Chrome versions.
   <int value="1399386367" label="LocalHistoryZeroSuggestBeyondNTP:disabled"/>
   <int value="1399657075" label="IndexedDBCompressValuesWithSnappy:enabled"/>
   <int value="1401948539" label="TpcdSupportSettings:disabled"/>
+  <int value="1402156039" label="BakedGamutMapping:disabled"/>
   <int value="1402940985" label="kScrollableTabStripWithDragging:disabled"/>
   <int value="1403195370" label="ArcCupsApi:enabled"/>
   <int value="1403792475" label="ShareMenu:enabled"/>

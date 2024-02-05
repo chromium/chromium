@@ -192,6 +192,10 @@ const char kCrOSLegacyMediaFormatsDescription[] =
     "MPEG4 video streams.";
 #endif
 
+const char kCssGamutMappingName[] = "CSS Gamut Mapping";
+const char kCssGamutMappingDescription[] =
+    "Enable experimental CSS gamut mapping implementation.";
+
 const char kCustomizeChromeColorExtractionName[] =
     "Customize Chrome Color Extraction";
 const char kCustomizeChromeColorExtractionDescription[] =

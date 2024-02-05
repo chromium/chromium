@@ -9760,6 +9760,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClickToCallDescription, kOsAll,
      FEATURE_VALUE_TYPE(kClickToCall)},
 
+    {"css-gamut-mapping", flag_descriptions::kCssGamutMappingName,
+     flag_descriptions::kCssGamutMappingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kBakedGamutMapping)},
+
     {"clipboard-unsanitized-content",
      flag_descriptions::kClipboardUnsanitizedContentName,
      flag_descriptions::kClipboardUnsanitizedContentDescription, kOsAll,

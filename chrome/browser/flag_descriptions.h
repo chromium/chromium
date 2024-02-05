@@ -142,6 +142,9 @@ extern const char kCrOSLegacyMediaFormatsName[];
 extern const char kCrOSLegacyMediaFormatsDescription[];
 #endif
 
+extern const char kCssGamutMappingName[];
+extern const char kCssGamutMappingDescription[];
+
 extern const char kCustomizeChromeColorExtractionName[];
 extern const char kCustomizeChromeColorExtractionDescription[];
 
