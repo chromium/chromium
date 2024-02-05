@@ -147,10 +147,17 @@ interface WebPrintJobStateObserver {
   OnWebPrintJobUpdate(WebPrintJobUpdate update);
 };
 
+// Allows the renderer to control a particular job.
+interface WebPrintJobController {
+  // Requests the browser to cancel the job.
+  Cancel();
+};
+
 struct WebPrintJobInfo {
   string job_name;
   uint32 job_pages;
   pending_receiver<WebPrintJobStateObserver> observer;
+  pending_remote<WebPrintJobController> controller;
 };
 
 enum GetPrintersError {

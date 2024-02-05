@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -33,6 +34,7 @@ class MODULES_EXPORT WebPrintJob
 
   // Web-exposed interfaces:
   WebPrintJobAttributes* attributes() const { return attributes_; }
+  void cancel();
   DEFINE_ATTRIBUTE_EVENT_LISTENER(jobstatechange, kJobstatechange)
 
   // EventTarget:
@@ -47,10 +49,13 @@ class MODULES_EXPORT WebPrintJob
   void OnWebPrintJobUpdate(mojom::blink::WebPrintJobUpdatePtr update) override;
 
  private:
+  bool cancel_called_ = false;
+
   Member<WebPrintJobAttributes> attributes_;
 
   HeapMojoReceiver<mojom::blink::WebPrintJobStateObserver, WebPrintJob>
       observer_;
+  HeapMojoRemote<mojom::blink::WebPrintJobController> controller_;
 };
 
 }  // namespace blink

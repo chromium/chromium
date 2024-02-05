@@ -30,7 +30,7 @@ dictionary WebPrintJobAttributes {
 interface WebPrintJob : EventTarget {
   WebPrintJobAttributes attributes();
 
-  attribute EventHandler onjobstatechange;
+  void cancel();
 
-  // TODO(b/302505962): Add remaining methods.
+  attribute EventHandler onjobstatechange;
 };

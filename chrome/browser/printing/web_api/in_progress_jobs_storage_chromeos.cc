@@ -55,6 +55,12 @@ InProgressJobsStorageChromeOS::InProgressJobsStorageChromeOS() {
 
 InProgressJobsStorageChromeOS::~InProgressJobsStorageChromeOS() = default;
 
+void InProgressJobsStorageChromeOS::Cancel() {
+  const auto& [printer_id, job_id] = controllers_.current_context();
+  GetLocalPrinterInterface()->CancelPrintJob(printer_id, job_id,
+                                             base::DoNothing());
+}
+
 void InProgressJobsStorageChromeOS::OnPrintJobUpdateDeprecated(
     const std::string& printer_id,
     uint32_t job_id,
@@ -66,14 +72,16 @@ void InProgressJobsStorageChromeOS::OnPrintJobUpdate(
     const std::string& printer_id,
     uint32_t job_id,
     crosapi::mojom::PrintJobUpdatePtr update) {
-  auto observer_id_itr = job_id_to_observer_id_.find({printer_id, job_id});
-  if (observer_id_itr == job_id_to_observer_id_.end()) {
+  auto id_pair_itr =
+      job_id_to_observer_controller_id_pair_.find({printer_id, job_id});
+  if (id_pair_itr == job_id_to_observer_controller_id_pair_.end()) {
     // This job doesn't belong to us or has already been discarded.
     return;
   }
 
   // See invariant description in the header.
-  auto& observer = CHECK_DEREF(state_observers_.Get(observer_id_itr->second));
+  const auto& [observer_id, controller_id] = id_pair_itr->second;
+  auto& observer = CHECK_DEREF(state_observers_.Get(observer_id));
 
   // Updates are forwarded to the renderer if either the `state` can be mapped
   // directly or printing is in progress (indicated by `pages_printed` > 0).
@@ -93,17 +101,23 @@ void InProgressJobsStorageChromeOS::OnPrintJobUpdate(
     observer.OnWebPrintJobUpdate(std::move(out_update));
   }
   if (state && base::Contains(kTerminalJobStates, *state)) {
-    state_observers_.Remove(observer_id_itr->second);
-    job_id_to_observer_id_.erase(observer_id_itr);
+    state_observers_.Remove(observer_id);
+    controllers_.Remove(controller_id);
+    job_id_to_observer_controller_id_pair_.erase(id_pair_itr);
   }
 }
 
 void InProgressJobsStorageChromeOS::PrintJobAcknowledgedByThePrintSystem(
     const std::string& printer_id,
     uint32_t job_id,
-    mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer) {
+    mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer,
+    mojo::PendingReceiver<blink::mojom::WebPrintJobController> controller) {
+  PrintJobUniqueId composite_id(printer_id, job_id);
+  auto controller_id =
+      controllers_.Add(this, std::move(controller), composite_id);
   auto observer_id = state_observers_.Add(std::move(observer));
-  job_id_to_observer_id_[{printer_id, job_id}] = observer_id;
+  job_id_to_observer_controller_id_pair_[composite_id] =
+      ObserverControllerIdPair(observer_id, controller_id);
 
   auto update = blink::mojom::WebPrintJobUpdate::New();
   update->state = blink::mojom::WebPrintJobState::kPending;
@@ -112,11 +126,13 @@ void InProgressJobsStorageChromeOS::PrintJobAcknowledgedByThePrintSystem(
 }
 
 void InProgressJobsStorageChromeOS::OnStateObserverDisconnected(
-    mojo::RemoteSetElementId observer_id) {
-  // By the time we get here `observer_id` will have already been removed from
-  // `state_observers_`.
-  base::EraseIf(job_id_to_observer_id_,
-                [&](const auto& entry) { return entry.second == observer_id; });
+    mojo::RemoteSetElementId observer_id_in) {
+  // By the time we get here `observer_id_in` will have already been removed
+  // from `state_observers_`.
+  base::EraseIf(job_id_to_observer_controller_id_pair_, [&](const auto& entry) {
+    const auto& [observer_id, controller_id] = entry.second;
+    return observer_id_in == observer_id;
+  });
 }
 
 }  // namespace printing
