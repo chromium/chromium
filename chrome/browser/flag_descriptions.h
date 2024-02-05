@@ -2359,6 +2359,9 @@ extern const char kContextualSearchSuppressShortViewDescription[];
 extern const char kConvertTrackpadEventsToMouseName[];
 extern const char kConvertTrackpadEventsToMouseDescription[];
 
+extern const char kDataSharingAndroidName[];
+extern const char kDataSharingAndroidDescription[];
+
 extern const char kDefaultViewportIsDeviceWidthName[];
 extern const char kDefaultViewportIsDeviceWidthDescription[];
 

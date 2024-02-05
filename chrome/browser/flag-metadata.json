@@ -1599,6 +1599,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "data-sharing-android",
+    "owners": [ "haileywang@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "dcheck-is-fatal",
     "owners": [ "wez@chromium.org" ],
     // Used to debug failed assertions in environments where debug builds cannot

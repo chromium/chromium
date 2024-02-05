@@ -4043,6 +4043,10 @@ const char kConvertTrackpadEventsToMouseName[] =
 const char kConvertTrackpadEventsToMouseDescription[] =
     "Convert trackpad events to mouse events to improve gesture support";
 
+const char kDataSharingAndroidName[] = "Data Sharing for Android";
+const char kDataSharingAndroidDescription[] =
+    "Data sharing service in Android devices.";
+
 const char kDefaultViewportIsDeviceWidthName[] =
     "Default viewport width is device width";
 const char kDefaultViewportIsDeviceWidthDescription[] =

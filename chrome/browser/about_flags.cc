@@ -9905,6 +9905,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextMenuPopupForAllScreenSizes)},
 
+    {"data-sharing-android", flag_descriptions::kDataSharingAndroidName,
+     flag_descriptions::kDataSharingAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDataSharingAndroid)},
+
     {"tab-group-parity-android", flag_descriptions::kTabGroupParityAndroidName,
      flag_descriptions::kTabGroupParityAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabGroupParityAndroid)},

@@ -16698,6 +16698,7 @@ from previous Chrome versions.
   <int value="-1850988416" label="(Obsolete) ExplicitLanguageAsk:disabled"/>
   <int value="-1850155382" label="EnablePerfettoSystemTracing:enabled"/>
   <int value="-1849706663" label="enable-password-force-saving:disabled"/>
+  <int value="-1849100017" label="DataSharingAndroid:disabled"/>
   <int value="-1847835522" label="disable-touch-adjustment"/>
   <int value="-1847776781"
       label="enable-loading-ipc-optimization-for-small-resources"/>
@@ -23571,6 +23572,7 @@ from previous Chrome versions.
       label="SuppressClipboardSuggestionAfterFirstUsed:enabled"/>
   <int value="1333354155" label="FluentScrollbar:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
+  <int value="1334130934" label="DataSharingAndroid:enabled"/>
   <int value="1335454908" label="ShoppingCollection:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338510325" label="lacros-selection"/>

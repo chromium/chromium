@@ -253,6 +253,7 @@ public abstract class ChromeFeatureList {
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
     public static final String DATA_SHARING = "DataSharing";
+    public static final String DATA_SHARING_ANDROID = "DataSharingAndroid";
     public static final String DEFER_KEEP_SCREEN_ON_DURING_GESTURE =
             "DeferKeepScreenOnDuringGesture";
     public static final String DEFER_NOTIFY_IN_MOTION = "DeferNotifyInMotion";
