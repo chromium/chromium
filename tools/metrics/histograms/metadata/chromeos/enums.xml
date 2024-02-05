@@ -626,6 +626,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="SAML Chrome Credentials Passing API not used"/>
 </enum>
 
+<enum name="ChromeOSSamlIncorrectAttestation">
+  <summary>
+    Different method that can repport Incorrect Attestation in SamlHandler in
+    ChromeOS.
+  </summary>
+  <int value="0" label="onBeforeRequest">
+    SamlHandler repport Incorrect Attestation in onBeforeRequest_.
+  </int>
+  <int value="1" label="onBeforeSendHeaders">
+    SamlHandler repport Incorrect Attestation in onBeforeSendHeaders_.
+  </int>
+  <int value="2" label="continueDelayedRedirect">
+    SamlHandler repport Incorrect Attestation in continueDelayedRedirect_.
+  </int>
+</enum>
+
 <enum name="ChromeOSSamlProvider">
   <summary>
     Different SAML providers that uses SAML login flow in ChromeOS.

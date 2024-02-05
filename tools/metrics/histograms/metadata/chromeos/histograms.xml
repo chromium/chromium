@@ -2269,6 +2269,13 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.SAML.IncorrectAttestation"
+    enum="ChromeOSSamlIncorrectAttestation" expires_after="2024-07-28">
+  <owner>mohammedabdon@chromium.org</owner>
+  <owner>bchikhaoui@google.com</owner>
+  <summary>Recorded Incorrect Attestation in SamlHandler.</summary>
+</histogram>
+
 <histogram name="ChromeOS.SAML.InSessionPasswordChangeEvent"
     enum="SamlInSessionPasswordChangeEvent" expires_after="2024-06-30">
   <owner>mslus@chromium.org</owner>
