@@ -3579,10 +3579,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   // so that clients can use this to detect support.
   caps.supports_yuv_readback = true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  PopulateDRMCapabilities(&caps, feature_info_.get());
-#endif
-
   return caps;
 }
 
