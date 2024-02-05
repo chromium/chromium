@@ -233,6 +233,11 @@ BASE_DECLARE_FEATURE(kSyncShowIdentityErrorsForSignedInUsers);
 // it is cleared on sign-out.
 BASE_DECLARE_FEATURE(kSyncRememberCustomPassphraseAfterSignout);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, WebAPK data will be synced for Backup&Restore purposes.
+BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

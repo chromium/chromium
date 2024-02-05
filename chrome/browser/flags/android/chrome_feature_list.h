@@ -168,7 +168,6 @@ BASE_DECLARE_FEATURE(kVerticalAutomotiveBackButtonToolbar);
 BASE_DECLARE_FEATURE(kVoiceSearchAudioCapturePolicy);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 BASE_DECLARE_FEATURE(kWebApkAllowIconUpdate);
-BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 BASE_DECLARE_FEATURE(kWebApkIconUpdateThreshold);
 
 // For FeatureParam, Alphabetical:
