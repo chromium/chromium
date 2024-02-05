@@ -56,6 +56,7 @@
         <include name="IDR_LIST_PICKER_JS" file="../renderer/core/html/forms/resources/list_picker.js" type="BINDATA" compress="brotli"/>
       </if>
       <include name="IDR_AUDIO_SPATIALIZATION_COMPOSITE" file="../renderer/platform/audio/resources/Composite.flac" type="BINDATA"/>
+      <include name="IDR_UASTYLE_JSON_DOCUMENT_CSS" file="../renderer/core/css/json-document.css" type="BINDATA" compress="brotli"/>
     </includes>
   </release>
 </grit>

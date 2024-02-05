@@ -67,6 +67,7 @@ class CSSDefaultStyleSheets final
   RuleSet* DefaultHtmlQuirksStyle() { return default_html_quirks_style_.Get(); }
   RuleSet* DefaultPrintStyle() { return default_print_style_.Get(); }
   RuleSet* DefaultViewSourceStyle();
+  RuleSet* DefaultJSONDocumentStyle();
   RuleSet* DefaultForcedColorStyle() {
     return default_forced_color_style_.Get();
   }
@@ -147,6 +148,7 @@ class CSSDefaultStyleSheets final
   Member<RuleSet> default_pseudo_element_style_;
   Member<RuleSet> default_media_controls_style_;
   Member<RuleSet> default_fullscreen_style_;
+  Member<RuleSet> default_json_document_style_;
   // If new RuleSets are added, make sure to add a new check in
   // VerifyUniversalRuleCount() as universal rule buckets are performance
   // sensitive. At least if the added UA styles are matched against all elements

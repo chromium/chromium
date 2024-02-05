@@ -920,6 +920,11 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
     func(default_style_sheets.DefaultForcedColorStyle());
   }
 
+  if (RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
+      GetDocument().IsJSONDocument()) {
+    func(default_style_sheets.DefaultJSONDocumentStyle());
+  }
+
   const auto pseudo_id = GetPseudoId(element, collector);
   if (pseudo_id == kPseudoIdNone) {
     return;

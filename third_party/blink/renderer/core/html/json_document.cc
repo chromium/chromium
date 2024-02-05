@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_pre_element.h"
-#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -27,49 +26,6 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
-
-namespace {
-// TODO(crbug.com/1512214): Move Inline CSS to UA stylesheet
-String GetStyleSheetContentForShadowDOM() {
-  return R"CSS(
-    .json-formatter-control {
-      width: 100%;
-      font-size: initial;
-      font-family: monospace;
-      user-select: none;
-      background-color: rgb(240,240,240);
-      border-bottom: 1px solid rgb(187, 187, 187);
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-    }
-    @media (prefers-color-scheme: dark) {
-      .json-formatter-control {
-        background-color: rgb(60, 60, 60);
-      }
-    }
-  )CSS";
-}
-
-String GetStyleSheetContentForDocument() {
-  return R"(
-    body > pre {
-      padding-top: 20px;
-      word-wrap: break-word;
-      white-space: pre-wrap;
-    }
-    .json-formatter-container {
-      position: fixed;
-      top: 0px;
-      width: 100%;
-    }
-    body {
-      margin: 0;
-    }
-  )";
-}
-
-}  // namespace
 
 class PrettyPrintJSONListener : public NativeEventListener {
  public:
@@ -140,10 +96,6 @@ class JSONDocumentParser : public HTMLDocumentParser {
     head->ParserAppendChild(meta);
     head->ParserAppendChild(meta_charset);
     html->ParserAppendChild(head);
-    auto* documentStyle =
-        MakeGarbageCollected<HTMLStyleElement>(*GetDocument());
-    documentStyle->setTextContent(GetStyleSheetContentForDocument());
-    head->ParserAppendChild(documentStyle);
     auto* body = MakeGarbageCollected<HTMLBodyElement>(*GetDocument());
     html->ParserAppendChild(body);
     pre_ = MakeGarbageCollected<HTMLPreElement>(html_names::kPreTag,
@@ -153,8 +105,7 @@ class JSONDocumentParser : public HTMLDocumentParser {
     label->ParserAppendChild(Text::Create(
         *GetDocument(), WTF::AtomicString(Locale::DefaultLocale().QueryString(
                             IDS_PRETTY_PRINT_JSON))));
-    label->setAttribute(html_names::kClassAttr,
-                        AtomicString("json-formatter-control"));
+    label->SetShadowPseudoId(AtomicString("-internal-json-formatter-control"));
     auto* checkbox = MakeGarbageCollected<HTMLInputElement>(*GetDocument());
     checkbox->setAttribute(html_names::kTypeAttr, input_type_names::kCheckbox);
     checkbox->addEventListener(
@@ -171,9 +122,6 @@ class JSONDocumentParser : public HTMLDocumentParser {
     auto* form = MakeGarbageCollected<HTMLFormElement>(*GetDocument());
     form->setAttribute(html_names::kAutocompleteAttr, AtomicString("off"));
     form->ParserAppendChild(label);
-    HTMLStyleElement* style =
-        MakeGarbageCollected<HTMLStyleElement>(*GetDocument());
-    style->setTextContent(GetStyleSheetContentForShadowDOM());
     // See crbug.com/1485052: the div is fixed-positioned to maintain the
     // DOM tree structure and avoid compatibility problems with extensions.
     auto* div = MakeGarbageCollected<HTMLDivElement>(*GetDocument());
@@ -181,7 +129,6 @@ class JSONDocumentParser : public HTMLDocumentParser {
                       AtomicString("json-formatter-container"));
 
     ShadowRoot& shadow_root = div->EnsureUserAgentShadowRoot();
-    shadow_root.ParserAppendChild(style);
     shadow_root.ParserAppendChild(form);
     body->ParserAppendChild(pre_);
     body->ParserAppendChild(div);

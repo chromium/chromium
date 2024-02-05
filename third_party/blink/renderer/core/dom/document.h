@@ -613,6 +613,8 @@ class CORE_EXPORT Document : public ContainerNode,
     is_view_source_ = is_view_source;
   }
 
+  virtual bool IsJSONDocument() const { return false; }
+
   // WebXR DOM Overlay support, cf https://immersive-web.github.io/dom-overlays/
   // True if there's an ongoing "immersive-ar" WebXR session with a DOM Overlay
   // element active. This is needed for applying the :xr-overlay pseudoclass
