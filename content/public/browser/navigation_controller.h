@@ -49,7 +49,6 @@ class BackForwardCache;
 class BrowserContext;
 class NavigationEntry;
 class RenderFrameHost;
-class WebContents;
 class NavigationHandle;
 struct OpenURLParams;
 
@@ -334,13 +333,6 @@ class NavigationController {
   CONTENT_EXPORT static void DisablePromptOnRepost();
 
   virtual ~NavigationController() {}
-
-  // Returns the web contents associated with this controller. It can never be
-  // nullptr.
-  //
-  // TODO(crbug.com/1225205): Remove this. It is a layering violation as it is
-  // implemented in renderer_host/ which cannot depend on WebContents.
-  virtual WebContents* DeprecatedGetWebContents() = 0;
 
   // Get the browser context for this controller. It can never be nullptr.
   virtual BrowserContext* GetBrowserContext() = 0;

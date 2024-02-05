@@ -88,7 +88,6 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   void NotifyNavigationEntriesDeleted() override;
   void ActivateAndShowRepostFormWarningDialog() override;
   bool ShouldPreserveAbortedURLs() override;
-  WebContents* DeprecatedGetWebContents() override;
   void UpdateOverridingUserAgent() override;
 
   const raw_ptr<WebContentsImpl> web_contents_;

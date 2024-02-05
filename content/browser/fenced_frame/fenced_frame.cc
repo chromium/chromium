@@ -330,10 +330,6 @@ bool FencedFrame::ShouldPreserveAbortedURLs() {
   return false;
 }
 
-WebContents* FencedFrame::DeprecatedGetWebContents() {
-  return web_contents_;
-}
-
 void FencedFrame::UpdateOverridingUserAgent() {}
 
 void FencedFrame::DidChangeFramePolicy(const blink::FramePolicy& frame_policy) {
