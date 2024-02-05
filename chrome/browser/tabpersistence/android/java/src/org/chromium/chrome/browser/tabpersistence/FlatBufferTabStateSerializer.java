@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.tabpersistence;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
@@ -17,6 +19,8 @@ import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.TabStateFlatBufferV1;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 
 /** {@link TabStateSerializer} backed by a FlatBuffer */
@@ -27,6 +31,27 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
 
     public FlatBufferTabStateSerializer(boolean isEncrypted) {
         mIsEncrypted = isEncrypted;
+    }
+
+    @IntDef({
+        TabStateFlatBufferDeserializeResult.SUCCESS,
+        TabStateFlatBufferDeserializeResult.FAILURE_UNKNOWN_REASON,
+        TabStateFlatBufferDeserializeResult.FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION,
+        TabStateFlatBufferDeserializeResult.NUM_ENTRIES,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public @interface TabStateFlatBufferDeserializeResult {
+        /** FlatBuffer was successfully deserialized to TabState. */
+        int SUCCESS = 0;
+
+        /** FlatBuffer deserialization failed because of an unknown reason. */
+        int FAILURE_UNKNOWN_REASON = 1;
+
+        /** FlatBuffer deserialization failed because of an index out of bounds exception. */
+        int FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION = 2;
+
+        int NUM_ENTRIES = 3;
     }
 
     @Override
@@ -67,37 +92,51 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
 
     @Override
     public TabState deserialize(ByteBuffer bytes) {
-        TabStateFlatBufferV1 tabStateFlatBuffer =
-                TabStateFlatBufferV1.getRootAsTabStateFlatBufferV1(bytes);
+        try {
+            TabStateFlatBufferV1 tabStateFlatBuffer =
+                    TabStateFlatBufferV1.getRootAsTabStateFlatBufferV1(bytes);
 
-        TabState state = new TabState();
-        state.parentId = tabStateFlatBuffer.parentId();
-        state.rootId = tabStateFlatBuffer.rootId();
-        state.openerAppId =
-                NULL_OPENER_APP_ID.equals(tabStateFlatBuffer.openerAppId())
-                        ? null
-                        : tabStateFlatBuffer.openerAppId();
-        state.timestampMillis = tabStateFlatBuffer.timestampMillis();
-        state.lastNavigationCommittedTimestampMillis =
-                tabStateFlatBuffer.lastNavigationCommittedTimestampMillis();
-        state.userAgent = getTabUserAgentTypeFromFlatBuffer(tabStateFlatBuffer.userAgent());
-        state.tabLaunchTypeAtCreation =
-                getLaunchTypeFromFlatBuffer(tabStateFlatBuffer.launchTypeAtCreation());
-        state.themeColor = tabStateFlatBuffer.themeColor();
-        ByteBuffer webContentsStateBuffer =
-                tabStateFlatBuffer.webContentsStateBytesAsByteBuffer() == null
-                        ? ByteBuffer.allocateDirect(0)
-                        : tabStateFlatBuffer.webContentsStateBytesAsByteBuffer().slice();
-        if (mIsEncrypted) {
-            state.contentsState =
-                    new WebContentsState(
-                            ByteBuffer.allocateDirect(webContentsStateBuffer.remaining()));
-            state.contentsState.buffer().put(webContentsStateBuffer);
-        } else {
-            state.contentsState = new WebContentsState(webContentsStateBuffer);
+            TabState state = new TabState();
+            state.parentId = tabStateFlatBuffer.parentId();
+            state.rootId = tabStateFlatBuffer.rootId();
+            state.openerAppId =
+                    NULL_OPENER_APP_ID.equals(tabStateFlatBuffer.openerAppId())
+                            ? null
+                            : tabStateFlatBuffer.openerAppId();
+            state.timestampMillis = tabStateFlatBuffer.timestampMillis();
+            state.lastNavigationCommittedTimestampMillis =
+                    tabStateFlatBuffer.lastNavigationCommittedTimestampMillis();
+            state.userAgent = getTabUserAgentTypeFromFlatBuffer(tabStateFlatBuffer.userAgent());
+            state.tabLaunchTypeAtCreation =
+                    getLaunchTypeFromFlatBuffer(tabStateFlatBuffer.launchTypeAtCreation());
+            state.themeColor = tabStateFlatBuffer.themeColor();
+            ByteBuffer webContentsStateBuffer =
+                    tabStateFlatBuffer.webContentsStateBytesAsByteBuffer() == null
+                            ? ByteBuffer.allocateDirect(0)
+                            : tabStateFlatBuffer.webContentsStateBytesAsByteBuffer().slice();
+            if (mIsEncrypted) {
+                state.contentsState =
+                        new WebContentsState(
+                                ByteBuffer.allocateDirect(webContentsStateBuffer.remaining()));
+                state.contentsState.buffer().put(webContentsStateBuffer);
+            } else {
+                state.contentsState = new WebContentsState(webContentsStateBuffer);
+            }
+            state.contentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+            return state;
+        } catch (IndexOutOfBoundsException e) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.FlatBufferDeserializeResult",
+                    TabStateFlatBufferDeserializeResult.FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION,
+                    TabStateFlatBufferDeserializeResult.NUM_ENTRIES);
+        } catch (Exception e) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.FlatBufferDeserializeResult",
+                    TabStateFlatBufferDeserializeResult.FAILURE_UNKNOWN_REASON,
+                    TabStateFlatBufferDeserializeResult.NUM_ENTRIES);
+            assert false : e.getMessage();
         }
-        state.contentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
-        return state;
+        return null;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

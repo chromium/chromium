@@ -2149,6 +2149,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabState.FlatBufferDeserializeResult"
+    enum="TabStateFlatBufferDeserializeResult" expires_after="2025-02-02">
+  <owner>davidjm@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    TabState (Tab metadata persistence system on Chrome for Android) is being
+    migrated from a hand-written schema to a FlatBuffer based schema. This
+    metric records the number of successful and unsuccessful FlatBuffer
+    deserializations and where known what the reason for unsuccessful
+    deserialization was.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabState.LoadTime" units="ms" expires_after="2024-06-30">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>

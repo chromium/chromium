@@ -17,18 +17,21 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.StreamUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
+import org.chromium.chrome.browser.tabpersistence.FlatBufferTabStateSerializer.TabStateFlatBufferDeserializeResult;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 /** Unit tests for {@link TabStateFileManager}. */
@@ -54,6 +57,25 @@ public class TabStateFileManagerUnitTest {
         TabStateFileManager.saveStateInternal(file, state, false);
 
         validateTestTabState(TabStateFileManager.restoreTabStateInternal(file, false));
+    }
+
+    @Test
+    public void testInvalidBuffer() {
+        byte[] bytes = new byte[5000];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) i;
+        }
+
+        var builder =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Tabs.TabState.FlatBufferDeserializeResult",
+                                TabStateFlatBufferDeserializeResult
+                                        .FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION);
+        HistogramWatcher histograms = builder.build();
+        FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(false);
+        Assert.assertNull(serializer.deserialize(ByteBuffer.wrap(bytes)));
+        histograms.assertExpected();
     }
 
     @Test
