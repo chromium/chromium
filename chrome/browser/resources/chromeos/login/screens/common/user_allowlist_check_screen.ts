@@ -15,6 +15,7 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {GaiaButton} from '../../components/gaia_button.js';
 
 import {getTemplate} from './user_allowlist_check_screen.html.js';
 
@@ -98,9 +99,8 @@ export class UserAllowlistCheckScreenElement extends
     }
 
     const submitButton =
-        this.shadowRoot?.querySelector<HTMLElement>('#submitButton');
-    if (submitButton instanceof HTMLElement) {
-      // TODO(b/320446861): Fix type once GaiaButton can be added.
+        this.shadowRoot?.querySelector<GaiaButton>('#submitButton');
+    if (submitButton instanceof GaiaButton) {
       submitButton.focus();
     }
   }
