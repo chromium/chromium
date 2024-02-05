@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -307,7 +308,9 @@ void SearchCompanionSidePanelCoordinator::MaybeUpdateCompanionEnabledState() {
     action_item->SetEnabled(enabled);
     action_item->SetImage(ui::ImageModel::FromVectorIcon(
         (enabled ? icon() : disabled_icon()), ui::kColorIcon,
-        /*icon_size=*/16));
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            ChromeDistanceMetric::
+                DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
   } else {
     MaybeUpdatePinnedButtonEnabledState(enabled);
     MaybeUpdateComboboxEntryEnabledState(enabled);
@@ -346,7 +349,8 @@ void SearchCompanionSidePanelCoordinator::MaybeUpdateComboboxEntryEnabledState(
 
   entry->ResetIcon(ui::ImageModel::FromVectorIcon(
       (enabled ? icon() : disabled_icon()), ui::kColorIcon,
-      /*icon_size=*/16));
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
 }
 
 void SearchCompanionSidePanelCoordinator::OnTemplateURLServiceShuttingDown() {
