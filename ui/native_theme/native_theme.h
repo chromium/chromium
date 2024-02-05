@@ -301,6 +301,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     // This allows clients to directly override the color values to support
     // element-specific web platform CSS.
     absl::optional<SkColor> thumb_color;
+    bool is_thumb_minimal_mode = false;
   };
 
 #if BUILDFLAG(IS_APPLE)

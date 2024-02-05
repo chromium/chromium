@@ -195,6 +195,7 @@ class WebThemeEngine {
     WebScrollbarOverlayColorTheme scrollbar_theme =
         WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark;
     std::optional<SkColor> thumb_color;
+    bool is_thumb_minimal_mode = false;
   };
 
   struct ScrollbarButtonExtraParams {

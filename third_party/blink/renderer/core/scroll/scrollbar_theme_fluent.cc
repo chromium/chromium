@@ -169,15 +169,9 @@ ScrollbarThemeFluent::BuildScrollbarThumbExtraParams(
   if (scrollbar.ScrollbarThumbColor().has_value()) {
     scrollbar_thumb.thumb_color =
         scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
-  } else if (scrollbar.IsFluentOverlayScrollbarMinimalMode() &&
-             WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() ==
-                 ForcedColors::kNone) {
-    const bool dark_mode =
-        (scrollbar.UsedColorScheme() == mojom::blink::ColorScheme::kDark);
-    // TODO(crbug.com/1518945): Find a better way to define these colors.
-    scrollbar_thumb.thumb_color = dark_mode ? SkColorSetA(SK_ColorWHITE, 0x8B)
-                                            : SkColorSetA(SK_ColorBLACK, 0x72);
   }
+  scrollbar_thumb.is_thumb_minimal_mode =
+      scrollbar.IsFluentOverlayScrollbarMinimalMode();
   return scrollbar_thumb;
 }
 

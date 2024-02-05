@@ -57,6 +57,7 @@ enum RendererColorId {
   kColorWebNativeControlScrollbarThumb,
   kColorWebNativeControlScrollbarThumbHovered,
   kColorWebNativeControlScrollbarThumbInactive,
+  kColorWebNativeControlScrollbarThumbOverlayMinimalMode,
   kColorWebNativeControlScrollbarThumbPressed,
   kColorWebNativeControlScrollbarTrack,
   kColorWebNativeControlSlider,
