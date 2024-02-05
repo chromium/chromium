@@ -4871,6 +4871,12 @@
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_A11Y_PLURAL_TEMPLATE" desc="List item button a11y label for editing list when including more than one edit label. Spoken by screen readers when list item button gets focus but not visually rendered." translateable="false">
           Selected key are <ph name="KEYS">$1<ex>w, a, s, d</ex></ph>. Tap on the button to edit the control
         </message>
+        <message name="IDS_INPUT_OVERLAY_SHORTCUT_EDIT_A11Y_LABEL_TEMPLATE" desc="Edit button a11y label for delete-edit shortcut menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Edit <ph name="ACTION_NAME">$1<ex>Button w</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_SHORTCUT_DELETE_A11Y_LABEL_TEMPLATE" desc="Delete button a11y label for delete-edit shortcut menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Delete <ph name="ACTION_NAME">$1<ex>Button w</ex></ph>
+        </message>
         <!-- End of Arc Input Overlay -->
       </if>
 

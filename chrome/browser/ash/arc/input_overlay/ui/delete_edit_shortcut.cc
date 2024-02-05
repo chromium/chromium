@@ -13,10 +13,14 @@
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -36,7 +40,7 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
                                        ActionViewListItem* anchor_view)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::LEFT_CENTER,
-                                      views::BubbleBorder::NO_SHADOW),
+                                      views::BubbleBorder::DIALOG_SHADOW),
       controller_(controller) {
   set_margins(gfx::Insets(12));
   set_corner_radius(20);
@@ -45,29 +49,55 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
   set_internal_name(kDeleteEditShortcut);
   set_parent_window(anchor_view->GetWidget()->GetNativeWindow());
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetAccessibleWindowRole(ax::mojom::Role::kMenu);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/gfx::Insets(),
       /*between_child_spacing=*/12));
 
-  AddChildView(std::make_unique<ash::IconButton>(
+  // Create the buttons with empty accessibility names. They will be updated in
+  // `UpdateTooltipText`.
+  edit_button_ = AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&DeleteEditShortcut::OnEditButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kGameControlsEditPenIcon,
-      IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+      ash::IconButton::Type::kMedium, &kGameControlsEditPenIcon, u"",
+      /*is_togglable=*/false, /*has_border=*/false));
 
-  AddChildView(std::make_unique<ash::IconButton>(
+  delete_button_ = AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&DeleteEditShortcut::OnDeleteButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kGameControlsDeleteIcon,
-      IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+      ash::IconButton::Type::kMedium, &kGameControlsDeleteIcon, u"",
+      /*is_togglable=*/false, /*has_border=*/false));
+  UpdateTooltipText(anchor_view);
 }
 
 DeleteEditShortcut::~DeleteEditShortcut() = default;
 
 void DeleteEditShortcut::UpdateAnchorView(ActionViewListItem* anchor_view) {
+  // Reset the highlight of previous anchor view.
+  SetHighlightedButton(anchor_view);
+
   SetAnchorView(anchor_view);
+  UpdateTooltipText(anchor_view);
+
+  // Clear focus when changing anchor view.
+  if (auto* focus_manager = GetFocusManager()) {
+    focus_manager->ClearFocus();
+  }
+}
+
+void DeleteEditShortcut::UpdateTooltipText(ActionViewListItem* anchor_view) {
+  const std::u16string action_name = anchor_view->CalculateActionName();
+  // e.g. "Edit Button m"
+  const std::u16string edit_text = l10n_util::GetStringFUTF16(
+      IDS_INPUT_OVERLAY_SHORTCUT_EDIT_A11Y_LABEL_TEMPLATE, action_name);
+  edit_button_->SetTooltipText(edit_text);
+
+  // e.g. "Delete Joystick wasd"
+  const std::u16string delete_text = l10n_util::GetStringFUTF16(
+      IDS_INPUT_OVERLAY_SHORTCUT_DELETE_A11Y_LABEL_TEMPLATE, action_name);
+  delete_button_->SetTooltipText(delete_text);
 }
 
 void DeleteEditShortcut::OnEditButtonPressed() {

@@ -773,12 +773,16 @@ void DisplayOverlayController::AddActionHighlightWidget(Action* action) {
         std::make_unique<ActionHighlight>(this, anchor_view));
   }
 
-  auto* highlight = views::AsViewClass<ActionHighlight>(
-      action_highlight_widget_->GetContentsView());
-  highlight->UpdateAnchorView(anchor_view);
+  if (auto* highlight = views::AsViewClass<ActionHighlight>(
+          action_highlight_widget_->GetContentsView())) {
+    highlight->UpdateAnchorView(anchor_view);
 
-  action_highlight_widget_->ShowInactive();
-  input_mapping_widget_->StackAboveWidget(action_highlight_widget_.get());
+    // Show `action_highlight_widget_` if it is hidden.
+    if (!action_highlight_widget_->IsVisible()) {
+      action_highlight_widget_->ShowInactive();
+      input_mapping_widget_->StackAboveWidget(action_highlight_widget_.get());
+    }
+  }
 }
 
 void DisplayOverlayController::RemoveActionHighlightWidget() {
