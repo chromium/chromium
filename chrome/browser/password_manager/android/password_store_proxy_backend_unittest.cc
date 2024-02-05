@@ -922,7 +922,7 @@ INSTANTIATE_TEST_SUITE_P(
         FallbackParam{.error = kUnrecoverableError,
                       .is_account_store = true,
                       .is_using_split_account_local_stores = true,
-                      .should_fallback = true},
+                      .should_fallback = false},
         FallbackParam{.error = kRecoverableError,
                       .is_account_store = true,
                       .is_using_split_account_local_stores = true,

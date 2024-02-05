@@ -316,9 +316,8 @@ void PasswordStoreProxyBackend::MaybeFallbackOnOperation(
     const MethodName& method_name,
     base::OnceCallback<void(ResultT)> result_callback,
     ResultT result) {
-  if (!is_account_store_ &&
-      password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs_)) {
-    // The backend for local passwords doesn't support unenrollment and as such
+  if (password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs_)) {
+    // After store split the backend doesn't support unenrollment and as such
     // doesn't support fallbacks.
     std::move(result_callback).Run(std::move(result));
     return;
