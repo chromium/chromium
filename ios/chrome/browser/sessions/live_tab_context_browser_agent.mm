@@ -133,11 +133,9 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     const SessionID* tab_id) {
   // TODO(crbug.com/661636): Handle tab-switch animation somehow...
   web_state_list_->InsertWebState(
-      tab_index,
       session_util::CreateWebStateWithNavigationEntries(
           browser_state_, selected_navigation, navigations),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
+      WebStateList::InsertionParams::AtIndex(tab_index).Activate());
   return nullptr;
 }
 

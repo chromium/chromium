@@ -232,8 +232,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     web_state_->SetWebFramesManager(content_world, std::move(frames_manager));
 
     browser_->GetWebStateList()->InsertWebState(
-        0, std::move(test_web_state), WebStateList::INSERT_FORCE_INDEX,
-        WebStateOpener());
+        std::move(test_web_state), WebStateList::InsertionParams::AtIndex(0));
     for (int i = 1; i < kNumberOfWebStates; i++) {
       InsertNewWebState(i);
     }
@@ -346,8 +345,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     web_state->SetWebFramesManager(content_world, std::move(frames_manager));
 
     browser_->GetWebStateList()->InsertWebState(
-        index, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,
-        WebStateOpener());
+        std::move(web_state), WebStateList::InsertionParams::AtIndex(index));
   }
 
   void SetUpActiveWebState() {

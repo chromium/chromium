@@ -191,8 +191,9 @@ TEST_F(AccountConsistencyBrowserAgentTest,
   // `OnShowConsistencyPromo`.
   auto test_web_state = std::make_unique<web::FakeWebState>();
   WebStateOpener opener;
-  web_state_list->InsertWebState(1, std::move(test_web_state),
-                                 WebStateList::INSERT_FORCE_INDEX, opener);
+  web_state_list->InsertWebState(
+      std::move(test_web_state),
+      WebStateList::InsertionParams::AtIndex(1).WithOpener(opener));
   web::WebState* web_state = web_state_list->GetWebStateAt(1);
   agent_->OnShowConsistencyPromo(url, web_state);
   // Expect -showWebSigninPromoFromViewController:URL: to have not been called.

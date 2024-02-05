@@ -47,9 +47,9 @@ class WebStateDependencyInstallerBridgeTest : public PlatformTest {
 TEST_F(WebStateDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
   WebStateDependencyInstallerBridge bridge(installer_, &web_state_list_);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
-  web_state_list_.InsertWebState(0, std::move(web_state_1),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(
+      std::move(web_state_1),
+      WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_EQ(installer_.installCount, 1);
   auto web_state_2 = std::make_unique<web::FakeWebState>();
   web_state_list_.ReplaceWebStateAt(0, std::move(web_state_2));
@@ -62,13 +62,13 @@ TEST_F(WebStateDependencyInstallerBridgeTest, UninstallOnBridgeDestruction) {
   auto bridge = std::make_unique<WebStateDependencyInstallerBridge>(
       installer_, &web_state_list_);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
-  web_state_list_.InsertWebState(0, std::move(web_state_1),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(
+      std::move(web_state_1),
+      WebStateList::InsertionParams::Automatic().Activate());
   auto web_state_2 = std::make_unique<web::FakeWebState>();
-  web_state_list_.InsertWebState(0, std::move(web_state_2),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(
+      std::move(web_state_2),
+      WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_EQ(installer_.installCount, 2);
   EXPECT_EQ(installer_.uninstallCount, 0);
   bridge.reset();

@@ -152,9 +152,9 @@ class PartialTranslateMediatorTest : public PlatformTest {
     web::WebState::CreateParams params(browser_state_.get());
     auto web_state = web::WebState::Create(params);
     WebSelectionTabHelper::CreateForWebState(web_state.get());
-    web_state_list_.InsertWebState(0, std::move(web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list_.InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     web_state_ = web_state_list_.GetActiveWebState();
     base_view_controller_ = [[UIViewController alloc] init];
     fake_alert_controller_ = [[FakeAlertController alloc] init];

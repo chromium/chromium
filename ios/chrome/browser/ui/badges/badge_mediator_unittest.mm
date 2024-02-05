@@ -97,17 +97,17 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
     [badge_mediator_ disconnect];
   }
 
-  // Inserts a new WebState to the WebStateList at `index` and activates it.
-  void InsertActivatedWebState(int index) {
+  // Appends a new WebState to the WebStateList and activates it.
+  void AppendActivatedWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     web_state->SetBrowserState(browser_state());
     InfoBarManagerImpl::CreateForWebState(web_state.get());
     InfobarBadgeTabHelper::CreateForWebState(web_state.get());
-    web_state_list()->InsertWebState(index, std::move(web_state),
-                                     WebStateList::INSERT_ACTIVATE,
-                                     WebStateOpener());
+    web_state_list()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
   // Adds an Infobar of `type` to the InfoBarManager and returns the infobar.
@@ -162,7 +162,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
 // Test that the BadgeMediator responds with no displayed and fullscreen badge
 // when there are no Infobars added and the BrowserState is not OffTheRecord.
 TEST_P(BadgeMediatorTest, BadgeMediatorTestNoInfobar) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   EXPECT_FALSE(badge_consumer_.displayedBadge);
   EXPECT_EQ(is_off_the_record(),
             badge_consumer_.hasFullscreenOffTheRecordBadge);
@@ -171,7 +171,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestNoInfobar) {
 // Test that the BadgeMediator responds with one new badge when an infobar is
 // added
 TEST_P(BadgeMediatorTest, BadgeMediatorTestAddInfobar) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
   EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
@@ -180,7 +180,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestAddInfobar) {
 // Test that the BadgeMediator handled the removal of the correct badge when two
 // infobars are added and then one is removed.
 TEST_P(BadgeMediatorTest, BadgeMediatorTestRemoveInfobar) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   InfoBarIOS* second_infobar =
       AddInfobar(kSecondInfobarType, kSecondInfobarMessageText);
@@ -191,7 +191,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestRemoveInfobar) {
 }
 
 TEST_P(BadgeMediatorTest, BadgeMediatorTestMarkAsRead) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   // Since there is only one badge, it should be marked as read.
   EXPECT_FALSE(badge_consumer_.hasUnreadBadge);
@@ -208,11 +208,11 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestMarkAsRead) {
 // Test that the BadgeMediator updates the current badges to none when switching
 // to a second WebState after an infobar is added to the first WebState.
 TEST_P(BadgeMediatorTest, BadgeMediatorTestSwitchWebState) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
   EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
-  InsertActivatedWebState(/*index=*/1);
+  AppendActivatedWebState();
   EXPECT_FALSE(badge_consumer_.displayedBadge);
 }
 
@@ -220,11 +220,11 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestSwitchWebState) {
 // the added infobar came from an inactive WebState.
 TEST_P(BadgeMediatorTest,
        BadgeMediatorTestSwitchWebStateAndAddInfobarToInactiveWebState) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
   EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
-  InsertActivatedWebState(/*index=*/1);
+  AppendActivatedWebState();
   std::unique_ptr<InfoBarIOS> added_infobar = std::make_unique<FakeInfobarIOS>(
       kSecondInfobarType, kSecondInfobarMessageText);
   InfoBarManagerImpl::FromWebState(web_state_list()->GetWebStateAt(0))
@@ -235,7 +235,7 @@ TEST_P(BadgeMediatorTest,
 // Test that the BadgeMediator does not inform its consumer of a new infobar it
 // has already been disconnected.
 TEST_P(BadgeMediatorTest, BadgeMediatorTestDoNotAddInfobarIfWebStateListGone) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   ASSERT_FALSE(badge_consumer_.displayedBadge);
   [badge_mediator_ disconnect];
   std::unique_ptr<InfoBarIOS> added_infobar = std::make_unique<FakeInfobarIOS>(
@@ -247,7 +247,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestDoNotAddInfobarIfWebStateListGone) {
 
 // Test that the BadgeMediator updates the badge when it is accepted.
 TEST_P(BadgeMediatorTest, BadgeMediatorTestAcceptedBadge) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
   EXPECT_FALSE(badge_consumer_.displayedBadge.badgeState &= BadgeStateAccepted);
@@ -261,7 +261,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestAcceptedBadge) {
 // update when the WebStateList is preserved but the LocationBar (and therefore
 // the BadgeMediator) is restarted from scratch.
 TEST_P(BadgeMediatorTest, BadgeMediatorTestRestartWithInfobar) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
 
   // Simulate reload of app, but preservation of WebStateList.
@@ -283,12 +283,12 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestRestartWithInfobar) {
 // detached and a new WebState is added. This test also makes sure that closing
 // the last WebState doesn't break anything.
 TEST_P(BadgeMediatorTest, BadgeMediatorTestCloseLastTab) {
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
   ASSERT_TRUE(badge_consumer_.displayedBadge);
   EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
   web_state_list()->DetachWebStateAt(0);
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   ASSERT_FALSE(badge_consumer_.displayedBadge);
 }
 
@@ -298,7 +298,7 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
   // Add an active WebState at index 0 and add an InfoBar with `type` to the
   // WebState's InfoBarManager, checking that the badge item has been created
   // with the default BadgeState.
-  InsertActivatedWebState(/*index=*/0);
+  AppendActivatedWebState();
   InfobarType type = kFirstInfobarType;
   InfobarBadgeTabHelper* tab_helper =
       InfobarBadgeTabHelper::FromWebState(web_state());

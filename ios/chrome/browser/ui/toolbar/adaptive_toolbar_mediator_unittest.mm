@@ -143,9 +143,8 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   void SetUpWebStateList() {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
-    web_state_list_->InsertWebState(0, std::move(test_web_state_),
-                                    WebStateList::INSERT_FORCE_INDEX,
-                                    WebStateOpener());
+    web_state_list_->InsertWebState(std::move(test_web_state_),
+                                    WebStateList::InsertionParams::AtIndex(0));
     for (int i = 1; i < kNumberOfWebStates; i++) {
       InsertNewWebState(i);
     }
@@ -158,9 +157,8 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         std::make_unique<web::FakeNavigationManager>());
     GURL url("http://test/" + base::NumberToString(index));
     web_state->SetCurrentURL(url);
-    web_state_list_->InsertWebState(index, std::move(web_state),
-                                    WebStateList::INSERT_FORCE_INDEX,
-                                    WebStateOpener());
+    web_state_list_->InsertWebState(
+        std::move(web_state), WebStateList::InsertionParams::AtIndex(index));
   }
 
   void SetUpActiveWebState() { web_state_list_->ActivateWebStateAt(0); }
@@ -502,7 +500,8 @@ TEST_F(AdaptiveToolbarMediatorTest, MenuElementsBackForward) {
   web_state->SetBrowserState(chrome_browser_state_.get());
   web_state->SetNavigationManager(std::move(navigation_manager));
   web_state_list_->InsertWebState(
-      0, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   mediator_.webStateList = web_state_list_.get();
   mediator_.consumer = consumer_;

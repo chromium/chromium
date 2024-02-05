@@ -79,8 +79,8 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
     AttachTabHelpers(web_state.get(), NO);
 
     int insertion_index = browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     WebStateList* web_state_list = browser_->GetWebStateList();
     web_state_list->ActivateWebStateAt(insertion_index);
 

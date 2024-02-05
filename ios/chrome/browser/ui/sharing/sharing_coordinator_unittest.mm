@@ -75,8 +75,8 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
 
   void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
     browser_->GetWebStateList()->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(web_state),
-        WebStateList::INSERT_ACTIVATE, WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
   ScopedKeyWindow scoped_key_window_;

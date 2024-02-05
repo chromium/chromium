@@ -94,8 +94,7 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestReactToNavigation) {
   auto web_state = std::make_unique<web::FakeWebState>();
   FakeWebState* web_state_ptr = web_state.get();
   web_state_ptr->SetCurrentURL(not_ntp_url);
-  web_state_list_->InsertWebState(
-      0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  web_state_list_->InsertWebState(std::move(web_state));
   web_state_list_->ActivateWebStateAt(0);
   EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
   web_state_ptr->OnNavigationFinished(&context);
@@ -132,8 +131,7 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestPrefetchOnTabSwitch) {
   auto web_state = std::make_unique<web::FakeWebState>();
   FakeWebState* web_state_ptr = web_state.get();
   web_state_ptr->SetCurrentURL(not_ntp_url);
-  web_state_list_->InsertWebState(
-      0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  web_state_list_->InsertWebState(std::move(web_state));
   web_state_list_->ActivateWebStateAt(0);
   EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
   web_state_ptr->OnNavigationFinished(&context);
@@ -144,8 +142,7 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestPrefetchOnTabSwitch) {
   web_state = std::make_unique<web::FakeWebState>();
   web_state_ptr = web_state.get();
   web_state_ptr->SetCurrentURL(not_ntp_url);
-  web_state_list_->InsertWebState(
-      1, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  web_state_list_->InsertWebState(std::move(web_state));
   web_state_list_->ActivateWebStateAt(1);
   EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
   controller_.get()->start_prefetch_call_count_ = 0;

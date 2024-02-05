@@ -68,8 +68,8 @@ class InfobarOverlayBrowserAgentTest
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
     browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     // Set up the OverlayPresenter's presentation context so that presentation
     // can be faked.
     presenter()->SetPresentationContext(&presentation_context_);

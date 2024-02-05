@@ -1572,9 +1572,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                                            std::move(web_state));
     } else {
       self.webStateList->InsertWebState(
-          self.webStateList->count(), std::move(web_state),
-          (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-          WebStateOpener());
+          std::move(web_state),
+          WebStateList::InsertionParams::AtIndex(self.webStateList->count())
+              .Activate());
     }
   }
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
@@ -1648,9 +1648,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   web::WebState* webStatePtr = webState.get();
 
   self.webStateList->InsertWebState(
-      self.webStateList->count(), std::move(webState),
-      (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-      WebStateOpener());
+      std::move(webState),
+      WebStateList::InsertionParams::AtIndex(self.webStateList->count())
+          .Activate());
   webStatePtr->OpenURL(web::WebState::OpenURLParams(
       searchUrl, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));

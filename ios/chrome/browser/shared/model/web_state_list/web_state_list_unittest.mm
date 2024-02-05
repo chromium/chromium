@@ -209,15 +209,13 @@ class WebStateListTest : public PlatformTest {
   }
 
   void AppendNewWebState(const char* url, WebStateOpener opener) {
-    web_state_list_.InsertWebState(WebStateList::kInvalidIndex,
-                                   CreateWebState(url),
-                                   WebStateList::INSERT_NO_FLAGS, opener);
+    web_state_list_.InsertWebState(
+        CreateWebState(url),
+        WebStateList::InsertionParams::Automatic().WithOpener(opener));
   }
 
   void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
-    web_state_list_.InsertWebState(
-        WebStateList::kInvalidIndex, std::move(web_state),
-        WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+    web_state_list_.InsertWebState(std::move(web_state));
   }
 };
 
@@ -244,15 +242,12 @@ TEST_F(WebStateListTest, InsertUrlSingle) {
 
 // Tests that inserting multiple webstates puts them in the expected places.
 TEST_F(WebStateListTest, InsertUrlMultiple) {
-  web_state_list_.InsertWebState(0, CreateWebState(kURL0),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
-  web_state_list_.InsertWebState(0, CreateWebState(kURL1),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
-  web_state_list_.InsertWebState(1, CreateWebState(kURL2),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(CreateWebState(kURL0),
+                                 WebStateList::InsertionParams::AtIndex(0));
+  web_state_list_.InsertWebState(CreateWebState(kURL1),
+                                 WebStateList::InsertionParams::AtIndex(0));
+  web_state_list_.InsertWebState(CreateWebState(kURL2),
+                                 WebStateList::InsertionParams::AtIndex(1));
 
   EXPECT_TRUE(observer_.web_state_inserted());
   ASSERT_EQ(3, web_state_list_.count());
@@ -277,9 +272,8 @@ TEST_F(WebStateListTest, ActivateWebState) {
 // Tests activating a webstate as it is inserted.
 TEST_F(WebStateListTest, InsertActivate) {
   web_state_list_.InsertWebState(
-      0, CreateWebState(kURL0),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
+      CreateWebState(kURL0),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
 
   EXPECT_TRUE(observer_.web_state_inserted());
   EXPECT_TRUE(observer_.web_state_activated());
@@ -310,9 +304,8 @@ TEST_F(WebStateListTest, GetIndexOfWebState) {
   EXPECT_EQ(1, web_state_list_.GetIndexOfWebState(target_web_state));
 
   // Another webstate inserted before target; target now at index 2.
-  web_state_list_.InsertWebState(0, CreateWebState(kURL3),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(CreateWebState(kURL3),
+                                 WebStateList::InsertionParams::AtIndex(0));
   EXPECT_EQ(2, web_state_list_.GetIndexOfWebState(target_web_state));
 }
 
@@ -387,8 +380,8 @@ TEST_F(WebStateListTest, InsertInheritOpener) {
             web_state_list_.GetActiveWebState());
 
   web_state_list_.InsertWebState(
-      WebStateList::kInvalidIndex, CreateWebState(kURL1),
-      WebStateList::INSERT_INHERIT_OPENER, WebStateOpener());
+      CreateWebState(kURL1),
+      WebStateList::InsertionParams::Automatic().InheritOpener());
 
   ASSERT_EQ(2, web_state_list_.count());
   ASSERT_EQ(web_state_list_.GetActiveWebState(),

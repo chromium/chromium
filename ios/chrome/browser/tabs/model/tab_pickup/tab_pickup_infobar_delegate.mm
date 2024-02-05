@@ -93,9 +93,9 @@ void TabPickupInfobarDelegate::OpenDistantTab() {
             browser_state, session_tab->current_navigation_index,
             session_tab->navigations);
     web_state_list->InsertWebState(
-        web_state_list->count(), std::move(web_state),
-        (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(web_state_list->count())
+            .Activate());
   }
 }
 

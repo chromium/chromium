@@ -74,9 +74,8 @@ class SessionServiceTest : public PlatformTest {
     for (int i = 0; i < tabs_count; ++i) {
       auto web_state = std::make_unique<web::FakeWebState>();
       web_state->SetNavigationItemCount(1);
-      web_state_list->InsertWebState(i, std::move(web_state),
-                                     WebStateList::INSERT_FORCE_INDEX,
-                                     WebStateOpener());
+      web_state_list->InsertWebState(std::move(web_state),
+                                     WebStateList::InsertionParams::AtIndex(i));
     }
     if (tabs_count > 0)
       web_state_list->ActivateWebStateAt(0);

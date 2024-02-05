@@ -39,8 +39,8 @@ void InsertWebState(Browser* browser) {
   InfoBarManagerImpl::CreateForWebState(web_state.get());
   BreadcrumbManagerTabHelper::CreateForWebState(web_state.get());
   browser->GetWebStateList()->InsertWebState(
-      /*index=*/0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 }
 
 const base::circular_deque<std::string>& GetEvents() {

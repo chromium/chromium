@@ -75,9 +75,9 @@ TEST_F(BrowserContainerMediatorTest, BlockContentForHTTPAuthDialog) {
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kWebStateUrl);
-  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
-                                              WebStateList::INSERT_ACTIVATE,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Show an HTTP authentication dialog from a different URL.
   const GURL kHttpAuthUrl("http://www.http_auth.test");

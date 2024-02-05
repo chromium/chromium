@@ -112,9 +112,9 @@ class OpenTabsSpotlightManagerTest : public PlatformTest {
     test_web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     FakeWebState* test_web_state_ptr = test_web_state.get();
-    web_state_list->InsertWebState(0, std::move(test_web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list->InsertWebState(
+        std::move(test_web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     return test_web_state_ptr;
   }
 

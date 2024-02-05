@@ -79,8 +79,8 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
         ->SetPresentationContext(&presentation_context_);
     // Add and active a WebState over which to present overlays.
     browser_->GetWebStateList()->InsertWebState(
-        0, std::make_unique<web::FakeWebState>(), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+        std::make_unique<web::FakeWebState>(),
+        WebStateList::InsertionParams::Automatic().Activate());
     web_state_ = browser_->GetWebStateList()->GetActiveWebState();
   }
 

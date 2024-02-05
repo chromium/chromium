@@ -184,8 +184,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
       StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
       // Create non-NTP WebState
       browser_.get()->GetWebStateList()->InsertWebState(
-          0, CreateWebState("http://chromium.org"),
-          WebStateList::INSERT_ACTIVATE, WebStateOpener());
+          CreateWebState("http://chromium.org"),
+          WebStateList::InsertionParams::Automatic().Activate());
       favicon::WebFaviconDriver::CreateForWebState(
           browser_.get()->GetWebStateList()->GetActiveWebState(),
           /*favicon_service=*/nullptr);
@@ -234,8 +234,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   // Inserts a FakeWebState into the browser's WebStateList.
   void InsertWebState(std::unique_ptr<web::WebState> web_state) {
     browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     web_state_ = browser_->GetWebStateList()->GetActiveWebState();
   }
 

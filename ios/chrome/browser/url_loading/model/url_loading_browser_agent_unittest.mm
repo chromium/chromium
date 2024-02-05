@@ -129,17 +129,15 @@ TEST_F(URLLoadingBrowserAgentTest, TestSwitchToTab) {
   std::unique_ptr<web::FakeWebState> web_state = CreateFakeWebState();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetCurrentURL(GURL("http://test/1"));
-  web_state_list->InsertWebState(0, std::move(web_state),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
+  web_state_list->InsertWebState(std::move(web_state),
+                                 WebStateList::InsertionParams::AtIndex(0));
 
   std::unique_ptr<web::FakeWebState> web_state_2 = CreateFakeWebState();
   web::WebState* web_state_ptr_2 = web_state_2.get();
   GURL url("http://test/2");
   web_state_2->SetCurrentURL(url);
-  web_state_list->InsertWebState(1, std::move(web_state_2),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
+  web_state_list->InsertWebState(std::move(web_state_2),
+                                 WebStateList::InsertionParams::AtIndex(1));
 
   web_state_list->ActivateWebStateAt(0);
 

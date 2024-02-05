@@ -80,9 +80,7 @@ class TabStripControllerTest : public PlatformTest {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetVisibleItem(visible_navigation_item_.get());
     web_state->SetNavigationManager(std::move(navigation_manager));
-    browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, std::move(web_state), WebStateList::INSERT_NO_FLAGS,
-        WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(std::move(web_state));
   }
 
   void DetachWebStateForTesting(int index) {

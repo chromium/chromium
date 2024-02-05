@@ -62,9 +62,9 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
 
     AutofillBottomSheetTabHelper::CreateForWebState(test_web_state_.get(), nil);
 
-    web_state_list_.InsertWebState(0, std::move(test_web_state_),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list_.InsertWebState(
+        std::move(test_web_state_),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     consumer_ = OCMProtocolMock(@protocol(FormInputAccessoryConsumer));
     handler_ = OCMProtocolMock(@protocol(FormInputAccessoryMediatorHandler));

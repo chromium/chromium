@@ -103,8 +103,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
     web_state->SetBrowserState(browser_state_.get());
     web_state->SetCurrentURL(GURL("http://test/"));
     browser_->GetWebStateList()->InsertWebState(
-        0, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,
-        WebStateOpener());
+        std::move(web_state), WebStateList::InsertionParams::AtIndex(0));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
 

@@ -118,8 +118,7 @@ TEST_F(TabHelperDelegateInstallerTest,
        InstallDelegatesForPreExistingTabHelpers) {
   // Insert a WebState into the WebStateList before the installer is created.
   browser_->GetWebStateList()->InsertWebState(
-      0, std::make_unique<web::FakeWebState>(), WebStateList::INSERT_NO_FLAGS,
-      WebStateOpener());
+      std::make_unique<web::FakeWebState>());
   FakeTabHelper* tab_helper = FakeTabHelper::FromWebState(
       browser_->GetWebStateList()->GetWebStateAt(0));
   ASSERT_FALSE(tab_helper->GetDelegate());

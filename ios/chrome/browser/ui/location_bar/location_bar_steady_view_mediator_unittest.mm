@@ -61,9 +61,9 @@ TEST_F(LocationBarSteadyViewMediatorTest, DisableShareForOverlays) {
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
-  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
-                                              WebStateList::INSERT_ACTIVATE,
-                                              WebStateOpener(nullptr));
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
   ASSERT_TRUE(consumer_.locationShareable);
 
   // Present a JavaScript alert over the WebState and verify that the page is no
@@ -88,9 +88,9 @@ TEST_F(LocationBarSteadyViewMediatorTest, HTTPAuthDialog) {
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
-  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
-                                              WebStateList::INSERT_ACTIVATE,
-                                              WebStateOpener(nullptr));
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Present an HTTP authentication dialog over the WebState and verify the
   // location text and page icon.
@@ -115,9 +115,9 @@ TEST_F(LocationBarSteadyViewMediatorTest,
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
-  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
-                                              WebStateList::INSERT_ACTIVATE,
-                                              WebStateOpener(nullptr));
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Present an HTTP authentication dialog over the WebState
   const std::string kMessage("message");

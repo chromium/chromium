@@ -66,9 +66,9 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
 
   // Create a mediator.
   void CreateMediator() {
-    web_state_list_->InsertWebState(0, std::move(test_web_state_),
-                                    WebStateList::INSERT_ACTIVATE,
-                                    WebStateOpener());
+    web_state_list_->InsertWebState(
+        std::move(test_web_state_),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     mediator_ = [[PaymentsSuggestionBottomSheetMediator alloc]
         initWithWebStateList:web_state_list_.get()

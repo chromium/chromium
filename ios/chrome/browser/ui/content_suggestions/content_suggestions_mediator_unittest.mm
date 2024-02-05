@@ -282,7 +282,8 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
   auto web_state = CreateWebState("http://chromium.org");
   web_state->SetTitle(u"title");
   int recent_tab_index = web_state_list_->InsertWebState(
-      0, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
   favicon::WebFaviconDriver::CreateForWebState(
       web_state_list_->GetActiveWebState(),
       /*favicon_service=*/nullptr);
@@ -290,9 +291,9 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
       StartSurfaceRecentTabBrowserAgent::FromBrowser(browser_.get());
   browser_agent->SaveMostRecentTab();
   // Create NTP
-  web_state_list_->InsertWebState(1, CreateWebState("chrome://newtab"),
-                                  WebStateList::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list_->InsertWebState(
+      CreateWebState("chrome://newtab"),
+      WebStateList::InsertionParams::Automatic().Activate());
   web::WebState* ntp_web_state = web_state_list_->GetActiveWebState();
   mediator_.webState = ntp_web_state;
   NewTabPageTabHelper::FromWebState(ntp_web_state)->SetShowStartSurface(true);
@@ -321,8 +322,8 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
 TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTabNoTitle) {
   // Create non-NTP WebState
   int recent_tab_index = web_state_list_->InsertWebState(
-      0, CreateWebState("http://chromium.org"), WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
+      CreateWebState("http://chromium.org"),
+      WebStateList::InsertionParams::Automatic().Activate());
   favicon::WebFaviconDriver::CreateForWebState(
       web_state_list_->GetActiveWebState(),
       /*favicon_service=*/nullptr);
@@ -330,9 +331,9 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTabNoTitle) {
       StartSurfaceRecentTabBrowserAgent::FromBrowser(browser_.get());
   browser_agent->SaveMostRecentTab();
   // Create NTP
-  web_state_list_->InsertWebState(1, CreateWebState("chrome://newtab"),
-                                  WebStateList::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list_->InsertWebState(
+      CreateWebState("chrome://newtab"),
+      WebStateList::InsertionParams::Automatic().Activate());
   web::WebState* ntp_web_state = web_state_list_->GetActiveWebState();
   mediator_.webState = ntp_web_state;
   NewTabPageTabHelper::FromWebState(ntp_web_state)->SetShowStartSurface(true);
@@ -358,9 +359,9 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTabNoTitle) {
 
 TEST_F(ContentSuggestionsMediatorTest, TestStartSurfaceRecentTabObserving) {
   // Create non-NTP WebState
-  web_state_list_->InsertWebState(0, CreateWebState("http://chromium.org"),
-                                  WebStateList::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list_->InsertWebState(
+      CreateWebState("http://chromium.org"),
+      WebStateList::InsertionParams::Automatic().Activate());
   favicon::WebFaviconDriver::CreateForWebState(
       web_state_list_->GetActiveWebState(),
       /*favicon_service=*/nullptr);
@@ -368,9 +369,9 @@ TEST_F(ContentSuggestionsMediatorTest, TestStartSurfaceRecentTabObserving) {
       StartSurfaceRecentTabBrowserAgent::FromBrowser(browser_.get());
   browser_agent->SaveMostRecentTab();
   // Create NTP
-  web_state_list_->InsertWebState(1, CreateWebState("chrome://newtab"),
-                                  WebStateList::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list_->InsertWebState(
+      CreateWebState("chrome://newtab"),
+      WebStateList::InsertionParams::Automatic().Activate());
   web::WebState* web_state = browser_agent->most_recent_tab();
   [mediator_ configureMostRecentTabItemWithWebState:web_state
                                           timeLabel:@" - 12 hours ago"];

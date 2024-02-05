@@ -54,9 +54,7 @@ class SideSwipeMediatorTest : public PlatformTest {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
-    browser_->GetWebStateList()->InsertWebState(
-        0, std::move(original_web_state), WebStateList::INSERT_NO_FLAGS,
-        WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(std::move(original_web_state));
 
     FullscreenController* fullscreen_controller =
         FullscreenController::FromBrowser(browser_.get());

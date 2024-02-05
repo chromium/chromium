@@ -137,8 +137,9 @@ web::WebState* TabInsertionBrowserAgent::InsertWebStateOpenedByDOM(
   web::WebState* web_state_ptr = web_state.get();
   WebStateList* web_state_list = browser_->GetWebStateList();
   web_state_list->InsertWebState(
-      web_state_list->count(), std::move(web_state),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(parent));
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(web_state_list->count())
+          .Activate()
+          .WithOpener(WebStateOpener(parent)));
   return web_state_ptr;
 }

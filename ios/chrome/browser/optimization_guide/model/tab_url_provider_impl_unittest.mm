@@ -59,8 +59,8 @@ class TabUrlProviderImplTest : public PlatformTest {
     fake_web_state->SetCurrentURL(url);
     fake_web_state->SetLastActiveTime(timestamp);
     browser->GetWebStateList()->InsertWebState(
-        browser->GetWebStateList()->count(), std::move(fake_web_state),
-        WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
+        std::move(fake_web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
   const std::vector<GURL> GetUrlsOfActiveTabs(
