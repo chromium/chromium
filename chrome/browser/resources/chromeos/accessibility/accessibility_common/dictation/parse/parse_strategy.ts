@@ -15,36 +15,29 @@ import {Macro} from '../macros/macro.js';
  * Macro.
  */
 export class ParseStrategy {
-  /** @param {!InputController} inputController */
-  constructor(inputController) {
-    /** @private {!InputController} */
+  private inputController_: InputController;
+  protected enabled = false;
+  constructor(inputController: InputController) {
     this.inputController_ = inputController;
-    /** @protected {boolean} */
-    this.enabled = false;
   }
 
-  /** @return {!InputController} */
-  getInputController() {
+  getInputController(): InputController {
     return this.inputController_;
   }
 
-  /** @return {boolean} */
-  isEnabled() {
+  isEnabled(): boolean {
     return this.enabled;
   }
 
-  /** @param {boolean} enabled */
-  setEnabled(enabled) {
+  setEnabled(enabled: boolean): void {
     this.enabled = enabled;
   }
 
   /** Refreshes this strategy when the locale changes. */
-  refresh() {}
+  refresh(): void {}
 
-  /**
-   * Accepts text, parses it, and returns a Macro.
-   * @param {string} text
-   * @return {!Promise<?Macro>}
-   */
-  async parse(text) {}
+  /** Accepts text, parses it, and returns a Macro. */
+  async parse(text: string): Promise<Macro|null> {
+    throw new Error(`The parse() function must be implemented by each subclass. Trying to parse text: ${text}`);
+  }
 }
