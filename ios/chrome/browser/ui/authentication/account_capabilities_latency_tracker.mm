@@ -51,9 +51,8 @@ bool AccountCapabilitiesLatencyTracker::HasCapability() const {
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   AccountInfo accountInfo =
       identity_manager_->FindExtendedAccountInfo(primaryAccount);
-  // TODO(b/309953195): Replace with target capability. Current check is an
-  // approximation.
-  return accountInfo.capabilities.is_subject_to_parental_controls() !=
+  return accountInfo.capabilities
+             .can_show_history_sync_opt_ins_without_minor_mode_restrictions() !=
          signin::Tribool::kUnknown;
 }
 
