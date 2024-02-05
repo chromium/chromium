@@ -9,6 +9,7 @@
 #include <limits>
 #include <random>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "components/gwp_asan/client/thread_local_random_bit_generator.h"
 #include "components/gwp_asan/client/thread_local_state.h"
@@ -21,6 +22,7 @@ enum ParentAllocator {
   MALLOC = 0,
   PARTITIONALLOC = 1,
   LIGHTWEIGHTDETECTOR = 2,
+  EXTREMELIGHTWEIGHTDETECTOR = 3,
 };
 
 // Class that encapsulates the current sampling state. Sampling is performed

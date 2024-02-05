@@ -32,7 +32,7 @@ namespace {
 using allocator_shim::AllocatorDispatch;
 
 // By being implemented as a global with inline method definitions, method calls
-// and member acceses are inlined and as efficient as possible in the
+// and member accesses are inlined and as efficient as possible in the
 // performance-sensitive allocation hot-path.
 //
 // Note that this optimization has not been benchmarked. However since it is

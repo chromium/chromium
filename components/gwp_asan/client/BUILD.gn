@@ -55,6 +55,8 @@ component("client") {
 
   if (use_allocator_shim) {
     sources += [
+      "extreme_lightweight_detector_malloc_shims.cc",
+      "extreme_lightweight_detector_malloc_shims.h",
       "lightweight_detector/malloc_shims.cc",
       "lightweight_detector/malloc_shims.h",
       "lightweight_detector/random_eviction_quarantine.cc",
@@ -100,6 +102,7 @@ source_set("unit_tests") {
 
   if (use_allocator_shim) {
     sources += [
+      "extreme_lightweight_detector_malloc_shims_unittest.cc",
       "lightweight_detector/malloc_shims_unittest.cc",
       "lightweight_detector/random_eviction_quarantine_unittest.cc",
       "sampling_malloc_shims_unittest.cc",
