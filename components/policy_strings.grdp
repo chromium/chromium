@@ -581,6 +581,9 @@ Additional details:
   <message name="IDS_POLICY_HEADER_LEVEL" desc="Table header for the column in the policy table that details whether a policy is mandatory or recommended.">
     Level
   </message>
+  <message name="IDS_POLICY_HEADER_NAMESPACE" desc="Table header for the column in the policy table that contains the policy namespace (either 'Chrome', or an extension ID).">
+    Namespace
+  </message>
   <message name="IDS_POLICY_HEADER_NAME" desc="Table header for the column in the policy table that contains the policy name.">
     Policy name
   </message>

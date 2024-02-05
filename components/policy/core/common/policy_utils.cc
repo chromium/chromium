@@ -53,7 +53,9 @@ base::Value::Dict GetPolicyNameToTypeMapping(
     const policy::Schema& schema) {
   base::Value::Dict result;
   for (auto& policy_name : policy_names) {
-    switch (schema.GetKnownProperty(policy_name.GetString()).type()) {
+    base::Value::Type policy_type =
+        schema.GetKnownProperty(policy_name.GetString()).type();
+    switch (policy_type) {
       case base::Value::Type::BOOLEAN:
         result.Set(policy_name.GetString(), "boolean");
         break;
@@ -73,7 +75,8 @@ base::Value::Dict GetPolicyNameToTypeMapping(
         result.Set(policy_name.GetString(), "string");
         break;
       default:
-        NOTREACHED();
+        NOTREACHED() << "Unrecognized policy type " << (int)policy_type << " ("
+                     << policy_name << ")";
         break;
     }
   }

@@ -48,7 +48,7 @@
       padding: 12px 7px;
     }
 
-    #name-header {
+    #namespace-header {
       border-radius: var(--element-border-radius) 0 0 0;
     }
 
@@ -74,7 +74,8 @@
 </style>
 <div class="table" role="table">
   <header role="row">
-    <div class="cell" id="name-header">$i18n{testTableName}</div>
+    <div class="cell" id="namespace-header">$i18n{testTableNamespace}</div>
+    <div class="cell">$i18n{testTableName}</div>
     <div class="cell">$i18n{testTableValue}</div>
     <div class="cell">$i18n{testTablePreset}</div>
     <div class="cell">$i18n{testTableSource}</div>
@@ -82,6 +83,5 @@
     <div class="cell">$i18n{testTableLevel}</div>
     <div class="cell" id="header-remove-btn-cell"></div>
   </header>
-  <policy-test-row></policy-test-row>
 </div>
 <button id="add-policy-btn">+</button>

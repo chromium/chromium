@@ -13,8 +13,10 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
+#include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_impl.h"
+#include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
@@ -277,10 +279,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
   std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
   const std::string jsonString =
       R"([
-      {"level": 0,"scope": 0,"source": 0,
-      "name": "AutofillAddressEnabled","value": false},
-      {"level": 1,"scope": 1,"source": 2,
-      "name": "CloudReportingEnabled","value": true}
+      {"level": 0,"scope": 0,"source": 0, "namespace": "chrome",
+       "name": "AutofillAddressEnabled","value": false},
+      {"level": 1,"scope": 1,"source": 2, "namespace": "chrome",
+       "name": "CloudReportingEnabled","value": true}
       ])";
   const std::string revertAppliedPoliciesButtonDisabledJs =
       R"(
@@ -633,6 +635,24 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTestDisabledByPolicy,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
+
+const char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const char kExtensionSchemaJson[] = R"({
+  "type": "object",
+  "properties": {
+    "normal_boolean": {
+      "type": "boolean"
+    },
+    "normal_number": {
+      "type": "number"
+    },
+    "sensitive_number": {
+      "type": "number",
+      "sensitiveValue": true,
+    }
+  }
+})";
+
 class PolicyTestUITest : public PlatformBrowserTest {
  public:
   PolicyTestUITest() {
@@ -647,6 +667,15 @@ class PolicyTestUITest : public PlatformBrowserTest {
 
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
+
+    // Add a fake "extension" to the SchemaRegistry.
+    auto* registry = GetProfile()->GetPolicySchemaRegistryService()->registry();
+    std::string error;
+    registry->RegisterComponent(
+        policy::PolicyNamespace(policy::POLICY_DOMAIN_EXTENSIONS, kExtensionId),
+        policy::Schema::Parse(kExtensionSchemaJson, &error));
+    ASSERT_THAT(error, testing::IsEmpty());
+
     // Enable kPolicyTestPageEnabled policy.
     policy::PolicyMap policy_map;
     base::Value::List policy_list;
@@ -714,6 +743,7 @@ class PolicyTestUITest : public PlatformBrowserTest {
   }
 
  private:
+  policy::Schema extension_schema_;
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
@@ -805,6 +835,138 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestPresetAutofill) {
   EXPECT_TRUE(content::ExecJs(web_contents(), changePresetToCbcmJs));
   EXPECT_EQ(content::EvalJs(web_contents(), getSelectedPresetId), "cbcm");
   EXPECT_EQ(content::EvalJs(web_contents(), getSourceValueJs), "sourceCloud");
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, GetSchema) {
+  base::Value schema = PolicyUI::GetSchema(GetProfile());
+  ASSERT_NE(nullptr, schema.GetDict().FindDict(kExtensionId));
+  // The extension's schema should exclude "sensitive_number", because it's
+  // a sensitive policy.
+  ASSERT_EQ(base::Value::Dict()
+                .Set("normal_boolean", "boolean")
+                .Set("normal_number", "number"),
+            *schema.GetDict().FindDict(kExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestExtensionPoliciesIncluded) {
+  if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                             chrome::GetChannel())) {
+    GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
+  }
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+
+  base::Value schema = PolicyUI::GetSchema(GetProfile());
+  base::Value chrome_policy_names(base::Value::Type::LIST);
+  for (const auto [key, _] : *schema.GetDict().FindDict("chrome")) {
+    chrome_policy_names.GetList().Append(key);
+  }
+  base::Value extension_policy_names(base::Value::Type::LIST);
+  for (const auto [key, _] : *schema.GetDict().FindDict(kExtensionId)) {
+    extension_policy_names.GetList().Append(key);
+  }
+
+  // The namespace <select> should offer the Chrome policy domain, and the
+  // extension's namespace.
+  const std::string getNamespacesFromSelect =
+      R"(
+        Array.from(
+            document
+                .querySelector('policy-test-table')
+                .shadowRoot
+                .querySelector('policy-test-row')
+                .shadowRoot
+                .querySelector('.namespace')
+                .options)
+            .map(e => e.innerText)
+      )";
+  EXPECT_EQ(
+      base::Value(base::Value::List().Append("Chrome").Append(kExtensionId)),
+      content::EvalJs(web_contents(), getNamespacesFromSelect));
+
+  // Get list of available policies from the <datalist>. They should initially
+  // correspond to the Chrome policy domain.
+  const std::string getPolicyNamesFromDatalist =
+      R"(
+        Array.from(
+            document
+                .querySelector('policy-test-table')
+                .shadowRoot
+                .querySelector('policy-test-row')
+                .shadowRoot
+                .getElementById('policy-name-list')
+                .options)
+            .map(e => e.innerText)
+      )";
+  content::EvalJsResult policy_names =
+      content::EvalJs(web_contents(), getPolicyNamesFromDatalist);
+  EXPECT_EQ(chrome_policy_names, policy_names);
+
+  // Switch to the extension's namespace. This should change the <datalist>'s
+  // policy names.
+  std::string switchToExtensionNamespace =
+      R"(
+        const namespaceDropdown =
+            document
+                .querySelector('policy-test-table')
+                .shadowRoot
+                .querySelector('policy-test-row')
+                .shadowRoot
+                .querySelector('.namespace');
+        namespaceDropdown.value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+        namespaceDropdown.dispatchEvent(new CustomEvent('change'));
+      )";
+  std::ignore = content::EvalJs(web_contents(), switchToExtensionNamespace);
+  content::EvalJsResult policy_names2 =
+      content::EvalJs(web_contents(), getPolicyNamesFromDatalist);
+  EXPECT_EQ(extension_policy_names, policy_names2);
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestSchemaChangeReflected) {
+  if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                             chrome::GetChannel())) {
+    GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
+  }
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     GURL(chrome::kChromeUIPolicyTestURL)));
+
+  base::Value schema = PolicyUI::GetSchema(GetProfile());
+  base::Value chrome_policy_names(base::Value::Type::LIST);
+  for (const auto [key, _] : *schema.GetDict().FindDict("chrome")) {
+    chrome_policy_names.GetList().Append(key);
+  }
+  base::Value extension_policy_names(base::Value::Type::LIST);
+  for (const auto [key, _] : *schema.GetDict().FindDict(kExtensionId)) {
+    extension_policy_names.GetList().Append(key);
+  }
+
+  // The namespace <select> should offer the Chrome policy domain, and the
+  // extension's namespace.
+  const std::string getNamespacesFromSelect =
+      R"(
+        Array.from(
+            document
+                .querySelector('policy-test-table')
+                .shadowRoot
+                .querySelector('policy-test-row')
+                .shadowRoot
+                .querySelector('.namespace')
+                .options)
+            .map(e => e.innerText)
+      )";
+  EXPECT_EQ(
+      base::Value(base::Value::List().Append("Chrome").Append(kExtensionId)),
+      content::EvalJs(web_contents(), getNamespacesFromSelect));
+
+  // Delete the extension from the schema. It should disappear from the
+  // namespace <select>.
+  auto* registry = GetProfile()->GetPolicySchemaRegistryService()->registry();
+  registry->UnregisterComponent(
+      policy::PolicyNamespace(policy::POLICY_DOMAIN_EXTENSIONS, kExtensionId));
+  EXPECT_EQ(base::Value(base::Value::List().Append("Chrome")),
+            content::EvalJs(web_contents(), getNamespacesFromSelect));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestPolicyNameChangesInputType) {
