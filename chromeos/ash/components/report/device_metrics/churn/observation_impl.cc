@@ -436,7 +436,8 @@ std::optional<FresnelImportData> ObservationImpl::GenerateObservationImportData(
     std::optional<base::Time> first_active_week_ts =
         utils::GetFirstActiveWeek();
 
-    if (first_active_week_ts->is_null() ||
+    if (!first_active_week_ts.has_value() ||
+        first_active_week_ts.value() == base::Time() ||
         first_active_week_ts.value() == base::Time::UnixEpoch()) {
       LOG(ERROR) << "Failed to retrieve first active week from VPD. Leaving "
                     "first active and last powerwash week unset.";
