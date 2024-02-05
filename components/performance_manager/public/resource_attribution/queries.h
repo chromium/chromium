@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
-#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -126,11 +125,6 @@ class ScopedResourceUsageQuery {
   std::unique_ptr<ThrottledTimer> throttled_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
-
-// Convenience alias for a ScopedObservation that observes a
-// ScopedResourceUsageQuery.
-using ScopedQueryObservation =
-    base::ScopedObservation<ScopedResourceUsageQuery, QueryResultObserver>;
 
 // Creates a query to request resource usage measurements on a schedule.
 //

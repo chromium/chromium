@@ -15,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/events/event.h"
@@ -34,8 +34,9 @@ class Tab;
 class TabStrip;
 
 // Controls how hover cards are shown and hidden for tabs.
-class TabHoverCardController : public views::ViewObserver,
-                               public TabResourceUsageCollector::Observer {
+class TabHoverCardController
+    : public views::ViewObserver,
+      performance_manager::user_tuning::UserPerformanceTuningManager::Observer {
  public:
   explicit TabHoverCardController(TabStrip* tab_strip);
   ~TabHoverCardController() override;
@@ -89,8 +90,8 @@ class TabHoverCardController : public views::ViewObserver,
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
 
-  // TabResourceUsageCollector::Observer:
-  void OnTabResourceMetricsRefreshed() override;
+  // UserPerformanceTuningManager::Observer:
+  void OnMemoryMetricsRefreshed() override;
 
   bool ArePreviewsEnabled() const;
 

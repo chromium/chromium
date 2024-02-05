@@ -500,7 +500,9 @@ void TabHoverCardController::HideHoverCard() {
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
     if (hover_card_tab_memory_usage_enabled_) {
-      TabResourceUsageCollector::Get()->RemoveObserver(this);
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          GetInstance()
+              ->RemoveObserver(this);
     }
     delayed_show_timer_.Stop();
     hover_card_observation_.Reset();
@@ -541,7 +543,7 @@ void TabHoverCardController::OnViewVisibilityChanged(
   }
 }
 
-void TabHoverCardController::OnTabResourceMetricsRefreshed() {
+void TabHoverCardController::OnMemoryMetricsRefreshed() {
   if (hover_card_ != nullptr && target_tab_ != nullptr) {
     UpdateHoverCard(target_tab_,
                     TabSlotController::HoverCardUpdateType::kTabDataChanged);
@@ -579,7 +581,9 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
   }
 
   if (hover_card_tab_memory_usage_enabled_) {
-    TabResourceUsageCollector::Get()->AddObserver(this);
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->AddObserver(this);
   }
 }
 

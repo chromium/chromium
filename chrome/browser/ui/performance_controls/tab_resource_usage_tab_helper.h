@@ -8,10 +8,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace content {
-class NavigationHandle;
-}
-
 class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
  public:
   TabResourceUsage() = default;
@@ -42,8 +38,6 @@ class TabResourceUsageTabHelper
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   uint64_t GetMemoryUsageInBytes();
   void SetMemoryUsageInBytes(uint64_t memory_usage_bytes);

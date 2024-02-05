@@ -1365,8 +1365,6 @@ static_library("ui") {
       "performance_controls/performance_controls_hats_service_factory.h",
       "performance_controls/performance_controls_metrics.cc",
       "performance_controls/performance_controls_metrics.h",
-      "performance_controls/tab_resource_usage_collector.cc",
-      "performance_controls/tab_resource_usage_collector.h",
       "performance_controls/tab_resource_usage_tab_helper.cc",
       "performance_controls/tab_resource_usage_tab_helper.h",
       "permission_bubble/permission_prompt.h",

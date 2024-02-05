@@ -73,8 +73,7 @@ class ProcessMetricsDecorator
   // Immediately refreshes the metrics for all the process nodes. This will do
   // nothing if the last metric refresh was more recent than
   // `kMinImmediateRefreshDelay`, since a recent measurement already exists.
-  void RequestImmediateMetrics(
-      base::OnceClosure on_metrics_received = base::DoNothing());
+  void RequestImmediateMetrics();
 
   static constexpr base::TimeDelta kMinImmediateRefreshDelay = base::Seconds(2);
 

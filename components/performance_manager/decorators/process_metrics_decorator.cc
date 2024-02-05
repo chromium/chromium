@@ -148,8 +148,7 @@ void ProcessMetricsDecorator::OnMetricsInterestTokenReleased() {
   }
 }
 
-void ProcessMetricsDecorator::RequestImmediateMetrics(
-    base::OnceClosure on_metrics_received) {
+void ProcessMetricsDecorator::RequestImmediateMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Callers should have an interest token before calling
   // RequestImmediateMetrics().
@@ -174,8 +173,7 @@ void ProcessMetricsDecorator::RequestImmediateMetrics(
   RequestProcessesMemoryMetrics(
       /*immediate_request=*/true,
       base::BindOnce(&ProcessMetricsDecorator::DidGetMemoryUsage,
-                     weak_factory_.GetWeakPtr())
-          .Then(std::move(on_metrics_received)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ProcessMetricsDecorator::StartTimer() {
