@@ -190,7 +190,9 @@ void PermissionManager::Shutdown() {
       if (type_to_count.second > 0) {
         PermissionContextBase* context =
             GetPermissionContext(type_to_count.first);
-        context->RemoveObserver(this);
+        if (context != nullptr) {
+          context->RemoveObserver(this);
+        }
       }
     }
     subscription_type_counts_.clear();
@@ -268,16 +270,15 @@ void PermissionManager::RequestPermissionsInternal(
 
     auto response_callback =
         std::make_unique<PermissionResponseCallback>(this, request_local_id, i);
-    if (PermissionUtil::IsPermissionBlockedInPartition(
-            permission, request_description.requesting_origin,
-            render_frame_host->GetProcess())) {
+    PermissionContextBase* context = GetPermissionContext(permission);
+    if (!context || PermissionUtil::IsPermissionBlockedInPartition(
+                        permission, request_description.requesting_origin,
+                        render_frame_host->GetProcess())) {
       response_callback->OnPermissionsRequestResponseStatus(
           CONTENT_SETTING_BLOCK);
       continue;
     }
 
-    PermissionContextBase* context = GetPermissionContext(permission);
-    DCHECK(context);
     context->RequestPermission(
         PermissionRequestData(
             context, request_id, request_description,
@@ -427,6 +428,9 @@ PermissionManager::SubscribeToPermissionStatusChange(
   auto& type_count = subscription_type_counts_[content_type];
   if (type_count == 0) {
     PermissionContextBase* context = GetPermissionContext(content_type);
+    if (context == nullptr) {
+      return SubscriptionId();
+    }
     context->AddObserver(this);
   }
   ++type_count;
@@ -492,7 +496,9 @@ void PermissionManager::UnsubscribeFromPermissionStatusChange(
   type_count->second--;
   if (type_count->second == 0) {
     PermissionContextBase* context = GetPermissionContext(type);
-    context->RemoveObserver(this);
+    if (context != nullptr) {
+      context->RemoveObserver(this);
+    }
   }
 }
 
@@ -589,15 +595,16 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
   // TODO(crbug.com/1307044): Move this to PermissionContextBase.
   content::RenderProcessHost* rph =
       render_frame_host ? render_frame_host->GetProcess() : render_process_host;
-  if (rph && PermissionUtil::IsPermissionBlockedInPartition(
-                 permission, requesting_origin, rph)) {
+  PermissionContextBase* context = GetPermissionContext(permission);
+
+  if (!context || (rph && PermissionUtil::IsPermissionBlockedInPartition(
+                              permission, requesting_origin, rph))) {
     return content::PermissionResult(
         PermissionStatus::DENIED, content::PermissionStatusSource::UNSPECIFIED);
   }
 
   GURL canonical_requesting_origin = PermissionUtil::GetCanonicalOrigin(
       permission, requesting_origin, embedding_origin);
-  PermissionContextBase* context = GetPermissionContext(permission);
   content::PermissionResult result = context->GetPermissionStatus(
       render_frame_host, canonical_requesting_origin.DeprecatedGetOriginAsURL(),
       embedding_origin.DeprecatedGetOriginAsURL());
