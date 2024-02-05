@@ -11,7 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
 
 namespace system_cpu {
@@ -33,8 +33,8 @@ namespace device {
 class CpuProbeManager {
  public:
   // Return this value when the implementation fails to get a result.
-  static constexpr system_cpu::PressureSample kUnsupportedValue = {
-      .cpu_utilization = 0.0};
+  static constexpr system_cpu::CpuSample kUnsupportedValue = {.cpu_utilization =
+                                                                  0.0};
 
   CpuProbeManager(base::TimeDelta,
                   base::RepeatingCallback<void(mojom::PressureState)>);
@@ -73,11 +73,10 @@ class CpuProbeManager {
   void OnSamplingStarted();
 
   // Called periodically while the CpuProbe is running.
-  void OnPressureSampleAvailable(std::optional<system_cpu::PressureSample>);
+  void OnCpuSampleAvailable(std::optional<system_cpu::CpuSample>);
 
-  // Calculate PressureState based on optional PressureSample.
-  mojom::PressureState CalculateState(
-      std::optional<system_cpu::PressureSample>);
+  // Calculate PressureState based on optional CpuSample.
+  mojom::PressureState CalculateState(std::optional<system_cpu::CpuSample>);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -108,9 +107,9 @@ class CpuProbeManager {
 
   // True if the CpuProbe state will be reported after the next update.
   //
-  // The PressureSample reported by many CpuProbe implementations relies
+  // The CpuSample reported by many CpuProbe implementations relies
   // on the differences observed between two Update() calls. For this reason,
-  // the PressureSample reported after a first Update() call is not
+  // the CpuSample reported after a first Update() call is not
   // reported via `sampling_callback_`.
   bool got_probe_baseline_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };

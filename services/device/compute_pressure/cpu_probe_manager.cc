@@ -19,7 +19,7 @@ namespace device {
 namespace {
 
 using system_cpu::CpuProbe;
-using system_cpu::PressureSample;
+using system_cpu::CpuSample;
 
 // Delta for the state decision hysteresis.
 constexpr double kThresholdDelta = 0.03;
@@ -74,12 +74,11 @@ void CpuProbeManager::EnsureStarted() {
   // base::Unretained usage is safe here because the callback is only run
   // while `system_cpu_probe_` is alive, and `system_cpu_probe_` is owned by
   // this instance.
-  timer_.Start(
-      FROM_HERE, sampling_interval_,
-      base::BindRepeating(
-          &CpuProbe::RequestSample, system_cpu_probe_->GetWeakPtr(),
-          base::BindRepeating(&CpuProbeManager::OnPressureSampleAvailable,
-                              base::Unretained(this))));
+  timer_.Start(FROM_HERE, sampling_interval_,
+               base::BindRepeating(
+                   &CpuProbe::RequestSample, system_cpu_probe_->GetWeakPtr(),
+                   base::BindRepeating(&CpuProbeManager::OnCpuSampleAvailable,
+                                       base::Unretained(this))));
 
   if (base::FeatureList::IsEnabled(
           features::kComputePressureBreakCalibrationMitigation)) {
@@ -125,8 +124,7 @@ void CpuProbeManager::OnSamplingStarted() {
   got_probe_baseline_ = true;
 }
 
-void CpuProbeManager::OnPressureSampleAvailable(
-    std::optional<PressureSample> sample) {
+void CpuProbeManager::OnCpuSampleAvailable(std::optional<CpuSample> sample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Stop sending data when Stop() was already called.
@@ -140,11 +138,11 @@ void CpuProbeManager::OnPressureSampleAvailable(
 }
 
 mojom::PressureState CpuProbeManager::CalculateState(
-    std::optional<PressureSample> maybe_sample) {
-  const PressureSample sample = maybe_sample.value_or(kUnsupportedValue);
+    std::optional<CpuSample> maybe_sample) {
+  const CpuSample sample = maybe_sample.value_or(kUnsupportedValue);
 
   // TODO(crbug.com/1342528): A more advanced algorithm that calculates
-  // PressureState using PressureSample needs to be determined.
+  // PressureState using CpuSample needs to be determined.
   // At this moment the algorithm is the simplest possible
   // with thresholds defining the state.
   const auto& kStateThresholds = state_randomization_requested_

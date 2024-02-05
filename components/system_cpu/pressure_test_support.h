@@ -18,11 +18,11 @@
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
 #include "components/system_cpu/cpu_probe.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 
 namespace system_cpu {
 
-// Test double for platform specific CpuProbe that stores the PressureSample in
+// Test double for platform specific CpuProbe that stores the CpuSample in
 // a TestFuture.
 template <typename T,
           typename = std::enable_if_t<std::is_base_of_v<CpuProbe, T>>>
@@ -35,14 +35,14 @@ class FakePlatformCpuProbe : public T {
 
   // Tests the internals of each platform CPU probe by calling Update() directly
   // instead of using the public interface.
-  std::optional<PressureSample> UpdateAndWaitForSample() {
+  std::optional<CpuSample> UpdateAndWaitForSample() {
     T::Update(sample_.GetCallback());
     // Blocks until the sample callback is invoked.
     return sample_.Take();
   }
 
  private:
-  base::test::TestFuture<std::optional<PressureSample>> sample_;
+  base::test::TestFuture<std::optional<CpuSample>> sample_;
 };
 
 // Test double for CpuProbe that always returns a predetermined value.
@@ -56,11 +56,11 @@ class FakeCpuProbe final : public CpuProbe {
   base::WeakPtr<CpuProbe> GetWeakPtr() final;
 
   // Can be called from any thread.
-  void SetLastSample(std::optional<PressureSample> sample);
+  void SetLastSample(std::optional<CpuSample> sample);
 
  private:
   base::Lock lock_;
-  std::optional<PressureSample> last_sample_ GUARDED_BY_CONTEXT(lock_);
+  std::optional<CpuSample> last_sample_ GUARDED_BY_CONTEXT(lock_);
 
   base::WeakPtrFactory<FakeCpuProbe> weak_factory_{this};
 };
@@ -69,7 +69,7 @@ class FakeCpuProbe final : public CpuProbe {
 // Update().
 class StreamingCpuProbe final : public CpuProbe {
  public:
-  StreamingCpuProbe(std::vector<PressureSample>, base::OnceClosure);
+  StreamingCpuProbe(std::vector<CpuSample>, base::OnceClosure);
 
   ~StreamingCpuProbe() final;
 
@@ -78,11 +78,11 @@ class StreamingCpuProbe final : public CpuProbe {
   base::WeakPtr<CpuProbe> GetWeakPtr() final;
 
  private:
-  std::vector<PressureSample> samples_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<CpuSample> samples_ GUARDED_BY_CONTEXT(sequence_checker_);
   size_t sample_index_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // This closure is called on an Update() call after the expected number of
-  // samples has been taken by PressureSampler.
+  // samples has been taken by CpuSampler.
   base::OnceClosure done_callback_;
 
   base::WeakPtrFactory<StreamingCpuProbe> weak_factory_{this};

@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/system_cpu/cpu_probe.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 #include "components/system_cpu/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +40,7 @@ class CpuProbeTest : public testing::Test {
     run_loop.Run();
   }
 
-  void CollectorCallback(std::optional<PressureSample> sample) {
+  void CollectorCallback(std::optional<CpuSample> sample) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (sample.has_value()) {
       samples_.push_back(sample->cpu_utilization);
@@ -77,8 +77,7 @@ using CpuProbeDeathTest = CpuProbeTest;
 TEST_F(CpuProbeTest, RequestSample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  static_cast<FakeCpuProbe*>(cpu_probe_.get())
-      ->SetLastSample(PressureSample{0.9});
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())->SetLastSample(CpuSample{0.9});
   cpu_probe_->StartSampling();
   WaitForUpdate();
 
@@ -88,13 +87,13 @@ TEST_F(CpuProbeTest, RequestSample) {
 TEST_F(CpuProbeTest, RepeatedSamples) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{0.6},
+      CpuSample{0.6},
       // Value after first Update(), should be discarded.
-      PressureSample{0.9},
+      CpuSample{0.9},
       // Value after second Update(), should be reported.
-      PressureSample{0.4},
+      CpuSample{0.4},
   };
 
   base::RunLoop run_loop;
@@ -110,15 +109,14 @@ TEST_F(CpuProbeTest, RepeatedSamples) {
 TEST_F(CpuProbeTest, DestroyWhileSampling) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  static_cast<FakeCpuProbe*>(cpu_probe_.get())
-      ->SetLastSample(PressureSample{0.9});
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())->SetLastSample(CpuSample{0.9});
   cpu_probe_->StartSampling();
 
   // Test passes as long as it doesn't crash.
   base::RunLoop run_loop;
   cpu_probe_->RequestSample(base::BindOnce(
       [](base::ScopedClosureRunner quit_closure_runner,
-         std::optional<PressureSample>) {
+         std::optional<CpuSample>) {
         // `quit_closure_runner` will run the bound `quit_closure` when the
         // callback is destroyed. The callback function shouldn't actually
         // execute because the CpuProbe is destroyed before the RunLoop
@@ -134,13 +132,13 @@ TEST_F(CpuProbeTest, DestroyWhileSampling) {
 TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooLarge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{0.6},
+      CpuSample{0.6},
       // Value after first Update(), should be discarded.
-      PressureSample{0.9},
+      CpuSample{0.9},
       // Crash expected.
-      PressureSample{1.1},
+      CpuSample{1.1},
   };
 
   base::RunLoop run_loop;
@@ -155,13 +153,13 @@ TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooLarge) {
 TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooSmall) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{0.6},
+      CpuSample{0.6},
       // Value after first Update(), should be discarded.
-      PressureSample{0.9},
+      CpuSample{0.9},
       // Crash expected.
-      PressureSample{-0.5},
+      CpuSample{-0.5},
   };
 
   base::RunLoop run_loop;
@@ -176,8 +174,7 @@ TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooSmall) {
 TEST_F(CpuProbeDeathTest, DISABLED_RequestSampleWithoutStartSampling) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  static_cast<FakeCpuProbe*>(cpu_probe_.get())
-      ->SetLastSample(PressureSample{0.9});
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())->SetLastSample(CpuSample{0.9});
   EXPECT_CHECK_DEATH(WaitForUpdate());
 }
 

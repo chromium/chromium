@@ -18,7 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/win/scoped_pdh_query.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 
 namespace system_cpu {
 
@@ -45,7 +45,7 @@ class CpuProbeWin::BlockingTaskRunnerHelper final {
   BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
   BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
 
-  std::optional<PressureSample> Update();
+  std::optional<CpuSample> Update();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -73,7 +73,7 @@ CpuProbeWin::BlockingTaskRunnerHelper::~BlockingTaskRunnerHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::optional<PressureSample> CpuProbeWin::BlockingTaskRunnerHelper::Update() {
+std::optional<CpuSample> CpuProbeWin::BlockingTaskRunnerHelper::Update() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   PDH_STATUS pdh_status;
@@ -136,7 +136,7 @@ std::optional<PressureSample> CpuProbeWin::BlockingTaskRunnerHelper::Update() {
     return std::nullopt;
   }
 
-  return PressureSample{counter_value.doubleValue / 100.0};
+  return CpuSample{counter_value.doubleValue / 100.0};
 }
 
 // static

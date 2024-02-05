@@ -24,8 +24,8 @@
 
 namespace device {
 
+using system_cpu::CpuSample;
 using system_cpu::FakeCpuProbe;
-using system_cpu::PressureSample;
 using system_cpu::StreamingCpuProbe;
 
 class CpuProbeManagerTest : public testing::Test {
@@ -100,7 +100,7 @@ TEST_F(CpuProbeManagerTest, EnsureStarted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(absl::make_optional(PressureSample{0.9}));
+      ->SetLastSample(absl::make_optional(CpuSample{0.9}));
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
 
@@ -111,13 +111,13 @@ TEST_F(CpuProbeManagerTest, EnsureStarted) {
 TEST_F(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{0.6},
+      CpuSample{0.6},
       // Value after first Update(), should be discarded.
-      PressureSample{0.9},
+      CpuSample{0.9},
       // Value after second Update(), should be reported.
-      PressureSample{0.4},
+      CpuSample{0.4},
   };
 
   base::RunLoop run_loop;
@@ -133,9 +133,8 @@ TEST_F(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
 TEST_F(CpuProbeManagerTest, CalculateStateValueTooLarge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  EXPECT_DCHECK_DEATH_WITH(
-      cpu_probe_manager_->CalculateState(PressureSample{1.1}),
-      "unexpected value: 1.1");
+  EXPECT_DCHECK_DEATH_WITH(cpu_probe_manager_->CalculateState(CpuSample{1.1}),
+                           "unexpected value: 1.1");
 }
 
 TEST_F(CpuProbeManagerWithMockTimeTest,
@@ -153,7 +152,7 @@ TEST_F(CpuProbeManagerWithMockTimeTest,
   cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<FakeCpuProbe>());
 
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(PressureSample{0.86});
+      ->SetLastSample(CpuSample{0.86});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_.back(),
@@ -163,7 +162,7 @@ TEST_F(CpuProbeManagerWithMockTimeTest,
   samples_.clear();
 
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(PressureSample{0.86});
+      ->SetLastSample(CpuSample{0.86});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   // First toggling.
@@ -181,19 +180,19 @@ TEST_F(CpuProbeManagerWithMockTimeTest,
 TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{0.6},
+      CpuSample{0.6},
       // Value after first Update(), should be discarded.
-      PressureSample{0.9},
+      CpuSample{0.9},
       // kNominal value after should be reported.
-      PressureSample{0.3},
+      CpuSample{0.3},
       // kFair value should be reported.
-      PressureSample{0.6},
+      CpuSample{0.6},
       // kSerious value should be reported.
-      PressureSample{0.9},
+      CpuSample{0.9},
       // kCritical value should be reported.
-      PressureSample{1.0},
+      CpuSample{1.0},
   };
 
   base::RunLoop run_loop;
@@ -213,19 +212,19 @@ TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
 TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisDown) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{1.0},
+      CpuSample{1.0},
       // Value after first Update(), should be discarded.
-      PressureSample{0.85},
+      CpuSample{0.85},
       // kCritical value after should be reported.
-      PressureSample{1.0},
+      CpuSample{1.0},
       // kSerious value should be reported.
-      PressureSample{0.85},
+      CpuSample{0.85},
       // kFair value should be reported.
-      PressureSample{0.55},
+      CpuSample{0.55},
       // kNominal value should be reported.
-      PressureSample{0.25},
+      CpuSample{0.25},
   };
 
   base::RunLoop run_loop;
@@ -246,19 +245,19 @@ TEST_F(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisDownByDelta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{1.0},
+      CpuSample{1.0},
       // Value after first Update(), should be discarded.
-      PressureSample{1.0},
+      CpuSample{1.0},
       // kCritical value after should be reported.
-      PressureSample{0.95},
+      CpuSample{0.95},
       // kCritical value should be reported due to hysteresis.
-      PressureSample{0.88},
+      CpuSample{0.88},
       // kFair value should be reported.
-      PressureSample{0.58},
+      CpuSample{0.58},
       // kNominal value should be reported.
-      PressureSample{0.26},
+      CpuSample{0.26},
   };
 
   base::RunLoop run_loop;
@@ -279,17 +278,17 @@ TEST_F(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisDownByDeltaTwoState) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{1.0},
+      CpuSample{1.0},
       // Value after first Update(), should be discarded.
-      PressureSample{1.0},
+      CpuSample{1.0},
       // kCritical value after should be reported.
-      PressureSample{0.95},
+      CpuSample{0.95},
       // kFair value should be reported.
-      PressureSample{0.58},
+      CpuSample{0.58},
       // kFair value should be reported due to hysteresis.
-      PressureSample{0.28},
+      CpuSample{0.28},
   };
 
   base::RunLoop run_loop;
@@ -309,19 +308,19 @@ TEST_F(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisUpByDelta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<PressureSample> samples = {
+  std::vector<CpuSample> samples = {
       // Value right after construction.
-      PressureSample{1.0},
+      CpuSample{1.0},
       // Value after first Update(), should be discarded.
-      PressureSample{1.0},
+      CpuSample{1.0},
       // kNominal value after should be reported.
-      PressureSample{0.3},
+      CpuSample{0.3},
       // kFair value should be reported due to hysteresis.
-      PressureSample{0.32},
+      CpuSample{0.32},
       // kSerious value should be reported.
-      PressureSample{0.62},
+      CpuSample{0.62},
       // kCritical value should be reported.
-      PressureSample{0.91},
+      CpuSample{0.91},
   };
 
   base::RunLoop run_loop;
@@ -347,7 +346,7 @@ TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedImmediate) {
 
   samples_.clear();
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(PressureSample{0.9});
+      ->SetLastSample(CpuSample{0.9});
 
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
@@ -363,7 +362,7 @@ TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedDelayed) {
   cpu_probe_manager_->Stop();
   samples_.clear();
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(PressureSample{0.9});
+      ->SetLastSample(CpuSample{0.9});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
@@ -381,7 +380,7 @@ TEST_F(CpuProbeManagerTest, StopImmediateEnsureStartedImmediate) {
 
   samples_.clear();
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(PressureSample{0.9});
+      ->SetLastSample(CpuSample{0.9});
 
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
@@ -397,7 +396,7 @@ TEST_F(CpuProbeManagerTest, StopImmediateEnsureStartedDelayed) {
 
   samples_.clear();
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(PressureSample{0.9});
+      ->SetLastSample(CpuSample{0.9});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
