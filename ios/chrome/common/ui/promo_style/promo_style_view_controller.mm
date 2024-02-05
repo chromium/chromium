@@ -49,6 +49,7 @@ constexpr CGFloat kSeparatorHeight = 1;
 constexpr CGFloat kLearnMoreButtonSide = 40;
 constexpr CGFloat kheaderImageSize = 48;
 constexpr CGFloat kFullheaderImageSize = 100;
+constexpr CGFloat kStackViewDefaultSpacing = 10;
 
 // Corner radius for the whole view.
 constexpr CGFloat kCornerRadius = 20;
@@ -125,7 +126,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // layout.
   BOOL _shouldScrollToBottom;
 
-  // Wheter the buttons have been updated from "More" to the action buttons.
+  // Whether the buttons have been updated from "More" to the action buttons.
   BOOL _buttonUpdated;
 }
 
@@ -219,6 +220,13 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   _actionStackView.axis = UILayoutConstraintAxisVertical;
   _actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [_actionStackView addArrangedSubview:self.primaryActionButton];
+
+  // Spacing is needed when all buttons have filled background.
+  if (self.useEquallyWeightedButtons) {
+    [_actionStackView setCustomSpacing:kStackViewDefaultSpacing
+                             afterView:_primaryActionButton];
+  }
+
   [view addSubview:_actionStackView];
 
   // Create a layout guide to constrain the width of the content, while still
@@ -719,35 +727,46 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   return _specificContentView;
 }
 
+- (HighlightButton*)createHighlightButtonWithText:(NSString*)buttonText
+                          accessibilityIdentifier:
+                              (NSString*)accessibilityIdentifier {
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  buttonConfiguration.titlePadding = kMoreArrowMargin;
+  buttonConfiguration.background.backgroundColor =
+      self.useEquallyWeightedButtons ? [UIColor colorNamed:kBlueHaloColor]
+                                     : [UIColor colorNamed:kBlueColor];
+  buttonConfiguration.baseForegroundColor =
+      self.useEquallyWeightedButtons
+          ? [UIColor colorNamed:kBlueColor]
+          : [UIColor colorNamed:kSolidButtonTextColor];
+  buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
+  buttonConfiguration.title = buttonText;
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+
+  HighlightButton* button = [[HighlightButton alloc] initWithFrame:CGRectZero];
+  button.configuration = buttonConfiguration;
+  [self setPrimaryActionButtonFont:button];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
+  button.accessibilityIdentifier = accessibilityIdentifier;
+  return button;
+}
+
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
-    _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-    buttonConfiguration.titlePadding = kMoreArrowMargin;
-    buttonConfiguration.background.backgroundColor =
-        [UIColor colorNamed:kBlueColor];
-    buttonConfiguration.baseForegroundColor =
-        [UIColor colorNamed:kSolidButtonTextColor];
-    buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
-
     // Use `primaryActionString` even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
     // content height, so there is no way to know if scrolling is needed.
     // This label will be updated at the viewDidAppear stage if necessary.
-    buttonConfiguration.title = self.primaryActionString;
-    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-    _primaryActionButton.configuration = buttonConfiguration;
-    [self setPrimaryActionButtonFont:_primaryActionButton];
+    _primaryActionButton =
+        [self createHighlightButtonWithText:self.primaryActionString
+                    accessibilityIdentifier:
+                        kPromoStylePrimaryActionAccessibilityIdentifier];
 
-    _primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _primaryActionButton.pointerInteractionEnabled = YES;
-    _primaryActionButton.pointerStyleProvider =
-        CreateOpaqueButtonPointerStyleProvider();
-    _primaryActionButton.accessibilityIdentifier =
-        kPromoStylePrimaryActionAccessibilityIdentifier;
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
@@ -1333,12 +1352,21 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 - (UIButton*)createSecondaryActionButton {
   DCHECK(self.secondaryActionString);
-  UIButton* button = [self createButtonWithText:self.secondaryActionString
-                        accessibilityIdentifier:
-                            kPromoStyleSecondaryActionAccessibilityIdentifier];
-  UILabel* titleLabel = button.titleLabel;
-  titleLabel.adjustsFontSizeToFitWidth = YES;
-  titleLabel.minimumScaleFactor = 0.7;
+  UIButton* button;
+  if (self.useEquallyWeightedButtons) {
+    // Create the secondaryActionButton matching the button type, colors, and
+    // text style of the primaryActionButton.
+    button = [self createHighlightButtonWithText:self.secondaryActionString
+                         accessibilityIdentifier:
+                             kPromoStyleSecondaryActionAccessibilityIdentifier];
+  } else {
+    button = [self createButtonWithText:self.secondaryActionString
+                accessibilityIdentifier:
+                    kPromoStyleSecondaryActionAccessibilityIdentifier];
+    UILabel* titleLabel = button.titleLabel;
+    titleLabel.adjustsFontSizeToFitWidth = YES;
+    titleLabel.minimumScaleFactor = 0.7;
+  }
 
   [button addTarget:self
                 action:@selector(didTapSecondaryActionButton)

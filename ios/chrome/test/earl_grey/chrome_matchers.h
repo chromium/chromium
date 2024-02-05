@@ -39,6 +39,14 @@ id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id);
 // `label` and accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithAccessibilityLabel(NSString* label);
 
+// Returns a matcher for element with with foreground color corresponding to
+// `colorName` and accessibility trait UIAccessibilityTraitButton.
+id<GREYMatcher> ButtonWithForegroundColor(NSString* colorName);
+
+// Returns a matcher for element with with background color corresponding to
+// `colorName` and accessibility trait UIAccessibilityTraitButton.
+id<GREYMatcher> ButtonWithBackgroundColor(NSString* colorName);
+
 // Returns a matcher for context menu items with accessibility label
 // corresponding to `label`.
 id<GREYMatcher> ContextMenuItemWithAccessibilityLabel(NSString* label);

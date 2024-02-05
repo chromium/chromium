@@ -176,6 +176,56 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       buttonWithAccessibilityLabel:l10n_util::GetNSStringWithFixup(messageID)];
 }
 
++ (id<GREYMatcher>)buttonWithForegroundColor:(NSString*)colorName {
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    if (![element isKindOfClass:UIButton.class]) {
+      return NO;
+    }
+    UIButton* button = base::apple::ObjCCastStrict<UIButton>(element);
+    return CGColorEqualToColor(
+        [UIColor colorNamed:colorName].CGColor,
+        button.configuration.baseForegroundColor.CGColor);
+  };
+
+  NSString* descriptionString =
+      [NSString stringWithFormat:@"Foreground color %@", colorName];
+
+  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
+    [description appendText:descriptionString];
+  };
+
+  id<GREYMatcher> foregroundColorMatcher =
+      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                           descriptionBlock:describe];
+  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    foregroundColorMatcher, nil);
+}
+
++ (id<GREYMatcher>)buttonWithBackgroundColor:(NSString*)colorName {
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    if (![element isKindOfClass:UIButton.class]) {
+      return NO;
+    }
+    UIButton* button = base::apple::ObjCCastStrict<UIButton>(element);
+    return CGColorEqualToColor(
+        [UIColor colorNamed:colorName].CGColor,
+        button.configuration.background.backgroundColor.CGColor);
+  };
+
+  NSString* descriptionString =
+      [NSString stringWithFormat:@"Background color %@", colorName];
+
+  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
+    [description appendText:descriptionString];
+  };
+
+  id<GREYMatcher> backgroundColorMatcher =
+      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                           descriptionBlock:describe];
+  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    backgroundColorMatcher, nil);
+}
+
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabel:(NSString*)label {
   return grey_allOf(grey_accessibilityLabel(label),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);

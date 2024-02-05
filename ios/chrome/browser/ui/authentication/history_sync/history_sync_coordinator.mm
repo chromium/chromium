@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -165,6 +167,12 @@
 
   _viewController = [[HistorySyncViewController alloc] init];
   _viewController.delegate = self;
+
+  // TODO(b/318349283): This property will also be based on the capability
+  // CanShowHistorySyncOptInsWithoutMinorModeRestrictions.
+  _viewController.useEquallyWeightedButtons = base::FeatureList::IsEnabled(
+      switches::kMinorModeRestrictionsForHistorySyncOptIn);
+
   ChromeAccountManagerService* chromeAccountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
