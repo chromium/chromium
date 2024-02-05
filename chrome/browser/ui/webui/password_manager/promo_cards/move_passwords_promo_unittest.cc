@@ -47,8 +47,10 @@ class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    ChromeRenderViewHostTestHarness::TearDown();
+    fake_sync_service_ = nullptr;
     delegate_ = nullptr;
+    profile_store_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void EnableButter() {
