@@ -45,16 +45,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Input.UnrecognizedToolType.Android" units="tool type"
+<histogram name="Input.ToolType.Android" units="tool type"
     expires_after="2024-07-21">
   <owner>alexmitra@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
-    Records unrecognized tool type values which are sent to Chrome or WebView
-    from Android. These tool types are either TOOL_TYPE_PALM which shouldn't be
-    sent by Android or some undocumented integer value being sent by a 3P
-    vendor.
+    Records tool type values which are sent to Chrome or WebView from Android
+    when a touch event happens. This includes both valid and invalid tool types
+    and can be used both to see which invalid tool types are being sent and the
+    proportion of touch events that are sent with invalid tool types.
   </summary>
 </histogram>
 
