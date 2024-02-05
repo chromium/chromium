@@ -1317,17 +1317,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2023-12-01">
-  <owner>tranbaoduy@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Same as InputMethod.MultilingualExperiment.Autocorrect.Actions but only
-    recorded for diacritical autocorrects.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.NextWordPrediction" enum="BooleanEnabled"
     expires_after="2021-12-19">
   <owner>myy@chromium.org</owner>

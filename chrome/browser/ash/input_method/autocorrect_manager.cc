@@ -437,11 +437,6 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
     return;
   }
 
-  in_diacritical_autocorrect_session_ =
-      IsCurrentInputMethodExperimentalMultilingual() &&
-      diacritics_insensitive_string_comparator_.Equal(original_text,
-                                                      current_text);
-
   pending_autocorrect_ = AutocorrectManager::PendingAutocorrectState(
       /*original_text=*/original_text, /*suggested_text=*/current_text,
       /*start_time=*/base::TimeTicks::Now(),
@@ -540,12 +535,6 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
   if (IsCurrentInputMethodExperimentalMultilingual()) {
     base::UmaHistogramEnumeration(
         "InputMethod.MultilingualExperiment.Autocorrect.Actions", action);
-
-    if (in_diacritical_autocorrect_session_) {
-      base::UmaHistogramEnumeration(
-          "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
-          action);
-    }
   }
 }
 

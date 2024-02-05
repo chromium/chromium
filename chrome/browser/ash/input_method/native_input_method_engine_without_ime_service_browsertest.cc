@@ -597,9 +597,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
   histogram_tester.ExpectBucketCount(
       "InputMethod.MultilingualExperiment.Autocorrect.Actions",
       AutocorrectActions::kUnderlined, 0);
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
-      AutocorrectActions::kUnderlined, 0);
 
   engine_->OnAutocorrect(typed_text, corrected_text, 0);
 
@@ -608,106 +605,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
   // either accepted or rejected by the users in different ways).
   histogram_tester.ExpectBucketCount(
       "InputMethod.MultilingualExperiment.Autocorrect.Actions",
-      AutocorrectActions::kUnderlined, 1);
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
-      AutocorrectActions::kUnderlined, 0);
-
-  // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
-  // This incurs UI popup that allows user to reject the autocorrect trigger.
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecJs(
-      tab, "document.getElementById('text_id').setSelectionRange(2,2)"));
-  helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(2, 2));
-
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.Autocorrect.Actions",
-      AutocorrectActions::kReverted, 0);
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
-      AutocorrectActions::kReverted, 0);
-
-  // This simulates user rejecting the autocorrect trigger by navigating and
-  // and selecting the "undo" button. This isn't the only way autocorrect
-  // trigger is rejected though. Other kinds of rejects aren't recorded yet.
-  DispatchKeyPress(ui::VKEY_UP, false);
-  DispatchKeyPress(ui::VKEY_RETURN, false);
-  helper.WaitForSurroundingTextChanged(typed_text);
-
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.Autocorrect.Actions",
-      AutocorrectActions::kReverted, 1);
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
-      AutocorrectActions::kReverted, 0);
-
-  SetFocus(nullptr);
-}
-#endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
-                       SendsDiacriticalMetricsForExperimentalMultilingual) {
-  base::HistogramTester histogram_tester;
-
-  // TODO(crbug/1162211): Use object-oriented encapsulation for input method IDs
-  // instead of unstructured type-unsafe error-prone string concats.
-  const std::string input_method_id_prefix =
-      "_comp_ime_jkghodnilhceideoidjikpgommlajknk";
-  const std::string input_method_id = "experimental_layout-us_lang-fr-FR";
-  const std::string full_input_method_id =
-      input_method_id_prefix + input_method_id;
-
-  // More prod-like way to change input method; required because "multilingual
-  // experiment" metrics rely on real CrOS IMF "input method management".
-  scoped_refptr<InputMethodManager::State> active_ime_state =
-      InputMethodManager::Get()->GetActiveIMEState();
-  active_ime_state->EnableInputMethod(full_input_method_id);
-  active_ime_state->ChangeInputMethod(full_input_method_id,
-                                      false /* show_message */);
-
-  // Need to weirdly enable the same input method onto the bespoke instance
-  // of NativeInputMethodEngine that's the test subject, and attach it to the
-  // CrOS IMF environment, bypassing CrOS IMF "input method management" in the
-  // same way as all other tests here to fit in with the overall setup here.
-  // The NativeInputMethodEngine created and managed by CrOS IMF (thus also
-  // enabled via above ChangeInputMethod step) is effectively ignored.
-  // TODO(crbug/1197005): Migrate to unit tests to avoid all such weirdness.
-  engine_->Enable(input_method_id);
-  IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());
-
-  TextInputTestHelper helper(GetBrowserInputMethod());
-  SetUpTextInput(helper);
-  const std::u16string corrected_text = u"français";
-  const std::u16string typed_text = u"francais";
-  helper.GetTextInputClient()->InsertText(
-      corrected_text,
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(corrected_text);
-  EXPECT_EQ(IMEBridge::Get()
-                ->GetInputContextHandler()
-                ->GetSurroundingTextInfo()
-                .surrounding_text,
-            corrected_text);
-
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.Autocorrect.Actions",
-      AutocorrectActions::kUnderlined, 0);
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
-      AutocorrectActions::kUnderlined, 0);
-
-  engine_->OnAutocorrect(typed_text, corrected_text, 0);
-
-  // This indicates an autocorrect trigger, although the metric sounds
-  // UI-centric. This should captures all autocorrect triggers (that will be
-  // either accepted or rejected by the users in different ways).
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.Autocorrect.Actions",
-      AutocorrectActions::kUnderlined, 1);
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
       AutocorrectActions::kUnderlined, 1);
 
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
@@ -721,9 +618,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
   histogram_tester.ExpectBucketCount(
       "InputMethod.MultilingualExperiment.Autocorrect.Actions",
       AutocorrectActions::kReverted, 0);
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
-      AutocorrectActions::kReverted, 0);
 
   // This simulates user rejecting the autocorrect trigger by navigating and
   // and selecting the "undo" button. This isn't the only way autocorrect
@@ -734,9 +628,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
 
   histogram_tester.ExpectBucketCount(
       "InputMethod.MultilingualExperiment.Autocorrect.Actions",
-      AutocorrectActions::kReverted, 1);
-  histogram_tester.ExpectBucketCount(
-      "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
       AutocorrectActions::kReverted, 1);
 
   SetFocus(nullptr);
