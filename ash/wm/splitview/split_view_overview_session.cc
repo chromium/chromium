@@ -98,17 +98,16 @@ void SplitViewOverviewSession::OnKeyEvent() {
                    OverviewEnterExitType::kImmediateExit);
 }
 
-void SplitViewOverviewSession::OnMouseEvent(const ui::MouseEvent& event) {
-  aura::Window* target = static_cast<aura::Window*>(event.target());
-  if (event.type() != ui::ET_MOUSE_PRESSED ||
-      window_util::GetNonClientComponent(target, event.location()) !=
-          HTCLIENT) {
-    // Only MOUSE_PRESSED events in the client hit area will end overview.
-    return;
-  }
+void SplitViewOverviewSession::HandleClickOrTap(const ui::LocatedEvent& event) {
   gfx::Point location_in_screen = event.location();
+  aura::Window* target = static_cast<aura::Window*>(event.target());
   wm::ConvertPointToScreen(target, &location_in_screen);
-  if (window_->GetBoundsInScreen().Contains(location_in_screen)) {
+  const int client_component =
+      window_util::GetNonClientComponent(target, event.location());
+  if ((event.type() == ui::ET_MOUSE_PRESSED ||
+       event.type() == ui::ET_TOUCH_RELEASED) &&
+      window_->GetBoundsInScreen().Contains(location_in_screen) &&
+      (client_component == HTCLIENT || client_component == HTCAPTION)) {
     MaybeEndOverview(SplitViewOverviewSessionExitPoint::kSkip,
                      OverviewEnterExitType::kNormal);
   }

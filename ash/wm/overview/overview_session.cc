@@ -1345,15 +1345,11 @@ void OverviewSession::OnWindowAdded(aura::Window* new_window) {
 }
 
 void OverviewSession::OnMouseEvent(ui::MouseEvent* event) {
-  for (auto& grid : grid_list_) {
-    if (auto* split_view_overview_session =
-            RootWindowController::ForWindow(grid->root_window())
-                ->split_view_overview_session();
-        split_view_overview_session) {
-      split_view_overview_session->OnMouseEvent(*event);
-      return;
-    }
-  }
+  MaybeDelegateEventToSplitViewOverviewSession(event);
+}
+
+void OverviewSession::OnTouchEvent(ui::TouchEvent* event) {
+  MaybeDelegateEventToSplitViewOverviewSession(event);
 }
 
 void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
@@ -1692,6 +1688,19 @@ size_t OverviewSession::GetNumWindows() const {
     size += grid->GetNumWindows();
   }
   return size;
+}
+
+void OverviewSession::MaybeDelegateEventToSplitViewOverviewSession(
+    ui::LocatedEvent* event) {
+  for (auto& grid : grid_list_) {
+    if (auto* split_view_overview_session =
+            RootWindowController::ForWindow(grid->root_window())
+                ->split_view_overview_session();
+        split_view_overview_session) {
+      split_view_overview_session->HandleClickOrTap(*event);
+      return;
+    }
+  }
 }
 
 }  // namespace ash

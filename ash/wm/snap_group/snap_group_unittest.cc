@@ -68,6 +68,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -465,9 +466,11 @@ TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
-TEST_F(FasterSplitScreenTest, SkipPairingInOverviewOnMouseEvent) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+// Tests that when clicking or tapping on the empty area during faster split
+// screen setup session, overview will end.
+TEST_F(FasterSplitScreenTest, SkipPairingInOverviewWhenActivatingTheEmptyArea) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
 
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
   VerifySplitViewOverviewSession(w1.get());
@@ -484,25 +487,68 @@ TEST_F(FasterSplitScreenTest, SkipPairingInOverviewOnMouseEvent) {
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(outside_point);
   event_generator->ClickLeftButton();
-  OverviewController* overview_controller = OverviewController::Get();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(IsInOverviewSession());
   EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
             chromeos::WindowStateType::kPrimarySnapped);
 
-  // Snap `w1`. Test that clicking on `w1` again exits overview.
+  // Verify that tapping on an empty area in overview will exit the paring.
+  MaximizeToClearTheSession(w1.get());
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
   VerifySplitViewOverviewSession(w1.get());
-
-  // Moving the mouse around won't end overview.
-  event_generator->MoveMouseTo(w1->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-
-  // Clicking on `w1` again exits overview.
-  event_generator->ClickLeftButton();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
+  event_generator->MoveTouch(outside_point);
+  event_generator->PressTouch();
+  event_generator->ReleaseTouch();
+  EXPECT_FALSE(IsInOverviewSession());
+  EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
 }
 
-TEST_F(FasterSplitScreenTest, SkipPairingInOverviewOnKeyEvent) {
+// Tests that when clicking or tapping on the snapped window on the `HTCLIENT`
+// or `HTCAPTION` area during faster split screen setup session, overview will
+// end.
+TEST_F(FasterSplitScreenTest, SkipPairingWhenActivatingTheSnappedWindow) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  aura::test::TestWindowDelegate delegate;
+
+  auto* event_generator = GetEventGenerator();
+
+  // Snap `w1`. Test that moving the mouse around won't end overview
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(IsInOverviewSession());
+  MaximizeToClearTheSession(w1.get());
+
+  // Build test cases to verify that overview will end when clicking or tapping
+  // on the window caption or client area.
+  struct {
+    int window_component;
+    bool is_click_event;
+  } kTestCases[]{
+      {/*window_component*/ HTCLIENT, /*is_click_event=*/true},
+      {/*window_component*/ HTCAPTION, /*is_click_event=*/true},
+      {/*window_component*/ HTCLIENT, /*is_click_event=*/false},
+      {/*window_component*/ HTCAPTION, /*is_click_event=*/false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+    VerifySplitViewOverviewSession(w1.get());
+    delegate.set_window_component(test_case.window_component);
+    if (test_case.is_click_event) {
+      event_generator->ClickLeftButton();
+    } else {
+      event_generator->PressTouch();
+      event_generator->ReleaseTouch();
+    }
+    EXPECT_FALSE(IsInOverviewSession());
+    MaximizeToClearTheSession(w1.get());
+  }
+}
+
+TEST_F(FasterSplitScreenTest, SkipPairingOnKeyEvent) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
 
