@@ -40,9 +40,7 @@ build_webui_tests("build") {
     "lacros_extension_controlled_indicator_test.ts",
     "lock_screen_subpage_test.ts",
     "onc_mojo_test.ts",
-    "os_about_page_tests.js",
     "os_page_availability_test.ts",
-    "test_about_page_browser_proxy.ts",
     "test_api.ts",
     "test_extension_control_browser_proxy.ts",
     "test_lacros_extension_control_browser_proxy.ts",
@@ -203,6 +201,8 @@ build_webui_tests("build") {
     "os_about_page/consumer_auto_update_toggle_dialog_test.ts",
     "os_about_page/detailed_build_info_subpage_test.ts",
     "os_about_page/edit_hostname_dialog_test.ts",
+    "os_about_page/os_about_page_test.ts",
+    "os_about_page/test_about_page_browser_proxy.ts",
     "os_about_page/test_device_name_browser_proxy.ts",
 
     "os_apps_page/app_management_page/app_detail_view_test.ts",

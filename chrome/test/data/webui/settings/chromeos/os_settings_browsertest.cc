@@ -24,12 +24,21 @@ class OSSettingsMochaTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUIOSSettingsHost);
   }
 
-  void RunSettingsTest(const std::string& current_path) {
+  // Runs the specified test.
+  // - test_path: The path to the test file within the CrOS Settings test root
+  //              directory.
+  // - trigger: A JS string used to trigger the tests, defaults to
+  //            "mocha.run()".
+  void RunSettingsTest(
+      const std::string& test_path,
+      const std::string& trigger = std::string("mocha.run()")) {
     // All OS Settings test files are located in the directory
     // settings/chromeos/.
-    const std::string path_with_parent_directory =
-        base::StrCat({std::string("settings/chromeos/"), current_path});
-    RunTest(path_with_parent_directory, "mocha.run()");
+    const std::string path_with_parent_directory = base::StrCat({
+        std::string("settings/chromeos/"),
+        test_path,
+    });
+    RunTest(path_with_parent_directory, trigger);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -59,20 +68,6 @@ class OSSettingsMochaTestRevampDisabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-using OsAboutPageTest = OSSettingsMochaTest;
-
-IN_PROC_BROWSER_TEST_F(OsAboutPageTest, AllBuilds) {
-  RunTest("settings/chromeos/os_about_page_tests.js",
-          "runMochaSuite('<os-about-page> AllBuilds')");
-}
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(OsAboutPageTest, OfficialBuild) {
-  RunTest("settings/chromeos/os_about_page_tests.js",
-          "runMochaSuite('<os-about-page> OfficialBuild')");
-}
-#endif
 
 class OSSettingsMochaTestApnRevampEnabled : public OSSettingsMochaTest {
  protected:
@@ -1010,6 +1005,32 @@ IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled,
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageTtsVoiceSubpage) {
   RunSettingsTest("os_a11y_page/tts_voice_subpage_test.js");
 }
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsAboutPage_AllBuilds) {
+  RunSettingsTest("os_about_page/os_about_page_test.js",
+                  "runMochaSuite('<os-about-page> AllBuilds')");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsAboutPage_AllBuilds) {
+  RunSettingsTest("os_about_page/os_about_page_test.js",
+                  "runMochaSuite('<os-about-page> AllBuilds')");
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsAboutPage_OfficialBuild) {
+  RunSettingsTest("os_about_page/os_about_page_test.js",
+                  "runMochaSuite('<os-about-page> OfficialBuild')");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsAboutPage_OfficialBuild) {
+  RunSettingsTest("os_about_page/os_about_page_test.js",
+                  "runMochaSuite('<os-about-page> OfficialBuild')");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsAboutPageChannelSwitcherDialog) {
   RunSettingsTest("os_about_page/channel_switcher_dialog_test.js");
