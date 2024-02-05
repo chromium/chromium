@@ -50,6 +50,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Thumbnail" summary="Thumbnail"/>
   <variant name="TopSites" summary="TopSites"/>
   <variant name="TrustTokens" summary="TrustTokens"/>
+  <variant name="UKMMetrics" summary="UKMMetrics"/>
   <variant name="UserNotes" summary="UserNotes"/>
   <variant name="Web" summary="Web"/>
 </variants>
