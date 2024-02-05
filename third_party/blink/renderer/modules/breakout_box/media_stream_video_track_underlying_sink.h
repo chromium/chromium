@@ -25,6 +25,10 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
   explicit MediaStreamVideoTrackUnderlyingSink(
       scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker);
 
+  MediaStreamVideoTrackUnderlyingSink(
+      scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker,
+      gpu::GpuMemoryBufferManager* gmb_manager);
+
   ~MediaStreamVideoTrackUnderlyingSink() override;
 
   // UnderlyingSinkBase overrides.
@@ -43,6 +47,8 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
 
   std::unique_ptr<WritableStreamTransferringOptimizer>
   GetTransferringOptimizer();
+
+  gpu::GpuMemoryBufferManager* gmb_manager() { return gmb_manager_; }
 
  private:
   void Disconnect();
@@ -73,6 +79,7 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
       GUARDED_BY_CONTEXT(sequence_checker_);
   int convert_to_nv12_gmb_failure_count_ GUARDED_BY_CONTEXT(sequence_checker_) =
       0;
+  gpu::GpuMemoryBufferManager* const gmb_manager_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

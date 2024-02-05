@@ -22,6 +22,8 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -172,6 +174,16 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {
   EXPECT_TRUE(dummy_exception_state.HadException());
   EXPECT_EQ(dummy_exception_state.Code(),
             static_cast<ExceptionCode>(DOMExceptionCode::kInvalidStateError));
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, GetGmbManager) {
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* underlying_sink = CreateUnderlyingSink(script_state);
+  EXPECT_EQ(!!underlying_sink->gmb_manager(),
+            WebGraphicsContext3DVideoFramePool::
+                IsGpuMemoryBufferReadbackFromTextureEnabled());
 }
 
 }  // namespace blink
