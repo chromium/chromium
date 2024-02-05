@@ -3814,9 +3814,9 @@ enum WebFeature {
   kServiceWorkerEventHandlerModifiedAfterInitialization = 4469,
   kAuthorizationCrossOrigin = 4470,
   kCSSColorMixFunction = 4471,
-  kOBSOLETE_CSSColorColorSpecifiedSpace = 4472,
-  kOBSOLETE_CSSColorLabOklab = 4473,
-  kOBSOLETE_CSSColorLchOklch = 4474,
+  kCSSColorColorSpecifiedSpace = 4472,
+  kCSSColorLabOklab = 4473,
+  kCSSColorLchOklch = 4474,
   kOBSOLETE_CreateNSResolverWithNonElements2 = 4475,
   kGetDisplayMediaWithPreferCurrentTabTrue = 4476,
   kFencedFrameConfigAttribute = 4477,
@@ -4196,10 +4196,6 @@ enum WebFeature {
   kSpeculationRulesBrowserPrerenderRule = 4832,
   kFirstPartySharedWorkerSameSiteCookiesNone = 4833,
   kCSSCustomStateDeprecatedSyntax = 4834,
-  kCSSColor_SpaceRGB = 4835,
-  kCSSColor_SpaceRGB_outOfRec2020= 4836,
-  kCSSColor_SpaceOkLxx = 4837,
-  kCSSColor_SpaceOkLxx_OutOfRange = 4838,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
