@@ -886,6 +886,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MediaFeatures.LIBAOM_USE_CHROME_THREADS,
                 "Attaches libaom threads to the chromium thread system."),
+        Flag.baseFeature(
+                BlinkFeatures.BACK_FORWARD_CACHE_SEND_NOT_RESTORED_REASONS,
+                "Expose NotRestoredReasons via PerformanceNavigationTiming API."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
