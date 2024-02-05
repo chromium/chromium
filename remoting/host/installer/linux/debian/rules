@@ -11,3 +11,8 @@
 # virtual desktops, possibly losing unsaved work.
 override_dh_installinit:
 	dh_installinit -r
+
+# Use the older "xz" compression format so the package installs on Debian 11
+# or similar systems - see b/322991199.
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
