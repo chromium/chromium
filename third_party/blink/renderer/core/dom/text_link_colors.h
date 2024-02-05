@@ -37,8 +37,6 @@
 
 namespace blink {
 
-class CSSValue;
-
 class CORE_EXPORT TextLinkColors {
   DISALLOW_NEW();
 
@@ -63,10 +61,6 @@ class CORE_EXPORT TextLinkColors {
   void ResetLinkColor() { has_custom_link_color_ = false; }
   void ResetVisitedLinkColor() { has_custom_visited_link_color_ = false; }
   void ResetActiveLinkColor() { has_custom_active_link_color_ = false; }
-  Color ColorFromCSSValue(const CSSValue&,
-                          Color current_color,
-                          mojom::blink::ColorScheme color_scheme,
-                          bool for_visited_link = false) const;
 
  private:
   Color text_color_;
