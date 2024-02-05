@@ -196,7 +196,7 @@ void ScalableIphBrowserTestBase::SetUpMocks() {
 void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
   base::FieldTrialParams params;
   AppendVersionNumber(params);
-  AppendFakeUiParamsNotification(params);
+  AppendUiParams(params);
   base::test::FeatureRefAndParams test_config(kScalableIphTest, params);
 
   std::vector<base::test::FeatureRefAndParams> enabled_features({test_config});
@@ -224,6 +224,12 @@ void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
                                                      disabled_features);
 }
 
+void ScalableIphBrowserTestBase::AppendUiParams(
+    base::FieldTrialParams& params) {
+  AppendFakeUiParamsNotification(params, /*has_body_text=*/true,
+                                 kScalableIphTest);
+}
+
 void ScalableIphBrowserTestBase::AppendVersionNumber(
     base::FieldTrialParams& params,
     const base::Feature& feature,
@@ -248,6 +254,7 @@ void ScalableIphBrowserTestBase::AppendVersionNumber(
 
 void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
     base::FieldTrialParams& params,
+    bool has_body_text,
     const base::Feature& feature) {
   params[FullyQualified(feature, scalable_iph::kCustomUiTypeParamName)] =
       scalable_iph::kCustomUiTypeValueNotification;
@@ -257,9 +264,13 @@ void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
   params[FullyQualified(feature,
                         scalable_iph::kCustomNotificationTitleParamName)] =
       kTestNotificationTitle;
-  params[FullyQualified(feature,
-                        scalable_iph::kCustomNotificationBodyTextParamName)] =
-      kTestNotificationBodyText;
+
+  if (has_body_text) {
+    params[FullyQualified(feature,
+                          scalable_iph::kCustomNotificationBodyTextParamName)] =
+        kTestNotificationBodyText;
+  }
+
   params[FullyQualified(feature,
                         scalable_iph::kCustomNotificationButtonTextParamName)] =
       kTestNotificationButtonText;
@@ -269,11 +280,6 @@ void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
   params[FullyQualified(feature,
                         scalable_iph::kCustomButtonActionEventParamName)] =
       kTestActionEventName;
-}
-
-void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
-    base::FieldTrialParams& params) {
-  AppendFakeUiParamsNotification(params, kScalableIphTest);
 }
 
 void ScalableIphBrowserTestBase::AppendFakeUiParamsBubble(

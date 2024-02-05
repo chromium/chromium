@@ -260,6 +260,8 @@ inline constexpr char kCustomNotificationImageTypeParamName[] =
     "x_CustomNotificationImageType";
 inline constexpr char kCustomNotificationImageTypeValueWallpaper[] =
     "Wallpaper";
+inline constexpr char kCustomNotificationImageTypeValueMinecraft[] =
+    "Minecraft";
 inline constexpr char kCustomNotificationIconParamName[] =
     "x_CustomNotificationIcon";
 inline constexpr char kCustomNotificationIconValueDefault[] = "Default";

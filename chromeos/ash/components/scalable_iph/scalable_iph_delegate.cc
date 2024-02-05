@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 
 namespace scalable_iph {
 
@@ -104,7 +105,9 @@ std::ostream& operator<<(
     case ScalableIphDelegate::NotificationImageType::kNoImage:
       return out << "NoImage";
     case ScalableIphDelegate::NotificationImageType::kWallpaper:
-      return out << "Wallpaper";
+      return out << kCustomNotificationImageTypeValueWallpaper;
+    case ScalableIphDelegate::NotificationImageType::kMinecraft:
+      return out << kCustomNotificationImageTypeValueMinecraft;
   }
 }
 
