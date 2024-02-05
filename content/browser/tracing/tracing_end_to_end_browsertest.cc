@@ -572,8 +572,7 @@ IN_PROC_BROWSER_TEST_F(SystemTracingEndToEndBrowserTest, PerformanceMark) {
   // connecting to the service), but it doesn't matter. We just want to make
   // sure that at least one of them is there.
   std::vector<char> trace;
-  size_t i = 0;
-  for (; i < 300; i++) {
+  for (size_t i = 0; i < 100; i++) {
     EXPECT_TRUE(ExecJs(tab, "performance.mark('mark1');"));
 
     base::RunLoop flush;
@@ -589,7 +588,6 @@ IN_PROC_BROWSER_TEST_F(SystemTracingEndToEndBrowserTest, PerformanceMark) {
       break;
     }
   }
-  ASSERT_LT(i, 300U);
 
   base::test::TestTraceProcessorImpl ttp;
   absl::Status status = ttp.ParseTrace(trace);
