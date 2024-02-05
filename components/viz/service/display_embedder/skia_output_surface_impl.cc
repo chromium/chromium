@@ -489,8 +489,12 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     // purpose of creating Graphite TextureInfo i.e. it will have CopySrc and
     // CopyDst usage. So don't treat it like a root surface which generally
     // won't have or support those usages.
-    skgpu::graphite::TextureInfo texture_info =
-        gpu::GraphiteBackendTextureInfo(gr_context_type_, format_);
+    skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
+        gr_context_type_, format_, /*readonly=*/false, /*plane_index=*/0,
+        /*is_yuv_plane=*/false,
+        /*mipmapped=*/false, /*scanout_dcomp_surface=*/false,
+        /*supports_multiplanar_rendering=*/false,
+        /*supports_multiplanar_copy=*/false);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info);
   } else {
@@ -879,9 +883,10 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,
                           static_cast<SkAlphaType>(alpha_type), color_space);
     skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
-        gr_context_type_, format, /*plane_index=*/0,
+        gr_context_type_, format, /*readonly=*/false, /*plane_index=*/0,
         /*is_yuv_plane=*/false, mipmap == skgpu::Mipmapped::kYes,
-        scanout_dcomp_surface);
+        scanout_dcomp_surface, /*supports_multiplanar_rendering=*/false,
+        /*supports_multiplanar_copy=*/false);
     if (!texture_info.isValid()) {
       DLOG(ERROR) << "BeginPaintRenderPass: invalid Graphite TextureInfo";
       return nullptr;

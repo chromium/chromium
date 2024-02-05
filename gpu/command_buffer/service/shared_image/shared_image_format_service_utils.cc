@@ -575,6 +575,7 @@ wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index) {
 skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
+    bool readonly,
     int plane_index,
     bool is_yuv_plane,
     bool mipmapped,
@@ -589,9 +590,10 @@ skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
   } else {
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    return DawnBackendTextureInfo(
-        format, is_yuv_plane, plane_index, mipmapped, scanout_dcomp_surface,
-        supports_multiplanar_rendering, supports_multiplanar_copy);
+    return DawnBackendTextureInfo(format, readonly, is_yuv_plane, plane_index,
+                                  mipmapped, scanout_dcomp_surface,
+                                  supports_multiplanar_rendering,
+                                  supports_multiplanar_copy);
 #endif
   }
   NOTREACHED_NORETURN();
@@ -601,8 +603,7 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index,
-    bool mipmapped,
-    bool scanout_dcomp_surface) {
+    bool mipmapped) {
   if (gr_context_type == GrContextType::kGraphiteMetal) {
 #if BUILDFLAG(SKIA_USE_METAL)
     return GraphiteMetalTextureInfo(format, plane_index,
@@ -625,16 +626,6 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     // For promise textures, just need TextureBinding usage for sampling
     // except for dcomp scanout which needs rendering and copy usages as well.
     dawn_texture_info.fUsage = wgpu::TextureUsage::TextureBinding;
-    if (scanout_dcomp_surface) {
-      // Textures from DComp surfaces cannot be used as TextureBinding, however
-      // DCompSurfaceImageBacking creates a textureable intermediate texture.
-      // TODO(crbug.com/1468844): Remove TextureBinding usage when the
-      // intermediate workaround is remove.
-      dawn_texture_info.fUsage = wgpu::TextureUsage::TextureBinding |
-                                 wgpu::TextureUsage::RenderAttachment |
-                                 wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::CopyDst;
-    }
     dawn_texture_info.fMipmapped =
         mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
     return dawn_texture_info;
@@ -646,6 +637,7 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
 #if BUILDFLAG(SKIA_USE_DAWN)
 skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
     viz::SharedImageFormat format,
+    bool readonly,
     bool is_yuv_plane,
     int plane_index,
     bool mipmapped,
@@ -664,6 +656,11 @@ skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
   dawn_texture_info.fUsage = SupportedDawnTextureUsage(
       is_yuv_plane, scanout_dcomp_surface, supports_multiplanar_rendering,
       supports_multiplanar_copy);
+  if (readonly) {
+    constexpr wgpu::TextureUsage kReadOnlyTextureUsage =
+        wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+    dawn_texture_info.fUsage &= kReadOnlyTextureUsage;
+  }
   dawn_texture_info.fMipmapped =
       mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
   return dawn_texture_info;
