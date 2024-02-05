@@ -350,6 +350,33 @@ bool IsEligibleForDelay(const Resource& resource,
       break;
   }
 
+  static const bool opt_out_low =
+      features::kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam.Get();
+  static const bool opt_out_auto =
+      features::kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam
+          .Get();
+  static const bool opt_out_high =
+      features::kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam
+          .Get();
+
+  switch (resource.GetResourceRequest().GetFetchPriorityHint()) {
+    case mojom::blink::FetchPriorityHint::kLow:
+      if (opt_out_low) {
+        return false;
+      }
+      break;
+    case mojom::blink::FetchPriorityHint::kAuto:
+      if (opt_out_auto) {
+        return false;
+      }
+      break;
+    case mojom::blink::FetchPriorityHint::kHigh:
+      if (opt_out_high) {
+        return false;
+      }
+      break;
+  }
+
   static const features::DelayAsyncScriptTarget delay_async_script_target =
       features::kDelayAsyncScriptTargetParam.Get();
   switch (delay_async_script_target) {

@@ -701,9 +701,22 @@ const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>::Option
 };
 const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
     kDelayAsyncScriptExecutionTargetParam{
-        &kDelayAsyncScriptExecution, "delay_async_script_execution_target",
+        &kDelayAsyncScriptExecution, "delay_async_exec_target",
         AsyncScriptExperimentalSchedulingTarget::kBoth,
         &async_script_experimental_scheduling_targets};
+
+const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam{
+        &kDelayAsyncScriptExecution,
+        "delay_async_exec_opt_out_low_fetch_priority_hint", false};
+const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam{
+        &kDelayAsyncScriptExecution,
+        "delay_async_exec_opt_out_auto_fetch_priority_hint", false};
+const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam{
+        &kDelayAsyncScriptExecution,
+        "delay_async_exec_opt_out_high_fetch_priority_hint", false};
 
 BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
              "DelayLowPriorityRequestsAccordingToNetworkState",
@@ -1403,10 +1416,28 @@ const base::FeatureParam<AsyncScriptPrioritisationType>
 // specified target.
 const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
     kLowPriorityAsyncScriptExecutionTargetParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_priority_async_script_execution_target",
+        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_target",
         AsyncScriptExperimentalSchedulingTarget::kBoth,
         &async_script_experimental_scheduling_targets};
+
+// kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
+// low.
+const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam{
+        &kLowPriorityAsyncScriptExecution,
+        "low_pri_async_exec__opt_out_low_fetch_priority_hint", false};
+// kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
+// auto.
+const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam{
+        &kLowPriorityAsyncScriptExecution,
+        "low_pri_async_exec_opt_out_auto_fetch_priority_hint", false};
+// kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
+// high.
+const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam{
+        &kLowPriorityAsyncScriptExecution,
+        "low_pri_async_exec_opt_out_high_fetch_priority_hint", false};
 
 BASE_FEATURE(kLowPriorityScriptLoading,
              "LowPriorityScriptLoading",

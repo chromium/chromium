@@ -349,6 +349,12 @@ enum class AsyncScriptExperimentalSchedulingTarget {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     AsyncScriptExperimentalSchedulingTarget>
     kDelayAsyncScriptExecutionTargetParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam;
 
 // If enabled, the ResourceLoadScheculer will take the current network state
 // into consideration, when it plans to delay a low-priority throttleable
@@ -833,6 +839,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     AsyncScriptExperimentalSchedulingTarget>
     kLowPriorityAsyncScriptExecutionTargetParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam;
 
 // If enabled, async scripts will be loaded with a lower fetch priority.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityScriptLoading);

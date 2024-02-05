@@ -334,6 +334,36 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
       break;
   }
 
+  static const bool opt_out_low =
+      features::kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam
+          .Get();
+  static const bool opt_out_auto =
+      features::kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam
+          .Get();
+  static const bool opt_out_high =
+      features::kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam
+          .Get();
+
+  if (GetResource()) {
+    switch (GetResource()->GetResourceRequest().GetFetchPriorityHint()) {
+      case mojom::blink::FetchPriorityHint::kLow:
+        if (opt_out_low) {
+          return false;
+        }
+        break;
+      case mojom::blink::FetchPriorityHint::kAuto:
+        if (opt_out_auto) {
+          return false;
+        }
+        break;
+      case mojom::blink::FetchPriorityHint::kHigh:
+        if (opt_out_high) {
+          return false;
+        }
+        break;
+    }
+  }
+
   return true;
 }
 
