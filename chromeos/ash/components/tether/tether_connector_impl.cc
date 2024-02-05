@@ -73,6 +73,10 @@ GetConnectionToHostResponseAndInternalErrorFromWifiHotspotConnectionError(
           ConnectionToHostResult::INTERNAL_ERROR,
           ConnectionToHostInternalError::
               CLIENT_CONNECTION_NETWORK_CONNECTION_HANDLER_FAILED);
+    case WifiHotspotConnector::WifiHotspotConnectionError::kWifiFailedToEnabled:
+      return std::make_pair(ConnectionToHostResult::INTERNAL_ERROR,
+                            ConnectionToHostInternalError::
+                                CLIENT_CONNECTION_WIFI_FAILED_TO_ENABLE);
   }
 }
 
@@ -374,7 +378,7 @@ void TetherConnectorImpl::OnWifiConnection(
       PA_LOG(WARNING)
           << "Failed to connect to Wi-Fi hotspot for device with ID "
           << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(device_id)
-          << ", " << "but the connection to that device failed.";
+          << ", " << "but the connection to that device was canceled.";
       return;
     }
 

@@ -915,6 +915,38 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_Success) {
 }
 
 TEST_F(WifiHotspotConnectorTest,
+       TestConnect_WifiDisabled_FailsIfWifiDoesNotTurnOn) {
+  technology_state_controller()->SetTechnologiesEnabled(
+      NetworkTypePattern::WiFi(), false /* enabled */,
+      network_handler::ErrorCallback());
+
+  std::vector<std::string> prohibited_technologies;
+  prohibited_technologies.push_back(shill::kTypeWifi);
+  network_state_handler()->SetProhibitedTechnologies(prohibited_technologies);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
+
+  wifi_hotspot_connector_->ConnectToWifiHotspot(
+      std::string(kSsid), std::string(kPassword), kTetherNetworkGuid,
+      base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
+                     base::Unretained(this)));
+
+  // Allow the asynchronous call to
+  // TechnologyStateHandler::SetTechnologiesEnabled() within
+  // WifiHotspotConnector::ConnectToWifiHotspot() to synchronously run. After
+  // this call, Wi-Fi should be enabled and WifiHotspotConnector will have
+  // called TestNetworkConnect::CreateConfiguration().
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
+  EXPECT_EQ(1u, connection_callback_responses_.size());
+  EXPECT_EQ(
+      WifiHotspotConnector::WifiHotspotConnectionError::kWifiFailedToEnabled,
+      connection_callback_responses_[0].error());
+}
+
+TEST_F(WifiHotspotConnectorTest,
        TestConnect_WifiDisabled_Success_OtherDeviceStatesChange) {
   technology_state_controller()->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,

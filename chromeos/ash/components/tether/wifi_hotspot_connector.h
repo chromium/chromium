@@ -36,6 +36,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
     kCancelledForNewerConnectionAttempt,
     kNetworkConnectionHandlerFailed,
     kNetworkStateWasNull,
+    kWifiFailedToEnabled,
   };
 
   WifiHotspotConnector(NetworkHandler* network_handler,
