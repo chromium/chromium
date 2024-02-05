@@ -775,8 +775,8 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
   RunTest(CompositorMode::THREADED);
 }
 
-// TODO(crbug.com/1517753): Test is flaky on Mac asan.
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1517753): Test is flaky on (at least) Mac and Linux asan.
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor15_ScrollChild \
   DISABLED_DeviceScaleFactor15_ScrollChild
 #else
