@@ -3290,6 +3290,11 @@
           },
         }
       },
+      'win11-arm64-dbg-tests': {
+        'swarming': {
+          'shards': 9,
+        },
+      },
     },
   },
   'interactive_ui_tests Lacros version skew testing ash beta': {
