@@ -1032,6 +1032,18 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectListTest,
                          {"state", ""}}));
 }
 
+class AutofillInteractiveTest_PrefillFormAndFill
+    : public AutofillInteractiveTest {
+ public:
+  AutofillInteractiveTest_PrefillFormAndFill() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAutofillSkipPreFilledFields);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class AutofillInteractiveTest_UndoAutofill : public AutofillInteractiveTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kAutofillUndo};
 };
@@ -1266,7 +1278,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectListFieldAndFill) {
 }
 
 // Test that autofill works when the website prefills the form.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, PrefillFormAndFill) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_PrefillFormAndFill,
+                       PrefillFormAndFill) {
   const char kPrefillScript[] =
       R"( <script>
             document.getElementById('firstname').value = 'Seb';
