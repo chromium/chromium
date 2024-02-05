@@ -67,6 +67,24 @@
       </template>
     </div>
   </div>
+
+  <div id="container-name-host-inner-slotted">
+    <div>
+      <template shadowrootmode="open">
+        <style>
+          :host { container-name: foo; }
+          ::slotted(div) { color: red; }
+          @container foo (width > 0px) {
+            ::slotted(div) {
+              color: green;
+            }
+          }
+        </style>
+        <slot></slot>
+      </template>
+      <div id="t4"></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -88,5 +106,9 @@
   test(() => {
     assert_equals(getComputedStyle(t3host.shadowRoot.querySelector('#t3')).color, green);
   }, "Inner scope query should match container-name set by :host rule in shadow tree");
+
+  test(() => {
+    assert_equals(getComputedStyle(t4).color, green);
+  }, "Inner scope query containing ::slotted should match container-name set by :host rule in shadow tree");
 
 </script>
