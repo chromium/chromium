@@ -93,11 +93,6 @@ enum class PasswordStoreOperation {
 class PasswordStoreAndroidBackend
     : public PasswordStoreAndroidBackendReceiverBridge::Consumer {
  protected:
-  // Can be invoked upon AndroidBackendAPIErrorCode::kPassphraseRequired errors
-  // to attempt to resolve the error.
-  using TryFixPassphraseErrorCb =
-      base::RepeatingCallback<void(const syncer::SyncService*)>;
-
   PasswordStoreAndroidBackend(
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,

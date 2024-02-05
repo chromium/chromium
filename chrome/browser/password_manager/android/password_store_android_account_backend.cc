@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/sync/android/explicit_passphrase_platform_client.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
@@ -28,7 +27,6 @@ namespace {
 
 constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus2";
-constexpr int kMinGmsVersionCodeWithCustomPassphraseApi = 235204000;
 
 std::string GetSyncingAccount(const syncer::SyncService* sync_service) {
   CHECK(sync_service);
@@ -66,26 +64,12 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
                                 UnifiedPasswordManagerActiveStatus::kActive);
 }
 
-bool IsExplicitPassphrasePlatformClientSupported() {
-  // TODO(crbug.com/1511304): Don't duplicate these checks. Instead, have
-  // SyncService::GetExplicitPassphraseClient() which returns null if they are
-  // not satisfied. Then try_fix_passphrase_error_cb_ can also be replaced with
-  // faking a ExplicitPassphraseClient method.
-  std::string version_code_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
-  int version_code = 0;
-  return base::StringToInt(version_code_str, &version_code) &&
-         version_code >= kMinGmsVersionCodeWithCustomPassphraseApi &&
-         base::FeatureList::IsEnabled(
-             syncer::kPassExplicitSyncPassphraseToGmsCore);
-}
-
 enum class ActionOnApiError {
   // See password_manager_upm_eviction::EvictCurrentUser().
   kEvict,
   // See prefs::kSavePasswordsSuspendedByError.
   kDisableSaving,
-  // See PasswordStoreAndroidAccountBackend::TryFixPassphraseErrorCb.
+  // See syncer::SyncService::SendExplicitPassphraseToPlatformClient().
   kDisableSavingAndTryFixPassphraseError,
 };
 
@@ -141,12 +125,7 @@ PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
           PasswordStoreAndroidBackendBridgeHelper::Create(is_account_store),
           std::make_unique<PasswordManagerLifecycleHelperImpl>(),
           prefs),
-      affiliations_prefetcher_(affiliations_prefetcher),
-      try_fix_passphrase_error_cb_(
-          IsExplicitPassphrasePlatformClientSupported()
-              ? base::BindRepeating(
-                    &syncer::SendExplicitPassphraseToJavaPlatformClient)
-              : base::NullCallback()) {
+      affiliations_prefetcher_(affiliations_prefetcher) {
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(
           std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
@@ -164,13 +143,11 @@ PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
     std::unique_ptr<PasswordSyncControllerDelegateAndroid>
         sync_controller_delegate,
     PrefService* prefs,
-    AffiliationsPrefetcher* affiliations_prefetcher,
-    const TryFixPassphraseErrorCb& try_fix_passphrase_error_cb)
+    AffiliationsPrefetcher* affiliations_prefetcher)
     : PasswordStoreAndroidBackend(std::move(bridge_helper),
                                   std::move(lifecycle_helper),
                                   prefs),
-      affiliations_prefetcher_(affiliations_prefetcher),
-      try_fix_passphrase_error_cb_(try_fix_passphrase_error_cb) {
+      affiliations_prefetcher_(affiliations_prefetcher) {
   sync_controller_delegate_ = std::move(sync_controller_delegate);
   sync_controller_delegate_->SetPwdSyncStateChangedCallback(base::BindRepeating(
       &PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged,
@@ -359,9 +336,10 @@ PasswordStoreAndroidAccountBackend::AsWeakPtr() {
 PasswordStoreBackendErrorRecoveryType
 PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
     AndroidBackendAPIErrorCode error) {
-  switch (GetRecoveryActionOnApiError(error,
-                                      bridge_helper()->CanRemoveUnenrollment(),
-                                      !!try_fix_passphrase_error_cb_)) {
+  CHECK(sync_service_);
+  switch (GetRecoveryActionOnApiError(
+      error, bridge_helper()->CanRemoveUnenrollment(),
+      sync_service_->SupportsExplicitPassphrasePlatformClient())) {
     case ActionOnApiError::kEvict: {
       if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs())) {
         password_manager_upm_eviction::EvictCurrentUser(static_cast<int>(error),
@@ -370,8 +348,8 @@ PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
       return PasswordStoreBackendErrorRecoveryType::kUnrecoverable;
     }
     case ActionOnApiError::kDisableSavingAndTryFixPassphraseError:
-      CHECK(try_fix_passphrase_error_cb_);
-      try_fix_passphrase_error_cb_.Run(sync_service_);
+      CHECK(sync_service_->SupportsExplicitPassphrasePlatformClient());
+      sync_service_->SendExplicitPassphraseToPlatformClient();
       ABSL_FALLTHROUGH_INTENDED;
     case ActionOnApiError::kDisableSaving:
       should_disable_saving_due_to_error_ = true;

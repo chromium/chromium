@@ -184,7 +184,11 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
 
-    ResetBackend(/*try_fix_passphrase_error_cb=*/base::NullCallback());
+    backend_ = std::make_unique<PasswordStoreAndroidAccountBackend>(
+        base::PassKey<class PasswordStoreAndroidAccountBackendTest>(),
+        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(),
+        CreatePasswordSyncControllerDelegate(), &prefs_,
+        affiliations_prefetcher_.get());
   }
 
   ~PasswordStoreAndroidAccountBackendTest() override {
@@ -229,16 +233,6 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  // Prefer using the already created `backend()` when possible.
-  void ResetBackend(const base::RepeatingCallback<void(const syncer::SyncService*)>&
-                        try_fix_passphrase_error_cb) {
-    backend_ = std::make_unique<PasswordStoreAndroidAccountBackend>(
-        base::PassKey<class PasswordStoreAndroidAccountBackendTest>(),
-        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(),
-        CreatePasswordSyncControllerDelegate(), &prefs_,
-        affiliations_prefetcher_.get(), try_fix_passphrase_error_cb);
-  }
 
  private:
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper>
@@ -1230,9 +1224,9 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
        PassphraseRequiredErrorCausesNoUnenrollmentIfFixSupported) {
   base::HistogramTester histogram_tester;
 
-  base::MockCallback<base::RepeatingCallback<void(const syncer::SyncService*)>>
-      try_fix_passphrase_error_cb;
-  ResetBackend(try_fix_passphrase_error_cb.Get());
+  base::MockCallback<base::RepeatingClosure> send_passphrase_cb;
+  EXPECT_CALL(send_passphrase_cb, Run());
+  sync_service()->SetPassphrasePlatformClientCallback(send_passphrase_cb.Get());
   backend().InitBackend(/*affiliated_match_helper=*/nullptr,
                         PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
                         base::NullCallback(), base::DoNothing());
@@ -1246,7 +1240,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
       PasswordStoreBackendErrorRecoveryType::kRecoverable};
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
-  EXPECT_CALL(try_fix_passphrase_error_cb, Run);
   // Simulate receiving PASSPHRASE_REQUIRED code.
   int kPassphraseRequiredErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kPassphraseRequired);

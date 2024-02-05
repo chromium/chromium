@@ -474,6 +474,20 @@ class SyncService : public KeyedService {
   // page is opened.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 
+  // Necessary condition for SendExplicitPassphraseToPlatformClient() (not
+  // sufficient).
+  // TODO(crbug.com/1524184): Stop exposing this when UPM unenrollment is gone.
+  virtual bool SupportsExplicitPassphrasePlatformClient() = 0;
+
+  // Shares the explicit passphrase content with layers outside of the browser
+  // which have an independent sync client, and thus separate encryption
+  // infrastructure. That way, if the user has entered their passphrase in the
+  // browser, it does not need to be entered again.
+  // No-ops if SupportsExplicitPassphrasePlatformClient() is false, or the user
+  // didn't enter their passphrase in the browser yet, or never set up a custom
+  // passphrase in the first place.
+  virtual void SendExplicitPassphraseToPlatformClient() = 0;
+
   //////////////////////////////////////////////////////////////////////////////
   // OBSERVERS
   //////////////////////////////////////////////////////////////////////////////

@@ -29,7 +29,6 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/android/explicit_passphrase_platform_client.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -57,7 +56,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "components/sync/android/jni_headers/ExplicitPassphrasePlatformClient_jni.h"
 #include "components/sync/android/sync_service_android_bridge.h"
+#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace syncer {
@@ -67,6 +73,15 @@ namespace {
 BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
              "SyncUnsubscribeFromTypesWithPermanentErrors",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr int kMinGmsVersionCodeWithCustomPassphraseApi = 235204000;
+
+// Keep in sync with the corresponding string in
+// ExplicitPassphrasePlatformClientTest.java
+constexpr char kIgnoreMinGmsVersionWithPassphraseSupportForTest[] =
+    "ignore-min-gms-version-with-passphrase-support-for-test";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // The time after browser startup to report sync configuration metrics.
 constexpr base::TimeDelta kRecordDownloadStatusTimeout = base::Seconds(30);
@@ -1298,9 +1313,7 @@ void SyncServiceImpl::SetEncryptionBootstrapToken(
     const std::string& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   user_settings_->SetEncryptionBootstrapToken(bootstrap_token);
-#if BUILDFLAG(IS_ANDROID)
-  SendExplicitPassphraseToJavaPlatformClient(this);
-#endif
+  SendExplicitPassphraseToPlatformClient();
 }
 
 std::string SyncServiceImpl::GetEncryptionBootstrapToken() const {
@@ -2154,6 +2167,54 @@ void SyncServiceImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
 
   sessions_invalidations_enabled_ = enabled;
   UpdateDataTypesForInvalidations();
+}
+
+bool SyncServiceImpl::SupportsExplicitPassphrasePlatformClient() {
+#if BUILDFLAG(IS_ANDROID)
+  int version_code = 0;
+  bool has_min_gms_version =
+      base::StringToInt(
+          base::android::BuildInfo::GetInstance()->gms_version_code(),
+          &version_code) &&
+      version_code >= kMinGmsVersionCodeWithCustomPassphraseApi;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kIgnoreMinGmsVersionWithPassphraseSupportForTest) &&
+      !has_min_gms_version) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      syncer::kPassExplicitSyncPassphraseToGmsCore);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void SyncServiceImpl::SendExplicitPassphraseToPlatformClient() {
+#if BUILDFLAG(IS_ANDROID)
+  if (!SupportsExplicitPassphrasePlatformClient()) {
+    return;
+  }
+
+  std::unique_ptr<syncer::Nigori> nigori_key =
+      user_settings_->GetExplicitPassphraseDecryptionNigoriKey();
+  if (!nigori_key) {
+    return;
+  }
+
+  sync_pb::NigoriKey proto;
+  proto.set_deprecated_name(nigori_key->GetKeyName());
+  nigori_key->ExportKeys(proto.mutable_deprecated_user_key(),
+                         proto.mutable_encryption_key(),
+                         proto.mutable_mac_key());
+  int32_t byte_size = proto.ByteSize();
+  std::vector<uint8_t> bytes(byte_size);
+  proto.SerializeToArray(bytes.data(), byte_size);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExplicitPassphrasePlatformClient_setExplicitDecryptionPassphrase(
+      env, ConvertToJavaCoreAccountInfo(env, GetAccountInfo()),
+      base::android::ToJavaByteArray(env, bytes));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void SyncServiceImpl::StopAndClear() {
