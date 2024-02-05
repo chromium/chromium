@@ -2125,7 +2125,6 @@ void HttpNetworkTransaction::SetProxyInfoInResponse(
     const ProxyInfo& proxy_info,
     HttpResponseInfo* response_info) {
   response_info->was_fetched_via_proxy = !proxy_info.is_direct();
-  response_info->was_ip_protected = proxy_info.is_for_ip_protection();
   response_info->was_mdl_match = proxy_info.is_mdl_match();
   if (response_info->was_fetched_via_proxy && !proxy_info.is_empty()) {
     response_info->proxy_chain = proxy_info.proxy_chain();

@@ -578,6 +578,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Eligible"/>
 </enum>
 
+<enum name="IpProtectionProxyChainId">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Chain 1"/>
+  <int value="2" label="Chain 2"/>
+  <int value="3" label="Chain 3"/>
+</enum>
+
 <enum name="IpProtectionProxyLayer">
   <int value="0" label="Proxy A"/>
   <int value="1" label="Proxy B"/>

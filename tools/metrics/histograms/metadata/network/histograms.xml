@@ -4418,6 +4418,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.ProxyChainFallback"
+    enum="IpProtectionProxyChainId" expires_after="2024-05-12">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Logged when a proxy chain failure is detected in the proxy delegate's
+    `OnFallback` method, with values defined by the `chain_id` value given in
+    the GetProxyInfo RPC response.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.RequestIsEligibleForProtection"
     enum="IpProtectionEligibility" expires_after="2024-07-29">
   <owner>ashleynewson@chromium.org</owner>

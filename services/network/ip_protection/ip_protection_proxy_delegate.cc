@@ -25,6 +25,32 @@
 
 namespace network {
 
+namespace {
+
+// An enumeration of the `chain_id` values supplied in the GetProxyInfo RPC
+// response, for use with `UmaHistogramEnumeration`. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class IpProtectionProxyChainId {
+  kUnknown = 0,
+  kChain1 = 1,
+  kChain2 = 2,
+  kChain3 = 3,
+  kMaxValue = kChain3,
+};
+
+IpProtectionProxyChainId ChainIdToEnum(int chain_id) {
+  static_assert(net::ProxyChain::kMaxIpProtectionChainId ==
+                    static_cast<int>(IpProtectionProxyChainId::kMaxValue),
+                "maximum `chain_id` must match between `net::ProxyChain` and "
+                "`network::IpProtectionProxyChainId`");
+  CHECK(chain_id >= static_cast<int>(IpProtectionProxyChainId::kUnknown) &&
+        chain_id <= static_cast<int>(IpProtectionProxyChainId::kMaxValue));
+  return static_cast<IpProtectionProxyChainId>(chain_id);
+}
+
+}  // namespace
+
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
     NetworkServiceProxyAllowList* network_service_proxy_allow_list,
     std::unique_ptr<IpProtectionConfigCache> ipp_config_cache)
@@ -200,6 +226,9 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
   if (bad_chain.is_for_ip_protection()) {
+    base::UmaHistogramEnumeration(
+        "NetworkService.IpProtection.ProxyChainFallback",
+        ChainIdToEnum(bad_chain.ip_protection_chain_id()));
     CHECK(ipp_config_cache_);
     ipp_config_cache_->RequestRefreshProxyList();
   }

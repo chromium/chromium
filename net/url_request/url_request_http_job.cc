@@ -1817,9 +1817,18 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
             "Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net",
             prefilter_bytes_read(), 1, 50000000, 50);
       }
-      if (response_info_->was_ip_protected) {
+      if (response_info_->proxy_chain.is_for_ip_protection()) {
         UMA_HISTOGRAM_TIMES("Net.HttpJob.IpProtection.TotalTimeNotCached",
                             total_time);
+        // Log specific times for non-zero chains. The zero chain is the
+        // default and is still counted in the base `TotalTimeNotCached`.
+        int chain_id = response_info_->proxy_chain.ip_protection_chain_id();
+        if (chain_id != ProxyChain::kNotIpProtectionChainId) {
+          UMA_HISTOGRAM_TIMES(
+              base::StrCat({"Net.HttpJob.IpProtection.TotalTimeNotCached.Chain",
+                            base::NumberToString(chain_id)}),
+              total_time);
+        }
 
         UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.IpProtection.BytesSent",
                                     GetTotalSentBytes(), 1, 50000000, 50);

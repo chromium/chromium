@@ -207,13 +207,14 @@ class IpProtectionProxyDelegateTest : public testing::Test {
   }
 
   // Shortcut to create a ProxyChain from hostnames.
-  net::ProxyChain MakeChain(std::vector<std::string> hostnames) {
+  net::ProxyChain MakeChain(std::vector<std::string> hostnames,
+                            int chain_id = 0) {
     std::vector<net::ProxyServer> servers;
     for (auto& hostname : hostnames) {
       servers.push_back(net::ProxyServer::FromSchemeHostAndPort(
           net::ProxyServer::SCHEME_HTTPS, hostname, std::nullopt));
     }
-    return net::ProxyChain::ForIpProtection(servers);
+    return net::ProxyChain::ForIpProtection(servers, chain_id);
   }
 
   mojom::BlindSignedAuthTokenPtr MakeAuthToken(std::string content) {
@@ -769,20 +770,23 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyIpProtectionHttpsSuccess) {
   histogram_tester_.ExpectUniqueSample(kAvailabilityHistogram, true, 1);
 }
 
-TEST_F(IpProtectionProxyDelegateTest, OnFallback_IpProtection) {
-  auto ip_protection_proxy_chain =
-      net::ProxyChain::ForIpProtection({net::ProxyServer::FromSchemeHostAndPort(
-          net::ProxyServer::SCHEME_HTTPS, "proxy.com", std::nullopt)});
+TEST_F(IpProtectionProxyDelegateTest, OnFallback) {
+  constexpr int kChainId = 2;
+  auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy.com", std::nullopt)},
+      kChainId);
   bool force_refresh_called = false;
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { force_refresh_called = true; }));
-  ipp_config_cache->SetProxyList({MakeChain({"proxy.com"})});
   auto delegate = CreateDelegate(std::move(ipp_config_cache));
 
   delegate->OnFallback(ip_protection_proxy_chain, net::ERR_FAILED);
   EXPECT_TRUE(force_refresh_called);
+  histogram_tester_.ExpectBucketCount(
+      "NetworkService.IpProtection.ProxyChainFallback", kChainId, 1);
 }
 
 TEST_F(IpProtectionProxyDelegateTest, MergeProxyRules) {

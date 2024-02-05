@@ -120,12 +120,6 @@ class NET_EXPORT HttpResponseInfo {
   // `InitFromPickle()` then use it to replace `was_fetched_via_proxy`.
   ProxyChain proxy_chain;
 
-  // Whether this request was covered by IP protection. This may be true even if
-  // the IP Protection proxy chain is `direct://`. It is false if `was_cached`.
-  // This field is not persisted by `Persist()` and not restored by
-  // `InitFromPickle()`.
-  bool was_ip_protected = false;
-
   // Whether this request was eligible for IP Protection based on the request
   // being a match to the masked domain list, if available.
   // This field is not persisted by `Persist()` and not restored by
