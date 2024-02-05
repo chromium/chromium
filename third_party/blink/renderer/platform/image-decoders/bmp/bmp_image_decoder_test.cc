@@ -5,9 +5,12 @@
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
 #include <memory>
+
+#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -109,6 +112,107 @@ TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
   EXPECT_FALSE(decoder->Failed());
+}
+
+TEST(BMPImageDecoderTest, VerifyBMPSuite) {
+  struct BMPSuiteEntry {
+    const char* dir;
+    const char* bmp;
+    const char* png;
+  };
+  static constexpr BMPSuiteEntry kBMPSuiteEntries[] = {
+      {"good", "pal1", "pal1"},
+      {"good", "pal1wb", "pal1"},
+      {"good", "pal1bg", "pal1bg"},
+      {"good", "pal4", "pal4"},
+      {"good", "pal4gs", "pal4gs"},
+      {"good", "pal4rle", "pal4"},
+      {"good", "pal8", "pal8"},
+      {"good", "pal8-0", "pal8"},
+      {"good", "pal8gs", "pal8gs"},
+      {"good", "pal8rle", "pal8"},
+      {"good", "pal8w126", "pal8w126"},
+      {"good", "pal8w125", "pal8w125"},
+      {"good", "pal8w124", "pal8w124"},
+      {"good", "pal8topdown", "pal8"},
+      {"good", "pal8nonsquare", "pal8nonsquare-e"},
+      {"good", "pal8os2", "pal8"},
+      {"good", "pal8v5", "pal8"},
+      {"good", "rgb16", "rgb16"},
+      {"good", "rgb16bfdef", "rgb16"},
+      {"good", "rgb16-565", "rgb16-565"},
+      {"good", "rgb16-565pal", "rgb16-565"},
+      {"good", "rgb24", "rgb24"},
+      {"good", "rgb24pal", "rgb24"},
+      {"good", "rgb32", "rgb24"},
+      {"good", "rgb32bfdef", "rgb24"},
+      {"good", "rgb32bf", "rgb24"},
+
+      // The following "good" image is not included because our decoder puts a
+      // slight color tinge in the result. This isn't visible to the naked eye,
+      // but it is not pixel-perfect to the reference. Despite being in the
+      // "good" category, the test description states "not sure that the gamma
+      // and chromaticity values in this file are sensible, because I can’t find
+      // any detailed documentation of them" so a slight deviation seems fine.
+      // {"good/pal8v4", "pal8"},
+  };
+
+  for (const BMPSuiteEntry& entry : kBMPSuiteEntries) {
+    // Load the BMP file under test.
+    std::string bmp_path =
+        base::StringPrintf("/images/bmp-suite/%s/%s.bmp", entry.dir, entry.bmp);
+    scoped_refptr<SharedBuffer> data = ReadFile(bmp_path.c_str());
+    ASSERT_NE(data.get(), nullptr) << "unable to load '" << bmp_path << "'";
+    ASSERT_FALSE(data->empty());
+
+    std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
+    decoder->SetData(data.get(), /*all_data_received=*/true);
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+    ASSERT_FALSE(decoder->Failed());
+
+    // Load the PNG reference for this file.
+    std::string png_path =
+        base::StringPrintf("/images/bmp-suite/reference/%s.png", entry.png);
+    scoped_refptr<SharedBuffer> reference_data = ReadFile(png_path.c_str());
+    ASSERT_NE(reference_data.get(), nullptr)
+        << "unable to load '" << png_path << "'";
+    ASSERT_FALSE(reference_data->empty());
+
+    PNGImageDecoder png_decoder{ImageDecoder::kAlphaNotPremultiplied,
+                                ImageDecoder::kDefaultBitDepth,
+                                ColorBehavior::kTransformToSRGB,
+                                ImageDecoder::kNoDecodedImageByteLimit};
+    png_decoder.SetData(reference_data.get(), /*all_data_received=*/true);
+    ImageFrame* reference_frame = png_decoder.DecodeFrameBufferAtIndex(0);
+    ASSERT_EQ(ImageFrame::kFrameComplete, reference_frame->GetStatus());
+    ASSERT_FALSE(png_decoder.Failed());
+
+    // Compare the ImageFrames.
+    // TODO: https://crbug.com/1524420 - use Skia Gold for pixel diffing
+    ASSERT_EQ(frame->GetPixelFormat(), ImageFrame::kN32);
+    ASSERT_EQ(reference_frame->GetPixelFormat(), ImageFrame::kN32);
+    ASSERT_EQ(frame->Bitmap().width(), reference_frame->Bitmap().width());
+    ASSERT_EQ(frame->Bitmap().height(), reference_frame->Bitmap().height());
+
+    for (int y = frame->Bitmap().height() - 1; y >= 0; --y) {
+      for (int x = frame->Bitmap().width() - 1; x >= 0; --x) {
+        ImageFrame::PixelData* pixel_rgba = frame->GetAddr(x, y);
+        ImageFrame::PixelData* reference_rgba = reference_frame->GetAddr(x, y);
+        if (*pixel_rgba != *reference_rgba) {
+          ADD_FAILURE() << base::StringPrintf(
+              "%s: pixel mismatch at %d, %d - RGBA in reference "
+              "[%02X%02X%02X%02X] vs actual [%02X%02X%02X%02X]",
+              bmp_path.c_str(), x, y, SkGetPackedR32(*reference_rgba),
+              SkGetPackedG32(*reference_rgba), SkGetPackedB32(*reference_rgba),
+              SkGetPackedA32(*reference_rgba), SkGetPackedR32(*pixel_rgba),
+              SkGetPackedG32(*pixel_rgba), SkGetPackedB32(*pixel_rgba),
+              SkGetPackedA32(*pixel_rgba));
+          x = y = 0;  // Only report the first pixel mismatch.
+        }
+      }
+    }
+  }
 }
 
 class BMPImageDecoderCorpusTest : public ImageDecoderBaseTest {
