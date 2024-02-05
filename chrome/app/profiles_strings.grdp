@@ -166,6 +166,9 @@
   browsing profile. Displayed in the avatar menu bubble and button UI.">
     Guest
   </message>
+  <message name="IDS_PROFILE_MENU_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item in the profile menu.">
+    Open Guest Profile
+  </message>
 
   <message name="IDS_DEFAULT_AVATAR_NAME_8" desc="The default name given to a newly created profile with the female spy avatar.">
     Agent X

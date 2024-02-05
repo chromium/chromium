@@ -35,6 +35,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -294,10 +295,14 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
-  return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                            ? kUserAccountAvatarRefreshIcon
-                                            : kUserAccountAvatarIcon,
-                                        ui::kColorAvatarIconGuest, size);
+  return ui::ImageModel::FromVectorIcon(
+      features::IsChromeRefresh2023() ? kUserAccountAvatarRefreshIcon
+                                      : kUserAccountAvatarIcon,
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)
+          ? ui::kColorMenuIcon
+          : ui::kColorAvatarIconGuest,
+      size);
 }
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,

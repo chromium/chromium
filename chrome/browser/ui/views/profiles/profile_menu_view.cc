@@ -780,7 +780,11 @@ void ProfileMenuView::BuildAvailableProfiles() {
       !web_app::AppBrowserController::IsWebApp(browser())) {
     AddAvailableProfile(
         profiles::GetGuestAvatar(),
-        l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME),
+        l10n_util::GetStringUTF16(
+            switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                switches::ExplicitBrowserSigninPhase::kFull)
+                ? IDS_PROFILE_MENU_OPEN_GUEST_PROFILE
+                : IDS_GUEST_PROFILE_NAME),
         /*is_guest=*/true,
         /*is_enabled=*/true,
         base::BindRepeating(&ProfileMenuView::OnGuestProfileButtonClicked,
