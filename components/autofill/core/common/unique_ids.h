@@ -99,7 +99,7 @@ using FieldRendererIdType = ::base::IdTypeU64<class FieldRendererIdMarker>;
 // FormRendererId and FieldRendererId uniquely identify a DOM form or field
 // element, respectively, among all such elements in one frame.
 //
-// To uniquely identify frames across frames, see FormGlobalId and
+// To uniquely identify forms and fields across frames, see FormGlobalId and
 // FieldGlobalId.
 //
 // As a sentinel value, the FormRendererId of a synthetic form converts to
@@ -153,8 +153,8 @@ struct GlobalId {
 // GlobalIds are not necessarily persistent across page loads.
 //
 // Since LocalFrameTokens must not be leaked to renderer processes other than
-// the one they originate from, so Autofill should generally not send GlobalIds
-// to any renderer process.
+// the one they originate from, Autofill does not send GlobalIds to any renderer
+// process.
 //
 // TODO(crbug/1207920) Move to core/browser.
 using FormGlobalId = internal::GlobalId<FormRendererId>;
