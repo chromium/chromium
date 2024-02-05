@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -61,8 +62,19 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 
   // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
+  // Eligibility for account storage is controlled by separate flags for syncing
+  // and non-syncing users. Enabling the flag is a necessary condition but not
+  // sufficient, other checks follow below.
   if (sync_service->IsSyncFeatureEnabled()) {
-    return false;
+    if (!base::FeatureList::IsEnabled(
+            syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
+      return false;
+    }
+  } else {
+    if (!base::FeatureList::IsEnabled(
+            syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)) {
+      return false;
+    }
   }
 
   switch (sync_service->GetTransportState()) {

@@ -15,14 +15,16 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_prefs.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager::features_util {
 
-class PasswordManagerFeaturesUtilTestBase {
+class PasswordManagerFeaturesUtilTestBase : public testing::Test {
  public:
   PasswordManagerFeaturesUtilTestBase() {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -78,11 +80,11 @@ class PasswordManagerFeaturesUtilTestBase {
 };
 
 #if BUILDFLAG(IS_ANDROID)
-// Test fixture where the account-scoped password storage is *disabled*.
-// Android is the only platform still supporting that.
+// Test fixture where the account-scoped password storage is *disabled* for both
+// syncing and non-syncing users, i.e. CanCreateAccountStore() is false. Android
+// is the only platform still supporting that.
 class PasswordManagerFeaturesUtilWithoutAccountStorageTest
-    : public PasswordManagerFeaturesUtilTestBase,
-      public testing::Test {
+    : public PasswordManagerFeaturesUtilTestBase {
  public:
   PasswordManagerFeaturesUtilWithoutAccountStorageTest() {
     pref_service_.registry()->RegisterIntegerPref(
@@ -90,18 +92,20 @@ class PasswordManagerFeaturesUtilWithoutAccountStorageTest
         static_cast<int>(
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 #endif  // BUIDLFLAG(IS_ANDROID)
 
-// Test fixture where the account-scoped password storage is *enabled*.
-class PasswordManagerFeaturesUtilTest
-    : public PasswordManagerFeaturesUtilTestBase,
-      public testing::Test {
+// Test fixture where account storage is enabled (via flag) for signed-in
+// non-syncing users and disabled for syncing users.
+class PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest
+    : public PasswordManagerFeaturesUtilTestBase {
  public:
-  PasswordManagerFeaturesUtilTest() {
+  PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {syncer::kEnablePasswordsAccountStorageForNonSyncingUsers},
+        /*disabled_features=*/{
+            syncer::kEnablePasswordsAccountStorageForSyncingUsers});
 #if BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -109,6 +113,32 @@ class PasswordManagerFeaturesUtilTest
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 #endif  //  BUILDFLAG(IS_ANDROID)
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test fixture where account storage is enabled (via flag) for syncing users
+// and disabled for non-syncing users.
+class PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest
+    : public PasswordManagerFeaturesUtilTestBase {
+ public:
+  PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {syncer::kEnablePasswordsAccountStorageForSyncingUsers},
+        /*disabled_features=*/{
+            syncer::kEnablePasswordsAccountStorageForNonSyncingUsers});
+#if BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+#endif  //  BUILDFLAG(IS_ANDROID)
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -119,13 +149,22 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
   account.gaia = "foo";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
-  // SyncService is running in transport mode with |account|.
+  // SyncService is running in transport mode with |account| and the opt-in
+  // bit is even present.
   SetSyncStateTransportActive(account);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
 
-  // Since the account storage feature is disabled, the profile store should be
+  // Since the account storage is disabled, the profile store should be the
   // the default.
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kProfileStore);
+
+  // Same if the user is syncing.
+  SetSyncStateFeatureActive(account);
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
@@ -138,7 +177,8 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptIn) {
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       AccountStorageOptIn) {
   CoreAccountInfo account;
   account.email = "foo@account.com";
   account.gaia = "foo";
@@ -190,7 +230,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptIn) {
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest,
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        AccountStorageKeepSettingsOnlyForUsers) {
   CoreAccountInfo first_account;
   first_account.email = "first@account.com";
@@ -238,7 +278,8 @@ TEST_F(PasswordManagerFeaturesUtilTest,
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       SyncSuppressesAccountStorageOptIn) {
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -264,7 +305,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
 }
 #else
-TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptInOnMobile) {
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       AccountStorageOptInOnMobile) {
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -294,7 +336,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptInOnMobile) {
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       SyncDisablesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -338,7 +381,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       LocalSyncDisablesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -376,7 +420,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
 }
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       OptOutClearsStorePreference) {
   base::HistogramTester histogram_tester;
 
   CoreAccountInfo account;
@@ -408,7 +453,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
                                       PasswordForm::Store::kProfileStore, 1);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, MigrateOptInPrefToSyncSelectedTypes) {
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       MigrateOptInPrefToSyncSelectedTypes) {
   syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   CoreAccountInfo account1;
   account1.gaia = "gaia1";
@@ -451,7 +497,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, MigrateOptInPrefToSyncSelectedTypes) {
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest,
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        MigrateDeclinedSaveOptInToExplicitOptOut) {
   // Using the Uno Flag because it will automatically turn on account password
   // storage if the default store has not been set to kProfileStore.
@@ -520,5 +566,40 @@ TEST_F(PasswordManagerFeaturesUtilTest,
             PasswordForm::Store::kProfileStore);
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
+       OptedInIfSyncingAndPasswordsSelected) {
+  CoreAccountInfo account;
+  account.email = "foo@account.com";
+  account.gaia = "foo";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  SetSyncStateFeatureActive(account);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
+
+  EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
+
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+}
+
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
+       OptedOutIfNonSyncing) {
+  SetSyncStateNotSignedIn();
+
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+
+  CoreAccountInfo account;
+  account.email = "foo@account.com";
+  account.gaia = "foo";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  SetSyncStateTransportActive(account);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
+
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+}
 
 }  // namespace password_manager::features_util
