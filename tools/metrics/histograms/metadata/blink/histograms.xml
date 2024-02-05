@@ -3203,7 +3203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.NotifyScriptLoaded.TabSearch" units="ms"
-    expires_after="2024-03-01">
+    expires_after="2025-01-01">
   <owner>dayeung@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
