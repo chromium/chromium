@@ -231,6 +231,13 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
+    public void onAccountsDisplayed() {
+        if (mNativeView != 0) {
+            AccountSelectionBridgeJni.get().onAccountsDisplayed(mNativeView);
+        }
+    }
+
+    @Override
     public void onModalDialogClosed() {
         mAccountSelectionComponent.onModalDialogClosed();
     }
@@ -252,5 +259,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 long nativeAccountSelectionViewAndroid, GURL idpConfigUrl, GURL idpLoginUrl);
 
         void onMoreDetails(long nativeAccountSelectionViewAndroid);
+
+        void onAccountsDisplayed(long nativeAccountSelectionViewAndroid);
     }
 }

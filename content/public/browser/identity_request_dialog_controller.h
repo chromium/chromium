@@ -111,6 +111,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       base::OnceCallback<void(const GURL& /*idp_config_url*/,
                               GURL /*idp_login_url*/)>;
   using MoreDetailsCallback = base::OnceCallback<void()>;
+  using AccountsDisplayedCallback = base::OnceCallback<void()>;
 
   IdentityRequestDialogController() = default;
 
@@ -144,7 +145,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
-      DismissCallback dismiss_callback);
+      DismissCallback dismiss_callback,
+      AccountsDisplayedCallback accounts_displayed_callback);
 
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is

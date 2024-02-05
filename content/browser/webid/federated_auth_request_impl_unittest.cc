@@ -679,8 +679,9 @@ class TestDialogController
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
-      IdentityRequestDialogController::DismissCallback dismiss_callback)
-      override {
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::AccountsDisplayedCallback
+          accounts_displayed_callback) override {
     if (!state_) {
       return;
     }
@@ -2809,9 +2810,11 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
   EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsVisible", 1, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsActive", 1, 1);
 }
 
-// Test that request fails if the web contents are hidden.
+// Test that request could succeed with auto re-authn even if the web contents
+// invisible.
 TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   base::HistogramTester histogram_tester;
   test_rvh()->SimulateWasShown();
@@ -2823,16 +2826,19 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   ASSERT_NE(test_rvh()->GetMainRenderFrameHost()->GetVisibilityState(),
             content::PageVisibilityState::kVisible);
 
-  RequestExpectations expectations = {
-      RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorRpPageNotVisible,
-      /*standalone_console_message=*/std::nullopt,
-      /*selected_idp_config_url=*/std::nullopt};
-  RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
-  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
-  EXPECT_FALSE(did_show_accounts_dialog());
+  // Pretends that the sharing permission has been granted for this account.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(_, _, OriginFromString(kProviderUrlFull),
+                                   Optional(std::string(kAccountId))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+  EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsVisible", 0, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsActive", 1, 1);
 }
 
 TEST_F(FederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
@@ -3130,8 +3136,9 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
-      IdentityRequestDialogController::DismissCallback dismiss_callback)
-      override {
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::AccountsDisplayedCallback
+          accounts_displayed_callback) override {
     // Disable FedCM API
     api_permission_delegate_->permission_override_ = std::make_pair(
         rp_origin_to_disable_, ApiPermissionStatus::BLOCKED_SETTINGS);
@@ -3141,7 +3148,8 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
         top_frame_for_display, iframe_for_display,
         std::move(identity_provider_data), sign_in_mode, rp_mode,
         show_auto_reauthn_checkbox, std::move(on_selected),
-        std::move(on_add_account), std::move(dismiss_callback));
+        std::move(on_add_account), std::move(dismiss_callback),
+        std::move(accounts_displayed_callback));
   }
 
  private:
@@ -3458,6 +3466,8 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   EXPECT_FALSE(did_show_accounts_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsActive", 0, 1);
 }
 
 // Test that the account chooser is not shown if the page navigates prior to the

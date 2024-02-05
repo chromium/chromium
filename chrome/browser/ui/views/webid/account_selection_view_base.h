@@ -162,6 +162,9 @@ class AccountSelectionViewBase {
     // dialog.
     virtual void OnMoreDetails(const ui::Event& event) = 0;
 
+    // Called when the accounts UI is displayed.
+    virtual void OnAccountsDisplayed() = 0;
+
     // Called when IdentityProvider.close() is called from the renderer.
     virtual void CloseModalDialog() = 0;
   };

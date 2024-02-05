@@ -328,6 +328,10 @@ void AccountSelectionViewAndroid::OnMoreDetails(JNIEnv* env) {
   delegate_->OnMoreDetails();
 }
 
+void AccountSelectionViewAndroid::OnAccountsDisplayed(JNIEnv* env) {
+  delegate_->OnAccountsDisplayed();
+}
+
 bool AccountSelectionViewAndroid::MaybeCreateJavaObject() {
   if (delegate_->GetNativeView() == nullptr ||
       delegate_->GetNativeView()->GetWindowAndroid() == nullptr) {

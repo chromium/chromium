@@ -33,10 +33,12 @@ void IdentityDialogController::ShowAccountsDialog(
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,
-    DismissCallback dismiss_callback) {
+    DismissCallback dismiss_callback,
+    AccountsDisplayedCallback accounts_displayed_callback) {
   on_account_selection_ = std::move(on_selected);
   on_login_ = std::move(on_add_account);
   on_dismiss_ = std::move(dismiss_callback);
+  on_accounts_displayed_ = std::move(accounts_displayed_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
   account_view_->Show(top_frame_for_display, iframe_for_display,
@@ -95,6 +97,10 @@ void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,
 
 void IdentityDialogController::OnMoreDetails() {
   std::move(on_more_details_).Run();
+}
+
+void IdentityDialogController::OnAccountsDisplayed() {
+  std::move(on_accounts_displayed_).Run();
 }
 
 void IdentityDialogController::ShowIdpSigninFailureDialog(

@@ -87,6 +87,10 @@ void FedCmAccountSelectionView::Show(
     return;
   }
 
+  accounts_displayed_callback_ =
+      base::BindOnce(&FedCmAccountSelectionView::OnAccountsDisplayed,
+                     weak_ptr_factory_.GetWeakPtr());
+
   idp_display_data_list_.clear();
 
   size_t accounts_size = 0u;
@@ -182,6 +186,9 @@ void FedCmAccountSelectionView::Show(
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
       GetDialogWidget()->Show();
+      if (accounts_displayed_callback_) {
+        std::move(accounts_displayed_callback_).Run();
+      }
     }
   }
   // Else:
@@ -196,6 +203,10 @@ void FedCmAccountSelectionView::Show(
         "IdpClosePopupToBrowserShowAccountsDuration",
         base::TimeTicks::Now() - idp_close_popup_time_);
   }
+}
+
+void FedCmAccountSelectionView::OnAccountsDisplayed() {
+  delegate_->OnAccountsDisplayed();
 }
 
 void FedCmAccountSelectionView::ShowFailureDialog(
@@ -368,6 +379,9 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
 
   if (is_web_contents_visible_) {
     GetDialogWidget()->Show();
+    if (accounts_displayed_callback_) {
+      std::move(accounts_displayed_callback_).Run();
+    }
     GetDialogWidget()->widget_delegate()->SetCanActivate(true);
     // This will protect against potentially unintentional inputs that happen
     // right after the dialog becomes visible again.

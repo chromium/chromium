@@ -1763,7 +1763,7 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the time from when a call to the API was made to when the accounts
-    dialog is shown. Only records a sample when the dialog is shown.
+    dialog is ready to be shown. Only records a sample when the dialog is shown.
   </summary>
 </histogram>
 
@@ -1822,6 +1822,16 @@ chromium-metrics-reviews@google.com.
     Records the time from when a getUserInfo() call is received on the browser
     process to the time it is completed. Records once per request with a
     successful accounts fetch. Records when the request is completed.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.WebContentsActive" enum="Boolean"
+    expires_after="2024-06-19">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the WebContents is active when the browser is ready to show
+    the accounts dialog to the user. Records at most one sample per API call.
   </summary>
 </histogram>
 

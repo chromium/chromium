@@ -257,6 +257,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Called when we should show a failure dialog in the case where a single IDP
   // account fetch resulted in a mismatch with its login status.
   void ShowSingleIdpFailureDialog();
+  void OnAccountsDisplayed();
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
@@ -424,7 +425,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // mediation flow.
   std::string account_id_;
   base::TimeTicks start_time_;
-  base::TimeTicks show_accounts_dialog_time_;
+  base::TimeTicks ready_to_display_accounts_dialog_time_;
+  base::TimeTicks accounts_dialog_display_time_;
   base::TimeTicks select_account_time_;
   base::TimeTicks token_response_time_;
   bool errors_logged_to_console_{false};

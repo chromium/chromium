@@ -612,6 +612,7 @@ public class AccountSelectionControllerTest {
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
+        verify(mMockDelegate).onAccountsDisplayed();
         verifyNoMoreInteractions(mMockDelegate);
         assertTrue(mMediator.wasDismissed());
         // The delayed task should not call delegate after user dismissing.
@@ -670,6 +671,7 @@ public class AccountSelectionControllerTest {
 
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
+            verify(mMockDelegate).onAccountsDisplayed();
         }
     }
 
@@ -692,6 +694,7 @@ public class AccountSelectionControllerTest {
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(
                     HeaderType.VERIFY_AUTO_REAUTHN, mModel.get(ItemProperties.HEADER).get(TYPE));
+            verify(mMockDelegate).onAccountsDisplayed();
         }
     }
 
@@ -710,6 +713,7 @@ public class AccountSelectionControllerTest {
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(
                     HeaderType.SIGN_IN_TO_IDP_STATIC, mModel.get(ItemProperties.HEADER).get(TYPE));
+            verify(mMockDelegate, never()).onAccountsDisplayed();
             // For failure dialog, we expect header + IDP sign in text + continue btn
             assertEquals(3, countAllItems());
             assertTrue(containsItemOfType(mModel, ItemProperties.IDP_SIGNIN));
@@ -748,6 +752,7 @@ public class AccountSelectionControllerTest {
                     TOKEN_ERROR_EMPTY_URL);
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
+            verify(mMockDelegate, never()).onAccountsDisplayed();
 
             // For error dialog, we expect header + error text + got it button
             assertEquals(3, countAllItems());
@@ -801,6 +806,7 @@ public class AccountSelectionControllerTest {
                     TOKEN_ERROR);
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
+            verify(mMockDelegate, never()).onAccountsDisplayed();
 
             // For error dialog, we expect header + error text + got it button
             assertEquals(3, countAllItems());
@@ -921,6 +927,24 @@ public class AccountSelectionControllerTest {
         // The requestShowContent method should have been called only once.
         verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);
         assertFalse(mMediator.wasDismissed());
+    }
+
+    @Test
+    public void testWebContentsHidden() {
+        when(mTab.isHidden()).thenReturn(true);
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                TEST_ETLD_PLUS_ONE,
+                TEST_ETLD_PLUS_ONE_1,
+                TEST_ETLD_PLUS_ONE_2,
+                Arrays.asList(ANA),
+                IDP_METADATA,
+                CLIENT_ID_METADATA,
+                /* isAutoReauthn= */ false,
+                /* rpContext= */ "signin");
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        mMediator.getTabObserver().onInteractabilityChanged(mTab, true);
+        verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);
     }
 
     private void pressBack() {

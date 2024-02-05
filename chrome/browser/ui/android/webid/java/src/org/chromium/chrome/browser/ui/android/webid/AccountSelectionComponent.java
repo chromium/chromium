@@ -45,6 +45,9 @@ public interface AccountSelectionComponent {
 
         /** Called on the opener when a modal dialog that it opened has been closed. */
         void onModalDialogClosed();
+
+        /** Called when the accounts UI is displayed. */
+        void onAccountsDisplayed();
     }
 
     /**
