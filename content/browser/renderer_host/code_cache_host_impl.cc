@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/io_buffer.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
-#include "third_party/blink/public/common/scheme_registry.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -69,8 +68,7 @@ bool CheckSecurityForAccessingCodeCacheData(
     return process_lock.matches_scheme(content::kChromeUIScheme) ||
            process_lock.matches_scheme(content::kChromeUIUntrustedScheme);
   }
-  if (resource_url.SchemeIsHTTPOrHTTPS() ||
-      blink::CommonSchemeRegistry::IsExtensionScheme(resource_url.scheme())) {
+  if (resource_url.SchemeIsHTTPOrHTTPS()) {
     if (process_lock.matches_scheme(content::kChromeUIScheme) ||
         process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
       // It is possible for WebUI pages to include open-web content, but such
@@ -424,9 +422,7 @@ std::optional<GURL> CodeCacheHostImpl::GetSecondaryKeyForCodeCache(
   if (process_lock.matches_scheme(url::kHttpScheme) ||
       process_lock.matches_scheme(url::kHttpsScheme) ||
       process_lock.matches_scheme(content::kChromeUIScheme) ||
-      process_lock.matches_scheme(content::kChromeUIUntrustedScheme) ||
-      blink::CommonSchemeRegistry::IsExtensionScheme(
-          process_lock.lock_url().scheme())) {
+      process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
     return process_lock.lock_url();
   }
 

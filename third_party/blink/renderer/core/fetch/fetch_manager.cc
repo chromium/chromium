@@ -30,7 +30,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom-blink.h"
@@ -616,9 +615,7 @@ void FetchManager::Loader::DidReceiveResponse(
   response_http_status_code_ = response.HttpStatusCode();
 
   if (response.MimeType() == "application/wasm" &&
-      (response.CurrentRequestUrl().ProtocolIsInHTTPFamily() ||
-       CommonSchemeRegistry::IsExtensionScheme(
-           response.CurrentRequestUrl().Protocol().Ascii()))) {
+      response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
     // We create a ScriptCachedMetadataHandler for WASM modules.
     cached_metadata_handler_ =
         MakeGarbageCollected<ScriptCachedMetadataHandler>(
