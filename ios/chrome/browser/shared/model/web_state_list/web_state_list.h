@@ -225,7 +225,7 @@ class WebStateList {
   // given `params`.
   // Returns the effective insertion index.
   int InsertWebState(std::unique_ptr<web::WebState> web_state,
-                     InsertionParams params);
+                     InsertionParams params = InsertionParams::Automatic());
 
   // Deprecated. Use the variant with InsertionParams.
   int InsertWebState(int index,

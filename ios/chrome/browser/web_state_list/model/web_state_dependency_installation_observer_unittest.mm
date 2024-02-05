@@ -115,8 +115,7 @@ TEST_F(WebStateDependencyInstallationObserverTest, UnrealizedWebStates) {
 
   // Insert the unrealized webstate but don't have it activate (since that
   // forces realization).
-  web_state_list_.InsertWebState(std::move(web_state_2),
-                                 WebStateList::InsertionParams::Automatic());
+  web_state_list_.InsertWebState(std::move(web_state_2));
   // The unrealized webstate should not have dependencies installed.
   EXPECT_FALSE(installer_.WasInstalled(web_state_2_raw));
   // Once realized, dependencies should be installed.
