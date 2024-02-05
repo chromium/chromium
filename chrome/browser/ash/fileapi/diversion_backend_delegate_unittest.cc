@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "content/public/browser/browser_thread.h"
@@ -109,17 +110,24 @@ class FakeFSBDelegate : public FileSystemBackendDelegate {
 }  // namespace
 
 class DiversionBackendDelegateTest : public testing::Test,
-                                     public testing::WithParamInterface<bool> {
+                                     public testing::WithParamInterface<int> {
  public:
   DiversionBackendDelegateTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  bool ShouldDivert() const { return GetParam(); }
+  // The int returned by GetParam() ranges from 0 to (1 << kNumParamBits).
+  static constexpr int kNumParamBits = 2;
+  bool ShouldCopy() const { return (1 << 0) & GetParam(); }
+  bool ShouldDivert() const { return (1 << 1) & GetParam(); }
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "ShouldDivert" : "ShouldNotDivert";
+    return base::StrCat({
+        "Should",
+        (((1 << 0) & info.param) ? "CopyAnd" : "MoveAnd"),
+        (((1 << 1) & info.param) ? "Divert" : "NotDivert"),
+    });
   }
 
  protected:
@@ -195,6 +203,11 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   // The final state should be the same, regardless of ShouldDivert(), in that
   // the fs_url0 file does not exist but the fs_url1 file does exist (and its
   // contents match the expected_contents).
+  //
+  // We also test copying (instead of moving) fs_url0 to fsurl1, depending on
+  // ShouldCopy(). The "download a file" workflow always moves, but copying
+  // should work too (where the final state is that both fs_url0 and fs_url1
+  // files exist and have the expected_contents).
   storage::FileSystemURL fs_url0 =
       CreateFSURL(ShouldDivert() ? "diversion.dat.crdownload"
                                  : "diversion.dat.some_other_extension");
@@ -272,9 +285,23 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
     EXPECT_FALSE(base::PathExists(fs_url1.path()));
   }
 
-  // Moving (renaming) that fs_url0 file to fs_url1 should materialize it (if
+  // Copying or moving that fs_url0 file to fs_url1 should materialize it (if
   // diverted) on the DiversionBackendDelegate's wrappee backend.
-  {
+  if (ShouldCopy()) {
+    async_file_util->CopyFileLocal(
+        CreateFSOContext(), fs_url0, fs_url1, {},
+        base::BindRepeating(
+            [](int64_t size_arg_for_copy_file_progress_callback) {
+              // No-op.
+            }),
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure, base::File::Error error) {
+              ASSERT_EQ(base::File::FILE_OK, error);
+              quit_closure.Run();
+            },
+            task_environment_.QuitClosure()));
+    task_environment_.RunUntilQuit();
+  } else {
     async_file_util->MoveFileLocal(
         CreateFSOContext(), fs_url0, fs_url1, {},
         base::BindOnce(
@@ -288,19 +315,25 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
 
   // Check the final state, per "The final state should be the same" above.
   {
-    EXPECT_FALSE(base::PathExists(fs_url0.path()));
+    EXPECT_EQ(ShouldCopy(), base::PathExists(fs_url0.path()));
     EXPECT_TRUE(base::PathExists(fs_url1.path()));
 
-    std::string read_file_to_string_contents;
-    ASSERT_TRUE(
-        base::ReadFileToString(fs_url1.path(), &read_file_to_string_contents));
-    EXPECT_EQ(expected_contents, read_file_to_string_contents);
+    if (ShouldCopy()) {
+      std::string contents0;
+      ASSERT_TRUE(base::ReadFileToString(fs_url0.path(), &contents0));
+      EXPECT_EQ(expected_contents, contents0);
+    }
+
+    std::string contents1;
+    ASSERT_TRUE(base::ReadFileToString(fs_url1.path(), &contents1));
+    EXPECT_EQ(expected_contents, contents1);
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         DiversionBackendDelegateTest,
-                         testing::Bool(),
-                         &DiversionBackendDelegateTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DiversionBackendDelegateTest,
+    testing::Range(0, 1 << DiversionBackendDelegateTest::kNumParamBits),
+    &DiversionBackendDelegateTest::DescribeParams);
 
 }  // namespace ash
