@@ -43,11 +43,9 @@ void AXRelationCache::DoInitialDocumentScan(Document& document) {
   // TODO(crbug.com/1473733) Address flaw that all DOM ids are being cached
   // together regardless of their TreeScope, which can lead to conflicts.
   // Traverse all connected nodes in the document, via both DOM and shadow DOM.
-  Node* node = &document;
-  while (Node* next =
-             ShadowIncludingTreeOrderTraversal::Next(*node, &document)) {
-    Element* element = DynamicTo<Element>(next);
-    if (element) {
+  for (Node& node :
+       ShadowIncludingTreeOrderTraversal::DescendantsOf(document)) {
+    if (Element* element = DynamicTo<Element>(node)) {
       // Cache relations that do not require an AXObject.
       CacheRelationIds(*element);
 
@@ -58,7 +56,6 @@ void AXRelationCache::DoInitialDocumentScan(Document& document) {
         }
       }
     }
-    node = next;
   }
 }
 
