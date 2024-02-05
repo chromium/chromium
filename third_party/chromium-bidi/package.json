@@ -3,12 +3,11 @@
   "version": "0.5.8",
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "scripts": {
-    "bidi-types": "node tools/generate-bidi-types.mjs",
     "build": "wireit",
-    "clean": "rimraf lib .eslintcache .wireit",
-    "e2e-headful": "wireit",
-    "e2e-headless": "wireit",
-    "e2e": "npm run e2e-headless --",
+    "clean": "node tools/clean.mjs",
+    "e2e:headful": "wireit",
+    "e2e:headless": "wireit",
+    "e2e": "npm run e2e:headless --",
     "flake8": "flake8 examples/ tests/",
     "format": "npm run pre-commit --",
     "format:eslint": "eslint --ext js --ext mjs --ext ts --fix .",
@@ -16,14 +15,14 @@
     "pre-commit": "pre-commit run --hook-stage manual --all-files",
     "prepare": "wireit",
     "rollup": "wireit",
-    "server": "npm run server-headless --",
-    "server-headful": "wireit",
-    "server-headless": "wireit",
+    "server": "npm run server:headless --",
+    "server:headful": "wireit",
+    "server:headless": "wireit",
     "test": "wireit",
     "tsc": "wireit",
     "unit": "wireit",
     "wpt": "wireit",
-    "wpt-all": "wireit",
+    "wpt:all": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "nyc": {
@@ -38,20 +37,20 @@
         "tsc"
       ]
     },
-    "e2e-headful": {
+    "e2e:headful": {
       "command": "pipenv run python -m pytest --ignore=tests/input",
       "dependencies": [
-        "server-headful"
+        "server:headful"
       ],
       "files": [
         "pytest.ini",
         "tests/**/*.py"
       ]
     },
-    "e2e-headless": {
+    "e2e:headless": {
       "command": "pipenv run python -m pytest",
       "dependencies": [
-        "server-headless"
+        "server:headless"
       ],
       "files": [
         "pytest.ini",
@@ -76,8 +75,8 @@
         "lib/iife/mapperTab.js"
       ]
     },
-    "server-headful": {
-      "command": "npm run server-headless -- --headless=false",
+    "server:headful": {
+      "command": "npm run server:headless -- --headless=false",
       "service": {
         "readyWhen": {
           "lineMatches": "BiDi server is listening on port \\d+"
@@ -87,7 +86,7 @@
         "rollup"
       ]
     },
-    "server-headless": {
+    "server:headless": {
       "command": "tools/run-bidi-server.mjs --headless=true",
       "files": [
         "tools/run-bidi-server.mjs"
@@ -137,7 +136,7 @@
         "rollup"
       ]
     },
-    "wpt-all": {
+    "wpt:all": {
       "command": "tools/run-wpt-all.mjs",
       "files": [
         "tools/run-wpt.mjs",

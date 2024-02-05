@@ -79,7 +79,7 @@ jobs:
         timeout-minutes: 20
         run: >
           xvfb-run --auto-servernum
-          npm run e2e-${{ matrix.head }}
+          npm run e2e:${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
@@ -87,7 +87,7 @@ jobs:
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
         timeout-minutes: 20
-        run: npm run e2e-${{ matrix.head }}
+        run: npm run e2e:${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}

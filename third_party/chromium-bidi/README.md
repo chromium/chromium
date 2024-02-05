@@ -260,9 +260,9 @@ The E2E tests require BiDi server running on the same host. By default, tests
 try to connect to the port `8080`. The server can be run from the project root:
 
 ```sh
-npm run e2e  # alias to to e2e-headless
-npm run e2e-headful
-npm run e2e-headless
+npm run e2e  # alias to to e2e:headless
+npm run e2e:headful
+npm run e2e:headless
 ```
 
 Use the `PORT` environment variable to connect to another port:

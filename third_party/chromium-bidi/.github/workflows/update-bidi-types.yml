@@ -91,9 +91,9 @@ jobs:
         with:
           name: permissions-cddl
       - name: Generate TypeScript types for the main spec
-        run: npm run bidi-types -- --cddl-file all.cddl
+        run: node tools/generate-bidi-types.mjs --cddl-file all.cddl
       - name: Generate TypeScript types for Permissions spec
-        run: npm run bidi-types -- --cddl-file permissions.cddl --ts-file src/protocol/generated/webdriver-bidi-permissions.ts --zod-file src/protocol-parser/generated/webdriver-bidi-permissions.ts
+        run: node tools/generate-bidi-types.mjs --cddl-file permissions.cddl --ts-file src/protocol/generated/webdriver-bidi-permissions.ts --zod-file src/protocol-parser/generated/webdriver-bidi-permissions.ts
       - run: git diff
       # Needed for `npm run format`.
       - run: python -m pip install pre-commit
