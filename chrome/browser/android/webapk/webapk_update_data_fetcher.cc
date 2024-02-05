@@ -47,19 +47,6 @@ bool IsInScope(const GURL& url, const GURL& scope) {
                           base::CompareCase::SENSITIVE);
 }
 
-constexpr char kGotUpdateManifestHistogramName[] =
-    "WebApk.Update.DidGetInstallableData";
-
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "WebApkUpdateManifestResult" in src/tools/metrics/histograms/enums.xml.
-enum class ManifestResult {
-  kDifferent = 0,
-  kDifferentLegacyId = 1,
-  kFound = 2,
-  kMaxValue = kFound,
-};
-
 }  // anonymous namespace
 
 jlong JNI_WebApkUpdateDataFetcher_Initialize(
@@ -177,29 +164,23 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
     return;
   }
 
-  if (web_manifest_id_.is_empty()) {
-    // Don't have an existing manifest ID, check if either manifest URL or
-    // start URL are the same. If neither of them are the same, we treat the
-    // manifest as one of another WebAPK.
-    if (web_manifest_url_ != *data.manifest_url &&
-        start_url_ != data.manifest->start_url) {
-      UMA_HISTOGRAM_ENUMERATION(kGotUpdateManifestHistogramName,
-                                ManifestResult::kDifferentLegacyId,
-                                ManifestResult::kMaxValue);
-      return;
-    }
-  } else if (web_manifest_id_ != data.manifest->id) {
-    // If the fetched manifest id is different from the current one,
-    // continue observing as the id is the identity for the application. We
-    // will treat the manifest with different id as the one of another WebAPK.
-    UMA_HISTOGRAM_ENUMERATION(kGotUpdateManifestHistogramName,
-                              ManifestResult::kDifferent,
-                              ManifestResult::kMaxValue);
+  CHECK(!data.manifest->id.is_empty());
+
+  // If there isn't an existing manifest ID, check if either manifest URL or
+  // start URL are the same. If neither of them are the same, we treat the
+  // manifest as one of another WebAPK.
+  if (web_manifest_id_.is_empty() && web_manifest_url_ != *data.manifest_url &&
+      start_url_ != data.manifest->start_url) {
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION(kGotUpdateManifestHistogramName,
-                            ManifestResult::kFound, ManifestResult::kMaxValue);
+  // If there is an existing manifest ID, but the fetched manifest id is
+  // different from the current one, continue observing as the id is the
+  // identity for the application. We will treat the manifest with different id
+  // as the one of another WebAPK.
+  if (!web_manifest_id_.is_empty() && web_manifest_id_ != data.manifest->id) {
+    return;
+  }
 
   info_.UpdateFromManifest(*data.manifest);
   info_.manifest_url = *data.manifest_url;

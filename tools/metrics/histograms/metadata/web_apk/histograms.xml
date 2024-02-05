@@ -266,17 +266,6 @@ chromium-metrics-reviews@google.com.
   <token key="WebApkDistributorType" variants="WebApkDistributorType"/>
 </histogram>
 
-<histogram name="WebApk.Update.DidGetInstallableData"
-    enum="WebApkUpdateManifestResult" expires_after="2024-03-10">
-  <owner>eirage@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    When WebApkUpdateDataFetcher found a valid manifest, record whether the
-    manifest can be used to update the WebAPK.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Update.GooglePlayUpdateResult"
     enum="WebApkGooglePlayInstallResult" expires_after="2024-06-30">
   <owner>hartmanng@chromium.org</owner>
