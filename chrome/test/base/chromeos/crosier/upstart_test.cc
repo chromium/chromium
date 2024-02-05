@@ -16,7 +16,7 @@ bool operator==(const JobStatus& a, const JobStatus& b) {
          std::tie(b.is_valid, b.goal, b.state, b.pid);
 }
 
-TEST(Upstart, ParseStatus) {
+TEST(UpstartTest, ParseStatus) {
   JobStatus result = internal::ParseStatus("foo", "");
   EXPECT_FALSE(result.is_valid);
 
@@ -55,7 +55,7 @@ TEST(Upstart, ParseStatus) {
   EXPECT_EQ(result, ui);
 }
 
-TEST(Upstart, GetJobStatus) {
+TEST(UpstartTest, GetJobStatus) {
   // Random nonexistent job.
   JobStatus result = GetJobStatus("nonexistent-job");
   EXPECT_FALSE(result.is_valid);
@@ -68,12 +68,12 @@ TEST(Upstart, GetJobStatus) {
   EXPECT_GT(result.pid, 0);
 }
 
-TEST(Upstart, JobExists) {
+TEST(UpstartTest, JobExists) {
   EXPECT_FALSE(JobExists("nonexistent-job"));
   EXPECT_TRUE(JobExists("dbus"));
 }
 
-TEST(Upstart, WaitForJobStatus) {
+TEST(UpstartTest, WaitForJobStatus) {
   // This is hard to test without making a lot of assumptions or messing with
   // the system. Instead, we just validate some simple cases that don't change
   // anything.
