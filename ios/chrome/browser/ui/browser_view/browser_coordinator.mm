@@ -1892,15 +1892,6 @@ enum class ToolbarKind {
   self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 }
 
-- (void)showPlusAddressManagementPage {
-  GURL managementUrl(plus_addresses::kPlusAddressManagementUrl.Get());
-  UrlLoadParams params = UrlLoadParams::InNewTab(managementUrl);
-  params.append_to = OpenPosition::kCurrentTab;
-  params.user_initiated = NO;
-  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  _urlLoadingBrowserAgent->Load(params);
-}
-
 - (void)showOmniboxPositionChoice {
   CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
 

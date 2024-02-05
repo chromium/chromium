@@ -11,6 +11,10 @@
 // the description in automation.
 extern NSString* const kPlusAddressModalDescriptionAccessibilityIdentifier;
 
+// Accessibility identifier for the bottom sheet's error message used to locate
+// the error message in automation.
+extern NSString* const kPlusAddressModalErrorMessageAccessibilityIdentifier;
+
 // The margin to be shown under the user's primary email address, and above the
 // reserved plus address element in the bottom sheet.
 extern const CGFloat kPrimaryAddressBottomMargin;
@@ -21,5 +25,11 @@ extern const CGFloat kBeforeImageTopMargin;
 
 // The desired size of the image at the top of the bottom sheet content.
 extern const CGFloat kImageSize;
+
+// Enum specifying the URL the bottom sheet should open.
+enum class PlusAddressURLType {
+  kErrorReport = 0,
+  kManagement = 1,
+};
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_CONSTANTS_H_
