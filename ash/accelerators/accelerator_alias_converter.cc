@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
+#include "chromeos/constants/devicetype.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -291,6 +292,8 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
             CreateTopRowAliases(*priority_external_keyboard, accelerator);
         alias) {
       aliases_set.insert(*alias);
+      // Always add the original accelerator if an external keyboard is present.
+      aliases_set.insert(accelerator);
     }
   }
   if (internal_keyboard) {
