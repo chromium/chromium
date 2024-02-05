@@ -165,6 +165,19 @@ enum class SessionEvalLocation {
   kMaxValue = kMixed,
 };
 
+// Enum for recording the feedback state of a Compose request.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with
+// ComposeRequestFeedback in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeRequestFeedback {
+  kNoFeedback = 0,
+  kPositiveFeedback = 1,
+  kNegativeFeedback = 2,
+  kRequestError = 3,
+  kMaxValue = kRequestError,
+};
+
 // Struct containing event and logging information for an individual
 // |ComposeSession|.
 struct ComposeSessionEvents {
@@ -344,6 +357,9 @@ void LogComposeDialogSelectionLength(int length);
 // Log the session duration with |session_suffix| applied to histogram name.
 void LogComposeSessionDuration(base::TimeDelta session_duration,
                                std::string session_suffix = "");
+
+void LogComposeRequestFeedback(EvalLocation eval_location,
+                               ComposeRequestFeedback feedback);
 
 }  // namespace compose
 

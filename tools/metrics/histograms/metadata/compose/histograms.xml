@@ -252,6 +252,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Compose.{ComposeEvalLocation}Request.Feedback"
+    enum="ComposeRequestFeedback" expires_after="2024-07-02">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Records the final value of feedback for each Compose Request. Logged when
+    feedback can no longer be modified for a request. {ComposeEvalLocation}.
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
 <histogram name="Compose.{ComposeEvalLocation}Request.Status"
     enum="ComposeResponseStatus" expires_after="2024-06-02">
   <owner>cuianthony@chromium.org</owner>

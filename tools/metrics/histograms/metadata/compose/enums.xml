@@ -59,6 +59,13 @@ chromium-metrics-reviews@google.com.
              suggestion"/>
 </enum>
 
+<enum name="ComposeRequestFeedback">
+  <int value="0" label="No feedback given"/>
+  <int value="1" label="Postivie feedback given"/>
+  <int value="2" label="Negative feedback given"/>
+  <int value="3" label="Request error"/>
+</enum>
+
 <enum name="ComposeRequestReason">
   <int value="0" label="Create button"/>
   <int value="1" label="Retry button"/>

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/common/compose/compose.mojom.h"
@@ -180,6 +181,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
+  void SetAllowFeedbackForTesting(bool allowed);
+
  private:
   void ProcessError(compose::EvalLocation eval_location,
                     compose::mojom::ComposeStatus status);
@@ -309,6 +312,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       model_quality_logs_uploader_;
 
   base::Token session_id_;
+
+  bool allow_feedback_for_testing_ = false;
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };

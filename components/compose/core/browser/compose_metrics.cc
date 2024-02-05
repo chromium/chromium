@@ -428,4 +428,12 @@ void LogComposeSessionDuration(base::TimeDelta session_duration,
   }
 }
 
+void LogComposeRequestFeedback(EvalLocation eval_location,
+                               ComposeRequestFeedback feedback) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Compose.", EvalLocationString(eval_location), ".Request.Feedback"}),
+      feedback);
+}
+
 }  // namespace compose

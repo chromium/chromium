@@ -2176,6 +2176,14 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
       quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
           ->request_latency_ms());
+
+  // Check that histogram was sent for Compose State removed from undo stack.
+  histograms().ExpectBucketCount("Compose.Server.Request.Feedback",
+                                 compose::ComposeRequestFeedback::kNoFeedback,
+                                 0);
+  histograms().ExpectBucketCount("Compose.Server.Request.Feedback",
+                                 compose::ComposeRequestFeedback::kRequestError,
+                                 2);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
@@ -2287,6 +2295,92 @@ TEST_F(ChromeComposeClientTest,
                 ->final_status());
 }
 
+TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(1);
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+
+  ShowDialogAndBindMojo();
+  client().GetSessionForActiveComposeField()->SetAllowFeedbackForTesting(true);
+
+  page_handler()->Compose("a user typed this", false);
+  ASSERT_TRUE(compose_future.Take());
+
+  page_handler()->SetUserFeedback(
+      compose::mojom::UserFeedback::kUserFeedbackPositive);
+
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // Get quality logs sent for the Compose Request
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
+      quality_test_future.Take();
+
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->user_feedback());
+
+  // Check that the histogram was sent for request feedback.
+  histograms().ExpectUniqueSample(
+      "Compose.Server.Request.Feedback",
+      compose::ComposeRequestFeedback::kPositiveFeedback, 1);
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackNegative) {
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(1);
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+
+  ShowDialogAndBindMojo();
+  client().GetSessionForActiveComposeField()->SetAllowFeedbackForTesting(true);
+
+  page_handler()->Compose("a user typed this", false);
+  ASSERT_TRUE(compose_future.Take());
+
+  page_handler()->SetUserFeedback(
+      compose::mojom::UserFeedback::kUserFeedbackNegative);
+
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // Get quality logs sent for the Compose Request
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
+      quality_test_future.Take();
+
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->user_feedback());
+
+  // Check that the histogram was sent for request feedback.
+  histograms().ExpectUniqueSample(
+      "Compose.Server.Request.Feedback",
+      compose::ComposeRequestFeedback::kNegativeFeedback, 1);
+}
+
 TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
   ShowDialogAndBindMojo();
 
@@ -2339,6 +2433,14 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
   histograms().ExpectBucketCount(compose::kComposeRequestReason,
                                  compose::ComposeRequestReason::kUpdateRequest,
                                  1);
+
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->final_status());
+  // Check that the histogram was sent for request feedback.
+  histograms().ExpectUniqueSample("Compose.Server.Request.Feedback",
+                                  compose::ComposeRequestFeedback::kNoFeedback,
+                                  2);
 }
 
 TEST_F(ChromeComposeClientTest, TestRegenerate) {

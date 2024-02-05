@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_tokenizer.h"
@@ -168,6 +169,44 @@ class ComposeState {
     mojo_state_ = std::move(mojo_state);
   }
 
+  void UploadModelQualityLogs(
+      raw_ptr<optimization_guide::ModelQualityLogsUploader> logs_uploader) {
+    if (!logs_uploader || !modeling_log_entry_) {
+      return;
+    }
+    LogRequestFeedback();
+    logs_uploader->UploadModelQualityLogs(TakeModelingLogEntry());
+  }
+
+  void LogRequestFeedback() {
+    if (!mojo_state_ || !mojo_state_->response) {
+      // No request or modeling information so nothing to report.
+      return;
+    }
+    if (mojo_state_->response->status != compose::mojom::ComposeStatus::kOk) {
+      // Request Feedback was already reported when error was received.
+      return;
+    }
+
+    compose::EvalLocation eval_location =
+        mojo_state_->response->on_device_evaluation_used
+            ? compose::EvalLocation::kOnDevice
+            : compose::EvalLocation::kServer;
+    compose::ComposeRequestFeedback feedback;
+    switch (mojo_state_->feedback) {
+      case compose::mojom::UserFeedback::kUserFeedbackPositive:
+        feedback = compose::ComposeRequestFeedback::kPositiveFeedback;
+        break;
+      case compose::mojom::UserFeedback::kUserFeedbackNegative:
+        feedback = compose::ComposeRequestFeedback::kNegativeFeedback;
+        break;
+      case compose::mojom::UserFeedback::kUserFeedbackUnspecified:
+        feedback = compose::ComposeRequestFeedback::kNoFeedback;
+        break;
+    }
+    compose::LogComposeRequestFeedback(eval_location, feedback);
+  }
+
  private:
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> modeling_log_entry_;
   compose::mojom::ComposeStatePtr mojo_state_;
@@ -256,41 +295,33 @@ ComposeSession::~ComposeSession() {
 
   LogComposeSessionCloseUkmMetrics(ukm_source_id_, session_events_);
 
-  // If we have a modeling quality log entry, upload it.
-
-  // If the latest result was an error upload that state
-  if (most_recent_error_log_) {
-    most_recent_error_log_
-        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-        ->set_final_status(final_status_);
-  } else if (most_recent_ok_state_->modeling_log_entry()) {
-    most_recent_ok_state_->modeling_log_entry()
-        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-        ->set_final_status(final_status_);
-  }
-
   // Quality log would automatically be uploaded on the destruction of
   // a modeling_log_entry. However in order to more easily test the quality
   // uploads we are calling upload directly here.
-  if (model_quality_logs_uploader_) {
-    if (most_recent_error_log_) {
-      model_quality_logs_uploader_->UploadModelQualityLogs(
-          std::move(most_recent_error_log_));
-    }
-    if (most_recent_ok_state_->modeling_log_entry()) {
-      model_quality_logs_uploader_->UploadModelQualityLogs(
-          most_recent_ok_state_->TakeModelingLogEntry());
-    }
+
+  if (!model_quality_logs_uploader_) {
+    // Can not upload any logs so exit early.
+    return;
+  }
+
+  if (most_recent_error_log_) {
+    // First set final status on most_recent_error_log
+    most_recent_error_log_
+        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_final_status(final_status_);
+    model_quality_logs_uploader_->UploadModelQualityLogs(
+        std::move(most_recent_error_log_));
+  } else if (most_recent_ok_state_->modeling_log_entry()) {
+    // First set final status on most_recent_ok_state_.
+    most_recent_ok_state_->modeling_log_entry()
+        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_final_status(final_status_);
+    most_recent_ok_state_->UploadModelQualityLogs(model_quality_logs_uploader_);
   }
 
   // Explicitly upload the rest of the undo stack.
   while (!undo_states_.empty()) {
-    if (undo_states_.top()->modeling_log_entry()) {
-      if (model_quality_logs_uploader_) {
-        model_quality_logs_uploader_->UploadModelQualityLogs(
-            undo_states_.top()->TakeModelingLogEntry());
-      }
-    }
+    undo_states_.top()->UploadModelQualityLogs(model_quality_logs_uploader_);
     undo_states_.pop();
   }
 }
@@ -529,6 +560,10 @@ void ComposeSession::ProcessError(compose::EvalLocation eval_location,
                                   compose::mojom::ComposeStatus error) {
   compose::LogComposeRequestStatus(eval_location, error);
 
+  // Feedback can not be given for a request with an error so report now.
+  compose::LogComposeRequestFeedback(
+      eval_location, compose::ComposeRequestFeedback::kRequestError);
+
   current_state_->has_pending_request = false;
   current_state_->response = compose::mojom::ComposeResponse::New();
   current_state_->response->status = error;
@@ -582,11 +617,8 @@ void ComposeSession::Undo(UndoCallback callback) {
 
   // upload the most recent modeling quality log entry before overwriting it
   // with state from undo,
-  if (most_recent_ok_state_->modeling_log_entry() &&
-      model_quality_logs_uploader_) {
-    model_quality_logs_uploader_->UploadModelQualityLogs(
-        most_recent_ok_state_->TakeModelingLogEntry());
-  }
+
+  most_recent_ok_state_->UploadModelQualityLogs(model_quality_logs_uploader_);
 
   if (!undo_state->IsMojoValid()) {
     // Gracefully fail if we find an invalid state on the undo stack.
@@ -649,6 +681,11 @@ void ComposeSession::OpenSignInPage() {
 void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
   base::Value::Dict feedback_metadata;
   feedback_metadata.Set("log_id", feedback_id);
+
+  if (allow_feedback_for_testing_) {
+    return;
+  }
+
   chrome::ShowFeedbackPage(
       web_contents_->GetLastCommittedURL(),
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
@@ -667,13 +704,17 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
     // feedback to.
     return;
   }
-  OptimizationGuideKeyedService* opt_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-  if (!opt_guide_keyed_service ||
-      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE)) {
-    return;
+
+  // TODO(b/314199871): Remove test bypass once this check becomes mock-able.
+  if (!allow_feedback_for_testing_) {
+    OptimizationGuideKeyedService* opt_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+    if (!opt_guide_keyed_service ||
+        !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
+            optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE)) {
+      return;
+    }
   }
 
   // Add to most_recent_ok_state_ in case of undos.
@@ -927,4 +968,8 @@ void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
     // subsequent dialog open.
     msbb_initially_off_ = false;
   }
+}
+
+void ComposeSession::SetAllowFeedbackForTesting(bool allowed) {
+  allow_feedback_for_testing_ = allowed;
 }

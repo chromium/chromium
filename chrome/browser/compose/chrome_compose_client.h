@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/token.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_session.h"
@@ -151,6 +152,10 @@ class ChromeComposeClient
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;
+  FRIEND_TEST_ALL_PREFIXES(ChromeComposeClientTest,
+                           TestComposeQualityFeedbackPositive);
+  FRIEND_TEST_ALL_PREFIXES(ChromeComposeClientTest,
+                           TestComposeQualityFeedbackNegative);
 
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
