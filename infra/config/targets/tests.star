@@ -197,6 +197,9 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "blink_platform_unittests",
+    mixins = [
+        "skia_gold_test",
+    ],
 )
 
 targets.tests.isolated_script_test(

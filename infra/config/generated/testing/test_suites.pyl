@@ -108,7 +108,11 @@
 
     'android_pie_rel_reduced_capacity_gtests': {
       'android_browsertests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'cc_unittests': {},
       'content_browsertests': {
         'swarming': {
@@ -835,7 +839,11 @@
       'base_unittests': {},
       'blink_common_unittests': {},
       'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
       'capture_unittests': {
@@ -2185,7 +2193,11 @@
       'blink_common_unittests': {},
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'blink_unittests': {},
       'blink_unittests_v2': {},
       'boringssl_crypto_tests': {},
@@ -4029,6 +4041,9 @@
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
         'args': [
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter',
@@ -4537,7 +4552,11 @@
       'app_shell_unittests': {},
       'base_unittests': {},
       'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'blink_unittests': {},
       'blink_unittests_v2': {},
       'cc_unittests': {},
