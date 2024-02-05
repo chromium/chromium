@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -61,9 +62,12 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void ShowHighlightAnimation();
   bool IsHighlightAnimationVisible() const;
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-  void ShowSignInText();
-  void HideSignInText();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void ShowInterceptText(
+      WebSigninInterceptor::SigninInterceptionType interception_type);
+  void HideText();
+
+  std::u16string GetInterceptText();
 #endif
 
   // Should be called when the icon is updated. This may trigger the identity
@@ -84,7 +88,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
     kNotShowing,
     kWaitingForImage,
     kShowingName,
-    kShowingSigninText
+    kShowingInterceptText
   };
 
   // BrowserListObserver:
@@ -126,6 +130,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   // this extends the duration of the current animation.
   void ShowIdentityAnimation();
 
+  void Reset();
+
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
@@ -154,9 +160,12 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   // sync paused/error state will be disabled.
   bool highlight_animation_visible_ = false;
 
-  // Caches the value of the last error so the class can detect when it changes
-  // and notify |avatar_toolbar_button_|.
+  // Caches the value of the last error so the class can detect when it
+  // changes and notify |avatar_toolbar_button_|.
   std::optional<AvatarSyncErrorType> last_avatar_error_;
+
+  std::optional<WebSigninInterceptor::SigninInterceptionType>
+      current_interception_type_;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
 };

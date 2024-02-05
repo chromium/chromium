@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -108,6 +109,16 @@ void RecordChromeSigninInterceptResult(base::TimeTicks start_time,
   }
 }
 
+// `WebSigninInterceptor::SigninInterceptionType::kChromeSignin` is
+// protected by `switches::ExplicitBrowserSigninPhase::kExperimental`.
+bool ShouldInterceptAffectAvatarButton(
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             switches::ExplicitBrowserSigninPhase::kFull) ||
+         interception_type ==
+             WebSigninInterceptor::SigninInterceptionType::kChromeSignin;
+}
+
 }  // namespace
 
 DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
@@ -139,13 +150,13 @@ DiceWebSigninInterceptionBubbleView::CreateBubble(
   // and the final height of the bubble is sent from
   // DiceWebSigninInterceptHandler.
   views::BubbleDialogDelegateView::CreateBubble(std::move(interception_bubble));
-  // If the chrome signin intercept bubble is shown, display a text next to the
-  // avatar icon.
-  if (bubble_parameters.interception_type ==
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+
+  if (ShouldInterceptAffectAvatarButton(bubble_parameters.interception_type)) {
+    // Adapt the identity pill, show the appropriate intercept text and disable
+    // the button as long as the buble is opened.
     AvatarToolbarButton* button = GetAvatarToolbarButton(*browser);
     button->SetButtonActionDisabled(true);
-    button->ShowSignInText();
+    button->ShowInterceptText(bubble_parameters.interception_type);
   }
 
   return handle;
@@ -293,12 +304,13 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
   }
 
   RecordInterceptionResult(bubble_parameters_, profile_, result);
-  if (bubble_parameters_.interception_type ==
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+
+  if (ShouldInterceptAffectAvatarButton(bubble_parameters_.interception_type)) {
     AvatarToolbarButton* button = GetAvatarToolbarButton(*browser_);
     button->SetButtonActionDisabled(false);
-    button->HideSignInText();
+    button->HideText();
   }
+
   std::move(callback_).Run(result);
   if (!accepted_) {
     // Only close the dialog when the user declined. If the user accepted the

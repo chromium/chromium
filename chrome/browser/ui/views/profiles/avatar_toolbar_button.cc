@@ -173,13 +173,12 @@ void AvatarToolbarButton::UpdateText() {
     case State::kAnimatedUserIdentity:
       text = delegate_->GetShortProfileName();
       break;
-    case State::kSignInTextShowing: {
+    case State::kInterceptTextShowing: {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
       // The signin text is not supported on Lacros.
       NOTREACHED_NORETURN();
 #else
-      text = l10n_util::GetStringUTF16(
-          IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT);
+      text = delegate_->GetInterceptText();
       break;
 #endif
     }
@@ -262,7 +261,7 @@ std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
             kColorAvatarButtonHighlightNormalForeground);
         break;
       case State::kGuestSession:
-      case State::kSignInTextShowing:
+      case State::kInterceptTextShowing:
       case State::kAnimatedUserIdentity:
         color = color_provider->GetColor(
             kColorAvatarButtonHighlightDefaultForeground);
@@ -306,7 +305,7 @@ void AvatarToolbarButton::UpdateInkdrop() {
         break;
       case State::kSyncError:
       case State::kGuestSession:
-      case State::kSignInTextShowing:
+      case State::kInterceptTextShowing:
       case State::kAnimatedUserIdentity:
         break;
       case State::kSyncPaused:
@@ -346,13 +345,14 @@ void AvatarToolbarButton::ShowAvatarHighlightAnimation() {
   delegate_->ShowHighlightAnimation();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-void AvatarToolbarButton::ShowSignInText() {
-  delegate_->ShowSignInText();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void AvatarToolbarButton::ShowInterceptText(
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
+  delegate_->ShowInterceptText(interception_type);
 }
 
-void AvatarToolbarButton::HideSignInText() {
-  delegate_->HideSignInText();
+void AvatarToolbarButton::HideText() {
+  delegate_->HideText();
 }
 #endif
 
@@ -468,7 +468,7 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
           GetAvatarSyncErrorDescription(*error,
                                         delegate_->IsSyncFeatureEnabled()));
     }
-    case State::kSignInTextShowing:
+    case State::kInterceptTextShowing:
     case State::kNormal:
       return delegate_->GetProfileName();
   }
@@ -510,7 +510,7 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
                                             icon_color, icon_size);
     case State::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
-    case State::kSignInTextShowing:
+    case State::kInterceptTextShowing:
     case State::kAnimatedUserIdentity:
     case State::kSyncError:
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon should
