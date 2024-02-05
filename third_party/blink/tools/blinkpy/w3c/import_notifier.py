@@ -35,8 +35,8 @@ _log = logging.getLogger(__name__)
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
 
-USE_BUGANIZER = False
-BUGANIZER_WPT_COMPONENT = "1415957"
+USE_BUGANIZER = True
+BUGANIZER_WPT_COMPONENT = '1456176'
 
 
 class ImportNotifier:
