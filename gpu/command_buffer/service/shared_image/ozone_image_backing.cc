@@ -709,9 +709,14 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
     // able to set a single (duplicated) fence for bunch of tiles instead of
     // having the SI framework creating fences for each single message when
     // write access ends.
-    need_end_fence =
-        (write_streams_count_ > 1) ||
-        !(usage() & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING);
+
+    // TODO(crbug.com/1522940): Implement vk fence optimization in the case of
+    // raster delegation.
+    const bool skip_fence_in_delegation =
+        (usage() & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
+        context_state_->GrContextIsGL();
+
+    need_end_fence = (write_streams_count_ > 1) || !skip_fence_in_delegation;
   }
 
   return true;
