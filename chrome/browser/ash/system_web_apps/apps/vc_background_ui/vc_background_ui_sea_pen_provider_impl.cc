@@ -11,7 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/camera/camera_effects_controller.h"
-#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
@@ -100,10 +100,11 @@ void VcBackgroundUISeaPenProviderImpl::DeleteRecentSeaPenImage(
 
 void VcBackgroundUISeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const SeaPenImage& sea_pen_image,
-    const std::string& query_info,
+    const ash::personalization_app::mojom::SeaPenQueryPtr& query,
     base::OnceCallback<void(bool success)> callback) {
+  const std::string metadata = QueryDictToXmpString(SeaPenQueryToDict(query));
   GetCameraEffectsController()->SetBackgroundImageFromContent(
-      sea_pen_image, query_info, std::move(callback));
+      sea_pen_image, metadata, std::move(callback));
 }
 
 }  // namespace ash::vc_background_ui

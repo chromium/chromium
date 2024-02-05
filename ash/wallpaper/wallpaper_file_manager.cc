@@ -10,6 +10,7 @@
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -198,8 +199,8 @@ std::optional<base::Value::Dict> AsOptionalDict(
     return std::nullopt;
   }
   base::Value::Dict& dict = parsed->GetDict();
-  if (!dict.contains(wallpaper_constants::kSeaPenFreeformQueryKey) &&
-      !dict.contains(wallpaper_constants::kSeaPenTemplateIdKey)) {
+  if (!dict.contains(kSeaPenFreeformQueryKey) &&
+      !dict.contains(kSeaPenTemplateIdKey)) {
     LOG(WARNING) << "Parsed JSON does not contain required keys";
     return std::nullopt;
   }

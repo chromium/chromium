@@ -58,7 +58,7 @@ class PersonalizationAppSeaPenProviderImpl
 
   void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
-      const std::string& query_info,
+      const mojom::SeaPenQueryPtr& query,
       base::OnceCallback<void(bool success)> callback) override;
 };
 

@@ -25,6 +25,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
@@ -1117,8 +1118,8 @@ void PersonalizationAppWallpaperProviderImpl::SendSeaPenWallpaperAttribution(
 
   std::vector<std::string> attribution;
 
-  auto* freeform_query = sea_pen_metadata->FindString(
-      wallpaper_constants::kSeaPenFreeformQueryKey);
+  auto* freeform_query =
+      sea_pen_metadata->FindString(ash::kSeaPenFreeformQueryKey);
   if (freeform_query) {
     // The Sea Pen wallpaper was generated from a freeform query.
     attribution.push_back(*freeform_query);
@@ -1130,13 +1131,13 @@ void PersonalizationAppWallpaperProviderImpl::SendSeaPenWallpaperAttribution(
 
   // Otherwise, it should be generated from a template query, get the user
   // visible query and add into `attributions`.
-  auto* user_visible_query_text = sea_pen_metadata->FindString(
-      wallpaper_constants::kSeaPenUserVisibleQueryTextKey);
+  auto* user_visible_query_text =
+      sea_pen_metadata->FindString(ash::kSeaPenUserVisibleQueryTextKey);
   if (user_visible_query_text) {
     attribution.push_back(*user_visible_query_text);
   }
-  auto* user_visible_query_template = sea_pen_metadata->FindString(
-      wallpaper_constants::kSeaPenUserVisibleQueryTemplateKey);
+  auto* user_visible_query_template =
+      sea_pen_metadata->FindString(ash::kSeaPenUserVisibleQueryTemplateKey);
   if (user_visible_query_template) {
     attribution.push_back(*user_visible_query_template);
   }
