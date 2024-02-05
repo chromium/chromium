@@ -30,6 +30,14 @@ source_set("sessions") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("restoration_observer") {
   sources = [ "session_restoration_observer.h" ]
   public_deps = [ "//base" ]
@@ -90,6 +98,7 @@ source_set("serialisation") {
     "web_state_list_serialization.mm",
   ]
   deps = [
+    ":features",
     ":session_constants",
     "//base",
     "//components/sessions:session_id",
@@ -348,6 +357,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":fake",
+    ":features",
     ":legacy_session_restoration_service",
     ":resources_unit_tests",
     ":restoration_agent",

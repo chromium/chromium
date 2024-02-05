@@ -10,6 +10,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -1559,6 +1561,58 @@ TEST_F(WebStateListSerializationTest,
 //
 // Protobuf message variant.
 TEST_F(WebStateListSerializationTest, Deserialize_Proto_MultipleNTPTabs) {
+  FakeWebStateListDelegate delegate;
+  WebStateList original_web_state_list(&delegate);
+  original_web_state_list.InsertWebState(
+      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(original_web_state_list, storage);
+
+  EXPECT_EQ(storage.items_size(), 1);
+  EXPECT_EQ(storage.active_index(), 0);
+  EXPECT_EQ(storage.pinned_item_count(), 0);
+
+  // Create a WebStateList with a single tab displaying NTP.
+  WebStateList restored_web_state_list(&delegate);
+  restored_web_state_list.InsertWebState(
+      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  restored_web_state_list.InsertWebState(
+      1, CreateWebStateOnNTP(/*has_pending_load*/ false),
+      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  ASSERT_EQ(restored_web_state_list.count(), 2);
+
+  // Record the WebStateIDs of the WebStates displaying the NTP.
+  const auto ntp_web_state_id_0 = IdentifierAt(restored_web_state_list, 0);
+  const auto ntp_web_state_id_1 = IdentifierAt(restored_web_state_list, 1);
+
+  // Check that after restoration, the old tab displaying the NTP
+  // has been closed.
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &restored_web_state_list, std::move(storage),
+          SessionRestorationScope::kAll,
+          /*enable_pinned_web_states*/ true,
+          base::BindRepeating(&CreateWebStateWithWebStateID));
+  EXPECT_EQ(restored_web_states.size(), 1u);
+
+  ASSERT_EQ(restored_web_state_list.count(), 3);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id_0);
+  EXPECT_EQ(IdentifierAt(restored_web_state_list, 1), ntp_web_state_id_1);
+}
+
+// Tests deserializing works with the kSessionRestorationSessionIDCheck flag
+// enabled.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_SessionIDCheck) {
+  base::test::ScopedFeatureList feature_list;
+  // This test is just here for exercising the code path behind the feature flag
+  // (which is just a CHECK). Remove the test when cleaning up the feature.
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{session::features::
+                                kSessionRestorationSessionIDCheck},
+      /*disabled_features=*/{});
+
   FakeWebStateListDelegate delegate;
   WebStateList original_web_state_list(&delegate);
   original_web_state_list.InsertWebState(

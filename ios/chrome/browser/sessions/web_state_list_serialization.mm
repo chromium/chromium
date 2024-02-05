@@ -17,6 +17,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -413,18 +414,42 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
   // the insertion, if in scope.
   const int active_index = deserializer.GetActiveIndex();
 
+  int32_t max_identifier = -1;
+
   // Restore all items in scope directly at their correct position in the
   // WebStateList. The opener-opened relationship is not restored yet, as
   // some WebState may have an opener that is stored after them.
   for (int index = range.min; index < range.max; ++index) {
+
     std::unique_ptr<web::WebState> web_state = deserializer.RestoreTabAt(index);
     restored_web_states.push_back(web_state.get());  // Store pointer to item.
+
+    if (base::FeatureList::IsEnabled(
+            session::features::kSessionRestorationSessionIDCheck)) {
+      web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+      if (!web_state_id.valid()) {
+        base::debug::DumpWithoutCrashing();
+      }
+      max_identifier = std::max(max_identifier, web_state_id.identifier());
+    }
 
     const int inserted_index = web_state_list->InsertWebState(
         helper.insertion_index(index), std::move(web_state),
         helper.insertion_flags(index, index == active_index), WebStateOpener{});
 
     DCHECK_EQ(inserted_index, helper.insertion_index(index));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          session::features::kSessionRestorationSessionIDCheck)) {
+    int32_t next_id = SessionID::NewUnique().id();
+    if (next_id > max_identifier - 10000000) {
+      // In case the ID went over the max int value, make sure that we only
+      // compare them if they are not too far.
+      if (max_identifier >= next_id) {
+        base::debug::DumpWithoutCrashing();
+      }
+    }
   }
 
   // Check that all WebStates have been restored.
