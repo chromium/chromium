@@ -1050,6 +1050,22 @@
     "expiry_milestone": 140
   },
   {
+    "name": "campbell-glyph",
+    "owners": [
+      "tbarzic@chromiu.org",
+      "chromeos-launcher@google.com"
+    ],
+    "expiry_milestone": 124
+  },
+  {
+    "name": "campbell-key",
+    "owners": [
+      "tbarzic@chromiu.org",
+      "chromeos-launcher@google.com"
+    ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "canvas-2d-layers",
     "owners": [ "fserb@chromium.org", "jpgravel@chromium.org", "yiyix@chromium.org" ],
     "expiry_milestone": 125

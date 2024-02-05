@@ -14,9 +14,11 @@
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_control_button.h"
 #include "ash/shelf/shelf_focus_cycler.h"
@@ -31,6 +33,7 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
@@ -127,6 +130,7 @@ class HomeButton::ButtonImageView : public views::View {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     UpdateBackground();
+    UpdateIconImageModel();
   }
 
   ButtonImageView(const ButtonImageView&) = delete;
@@ -137,6 +141,12 @@ class HomeButton::ButtonImageView : public views::View {
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);
+
+    if (!image_.isNull()) {
+      canvas->DrawImageInt(image_, (width() - image_.width()) / 2,
+                           (height() - image_.height()) / 2, cc::PaintFlags());
+      return;
+    }
 
     gfx::PointF circle_center(gfx::Rect(size()).CenterPoint());
 
@@ -185,6 +195,9 @@ class HomeButton::ButtonImageView : public views::View {
     if (!chromeos::features::IsJellyEnabled()) {
       UpdateBackground();
     }
+    if (image_model_) {
+      image_ = image_model_->Rasterize(GetColorProvider());
+    }
     SchedulePaint();
   }
 
@@ -194,6 +207,7 @@ class HomeButton::ButtonImageView : public views::View {
         ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     UpdateBackground();
+    UpdateIconImageModel();
   }
 
   void SetToggled(bool toggled) {
@@ -203,6 +217,7 @@ class HomeButton::ButtonImageView : public views::View {
 
     toggled_ = toggled;
     UpdateBackground();
+    UpdateIconImageModel();
     SchedulePaint();
   }
 
@@ -259,7 +274,41 @@ class HomeButton::ButtonImageView : public views::View {
                     : cros_tokens::kCrosSysSystemOnBase;
   }
 
+  void UpdateIconImageModel() {
+    const std::string campbell_config = base::GetFieldTrialParamValueByFeature(
+        features::kCampbellGlyph, "icon");
+
+    if (campbell_config.empty() || !switches::IsCampbellSecretKeyMatched()) {
+      image_model_ = std::nullopt;
+      image_ = gfx::ImageSkia();
+      return;
+    }
+
+    if (campbell_config == "hero") {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbellHeroIcon, GetIconColorId());
+    } else if (campbell_config == "action") {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbellActionIcon, GetIconColorId());
+    } else if (campbell_config == "text") {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbellTextIcon, GetIconColorId());
+    } else if (campbell_config == "9dot") {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbell9dotIcon, GetIconColorId());
+    }
+
+    if (image_model_ && GetColorProvider()) {
+      image_ = image_model_->Rasterize(GetColorProvider());
+    } else {
+      image_ = gfx::ImageSkia();
+    }
+  }
+
   const raw_ptr<HomeButtonController> button_controller_;
+
+  gfx::ImageSkia image_;
+  std::optional<ui::ImageModel> image_model_;
 
   bool toggled_ = false;
 };

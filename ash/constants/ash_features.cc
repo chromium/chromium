@@ -393,6 +393,11 @@ BASE_FEATURE(kCameraPrivacySwitchNotifications,
              "CameraPrivacySwitchNotifications",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the feature to parameterize glyph for "Campbell" feature.
+BASE_FEATURE(kCampbellGlyph,
+             "CampbellGlyph",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the capture mode advanced audio settings are enabled.
 BASE_FEATURE(kCaptureModeAudioMixing,
              "CaptureModeAudioMixing",

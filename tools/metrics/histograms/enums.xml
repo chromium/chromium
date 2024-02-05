@@ -16993,6 +16993,7 @@ from previous Chrome versions.
   <int value="-1695774453" label="skip-extra-ash-window-positioning"/>
   <int value="-1695608731"
       label="PageInfoAboutThisSiteDescriptionPlaceholder:disabled"/>
+  <int value="-1695235937" label="CampbellGlyph:enabled"/>
   <int value="-1694900665" label="HandwritingGestureEditing:enabled"/>
   <int value="-1693498375" label="CdmFactoryDaemon:enabled"/>
   <int value="-1693140558" label="FiltersInRecentsV2:disabled"/>
@@ -18151,6 +18152,7 @@ from previous Chrome versions.
   <int value="-1182777927" label="ShareButtonInTopToolbar:enabled"/>
   <int value="-1182771360"
       label="AutofillVirtualCardsOnTouchToFillAndroid:disabled"/>
+  <int value="-1182667070" label="CampbellGlyph:disabled"/>
   <int value="-1182246276" label="EnableRFC8925:enabled"/>
   <int value="-1182087678"
       label="CrossOriginOpenerPolicyAccessReporting:disabled"/>

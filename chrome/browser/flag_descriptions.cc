@@ -5814,6 +5814,13 @@ const char kBluetoothUseLLPrivacyDescription[] =
     "Enable address resolution offloading to Bluetooth Controller if "
     "supported. Modifying this flag will cause Bluetooth Controller to reset.";
 
+const char kCampbellGlyphName[] = "Enable glyph for Campbell";
+const char kCampbellGlyphDescription[] = "Enables a Campbell glyph.";
+
+const char kCampbellKeyName[] = "Key to enable glyph for Campbell";
+const char kCampbellKeyDescription[] =
+    "Secret key to enable glyph for Campbell";
+
 const char kCaptureModeAudioMixingName[] =
     "Enable screen capture advanced audio settings";
 const char kCaptureModeAudioMixingDescription[] =

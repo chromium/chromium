@@ -3355,6 +3355,12 @@ extern const char kBluetoothFlossIsAvailabilityCheckNeededDescription[];
 extern const char kBluetoothUseLLPrivacyName[];
 extern const char kBluetoothUseLLPrivacyDescription[];
 
+extern const char kCampbellGlyphName[];
+extern const char kCampbellGlyphDescription[];
+
+extern const char kCampbellKeyName[];
+extern const char kCampbellKeyDescription[];
+
 extern const char kCaptureModeAudioMixingName[];
 extern const char kCaptureModeAudioMixingDescription[];
 
