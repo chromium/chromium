@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/osauth/auth_factor_migration.h"
+#include "chrome/browser/ash/login/osauth/knowledge_factor_hash_info_migration.h"
 #include "chrome/browser/ash/login/osauth/recovery_factor_hsm_pubkey_migration.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -30,6 +31,8 @@ std::string GetAuthFactorMigrationName(
   switch (name) {
     case AuthFactorMigration::MigrationName::kRecoveryFactorHsmPubkeyMigration:
       return "RecoveryFactorHsmPubkeyMigration";
+    case AuthFactorMigration::MigrationName::kKnowledgeFactorHashInfoMigration:
+      return "KnowledgeFactorHashInfoMigration";
   }
 }
 
@@ -66,6 +69,8 @@ AuthFactorMigrator::GetMigrationsList(UserDataAuthClient* user_data_auth) {
   auto result = std::vector<std::unique_ptr<AuthFactorMigration>>();
   result.emplace_back(
       std::make_unique<RecoveryFactorHsmPubkeyMigration>(user_data_auth));
+  result.emplace_back(
+      std::make_unique<KnowledgeFactorHashInfoMigration>(user_data_auth));
   return result;
 }
 

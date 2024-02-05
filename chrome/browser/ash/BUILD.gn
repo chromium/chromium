@@ -1763,6 +1763,8 @@ source_set("ash") {
     "login/osauth/auth_policy_enforcer.h",
     "login/osauth/chrome_auth_parts.cc",
     "login/osauth/chrome_auth_parts.h",
+    "login/osauth/knowledge_factor_hash_info_migration.cc",
+    "login/osauth/knowledge_factor_hash_info_migration.h",
     "login/osauth/profile_prefs_auth_policy_connector.cc",
     "login/osauth/profile_prefs_auth_policy_connector.h",
     "login/osauth/profile_prefs_auth_policy_connector_factory.cc",
