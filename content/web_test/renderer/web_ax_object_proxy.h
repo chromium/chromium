@@ -267,7 +267,6 @@ class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
   ~WebAXObjectProxyList() override;
 
   void Clear();
-  void Remove(unsigned axid) { ax_objects_.erase(axid); }
   v8::Local<v8::Object> GetOrCreate(const blink::WebAXObject&) override;
   blink::WebAXContext* GetAXContext() override;
 
