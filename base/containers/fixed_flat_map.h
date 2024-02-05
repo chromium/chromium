@@ -93,7 +93,7 @@ using fixed_flat_map = base::
 // of keys and values. Requires that the passed in `data` contains unique keys.
 //
 // Large inputs will run into compiler limits, e.g. "constexpr evaluation hit
-// maximum step limit". In that case, use `MakeFixedFlatMap(sorted_unique)`.
+// maximum step limit", unless `data` is already sorted.
 //
 // Example usage:
 //   constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
