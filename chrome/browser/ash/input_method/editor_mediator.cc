@@ -208,12 +208,6 @@ void EditorMediator::CacheContext() {
   }
 }
 
-void EditorMediator::OnTextInsertionRequested() {
-  // After queuing the text to be inserted, closing the mako web ui should
-  // return the focus back to the original input.
-  mako_bubble_coordinator_.CloseUI();
-}
-
 void EditorMediator::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
   editor_switch_->OnInputContextUpdated(

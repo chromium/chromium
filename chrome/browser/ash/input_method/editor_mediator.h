@@ -80,7 +80,6 @@ class EditorMediator : public EditorEventSink,
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // EditorSystemActuator::System overrides
-  void OnTextInsertionRequested() override;
   void ProcessConsentAction(ConsentAction consent_action) override;
   void ShowUI() override;
   void CloseUI() override;

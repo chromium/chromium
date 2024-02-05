@@ -36,10 +36,11 @@ void EditorSystemActuator::InsertText(const std::string& text) {
   logger->LogNumberOfCharactersInserted(text.length());
   logger->LogNumberOfCharactersSelectedForInsert(
       system_->GetSelectedTextLength());
-  // We queue the text to be inserted here rather then insert it directly into
-  // the input.
+  // The text cannot be immediately inserted as the target input is not focused
+  // at this point, the WebUI is focused. After closing the WebUI focus will
+  // return to the original text input.
   inserter_.InsertTextOnNextFocus(text);
-  system_->OnTextInsertionRequested();
+  system_->CloseUI();
 }
 
 void EditorSystemActuator::ApproveConsent() {

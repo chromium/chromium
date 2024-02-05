@@ -23,7 +23,6 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   class System {
    public:
     virtual ~System() = default;
-    virtual void OnTextInsertionRequested() = 0;
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
