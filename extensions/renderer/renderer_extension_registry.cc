@@ -8,6 +8,7 @@
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
 #include "content/public/renderer/render_thread.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
 namespace extensions {
@@ -41,7 +42,7 @@ const ExtensionSet* RendererExtensionRegistry::GetMainThreadExtensionSet()
 }
 
 bool RendererExtensionRegistry::Contains(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   base::AutoLock lock(lock_);
   return extensions_.Contains(extension_id);
 }
@@ -53,13 +54,13 @@ bool RendererExtensionRegistry::Insert(
   return extensions_.Insert(extension);
 }
 
-bool RendererExtensionRegistry::Remove(const std::string& id) {
+bool RendererExtensionRegistry::Remove(const ExtensionId& id) {
   DCHECK(content::RenderThread::Get());
   base::AutoLock lock(lock_);
   return extensions_.Remove(id);
 }
 
-std::string RendererExtensionRegistry::GetExtensionOrAppIDByURL(
+ExtensionId RendererExtensionRegistry::GetExtensionOrAppIDByURL(
     const GURL& url) const {
   base::AutoLock lock(lock_);
   return extensions_.GetExtensionOrAppIDByURL(url);
@@ -79,7 +80,7 @@ const Extension* RendererExtensionRegistry::GetHostedAppByURL(
 }
 
 const Extension* RendererExtensionRegistry::GetByID(
-    const std::string& id) const {
+    const ExtensionId& id) const {
   base::AutoLock lock(lock_);
   return extensions_.GetByID(id);
 }

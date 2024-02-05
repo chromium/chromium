@@ -5,9 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_DOM_ACTIVITY_LOGGER_H_
 #define EXTENSIONS_RENDERER_DOM_ACTIVITY_LOGGER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/values.h"
 #include "extensions/common/dom_action_types.h"
 #include "extensions/common/extension_id.h"
@@ -28,7 +25,7 @@ namespace extensions {
 class DOMActivityLogger: public blink::WebDOMActivityLogger {
  public:
   static const int kMainWorldId = 0;
-  explicit DOMActivityLogger(const std::string& extension_id);
+  explicit DOMActivityLogger(const ExtensionId& extension_id);
 
   DOMActivityLogger(const DOMActivityLogger&) = delete;
   DOMActivityLogger& operator=(const DOMActivityLogger&) = delete;
@@ -38,7 +35,7 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
   // Check (using the WebKit API) if there is no logger attached to the world
   // corresponding to world_id, and if so, construct a new logger and attach it.
   // world_id = 0 indicates the main world.
-  static void AttachToWorld(int32_t world_id, const std::string& extension_id);
+  static void AttachToWorld(int32_t world_id, const ExtensionId& extension_id);
 
  private:
   // blink::WebDOMActivityLogger implementation.

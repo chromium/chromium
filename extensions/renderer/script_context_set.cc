@@ -13,6 +13,7 @@
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/utils/extension_utils.h"
@@ -203,7 +204,7 @@ void ScriptContextSet::ExecuteCallbackWithContext(
   }
 }
 
-void ScriptContextSet::OnExtensionUnloaded(const std::string& extension_id) {
+void ScriptContextSet::OnExtensionUnloaded(const ExtensionId& extension_id) {
   ScriptContextSetIterable::ForEach(
       GenerateHostIdFromExtensionId(extension_id),
       base::BindRepeating(&ScriptContextSet::Remove, base::Unretained(this)));
@@ -217,7 +218,7 @@ const Extension* ScriptContextSet::GetExtensionFromFrameAndWorld(
     blink::WebLocalFrame* frame,
     int32_t world_id,
     bool use_effective_url) {
-  std::string extension_id;
+  ExtensionId extension_id;
   if (world_id != 0) {
     // Isolated worlds (content script).
     extension_id =

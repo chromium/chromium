@@ -16,6 +16,7 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/console.h"
@@ -57,7 +58,7 @@ bool RenderFrameMatches(const ExtensionFrameHelper* frame_helper,
                         mojom::ViewType match_view_type,
                         int match_window_id,
                         int match_tab_id,
-                        const std::string& match_extension_id) {
+                        const ExtensionId& match_extension_id) {
   if (match_view_type != mojom::ViewType::kInvalid &&
       frame_helper->view_type() != match_view_type)
     return false;
@@ -156,7 +157,7 @@ ExtensionFrameHelper::~ExtensionFrameHelper() {
 
 // static
 std::vector<content::RenderFrame*> ExtensionFrameHelper::GetExtensionFrames(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int browser_window_id,
     int tab_id,
     mojom::ViewType view_type) {
@@ -172,7 +173,7 @@ std::vector<content::RenderFrame*> ExtensionFrameHelper::GetExtensionFrames(
 // static
 v8::Local<v8::Array> ExtensionFrameHelper::GetV8MainFrames(
     v8::Local<v8::Context> context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int browser_window_id,
     int tab_id,
     mojom::ViewType view_type) {
@@ -208,7 +209,7 @@ v8::Local<v8::Array> ExtensionFrameHelper::GetV8MainFrames(
 
 // static
 content::RenderFrame* ExtensionFrameHelper::GetBackgroundPageFrame(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   for (const ExtensionFrameHelper* helper : g_frame_helpers.Get()) {
     if (RenderFrameMatches(helper, mojom::ViewType::kExtensionBackgroundPage,
                            extension_misc::kUnknownWindowId,
@@ -225,7 +226,7 @@ content::RenderFrame* ExtensionFrameHelper::GetBackgroundPageFrame(
 
 v8::Local<v8::Value> ExtensionFrameHelper::GetV8BackgroundPageMainFrame(
     v8::Isolate* isolate,
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   content::RenderFrame* main_frame = GetBackgroundPageFrame(extension_id);
   blink::WebLocalFrame* web_frame =
       main_frame ? main_frame->GetWebFrame() : nullptr;
@@ -453,7 +454,7 @@ void ExtensionFrameHelper::NotifyRenderViewType(mojom::ViewType type) {
   view_type_ = type;
 }
 
-void ExtensionFrameHelper::MessageInvoke(const std::string& extension_id,
+void ExtensionFrameHelper::MessageInvoke(const ExtensionId& extension_id,
                                          const std::string& module_name,
                                          const std::string& function_name,
                                          base::Value::List args) {
@@ -524,7 +525,7 @@ void ExtensionFrameHelper::SetSpatialNavigationEnabled(bool enabled) {
 
 void ExtensionFrameHelper::ExecuteDeclarativeScript(
     int32_t tab_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& script_id,
     const GURL& url) {
   // TODO(https://crbug.com/1186220): URL-checking isn't the best approach to

@@ -20,6 +20,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/extension_frame_helper.h"
@@ -263,7 +264,7 @@ void ScriptInjectionManager::OnRenderFrameCreated(
 }
 
 void ScriptInjectionManager::OnExtensionUnloaded(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   for (auto iter = pending_injections_.begin();
       iter != pending_injections_.end();) {
     if ((*iter)->host_id().id == extension_id) {

@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -46,7 +47,7 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   void OnRenderFrameCreated(content::RenderFrame* render_frame);
 
   // Removes pending injections of the unloaded extension.
-  void OnExtensionUnloaded(const std::string& extension_id);
+  void OnExtensionUnloaded(const ExtensionId& extension_id);
 
   // Handle the ExecuteCode extension message.
   void HandleExecuteCode(mojom::ExecuteCodeParamsPtr params,

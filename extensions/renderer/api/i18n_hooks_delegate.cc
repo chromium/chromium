@@ -14,6 +14,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/js_runner.h"
@@ -149,7 +150,7 @@ void InitDetectedLanguages(
 // substitutions. This can result in a synchronous IPC being sent to the browser
 // for the first call related to an extension in this process.
 v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
-                                    const std::string& extension_id,
+                                    const ExtensionId& extension_id,
                                     v8::Local<v8::Value> v8_substitutions,
                                     v8::Local<v8::Value> v8_options,
                                     SharedL10nMap::IPCTarget* ipc_target,
