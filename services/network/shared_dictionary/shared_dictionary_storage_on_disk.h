@@ -28,6 +28,7 @@
 namespace network {
 
 class SharedDictionaryManagerOnDisk;
+class SimpleUrlPatternMatcher;
 
 // A SharedDictionaryStorage which is managed by SharedDictionaryManagerOnDisk.
 class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
@@ -71,14 +72,32 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   class RefCountedSharedDictionary;
   class WrappedSharedDictionary;
 
+  class DictionaryInfoWithMatcher : public net::SharedDictionaryInfo {
+   public:
+    DictionaryInfoWithMatcher(net::SharedDictionaryInfo info,
+                              std::unique_ptr<SimpleUrlPatternMatcher> matcher);
+    ~DictionaryInfoWithMatcher();
+    DictionaryInfoWithMatcher(const DictionaryInfoWithMatcher&) = delete;
+    DictionaryInfoWithMatcher& operator=(const DictionaryInfoWithMatcher&) =
+        delete;
+    DictionaryInfoWithMatcher(DictionaryInfoWithMatcher&&);
+    DictionaryInfoWithMatcher& operator=(DictionaryInfoWithMatcher&&);
+
+    const SimpleUrlPatternMatcher* matcher() const { return matcher_.get(); }
+
+   private:
+    std::unique_ptr<SimpleUrlPatternMatcher> matcher_;
+  };
+
   void OnDatabaseRead(
       net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError result);
-  void OnDictionaryWritten(net::SharedDictionaryInfo info);
+  void OnDictionaryWritten(std::unique_ptr<SimpleUrlPatternMatcher> matcher,
+                           net::SharedDictionaryInfo info);
   void OnRefCountedSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
   const std::map<url::SchemeHostPort,
-                 std::map<std::string, net::SharedDictionaryInfo>>&
+                 std::map<std::string, DictionaryInfoWithMatcher>>&
   GetDictionaryMapForTesting() {
     return dictionary_info_map_;
   }
@@ -87,7 +106,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   const net::SharedDictionaryIsolationKey isolation_key_;
   base::ScopedClosureRunner on_deleted_closure_runner_;
   std::map<url::SchemeHostPort,
-           std::map<std::string, net::SharedDictionaryInfo>>
+           std::map<std::string, DictionaryInfoWithMatcher>>
       dictionary_info_map_;
   std::map<base::UnguessableToken, raw_ptr<RefCountedSharedDictionary>>
       dictionaries_;

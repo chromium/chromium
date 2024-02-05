@@ -201,7 +201,7 @@ construction to catch up the following spec changes:
 - Change Content-Encoding name "br-d" "zstd-d"
   - Stauts: Implemented by https://crrev.com/c/5185977.
 - Changed match to use URLPattern
-  - Stauts: Not yet implemented.
+  - Stauts: Implemented by https://crrev.com/c/5232339.
 - Added support for a server-provided dictionary id
   - Stauts: Not yet implemented.
 - Stop using "expires" value of "Use-As-Dictionary" header, and use the cache

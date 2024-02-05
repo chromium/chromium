@@ -19,6 +19,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
+#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "url/scheme_host_port.h"
 
 namespace network {
@@ -103,6 +104,19 @@ class SharedDictionaryStorageOnDisk::WrappedSharedDictionary
  private:
   scoped_refptr<RefCountedSharedDictionary> ref_counted_shared_dictionary_;
 };
+
+SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher::
+    DictionaryInfoWithMatcher(net::SharedDictionaryInfo info,
+                              std::unique_ptr<SimpleUrlPatternMatcher> matcher)
+    : net::SharedDictionaryInfo(std::move(info)),
+      matcher_(std::move(matcher)) {}
+SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher::
+    ~DictionaryInfoWithMatcher() = default;
+SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher::
+    DictionaryInfoWithMatcher(DictionaryInfoWithMatcher&&) = default;
+SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher&
+SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher::operator=(
+    DictionaryInfoWithMatcher&&) = default;
 
 SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
     base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
@@ -197,10 +211,19 @@ SharedDictionaryStorageOnDisk::CreateWriter(const GURL& url,
   if (!manager_) {
     return nullptr;
   }
+
+  std::unique_ptr<SimpleUrlPatternMatcher> matcher;
+  if (NeedToUseUrlPatternMatcher()) {
+    auto matcher_create_result = SimpleUrlPatternMatcher::Create(match, url);
+    if (!matcher_create_result.has_value()) {
+      return nullptr;
+    }
+    matcher = std::move(matcher_create_result.value());
+  }
   return manager_->CreateWriter(
       isolation_key_, url, response_time, expiration, match,
       base::BindOnce(&SharedDictionaryStorageOnDisk::OnDictionaryWritten,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(matcher)));
 }
 
 bool SharedDictionaryStorageOnDisk::IsAlreadyRegistered(
@@ -220,13 +243,24 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
   if (!result.has_value()) {
     return;
   }
-  std::set<base::UnguessableToken> deleted_cache_tokens;
+
+  const bool need_matcher = NeedToUseUrlPatternMatcher();
   for (auto& info : result.value()) {
     const url::SchemeHostPort scheme_host_port =
         url::SchemeHostPort(info.url());
     const std::string match = info.match();
-    (dictionary_info_map_[scheme_host_port])
-        .insert(std::make_pair(match, std::move(info)));
+    std::unique_ptr<SimpleUrlPatternMatcher> matcher;
+    if (need_matcher) {
+      auto matcher_create_result =
+          SimpleUrlPatternMatcher::Create(match, info.url());
+      if (!matcher_create_result.has_value()) {
+        continue;
+      }
+      matcher = std::move(matcher_create_result.value());
+    }
+
+    dictionary_info_map_[scheme_host_port].insert(std::make_pair(
+        match, DictionaryInfoWithMatcher(std::move(info), std::move(matcher))));
   }
 
   auto callbacks = std::move(pending_get_dictionary_tasks_);
@@ -236,11 +270,13 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
 }
 
 void SharedDictionaryStorageOnDisk::OnDictionaryWritten(
+    std::unique_ptr<SimpleUrlPatternMatcher> matcher,
     net::SharedDictionaryInfo info) {
   const url::SchemeHostPort scheme_host_port = url::SchemeHostPort(info.url());
   const std::string match = info.match();
   (dictionary_info_map_[scheme_host_port])
-      .insert_or_assign(match, std::move(info));
+      .insert_or_assign(match, DictionaryInfoWithMatcher(std::move(info),
+                                                         std::move(matcher)));
 }
 
 void SharedDictionaryStorageOnDisk::OnRefCountedSharedDictionaryDeleted(

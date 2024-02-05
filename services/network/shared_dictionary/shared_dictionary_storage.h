@@ -63,6 +63,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
  protected:
   friend class base::RefCounted<SharedDictionaryStorage>;
 
+  // Returns true when V2 backend is used.
+  // TODO(crbug.com/1413922): Remove this when we remove V1 backend support.
+  static bool NeedToUseUrlPatternMatcher();
+
   SharedDictionaryStorage();
   virtual ~SharedDictionaryStorage();
 
@@ -93,23 +97,29 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
   if (it == dictionary_info_map.end()) {
     return nullptr;
   }
-  DictionaryInfoType* info = nullptr;
-  size_t mached_path_size = 0;
-  // TODO(crbug.com/1413922): If there are multiple matching dictionaries, this
-  // method currently returns the dictionary with the longest path pattern. But
-  // we should have a detailed description about `best-matching` in the spec.
+  DictionaryInfoType* matched_info = nullptr;
   for (auto& item : it->second) {
-    // TODO(crbug.com/1413922): base::MatchPattern() is treating '?' in the
-    // pattern as an wildcard. We need to introduce a new flag in
-    // base::MatchPattern() to treat '?' as a normal character.
-    // TODO(crbug.com/1413922): Need support path expansion for relative paths.
-    if ((item.first.size() > mached_path_size) &&
-        base::MatchPattern(url.path(), item.first)) {
-      mached_path_size = item.first.size();
-      info = &item.second;
+    DictionaryInfoType& info = item.second;
+    CHECK_EQ(info.match(), item.first);
+    if (matched_info &&
+        ((matched_info->match().size() > info.match().size()) ||
+         (matched_info->match().size() == info.match().size() &&
+          matched_info->response_time() > info.response_time()))) {
+      continue;
+    }
+    if (!info.matcher()) {
+      // This is for V1 backend.
+      // TODO(crbug.com/1413922): Remove this after V1 backend is removed.
+      if (base::MatchPattern(url.path(), info.match())) {
+        matched_info = &info;
+      }
+    } else {
+      if (info.matcher()->Match(url)) {
+        matched_info = &info;
+      }
     }
   }
-  return info;
+  return matched_info;
 }
 
 // Returns true if the same dictionary is already registered in

@@ -30,6 +30,7 @@ class CorsURLLoaderSharedDictionaryTest;
 }  // namespace cors
 
 class SharedDictionaryManagerInMemory;
+class SimpleUrlPatternMatcher;
 
 // A SharedDictionaryStorage which is managed by
 // SharedDictionaryManagerInMemory.
@@ -45,7 +46,8 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
                    base::Time last_used_time,
                    scoped_refptr<net::IOBuffer> data,
                    size_t size,
-                   const net::SHA256HashValue& hash);
+                   const net::SHA256HashValue& hash,
+                   std::unique_ptr<SimpleUrlPatternMatcher> matcher);
 
     DictionaryInfo(const DictionaryInfo&) = delete;
     DictionaryInfo& operator=(const DictionaryInfo&) = delete;
@@ -63,6 +65,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const scoped_refptr<net::IOBuffer>& data() const { return data_; }
     size_t size() const { return size_; }
     const net::SHA256HashValue& hash() const { return hash_; }
+    const SimpleUrlPatternMatcher* matcher() const { return matcher_.get(); }
 
     void set_last_used_time(base::Time last_used_time) {
       last_used_time_ = last_used_time;
@@ -77,6 +80,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     scoped_refptr<net::IOBuffer> data_;
     size_t size_;
     net::SHA256HashValue hash_;
+    std::unique_ptr<SimpleUrlPatternMatcher> matcher_;
   };
 
   SharedDictionaryStorageInMemory(
@@ -127,6 +131,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
                            base::Time response_time,
                            base::TimeDelta expiration,
                            const std::string& match,
+                           std::unique_ptr<SimpleUrlPatternMatcher> matcher,
                            SharedDictionaryWriterInMemory::Result result,
                            scoped_refptr<net::IOBuffer> data,
                            size_t size,

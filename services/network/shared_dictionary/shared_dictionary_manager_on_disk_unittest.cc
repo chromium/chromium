@@ -160,18 +160,6 @@ void WriteDiskCacheEntry(SharedDictionaryManager* manager,
           write_callback.callback(), /*truncate=*/false)));
 }
 
-base::UnguessableToken GetDiskCacheKeyTokenOfFirstDictionary(
-    const std::map<url::SchemeHostPort,
-                   std::map<std::string, net::SharedDictionaryInfo>>&
-        dictionary_map,
-    const std::string& scheme_host_port_str) {
-  auto it =
-      dictionary_map.find(url::SchemeHostPort(GURL(scheme_host_port_str)));
-  CHECK(it != dictionary_map.end()) << scheme_host_port_str;
-  CHECK(!it->second.empty());
-  return it->second.begin()->second.disk_cache_key_token();
-}
-
 }  // namespace
 
 class SharedDictionaryManagerOnDiskTest
@@ -207,6 +195,21 @@ class SharedDictionaryManagerOnDiskTest
   features::CompressionDictionaryTransportBackendVersion GetVersion() const {
     return GetParam();
   }
+
+  static base::UnguessableToken GetDiskCacheKeyTokenOfFirstDictionary(
+      const std::map<
+          url::SchemeHostPort,
+          std::map<std::string,
+                   SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher>>&
+          dictionary_map,
+      const std::string& scheme_host_port_str) {
+    auto it =
+        dictionary_map.find(url::SchemeHostPort(GURL(scheme_host_port_str)));
+    CHECK(it != dictionary_map.end()) << scheme_host_port_str;
+    CHECK(!it->second.empty());
+    return it->second.begin()->second.disk_cache_key_token();
+  }
+
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager(
       uint64_t cache_max_size = 0,
       uint64_t cache_max_count =
@@ -218,8 +221,10 @@ class SharedDictionaryManagerOnDiskTest
 #endif  // BUILDFLAG(IS_ANDROID)
         /*file_operations_factory=*/nullptr);
   }
-  const std::map<url::SchemeHostPort,
-                 std::map<std::string, net::SharedDictionaryInfo>>&
+  const std::map<
+      url::SchemeHostPort,
+      std::map<std::string,
+               SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher>>&
   GetOnDiskDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageOnDisk*>(storage)
         ->GetDictionaryMapForTesting();

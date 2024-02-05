@@ -229,8 +229,10 @@ class SharedDictionaryManagerTest
     return static_cast<SharedDictionaryStorageInMemory*>(storage)
         ->GetDictionaryMap();
   }
-  const std::map<url::SchemeHostPort,
-                 std::map<std::string, net::SharedDictionaryInfo>>&
+  const std::map<
+      url::SchemeHostPort,
+      std::map<std::string,
+               SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher>>&
   GetOnDiskDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageOnDisk*>(storage)
         ->GetDictionaryMapForTesting();
@@ -716,6 +718,52 @@ TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromCacheControlHeader) {
   }
 }
 
+TEST_P(SharedDictionaryManagerTest, InvalidMatch) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+  struct {
+    std::string header_string;
+    bool expect_success_v1;
+    bool expect_success_v2;
+  } kTestCases[] = {
+      // Invalid as a constructor string of URLPattern.
+      {"{", true, false},
+      // Unsupported regexp group.
+      {"(a|b)", true, false},
+  };
+  for (const auto& testcase : kTestCases) {
+    SCOPED_TRACE(
+        base::StringPrintf("match: %s", testcase.header_string.c_str()));
+    scoped_refptr<net::HttpResponseHeaders> headers =
+        net::HttpResponseHeaders::TryToCreate(base::StrCat(
+            {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+             ": match=\"", testcase.header_string, "\"\n",
+             "cache-control:max-age=100\n\n"}));
+    ASSERT_TRUE(headers);
+    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+        GURL("https://origin1.test/testfile.txt"),
+        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
+        *headers,
+        /*was_fetched_via_cache=*/false,
+        /*access_allowed_check_callback=*/base::BindOnce([]() {
+          return true;
+        }));
+    switch (GetVersion()) {
+      case features::CompressionDictionaryTransportBackendVersion::kV1:
+        EXPECT_EQ(testcase.expect_success_v1, !!writer);
+        break;
+      case features::CompressionDictionaryTransportBackendVersion::kV2:
+        EXPECT_EQ(testcase.expect_success_v2, !!writer);
+        break;
+    }
+  }
+}
+
 TEST_P(SharedDictionaryManagerTest, AccessAllowedCheckReturnTrue) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
@@ -987,6 +1035,54 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
     }
   }
 }
+
+TEST_P(SharedDictionaryManagerTest, LongestMatchDictionaryWin) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "*estfile*",
+                  {"Longer match"});
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "test*",
+                  {"Shorter match"});
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  auto dict = storage->GetDictionarySync(GURL("https://origin1.test/testfile"));
+  ASSERT_TRUE(dict);
+  net::TestCompletionCallback read_callback;
+  EXPECT_EQ(net::OK,
+            read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+  EXPECT_EQ("Longer match", std::string(dict->data()->data(), dict->size()));
+}
+
+TEST_P(SharedDictionaryManagerTest, LatestDictionaryWin) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "test*",
+                  {"Old match"});
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage.get(), GURL("https://origin1.test/dict"), "*est*",
+                  {"New match"});
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  auto dict = storage->GetDictionarySync(GURL("https://origin1.test/testfile"));
+  ASSERT_TRUE(dict);
+  net::TestCompletionCallback read_callback;
+  EXPECT_EQ(net::OK,
+            read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+  EXPECT_EQ("New match", std::string(dict->data()->data(), dict->size()));
+}
+
 TEST_P(SharedDictionaryManagerTest, OverrideDictionary) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();

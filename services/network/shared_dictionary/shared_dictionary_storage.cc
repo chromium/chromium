@@ -120,6 +120,12 @@ std::optional<DictionaryHeaderInfo> ParseDictionaryHeaderInfo(
 
 }  // namespace
 
+// static
+bool SharedDictionaryStorage::NeedToUseUrlPatternMatcher() {
+  return features::kCompressionDictionaryTransportBackendVersion.Get() !=
+         features::CompressionDictionaryTransportBackendVersion::kV1;
+}
+
 SharedDictionaryStorage::SharedDictionaryStorage() = default;
 
 SharedDictionaryStorage::~SharedDictionaryStorage() = default;
