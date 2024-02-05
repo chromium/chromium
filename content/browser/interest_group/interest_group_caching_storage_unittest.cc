@@ -503,6 +503,15 @@ TEST_F(InterestGroupCachingStorageTest, GetInterestGroupUsesCache) {
             &(post_cache_loaded_group.value()->interest_group));
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.GetInterestGroupCacheHit", true, 1);
+
+  // After the cached value expires there should be no cached value.
+  task_environment().FastForwardBy(base::Days(2));
+  std::optional<SingleStorageInterestGroup> post_expiration_loaded_group =
+      GetInterestGroup(caching_storage.get(),
+                       blink::InterestGroupKey(ig.owner, ig.name));
+  EXPECT_FALSE(post_expiration_loaded_group.has_value());
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.GetInterestGroupCacheHit", true, 2);
 }
 
 TEST_F(InterestGroupCachingStorageTest, CacheWorksWhenPointerReleased) {
