@@ -68,12 +68,122 @@ js_files = [
 ]
 
 ts_files = [
-  "file_manager/files_tooltip.ts",
-  "file_manager/android_photos.ts",
   "testcase.ts",
+
+  # "remote_call.ts",
+
+  # "test_util.ts",
+
+  # File Manager.
+  "file_manager/android_photos.ts",
+
+  # "file_manager/background.ts",
+
+  # "file_manager/breadcrumbs.ts",
 
   "file_manager/choose_entry.ts",
   "file_manager/choose_entry_const.ts",
+
+  # "file_manager/context_menu.ts",
+
+  # "file_manager/copy_between_windows.ts",
+
+  # "file_manager/create_new_folder.ts",
+
+  # "file_manager/crostini.ts",
+
+  # "file_manager/directory_tree.ts",
+
+  # "file_manager/directory_tree_context_menu.ts",
+
+  # "file_manager/dlp.ts",
+
+  # "file_manager/dlp_enterprise_connectors.ts",
+
+  # "file_manager/drive_specific.ts",
+
+  # "file_manager/file_dialog.ts",
+
+  # "file_manager/file_display.ts",
+
+  # "file_manager/file_list.ts",
+
+  # "file_manager/file_transfer_connector.ts",
+
+  "file_manager/files_tooltip.ts",
+
+  # "file_manager/folder_shortcuts.ts",
+
+  # "file_manager/format_dialog.ts",
+
+  # "file_manager/gear_menu.ts",
+
+  # "file_manager/grid_view.ts",
+
+  # "file_manager/guest_os.ts",
+
+  # "file_manager/holding_space.ts",
+
+  # "file_manager/install_linux_package_dialog.ts",
+
+  # "file_manager/keyboard_operations.ts",
+
+  # "file_manager/metadata.ts",
+
+  # "file_manager/metrics.ts",
+
+  # "file_manager/my_files.ts",
+
+  # "file_manager/navigation.ts",
+
+  # "file_manager/office.ts",
+
+  # "file_manager/open_audio_media_app.ts",
+
+  # "file_manager/open_files_in_web_drive.ts",
+
+  # "file_manager/open_image_media_app.ts",
+
+  # "file_manager/open_media_app.ts",
+
+  # "file_manager/open_sniffed_files.ts",
+
+  # "file_manager/open_video_media_app.ts",
+
+  # "file_manager/providers.ts",
+
+  # "file_manager/quick_view.ts",
+
+  # "file_manager/recents.ts",
+
+  # "file_manager/restore_prefs.ts",
+
+  # "file_manager/search.ts",
+
+  # "file_manager/share.ts",
+
+  # "file_manager/share_and_manage_dialog.ts",
+
+  # "file_manager/sort_columns.ts",
+
+  # "file_manager/tab_index.ts",
+
+  # "file_manager/tasks.ts",
+
+  # "file_manager/test_data.ts",
+
+  # "file_manager/toolbar.ts",
+
+  # "file_manager/transfer.ts",
+
+  # "file_manager/trash.ts",
+
+  # "file_manager/traverse.ts",
+
+  # "file_manager/zip_files.ts",
+
+  # Page Objects.
+  # "file_manager/page_objects/directory_tree.ts",
 ]
 
 # TS/JS files.

@@ -455,11 +455,17 @@ def process_build_file(build_file_name, js_file_name):
 
             # Replace .js with .ts inplace for Image Loader.
             if f'"{js_file_name.name}",' in line.strip():
-              l = line.replace('.js',  '.ts', 1)
-              new_file.append(l)
-              continue
+                l = line.replace('.js',  '.ts', 1)
+                new_file.append(l)
+                continue
 
             new_file.append(line)
+
+    if 'integration_tests/' in str(from_root):
+        js_str_name = str(js_file_name.absolute().relative_to(build_file_name.parent))
+        js_str_name = js_str_name.replace('.js', '.ts')
+        anchor = 'ts_files = [\n'
+        find_and_uncomment(new_file, anchor, js_str_name)
 
     return new_file
 
@@ -478,8 +484,10 @@ def process_file_names_gni(js_fname, gni_file):
     anchor = 'ts_files = [\n'
     if js_str_name.endswith('unittest.js'):
         anchor = 'ts_test_files = [\n'
-    if 'image_loader/' in js_str_name:
-        anchor = 'image_loader_ts = [\n'
+    if 'integration_tests/' in str(gni_file):
+        anchor = None
+    elif 'image_loader/' in js_str_name:
+        anchor = None
 
     with gni_file.open() as f:
         for line in f.readlines():
@@ -491,7 +499,33 @@ def process_file_names_gni(js_fname, gni_file):
             if line == anchor:
                 new_file.append(ts_line)
 
+    if 'image_loader/' in js_str_name:
+        anchor = 'image_loader_ts = [\n'
+        ts_str_name = js_str_name.replace('.js', '.ts')
+        find_and_uncomment(new_file, anchor, ts_str_name)
+
     return new_file
+
+
+def find(lines, pattern):
+    for idx, line in enumerate(lines):
+        if pattern in line:
+            return idx
+
+    return -1
+
+
+def find_and_uncomment(lines, anchor, ts_fname):
+    """Finds the line with `ts_fname` and uncomment.
+    It updates the `lines` in-place.
+    """
+    idx_start = find(lines, anchor)
+    idx_end = idx_start + find(lines[idx_start:], ']')
+    idx_fname = idx_start + find(lines[idx_start:idx_end], f'# "{ts_fname}"')
+    line = lines[idx_fname]
+    # Uncomment the line.
+    line = line.replace('# ', '', 1)
+    lines[idx_fname] = line
 
 
 def to_build_file(js_fname):
@@ -525,7 +559,7 @@ def find_build_files(js_fname):
     return ret
 
 
-#### End of Build file conversions:
+#### End of Build file conversions.
 
 
 def replace_file(fname, content):
@@ -556,6 +590,35 @@ def run_git_mv(js_path_str):
         return ''
 
 
+def register_testcase(js_file_name):
+    # Lines:
+    # 1. Import line
+    # 2. Spread assigning to the `testcase` namespace.
+
+    namespace_re = re.compile(r"import \* as (\w+) from '[\w\/.]+';")
+    js_import_path = js_file_name.absolute().relative_to(_INTEGRATION_TESTS_ROOT)
+    import_line_pattern = f"from './{js_import_path}';"
+    testcase_path = _INTEGRATION_TESTS_ROOT.joinpath('testcase.ts')
+    lines = list(open(testcase_path).readlines())
+    import_idx = find(lines, import_line_pattern)
+    if import_idx == -1:
+        return
+
+    import_line = lines[import_idx]
+    lines[import_idx] = import_line.replace('// ', '');
+    try:
+        namespace_name = namespace_re.findall(import_line)[0]
+    except IndexError:
+        namespace_name = ''
+    if namespace_name:
+        spread_line_pattern = f" ...{namespace_name},"
+        spread_line_idx = find(lines, spread_line_pattern)
+        if spread_line_idx > -1:
+            spread_line = lines[spread_line_idx]
+            lines[spread_line_idx] = spread_line.replace('// ', '');
+
+    replace_file(testcase_path, lines)
+
 #### Start of controlling the execution of the script.
 
 
@@ -570,7 +633,8 @@ def process_js_files(files):
         for b in bs:
             new_build_file = process_build_file(b, js_path)
             replace_file(b, new_build_file)
-            # Remove the .js file and add it to the `ts_files = ` section.
+            # Process as `file_names.gni` to remove the .js file and add it to
+            # the `ts_files = ` section.
             if b == _INTEGRATION_TESTS_ROOT.joinpath('BUILD.gn'):
               new_build_file = process_file_names_gni(js_path.absolute(), b)
               replace_file(b, new_build_file)
@@ -583,12 +647,16 @@ def process_js_files(files):
                 js_path.absolute(), file_names)
             replace_file(file_names, new_file_names_gni)
 
+        # For Integration Tests, uncomment relevant lines in the testcase.ts
+        if 'integration_tests/' in fname:
+            register_testcase(js_path)
+
         # Process the JS file content and save as JS file.
-        ts_content = process_js_file(js_path)
-        replace_file(js_path, ts_content)
+        # ts_content = process_js_file(js_path)
+        # replace_file(js_path, ts_content)
 
         # Rename to TS.
-        run_git_mv(str(js_path))
+        # run_git_mv(str(js_path))
 
 
 def main():

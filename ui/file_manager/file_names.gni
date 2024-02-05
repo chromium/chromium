@@ -9,10 +9,24 @@ image_loader_static_js_files = [
 ]
 
 image_loader_ts = [
-  "image_loader/scheduler.ts",
   "image_loader/background.ts",
   "image_loader/cache.ts",
+
+  # "image_loader/image_loader.ts",
+
+  # "image_loader/image_loader_client.ts",
+
+  # "image_loader/image_loader_util.ts",
+
   "image_loader/image_orientation.ts",
+
+  # "image_loader/image_request_task.ts",
+
+  # "image_loader/load_image_request.ts",
+
+  # "image_loader/piex_loader.ts",
+
+  "image_loader/scheduler.ts",
 ]
 
 static_js_files = [
