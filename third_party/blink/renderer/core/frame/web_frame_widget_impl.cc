@@ -617,9 +617,9 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
 
   if (auto* text_control = EnclosingTextControl(stylus_writable_element)) {
     text_control->Focus(FocusParams(FocusTrigger::kUserGesture));
-  } else if (auto* html_element =
-                 DynamicTo<HTMLElement>(stylus_writable_element)) {
-    html_element->Focus(FocusParams(FocusTrigger::kUserGesture));
+  } else if (auto* root_editable_html_element = DynamicTo<HTMLElement>(
+                 RootEditableElement(*stylus_writable_element))) {
+    root_editable_html_element->Focus(FocusParams(FocusTrigger::kUserGesture));
   }
   Element* focused_element = FocusedElement();
   // Since the element can change after it gets focused, we just verify if

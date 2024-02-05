@@ -455,6 +455,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                          const gfx::PointF& screen_point,
                          ui::mojom::blink::DragOperation,
                          base::OnceClosure callback) override;
+  void OnStartStylusWriting(OnStartStylusWritingCallback callback) override;
 
   // mojom::blink::FrameWidgetInputHandler overrides:
   void HandleStylusWritingGestureAction(
@@ -801,7 +802,6 @@ class CORE_EXPORT WebFrameWidgetImpl
                       uint32_t key_modifiers,
                       base::OnceClosure callback) override;
   void DragSourceSystemDragEnded() override;
-  void OnStartStylusWriting(OnStartStylusWritingCallback callback) override;
   void SetBackgroundOpaque(bool opaque) override;
   void SetActive(bool active) override;
   // For both mainframe and childframe change the text direction of the
