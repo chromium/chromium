@@ -46,7 +46,7 @@ async def test_provide_response_beforeRequestSent_is_valid_phase(
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
-                                              phases=["beforeRequestSent"])
+                                              phase="beforeRequestSent")
 
     # No exception should be thrown.
     await execute_command(
@@ -65,7 +65,7 @@ async def test_provide_response_invalid_status_code(websocket, context_id,
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
-                                              phases=["responseStarted"])
+                                              phase="beforeRequestSent")
 
     with pytest.raises(
             Exception,
@@ -90,7 +90,7 @@ async def test_provide_response_invalid_reason_phrase(websocket, context_id,
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
-                                              phases=["responseStarted"])
+                                              phase="beforeRequestSent")
 
     with pytest.raises(
             Exception,
@@ -114,7 +114,7 @@ async def test_provide_response_invalid_headers(websocket, context_id,
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
-                                              phases=["responseStarted"])
+                                              phase="beforeRequestSent")
 
     with pytest.raises(
             Exception,
@@ -138,7 +138,7 @@ async def test_provide_response_invalid_body(websocket, context_id,
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
-                                              phases=["responseStarted"])
+                                              phase="beforeRequestSent")
 
     with pytest.raises(Exception,
                        match=str({

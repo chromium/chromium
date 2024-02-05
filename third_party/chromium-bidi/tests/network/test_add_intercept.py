@@ -293,7 +293,11 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
                              "pattern",
                              "string and pattern",
                          ])
-async def test_add_intercept_blocks(websocket, context_id, url_patterns):
+async def test_add_intercept_blocks(
+    websocket,
+    context_id,
+    url_patterns,
+):
     # TODO: make offline
     example_url = "https://www.example.com/"
     await subscribe(websocket, ["network.beforeRequestSent"])

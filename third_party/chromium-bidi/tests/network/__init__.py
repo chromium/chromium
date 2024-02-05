@@ -19,36 +19,40 @@ from test_helpers import (execute_command, send_JSON_command, subscribe,
 
 
 async def create_blocked_request(websocket, context_id: str, *, url: str,
-                                 phases: list[Literal["beforeRequestSent",
-                                                      "responseStarted",
-                                                      "authRequired"]]):
+                                 phase: Literal["beforeRequestSent",
+                                                "responseStarted",
+                                                "authRequired"]):
     """Creates a dummy blocked network request and returns its network id."""
 
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+    event = f"network.{phase}"
+
+    await subscribe(websocket, [event])
 
     await execute_command(
         websocket, {
             "method": "network.addIntercept",
             "params": {
-                "phases": phases,
+                "phases": [phase],
                 "urlPatterns": [{
                     "type": "string",
                     "pattern": url,
                 }, ],
             },
         })
-    # TODO: How about we try to evaluate a fetch instead of navigating that way.
-    # Then are less likely to have another event and would speed up the test.
+
     await send_JSON_command(
         websocket, {
-            "method": "browsingContext.navigate",
+            "method": "script.evaluate",
             "params": {
-                "url": url,
-                "context": context_id,
-                "wait": "complete",
+                "expression": f"fetch('{url}')",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": False
             }
         })
-    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
-    network_id = event_response["params"]["params"]["networkId"]
+
+    event_response = await wait_for_event(websocket, event)
+    network_id = event_response["params"]["request"]["request"]
 
     return network_id

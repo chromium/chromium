@@ -315,12 +315,12 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'session.status':
         return this.#sessionProcessor.status();
       case 'session.subscribe':
-        return this.#sessionProcessor.subscribe(
+        return await this.#sessionProcessor.subscribe(
           this.#parser.parseSubscribeParams(command.params),
           command.channel
         );
       case 'session.unsubscribe':
-        return this.#sessionProcessor.unsubscribe(
+        return await this.#sessionProcessor.unsubscribe(
           this.#parser.parseSubscribeParams(command.params),
           command.channel
         );

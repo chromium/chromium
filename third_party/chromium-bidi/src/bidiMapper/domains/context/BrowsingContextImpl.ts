@@ -17,6 +17,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import {BiDiModule} from '../../../protocol/chromium-bidi.js';
 import {
   BrowsingContext,
   ChromiumBidi,
@@ -1001,6 +1002,16 @@ export class BrowsingContextImpl {
     await this.#cdpTarget.cdpClient.sendCommand('Page.navigateToHistoryEntry', {
       entryId: entry.id,
     });
+  }
+
+  async toggleModulesIfNeeded(): Promise<void> {
+    const enableNetwork =
+      this.#eventManager.subscriptionManager.isSubscribedToModule(
+        BiDiModule.Network,
+        this.id
+      );
+
+    await this.#cdpTarget.toggleNetworkIfNeeded(enableNetwork);
   }
 }
 

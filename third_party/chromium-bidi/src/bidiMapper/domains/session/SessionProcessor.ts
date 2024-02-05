@@ -35,11 +35,11 @@ export class SessionProcessor {
     return {ready: false, message: 'already connected'};
   }
 
-  subscribe(
+  async subscribe(
     params: Session.SubscriptionRequest,
     channel: BidiPlusChannel = null
-  ): EmptyResult {
-    this.#eventManager.subscribe(
+  ): Promise<EmptyResult> {
+    await this.#eventManager.subscribe(
       params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [null],
       channel
@@ -47,11 +47,11 @@ export class SessionProcessor {
     return {};
   }
 
-  unsubscribe(
+  async unsubscribe(
     params: Session.SubscriptionRequest,
     channel: BidiPlusChannel = null
-  ): EmptyResult {
-    this.#eventManager.unsubscribe(
+  ): Promise<EmptyResult> {
+    await this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [null],
       channel

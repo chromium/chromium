@@ -18,6 +18,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
+import {BiDiModule} from '../../../protocol/chromium-bidi.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
@@ -38,8 +39,9 @@ export class CdpTarget {
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #networkStorage: NetworkStorage;
 
-  readonly #targetUnblocked = new Deferred<Result<void>>();
+  readonly #unblocked = new Deferred<Result<void>>();
   readonly #acceptInsecureCerts: boolean;
+  #networkDomainEnabled = false;
 
   static create(
     targetId: Protocol.Target.TargetID,
@@ -94,7 +96,7 @@ export class CdpTarget {
 
   /** Returns a deferred that resolves when the target is unblocked. */
   get unblocked(): Deferred<Result<void>> {
-    return this.#targetUnblocked;
+    return this.#unblocked;
   }
 
   get id(): Protocol.Target.TargetID {
@@ -132,6 +134,13 @@ export class CdpTarget {
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
+    // Check if the network domain is enabled globally.
+    const enabledNetwork =
+      this.#eventManager.subscriptionManager.isSubscribedToModule(
+        BiDiModule.Network,
+        this.#id
+      );
+
     try {
       await Promise.all([
         this.#cdpClient.sendCommand('Runtime.enable'),
@@ -143,9 +152,10 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
           ignore: this.#acceptInsecureCerts,
         }),
-        // XXX: #1080: Do not always enable the network domain globally.
         // TODO: enable Network domain for OOPiF targets.
-        this.#cdpClient.sendCommand('Network.enable'),
+        enabledNetwork
+          ? this.#cdpClient.sendCommand('Network.enable')
+          : undefined,
         // XXX: #1080: Do not always enable the fetch domain globally.
         this.fetchEnable(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
@@ -159,7 +169,7 @@ export class CdpTarget {
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
       if (!this.#cdpClient.isCloseError(error)) {
-        this.#targetUnblocked.resolve({
+        this.#unblocked.resolve({
           kind: 'error',
           error,
         });
@@ -167,10 +177,25 @@ export class CdpTarget {
       }
     }
 
-    this.#targetUnblocked.resolve({
+    this.#unblocked.resolve({
       kind: 'success',
       value: undefined,
     });
+  }
+
+  async toggleNetworkIfNeeded(enabled: boolean): Promise<void> {
+    if (enabled === this.#networkDomainEnabled) {
+      return;
+    }
+
+    this.#networkDomainEnabled = enabled;
+    try {
+      await this.#cdpClient.sendCommand(
+        this.#networkDomainEnabled ? 'Network.enable' : 'Network.disable'
+      );
+    } catch (err) {
+      this.#networkDomainEnabled = !enabled;
+    }
   }
 
   #setEventListeners() {
