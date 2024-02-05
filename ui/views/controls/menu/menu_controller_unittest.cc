@@ -25,6 +25,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -3000,7 +3001,7 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
 // Test that in accessibility mode disabled menu items are taken into account
 // during items indices assignment.
 TEST_F(MenuControllerTest, AccessibilityDisabledItemsIndices) {
-  const ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
 
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const MenuItemView* const item1 = submenu->GetMenuItemAt(0);

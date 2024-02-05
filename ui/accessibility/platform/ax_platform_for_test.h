@@ -10,22 +10,45 @@
 
 namespace ui {
 
+class ScopedAXModeSetter;
+
 // A process-wide AXPlatform instance for use by tests.
 class AXPlatformForTest : public AXPlatform::Delegate {
  public:
-  AXPlatformForTest() = default;
+  // Returns the instance for the test.
+  static AXPlatformForTest& GetInstance();
+
+  AXPlatformForTest();
   AXPlatformForTest(const AXPlatformForTest&) = delete;
   AXPlatformForTest& operator=(const AXPlatformForTest&) = delete;
-  ~AXPlatformForTest() override = default;
+  ~AXPlatformForTest() override;
 
   // AXPlatform::Delegate:
   AXMode GetProcessMode() override;
   void SetProcessMode(AXMode new_mode) override;
 
  private:
+  friend class ScopedAXModeSetter;
+
   AXPlatform ax_platform_{*this};
 
   AXMode mode_;
+};
+
+// Provides a way for tests to temporarily override the accessibility mode flags
+// accessible by the test's fake AXPlatform. Observers are not notified of the
+// change.
+class ScopedAXModeSetter {
+ public:
+  explicit ScopedAXModeSetter(AXMode new_mode) {
+    AXPlatformForTest::GetInstance().mode_ = new_mode;
+  }
+  ~ScopedAXModeSetter() {
+    AXPlatformForTest::GetInstance().mode_ = previous_mode_;
+  }
+
+ private:
+  const AXMode previous_mode_{AXPlatformForTest::GetInstance().mode_};
 };
 
 }  // namespace ui

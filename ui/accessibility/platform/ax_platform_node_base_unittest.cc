@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/test_ax_tree_update.h"

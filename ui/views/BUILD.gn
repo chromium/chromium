@@ -1349,7 +1349,7 @@ test("views_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/icu",
-    "//ui/accessibility",
+    "//ui/accessibility:test_support",
     "//ui/actions",
     "//ui/base",
     "//ui/base:ozone_buildflags",
@@ -1489,7 +1489,6 @@ test("views_unittests") {
       "widget/window_reorderer_unittest.cc",
     ]
     deps += [
-      "//ui/accessibility:test_support",
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/base/cursor/mojom:cursor_type",

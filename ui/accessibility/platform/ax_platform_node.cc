@@ -98,11 +98,6 @@ void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
 }
 
 // static
-void AXPlatformNode::SetAXMode(AXMode new_mode) {
-  AXPlatform::GetInstance().SetMode(new_mode);
-}
-
-// static
 void AXPlatformNode::SetPopupFocusOverride(
     gfx::NativeViewAccessible popup_focus_override) {
   popup_focus_override_ = popup_focus_override;
