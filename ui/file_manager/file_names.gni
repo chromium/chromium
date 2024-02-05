@@ -28,10 +28,7 @@ static_js_files = [
 # END: static_js_files.
 
 ts_files = [
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Common.
+  # Common:
   "file_manager/common/js/api.ts",
   "file_manager/common/js/app_util.ts",
   "file_manager/common/js/array_data_model.ts",
@@ -68,33 +65,19 @@ ts_files = [
   "file_manager/common/js/util.ts",
   "file_manager/common/js/volume_manager_types.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Lib.
+  # Lib:
   "file_manager/lib/actions_producer.ts",
   "file_manager/lib/base_store.ts",
   "file_manager/lib/concurrency_models.ts",
   "file_manager/lib/selector.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # State.
-  "file_manager/state/file_key.ts",
-  "file_manager/state/store.ts",
-  "file_manager/state/state.ts",
-
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Ducks.
+  # State & Ducks:
   "file_manager/state/ducks/all_entries.ts",
   "file_manager/state/ducks/android_apps.ts",
   "file_manager/state/ducks/bulk_pinning.ts",
+  "file_manager/state/ducks/current_directory.ts",
   "file_manager/state/ducks/device.ts",
   "file_manager/state/ducks/drive.ts",
-  "file_manager/state/ducks/current_directory.ts",
   "file_manager/state/ducks/folder_shortcuts.ts",
   "file_manager/state/ducks/launch_params.ts",
   "file_manager/state/ducks/navigation.ts",
@@ -102,54 +85,49 @@ ts_files = [
   "file_manager/state/ducks/search.ts",
   "file_manager/state/ducks/ui_entries.ts",
   "file_manager/state/ducks/volumes.ts",
+  "file_manager/state/file_key.ts",
+  "file_manager/state/state.ts",
+  "file_manager/state/store.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Containers.
+  # Containers:
   "file_manager/containers/breadcrumb_container.ts",
   "file_manager/containers/cloud_panel_container.ts",
+  "file_manager/containers/directory_tree_container.ts",
   "file_manager/containers/nudge_container.ts",
   "file_manager/containers/search_container.ts",
-  "file_manager/containers/directory_tree_container.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Widgets.
+  # Widgets:
   "file_manager/widgets/xf_base.ts",
   "file_manager/widgets/xf_breadcrumb.ts",
   "file_manager/widgets/xf_bulk_pinning_dialog.ts",
+  "file_manager/widgets/xf_cloud_panel.ts",
   "file_manager/widgets/xf_conflict_dialog.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
   "file_manager/widgets/xf_icon.ts",
+  "file_manager/widgets/xf_inline_status.ts",
   "file_manager/widgets/xf_jellybean.ts",
   "file_manager/widgets/xf_nudge.ts",
+  "file_manager/widgets/xf_password_dialog.ts",
+  "file_manager/widgets/xf_pie_progress.ts",
   "file_manager/widgets/xf_search_options.ts",
   "file_manager/widgets/xf_select.ts",
   "file_manager/widgets/xf_splitter.ts",
-  "file_manager/widgets/xf_pie_progress.ts",
-  "file_manager/widgets/xf_inline_status.ts",
-  "file_manager/widgets/xf_cloud_panel.ts",
   "file_manager/widgets/xf_tree.ts",
   "file_manager/widgets/xf_tree_item.ts",
-  "file_manager/widgets/xf_password_dialog.ts",
+  "file_manager/widgets/xf_tree_util.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Foreground UI.
+  # Foreground UI:
   "file_manager/foreground/js/ui/a11y_announce.ts",
   "file_manager/foreground/js/ui/action_model_ui.ts",
   "file_manager/foreground/js/ui/actions_submenu.ts",
-  "file_manager/foreground/js/ui/default_task_dialog.ts",
-  "file_manager/foreground/js/ui/dialogs.ts",
-  "file_manager/foreground/js/ui/commandbutton.ts",
   "file_manager/foreground/js/ui/combobutton.ts",
   "file_manager/foreground/js/ui/command.ts",
+  "file_manager/foreground/js/ui/commandbutton.ts",
   "file_manager/foreground/js/ui/context_menu_handler.ts",
-  "file_manager/foreground/js/ui/drag_selector.ts",
+  "file_manager/foreground/js/ui/default_task_dialog.ts",
   "file_manager/foreground/js/ui/dialog_footer.ts",
+  "file_manager/foreground/js/ui/dialogs.ts",
+  "file_manager/foreground/js/ui/drag_selector.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
   "file_manager/foreground/js/ui/file_list_selection_model.ts",
   "file_manager/foreground/js/ui/file_manager_dialog_base.ts",
@@ -168,9 +146,9 @@ ts_files = [
   "file_manager/foreground/js/ui/list.ts",
   "file_manager/foreground/js/ui/list_container.ts",
   "file_manager/foreground/js/ui/list_item.ts",
-  "file_manager/foreground/js/ui/list_single_selection_model.ts",
   "file_manager/foreground/js/ui/list_selection_controller.ts",
   "file_manager/foreground/js/ui/list_selection_model.ts",
+  "file_manager/foreground/js/ui/list_single_selection_model.ts",
   "file_manager/foreground/js/ui/menu.ts",
   "file_manager/foreground/js/ui/menu_item.ts",
   "file_manager/foreground/js/ui/multi_menu.ts",
@@ -179,17 +157,15 @@ ts_files = [
   "file_manager/foreground/js/ui/progress_center_panel.ts",
   "file_manager/foreground/js/ui/providers_menu.ts",
   "file_manager/foreground/js/ui/splitter.ts",
+  "file_manager/foreground/js/ui/table/table.ts",
   "file_manager/foreground/js/ui/table/table_column.ts",
   "file_manager/foreground/js/ui/table/table_column_model.ts",
   "file_manager/foreground/js/ui/table/table_header.ts",
   "file_manager/foreground/js/ui/table/table_list.ts",
-  "file_manager/foreground/js/ui/table/table.ts",
   "file_manager/foreground/js/ui/table/table_splitter.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Banners.
+  # Banners:
+  "file_manager/foreground/js/ui/banners/dlp_restricted_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_low_individual_space_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_low_shared_drive_space_banner.ts",
@@ -198,6 +174,7 @@ ts_files = [
   "file_manager/foreground/js/ui/banners/drive_out_of_organization_space_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_out_of_shared_drive_space_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_welcome_banner.ts",
+  "file_manager/foreground/js/ui/banners/educational_banner.ts",
   "file_manager/foreground/js/ui/banners/google_one_offer_banner.ts",
   "file_manager/foreground/js/ui/banners/holding_space_welcome_banner.ts",
   "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.ts",
@@ -206,15 +183,10 @@ ts_files = [
   "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.ts",
   "file_manager/foreground/js/ui/banners/state_banner.ts",
   "file_manager/foreground/js/ui/banners/trash_banner.ts",
-  "file_manager/foreground/js/ui/banners/educational_banner.ts",
-  "file_manager/foreground/js/ui/banners/warning_banner.ts",
-  "file_manager/foreground/js/ui/banners/dlp_restricted_banner.ts",
   "file_manager/foreground/js/ui/banners/types.ts",
+  "file_manager/foreground/js/ui/banners/warning_banner.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Background.
+  # Background:
   "file_manager/background/js/app_window_wrapper.ts",
   "file_manager/background/js/crostini.ts",
   "file_manager/background/js/drive_sync_handler.ts",
@@ -227,17 +199,14 @@ ts_files = [
   "file_manager/background/js/mock_volume_manager.ts",
   "file_manager/background/js/progress_center.ts",
   "file_manager/background/js/runtime_loaded_test_util.ts",
-  "file_manager/background/js/test_util_base.ts",
   "file_manager/background/js/test_util.ts",
+  "file_manager/background/js/test_util_base.ts",
   "file_manager/background/js/volume_info.ts",
   "file_manager/background/js/volume_info_list.ts",
-  "file_manager/background/js/volume_manager_factory.ts",
   "file_manager/background/js/volume_manager.ts",
+  "file_manager/background/js/volume_manager_factory.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Foreground.
+  # Foreground:
   "file_manager/foreground/js/actions_controller.ts",
   "file_manager/foreground/js/actions_model.ts",
   "file_manager/foreground/js/android_app_list_model.ts",
@@ -298,25 +267,13 @@ ts_files = [
   "file_manager/foreground/js/toolbar_controller.ts",
   "file_manager/foreground/js/uma_enums.gen.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Elements.
+  # Elements:
   "file_manager/foreground/elements/files_spinner.ts",
   "file_manager/foreground/elements/xf_button.ts",
   "file_manager/foreground/elements/xf_circular_progress.ts",
   "file_manager/foreground/elements/xf_display_panel.ts",
   "file_manager/foreground/elements/xf_panel_item.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Util.
-  "file_manager/widgets/xf_tree_util.ts",
-
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Metadata:
   "file_manager/foreground/js/metadata/byte_reader.ts",
   "file_manager/foreground/js/metadata/content_metadata_provider.ts",
@@ -345,10 +302,10 @@ ts_files = [
 # JS targets should rely on externs to type check the Polymer elements from TS.
 ts_polymer = [
   "file_manager/foreground/elements/files_format_dialog.ts",
-  "file_manager/foreground/elements/files_quick_view.ts",
   "file_manager/foreground/elements/files_metadata_box.ts",
-  "file_manager/foreground/elements/files_safe_media.ts",
   "file_manager/foreground/elements/files_metadata_entry.ts",
+  "file_manager/foreground/elements/files_quick_view.ts",
+  "file_manager/foreground/elements/files_safe_media.ts",
   "file_manager/foreground/elements/files_toast.ts",
   "file_manager/foreground/elements/files_tooltip.ts",
 ]
@@ -360,11 +317,7 @@ ts_templates = [
   "file_manager/foreground/elements/xf_circular_progress.html",
   "file_manager/foreground/elements/xf_display_panel.html",
   "file_manager/foreground/elements/xf_panel_item.html",
-  "file_manager/widgets/xf_conflict_dialog.html",
-  "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
-  "file_manager/widgets/xf_nudge.html",
-  "file_manager/widgets/xf_password_dialog.html",
-  "file_manager/widgets/xf_search_options.html",
+  "file_manager/foreground/js/ui/banners/dlp_restricted_banner.html",
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.html",
   "file_manager/foreground/js/ui/banners/drive_low_individual_space_banner.html",
   "file_manager/foreground/js/ui/banners/drive_low_shared_drive_space_banner.html",
@@ -373,6 +326,7 @@ ts_templates = [
   "file_manager/foreground/js/ui/banners/drive_out_of_organization_space_banner.html",
   "file_manager/foreground/js/ui/banners/drive_out_of_shared_drive_space_banner.html",
   "file_manager/foreground/js/ui/banners/drive_welcome_banner.html",
+  "file_manager/foreground/js/ui/banners/educational_banner.html",
   "file_manager/foreground/js/ui/banners/google_one_offer_banner.html",
   "file_manager/foreground/js/ui/banners/holding_space_welcome_banner.html",
   "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.html",
@@ -380,17 +334,17 @@ ts_templates = [
   "file_manager/foreground/js/ui/banners/photos_welcome_banner.html",
   "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.html",
   "file_manager/foreground/js/ui/banners/state_banner.html",
-  "file_manager/foreground/js/ui/banners/educational_banner.html",
-  "file_manager/foreground/js/ui/banners/warning_banner.html",
   "file_manager/foreground/js/ui/banners/trash_banner.html",
-  "file_manager/foreground/js/ui/banners/dlp_restricted_banner.html",
+  "file_manager/foreground/js/ui/banners/warning_banner.html",
+  "file_manager/widgets/xf_conflict_dialog.html",
+  "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
+  "file_manager/widgets/xf_nudge.html",
+  "file_manager/widgets/xf_password_dialog.html",
+  "file_manager/widgets/xf_search_options.html",
 ]
 
 ts_test_files = [
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Common.
+  # Common:
   "file_manager/common/js/array_data_model_unittest.ts",
   "file_manager/common/js/async_util_unittest.ts",
   "file_manager/common/js/entry_utils_unittest.ts",
@@ -407,41 +361,26 @@ ts_test_files = [
   "file_manager/common/js/util_unittest.ts",
   "file_manager/common/js/volume_manager_types_unittest.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Containers
+  # Containers:
   "file_manager/containers/breadcrumb_container_unittest.ts",
   "file_manager/containers/cloud_panel_container_unittest.ts",
   "file_manager/containers/directory_tree_container_unittest.ts",
   "file_manager/containers/nudge_container_unittest.ts",
   "file_manager/containers/search_container_unittest.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Lib:
   "file_manager/lib/actions_producer_unittest.ts",
   "file_manager/lib/base_store_unittest.ts",
   "file_manager/lib/for_tests.ts",
   "file_manager/lib/selector_unittest.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Reducers:
-  "file_manager/state/for_tests.ts",
-
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
-  # Ducks:
+  # State & Ducks:
   "file_manager/state/ducks/all_entries_unittest.ts",
   "file_manager/state/ducks/android_apps_unittest.ts",
   "file_manager/state/ducks/bulk_pinning_unittest.ts",
+  "file_manager/state/ducks/current_directory_unittest.ts",
   "file_manager/state/ducks/device_unittest.ts",
   "file_manager/state/ducks/drive_unittest.ts",
-  "file_manager/state/ducks/current_directory_unittest.ts",
   "file_manager/state/ducks/folder_shortcuts_unittest.ts",
   "file_manager/state/ducks/launch_params_unittest.ts",
   "file_manager/state/ducks/navigation_unittest.ts",
@@ -449,15 +388,13 @@ ts_test_files = [
   "file_manager/state/ducks/search_unittest.ts",
   "file_manager/state/ducks/ui_entries_unittest.ts",
   "file_manager/state/ducks/volumes_unittest.ts",
+  "file_manager/state/for_tests.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Widgets:
   "file_manager/widgets/xf_breadcrumb_unittest.ts",
   "file_manager/widgets/xf_bulk_pinning_dialog_unittest.ts",
-  "file_manager/widgets/xf_conflict_dialog_unittest.ts",
   "file_manager/widgets/xf_cloud_panel_unittest.ts",
+  "file_manager/widgets/xf_conflict_dialog_unittest.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog_unittest.ts",
   "file_manager/widgets/xf_icon_unittest.ts",
   "file_manager/widgets/xf_nudge_unittest.ts",
@@ -465,20 +402,14 @@ ts_test_files = [
   "file_manager/widgets/xf_search_options_unittest.ts",
   "file_manager/widgets/xf_select_unittest.ts",
   "file_manager/widgets/xf_splitter_unittest.ts",
-  "file_manager/widgets/xf_tree_unittest.ts",
   "file_manager/widgets/xf_tree_item_unittest.ts",
+  "file_manager/widgets/xf_tree_unittest.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Background:
   "file_manager/background/js/crostini_unittest.ts",
   "file_manager/background/js/drive_sync_handler_unittest.ts",
   "file_manager/background/js/volume_manager_unittest.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Foreground:
   "file_manager/foreground/elements/files_toast_unittest.ts",
   "file_manager/foreground/elements/files_tooltip_unittest.ts",
@@ -502,11 +433,13 @@ ts_test_files = [
   "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/thumbnail_loader_unittest.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # UI:
   "file_manager/foreground/js/ui/actions_submenu_unittest.ts",
+  "file_manager/foreground/js/ui/banners/dlp_restricted_banner_unittest.ts",
+  "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.ts",
+  "file_manager/foreground/js/ui/banners/educational_banner_unittest.ts",
+  "file_manager/foreground/js/ui/banners/state_banner_unittest.ts",
+  "file_manager/foreground/js/ui/banners/warning_banner_unittest.ts",
   "file_manager/foreground/js/ui/command_unittest.ts",
   "file_manager/foreground/js/ui/context_menu_handler_unittest.ts",
   "file_manager/foreground/js/ui/file_grid_unittest.ts",
@@ -517,23 +450,15 @@ ts_test_files = [
   "file_manager/foreground/js/ui/file_tap_handler_unittest.ts",
   "file_manager/foreground/js/ui/grid_unittest.ts",
   "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.ts",
-  "file_manager/foreground/js/ui/menu_unittest.ts",
-  "file_manager/foreground/js/ui/multi_menu_unittest.ts",
-  "file_manager/foreground/js/ui/list_single_selection_model_unittest.ts",
   "file_manager/foreground/js/ui/list_selection_model_test_util.ts",
   "file_manager/foreground/js/ui/list_selection_model_unittest.ts",
+  "file_manager/foreground/js/ui/list_single_selection_model_unittest.ts",
   "file_manager/foreground/js/ui/list_unittest.ts",
+  "file_manager/foreground/js/ui/menu_unittest.ts",
+  "file_manager/foreground/js/ui/multi_menu_unittest.ts",
   "file_manager/foreground/js/ui/position_util_unittest.ts",
-  "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.ts",
-  "file_manager/foreground/js/ui/banners/state_banner_unittest.ts",
-  "file_manager/foreground/js/ui/banners/warning_banner_unittest.ts",
-  "file_manager/foreground/js/ui/banners/educational_banner_unittest.ts",
-  "file_manager/foreground/js/ui/banners/dlp_restricted_banner_unittest.ts",
   "file_manager/foreground/js/ui/splitter_unittest.ts",
 
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Metadata:
   "file_manager/foreground/js/metadata/content_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
