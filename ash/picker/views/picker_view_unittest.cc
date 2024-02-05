@@ -15,6 +15,7 @@
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view.h"
 #include "ash/test/test_ash_web_view_factory.h"
@@ -25,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -32,6 +34,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -269,6 +272,24 @@ TEST_F(PickerViewTest, SwitchesToCategoryView) {
   EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest, SelectingCategoryUpdatesSearchFieldPlaceholderText) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(kDefaultCaretBounds,
+                                         kDefaultCursorPoint, &delegate);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetCategoryItemView(picker_view);
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  EXPECT_THAT(picker_view->search_field_view_for_testing()
+                  .textfield_for_testing()
+                  .GetPlaceholderText(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_PICKER_EMOJIS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT)));
 }
 
 TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {

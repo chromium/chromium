@@ -6939,8 +6939,20 @@ New install
       <message name="IDS_PICKER_GIFS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show gif results.">
         Gifs
       </message>
-      <message name="IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
+      <message name="IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
         Search to insert
+      </message>
+      <message name="IDS_PICKER_EMOJIS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the emojis category is selected.">
+        Search Emojis
+      </message>
+      <message name="IDS_PICKER_SYMBOLS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the symbols category is selected.">
+        Search Symbols
+      </message>
+      <message name="IDS_PICKER_EMOTICONS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the emoticons category is selected.">
+        Search Emoticons
+      </message>
+      <message name="IDS_PICKER_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the gifs category is selected.">
+        Search Gifs
       </message>
 
       <!-- WM -->
