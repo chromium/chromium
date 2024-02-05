@@ -50,6 +50,7 @@ function overriddenValues(privacyHubVersion: string) {
         showPrivacyHubPage: true,
         showPrivacyHubLocationControl: false,
         showSpeakOnMuteDetectionPage: true,
+        showAppPermissionsInsidePrivacyHub: false,
       };
     }
     case PrivacyHubVersion.V0AndLocation: {
@@ -57,6 +58,7 @@ function overriddenValues(privacyHubVersion: string) {
         showPrivacyHubPage: true,
         showPrivacyHubLocationControl: true,
         showSpeakOnMuteDetectionPage: true,
+        showAppPermissionsInsidePrivacyHub: false,
       };
     }
     default: {

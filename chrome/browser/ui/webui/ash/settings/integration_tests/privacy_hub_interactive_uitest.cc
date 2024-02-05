@@ -92,7 +92,7 @@ class PrivacyHubV1InteractiveUiTest : public PrivacyHubInteractiveUiTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kCrosPrivacyHub,
                               features::kCrosPrivacyHubV0},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kCrosPrivacyHubAppPermissions});
     CHECK(features::IsCrosPrivacyHubEnabled());
     CHECK(features::IsCrosPrivacyHubLocationEnabled());
   }
@@ -132,7 +132,9 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubV1InteractiveUiTest, SettingsPage) {
 class PrivacyHubV0InteractiveUiTest : public PrivacyHubInteractiveUiTest {
  public:
   PrivacyHubV0InteractiveUiTest() {
-    feature_list_.InitAndEnableFeature(features::kCrosPrivacyHubV0);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kCrosPrivacyHubV0},
+        /*disabled_features=*/{features::kCrosPrivacyHubAppPermissions});
   }
 
  private:
