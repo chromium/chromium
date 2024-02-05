@@ -19,7 +19,6 @@ import "url/mojom/origin.mojom";
 // third_party/blink/public/mojom/devtools/inspector_issue.mojom.
 enum RequestTokenStatus {
   kSuccess,
-  kApprovalDeclined,
   kErrorTooManyRequests,
   kErrorCanceled,
   kError,
