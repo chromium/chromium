@@ -170,4 +170,10 @@ public class OmniboxFeatures {
     public static boolean shouldCalculateVisibleHint(Context context) {
         return !(isTablet(context) && ChromeFeatureList.sNoVisibleHintForTablets.isEnabled());
     }
+
+    /** Returns whether to show the incognito status for tablet. */
+    public static boolean showIncognitoStatusForTablet() {
+        return ChromeFeatureList.sTabletToolbarIncognitoStatus.isEnabled()
+                || ChromeFeatureList.sDynamicTopChrome.isEnabled();
+    }
 }

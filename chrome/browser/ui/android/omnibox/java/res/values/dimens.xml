@@ -43,7 +43,8 @@ found in the LICENSE file.
     <dimen name="fake_search_box_lateral_padding">10dp</dimen>
     <dimen name="fake_search_box_end_padding">12dp</dimen>
     <dimen name="fake_search_box_start_padding">24dp</dimen>
-    <dimen name="incognito_badge_lateral_padding">4dp</dimen>
+    <dimen name="incognito_badge_lateral_padding_start">4dp</dimen>
+    <dimen name="incognito_badge_lateral_padding_end">4dp</dimen>
     <dimen name="location_bar_status_icon_width">24dp</dimen>
     <dimen name="location_bar_status_icon_bg_size">32dp</dimen>
     <dimen name="location_bar_status_icon_holding_space_size">8dp</dimen>

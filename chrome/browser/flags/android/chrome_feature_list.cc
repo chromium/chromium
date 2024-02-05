@@ -271,6 +271,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabAndLinkDragDropAndroid,
     &kTabEngagementReportingAndroid,
     &kTabGroupParityAndroid,
+    &kTabletToolbarIncognitoStatus,
     &kTabletToolbarReordering,
     &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
@@ -853,6 +854,10 @@ BASE_FEATURE(kTabGroupParityAndroid,
 BASE_FEATURE(kTabStateFlatBuffer,
              "TabStateFlatBuffer",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabletToolbarIncognitoStatus,
+             "TabletToolbarIncognitoStatus",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabletToolbarReordering,
              "TabletToolbarReordering",

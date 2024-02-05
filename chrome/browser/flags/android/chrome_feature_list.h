@@ -153,6 +153,7 @@ BASE_DECLARE_FEATURE(kTabAndLinkDragDropAndroid);
 BASE_DECLARE_FEATURE(kTabEngagementReportingAndroid);
 BASE_DECLARE_FEATURE(kTabGroupParityAndroid);
 BASE_DECLARE_FEATURE(kTabStateFlatBuffer);
+BASE_DECLARE_FEATURE(kTabletToolbarIncognitoStatus);
 BASE_DECLARE_FEATURE(kTabletToolbarReordering);
 BASE_DECLARE_FEATURE(kTabStripStartupRefactoring);
 BASE_DECLARE_FEATURE(kTabToGTSAnimation);
