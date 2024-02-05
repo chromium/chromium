@@ -47,7 +47,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -253,9 +253,10 @@ AutofillExternalDelegate::GetLastFieldTypesToFillForSection(
 }
 
 bool AutofillExternalDelegate::HasActiveScreenReader() const {
-  // Note: This always returns false if ChromeVox is in use because
-  // AXPlatformNodes are not used on the ChromeOS platform.
-  return ui::AXPlatformNode::GetAccessibilityMode().has_mode(
+  // Note: This always returns false if ChromeVox is in use because the
+  // process-wide AXMode is not updated in that case; except for Lacros, where
+  // kScreenReader mirrors the spoken feedback preference.
+  return ui::AXPlatform::GetInstance().GetMode().has_mode(
       ui::AXMode::kScreenReader);
 }
 

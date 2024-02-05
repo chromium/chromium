@@ -56,10 +56,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // like during testing.
   static void DisallowAXModeChanges();
 
-  // Convenience method to get the current accessibility mode.
-  // Note: new callers should use AXPlatform::GetMode.
-  static AXMode GetAccessibilityMode();
-
   // Helper static function to notify all global observers about
   // the addition of an AXMode flag.
   static void NotifyAddAXModeFlags(AXMode mode_flags);

@@ -60,7 +60,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 
  private:
   friend class ::ui::AXPlatformNode;
-  FRIEND_TEST_ALL_PREFIXES(AXPlatformTest, GetAccessibilityMode);
   FRIEND_TEST_ALL_PREFIXES(AXPlatformTest, Observer);
 
   // Sets the process-wide accessibility mode.

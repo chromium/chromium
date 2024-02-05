@@ -28,7 +28,7 @@
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -409,7 +409,7 @@ FeaturePromoControllerCommon::GetAsWeakPtr() {
 
 bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable(
     bool for_demo) const {
-  if (!ui::AXPlatformNode::GetAccessibilityMode().has_mode(
+  if (!ui::AXPlatform::GetInstance().GetMode().has_mode(
           ui::AXMode::kScreenReader)) {
     return false;
   }
