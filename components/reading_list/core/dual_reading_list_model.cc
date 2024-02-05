@@ -568,10 +568,9 @@ void DualReadingListModel::ReadingListWillRemoveEntry(
     return;
   }
 
-  if (model == account_model_.get() &&
-      local_or_syncable_model_->GetEntryByURL(url)) {
-    // The entry was removed via sync from `account_model_`, but the fact that
-    // the entry also exists in `local_or_syncable_model_` means the result is
+  if (local_or_syncable_model_->GetEntryByURL(url) &&
+      account_model_->GetEntryByURL(url)) {
+    // The fact that the entry exists in one of the models means the result is
     // not an actual deletion but, at most, an update.
     NotifyObserversWithWillUpdateEntry(url);
   } else {
@@ -588,10 +587,10 @@ void DualReadingListModel::ReadingListDidRemoveEntry(
     return;
   }
 
-  if (local_or_syncable_model_->GetEntryByURL(url)) {
-    // The entry is still present in `local_or_syncable_model_`, so this is an
+  if (local_or_syncable_model_->GetEntryByURL(url) ||
+      account_model_->GetEntryByURL(url)) {
+    // The entry is still present in one of the models, so this is an
     // update rather than a deletion.
-    DCHECK(model == account_model_.get());
     UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
     NotifyObserversWithDidUpdateEntry(url);
     return;

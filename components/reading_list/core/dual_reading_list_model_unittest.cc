@@ -952,6 +952,45 @@ TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrlFromSync) {
             StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
 }
 
+TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrlFromTheLocalModel) {
+  ASSERT_TRUE(ResetStorageAndMimicSyncEnabled(
+      /*initial_syncable_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrlFromTheLocalModel) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{TestEntryBuilder(kUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+}
+
 TEST_F(DualReadingListModelTest, AddEntryWhenSignedOut) {
   ASSERT_TRUE(ResetStorageAndMimicSignedOut());
 
