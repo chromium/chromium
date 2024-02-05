@@ -275,8 +275,8 @@ DropDownCheckbox::DropDownCheckbox(const std::u16string& title,
   model_->AddObserver(selection_model_.get());
 
   // Set up layout.
-  auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetInteriorMargin(kDropDownCheckboxBorderInsets);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetInteriorMargin(kDropDownCheckboxBorderInsets);
   // Allow `title_` to shrink and elide, so that `drop_down_arrow_` on the
   // right always remains visible.
   title_->SetProperty(
@@ -299,8 +299,8 @@ DropDownCheckbox::DropDownCheckbox(const std::u16string& title,
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kDropDownCheckboxRoundedCorners);
   StyleUtil::SetUpInkDropForButton(this);
-  layout->SetChildViewIgnoredByLayout(views::FocusRing::Get(this),
-                                      /*ignored=*/true);
+  views::FocusRing::Get(this)->SetProperty(views::kViewIgnoredByLayoutKey,
+                                           /*ignored=*/true);
 
   event_handler_ = std::make_unique<EventHandler>(this);
 

@@ -235,9 +235,9 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
     : views::Button(std::move(pressed_callback)) {
   CHECK(assignment);
 
-  auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  layout->SetInteriorMargin(kInteriorMargin);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetInteriorMargin(kInteriorMargin);
 
   const gfx::RoundedCornersF corner_radii =
       GetRoundedCorners(item_index, last_item_index);
@@ -282,7 +282,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
 
   // Prevent the layout manager from setting the focus ring to a default hidden
   // visibility.
-  layout->SetChildViewIgnoredByLayout(focus_ring, true);
+  focus_ring->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
 GlanceablesClassroomItemView::~GlanceablesClassroomItemView() = default;

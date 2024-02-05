@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "ui/views/view_class_properties.h"
+
 namespace views {
 
 FillLayout::FillLayout() = default;
@@ -32,7 +34,7 @@ ProposedLayout FillLayout::CalculateProposedLayout(
 
   const gfx::Rect contents_bounds = host_view()->GetContentsBounds();
   for (View* child : host_view()->children()) {
-    if (!IsChildViewIgnoredByLayout(child)) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
       layout.child_layouts.push_back(
           ChildLayout{child, child->GetVisible(), contents_bounds,
                       SizeBounds(contents_bounds.size())});
@@ -49,7 +51,7 @@ gfx::Size FillLayout::GetPreferredSize(const View* host) const {
 
   bool has_child = false;
   for (const View* child : host->children()) {
-    if (!IsChildViewIgnoredByLayout(child)) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
       has_child = true;
       result.SetToMax(child->GetPreferredSize(GetContentsSizeBounds(host)));
     }
@@ -76,7 +78,7 @@ gfx::Size FillLayout::GetMinimumSize(const View* host) const {
 
   bool has_child = false;
   for (const View* child : host->children()) {
-    if (!IsChildViewIgnoredByLayout(child)) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
       has_child = true;
       result.SetToMax(child->GetMinimumSize());
     }
@@ -99,7 +101,7 @@ int FillLayout::GetPreferredHeightForWidth(const View* host, int width) const {
   width -= insets.width();
   int height = 0;
   for (const View* child : host->children()) {
-    if (!IsChildViewIgnoredByLayout(child)) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
       height =
           std::max(height, insets.height() + child->GetHeightForWidth(width));
     }

@@ -371,34 +371,32 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
-  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
-  // Download Icon
-  layout->AddColumn(views::LayoutAlignment::kCenter,
-                    views::LayoutAlignment::kStart,
-                    views::TableLayout::kFixedSize,
-                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  // Download name label (primary_label_)
-  layout->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+  SetLayoutManager(std::make_unique<views::TableLayout>())
+      // Download Icon
+      ->AddColumn(views::LayoutAlignment::kCenter,
+                  views::LayoutAlignment::kStart,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      // Download name label (primary_label_)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
       .AddColumn(views::LayoutAlignment::kStart,
                  features::IsChromeRefresh2023()
                      ? views::LayoutAlignment::kCenter
                      : views::LayoutAlignment::kStart,
-                 1.0f, views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  // Download Buttons: Cancel, Discard, Scan, Open Now, only one may be active
-  layout->AddColumn(views::LayoutAlignment::kCenter,
-                    views::LayoutAlignment::kStart,
-                    views::TableLayout::kFixedSize,
-                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+                 1.0f, views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      // Download Buttons: Cancel, Discard, Scan, Open Now, only one may be
+      // active
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kStart, views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      // Subpage icon
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kStart, views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      // Three rows, one for name, one for status, and one for the progress bar.
+      .AddRows(3, 1.0f);
 
-  // Subpage icon
-  layout->AddColumn(views::LayoutAlignment::kCenter,
-                    views::LayoutAlignment::kStart,
-                    views::TableLayout::kFixedSize,
-                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  // Three rows, one for name, one for status, and one for the progress bar.
-  layout->AddRows(3, 1.0f);
-
-  layout->SetChildViewIgnoredByLayout(inkdrop_container_, true);
+  inkdrop_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   transparent_button_ =
       AddChildView(std::make_unique<DownloadBubbleTransparentButton>(
@@ -407,7 +405,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
           this));
   transparent_button_->set_context_menu_controller(this);
   transparent_button_->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
-  layout->SetChildViewIgnoredByLayout(transparent_button_, true);
+  transparent_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetCanProcessEventsWithinSubtree(false);
@@ -465,7 +463,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   open_when_complete_action_ =
       AddQuickAction(DownloadCommands::OPEN_WHEN_COMPLETE);
   quick_action_holder_->SetVisible(false);
-  layout->SetChildViewIgnoredByLayout(quick_action_holder_, true);
+  quick_action_holder_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   quick_action_holder_->SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDialogBackground));
 

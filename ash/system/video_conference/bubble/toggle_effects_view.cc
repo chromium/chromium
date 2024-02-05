@@ -211,7 +211,7 @@ ToggleEffectsButton::ToggleEffectsButton(
   focus_ring->SetHaloInset(-3);
   // Since the focus ring doesn't set a LayoutManager it won't get drawn
   // unless excluded by the tile's LayoutManager.
-  layout_->SetChildViewIgnoredByLayout(focus_ring, true);
+  focus_ring->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   auto icon = std::make_unique<views::ImageView>();
   icon->SetID(video_conference::BubbleViewID::kToggleEffectIcon);

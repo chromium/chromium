@@ -496,7 +496,7 @@ TEST_F(FlexLayoutTest, Layout_Exlcude) {
   View* child2 = AddChild(kChild2Size);
   const View* child3 = AddChild(kChild3Size);
 
-  layout_->SetChildViewIgnoredByLayout(child2, true);
+  child2->SetProperty(kViewIgnoredByLayoutKey, true);
   child2->SetBounds(3, 3, 3, 3);
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(Rect(3, 3, 3, 3), child2->bounds());
@@ -504,7 +504,7 @@ TEST_F(FlexLayoutTest, Layout_Exlcude) {
   EXPECT_EQ(Rect(18, 5, 17, 13), child3->bounds());
   EXPECT_EQ(Size(44, 25), host_->GetPreferredSize());
 
-  layout_->SetChildViewIgnoredByLayout(child2, false);
+  child2->SetProperty(kViewIgnoredByLayoutKey, false);
   test::RunScheduledLayout(host_.get());
   std::vector<Rect> expected = {Rect(6, 5, 12, 10), Rect(18, 5, 13, 11),
                                 Rect(31, 5, 17, 13)};

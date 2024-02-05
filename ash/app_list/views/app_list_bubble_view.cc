@@ -234,8 +234,7 @@ AppListBubbleView::AppListBubbleView(
                        : views::HighlightBorder::Type::kHighlightBorder1,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
-  views::FillLayout* layout =
-      SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetLayoutManager(std::make_unique<views::FillLayout>());
   a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
       AddChildView(std::make_unique<views::View>()));
   InitContentsView(drag_and_drop_host);
@@ -248,7 +247,7 @@ AppListBubbleView::AppListBubbleView(
 
   InitFolderView(drag_and_drop_host);
   // Folder view is laid out manually based on its contents.
-  layout->SetChildViewIgnoredByLayout(folder_view_, true);
+  folder_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));

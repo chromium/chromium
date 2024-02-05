@@ -61,7 +61,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   // used but must exist to keep things happy. This view should be refactored to
   // descend from views::Button directly.
   for (views::View* child : children()) {
-    layout->SetChildViewIgnoredByLayout(child, true);
+    child->SetProperty(views::kViewIgnoredByLayoutKey, true);
   }
 
   const int icon_padding = layout_provider->GetDistanceMetric(

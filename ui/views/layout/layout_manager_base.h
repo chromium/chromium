@@ -46,13 +46,6 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
   // result had already been calculated, a cached value may be returned.
   ProposedLayout GetProposedLayout(const gfx::Size& host_size) const;
 
-  // Excludes a specific view from the layout when doing layout calculations.
-  // Useful when a child view is meant to be displayed but has its size and
-  // position managed elsewhere in code. By default, all child views are
-  // included in the layout unless they are hidden.
-  void SetChildViewIgnoredByLayout(View* child_view, bool ignored);
-  bool IsChildViewIgnoredByLayout(const View* child_view) const;
-
   // LayoutManager:
   gfx::Size GetPreferredSize(const View* host) const override;
   gfx::Size GetPreferredSize(const View* host,

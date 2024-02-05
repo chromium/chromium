@@ -349,8 +349,8 @@ Combobox::Combobox(ui::ComboboxModel* model)
   OnComboboxModelChanged(model_);
 
   // Set up layout.
-  auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetInteriorMargin(kComboboxBorderInsets);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetInteriorMargin(kComboboxBorderInsets);
   // Allow `title_` to shrink and elide, so that `drop_down_arrow_` on the
   // right always remains visible.
   title_->SetProperty(
@@ -373,8 +373,8 @@ Combobox::Combobox(ui::ComboboxModel* model)
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(
       this, kComboboxRoundedCorners);
   StyleUtil::SetUpInkDropForButton(this);
-  layout->SetChildViewIgnoredByLayout(views::FocusRing::Get(this),
-                                      /*ignored=*/true);
+  views::FocusRing::Get(this)->SetProperty(views::kViewIgnoredByLayoutKey,
+                                           /*ignored=*/true);
 
   event_handler_ = std::make_unique<ComboboxEventHandler>(this);
 

@@ -2139,7 +2139,7 @@ TEST_F(AnimatingLayoutManagerTest, FlexLayout_FadeOut_IgnoreChildView) {
   EXPECT_FALSE(layout()->is_animating());
   EnsureLayout(expected_start);
 
-  layout()->SetChildViewIgnoredByLayout(child(0), true);
+  child(0)->SetProperty(kViewIgnoredByLayoutKey, true);
 
   test::RunScheduledLayout(view());
   EXPECT_TRUE(layout()->is_animating());

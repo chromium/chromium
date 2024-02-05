@@ -693,8 +693,7 @@ void LoginUserView::UpdateOpacity() {
 }
 
 void LoginUserView::SetLargeLayout() {
-  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
-  layout
+  SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kCenter,
                   1.0f, views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(views::TableLayout::kFixedSize,
@@ -714,7 +713,7 @@ void LoginUserView::SetLargeLayout() {
       .AddRows(1, views::TableLayout::kFixedSize);
 
   AddChildView(tap_button_.get());
-  layout->SetChildViewIgnoredByLayout(tap_button_, true);
+  tap_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   AddChildView(user_image_.get());
   user_image_->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(5, 1));

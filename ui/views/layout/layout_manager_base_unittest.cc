@@ -14,6 +14,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 
@@ -181,27 +182,27 @@ TEST(LayoutManagerBaseTest, SetChildIncludedInLayout) {
   ExpectSameViews({child1, child2, child3}, layout->GetIncludedChildViews());
 
   // Remove one.
-  layout->SetChildViewIgnoredByLayout(child2, true);
+  child2->SetProperty(kViewIgnoredByLayoutKey, true);
   ExpectSameViews({child1, child3}, layout->GetIncludedChildViews());
 
   // Remove another.
-  layout->SetChildViewIgnoredByLayout(child1, true);
+  child1->SetProperty(kViewIgnoredByLayoutKey, true);
   ExpectSameViews({child3}, layout->GetIncludedChildViews());
 
   // Removing it again should have no effect.
-  layout->SetChildViewIgnoredByLayout(child1, true);
+  child1->SetProperty(kViewIgnoredByLayoutKey, true);
   ExpectSameViews({child3}, layout->GetIncludedChildViews());
 
   // Add one back.
-  layout->SetChildViewIgnoredByLayout(child1, false);
+  child1->SetProperty(kViewIgnoredByLayoutKey, false);
   ExpectSameViews({child1, child3}, layout->GetIncludedChildViews());
 
   // Adding it back again should have no effect.
-  layout->SetChildViewIgnoredByLayout(child1, false);
+  child1->SetProperty(kViewIgnoredByLayoutKey, false);
   ExpectSameViews({child1, child3}, layout->GetIncludedChildViews());
 
   // Add the other view back.
-  layout->SetChildViewIgnoredByLayout(child2, false);
+  child2->SetProperty(kViewIgnoredByLayoutKey, false);
   ExpectSameViews({child1, child2, child3}, layout->GetIncludedChildViews());
 }
 
@@ -506,30 +507,12 @@ TEST_F(LayoutManagerBaseManagerTest, Layout) {
   EXPECT_FALSE(child(2)->GetVisible());
 }
 
-TEST_F(LayoutManagerBaseManagerTest, ChildViewIgnoredByLayout) {
+TEST_F(LayoutManagerBaseManagerTest, IgnoresChildWithViewIgnoredByLayoutKey) {
   AddChildView(kSquarishSize);
   AddChildView(kLongSize);
   AddChildView(kTallSize);
 
-  EXPECT_FALSE(layout_manager()->IsChildViewIgnoredByLayout(child(0)));
-  EXPECT_FALSE(layout_manager()->IsChildViewIgnoredByLayout(child(1)));
-  EXPECT_FALSE(layout_manager()->IsChildViewIgnoredByLayout(child(2)));
-
-  layout_manager()->SetChildViewIgnoredByLayout(child(1), true);
-
-  EXPECT_FALSE(layout_manager()->IsChildViewIgnoredByLayout(child(0)));
-  EXPECT_TRUE(layout_manager()->IsChildViewIgnoredByLayout(child(1)));
-  EXPECT_FALSE(layout_manager()->IsChildViewIgnoredByLayout(child(2)));
-}
-
-TEST_F(LayoutManagerBaseManagerTest,
-       ChildViewIgnoredByLayout_IgnoresChildView) {
-  AddChildView(kSquarishSize);
-  AddChildView(kLongSize);
-  AddChildView(kTallSize);
-
-  layout_manager()->SetChildViewIgnoredByLayout(child(1), true);
-
+  child(1)->SetProperty(kViewIgnoredByLayoutKey, true);
   child(1)->SetSize(kLargeSize);
 
   // Makes enough room for all views, and triggers layout.

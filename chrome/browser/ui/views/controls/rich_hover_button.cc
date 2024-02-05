@@ -96,9 +96,9 @@ RichHoverButton::RichHoverButton(
                    text_context, views::style::STYLE_PRIMARY));
 
   // TODO(pkasting): This class should subclass Button, not HoverButton.
-  table_layout->SetChildViewIgnoredByLayout(image_container_view(), true);
-  table_layout->SetChildViewIgnoredByLayout(label(), true);
-  table_layout->SetChildViewIgnoredByLayout(ink_drop_container(), true);
+  image_container_view()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  label()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  ink_drop_container()->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   AddChildView(CreateIconView(main_image_icon));
   auto title_label = std::make_unique<views::Label>();

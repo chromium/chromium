@@ -382,8 +382,9 @@ ProposedLayout TableLayout::CalculateProposedLayout(
   layout.host_size.SetToMax(minimum_size_);
 
   for (View* child : GetChildViewsInPaintOrder(host_view())) {
-    if (!IsChildViewIgnoredByLayout(child))
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
       layout.child_layouts.push_back({child, true, {}, {}});
+    }
   }
 
   // Size each view.
