@@ -300,7 +300,9 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public BookmarkId getDefaultReadingListFolder(long nativeBookmarkBridge) {
-            return mMobileFolderId;
+            return BookmarkFeatures.isBookmarksAccountStorageEnabled()
+                    ? mAccountReadingListFolderId
+                    : mLocalOrSyncableReadingListFolderId;
         }
 
         @Override

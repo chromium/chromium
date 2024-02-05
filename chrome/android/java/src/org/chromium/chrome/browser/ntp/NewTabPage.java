@@ -608,7 +608,8 @@ public class NewTabPage
                         BookmarkModel.getForProfile(profile),
                         BrowserUiUtils.HostSurface.NEW_TAB_PAGE,
                         mTabModelSelector,
-                        profile) {
+                        profile,
+                        mBottomSheetController) {
                     @Override
                     public void openHelpPage() {
                         NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);

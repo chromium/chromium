@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
@@ -52,24 +53,30 @@ import org.chromium.url.GURL;
  * A default {@link ContextMenuItemDelegate} that supports the context menu functionality in Tab.
  */
 public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
+    private final Activity mActivity;
     private final TabImpl mTab;
     private final TabModelSelector mTabModelSelector;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Runnable mContextMenuCopyLinkObserver;
-    private final Supplier<SnackbarManager> mSnackbarManager;
+    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
 
     /** Builds a {@link TabContextMenuItemDelegate} instance. */
     public TabContextMenuItemDelegate(
+            Activity activity,
             Tab tab,
             TabModelSelector tabModelSelector,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             Runnable contextMenuCopyLinkObserver,
-            Supplier<SnackbarManager> snackbarManager) {
+            Supplier<SnackbarManager> snackbarManagerSupplier,
+            Supplier<BottomSheetController> bottomSheetControllerSupplier) {
+        mActivity = activity;
         mTab = (TabImpl) tab;
         mTabModelSelector = tabModelSelector;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
-        mSnackbarManager = snackbarManager;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
     }
 
     @Override
@@ -290,12 +297,13 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 () -> {
                     // Add to reading list.
                     BookmarkUtils.addToReadingList(
-                            url,
-                            title,
-                            mSnackbarManager.get(),
+                            mActivity,
                             bookmarkModel,
-                            mTab.getContext(),
-                            profile);
+                            title,
+                            url,
+                            mSnackbarManagerSupplier.get(),
+                            mTab.getProfile(),
+                            mBottomSheetControllerSupplier.get());
                     TrackerFactory.getTrackerForProfile(profile)
                             .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
 

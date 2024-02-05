@@ -123,7 +123,8 @@ public class ExploreSurfaceCoordinator {
                         new ExploreSurfaceActionDelegate(
                                 snackbarManager,
                                 BookmarkModel.getForProfile(profile),
-                                tabModelSelector),
+                                tabModelSelector,
+                                bottomSheetController),
                         HelpAndFeedbackLauncherImpl.getForProfile(profile),
                         tabStripHeightSupplier);
 
@@ -188,7 +189,8 @@ public class ExploreSurfaceCoordinator {
         ExploreSurfaceActionDelegate(
                 SnackbarManager snackbarManager,
                 BookmarkModel bookmarkModel,
-                TabModelSelector tabModelSelector) {
+                TabModelSelector tabModelSelector,
+                BottomSheetController bottomSheetController) {
             super(
                     mActivity,
                     snackbarManager,
@@ -196,7 +198,8 @@ public class ExploreSurfaceCoordinator {
                     bookmarkModel,
                     BrowserUiUtils.HostSurface.START_SURFACE,
                     tabModelSelector,
-                    mProfile);
+                    mProfile,
+                    bottomSheetController);
         }
 
         @Override

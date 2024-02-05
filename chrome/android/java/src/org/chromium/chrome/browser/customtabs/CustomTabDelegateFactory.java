@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -239,8 +240,11 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    // Should only be used after inflation.
     private final Lazy<SnackbarManager> mSnackbarManager;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    // Should only be used after inflation.
+    private final Lazy<BottomSheetController> mBottomSheetController;
 
     private TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
     private ExternalNavigationDelegateImpl mNavigationDelegate;
@@ -251,16 +255,16 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param shouldHideBrowserControls Whether or not the browser controls may auto-hide.
      * @param isOpenedByChrome Whether the CustomTab was originally opened by Chrome.
      * @param webApkScopeUrl The URL of the WebAPK web manifest scope. Null if the delegate is not
-     *                       for a WebAPK.
-     * @param displayMode  The activity's display mode.
+     *     for a WebAPK.
+     * @param displayMode The activity's display mode.
      * @param shouldEnableEmbeddedMediaExperience Whether embedded media experience is enabled.
      * @param visibilityDelegate The delegate that handles browser control visibility associated
-     *                           with browser actions (as opposed to tab state).
+     *     with browser actions (as opposed to tab state).
      * @param authUtils To determine whether apps are Google signed.
      * @param multiWindowUtils To use to determine which ChromeTabbedActivity to open new tabs in.
      * @param verifier Decides how to handle navigation to a new URL.
      * @param ephemeralTabCoordinatorSupplier A provider of {@link EphemeralTabCoordinator} that
-     *                                        shows preview tab.
+     *     shows preview tab.
      * @param chromeActivityNativeDelegate Delegate for native initialziation.
      * @param browserControlsStateProvider Provides state of the browser controls.
      * @param fullscreenManager Manages the fullscreen state.
@@ -271,6 +275,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param snackbarManager Manages the snackbar.
      * @param shareDelegateSupplier Supplies the share delegate.
      * @param activityType The type of the current activity.
+     * @param bottomSheetController Controls the bottom sheet.
      */
     private CustomTabDelegateFactory(
             Activity activity,
@@ -293,7 +298,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Lazy<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            @Named(ACTIVITY_TYPE) @ActivityType int activityType) {
+            @Named(ACTIVITY_TYPE) @ActivityType int activityType,
+            Lazy<BottomSheetController> bottomSheetController) {
         mActivity = activity;
         mShouldHideBrowserControls = shouldHideBrowserControls;
         mIsOpenedByChrome = isOpenedByChrome;
@@ -315,6 +321,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mSnackbarManager = snackbarManager;
         mShareDelegateSupplier = shareDelegateSupplier;
         mActivityType = activityType;
+        mBottomSheetController = bottomSheetController;
     }
 
     @Inject
@@ -335,7 +342,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Lazy<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            @Named(ACTIVITY_TYPE) @ActivityType int activityType) {
+            @Named(ACTIVITY_TYPE) @ActivityType int activityType,
+            Lazy<BottomSheetController> bottomSheetController) {
         this(
                 activity,
                 intentDataProvider.shouldEnableUrlBarHiding(),
@@ -357,7 +365,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 modalDialogManagerSupplier,
                 snackbarManager,
                 shareDelegateSupplier,
-                activityType);
+                activityType,
+                bottomSheetController);
     }
 
     /**
@@ -386,7 +395,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 () -> null,
                 null,
                 null,
-                ActivityType.CUSTOM_TAB);
+                ActivityType.CUSTOM_TAB,
+                null);
     }
 
     @Override
@@ -451,11 +461,13 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     TabContextMenuItemDelegate createTabContextMenuItemDelegate(Tab tab) {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         return new TabContextMenuItemDelegate(
+                mActivity,
                 tab,
                 tabModelSelector,
                 EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : () -> null,
                 () -> {},
-                () -> mSnackbarManager.get());
+                () -> mSnackbarManager.get(),
+                () -> mBottomSheetController.get());
     }
 
     @Override
