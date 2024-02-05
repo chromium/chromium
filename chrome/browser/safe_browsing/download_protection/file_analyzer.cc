@@ -86,7 +86,8 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
     StartExtractDmgFeatures();
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  } else if (inspection_type == DownloadFileType::OFFICE_DOCUMENT) {
+  } else if (inspection_type == DownloadFileType::OFFICE_DOCUMENT &&
+             !base::FeatureList::IsEnabled(kMaldocaSkipCheck)) {
     StartExtractDocumentFeatures();
 #endif
   } else if (base::FeatureList::IsEnabled(kSevenZipEvaluationEnabled) &&
@@ -270,10 +271,11 @@ void FileAnalyzer::ExtractFileOrDmgFeatures(
     bool download_file_has_koly_signature) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (download_file_has_koly_signature)
+  if (download_file_has_koly_signature) {
     StartExtractDmgFeatures();
-  else
+  } else {
     StartExtractFileFeatures();
+  }
 }
 
 void FileAnalyzer::OnDmgAnalysisFinished(

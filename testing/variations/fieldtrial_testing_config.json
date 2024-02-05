@@ -10911,6 +10911,25 @@
             ]
         }
     ],
+    "MaldocaSkipChecks": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MaldocaSkipChecks"
+                    ]
+                }
+            ]
+        }
+    ],
     "MaxNumDelayableRequestsPerHostPerClient": [
         {
             "platforms": [
