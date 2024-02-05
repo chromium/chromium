@@ -78,13 +78,12 @@
           {
             "name": "state",
             "$ref": "Enumeration"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "takesEnumArray",
@@ -97,13 +96,12 @@
             "items": {
               "$ref": "Enumeration"
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "takesEnumAsType",
@@ -113,13 +111,12 @@
           {
             "name": "enumeration",
             "$ref": "Enumeration"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "takesEnumArrayAsType",
@@ -132,68 +129,62 @@
             "items": {
               "$ref": "Enumeration"
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "returnsEnum",
         "type": "function",
         "description": "Returns an enum through the callback",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "state",
-                "$ref": "Enumeration"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "state",
+              "$ref": "Enumeration"
+            }
+          ]
+        }
       },
       {
         "name": "returnsEnumAsType",
         "type": "function",
         "description": "Returns an enum through the callback",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "enumeration",
-                "$ref": "Enumeration"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "enumeration",
+              "$ref": "Enumeration"
+            }
+          ]
+        }
       },
       {
         "name": "returnsTwoEnums",
         "type": "function",
         "description": "Returns two enums through the callback",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "firstState",
-                "$ref": "Enumeration"
-              },
-              {
-                "name": "secondState",
-                "$ref": "OtherEnumeration"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "does_not_support_promises": "Multi-parameter callback for test",
+          "parameters": [
+            {
+              "name": "firstState",
+              "$ref": "Enumeration"
+            },
+            {
+              "name": "secondState",
+              "$ref": "OtherEnumeration"
+            }
+          ]
+        }
       },
       {
         "name": "takesOptionalEnum",
@@ -204,13 +195,12 @@
             "name": "state",
             "$ref": "Enumeration",
             "optional": true
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "takesMultipleOptionalEnums",
@@ -226,13 +216,12 @@
             "name": "type",
             "$ref": "OtherEnumeration",
             "optional": true
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       }
     ],
     "events": [

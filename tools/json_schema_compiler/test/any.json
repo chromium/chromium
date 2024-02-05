@@ -24,31 +24,29 @@
             "type": "any",
             "name": "anyName",
             "optional": true
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "returnAny",
         "type": "function",
         "description": "Returns any.",
         "nodoc": "true",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "any"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "type": "function",
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "any"
+            }
+          ]
+        }
       }
     ],
     "events": [

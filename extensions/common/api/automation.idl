@@ -1548,12 +1548,12 @@ enum PositionType {
     // listen to changes across all trees. Pass a filter to determine what
     // specific tree changes to listen to, and note that listnening to all
     // tree changes can be expensive.
-    [nocompile, doesNotSupportPromises="Event callback"]
+    [nocompile, trailingCallbackIsFunctionParameter]
     static void addTreeChangeObserver(
         TreeChangeObserverFilter filter, TreeChangeObserver observer);
 
     // Remove a tree change observer.
-    [nocompile, doesNotSupportPromises="Event callback"]
+    [nocompile, trailingCallbackIsFunctionParameter]
     static void removeTreeChangeObserver(
         TreeChangeObserver observer);
 

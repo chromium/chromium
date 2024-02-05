@@ -75,10 +75,11 @@ const char kFunctions[] =
     "  'parameters': [{"
     "    'name': 'int',"
     "    'type': 'integer'"
-    "  }, {"
+    "  }],"
+    "  'returns_async': {"
     "    'name': 'callback',"
     "    'type': 'function'"
-    "  }]"
+    "  }"
     "}]";
 
 constexpr char kFunctionsWithCallbackSignatures[] = R"(
@@ -90,21 +91,23 @@ constexpr char kFunctionsWithCallbackSignatures[] = R"(
        }]
      }, {
        "name": "intCallback",
-       "parameters": [{
+       "parameters": [],
+       "returns_async": {
          "name": "callback",
-         "type": "function",
+         "does_not_support_promises": "Test",
          "parameters": [{
            "name": "int",
            "type": "integer"
          }]
-       }]
+       }
      }, {
        "name": "noParamCallback",
-       "parameters": [{
+       "parameters": [],
+       "returns_async": {
          "name": "callback",
-         "type": "function",
+         "does_not_support_promises": "Test",
          "parameters": []
-       }]
+       }
      }])";
 
 constexpr char kFunctionsWithPromiseSignatures[] =

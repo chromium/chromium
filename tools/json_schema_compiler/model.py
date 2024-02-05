@@ -333,9 +333,8 @@ class Function(object):
              parameter is used for each choice of a 'choices' parameter
   - |deprecated| a reason and possible alternative for a deprecated function
   - |description| a description of the function (if provided)
-  - |returns_async| an asynchronous return for the function. This may be
-                    specified either though the returns_async field or a
-                    callback function at the end of the parameters, but not both
+  - |returns_async| an asynchronous return for the function. This is specified
+                    through the returns_async field
   - |optional| whether the Function is "optional"; this only makes sense to be
                present when the Function is representing a callback property
   - |simple_name| the name of this Function without a namespace
@@ -372,50 +371,31 @@ class Function(object):
     self.filters = [GeneratePropertyFromParam(filter_instance)
                     for filter_instance in json.get('filters', [])]
 
+    # Any asynchronous return should be defined using the returns_async field.
     returns_async = json.get('returns_async', None)
     if returns_async:
-      returns_async_params = returns_async.get('parameters')
-      if (returns_async_params is None):
-        raise ValueError(
-            'parameters key not specified on returns_async: %s.%s in %s' %
-            (namespace.name, name, namespace.source_file))
-      if len(returns_async_params) > 1:
-        raise ValueError('Only a single parameter can be specific on '
-                         'returns_async: %s.%s in %s' %
-                         (namespace.name, name, namespace.source_file))
-      self.returns_async = ReturnsAsync(self, returns_async, namespace,
-                                        Origin(from_client=True), True)
+      self.returns_async = ReturnsAsync(
+          self,
+          returns_async,
+          namespace,
+          Origin(from_client=True),
+      )
       # TODO(https://crbug.com/1143032): Returning a synchronous value is
       # incompatible with returning a promise. There are APIs that specify this,
-      # though. Some appear to be incorrectly specified (i.e., don't return a
-      # value, but claim to), but others actually do return something. We'll
-      # need to handle those when converting them to allow promises.
-      if json.get('returns') is not None:
+      # though, so we make sure they have specified does_not_support_promises if
+      # they do.
+      if (
+          json.get('returns') is not None
+          and self.returns_async.can_return_promise
+      ):
         raise ValueError(
-            'Cannot specify both returns and returns_async: %s.%s'
-            % (namespace.name, name))
+            'Cannot specify both returns and returns_async on a function '
+            'which supports promies: %s.%s' % (namespace.name, name)
+        )
 
     params = json.get('parameters', [])
-    callback_param = None
     for i, param in enumerate(params):
-      # We consider the final function argument to the API to be the callback
-      # parameter if returns_async wasn't specified. Otherwise, we consider all
-      # function arguments to just be properties.
-      if i == len(params) - 1 and param.get(
-          'type') == 'function' and not self.returns_async:
-        callback_param = param
-      else:
-        # Treat all intermediate function arguments as properties. Certain APIs,
-        # such as the webstore, have these.
-        self.params.append(GeneratePropertyFromParam(param))
-
-    if callback_param:
-      # Even though we are creating a ReturnsAsync type here, this does not
-      # support being returned via a Promise, as this is implied by
-      # "returns_async" being found in the JSON.
-      # This is just a holder type for the callback.
-      self.returns_async = ReturnsAsync(self, callback_param, namespace,
-                                        Origin(from_client=True), False)
+      self.params.append(GeneratePropertyFromParam(param))
 
     self.returns = None
     if 'returns' in json:
@@ -441,23 +421,39 @@ class ReturnsAsync(object):
              callbacks, or the list of properties on the returned object in the
              case of using promises
   - |can_return_promise| whether this can be treated as a Promise as well as
-                         callback
+                         callback. Currently only consumed for documentation
+                         purposes
   """
-  def __init__(self, parent, json, namespace, origin, can_return_promise):
+  def __init__(self, parent, json, namespace, origin):
     self.name = json.get('name')
     self.simple_name = _StripNamespace(self.name, namespace)
     self.description = json.get('description')
     self.optional = _GetWithDefaultChecked(parent, json, 'optional', False)
     self.nocompile = json.get('nocompile')
     self.parent = parent
-    self.can_return_promise = can_return_promise
+    self.can_return_promise = json.get('does_not_support_promises') is None
 
     if json.get('returns') is not None:
-      raise ValueError('Cannot return a value from an asynchronous return: '
-                       '%s.%s' % (namespace.name, self.name))
+      raise ValueError(
+          'Cannot return a value from an asynchronous return: %s.%s in %s'
+          % (namespace.name, parent.name, namespace.source_file)
+      )
     if json.get('deprecated') is not None:
-      raise ValueError('Cannot specify deprecated on an asynchronous return: '
-                       '%s.%s' % (namespace.name, self.name))
+      raise ValueError(
+          'Cannot specify deprecated on an asynchronous return: %s.%s in %s'
+          % (namespace.name, parent.name, namespace.source_file)
+      )
+    if json.get('parameters') is None:
+      raise ValueError(
+          'parameters key not specified on returns_async: %s.%s in %s'
+          % (namespace.name, parent.name, namespace.source_file)
+      )
+    if len(json.get('parameters')) > 1 and self.can_return_promise:
+      raise ValueError(
+          'Only a single parameter can be specific on a returns_async which'
+          ' supports promises: %s.%s in %s'
+          % (namespace.name, parent.name, namespace.source_file)
+      )
 
     def GeneratePropertyFromParam(p):
       return Property(self, p['name'], p, namespace, origin)

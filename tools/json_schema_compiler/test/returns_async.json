@@ -33,23 +33,22 @@
         "name": "doesNotSupportPromises",
         "description": "Returns an object via callback.",
         "type": "function",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "someObject",
-                "type": "object",
-                "properties": {
-                  "state": {
-                    "$ref": "Enumeration"
-                  }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "does_not_support_promises": "For testing",
+          "parameters": [
+            {
+              "name": "someObject",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "$ref": "Enumeration"
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

@@ -35,31 +35,28 @@
             "name": "testType",
             "$ref": "simple_api.TestType",
             "optional": true
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+      "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "getTestType",
         "type": "function",
         "description": "Return a TestType.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "simple_api.TestType",
-                "description": "A TestType."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "$ref": "simple_api.TestType",
+              "description": "A TestType."
+            }
+          ]
+        }
       },
       {
         "name": "testTypeInObject",
@@ -73,13 +70,12 @@
               "testType": {"$ref": "simple_api.TestType", "optional": true},
               "boolean": {"type": "boolean"}
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       }
     ]
   }

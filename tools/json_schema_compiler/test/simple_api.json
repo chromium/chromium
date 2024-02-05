@@ -107,19 +107,18 @@
           {
             "name": "num",
             "type": "integer"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "integer",
-                "description": "The incremented value."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "integer",
+              "description": "The incremented value."
+            }
+          ]
+        }
       },
       {
         "name": "optionalString",
@@ -130,13 +129,12 @@
             "name": "str",
             "type": "string",
             "optional": true
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "optionalBeforeRequired",
@@ -151,13 +149,12 @@
           {
             "name": "second",
             "type": "string"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "requiredFunctionParameter",
@@ -179,37 +176,33 @@
         "name": "optionalCallbackParams",
         "type": "function",
         "description": "Gives back a string. Or not.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "TestType",
-                "description": "True if the extension has the specified permissions."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "$ref": "TestType",
+              "description": "True if the extension has the specified permissions."
+            }
+          ]
+        }
       },
       {
         "name": "getTestType",
         "type": "function",
         "description": "Return a TestType.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "TestType",
-                "description": "A TestType."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "$ref": "TestType",
+              "description": "A TestType."
+            }
+          ]
+        }
       }
     ],
     "events": [

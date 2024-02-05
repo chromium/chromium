@@ -191,15 +191,15 @@
                 "description": "Whether this context menu item is enabled or disabled. Defaults to <code>true</code>."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the item has been created in the browser. If an error occurs during creation, details will be available in $(ref:runtime.lastError).",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the item has been created in the browser. If an error occurs during creation, details will be available in $(ref:runtime.lastError).",
+          "parameters": [],
+          "does_not_support_promises": "Synchronous return and callback crbug.com/1143032"
+        }
       },
       {
         "name": "update",
@@ -284,15 +284,14 @@
                 "optional": true
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [],
-            "description": "Called when the context menu has been updated."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [],
+          "description": "Called when the context menu has been updated."
+        }
       },
       {
         "name": "remove",
@@ -306,29 +305,26 @@
             ],
             "name": "menuItemId",
             "description": "The ID of the context menu item to remove."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [],
-            "description": "Called when the context menu has been removed."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [],
+          "description": "Called when the context menu has been removed."
+        }
       },
       {
         "name": "removeAll",
         "type": "function",
         "description": "Removes all context menu items added by this extension.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [],
-            "description": "Called when removal is complete."
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [],
+          "description": "Called when removal is complete."
+        }
       }
     ],
     "events": [

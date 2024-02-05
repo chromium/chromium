@@ -25,22 +25,21 @@
                 ],
                 "description": "A single key to get, list of keys to get, or a dictionary specifying default values (see description of the object).  An empty list or object will return an empty result object.  Pass in <code>null</code> to get the entire contents of storage.",
                 "optional": true
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "description": "Callback with storage items, or on failure (in which case lastError will be set).",
-                "parameters": [
-                  {
-                    "name": "items",
-                    "type": "object",
-                    "properties": {},
-                    "additionalProperties": { "type": "any" },
-                    "description": "Object with items in their key-value mappings."
-                  }
-                ]
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "Callback with storage items, or on failure (in which case lastError will be set).",
+              "parameters": [
+                {
+                  "name": "items",
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": { "type": "any" },
+                  "description": "Object with items in their key-value mappings."
+                }
+              ]
+            }
           }
         ]
       },

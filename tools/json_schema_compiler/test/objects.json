@@ -35,66 +35,62 @@
                 "type": "boolean"
               }
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "returnsObject",
         "description": "Returns an object.",
         "type": "function",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "info",
-                "type": "object",
-                "properties": {
-                  "state": {
-                    "$ref": "firstState"
-                  }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "info",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "$ref": "firstState"
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "returnsTwoObjects",
         "description": "Return two objects.",
         "type": "function",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "firstInfo",
-                "type": "object",
-                "properties": {
-                  "state": {
-                    "$ref": "firstState"
-                  }
-                }
-              },
-              {
-                "name": "secondInfo",
-                "type": "object",
-                "properties": {
-                  "state": {
-                    "$ref": "secondState"
-                  }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "does_not_support_promises": "Multi-parameter callback for test",
+          "parameters": [
+            {
+              "name": "firstInfo",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "$ref": "firstState"
                 }
               }
-            ]
-          }
-        ]
+            },
+            {
+              "name": "secondInfo",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "$ref": "secondState"
+                }
+              }
+            }
+          ]
+        }
       }
     ],
     "events": [

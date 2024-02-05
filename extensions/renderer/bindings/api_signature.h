@@ -67,9 +67,7 @@ class APISignature {
   static std::unique_ptr<APISignature> CreateFromValues(
       const base::Value& specification_list,
       const base::Value* returns_async,
-      BindingAccessChecker* access_checker,
-      const std::string& api_name,
-      bool is_event_signature);
+      BindingAccessChecker* access_checker);
 
   struct V8ParseResult {
     // Appease the Chromium style plugin (out of line ctor/dtor).
