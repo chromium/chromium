@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("qr_scanner") {
+source_set("ui") {
   sources = [
     "qr_scanner_camera_controller.h",
     "qr_scanner_camera_controller.mm",
@@ -37,7 +37,7 @@ source_set("coordinator") {
     "qr_scanner_legacy_coordinator.mm",
   ]
   deps = [
-    ":qr_scanner",
+    ":ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -77,7 +77,7 @@ source_set("eg_app_support+eg2") {
     "qr_scanner_app_interface.mm",
   ]
   deps = [
-    ":qr_scanner",
+    ":ui",
     "//base",
     "//components/search_engines",
     "//components/version_info",

@@ -183,6 +183,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
 
   deps = [
     "//ios/chrome/browser/plus_addresses/ui:eg2_tests",
+    "//ios/chrome/browser/qr_scanner/ui_bundled:eg2_tests",
     "//ios/chrome/browser/settings/model/sync/utils:eg2_tests",
     "//ios/chrome/browser/ui/autofill/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:eg2_tests",
@@ -216,7 +217,6 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:eg2_tests",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history:eg2_tests",
     "//ios/chrome/browser/ui/price_notifications:eg2_tests",
-    "//ios/chrome/browser/ui/qr_scanner:eg2_tests",
     "//ios/chrome/browser/ui/reading_list:eg2_tests",
     "//ios/chrome/browser/ui/recent_tabs:eg2_tests",
     "//ios/chrome/browser/ui/sad_tab:eg2_tests",

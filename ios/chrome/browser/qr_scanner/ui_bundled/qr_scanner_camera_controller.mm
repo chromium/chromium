@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
+#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
 
 #import "base/apple/foundation_util.h"
 

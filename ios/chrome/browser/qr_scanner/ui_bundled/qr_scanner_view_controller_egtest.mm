@@ -8,7 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/qr_scanner/qr_scanner_app_interface.h"
+#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_app_interface.h"
 #import "ios/chrome/browser/ui/scanner/camera_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

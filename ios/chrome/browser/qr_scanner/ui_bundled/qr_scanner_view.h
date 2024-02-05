@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_QR_SCANNER_QR_SCANNER_VIEW_H_
-#define IOS_CHROME_BROWSER_UI_QR_SCANNER_QR_SCANNER_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_H_
+#define IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_H_
 
 #import "ios/chrome/browser/ui/scanner/scanner_view.h"
 
@@ -15,4 +15,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_QR_SCANNER_QR_SCANNER_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_H_
