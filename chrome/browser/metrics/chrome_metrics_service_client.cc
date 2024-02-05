@@ -1357,8 +1357,8 @@ bool ChromeMetricsServiceClient::IsWebstoreExtension(base::StringPiece id) {
     if (!registry) {
       continue;
     }
-    const extensions::Extension* extension = registry->GetExtensionById(
-        std::string(id), extensions::ExtensionRegistry::ENABLED);
+    const extensions::Extension* extension =
+        registry->enabled_extensions().GetByID(std::string(id));
     if (!extension) {
       continue;
     }
