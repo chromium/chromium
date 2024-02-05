@@ -582,6 +582,7 @@ source_set("tests") {
     "origin_agent_cluster_parser_unittest.cc",
     "parsed_headers_unittest.cc",
     "proxy_config_mojom_traits_unittest.cc",
+    "request_destination_unittest.cc",
     "schemeful_site_mojom_traits_unittest.cc",
     "shared_dictionary_isolation_key_mojom_traits_unittest.cc",
     "shared_dictionary_usage_info_mojom_traits_unittest.cc",
