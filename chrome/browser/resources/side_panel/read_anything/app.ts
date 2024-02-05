@@ -208,6 +208,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // because there are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
   paused = true;
+
+  // Voice and speed changes take effect on the next call of syntch.play(), but
+  // not on .resume(). In order to be responsive to the user's settings changes,
+  // we call synth.cancel() and synth.play(). However, as currently implemented,
+  // synth.cancel() and synth.play() plays from the beginning of the current
+  // utterance, even if parts of it had been spoken already. This can be
+  // disruptive to users who are toggling the play/pause button expecting for
+  // speech to resume from where the speech left off. This flag tracks the
+  // source of the pause to know whether to call synth.cancel()/synth.play() vs
+  // synth.paused()/synth.resume().
+  // TODO(crbug.com/1474951): Remove this when word level callbacks are enabled
+  pausedFromPlayClickButton = false;
   speechStarted = false;
   maxSpeechLength = 175;
 
@@ -553,11 +565,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.synth.speak(utterance);
   }
 
-  stopSpeech() {
+  stopSpeech(pausedFromPlayClickButton: boolean = false) {
     // TODO(crbug.com/1474951): When pausing, can we pause on the previous
     // word so that speech doesn't resume in the middle of the word?
     this.synth.pause();
     this.paused = true;
+    this.pausedFromPlayClickButton = pausedFromPlayClickButton;
 
     // Restore links if they're enabled when speech pauses.
     if (chrome.readingMode.linksEnabled) {
@@ -596,6 +609,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (this.speechStarted && this.paused) {
       this.synth.resume();
       this.paused = false;
+      this.pausedFromPlayClickButton = false;
       // Hide links when speech resumes.
       if (chrome.readingMode.linksEnabled) {
         this.updateContent();
@@ -615,6 +629,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
     if (container.textContent) {
       this.paused = false;
+      this.pausedFromPlayClickButton = false;
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
         this.updateContent();
