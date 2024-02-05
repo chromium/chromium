@@ -340,7 +340,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Contains data set explicitly via OverrideRole, OverrideName, etc. that
   // overrides anything provided by GetAccessibleNodeData().
-  ui::AXNodeData custom_data_;
+  ui::AXNodeData override_data_;
 
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility.
