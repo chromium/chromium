@@ -870,41 +870,65 @@ void TestAvifBppHistogram(const char* image_name,
 
 }  // namespace
 
-TEST(AnimatedAVIFTests, ValidImages) {
-  // star-animated-8bpc.avif, star-animated-10bpc.avif, and
-  // star-animated-12bpc.avif contain an EditListBox whose `flags` field is
-  // equal to 0, meaning the edit list is not repeated. Therefore their
-  // `expected_repetition_count` is 0.
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-animated-8bpc.avif", 5u, 0);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/star-animated-8bpc-with-alpha.avif", 5u,
-      kAnimationLoopInfinite);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-animated-10bpc.avif", 5u,
-                       0);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/star-animated-10bpc-with-alpha.avif", 5u,
-      kAnimationLoopInfinite);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-animated-12bpc.avif", 5u,
-                       0);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/star-animated-12bpc-with-alpha.avif", 5u,
-      kAnimationLoopInfinite);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/star-animated-8bpc-1-repetition.avif", 5u, 1);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/star-animated-8bpc-10-repetition.avif", 5u, 10);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/star-animated-8bpc-infinite-repetition.avif", 5u,
-      kAnimationLoopInfinite);
+struct AVIFImageParam {
+  const char* path;
+  size_t expected_frame_count;
+  int expected_repetition_count;
+};
+
+constexpr AVIFImageParam kAnimatedTestParams[] = {
+    // star-animated-8bpc.avif, star-animated-10bpc.avif, and
+    // star-animated-12bpc.avif contain an EditListBox whose `flags` field is
+    // equal to 0, meaning the edit list is not repeated. Therefore their
+    // `expected_repetition_count` is 0.
+    {"/images/resources/avif/star-animated-8bpc.avif", 5u, 0},
+    {"/images/resources/avif/star-animated-8bpc-with-alpha.avif", 5u,
+     kAnimationLoopInfinite},
+    {"/images/resources/avif/star-animated-10bpc.avif", 5u, 0},
+    {"/images/resources/avif/star-animated-10bpc-with-alpha.avif", 5u,
+     kAnimationLoopInfinite},
+    {"/images/resources/avif/star-animated-12bpc.avif", 5u, 0},
+    {"/images/resources/avif/star-animated-12bpc-with-alpha.avif", 5u,
+     kAnimationLoopInfinite},
+    {"/images/resources/avif/star-animated-8bpc-1-repetition.avif", 5u, 1},
+    {"/images/resources/avif/star-animated-8bpc-10-repetition.avif", 5u, 10},
+    {"/images/resources/avif/star-animated-8bpc-infinite-repetition.avif", 5u,
+     kAnimationLoopInfinite},
+};
+
+constexpr AVIFImageParam kStaticTestParams[] = {
+    {"/images/resources/avif/red-at-12-oclock-with-color-profile-lossy.avif", 1,
+     kAnimationNone},
+    {"/images/resources/avif/red-at-12-oclock-with-color-profile-8bpc.avif", 1,
+     kAnimationNone},
+    {"/images/resources/avif/red-at-12-oclock-with-color-profile-10bpc.avif", 1,
+     kAnimationNone},
+    {"/images/resources/avif/red-at-12-oclock-with-color-profile-12bpc.avif", 1,
+     kAnimationNone},
+    {"/images/resources/avif/tiger_3layer_1res.avif", 1, kAnimationNone},
+    {"/images/resources/avif/tiger_3layer_3res.avif", 1, kAnimationNone},
+    {"/images/resources/avif/tiger_420_8b_grid1x13.avif", 1, kAnimationNone},
+    {"/images/resources/avif/dice_444_10b_grid4x3.avif", 1, kAnimationNone},
+    {"/images/resources/avif/gracehopper_422_12b_grid2x4.avif", 1,
+     kAnimationNone},
+    {"/images/resources/avif/small-with-gainmap-adobe.avif", 1, kAnimationNone},
+    {"/images/resources/avif/small-with-gainmap-iso.avif", 1, kAnimationNone},
+};
+
+using AVIFValidImagesTest = ::testing::TestWithParam<AVIFImageParam>;
+
+INSTANTIATE_TEST_SUITE_P(AnimatedAVIF,
+                         AVIFValidImagesTest,
+                         ::testing::ValuesIn(kAnimatedTestParams));
+
+INSTANTIATE_TEST_SUITE_P(StaticAVIF,
+                         AVIFValidImagesTest,
+                         ::testing::ValuesIn(kStaticTestParams));
+
+TEST_P(AVIFValidImagesTest, ByteByByteDecode) {
+  TestByteByByteDecode(&CreateAVIFDecoder, GetParam().path,
+                       GetParam().expected_frame_count,
+                       GetParam().expected_repetition_count);
 }
 
 TEST(AnimatedAVIFTests, HasMultipleSubImages) {
@@ -972,47 +996,6 @@ TEST(StaticAVIFTests, invalidImages) {
       "/images/resources/avif/"
       "red-at-12-oclock-with-color-profile-with-wrong-frame-header.avif",
       ErrorPhase::kDecode);
-}
-
-TEST(StaticAVIFTests, ValidImages) {
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/red-at-12-oclock-with-color-profile-lossy.avif",
-      1, kAnimationNone);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/red-at-12-oclock-with-color-profile-8bpc.avif", 1,
-      kAnimationNone);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/red-at-12-oclock-with-color-profile-10bpc.avif",
-      1, kAnimationNone);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/red-at-12-oclock-with-color-profile-12bpc.avif",
-      1, kAnimationNone);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/tiger_3layer_1res.avif", 1,
-                       kAnimationNone);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/tiger_3layer_3res.avif", 1,
-                       kAnimationNone);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/tiger_420_8b_grid1x13.avif", 1,
-                       kAnimationNone);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/dice_444_10b_grid4x3.avif", 1,
-                       kAnimationNone);
-  TestByteByByteDecode(
-      &CreateAVIFDecoder,
-      "/images/resources/avif/gracehopper_422_12b_grid2x4.avif", 1,
-      kAnimationNone);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/small-with-gainmap-adobe.avif",
-                       1, kAnimationNone);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/small-with-gainmap-iso.avif", 1,
-                       kAnimationNone);
 }
 
 TEST(StaticAVIFTests, GetAdobeGainmapInfoAndData) {
