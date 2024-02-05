@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.RedirectChainSize" units="count"
-    expires_after="2024-04-25">
+    expires_after="2024-06-30">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.WasFullRedirectChainServed"
-    enum="Boolean" expires_after="2024-04-25">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.RedirectChainSize" units="count"
-    expires_after="2024-04-25">
+    expires_after="2024-06-30">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -526,7 +526,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Redirect.NetworkContextStateTransition"
-    enum="PrefetchRedirectNetworkContextTransition" expires_after="2024-04-25">
+    enum="PrefetchRedirectNetworkContextTransition" expires_after="2024-06-30">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -539,7 +539,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Redirect.Result" enum="PrefetchRedirectResult"
-    expires_after="2024-03-17">
+    expires_after="2024-06-30">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
