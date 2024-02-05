@@ -454,18 +454,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.macOS.LaunchedViaNotificationAction"
-    enum="NotificationActionSource" expires_after="M97">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Logged when macOS launched either a browser or helper app as a result of a
-    user clicking on a notification. This only happens if the process that
-    displayed that notification unexpectedly died. Logged once after the process
-    got started.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.macOS.ServiceProcessKilled" units="ms"
     expires_after="2024-08-07">
   <owner>knollr@chromium.org</owner>
