@@ -16,6 +16,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 
 namespace media {
@@ -179,7 +180,7 @@ class V4L2Buffer {
   void* GetPlaneMapping(const size_t plane);
   size_t GetMemoryUsage() const;
   const struct v4l2_buffer& v4l2_buffer() const { return v4l2_buffer_; }
-  scoped_refptr<VideoFrame> GetVideoFrame();
+  const scoped_refptr<FrameResource>& GetFrameResource();
 
  private:
   V4L2Buffer(const IoctlAsCallback& ioctl_cb,
@@ -203,7 +204,7 @@ class V4L2Buffer {
   struct v4l2_plane v4l2_planes_[VIDEO_MAX_PLANES];
 
   struct v4l2_format format_;
-  scoped_refptr<VideoFrame> video_frame_;
+  scoped_refptr<FrameResource> frame_;
   base::WeakPtrFactory<V4L2Buffer> weak_factory_{this};
 };
 
@@ -350,7 +351,7 @@ scoped_refptr<VideoFrame> V4L2Buffer::CreateVideoFrame() {
       *layout, gfx::Rect(size), size, std::move(dmabuf_fds), base::TimeDelta());
 }
 
-scoped_refptr<VideoFrame> V4L2Buffer::GetVideoFrame() {
+const scoped_refptr<FrameResource>& V4L2Buffer::GetFrameResource() {
   // We can create the VideoFrame only when using MMAP buffers.
   if (v4l2_buffer_.memory != V4L2_MEMORY_MMAP) {
     VLOGF(1) << "Cannot create video frame from non-MMAP buffer";
@@ -360,11 +361,12 @@ scoped_refptr<VideoFrame> V4L2Buffer::GetVideoFrame() {
   }
 
   // Create the video frame instance if requiring it for the first time.
-  if (!video_frame_) {
-    video_frame_ = CreateVideoFrame();
+  if (!frame_) {
+    // TODO(nhebert): switch to NativePixmap FrameResource when it is ready
+    frame_ = VideoFrameResource::Create(CreateVideoFrame());
   }
 
-  return video_frame_;
+  return frame_;
 }
 
 // A thread-safe pool of buffer indexes, allowing buffers to be obtained and
@@ -446,10 +448,10 @@ class V4L2BufferRefBase {
 
   ~V4L2BufferRefBase();
 
-  bool QueueBuffer(scoped_refptr<VideoFrame> video_frame);
+  bool QueueBuffer(scoped_refptr<FrameResource> frame);
   void* GetPlaneMapping(const size_t plane);
 
-  scoped_refptr<VideoFrame> GetVideoFrame();
+  const scoped_refptr<FrameResource>& GetFrameResource();
   // Checks that the number of passed FDs is adequate for the current format
   // and buffer configuration. Only useful for DMABUF buffers.
   bool CheckNumFDsForFormat(const size_t num_fds) const;
@@ -501,14 +503,14 @@ V4L2BufferRefBase::~V4L2BufferRefBase() {
   }
 }
 
-bool V4L2BufferRefBase::QueueBuffer(scoped_refptr<VideoFrame> video_frame) {
+bool V4L2BufferRefBase::QueueBuffer(scoped_refptr<FrameResource> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!queue_) {
     return false;
   }
 
-  queued = queue_->QueueBuffer(&v4l2_buffer_, std::move(video_frame));
+  queued = queue_->QueueBuffer(&v4l2_buffer_, std::move(frame));
 
   return queued;
 }
@@ -523,19 +525,19 @@ void* V4L2BufferRefBase::GetPlaneMapping(const size_t plane) {
   return queue_->buffers_[BufferId()]->GetPlaneMapping(plane);
 }
 
-scoped_refptr<VideoFrame> V4L2BufferRefBase::GetVideoFrame() {
+const scoped_refptr<FrameResource>& V4L2BufferRefBase::GetFrameResource() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Used so we can return a const scoped_refptr& in all cases.
-  static const scoped_refptr<VideoFrame> null_videoframe;
+  static const scoped_refptr<FrameResource> null_frame_resource;
 
   if (!queue_) {
-    return null_videoframe;
+    return null_frame_resource;
   }
 
   DCHECK_LE(BufferId(), queue_->buffers_.size());
 
-  return queue_->buffers_[BufferId()]->GetVideoFrame();
+  return queue_->buffers_[BufferId()]->GetFrameResource();
 }
 
 bool V4L2BufferRefBase::CheckNumFDsForFormat(const size_t num_fds) const {
@@ -613,7 +615,22 @@ scoped_refptr<VideoFrame> V4L2WritableBufferRef::GetVideoFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
 
-  return buffer_data_->GetVideoFrame();
+  const scoped_refptr<FrameResource>& frame = buffer_data_->GetFrameResource();
+  if (!frame) {
+    return nullptr;
+  }
+  if (!frame->AsVideoFrameResource()) {
+    NOTREACHED() << "V4L2ReadableBuffer::GetVideoFrame() is only called when "
+                    "the |frame_| is a VideoFrameResource";
+  }
+  return frame->AsVideoFrameResource()->GetMutableVideoFrame();
+}
+
+scoped_refptr<FrameResource> V4L2WritableBufferRef::GetFrameResource() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(buffer_data_);
+
+  return buffer_data_->GetFrameResource();
 }
 
 enum v4l2_memory V4L2WritableBufferRef::Memory() const {
@@ -624,7 +641,7 @@ enum v4l2_memory V4L2WritableBufferRef::Memory() const {
 }
 
 bool V4L2WritableBufferRef::DoQueue(V4L2RequestRef* request_ref,
-                                    scoped_refptr<VideoFrame> video_frame) && {
+                                    scoped_refptr<FrameResource> frame) && {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
 
@@ -633,7 +650,7 @@ bool V4L2WritableBufferRef::DoQueue(V4L2RequestRef* request_ref,
     return false;
   }
 
-  bool queued = buffer_data_->QueueBuffer(std::move(video_frame));
+  bool queued = buffer_data_->QueueBuffer(std::move(frame));
 
   // Clear our own reference.
   buffer_data_.reset();
@@ -713,6 +730,15 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<VideoFrame> video_frame,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
 
+  return std::move(*this).QueueDMABuf(
+      VideoFrameResource::Create(std::move(video_frame)), request_ref);
+}
+
+bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> frame,
+                                        V4L2RequestRef* request_ref) && {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(buffer_data_);
+
   // Move ourselves so our data gets freed no matter when we return
   V4L2WritableBufferRef self(std::move(*this));
 
@@ -722,9 +748,9 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<VideoFrame> video_frame,
   }
 
   // TODO(andrescj): consider replacing this by a DCHECK.
-  if (video_frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
-      video_frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
-    VLOGF(1) << "Only GpuMemoryBuffer and dma-buf VideoFrames are supported";
+  if (frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+      frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
+    VLOGF(1) << "Only frames with GpuMemoryBuffer and dma-buf are supported";
     return false;
   }
 
@@ -732,10 +758,9 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<VideoFrame> video_frame,
   // call to DoQueue() which uses the VIDIOC_QBUF ioctl and so ends up
   // increasing the reference count of the dma-buf. Thus, closing the FDs is
   // safe.
-  // TODO(andrescj): for dma-buf VideoFrames, duping the FDs is unnecessary.
+  // TODO(andrescj): for dma-buf frames, duping the FDs is unnecessary.
   // Consider handling that path separately.
-  gfx::GpuMemoryBufferHandle gmb_handle =
-      CreateGpuMemoryBufferHandle(video_frame.get());
+  gfx::GpuMemoryBufferHandle gmb_handle = frame->CreateGpuMemoryBufferHandle();
   if (gmb_handle.type != gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
     VLOGF(1) << "Failed to create GpuMemoryBufferHandle for frame!";
     return false;
@@ -752,7 +777,7 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<VideoFrame> video_frame,
     self.buffer_data_->v4l2_buffer_.m.planes[i].m.fd = planes[i].fd.get();
   }
 
-  return std::move(self).DoQueue(request_ref, std::move(video_frame));
+  return std::move(self).DoQueue(request_ref, std::move(frame));
 }
 
 bool V4L2WritableBufferRef::QueueDMABuf(
@@ -918,10 +943,10 @@ size_t V4L2WritableBufferRef::BufferId() const {
 
 V4L2ReadableBuffer::V4L2ReadableBuffer(const struct v4l2_buffer& v4l2_buffer,
                                        base::WeakPtr<V4L2Queue> queue,
-                                       scoped_refptr<VideoFrame> video_frame)
+                                       scoped_refptr<FrameResource> frame)
     : buffer_data_(
           std::make_unique<V4L2BufferRefBase>(v4l2_buffer, std::move(queue))),
-      video_frame_(std::move(video_frame)) {
+      frame_(std::move(frame)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -929,11 +954,29 @@ scoped_refptr<VideoFrame> V4L2ReadableBuffer::GetVideoFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
 
-  if (buffer_data_->v4l2_buffer_.memory == V4L2_MEMORY_DMABUF && video_frame_) {
-    return video_frame_;
-  }
+  const scoped_refptr<FrameResource>& frame =
+      (buffer_data_->v4l2_buffer_.memory == V4L2_MEMORY_DMABUF && frame_)
+          ? frame_
+          : buffer_data_->GetFrameResource();
 
-  return buffer_data_->GetVideoFrame();
+  if (!frame) {
+    return nullptr;
+  }
+  if (!frame->AsVideoFrameResource()) {
+    NOTREACHED() << "V4L2ReadableBuffer::GetVideoFrame() is only called when "
+                    "the |frame_| is a VideoFrameResource";
+  }
+  return frame->AsVideoFrameResource()->GetMutableVideoFrame();
+}
+
+scoped_refptr<FrameResource> V4L2ReadableBuffer::GetFrameResource() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(buffer_data_);
+
+  if (buffer_data_->v4l2_buffer_.memory == V4L2_MEMORY_DMABUF && frame_) {
+    return frame_;
+  }
+  return buffer_data_->GetFrameResource();
 }
 
 V4L2ReadableBuffer::~V4L2ReadableBuffer() {
@@ -1303,9 +1346,9 @@ class V4L2BufferRefFactory {
   static V4L2ReadableBufferRef CreateReadableRef(
       const struct v4l2_buffer& v4l2_buffer,
       base::WeakPtr<V4L2Queue> queue,
-      scoped_refptr<VideoFrame> video_frame) {
+      scoped_refptr<FrameResource> frame) {
     return new V4L2ReadableBuffer(v4l2_buffer, std::move(queue),
-                                  std::move(video_frame));
+                                  std::move(frame));
   }
 };
 
@@ -1404,7 +1447,7 @@ std::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
 }
 
 bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,
-                            scoped_refptr<VideoFrame> video_frame) {
+                            scoped_refptr<FrameResource> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   V4L2ProcessingTrace(v4l2_buffer, /*start=*/true);
@@ -1417,7 +1460,7 @@ bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,
   }
 
   const auto inserted =
-      queued_buffers_.emplace(v4l2_buffer->index, std::move(video_frame));
+      queued_buffers_.emplace(v4l2_buffer->index, std::move(frame));
   DCHECK(inserted.second);
 
   schedule_poll_cb_.Run();
@@ -1469,7 +1512,7 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
 
   auto it = queued_buffers_.find(v4l2_buffer.index);
   DCHECK(it != queued_buffers_.end());
-  scoped_refptr<VideoFrame> queued_frame = std::move(it->second);
+  scoped_refptr<FrameResource> queued_frame = std::move(it->second);
   queued_buffers_.erase(it);
 
   V4L2ProcessingTrace(&v4l2_buffer, /*start=*/false);
