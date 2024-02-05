@@ -1438,6 +1438,38 @@ void FakeUserDataAuthClient::UpdateAuthFactor(
   user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
 }
 
+void FakeUserDataAuthClient::UpdateAuthFactorMetadata(
+    const ::user_data_auth::UpdateAuthFactorMetadataRequest& request,
+    UpdateAuthFactorMetadataCallback callback) {
+  ::user_data_auth::UpdateAuthFactorMetadataReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kUpdateAuthFactorMetadata>(request);
+
+  if (auto error = TakeOperationError(Operation::kUpdateAuthFactor);
+      cryptohome::HasError(error)) {
+    SetErrorWrapperToReply(reply, error);
+    return;
+  }
+
+  auto error = cryptohome::ErrorWrapper::success();
+  auto* session =
+      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
+  SetErrorWrapperToReply(reply, error);
+  if (session == nullptr) {
+    return;
+  }
+
+  auto user_it = users_.find(session->account);
+  DCHECK(user_it != std::end(users_));
+  UserCryptohomeState& user_state = user_it->second;
+
+  // Check that the factor updated exists. We don't have to modify the stored
+  // factor because metadata fields are not recorded in this implementation.
+  CHECK(user_state.auth_factors.contains(request.auth_factor_label()))
+      << "Key does not exist: " << request.auth_factor_label();
+  return;
+}
+
 void FakeUserDataAuthClient::RemoveAuthFactor(
     const ::user_data_auth::RemoveAuthFactorRequest& request,
     RemoveAuthFactorCallback callback) {

@@ -44,32 +44,41 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
   void GetAuthFactorsConfiguration(std::unique_ptr<UserContext> context,
                                    AuthOperationCallback callback);
 
-  // Attempts to add Kiosk-specific key to user identified by `context`.
+  // Attempts to add Kiosk-specific key to user identified by `context`. On
+  // success, as this will modify the auth factor configurations of the user,
+  // the context auth factor configurations will be cleared.
   // Session should be authenticated.
   void AddKioskKey(std::unique_ptr<UserContext> context,
                    AuthOperationCallback callback);
 
   // Attempts to add knowledge-based Key contained in `context` to corresponding
   // user. Until migration to AuthFactors this method supports both password and
-  // PIN keys.
+  // PIN keys. On success, as this will modify the auth factor configurations of
+  // the user, the context auth factor configurations will be cleared.
   // Session should be authenticated.
   void AddContextKnowledgeKey(std::unique_ptr<UserContext> context,
                               AuthOperationCallback callback);
 
   // Attempts to add Challenge-response Key contained in `context` to
-  // corresponding user.
+  // corresponding user. On success, as this will modify the auth factor
+  // configurations of the user, the context auth factor configurations will be
+  // cleared.
   // Session should be authenticated.
   void AddContextChallengeResponseKey(std::unique_ptr<UserContext> context,
                                       AuthOperationCallback callback);
 
   // Attempts to replace factor labeled by Key contained in `context`
-  // with key stored in ReplacementKey in the `context`.
+  // with key stored in ReplacementKey in the `context`. On success, as this
+  // will modify the auth factor configurations of the user, the context auth
+  // factor configurations will be cleared.
   // Session should be authenticated.
   void ReplaceContextKey(std::unique_ptr<UserContext> context,
                          AuthOperationCallback callback);
 
   // Adds a PIN factor of the user corresponding to `context`. The PIN factor
-  // must not be configured prior to calling this.
+  // must not be configured prior to calling this. On success, as this will
+  // modify the auth factor configurations of the user, the context auth factor
+  // configurations will be cleared.
   // Session should be authenticated.
   void AddPinFactor(std::unique_ptr<UserContext> context,
                     cryptohome::PinSalt salt,
@@ -78,7 +87,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
 
   // Replaces an already configured PIN factor of the user corresponding to
   // `context`. The PIN factor must already be configured configured prior to
-  // calling this.
+  // calling this. On success, as this will modify the auth factor
+  // configurations of the user, the context auth factor configurations will be
+  // cleared.
   // Session should be authenticated.
   void ReplacePinFactor(std::unique_ptr<UserContext> context,
                         cryptohome::PinSalt salt,
@@ -86,30 +97,39 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                         AuthOperationCallback callback);
 
   // Removes the PIN factor of the user corresponding to `context`. Yields an
-  // error if no PIN factor was configured prior to calling this.
+  // error if no PIN factor was configured prior to calling this. On success, as
+  // this will modify the auth factor configurations of the user, the context
+  // auth factor configurations will be cleared.
   // Session should be authenticated.
   void RemovePinFactor(std::unique_ptr<UserContext> context,
                        AuthOperationCallback callback);
 
   // Adds a recovery key for the user by `context`. No key is added if there is
-  // already a recovery key.
+  // already a recovery key. On success, as this will modify the auth factor
+  // configurations of the user, the context auth factor configurations will be
+  // cleared.
   // Session must be authenticated.
   void AddRecoveryFactor(std::unique_ptr<UserContext> context,
                          AuthOperationCallback callback);
 
   // Rotates the recovery factor of the user by `context`. The recovery factor
-  // must already be configured prior to calling this.
+  // must already be configured prior to calling this. On success, as this will
+  // modify the auth factor configurations of the user, the context auth factor
+  // configurations will be cleared.
   // Session must be authenticated.
   void RotateRecoveryFactor(std::unique_ptr<UserContext> context,
                             bool ensure_fresh_recovery_id,
                             AuthOperationCallback callback);
 
-  // Remove all recovery keys for the user by `context`.
-  // Session must be authenticated.
+  // Remove all recovery keys for the user by `context`. On success, as this
+  // will modify the auth factor configurations of the user, the context auth
+  // factor configurations will be cleared. Session must be authenticated.
   void RemoveRecoveryFactor(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback);
 
-  // Sets the user's password factor if none already exists.
+  // Sets the user's password factor if none already exists. On success, as this
+  // will modify the auth factor configurations of the user, the context auth
+  // factor configurations will be cleared.
   // Session should be authenticated.
   void SetPasswordFactor(std::unique_ptr<UserContext> context,
                          cryptohome::RawPassword new_password,
@@ -117,12 +137,33 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                          AuthOperationCallback callback);
 
   // Replaces the user's password with a new value. A password must
-  // already be configured prior to calling this.
+  // already be configured prior to calling this. On success, as this will
+  // modify the auth factor configurations of the user, the context auth factor
+  // configurations will be cleared.
   // Session should be authenticated.
   void ReplacePasswordFactor(std::unique_ptr<UserContext> context,
                              cryptohome::RawPassword new_password,
                              const cryptohome::KeyLabel& label,
                              AuthOperationCallback callback);
+
+  // Updates the user's password factor's metadata. The password must already
+  // be configured prior to calling this. On success, as this will modify the
+  // auth factor configurations of the user, the context auth factor
+  // configurations will be cleared.
+  // Session should be authenticated.
+  void UpdatePasswordFactorMetadata(std::unique_ptr<UserContext> context,
+                                    const cryptohome::KeyLabel& label,
+                                    const cryptohome::SystemSalt& system_salt,
+                                    AuthOperationCallback callback);
+
+  // Updates the user's PIN factor's metadata. The PIN must already
+  // be configured prior to calling this. On success, as this will modify the
+  // auth factor configurations of the user, the context auth factor
+  // configurations will be cleared.
+  // Session should be authenticated.
+  void UpdatePinFactorMetadata(std::unique_ptr<UserContext> context,
+                               cryptohome::PinSalt salt,
+                               AuthOperationCallback callback);
 
  private:
   void OnListAuthFactors(
@@ -151,6 +192,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       std::optional<user_data_auth::RemoveAuthFactorReply> reply);
+
+  void OnUpdateAuthFactorMetadata(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      std::optional<user_data_auth::UpdateAuthFactorMetadataReply> reply);
 
   void SetPasswordFactorImpl(std::unique_ptr<UserContext> context,
                              cryptohome::RawPassword new_password,
