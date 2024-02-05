@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/tether/host_scan_cache.h"
 #include "chromeos/ash/components/tether/notification_presenter.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
+#include "chromeos/ash/components/tether/tether_host_response_recorder.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_connector.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_disconnector.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
@@ -222,6 +223,8 @@ void TetherConnectorImpl::OnSuccessfulConnectTetheringResponse(
     multidevice::RemoteDeviceRef remote_device,
     const std::string& ssid,
     const std::string& password) {
+  tether_host_response_recorder_->RecordSuccessfulConnectTetheringResponse(
+      remote_device);
   if (device_id_pending_connection_ != remote_device.GetDeviceId()) {
     // If the success was part of a previous attempt for a different device,
     // ignore it.
@@ -308,7 +311,6 @@ void TetherConnectorImpl::OnTetherHostToConnectFetched(
           device_id);
   connect_tethering_operation_ = ConnectTetheringOperation::Factory::Create(
       *tether_host_to_connect, device_sync_client_, secure_channel_client_,
-      tether_host_response_recorder_,
       host_scan_cache_->DoesHostRequireSetup(tether_network_guid));
   connect_tethering_operation_->AddObserver(this);
   connect_tethering_operation_->Initialize();

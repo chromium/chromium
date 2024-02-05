@@ -10,7 +10,6 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
-#include "chromeos/ash/components/tether/tether_host_response_recorder.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash {
@@ -41,17 +40,16 @@ ConnectTetheringOperation::Factory::Create(
     multidevice::RemoteDeviceRef device_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
-    TetherHostResponseRecorder* tether_host_response_recorder,
     bool setup_required) {
   if (factory_instance_) {
     return factory_instance_->CreateInstance(
         device_to_connect, device_sync_client, secure_channel_client,
-        tether_host_response_recorder, setup_required);
+        setup_required);
   }
 
-  return base::WrapUnique(new ConnectTetheringOperation(
-      device_to_connect, device_sync_client, secure_channel_client,
-      tether_host_response_recorder, setup_required));
+  return base::WrapUnique(
+      new ConnectTetheringOperation(device_to_connect, device_sync_client,
+                                    secure_channel_client, setup_required));
 }
 
 // static
@@ -66,7 +64,6 @@ ConnectTetheringOperation::ConnectTetheringOperation(
     multidevice::RemoteDeviceRef device_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
-    TetherHostResponseRecorder* tether_host_response_recorder,
     bool setup_required)
     : MessageTransferOperation(
           multidevice::RemoteDeviceRefList{device_to_connect},
@@ -74,7 +71,6 @@ ConnectTetheringOperation::ConnectTetheringOperation(
           device_sync_client,
           secure_channel_client),
       remote_device_(device_to_connect),
-      tether_host_response_recorder_(tether_host_response_recorder),
       clock_(base::DefaultClock::GetInstance()),
       setup_required_(setup_required),
       error_code_to_return_(HostResponseErrorCode::NO_RESPONSE) {}
@@ -123,9 +119,6 @@ void ConnectTetheringOperation::OnMessageReceived(
           << remote_device.GetTruncatedDeviceIdForLogs() << " and "
           << "response_code == SUCCESS. Config: {ssid: \"" << response->ssid()
           << "\", password: \"" << response->password() << "\"}";
-
-      tether_host_response_recorder_->RecordSuccessfulConnectTetheringResponse(
-          remote_device);
 
       // Save the response values here, but do not notify observers until
       // OnOperationFinished(). Notifying observers at this point can cause this
