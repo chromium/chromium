@@ -149,6 +149,7 @@ try_.orchestrator_builder(
     compilator = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
         omit_from_luci_cv = True,
     ),
@@ -187,6 +188,7 @@ try_.compilator_builder(
     ],
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 # TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
