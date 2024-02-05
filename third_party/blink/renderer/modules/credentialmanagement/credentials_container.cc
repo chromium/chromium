@@ -1526,7 +1526,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
   }
 
   if (options->hasIdentity() && options->identity()->hasProviders()) {
-    return GetForIdentity(script_state, resolver, promise, options,
+    return GetForIdentity(script_state, resolver, promise, *options,
                           *options->identity(), exception_state);
   }
 
@@ -1990,9 +1990,31 @@ ScriptPromise CredentialsContainer::GetForIdentity(
     ScriptState* script_state,
     ScriptPromiseResolver* resolver,
     const ScriptPromise& promise,
-    const CredentialRequestOptions* options,
+    const CredentialRequestOptions& options,
     const IdentityCredentialRequestOptions& identity_options,
     ExceptionState& exception_state) {
+  // Common errors for FedCM and WebIdentityDigitalCredential.
+  if (identity_options.providers().size() == 0) {
+    exception_state.ThrowTypeError("Need at least one identity provider.");
+    resolver->Detach();
+    return ScriptPromise();
+  }
+
+  auto* signal = options.getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "Request has been aborted."));
+    return promise;
+  }
+
+  if (absl::optional<ScriptPromise> digital_credential_promise =
+          GetForDigitalCredential(script_state, resolver, promise, options,
+                                  *identity_options.providers()[0],
+                                  identity_options.providers().size(),
+                                  exception_state)) {
+    return *digital_credential_promise;
+  }
+
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   // TODO(https://crbug.com/1441075): Ideally the logic should be handled in
@@ -2002,11 +2024,6 @@ ScriptPromise CredentialsContainer::GetForIdentity(
   ContentSecurityPolicy* policy =
       resolver->GetExecutionContext()
           ->GetContentSecurityPolicyForCurrentWorld();
-  if (identity_options.providers().size() == 0) {
-    exception_state.ThrowTypeError("Need at least one identity provider.");
-    resolver->Detach();
-    return ScriptPromise();
-  }
   if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context) &&
       identity_options.providers().size() > 1) {
     exception_state.ThrowTypeError(
@@ -2039,21 +2056,6 @@ ScriptPromise CredentialsContainer::GetForIdentity(
         provider->hasDomainHint()) {
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kFedCmDomainHint);
-    }
-    if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
-            resolver->GetExecutionContext()) &&
-        !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-      // TODO(https://crbug.com/1416939): make sure the Digital Credentials
-      //  API works well with the Multiple IdP API.
-      if (provider->hasHolder()) {
-        UseCounter::Count(resolver->GetExecutionContext(),
-                          WebFeature::kIdentityDigitalCredentials);
-
-        auto identity_provider =
-            blink::mojom::blink::IdentityProvider::From(*provider);
-        identity_provider_ptrs.push_back(std::move(identity_provider));
-        continue;
-      }
     }
 
     if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
@@ -2120,18 +2122,18 @@ ScriptPromise CredentialsContainer::GetForIdentity(
   // TODO(crbug.com/1429083): add uma histograms for rp mode.
 
   CredentialMediationRequirement mediation_requirement;
-  if (options->mediation() == "conditional") {
+  if (options.mediation() == "conditional") {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Conditional mediation is not supported for this credential type"));
     return promise;
   }
-  if (options->mediation() == "silent") {
+  if (options.mediation() == "silent") {
     mediation_requirement = CredentialMediationRequirement::kSilent;
-  } else if (options->mediation() == "required") {
+  } else if (options.mediation() == "required") {
     mediation_requirement = CredentialMediationRequirement::kRequired;
   } else {
-    DCHECK_EQ("optional", options->mediation());
+    DCHECK_EQ("optional", options.mediation());
     mediation_requirement = CredentialMediationRequirement::kOptional;
   }
 
@@ -2141,12 +2143,8 @@ ScriptPromise CredentialsContainer::GetForIdentity(
   }
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
-  if (auto* signal = options->getSignalOr(nullptr)) {
-    if (signal->aborted()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, "Request has been aborted."));
-      return promise;
-    }
+  if (signal) {
+    // Checked signal->aborted() at the top of the function.
 
     auto callback =
         !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context)
@@ -2172,7 +2170,7 @@ ScriptPromise CredentialsContainer::GetForIdentity(
     auth_request->RequestToken(
         std::move(idp_get_params), mediation_requirement,
         WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
-                      std::move(scoped_abort_state), WrapPersistent(options)));
+                      std::move(scoped_abort_state), WrapPersistent(&options)));
 
     // Start recording the duration from when RequestToken is called directly
     // to when RequestToken would be called if invoked through
@@ -2190,6 +2188,64 @@ ScriptPromise CredentialsContainer::GetForIdentity(
   web_identity_requester_->AppendGetCall(resolver, identity_options.providers(),
                                          rp_context, rp_mode);
 
+  return promise;
+}
+
+absl::optional<ScriptPromise> CredentialsContainer::GetForDigitalCredential(
+    ScriptState* script_state,
+    ScriptPromiseResolver* resolver,
+    const ScriptPromise& promise,
+    const CredentialRequestOptions& options,
+    const IdentityProviderRequestOptions& first_identity_provider,
+    size_t num_identity_providers,
+    ExceptionState& exception_state) {
+  // TODO(https://crbug.com/1416939): make sure the Digital Credentials
+  //  API works well with the Multiple IdP API.
+  if (!RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
+            resolver->GetExecutionContext()) ||
+      RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled() ||
+      !first_identity_provider.hasHolder()) {
+    return absl::nullopt;
+  }
+
+  if (num_identity_providers > 1u) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError,
+        "Digital Credentials API currently does not support multiple "
+        "providers."));
+    return promise;
+  }
+
+  UseCounter::Count(resolver->GetExecutionContext(),
+                    WebFeature::kIdentityDigitalCredentials);
+
+  std::unique_ptr<ScopedAbortState> scoped_abort_state;
+  if (auto* signal = options.getSignalOr(nullptr)) {
+    auto callback = WTF::BindOnce(&AbortIdentityCredentialRequest,
+                                  WrapPersistent(script_state));
+
+    auto* handle = signal->AddAlgorithm(std::move(callback));
+    scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
+  }
+
+  Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
+  identity_provider_ptrs.push_back(
+      blink::mojom::blink::IdentityProvider::From(first_identity_provider));
+
+  mojom::blink::IdentityProviderGetParametersPtr get_params =
+      mojom::blink::IdentityProviderGetParameters::New(
+          std::move(identity_provider_ptrs), mojom::blink::RpContext::kSignIn,
+          mojom::blink::RpMode::kWidget);
+
+  Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
+  idp_get_params.push_back(std::move(get_params));
+
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->RequestToken(
+      std::move(idp_get_params), CredentialMediationRequirement::kRequired,
+      WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
+                    std::move(scoped_abort_state), WrapPersistent(&options)));
   return promise;
 }
 

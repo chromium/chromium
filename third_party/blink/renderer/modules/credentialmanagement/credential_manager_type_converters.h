@@ -25,6 +25,7 @@ class AuthenticationExtensionsPRFValues;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
+class DigitalCredentialProvider;
 class IdentityCredentialDisconnectOptions;
 class IdentityProviderConfig;
 class IdentityProviderRequestOptions;
@@ -231,6 +232,13 @@ struct TypeConverter<blink::mojom::blink::IdentityProviderPtr,
                      blink::IdentityProviderRequestOptions> {
   static blink::mojom::blink::IdentityProviderPtr Convert(
       const blink::IdentityProviderRequestOptions&);
+};
+
+template <>
+struct TypeConverter<blink::mojom::blink::DigitalCredentialProviderPtr,
+                     blink::DigitalCredentialProvider> {
+  static blink::mojom::blink::DigitalCredentialProviderPtr Convert(
+      const blink::DigitalCredentialProvider&);
 };
 
 template <>
