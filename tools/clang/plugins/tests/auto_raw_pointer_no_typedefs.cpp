@@ -18,11 +18,6 @@ AliasWithPtr* return_ptr_to_alias_with_ptr() {
   return nullptr;
 }
 
-typedef int* TypedefWithPtr;
-TypedefWithPtr return_typedef_with_ptr() {
-  return nullptr;
-}
-
 class Foo {
  public:
   void foo() {}
@@ -85,9 +80,6 @@ int main() {
   auto* good_ptr_to_alias = return_ptr_to_alias_with_ptr();
   // This will fail.
   auto bad_ptr_to_alias = return_ptr_to_alias_with_ptr();
-
-  // `typedef` and `using` type aliases both work the same.
-  auto tdef = return_typedef_with_ptr();
 
   // This is a valid usecase of deducing a type to be a raw pointer and should
   // not trigger a warning / error.

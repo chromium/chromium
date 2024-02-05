@@ -11,6 +11,7 @@
 namespace chrome_checker {
 
 struct Options {
+  bool allow_auto_typedefs = false;
   bool check_base_classes = false;
   bool check_blink_data_member_type = false;
   bool check_ipc = false;

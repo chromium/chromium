@@ -31,12 +31,19 @@ config("find_bad_constructs") {
       "-Xclang",
       "check-stack-allocated",
 
+      # TODO(danakj): Enable this after clang update.
+      #"-Xclang",
+      #"-plugin-arg-find-bad-constructs",
+      #"-Xclang",
+      #"check-allow-auto-typedefs",
+
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "check-raw-ptr-to-stack-allocated",
 
-      # TODO(https://crbug.com/1504043): Remove when raw_ptr check has been enabled for the dawn repo.
+      # TODO(https://crbug.com/1504043): Remove when raw_ptr check has been
+      # enabled for the dawn repo.
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
       "-Xclang",

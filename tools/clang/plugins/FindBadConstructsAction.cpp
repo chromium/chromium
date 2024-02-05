@@ -83,6 +83,9 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg.starts_with(kBadRawPtrCastExcludePathArgPrefix)) {
       options_.check_bad_raw_ptr_cast_exclude_paths.push_back(
           arg.substr(strlen(kBadRawPtrCastExcludePathArgPrefix)).str());
+    } else if (arg == "check-allow-auto-typedefs") {
+      // TODO(danakj): Remove once enabled in Chromium.
+      options_.allow_auto_typedefs = true;
     } else if (arg == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;
