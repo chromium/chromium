@@ -220,7 +220,8 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
                         mOldInfo.isSplashProvidedByWebApk(),
                         null,
                         shortcutItems,
-                        mOldInfo.webApkVersionCode());
+                        mOldInfo.webApkVersionCode(),
+                        mOldInfo.lastUpdateTime());
         mObserver.onGotManifestData(intentDataProvider, primaryIconUrl, splashIconUrl);
     }
 

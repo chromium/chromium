@@ -17,6 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -155,7 +156,7 @@ public class WebappDataStorage {
          * @return Current time in milliseconds.
          */
         public long currentTimeMillis() {
-            return System.currentTimeMillis();
+            return TimeUtils.currentTimeMillis();
         }
     }
 

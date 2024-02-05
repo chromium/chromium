@@ -7,6 +7,7 @@ package org.chromium.chrome.test.util.browser.webapps;
 import android.content.Intent;
 import android.graphics.Color;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
@@ -108,6 +109,7 @@ public class WebApkIntentDataProviderBuilder {
                 /* isSplashProvidedByWebApk= */ false,
                 null,
                 /* shortcutItems= */ new ArrayList<>(),
-                mWebApkVersionCode);
+                mWebApkVersionCode,
+                /* lastUpdateTime= */ TimeUtils.currentTimeMillis());
     }
 }

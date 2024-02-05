@@ -26,6 +26,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
@@ -71,6 +72,11 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     // Maximum wait time for WebAPK update to be scheduled.
     private static final long UPDATE_TIMEOUT_MILLISECONDS = DateUtils.SECOND_IN_MILLIS * 30;
+
+    // Number of milliseconds that a WebAPK shell is outdated from last
+    // install/update and should be updated again.
+    @VisibleForTesting
+    static final long OLD_SHELL_NEEDS_UPDATE_INTERVAL = DateUtils.DAY_IN_MILLIS * 360;
 
     // Flags for AppIdentity Update dialog histograms.
     private static final int CHANGING_NOTHING = 0;
@@ -621,9 +627,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         return sWebApkTargetShellVersion;
     }
 
-    /** Whether there is a new version of the //chrome/android/webapk/shell_apk code. */
+    /** Whether the shell version is outdated. */
     private static boolean isShellApkVersionOutOfDate(WebappInfo info) {
-        return info.shellApkVersion() < webApkTargetShellVersion();
+        return info.shellApkVersion() < webApkTargetShellVersion()
+                || (info.lastUpdateTime() > 0
+                        && TimeUtils.currentTimeMillis() - info.lastUpdateTime()
+                                > OLD_SHELL_NEEDS_UPDATE_INTERVAL);
     }
 
     /**
