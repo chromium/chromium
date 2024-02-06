@@ -3311,18 +3311,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.PageLoadsWithOfferIconShowing.{OfferType}"
-    enum="BooleanShown" expires_after="2023-07-01">
-  <owner>meiliang@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Emits true if the offer notification icon is currently being shown in the
-    omnibox after a page navigation for {OfferType}. Doesn't emit any other
-    value.
-  </summary>
-  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
-</histogram>
-
 <histogram
     name="Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.{CardType}.{AuthenticationMethod}"
     enum="MandatoryReauthAuthEvent" expires_after="2024-07-01">

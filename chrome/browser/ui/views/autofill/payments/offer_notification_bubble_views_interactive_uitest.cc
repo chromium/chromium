@@ -710,41 +710,6 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(
-    OfferNotificationBubbleViewsInteractiveUiTest,
-    RecordPageLoadsWithPromoOfferIconShowingMetricForFreeListingOffer) {
-  // Applies to free listing coupons offers only, as we don't log this metric
-  // for other offers.
-  if (test_offer_type_ !=
-      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
-    return;
-  }
-
-  base::HistogramTester histogram_tester;
-
-  ShowBubbleForOfferAndVerify();
-  ASSERT_TRUE(GetOfferNotificationBubbleViews());
-  ASSERT_TRUE(IsIconVisible());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 1);
-
-  test_clock_.Advance(kAutofillBubbleSurviveNavigationTime);
-
-  // Navigates to another valid domain will not reshow the bubble.
-  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/second"));
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-  EXPECT_TRUE(IsIconVisible());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
-
-  // Navigates to an invalid domain will dismiss the icon.
-  NavigateToAndWaitForForm(GetUrl("www.about.test", "/"));
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-  EXPECT_FALSE(IsIconVisible());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
-}
-
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        IconViewAccessibleName) {
   EXPECT_EQ(GetOfferNotificationIconView()->GetAccessibleName(),

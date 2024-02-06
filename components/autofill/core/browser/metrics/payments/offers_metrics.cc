@@ -221,25 +221,12 @@ void LogSyncedOfferDataBeingValid(bool valid) {
 
 void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type,
                                     const GURL& url) {
-  std::string histogram_name = "Autofill.PageLoadsWithOfferIconShowing";
-  // Switch to different sub-histogram depending on offer type being displayed.
-  switch (offer_type) {
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-      histogram_name += ".FreeListingCouponOffer";
-        base::UmaHistogramBoolean(histogram_name + ".FromHistoryCluster",
-                                  commerce::UrlContainsDiscountUtmTag(url));
-      break;
-    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
-      histogram_name += "CardLinkedOffer";
-      break;
-    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
-      histogram_name += ".GPayPromoCodeOffer";
-      break;
-    case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
-      return;
+  if (offer_type == AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    base::UmaHistogramBoolean(
+        "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer."
+        "FromHistoryCluster",
+        commerce::UrlContainsDiscountUtmTag(url));
   }
-  base::UmaHistogramBoolean(histogram_name, true);
 }
 
 }  // namespace autofill::autofill_metrics
