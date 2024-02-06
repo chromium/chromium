@@ -4,6 +4,8 @@
 
 #include "chromecast/shared/platform_info_serializer.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -28,7 +30,7 @@ PlatformInfoSerializer& PlatformInfoSerializer::operator=(
 
 // static
 std::optional<PlatformInfoSerializer> PlatformInfoSerializer::Deserialize(
-    base::StringPiece base64) {
+    std::string_view base64) {
   std::optional<cast::bindings::MediaCapabilitiesMessage> proto =
       chromecast::bindings::ProtoSerializer<
           cast::bindings::MediaCapabilitiesMessage>::Deserialize(base64);
