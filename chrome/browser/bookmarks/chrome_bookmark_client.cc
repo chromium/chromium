@@ -194,24 +194,33 @@ bool ChromeBookmarkClient::IsNodeManaged(const bookmarks::BookmarkNode* node) {
          managed_bookmark_service_->IsNodeManaged(node);
 }
 
-std::string ChromeBookmarkClient::EncodeBookmarkSyncMetadata() {
-  // TODO(crbug.com/1520418): Also encode metadata produced by
-  // `account_bookmark_sync_service_` once BookmarkClient API allows it.
+std::string ChromeBookmarkClient::EncodeLocalOrSyncableBookmarkSyncMetadata() {
   return local_or_syncable_bookmark_sync_service_->EncodeBookmarkSyncMetadata();
 }
 
-void ChromeBookmarkClient::DecodeBookmarkSyncMetadata(
+std::string ChromeBookmarkClient::EncodeAccountBookmarkSyncMetadata() {
+  if (!account_bookmark_sync_service_) {
+    return std::string();
+  }
+
+  return account_bookmark_sync_service_->EncodeBookmarkSyncMetadata();
+}
+
+void ChromeBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
   local_or_syncable_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
       metadata_str, schedule_save_closure,
       std::make_unique<
           sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model_));
-  // TODO(crbug.com/1520418): Pass along sync metadata once BookmarkClient API
-  // is capable of reading it from BookmarkModel.
+}
+
+void ChromeBookmarkClient::DecodeAccountBookmarkSyncMetadata(
+    const std::string& metadata_str,
+    const base::RepeatingClosure& schedule_save_closure) {
   if (account_bookmark_sync_service_) {
     account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
-        std::string(), schedule_save_closure,
+        metadata_str, schedule_save_closure,
         std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
             model_));
   }

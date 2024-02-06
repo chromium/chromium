@@ -108,6 +108,8 @@ class BookmarkLoadDetails {
 
   void CreateIndices();
 
+  void ResetPermanentNodePointers();
+
   const scoped_refptr<UrlIndex>& url_index() { return url_index_; }
   const UrlIndex* url_index() const { return url_index_.get(); }
 

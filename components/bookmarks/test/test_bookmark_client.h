@@ -71,8 +71,12 @@ class TestBookmarkClient : public BookmarkClient {
   metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) override;
   bool IsNodeManaged(const BookmarkNode* node) override;
-  std::string EncodeBookmarkSyncMetadata() override;
-  void DecodeBookmarkSyncMetadata(
+  std::string EncodeLocalOrSyncableBookmarkSyncMetadata() override;
+  std::string EncodeAccountBookmarkSyncMetadata() override;
+  void DecodeLocalOrSyncableBookmarkSyncMetadata(
+      const std::string& metadata_str,
+      const base::RepeatingClosure& schedule_save_closure) override;
+  void DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
   base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(

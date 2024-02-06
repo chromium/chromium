@@ -89,6 +89,15 @@ void BookmarkLoadDetails::CreateIndices() {
   url_index_ = base::MakeRefCounted<UrlIndex>(std::move(root_node_));
 }
 
+void BookmarkLoadDetails::ResetPermanentNodePointers() {
+  bb_node_ = nullptr;
+  other_folder_node_ = nullptr;
+  mobile_folder_node_ = nullptr;
+  account_bb_node_ = nullptr;
+  account_other_folder_node_ = nullptr;
+  account_mobile_folder_node_ = nullptr;
+}
+
 const BookmarkNode* BookmarkLoadDetails::RootNodeForTest() const {
   return url_index_ ? url_index_->root() : root_node_.get();
 }
