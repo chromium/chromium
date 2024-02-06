@@ -187,15 +187,13 @@ class PersonalDataManager : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // Returns true if the PDM is currently awaiting responses from the database.
-  // In this case, the PDM's state is currently potentially inconsistent with
-  // the database. Once the state has converged, PersonalDataManagerObserver::
-  // OnPersonalDataFinishedProfileTasks() will be called.
-  // The PDM's state is inconsistent with the database in two cases:
-  // - When profile modifications are still pending: ProfileChangesAreOngoing().
-  // - When reads are still pending.
-  bool IsAwaitingPendingChanges() const {
-    return ProfileChangesAreOngoing() || HasPendingQueries();
+  // Returns true if the PDM is currently awaiting an address-related responses
+  // from the database. In this case, the PDM's address data is currently
+  // potentially inconsistent with the database. Once the state has converged,
+  // PersonalDataManagerObserver:: OnPersonalDataFinishedProfileTasks() will be
+  // called.
+  bool IsAwaitingPendingAddressChanges() const {
+    return ProfileChangesAreOngoing() || HasPendingAddressQueries();
   }
 
   // history::HistoryServiceObserver
@@ -556,7 +554,9 @@ class PersonalDataManager : public KeyedService,
   void CancelPendingServerQueries();
 
   // Returns if there are any pending queries to the web database.
-  bool HasPendingQueriesForTesting() { return HasPendingQueries(); }
+  bool HasPendingQueriesForTesting() {
+    return HasPendingAddressQueries() || HasPendingPaymentQueries();
+  }
 
   // This function assumes |credit_card| contains the full PAN. Returns |true|
   // if the card number of |credit_card| is equal to any local card or any
@@ -805,8 +805,9 @@ class PersonalDataManager : public KeyedService,
   void CancelPendingServerQuery(WebDataServiceBase::Handle* handle);
 
   // The first time this is called, logs a UMA metrics about the user's autofill
-  // addresses, credit card, offer and IBAN. On subsequent calls, does nothing.
-  void LogStoredDataMetrics() const;
+  // addresses, credit card, offer and IBAN.
+  void LogStoredAddressDataMetrics() const;
+  void LogStoredPaymentsDataMetrics() const;
 
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
@@ -838,7 +839,8 @@ class PersonalDataManager : public KeyedService,
   std::unique_ptr<PersonalDatabaseHelper> database_helper_;
 
   // True if personal data has been loaded from the web database.
-  bool is_data_loaded_ = false;
+  bool is_address_data_loaded_ = false;
+  bool is_payments_data_loaded_ = false;
 
   // The loaded profiles from the AutofillTable come from two sources:
   // - kLocalOrSyncable: Stored in `synced_local_profiles_`.
@@ -947,7 +949,8 @@ class PersonalDataManager : public KeyedService,
   void OnProfileChangeDone(const std::string& guid);
 
   // Returns if there are any pending queries to the web database.
-  bool HasPendingQueries() const;
+  bool HasPendingAddressQueries() const;
+  bool HasPendingPaymentQueries() const;
 
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
@@ -1017,10 +1020,6 @@ class PersonalDataManager : public KeyedService,
 
   // The image fetcher to fetch customized images for Autofill data.
   raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
-
-  // Whether we have already logged the stored profile, credit card, IBAN, offer
-  // and virtual card usage metrics this session.
-  mutable bool has_logged_stored_data_metrics_ = false;
 
   // An observer to listen for changes to prefs::kAutofillCreditCardEnabled.
   std::unique_ptr<BooleanPrefMember> credit_card_enabled_pref_;

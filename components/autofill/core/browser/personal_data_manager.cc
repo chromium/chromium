@@ -619,8 +619,23 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
     }
   }
 
-  if (HasPendingQueries())
+  if (!is_address_data_loaded_ && !HasPendingAddressQueries()) {
+    is_address_data_loaded_ = true;
+    LogStoredAddressDataMetrics();
+  }
+
+  // TODO(b/322170538): Move this block below the `GetServerDatabase()` if,
+  // once address reading logic was moved into a separate class.
+  if (!is_payments_data_loaded_ && !HasPendingPaymentQueries() &&
+      database_helper_->GetServerDatabase()) {
+    is_payments_data_loaded_ = true;
+    LogStoredPaymentsDataMetrics();
+    payments_data_cleaner_->CleanupPaymentsData();
+  }
+
+  if (HasPendingAddressQueries() || HasPendingPaymentQueries()) {
     return;
+  }
 
   if (!database_helper_->GetServerDatabase()) {
     DLOG(WARNING) << "There are no pending queries but the server database "
@@ -629,13 +644,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
     return;
   }
 
-  // All personal data is loaded, notify observers. |is_data_loaded_| is false
-  // if this is the initial load.
-  if (!is_data_loaded_) {
-    is_data_loaded_ = true;
-    LogStoredDataMetrics();
-    payments_data_cleaner_->CleanupPaymentsData();
-  }
   NotifyPersonalDataObserver();
 }
 
@@ -1336,7 +1344,7 @@ void PersonalDataManager::GetNonEmptyTypes(
 }
 
 bool PersonalDataManager::IsDataLoaded() const {
-  return is_data_loaded_;
+  return is_address_data_loaded_ && is_payments_data_loaded_;
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(
@@ -2348,19 +2356,15 @@ std::string PersonalDataManager::SaveImportedCreditCard(
   return guid;
 }
 
-void PersonalDataManager::LogStoredDataMetrics() const {
-  if (has_logged_stored_data_metrics_) {
-    return;
-  }
-  // Only log this info once per Chrome user profile load.
-  has_logged_stored_data_metrics_ = true;
-
+void PersonalDataManager::LogStoredAddressDataMetrics() const {
   const std::vector<AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
   autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
                                                    app_locale_);
+}
 
+void PersonalDataManager::LogStoredPaymentsDataMetrics() const {
   AutofillMetrics::LogStoredCreditCardMetrics(
       local_credit_cards_, server_credit_cards_,
       GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
@@ -2546,7 +2550,8 @@ void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
-  bool pending_changes = IsAwaitingPendingChanges();
+  bool pending_changes =
+      IsAwaitingPendingAddressChanges() || HasPendingPaymentQueries();
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();
   }
@@ -2675,10 +2680,13 @@ void PersonalDataManager::OnProfileChangeDone(const std::string& guid) {
   HandleNextProfileChange(guid);
 }
 
-bool PersonalDataManager::HasPendingQueries() const {
+bool PersonalDataManager::HasPendingAddressQueries() const {
   return pending_synced_local_profiles_query_ != 0 ||
-         pending_account_profiles_query_ != 0 ||
-         pending_creditcards_query_ != 0 ||
+         pending_account_profiles_query_ != 0;
+}
+
+bool PersonalDataManager::HasPendingPaymentQueries() const {
+  return pending_creditcards_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
          pending_customer_data_query_ != 0 || pending_offer_data_query_ != 0 ||

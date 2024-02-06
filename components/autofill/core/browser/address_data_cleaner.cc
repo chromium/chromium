@@ -253,7 +253,7 @@ void AddressDataCleaner::OnStateChanged(syncer::SyncService* sync_service) {
   // After sync has started, it's possible that the PDM is still reloading any
   // changed data from the database. In this case, delay the cleanups slightly
   // longer until `OnPersonalDataFinishedProfileTasks()` is called.
-  if (!personal_data_manager_->IsAwaitingPendingChanges()) {
+  if (!personal_data_manager_->IsAwaitingPendingAddressChanges()) {
     MaybeCleanupAddressData();
   }
 }
