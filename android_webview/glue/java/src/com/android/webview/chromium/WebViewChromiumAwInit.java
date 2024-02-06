@@ -260,6 +260,8 @@ public class WebViewChromiumAwInit {
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.CreationTime.StartChromiumLocked",
                 SystemClock.uptimeMillis() - startTime);
+        TraceEvent.webViewStartupStartChromiumLocked(
+                startTime, SystemClock.uptimeMillis() - startTime);
     }
 
     /**
