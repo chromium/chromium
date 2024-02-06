@@ -82,13 +82,11 @@
         jsdisplay="$this.third_party_storage_partitioning_enabled">
         Storage key:
         <div class="serviceworker-storage-key">
-          <div class="serviceworker-origin"
-            jsdisplay="$this.ancestor_chain_bit == 'CrossSite'">
-            <span>origin:</span>
+          <div class="serviceworker-origin">
+            <span>Origin:</span>
             <span jscontent="$this.origin"></span>
           </div>
-          <div class="serviceworker-top-level-site"
-            jsdisplay="$this.ancestor_chain_bit == 'CrossSite'">
+          <div class="serviceworker-top-level-site">
             <span>Top level site:</span>
             <span jscontent="$this.top_level_site"></span>
           </div>
@@ -97,8 +95,8 @@
             <span jscontent="$this.ancestor_chain_bit"></span>
           </div>
           <div class="serviceworker-nonce"
-            jsdisplay="$this.ancestor_chain_bit == 'CrossSite'">
-            <span>nonce:</span>
+            jsdisplay="$this.nonce !== '<null>'">
+            <span>Nonce:</span>
             <span jscontent="$this.nonce"></span>
           </div>
         </div>
