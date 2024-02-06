@@ -296,6 +296,12 @@ const char kPreloadingOnPerformancePageName[] =
 const char kPreloadingOnPerformancePageDescription[] =
     "Moves preloading settings to the performance page.";
 
+const char kPrerender2Name[] = "Prerendering";
+const char kPrerender2Description[] =
+    "If enabled, browser features and the speculation rules API can trigger "
+    "prerendering. If disabled, all prerendering APIs still exist, but a "
+    "prerender will never successfully take place.";
+
 const char kPrivacyIndicatorsName[] = "Enable Privacy Indicators";
 const char kPrivacyIndicatorsDescription[] =
     "While screen sharing or camera/microphone is being accessed, show a green "

@@ -118,11 +118,8 @@ which demonstrates how to trigger it.
 ### Force-disable all prerender triggers
 
 - The simplest and most aggressive way is disabling preloading on chrome://settings/preloading.
-- If you only want to disable Prerender2, run chromium with the command of
-  `--enable-features=Prerender2MemoryControls:memory_threshold_in_mb/10000000`.
-  This command makes prerender2 only run on devices with more than 10,000,000 MB
-  memory, and it should be able to stop prerender2 from triggering on (almost)
-  all devices (Change `10000000` to a bigger value if needed).
+- If you only want to disable Prerender2, you can use
+  chrome://flags/#prerender2, or `--disable-features=Prerender2`.
 
 ### Force-disable specific prerender triggers
 

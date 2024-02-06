@@ -3010,7 +3010,11 @@
       status: "stable",
     },
     {
-      // https://crbug.com/1126305
+      // Used to allow chrome://flags to turn off prerendering. (Without using
+      // the user-facing preloading settings page to turn off other
+      // preloading.) See https://crbug.com/1494471.
+      //
+      // It also has some feature params defined throughout the codebase.
       name: "Prerender2",
       status: "stable",
     },

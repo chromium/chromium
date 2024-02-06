@@ -6561,6 +6561,15 @@
     "expiry_milestone": 123
   },
   {
+    "name": "prerender2",
+    "owners": [
+      "//content/browser/preloading/prerender/OWNERS"
+    ],
+    // This flag is used for QA & debugging on ChromeOS, which has no way to
+    // customize switches. See https://crbug.com/1494471.
+    "expiry_milestone": -1
+  },
+  {
     "name": "price-change-module",
     "owners": [ "yuezhanggg@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 125

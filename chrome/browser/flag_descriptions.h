@@ -1682,6 +1682,9 @@ extern const char kEnableOmniboxClientSearchPrefetchDescription[];
 extern const char kPreloadingOnPerformancePageName[];
 extern const char kPreloadingOnPerformancePageDescription[];
 
+extern const char kPrerender2Name[];
+extern const char kPrerender2Description[];
+
 extern const char kCbdTimeframeRequiredName[];
 extern const char kCbdTimeframeRequiredDescription[];
 
