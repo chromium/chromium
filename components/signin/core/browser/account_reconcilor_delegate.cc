@@ -22,10 +22,6 @@ bool AccountReconcilorDelegate::IsReconcileEnabled() const {
   return false;
 }
 
-bool AccountReconcilorDelegate::IsUpdateCookieAllowed() const {
-  return true;
-}
-
 gaia::GaiaSource AccountReconcilorDelegate::GetGaiaApiSource() const {
   NOTREACHED() << "Reconcile is not enabled, no Gaia API calls should be made.";
   return gaia::GaiaSource::kChrome;
@@ -179,8 +175,8 @@ AccountReconcilorDelegate::GetChromeAccountsForReconcile(
   return std::vector<CoreAccountId>();
 }
 
-void AccountReconcilorDelegate::RevokeSecondaryTokensForReconcileIfNeeded(
-    const std::vector<gaia::ListedAccount>& gaia_accounts) {}
+void AccountReconcilorDelegate::RevokeSecondaryTokensBeforeReconcileIfNeeded() {
+}
 
 void AccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
     bool synced_data_deletion_in_progress) {}

@@ -17,7 +17,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -36,7 +35,7 @@ bool IsAccountSupervised(IdentityManager* identity_manager) {
 }  // namespace
 #endif
 
-// Revokes tokens for all accounts in `chrome_accounts` but the primary account.
+// Revokes tokens for all accounts in chrome_accounts but the primary account.
 void RevokeAllSecondaryTokens(
     IdentityManager* identity_manager,
     ConsentLevel consent_level,
@@ -96,40 +95,6 @@ DiceAccountReconcilorDelegate::~DiceAccountReconcilorDelegate() = default;
 
 bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
   return true;
-}
-
-bool DiceAccountReconcilorDelegate::IsUpdateCookieAllowed() const {
-  CHECK(IsReconcileEnabled());
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental)) {
-    // If the user is not signed in to chrome, cookie updates (OAuthMultiLogin)
-    // is not allowed. In this mode, cookies are the source of truth.
-    return identity_manager_->HasPrimaryAccount(
-        GetConsentLevelForPrimaryAccount());
-  }
-  return true;
-}
-
-void DiceAccountReconcilorDelegate::MatchTokensWithAccountsInCookie(
-    const std::vector<gaia::ListedAccount>& gaia_accounts) {
-  CHECK(!IsUpdateCookieAllowed());
-  const signin_metrics::SourceForRefreshTokenOperation source =
-      signin_metrics::SourceForRefreshTokenOperation::
-          kAccountReconcilor_RevokeTokensNotInCookies;
-  auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-  for (const CoreAccountInfo& account_info :
-       identity_manager_->GetAccountsWithRefreshTokens()) {
-    auto it = base::ranges::find(gaia_accounts, account_info.account_id,
-                                 &gaia::ListedAccount::id);
-    if (it == gaia_accounts.end() || !it->valid) {
-      // Account not in the cookie or the account is not valid (session
-      // expired) and requires the user to reauth.
-      accounts_mutator->RemoveAccount(account_info.account_id, source);
-    }
-  }
-  // TODO(b/320279580): Record a histogram with the number of valid signed in
-  // accounts in the cookie but doesn't have a refresh token (aka Chrome
-  // account).
 }
 
 DiceAccountReconcilorDelegate::InconsistencyReason
@@ -366,18 +331,14 @@ gaia::MultiloginMode DiceAccountReconcilorDelegate::CalculateModeForReconcile(
              : gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER;
 }
 
-void DiceAccountReconcilorDelegate::RevokeSecondaryTokensForReconcileIfNeeded(
-    const std::vector<gaia::ListedAccount>& gaia_accounts) {
+void DiceAccountReconcilorDelegate::
+    RevokeSecondaryTokensBeforeReconcileIfNeeded() {
   RevokeAllSecondaryTokens(identity_manager_,
                            GetConsentLevelForPrimaryAccount(),
                            signin_metrics::SourceForRefreshTokenOperation::
                                kAccountReconcilor_GaiaCookiesUpdated,
                            signin_metrics::ProfileSignout::kGaiaCookieUpdated,
                            /*revoke_only_if_in_error=*/true);
-  if (!IsUpdateCookieAllowed()) {
-    // Cookie update not enabled, match tokens with Gaia accounts.
-    MatchTokensWithAccountsInCookie(gaia_accounts);
-  }
 }
 
 void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(

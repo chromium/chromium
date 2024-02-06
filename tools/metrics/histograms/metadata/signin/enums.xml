@@ -766,7 +766,6 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="19" label="LogoutTabHelper::DidFinishNavigation"/>
   <int value="20" label="ForceSigninReauthWithDifferentAccount"/>
-  <int value="21" label="AccountReconcilor::RevokeTokensNotInCookies"/>
 </enum>
 
 <enum name="SyncErrorPromptUIAction">

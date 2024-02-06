@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/signin/core/browser/account_reconcilor.h"
-
 #include <cstring>
 #include <map>
 #include <memory>
@@ -12,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -28,6 +25,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
@@ -1572,40 +1570,6 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSyncingUser) {
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.account_id));
 }
-
-const std::vector<AccountReconcilorTestTableParam>
-    kDiceParamsUnoPreChromeSignIn = {
-        // clang-format off
-        // See `kDiceParams` above for detailed params format.
-        {  "",     "A",    IsFirstReconcile::kBoth,  "",  "",   "A"    },
-        {  "AB",   "",     IsFirstReconcile::kBoth,  "",  "" ,  ""     },
-        {  "AB",   "A",    IsFirstReconcile::kBoth,  "",  "A",  "A"    },
-        {  "A",    "B",    IsFirstReconcile::kBoth,  "",  "" ,  "B"    },
-        {  "xA",   "A",    IsFirstReconcile::kBoth,  "",  "",   "A"    },
-        {  "xAB",  "A",    IsFirstReconcile::kBoth,  "",  "",   "A"    },
-
-        // Account marked as invalid in cookies.
-        {  "A",    "xA",   IsFirstReconcile::kBoth,  "",  "",   "xA"   },
-        {  "AB",   "AxB",  IsFirstReconcile::kBoth,  "",  "A",  "AxB"  },
-        {  "xA",   "xA",   IsFirstReconcile::kBoth,  "",  "",   "xA"   },
-        // clang-format on
-};
-class AccountReconcilorTestDiceWithUnoPreChromeSignIn
-    : public AccountReconcilorTestTable {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{switches::kUnoDesktop};
-};
-
-// Checks one row of the `kDiceParamsUnoPreChromeSignIn` table above.
-TEST_P(AccountReconcilorTestDiceWithUnoPreChromeSignIn, TableRowTest) {
-  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
-  RunRowTest(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AccountReconcilorTestDiceWithUnoPreChromeSignIn,
-                         ::testing::ValuesIn(GenerateTestCasesFromParams(
-                             kDiceParamsUnoPreChromeSignIn)));
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
