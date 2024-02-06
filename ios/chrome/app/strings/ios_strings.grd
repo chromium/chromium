@@ -1033,7 +1033,7 @@ See your search engine’s instructions for deleting your search history, if app
         Yes, I'm in
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_SECONDARY_BUTTON" desc="Text for the Notifications promo secondary button.">
-        No Thanks
+        Don't get updates
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_TEXT" desc="Text for the Notifications promo.">
         Would you like notifications for news, sports, and more based on your interests?
