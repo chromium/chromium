@@ -321,8 +321,19 @@ class TabStripLayout: UICollectionViewFlowLayout {
     var origin = layoutAttributes.frame.origin
     var horizontalInset: CGFloat = 0
 
-    let staticSeparatorHorizontalInset =
-      tabCellSize.width - TabStripConstants.AnimatedSeparator.collapseHorizontalInsetThreshold
+    // Add a static separator horizontal inset only if the selected cell is the
+    // first or the last one. Otherwise, when the selected cell is anchored and
+    // a cell is scrolled behind, only one separator is displayed until the
+    // horizontal inset threshold is reached.
+    var staticSeparatorHorizontalInset: CGFloat = 0
+    if let snapshot = dataSource?.snapshot() {
+      let itemCount = snapshot.itemIdentifiers.count
+      if indexPath.item == 0 || indexPath.item == itemCount - 1 {
+        staticSeparatorHorizontalInset =
+          tabCellSize.width - TabStripConstants.AnimatedSeparator.collapseHorizontalInsetThreshold
+      }
+    }
+
     var hideLeftStaticSeparator = true
     var hideRightStaticSeparator = true
 
