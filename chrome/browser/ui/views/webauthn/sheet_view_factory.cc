@@ -336,6 +336,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
     case Step::kTrustThisComputer:
     case Step::kWaitingForEnclave:
     case Step::kGPMCreate:
+    case Step::kGPMTouchID:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<PlaceholderSheetModel>(dialog_model));
       break;

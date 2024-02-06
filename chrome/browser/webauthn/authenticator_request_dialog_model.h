@@ -162,6 +162,10 @@ class AuthenticatorRequestDialogModel
     kTrustThisComputer,
     kGPMCreate,
     kWaitingForEnclave,
+
+    // User verification prompt for GPM for demo purposes.
+    // TODO(nsatragno): integrate with create / get passkey instead.
+    kGPMTouchID,
   };
 
   // Implemented by the dialog to observe this model and show the UI panels

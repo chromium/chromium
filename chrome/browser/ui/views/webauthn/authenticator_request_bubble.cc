@@ -25,6 +25,10 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/webauthn/mac_authentication_view.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 
 struct BubbleContents {
@@ -37,6 +41,13 @@ struct BubbleContents {
   void (AuthenticatorRequestDialogModel::*on_ok)();
   void (AuthenticatorRequestDialogModel::*on_cancel)() =
       &AuthenticatorRequestDialogModel::StartOver;
+};
+
+constexpr BubbleContents kGPMTouchID = {
+    .title = u"Touch ID to proceed (UNTRANSLATED)",
+    .body = nullptr,
+    .show_footer = false,
+    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreate,
 };
 
 constexpr BubbleContents kGPMCreateContents = {
@@ -110,6 +121,8 @@ class AuthenticatorRequestBubbleDelegate
         return &kGPMCreateContents;
       case AuthenticatorRequestDialogModel::Step::kTrustThisComputer:
         return &kTrustThisComputerContents;
+      case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
+        return &kGPMTouchID;
       default:
         NOTREACHED();
         return nullptr;
@@ -178,6 +191,14 @@ class AuthenticatorRequestBubbleDelegate
     std::unique_ptr<views::View> view =
         CreateViewForContents(*bubble_contents_);
     primary_view_->AddChildView(std::move(view));
+#if BUILDFLAG(IS_MAC)
+    if (step == AuthenticatorRequestDialogModel::Step::kGPMTouchID) {
+      if (__builtin_available(macos 12, *)) {
+        primary_view_->AddChildView(
+            std::make_unique<MacAuthenticationView>(base::DoNothing()));
+      }
+    }
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   bool OnOk() {

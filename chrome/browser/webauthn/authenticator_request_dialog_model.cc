@@ -389,6 +389,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
 
     case AuthenticatorRequestDialogModel::Step::kGPMCreate:
     case AuthenticatorRequestDialogModel::Step::kTrustThisComputer:
+    case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
       return StepUIType::BUBBLE;
 
     default:

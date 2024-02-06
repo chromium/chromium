@@ -4537,7 +4537,10 @@ static_library("ui") {
       "Carbon.framework",
       "Quartz.framework",
     ]
-    weak_frameworks = [ "ScreenTime.framework" ]
+    weak_frameworks = [
+      "LocalAuthenticationEmbeddedUI.framework",  # macOS 12+
+      "ScreenTime.framework",  # macOS 11+
+    ]
   }
 
   if (is_win) {
@@ -6368,6 +6371,8 @@ static_library("ui") {
         "views/chrome_views_delegate_mac.cc",
         "views/policy/enterprise_startup_dialog_mac_util.h",
         "views/policy/enterprise_startup_dialog_mac_util.mm",
+        "views/webauthn/mac_authentication_view.h",
+        "views/webauthn/mac_authentication_view.mm",
       ]
       deps += [ "//components/crash/core/common:crash_key" ]
     } else {
