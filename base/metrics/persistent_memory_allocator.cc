@@ -400,8 +400,14 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
     shared_meta()->page_size = mem_page_;
     shared_meta()->version = kGlobalVersion;
     shared_meta()->id = id;
-    shared_meta()->freeptr.store(sizeof(SharedMetadata),
-                                 std::memory_order_release);
+    // Don't overwrite `freeptr` if it is set since we could have raced with
+    // another allocator. In such a case, `freeptr` would get "rewinded", and
+    // new objects would be allocated on top of already allocated objects.
+    uint32_t empty_freeptr = 0;
+    shared_meta()->freeptr.compare_exchange_strong(
+        /*expected=*/empty_freeptr, /*desired=*/sizeof(SharedMetadata),
+        /*success=*/std::memory_order_release,
+        /*failure=*/std::memory_order_relaxed);
 
     // Set up the queue of iterable allocations.
     shared_meta()->queue.size = sizeof(BlockHeader);
