@@ -1001,14 +1001,12 @@ suite('InternetPage', function() {
         let properties = OncMojo.getDefaultManagedProperties(
             NetworkType.kCellular, 'cellular1', 'cellular');
         // We're setting the list of APNs to the max number
-        properties.typeProperties.cellular = {
-          customApnList:
-              Array.apply(null, {length: MAX_NUM_CUSTOM_APNS}).map(_ => {
-                return {
-                  accessPointName: 'apn',
-                };
-              }),
-        };
+        properties.typeProperties.cellular.customApnList =
+            Array.apply(null, {length: MAX_NUM_CUSTOM_APNS}).map(_ => {
+              return {
+                accessPointName: 'apn',
+              };
+            });
         mojoApi_.setManagedPropertiesForTest(properties);
         await flushAsync();
 
@@ -1019,9 +1017,7 @@ suite('InternetPage', function() {
 
         properties = OncMojo.getDefaultManagedProperties(
             NetworkType.kCellular, 'cellular1', 'cellular');
-        properties.typeProperties.cellular = {
-          customApnList: [],
-        };
+        properties.typeProperties.cellular.customApnList = [];
         mojoApi_.setManagedPropertiesForTest(properties);
         await flushAsync();
         assertFalse(!!getApnTooltip());

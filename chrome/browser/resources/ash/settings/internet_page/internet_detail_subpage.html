@@ -81,7 +81,8 @@
     </network-icon>
     <div id="networkState" class="title settings-box-text"
         connected$="[[showConnectedState_(managedProperties_)]]"
-        warning$="[[showRestrictedConnectivity_(managedProperties_)]]"
+        warning$="[[showRestrictedConnectivity_(managedProperties_,
+                           deviceState_)]]"
         error$="[[isOutOfRangeOrNotEnabled_(outOfRange_, deviceState_)]]">
       [[getStateText_(managedProperties_, propertiesReceived_,
           outOfRange_, deviceState_)]]
@@ -324,7 +325,8 @@
           sub-label="[[getApnRowSubLabel_(managedProperties_)]]"
           on-click="onApnRowClicked_"
           role-description="$i18n{subpageArrowRoleDescription}"
-          warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
+          warning$="[[showRestrictedConnectivity_(managedProperties_,
+              deviceState_)]]">
       </cr-link-row>
     </template>
   </template>

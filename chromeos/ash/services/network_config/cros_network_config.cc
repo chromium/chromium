@@ -1656,6 +1656,11 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       cellular->sim_locked = cellular_device &&
                              cellular_device->iccid() == cellular->iccid &&
                              cellular_device->IsSimLocked();
+      if (features::IsCellularCarrierLockEnabled()) {
+        if (cellular->sim_locked) {
+          cellular->sim_lock_type = cellular_device->sim_lock_type();
+        }
+      }
       if (features::IsSuppressTextMessagesEnabled()) {
         UserTextMessageSuppressionState state =
             NetworkHandler::Get()

@@ -1195,10 +1195,17 @@ export class SettingsInternetDetailPageElement extends
         !this.isRestrictedConnectivity_(managedProperties);
   }
 
-  private showRestrictedConnectivity_(managedProperties: ManagedProperties|
-                                      undefined): boolean {
+  private showRestrictedConnectivity_(
+      managedProperties: ManagedProperties|undefined,
+      deviceState: OncMojo.DeviceStateProperties|null): boolean {
     if (!managedProperties) {
       return false;
+    }
+
+    // Display carrier locked network as warning
+    if (this.isCellularCarrierLockEnabled_ &&
+        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+      return true;
     }
 
     // State must be connected and restricted.
