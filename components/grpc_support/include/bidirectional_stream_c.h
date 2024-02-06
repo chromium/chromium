@@ -137,7 +137,7 @@ GRPC_SUPPORT_EXPORT
 bidirectional_stream* bidirectional_stream_create(
     stream_engine* engine,
     void* annotation,
-    bidirectional_stream_callback* callback);
+    const bidirectional_stream_callback* callback);
 
 /* TBD: The following methods return int. Should it be a custom type? */
 
