@@ -230,6 +230,15 @@ inline constexpr char kExtensionTelemetryFileData[] =
 inline constexpr char kHashPrefixRealTimeChecksAllowedByPolicy[] =
     "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
 
+// A preference indicating if the user has opted in to Enhanced Safe
+// Browsing before or after the friendlier settings launch. This pref
+// was added after the launch, so a value of `true` indicates that the
+// user is opted in to ESB, and definitely opted in with friendlier
+// settings, but a value of `false` is not definitive. If the user is
+// not opted in to ESB at all, this preference will be `false`.
+inline constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
+    "safebrowsing.esb_opt_in_with_friendlier_settings";
+
 }  // namespace prefs
 
 namespace safe_browsing {
