@@ -6735,3 +6735,6 @@ crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-error-basic
 crbug.com/41496645 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html [ Failure Pass ]
 crbug.com/323752584 [ Win11-arm64 ] external/wpt/webnn/* [ Failure Pass ]
 crbug.com/41490297 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Failure Pass ]
+
+# Gardener: 2024-02-06
+crbug.com/41491793 [ Mac ] virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-img-element/srcset/avoid-reload-on-resize.html [ Failure Pass ]
