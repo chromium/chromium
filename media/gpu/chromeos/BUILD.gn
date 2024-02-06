@@ -162,7 +162,6 @@ source_set("fourcc") {
 # This needs to be separate from :common since it is depended on by
 # //media/gpu:video_frame_mapper_common.
 source_set("video_frame_resource") {
-  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "frame_resource.cc",
     "frame_resource.h",
