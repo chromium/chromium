@@ -6,9 +6,10 @@ import '../cr_shared_vars.css.js';
 
 import {assertNotReached} from '//resources/js/assert.js';
 import {listenOnce} from '//resources/js/util.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_drawer.html.js';
+import {getCss} from './cr_drawer.css.js';
+import {getHtml} from './cr_drawer.html.js';
 
 export interface CrDrawerElement {
   $: {
@@ -16,41 +17,39 @@ export interface CrDrawerElement {
   };
 }
 
-export class CrDrawerElement extends PolymerElement {
+export class CrDrawerElement extends CrLitElement {
   static get is() {
     return 'cr-drawer';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      heading: String,
+      heading: {type: String},
 
       show_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /** The alignment of the drawer on the screen ('ltr' or 'rtl'). */
       align: {
         type: String,
-        value: 'ltr',
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
   heading: string;
-  align: 'ltr'|'rtl';
+  align: 'ltr'|'rtl' = 'ltr';
   private show_: boolean;
-
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
-  }
 
   get open(): boolean {
     return this.$.dialog.open;
@@ -70,15 +69,16 @@ export class CrDrawerElement extends PolymerElement {
   }
 
   /** Shows drawer and slides it into view. */
-  openDrawer() {
+  async openDrawer() {
     if (this.open) {
       return;
     }
     this.$.dialog.showModal();
     this.show_ = true;
-    this.fire_('cr-drawer-opening');
+    await this.updateComplete;
+    this.fire('cr-drawer-opening');
     listenOnce(this.$.dialog, 'transitionend', () => {
-      this.fire_('cr-drawer-opened');
+      this.fire('cr-drawer-opened');
     });
   }
 
@@ -87,7 +87,7 @@ export class CrDrawerElement extends PolymerElement {
    * is up to the owner of this component to differentiate between close and
    * cancel.
    */
-  private dismiss_(cancel: boolean) {
+  private async dismiss_(cancel: boolean) {
     if (!this.open) {
       return;
     }
@@ -113,29 +113,29 @@ export class CrDrawerElement extends PolymerElement {
    * Stop propagation of a tap event inside the container. This will allow
    * |onDialogClick_| to only be called when clicked outside the container.
    */
-  private onContainerClick_(event: Event) {
+  protected onContainerClick_(event: Event) {
     event.stopPropagation();
   }
 
   /**
    * Close the dialog when tapped outside the container.
    */
-  private onDialogClick_() {
+  protected onDialogClick_() {
     this.cancel();
   }
 
   /**
    * Overrides the default cancel machanism to allow for a close animation.
    */
-  private onDialogCancel_(event: Event) {
+  protected onDialogCancel_(event: Event) {
     event.preventDefault();
     this.cancel();
   }
 
-  private onDialogClose_() {
+  protected onDialogClose_() {
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
-    this.fire_('close');
+    this.fire('close');
   }
 }
 

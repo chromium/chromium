@@ -42,17 +42,16 @@ suite('SettingsUIToolbarAndDrawer', function() {
 
     const drawerOpened = eventToPromise('cr-drawer-opened', drawer);
     drawer.openDrawer();
-    flush();
+    await drawerOpened;
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(drawer.open);
     assertTrue(!!ui.shadowRoot!.querySelector('cr-drawer settings-menu'));
 
-    await drawerOpened;
     const drawerClosed = eventToPromise('close', drawer);
     drawer.cancel();
-
     await drawerClosed;
+
     // Drawer is closed, but menu is still stamped so
     // its contents remain visible as the drawer slides
     // out.
