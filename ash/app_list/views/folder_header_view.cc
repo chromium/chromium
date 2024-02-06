@@ -298,7 +298,6 @@ class FolderHeaderView::FolderNameJellyView
   void OnFocus() override {
     starting_name_ = GetText();
     SystemTextfield::OnFocus();
-    SetActive(true);
   }
 
   void OnBlur() override {
@@ -314,6 +313,14 @@ class FolderHeaderView::FolderNameJellyView
     }
 
     SystemTextfield::OnBlur();
+
+    // OnBlur updates background ONLY if the ActiveState is changed. Since the
+    // SystemTextField component does not clear focus after changing the
+    // ActiveState, there are some instances where removing focus will not
+    // trigger a background update.
+    // TODO(b/323054951): Clean this code once the SystemTextfield has
+    // implemented clearing focus.
+    UpdateBackground();
   }
 
   bool DoesMouseEventActuallyIntersect(const ui::MouseEvent& event) {
@@ -357,6 +364,7 @@ class FolderHeaderView::FolderNameViewController
       SystemTextfield* textfield,
       const ContentsChangedCallback& contents_changed_callback)
       : SystemTextfieldController(textfield),
+        textfield_(textfield),
         contents_changed_callback_(contents_changed_callback) {}
 
   FolderNameViewController(const FolderNameViewController&) = delete;
@@ -372,6 +380,16 @@ class FolderHeaderView::FolderNameViewController
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override {
     if (SystemTextfieldController::HandleKeyEvent(sender, key_event)) {
+      // TODO(b/323054951): Clean this code once the SystemTextfield has
+      // implemented clearing focus.
+      const bool should_clear_focus =
+          key_event.type() == ui::ET_KEY_PRESSED &&
+          (key_event.key_code() == ui::VKEY_RETURN ||
+           key_event.key_code() == ui::VKEY_ESCAPE);
+
+      if (should_clear_focus) {
+        textfield_->GetFocusManager()->ClearFocus();
+      }
       return true;
     }
 
@@ -383,6 +401,7 @@ class FolderHeaderView::FolderNameViewController
   }
 
  private:
+  raw_ptr<SystemTextfield> textfield_ = nullptr;
   const ContentsChangedCallback contents_changed_callback_;
 };
 
