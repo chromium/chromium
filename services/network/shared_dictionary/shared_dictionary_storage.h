@@ -24,6 +24,9 @@ class HttpResponseHeaders;
 }  // namespace net
 
 namespace network {
+namespace mojom {
+enum class RequestDestination : int32_t;
+}  // namespace mojom
 
 class SharedDictionary;
 class SharedDictionaryWriter;
@@ -75,7 +78,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
-      const std::string& match) = 0;
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id) = 0;
 
   // Called to avoid registering the same dictionary from the disk cache.
   virtual bool IsAlreadyRegistered(const GURL& url,

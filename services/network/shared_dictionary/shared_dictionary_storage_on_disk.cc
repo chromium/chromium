@@ -11,11 +11,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "net/base/io_buffer.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
@@ -42,6 +44,23 @@ void RecordMetadataReadTimeMetrics(
       base::StrCat({"Net.SharedDictionaryStorageOnDisk.MetadataReadTime.",
                     result_string}),
       time_delta);
+}
+
+std::set<mojom::RequestDestination> ToRequestDestinationSet(
+    std::string_view input) {
+  const std::vector<std::string_view> dest_strings = base::SplitStringPiece(
+      input, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::set<mojom::RequestDestination> destinations;
+  for (const auto dest_string : dest_strings) {
+    auto dest = RequestDestinationFromString(
+        dest_string, EmptyRequestDestinationOption::kUseFiveCharEmptyString);
+    if (!dest) {
+      LOG(ERROR) << "Invalid request destination string: " << dest_string;
+      continue;
+    }
+    destinations.insert(*dest);
+  }
+  return destinations;
 }
 
 }  // namespace
@@ -105,18 +124,19 @@ class SharedDictionaryStorageOnDisk::WrappedSharedDictionary
   scoped_refptr<RefCountedSharedDictionary> ref_counted_shared_dictionary_;
 };
 
-SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher::
-    DictionaryInfoWithMatcher(net::SharedDictionaryInfo info,
-                              std::unique_ptr<SimpleUrlPatternMatcher> matcher)
+SharedDictionaryStorageOnDisk::WrappedDictionaryInfo::WrappedDictionaryInfo(
+    net::SharedDictionaryInfo info,
+    std::unique_ptr<SimpleUrlPatternMatcher> matcher)
     : net::SharedDictionaryInfo(std::move(info)),
-      matcher_(std::move(matcher)) {}
-SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher::
-    ~DictionaryInfoWithMatcher() = default;
-SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher::
-    DictionaryInfoWithMatcher(DictionaryInfoWithMatcher&&) = default;
-SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher&
-SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher::operator=(
-    DictionaryInfoWithMatcher&&) = default;
+      matcher_(std::move(matcher)),
+      match_dest_(ToRequestDestinationSet(match_dest_string())) {}
+SharedDictionaryStorageOnDisk::WrappedDictionaryInfo::~WrappedDictionaryInfo() =
+    default;
+SharedDictionaryStorageOnDisk::WrappedDictionaryInfo::WrappedDictionaryInfo(
+    WrappedDictionaryInfo&&) = default;
+SharedDictionaryStorageOnDisk::WrappedDictionaryInfo&
+SharedDictionaryStorageOnDisk::WrappedDictionaryInfo::operator=(
+    WrappedDictionaryInfo&&) = default;
 
 SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
     base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
@@ -204,10 +224,13 @@ void SharedDictionaryStorageOnDisk::GetDictionary(
 }
 
 scoped_refptr<SharedDictionaryWriter>
-SharedDictionaryStorageOnDisk::CreateWriter(const GURL& url,
-                                            base::Time response_time,
-                                            base::TimeDelta expiration,
-                                            const std::string& match) {
+SharedDictionaryStorageOnDisk::CreateWriter(
+    const GURL& url,
+    base::Time response_time,
+    base::TimeDelta expiration,
+    const std::string& match,
+    const std::set<mojom::RequestDestination>& match_dest,
+    const std::string& id) {
   if (!manager_) {
     return nullptr;
   }
@@ -221,7 +244,7 @@ SharedDictionaryStorageOnDisk::CreateWriter(const GURL& url,
     matcher = std::move(matcher_create_result.value());
   }
   return manager_->CreateWriter(
-      isolation_key_, url, response_time, expiration, match,
+      isolation_key_, url, response_time, expiration, match, match_dest, id,
       base::BindOnce(&SharedDictionaryStorageOnDisk::OnDictionaryWritten,
                      weak_factory_.GetWeakPtr(), std::move(matcher)));
 }
@@ -260,7 +283,7 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
     }
 
     dictionary_info_map_[scheme_host_port].insert(std::make_pair(
-        match, DictionaryInfoWithMatcher(std::move(info), std::move(matcher))));
+        match, WrappedDictionaryInfo(std::move(info), std::move(matcher))));
   }
 
   auto callbacks = std::move(pending_get_dictionary_tasks_);
@@ -275,8 +298,8 @@ void SharedDictionaryStorageOnDisk::OnDictionaryWritten(
   const url::SchemeHostPort scheme_host_port = url::SchemeHostPort(info.url());
   const std::string match = info.match();
   (dictionary_info_map_[scheme_host_port])
-      .insert_or_assign(match, DictionaryInfoWithMatcher(std::move(info),
-                                                         std::move(matcher)));
+      .insert_or_assign(
+          match, WrappedDictionaryInfo(std::move(info), std::move(matcher)));
 }
 
 void SharedDictionaryStorageOnDisk::OnRefCountedSharedDictionaryDeleted(

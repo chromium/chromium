@@ -395,7 +395,9 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
           url::Origin::Create(GURL(*dict.FindString("frame_origin"))),
           net::SchemefulSite(GURL(*dict.FindString("top_frame_site")))),
       network::mojom::SharedDictionaryInfo::New(
-          *dict.FindString("match"), GURL(*dict.FindString("dictionary_url")),
+          *dict.FindString("match"),
+          /*match_dest=*/std::vector<network::mojom::RequestDestination>(),
+          /*id=*/"", GURL(*dict.FindString("dictionary_url")),
           ToTime(dict.FindString("response_time")->c_str()),
           base::Seconds(*dict.FindInt("expiration")),
           ToTime(dict.FindString("last_used_time")->c_str()),

@@ -133,7 +133,9 @@ class DummySharedDictionaryStorage : public SharedDictionaryStorage {
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
-      const std::string& match) override {
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id) override {
     return nullptr;
   }
   bool IsAlreadyRegistered(const GURL& url,

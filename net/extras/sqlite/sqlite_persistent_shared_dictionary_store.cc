@@ -805,10 +805,14 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
       LOG(WARNING) << "Invalid token";
       continue;
     }
-    result.emplace_back(GURL(url_string), response_time,
-                        expiration_time - response_time, match, last_used_time,
-                        size, *sha256_hash, *disk_cache_key_token,
-                        primary_key_in_database);
+    // TODO(crbug.com/1413922): Store `match_dest_string` and `id` in the
+    // database.
+    std::string match_dest_string;
+    std::string id;
+    result.emplace_back(
+        GURL(url_string), response_time, expiration_time - response_time, match,
+        match_dest_string, id, last_used_time, size, *sha256_hash,
+        *disk_cache_key_token, primary_key_in_database);
   }
   return base::ok(std::move(result));
 }
@@ -875,11 +879,15 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
     url::Origin frame_origin = url::Origin::Create(GURL(frame_origin_string));
     SchemefulSite top_frame_site = SchemefulSite(GURL(top_frame_site_string));
 
+    // TODO(crbug.com/1413922): Store `match_dest_string` and `id` in the
+    // database.
+    std::string match_dest_string;
+    std::string id;
     result[SharedDictionaryIsolationKey(frame_origin, top_frame_site)]
         .emplace_back(GURL(url_string), response_time,
-                      expiration_time - response_time, match, last_used_time,
-                      size, *sha256_hash, *disk_cache_key_token,
-                      primary_key_in_database);
+                      expiration_time - response_time, match, match_dest_string,
+                      id, last_used_time, size, *sha256_hash,
+                      *disk_cache_key_token, primary_key_in_database);
   }
   return base::ok(std::move(result));
 }

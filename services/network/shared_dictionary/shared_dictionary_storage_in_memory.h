@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_IN_MEMORY_H_
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
@@ -43,6 +44,8 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
                    base::Time response_time,
                    base::TimeDelta expiration,
                    const std::string& match,
+                   std::set<mojom::RequestDestination> match_dest,
+                   const std::string& id,
                    base::Time last_used_time,
                    scoped_refptr<net::IOBuffer> data,
                    size_t size,
@@ -61,6 +64,10 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const base::Time& response_time() const { return response_time_; }
     base::TimeDelta expiration() const { return expiration_; }
     const std::string& match() const { return match_; }
+    const std::set<mojom::RequestDestination> match_dest() const {
+      return match_dest_;
+    }
+    const std::string& id() const { return id_; }
     const base::Time& last_used_time() const { return last_used_time_; }
     const scoped_refptr<net::IOBuffer>& data() const { return data_; }
     size_t size() const { return size_; }
@@ -76,6 +83,8 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     base::Time response_time_;
     base::TimeDelta expiration_;
     std::string match_;
+    std::set<mojom::RequestDestination> match_dest_;
+    std::string id_;
     base::Time last_used_time_;
     scoped_refptr<net::IOBuffer> data_;
     size_t size_;
@@ -102,7 +111,9 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
-      const std::string& match) override;
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id) override;
   bool IsAlreadyRegistered(const GURL& url,
                            base::Time response_time,
                            base::TimeDelta expiration,
@@ -127,15 +138,18 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   ~SharedDictionaryStorageInMemory() override;
 
   // Called when SharedDictionaryWriterInMemory::Finish() is called.
-  void OnDictionaryWritten(const GURL& url,
-                           base::Time response_time,
-                           base::TimeDelta expiration,
-                           const std::string& match,
-                           std::unique_ptr<SimpleUrlPatternMatcher> matcher,
-                           SharedDictionaryWriterInMemory::Result result,
-                           scoped_refptr<net::IOBuffer> data,
-                           size_t size,
-                           const net::SHA256HashValue& hash);
+  void OnDictionaryWritten(
+      const GURL& url,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      std::unique_ptr<SimpleUrlPatternMatcher> matcher,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
+      SharedDictionaryWriterInMemory::Result result,
+      scoped_refptr<net::IOBuffer> data,
+      size_t size,
+      const net::SHA256HashValue& hash);
 
   base::WeakPtr<SharedDictionaryManagerInMemory> manager_;
   const net::SharedDictionaryIsolationKey isolation_key_;

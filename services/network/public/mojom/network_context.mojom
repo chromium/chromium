@@ -24,6 +24,7 @@ import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
 import "services/network/public/mojom/restricted_udp_socket.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/first_party_sets_access_delegate.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
@@ -616,13 +617,25 @@ struct NetworkConditions {
 };
 
 // Represents a shared dictionary.
+// Spec: https://datatracker.ietf.org/doc/draft-ietf-httpbis-compression-dictionary/
 struct SharedDictionaryInfo {
+  // The "match" value of the Use-As-Dictionary header.
   string match;
+  // The "match-dest" value of the Use-As-Dictionary header.
+  array<RequestDestination> match_dest;
+  // The "id" value of the Use-As-Dictionary header.
+  string id;
+  // The URL of the dictionary.
   url.mojom.Url dictionary_url;
+  // The time when Chrome received the dictionary.
   mojo_base.mojom.Time response_time;
+  // The time when this dictionary will be unusable.
   mojo_base.mojom.TimeDelta expiration;
+  // The time when this dictionary was used in the last time.
   mojo_base.mojom.Time last_used_time;
+  // The size of the dictionary binary.
   uint64 size;
+  // The SHA256 hash of the dictionary binary.
   SHA256HashValue hash;
 };
 

@@ -232,7 +232,7 @@ class SharedDictionaryManagerTest
   const std::map<
       url::SchemeHostPort,
       std::map<std::string,
-               SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher>>&
+               SharedDictionaryStorageOnDisk::WrappedDictionaryInfo>>&
   GetOnDiskDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageOnDisk*>(storage)
         ->GetDictionaryMapForTesting();
@@ -715,6 +715,180 @@ TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromCacheControlHeader) {
         GetSharedDictionaryInfo(manager.get(), isolation_key);
     ASSERT_EQ(1u, result.size());
     EXPECT_EQ(*testcase.expected_expiration, result[0]->expiration);
+  }
+}
+
+TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  struct {
+    std::string header_string;
+    bool expect_success_v1;
+    bool expect_success_v2;
+    std::string expected_id;
+  } kTestCases[] = {
+      // Valid `id` value.
+      {"match=\"test\", id=\"test_id\"", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true, /*expected_id=*/"test_id"},
+      // `id` should not be a list.
+      {"match=\"test\", id=(\"id1\" \"id2\")", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/false},
+      // `id` can be 1024 characters long.
+      {base::StrCat({"match=\"test\", id=\"", std::string(1024, 'x'), "\""}),
+       /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true, /*expected_id=*/std::string(1024, 'x')},
+      // `id` too long.
+      {base::StrCat({"match=\"test\", id=\"", std::string(1025, 'x'), "\""}),
+       /*expect_success_v1=*/true,
+       /*expect_success_v2=*/false},
+  };
+  for (const auto& testcase : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf("header_string: %s",
+                                    testcase.header_string.c_str()));
+    scoped_refptr<net::HttpResponseHeaders> headers =
+        net::HttpResponseHeaders::TryToCreate(base::StrCat(
+            {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+             ": ", testcase.header_string, "\n", kDefaultCacheControlHeader,
+             "\n"}));
+    ASSERT_TRUE(headers);
+    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+        GURL("https://origin1.test/testfile.txt"),
+        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
+        *headers,
+        /*was_fetched_via_cache=*/false,
+        /*access_allowed_check_callback=*/base::BindOnce([]() {
+          return true;
+        }));
+    switch (GetVersion()) {
+      case features::CompressionDictionaryTransportBackendVersion::kV1:
+        EXPECT_EQ(testcase.expect_success_v1, !!writer);
+        continue;
+      case features::CompressionDictionaryTransportBackendVersion::kV2:
+        EXPECT_EQ(testcase.expect_success_v2, !!writer);
+        break;
+    }
+    if (!writer) {
+      continue;
+    }
+    writer->Append(kTestData1.c_str(), kTestData1.size());
+    writer->Finish();
+    if (GetManagerType() == TestManagerType::kOnDisk) {
+      FlushCacheTasks();
+      // TODO(crbug.com/1413922): Currently `id` is not supported by the disk
+      // cache backend.
+      continue;
+    }
+    std::vector<network::mojom::SharedDictionaryInfoPtr> result =
+        GetSharedDictionaryInfo(manager.get(), isolation_key);
+    ASSERT_EQ(1u, result.size());
+    EXPECT_EQ(testcase.expected_id, result[0]->id);
+  }
+}
+
+TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  struct {
+    std::string header_string;
+    bool expect_success_v1;
+    bool expect_success_v2;
+    std::vector<mojom::RequestDestination> expected_match_dest;
+  } kTestCases[] = {
+      // No `match-dest` value.
+      {"match=\"test\"", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true, /*expected_match_dest=*/{}},
+      // Valid `match-dest` value.
+      {"match=\"test\", match-dest=(\"document\")", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true,
+       /*expected_match_dest=*/{mojom::RequestDestination::kDocument}},
+      // `match-dest` must be a list.
+      {"match=\"test\", match-dest=\"document\"", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/false},
+      // Unknown `match-dest` value should be treated as empty.
+      {"match=\"test\", match-dest=(\"unknown\")", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true,
+       /*expected_match_dest=*/{}},
+      //`match-dest` should not be a sf-token.
+      // https://github.com/httpwg/http-extensions/issues/2723
+      {"match=\"test\", match-dest=(document)", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/false},
+      // Valid `match-dest` value "".
+      {"match=\"test\", match-dest=(\"\")", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true,
+       /*expected_match_dest=*/{mojom::RequestDestination::kEmpty}},
+      // Valid `match-dest` value ("document" "frame" "iframe").
+      {"match=\"test\", match-dest=(\"document\" \"frame\" \"iframe\")",
+       /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true,
+       /*expected_match_dest=*/
+       {mojom::RequestDestination::kDocument, mojom::RequestDestination::kFrame,
+        mojom::RequestDestination::kIframe}},
+      // Valid `match-dest` value ("document" "frame" "iframe" "").
+      {"match=\"test\", match-dest=(\"document\" \"\")",
+       /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true,
+       /*expected_match_dest=*/
+       {mojom::RequestDestination::kEmpty,
+        mojom::RequestDestination::kDocument}},
+
+  };
+  for (const auto& testcase : kTestCases) {
+    base::RunLoop run_loop;
+    manager->ClearDataForIsolationKey(isolation_key, run_loop.QuitClosure());
+    run_loop.Run();
+    SCOPED_TRACE(base::StringPrintf("header_string: %s",
+                                    testcase.header_string.c_str()));
+    scoped_refptr<net::HttpResponseHeaders> headers =
+        net::HttpResponseHeaders::TryToCreate(base::StrCat(
+            {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+             ": ", testcase.header_string, "\n", kDefaultCacheControlHeader,
+             "\n"}));
+    ASSERT_TRUE(headers);
+    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+        GURL("https://origin1.test/testfile.txt"),
+        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
+        *headers,
+        /*was_fetched_via_cache=*/false,
+        /*access_allowed_check_callback=*/base::BindOnce([]() {
+          return true;
+        }));
+    switch (GetVersion()) {
+      case features::CompressionDictionaryTransportBackendVersion::kV1:
+        EXPECT_EQ(testcase.expect_success_v1, !!writer);
+        continue;
+      case features::CompressionDictionaryTransportBackendVersion::kV2:
+        EXPECT_EQ(testcase.expect_success_v2, !!writer);
+        break;
+    }
+    if (!writer) {
+      continue;
+    }
+    writer->Append(kTestData1.c_str(), kTestData1.size());
+    writer->Finish();
+    if (GetManagerType() == TestManagerType::kOnDisk) {
+      FlushCacheTasks();
+      // TODO(crbug.com/1413922): Currently `match-dest` is not supported by the
+      // disk cache backend.
+      continue;
+    }
+    std::vector<network::mojom::SharedDictionaryInfoPtr> result =
+        GetSharedDictionaryInfo(manager.get(), isolation_key);
+    ASSERT_EQ(1u, result.size());
+    EXPECT_EQ(testcase.expected_match_dest, result[0]->match_dest);
   }
 }
 

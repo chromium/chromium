@@ -55,12 +55,20 @@ extern const char kContentDictionaryHeaderName[];
 // The dictionary option name of "match".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];
 
+// The dictionary option name of "match-dest".
+COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatchDest[];
+
 // The dictionary option name of "expires".
 // This will not be used when V2 backend is enabled.
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameExpires[];
 
 // The dictionary option name of "type".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameType[];
+
+// The dictionary option name of "id".
+COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameId[];
+// The max length of dictionary id.
+inline constexpr uint64_t kDictionaryIdMaxLength = 1024;
 
 }  // namespace network::shared_dictionary
 

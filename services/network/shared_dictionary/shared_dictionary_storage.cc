@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -17,6 +18,8 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/request_destination.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 #include "url/gurl.h"
@@ -31,18 +34,24 @@ constexpr std::string_view kDefaultTypeRaw = "raw";
 class DictionaryHeaderInfo {
  public:
   DictionaryHeaderInfo(std::string match,
+                       std::set<network::mojom::RequestDestination> match_dest,
                        std::optional<base::TimeDelta> expiration,
-                       std::string type)
+                       std::string type,
+                       std::string id)
       : match(std::move(match)),
+        match_dest(std::move(match_dest)),
         expiration(expiration),
-        type(std::move(type)) {}
+        type(std::move(type)),
+        id(std::move(id)) {}
   ~DictionaryHeaderInfo() = default;
 
   std::string match;
+  std::set<network::mojom::RequestDestination> match_dest;
   // TODO(crbug.com/1413922): Stop using std::optional when we remove V1 backend
   // support.
   std::optional<base::TimeDelta> expiration;
   std::string type;
+  std::string id;
 };
 
 std::optional<DictionaryHeaderInfo> ParseDictionaryHeaderInfo(
@@ -61,15 +70,26 @@ std::optional<DictionaryHeaderInfo> ParseDictionaryHeaderInfo(
     return std::nullopt;
   }
 
-  // Don't use the value of `expires` in the `Use-As-Dictionary` response header
-  // when V2 backend is enabled.
-  const bool check_expires_dictionary_value =
+  const bool is_v1 =
       features::kCompressionDictionaryTransportBackendVersion.Get() ==
       features::CompressionDictionaryTransportBackendVersion::kV1;
+  // Don't use the value of `expires` in the `Use-As-Dictionary` response header
+  // when V2 backend is enabled.
+  const bool check_expires_dictionary_value = is_v1;
+  // Don't use the value of `match-dest` in the `Use-As-Dictionary` response
+  // header when V1 backend is enabled.
+  const bool check_match_dest_dictionary_value = !is_v1;
+  // Don't use the value of `id` in the `Use-As-Dictionary` response header when
+  // V1 backend is enabled.
+  const bool check_id_dictionary_value = !is_v1;
 
   std::optional<std::string> match_value;
+  // Maybe we don't need to support multiple match-dest.
+  // https://github.com/httpwg/http-extensions/issues/2722
+  std::set<network::mojom::RequestDestination> match_dest_values;
   std::optional<base::TimeDelta> expires_value;
   std::string type_value = std::string(kDefaultTypeRaw);
+  std::string id_value;
   for (const auto& entry : dictionary.value()) {
     if (entry.first == shared_dictionary::kOptionNameMatch) {
       if ((entry.second.member.size() != 1u) ||
@@ -77,6 +97,26 @@ std::optional<DictionaryHeaderInfo> ParseDictionaryHeaderInfo(
         return std::nullopt;
       }
       match_value = entry.second.member.front().item.GetString();
+    } else if (check_match_dest_dictionary_value &&
+               entry.first == shared_dictionary::kOptionNameMatchDest) {
+      if (!entry.second.member_is_inner_list) {
+        // `match-dest` must be a list.
+        return std::nullopt;
+      }
+      for (const auto& item : entry.second.member) {
+        if (!item.item.is_string()) {
+          return std::nullopt;
+        }
+        // We use the empty string "" for RequestDestination::kEmpty in
+        // `match-dest`.
+        std::optional<network::mojom::RequestDestination> dest_value =
+            RequestDestinationFromString(
+                item.item.GetString(),
+                EmptyRequestDestinationOption::kUseTheEmptyString);
+        if (dest_value) {
+          match_dest_values.insert(*dest_value);
+        }
+      }
     } else if (check_expires_dictionary_value &&
                entry.first == shared_dictionary::kOptionNameExpires) {
       if ((entry.second.member.size() != 1u) ||
@@ -91,6 +131,16 @@ std::optional<DictionaryHeaderInfo> ParseDictionaryHeaderInfo(
         return std::nullopt;
       }
       type_value = entry.second.member.front().item.GetString();
+    } else if (check_id_dictionary_value &&
+               entry.first == shared_dictionary::kOptionNameId) {
+      if ((entry.second.member.size() != 1u) ||
+          !entry.second.member.front().item.is_string()) {
+        return std::nullopt;
+      }
+      id_value = entry.second.member.front().item.GetString();
+      if (id_value.size() > shared_dictionary::kDictionaryIdMaxLength) {
+        return std::nullopt;
+      }
     }
   }
 
@@ -114,8 +164,9 @@ std::optional<DictionaryHeaderInfo> ParseDictionaryHeaderInfo(
   if (!match_value) {
     return std::nullopt;
   }
-  return DictionaryHeaderInfo(std::move(*match_value), std::move(expires_value),
-                              std::move(type_value));
+  return DictionaryHeaderInfo(
+      std::move(*match_value), std::move(match_dest_values),
+      std::move(expires_value), std::move(type_value), std::move(id_value));
 }
 
 }  // namespace
@@ -175,7 +226,8 @@ SharedDictionaryStorage::MaybeCreateWriter(
     return nullptr;
   }
 
-  return CreateWriter(url, response_time, expiration, info->match);
+  return CreateWriter(url, response_time, expiration, info->match,
+                      info->match_dest, info->id);
 }
 
 }  // namespace network

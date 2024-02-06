@@ -24,6 +24,8 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
                        base::Time response_time,
                        base::TimeDelta expiration,
                        const std::string& match,
+                       const std::string& match_dest_string,
+                       const std::string& id,
                        base::Time last_used_time,
                        size_t size,
                        const net::SHA256HashValue& hash,
@@ -44,6 +46,8 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
   base::Time response_time() const { return response_time_; }
   base::TimeDelta expiration() const { return expiration_; }
   const std::string& match() const { return match_; }
+  const std::string& match_dest_string() const { return match_dest_string_; }
+  const std::string& id() const { return id_; }
   base::Time last_used_time() const { return last_used_time_; }
   size_t size() const { return size_; }
   const net::SHA256HashValue& hash() const { return hash_; }
@@ -76,6 +80,12 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
   // The matching path pattern for the dictionary which was declared in
   // 'use-as-dictionary' response header's `match` option.
   std::string match_;
+  // The comma separated matching destinations for the dictionary which was
+  // declared in 'use-as-dictionary' response header's `match-dest` option.
+  std::string match_dest_string_;
+  // The Id for the dictionary which was declared in 'use-as-dictionary'
+  // response header's `id` option.
+  std::string id_;
   // The time when the dictionary was last used.
   base::Time last_used_time_;
   // The size of the dictionary binary.

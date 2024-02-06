@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_ON_DISK_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_ON_DISK_H_
 
+#include <optional>
+#include <set>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -30,6 +32,9 @@ class BackendFileOperationsFactory;
 }  // namespace disk_cache
 
 namespace network {
+namespace mojom {
+enum class RequestDestination : int32_t;
+}  // namespace mojom
 
 class SharedDictionaryStorage;
 
@@ -89,6 +94,8 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback);
 
   void UpdateDictionaryLastUsedTime(net::SharedDictionaryInfo& info);
@@ -132,6 +139,8 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
       const base::UnguessableToken& disk_cache_key_token,
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
       SharedDictionaryWriterOnDisk::Result result,

@@ -200,7 +200,7 @@ class SharedDictionaryManagerOnDiskTest
       const std::map<
           url::SchemeHostPort,
           std::map<std::string,
-                   SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher>>&
+                   SharedDictionaryStorageOnDisk::WrappedDictionaryInfo>>&
           dictionary_map,
       const std::string& scheme_host_port_str) {
     auto it =
@@ -224,7 +224,7 @@ class SharedDictionaryManagerOnDiskTest
   const std::map<
       url::SchemeHostPort,
       std::map<std::string,
-               SharedDictionaryStorageOnDisk::DictionaryInfoWithMatcher>>&
+               SharedDictionaryStorageOnDisk::WrappedDictionaryInfo>>&
   GetOnDiskDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageOnDisk*>(storage)
         ->GetDictionaryMapForTesting();
