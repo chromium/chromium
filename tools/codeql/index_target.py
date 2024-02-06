@@ -56,7 +56,7 @@ def trace(processing_num, entry, *, codeql_binary_path, codeql_db_path,
     logger.info(
         "FAILURE: a subprocess.CalledProcessError occurred while running %s" %
         command)
-    logger.info(traceback.format_exec())
+    logger.info(traceback.format_exc())
     logger.info("Working directory was %s" % directory)
     failed_commands.append(str(command))
 
