@@ -458,7 +458,7 @@ class PrerenderBookmarkBarOnPressedNavigationTest
     PrerenderBookmarkBarNavigationTestBase::SetUpOnMainThread();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            chrome_preloading_predictor::kPointerDownOnBookmarkBar);
+            chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar);
   }
 
  private:
@@ -525,7 +525,8 @@ IN_PROC_BROWSER_TEST_F(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kFinalStatusActivated, 1);
   histogram_tester.ExpectUniqueSample(
-      "Preloading.Prerender.Attempt.PointerDownOnBookmarkBar.TriggeringOutcome",
+      "Preloading.Prerender.Attempt.MouseHoverOrMouseDownOnBookmarkBar."
+      "TriggeringOutcome",
       kPreloadingTriggeringOutcomeSuccess, 1);
   // Navigate away to flush the metrics and check.
   ASSERT_TRUE(
@@ -602,7 +603,7 @@ class PrerenderBookmarkBarOnHoverNavigationTest
     PrerenderBookmarkBarNavigationTestBase::SetUpOnMainThread();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            chrome_preloading_predictor::kMouseHoverOnBookmarkBar);
+            chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar);
   }
 
   void TriggerPrerenderByMouseHoverOnBookmark(bool expect_completion) {
@@ -685,7 +686,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kFinalStatusActivated, 1);
   histogram_tester.ExpectUniqueSample(
-      "Preloading.Prerender.Attempt.MouseHoverOnBookmarkBar.TriggeringOutcome",
+      "Preloading.Prerender.Attempt.MouseHoverOrMouseDownOnBookmarkBar."
+      "TriggeringOutcome",
       kPreloadingTriggeringOutcomeSuccess, 1);
   ASSERT_EQ(bookmark_navigation_list().size(), 2u);
   for (int i = 0; i < 2; ++i) {
@@ -776,7 +778,8 @@ IN_PROC_BROWSER_TEST_F(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kFinalStatusActivated, 1);
   histogram_tester.ExpectBucketCount(
-      "Preloading.Prerender.Attempt.MouseHoverOnBookmarkBar.TriggeringOutcome",
+      "Preloading.Prerender.Attempt.MouseHoverOrMouseDownOnBookmarkBar."
+      "TriggeringOutcome",
       kPreloadingTriggeringOutcomeSuccess, 1);
 }
 
@@ -804,12 +807,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
                                        /*flags=*/ui::EF_NONE,
                                        /*changed_button_flags=*/ui::EF_NONE));
 
-  // Normal navigation is not in `kPointerDownOnBookmarkBar` predictor's domain.
+  // Normal navigation is not in `kMouseHoverOrMouseDownOnBookmarkBar`
+  // predictor's domain.
   histogram_tester.ExpectBucketCount(
-      "Preloading.Predictor.PointerDownOnBookmarkBar.Recall",
+      "Preloading.Predictor.MouseHoverOrMouseDownOnBookmarkBar.Recall",
       /*content::PredictorConfusionMatrix::kTruePositive*/ 0, 0);
   histogram_tester.ExpectBucketCount(
-      "Preloading.Predictor.PointerDownOnBookmarkBar.Recall",
+      "Preloading.Predictor.MouseHoverOrMouseDownOnBookmarkBar.Recall",
       /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 0);
 
   // A `PAGE_TRANSITION_AUTO_BOOKMARK` navigation should be in the predictor's
@@ -820,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   ui_test_utils::NavigateToURL(&params);
   histogram_tester.ExpectBucketCount(
-      "Preloading.Predictor.PointerDownOnBookmarkBar.Recall",
+      "Preloading.Predictor.MouseHoverOrMouseDownOnBookmarkBar.Recall",
       /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
 }
 
@@ -885,7 +889,7 @@ class PrerenderBookmarkBarDisabledNavigationTest
     PrerenderBookmarkBarNavigationTestBase::SetUpOnMainThread();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            chrome_preloading_predictor::kPointerDownOnBookmarkBar);
+            chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar);
   }
 
   void ClickOnBookmarkBarLink() {

@@ -74,8 +74,7 @@ class PrerenderManager : public content::WebContentsObserver,
   // from the on-going one. If the url given is already on-going, this function
   // will return the weak pointer to the on-going prerender handle.
   base::WeakPtr<content::PrerenderHandle> StartPrerenderBookmark(
-      const GURL& prerendering_url,
-      content::PreloadingPredictor predictor);
+      const GURL& prerendering_url);
   void StopPrerenderBookmark(
       base::WeakPtr<content::PrerenderHandle> prerender_handle);
 

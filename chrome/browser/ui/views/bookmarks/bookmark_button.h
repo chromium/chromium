@@ -66,7 +66,7 @@ class BookmarkButton : public BookmarkButtonBase {
 
  private:
   void StartPreconnecting(GURL url);
-  void StartPrerendering(content::PreloadingPredictor predictor, GURL url);
+  void StartPrerendering(GURL url);
 
   // A cached value of maximum width for tooltip to skip generating
   // new tooltip text.

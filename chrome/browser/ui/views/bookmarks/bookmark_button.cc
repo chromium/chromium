@@ -177,7 +177,7 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
       content::PreloadingData* preloading_data =
           content::PreloadingData::GetOrCreateForWebContents(web_contents);
       preloading_data->SetIsNavigationInDomainCallback(
-          chrome_preloading_predictor::kPointerDownOnBookmarkBar,
+          chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
           base::BindRepeating(
               [](content::NavigationHandle* navigation_handle) -> bool {
                 return ui::PageTransitionCoreTypeIs(
@@ -213,8 +213,7 @@ bool BookmarkButton::OnMousePressed(const ui::MouseEvent& event) {
   if (event.IsOnlyLeftMouseButton() &&
       base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
       kPrerenderBookmarkBarOnMousePressedTrigger.Get()) {
-    StartPrerendering(chrome_preloading_predictor::kPointerDownOnBookmarkBar,
-                      *url_);
+    StartPrerendering(*url_);
   }
   return result;
 }
@@ -233,8 +232,7 @@ void BookmarkButton::StartPreconnecting(GURL url) {
   if (kPrerenderStartDelayOnMouseHoverByMiliseconds.Get() -
           kPreconnectStartDelayOnMouseHoverByMiliseconds.Get() <=
       0) {
-    StartPrerendering(chrome_preloading_predictor::kMouseHoverOnBookmarkBar,
-                      url);
+    StartPrerendering(url);
   } else {
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(browser_->profile());
@@ -248,14 +246,12 @@ void BookmarkButton::StartPreconnecting(GURL url) {
         base::Milliseconds(
             kPrerenderStartDelayOnMouseHoverByMiliseconds.Get() -
             kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
-        base::BindRepeating(
-            &BookmarkButton::StartPrerendering, base::Unretained(this),
-            chrome_preloading_predictor::kMouseHoverOnBookmarkBar, url));
+        base::BindRepeating(&BookmarkButton::StartPrerendering,
+                            base::Unretained(this), url));
   }
 }
 
-void BookmarkButton::StartPrerendering(content::PreloadingPredictor predictor,
-                                       GURL url) {
+void BookmarkButton::StartPrerendering(GURL url) {
   // TODO(https://crbug.com/1422819): Prerender only for https scheme, and add
   // an enum metric to report the protocol scheme.
   CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
@@ -265,8 +261,7 @@ void BookmarkButton::StartPrerendering(content::PreloadingPredictor predictor,
     PrerenderManager::CreateForWebContents(&(*prerender_web_contents_));
     auto* prerender_manager =
         PrerenderManager::FromWebContents(&(*prerender_web_contents_));
-    prerender_handle_ =
-        prerender_manager->StartPrerenderBookmark(url, predictor);
+    prerender_handle_ = prerender_manager->StartPrerenderBookmark(url);
   }
 }
 
