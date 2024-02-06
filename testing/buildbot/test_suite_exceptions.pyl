@@ -2290,6 +2290,13 @@
   },
   'context_lost_passthrough_tests': {
     'modifications': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
+          # helps with stability.
+          '--jobs=2',
+        ],
+      },
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': [
           # These devices have issues running these tests in parallel.
@@ -2298,6 +2305,13 @@
       },
     },
     'replacements': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': {
           # Magic substitution happens after regular replacement, so remove it
@@ -3843,6 +3857,13 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
+          # helps with stability.
+          '--jobs=2',
+        ],
+      },
       'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
@@ -3866,6 +3887,13 @@
       'Win V8 FYI Release (NVIDIA)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
+        },
+      },
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
         },
       },
     },
@@ -4413,6 +4441,22 @@
           'shards': 2,
         },
       },
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
+          # helps with stability.
+          '--jobs=2',
+        ],
+      },
+    },
+    'replacements': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
     },
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
@@ -4703,6 +4747,26 @@
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
     ],
+  },
+  'webcodecs_tests': {
+    'modifications': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
+          # helps with stability.
+          '--jobs=2',
+        ],
+      },
+    },
+    'replacements': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
+    },
   },
   'webdriver_wpt_tests': {
     'modifications': {
