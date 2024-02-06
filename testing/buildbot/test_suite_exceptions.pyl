@@ -205,6 +205,11 @@
           '--gtest_filter=-ConstructCompilerTest.DefaultParameters',
         ],
       },
+      'linux-chromeos-rel': {
+        # b/41493162: angle_unittests has a high failure rate.
+        # Re-enable cq when the issue is fixed.
+        'ci_only': True,
+      },
     },
   },
   'ash_crosapi_tests': {
