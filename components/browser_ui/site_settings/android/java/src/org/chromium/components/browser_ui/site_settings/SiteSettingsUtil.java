@@ -106,8 +106,8 @@ public class SiteSettingsUtil {
         String result = "";
         if (storage > 0) {
             result =
-                    String.format(
-                            context.getString(R.string.origin_settings_storage_usage_brief),
+                    context.getString(
+                            R.string.origin_settings_storage_usage_brief,
                             Formatter.formatShortFileSize(context, storage));
         }
         if (cookies > 0) {
@@ -117,10 +117,8 @@ public class SiteSettingsUtil {
             result =
                     result.isEmpty()
                             ? cookie_str
-                            : String.format(
-                                    context.getString(R.string.summary_with_one_bullet),
-                                    result,
-                                    cookie_str);
+                            : context.getString(
+                                    R.string.summary_with_one_bullet, result, cookie_str);
         }
         return result;
     }

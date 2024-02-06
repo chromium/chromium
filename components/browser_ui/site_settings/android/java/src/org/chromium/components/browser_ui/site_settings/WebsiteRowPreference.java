@@ -183,10 +183,8 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
                 summary = cookie_str;
             } else {
                 summary =
-                        String.format(
-                                getContext().getString(R.string.summary_with_one_bullet),
-                                cookie_str,
-                                summary);
+                        getContext()
+                                .getString(R.string.summary_with_one_bullet, cookie_str, summary);
             }
         }
 
@@ -195,11 +193,7 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
             if (summary.isEmpty()) {
                 summary = HTTP;
             } else {
-                summary =
-                        String.format(
-                                getContext().getString(R.string.summary_with_one_bullet),
-                                HTTP,
-                                summary);
+                summary = getContext().getString(R.string.summary_with_one_bullet, HTTP, summary);
             }
         }
 

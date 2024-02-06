@@ -209,9 +209,8 @@ public class TouchToFillControllerTest {
         assertThat(
                 itemList.get(0).model.get(SUBTITLE),
                 is(
-                        String.format(
-                                mContext.getString(
-                                        R.string.touch_to_fill_sheet_subtitle_submission),
+                        mContext.getString(
+                                R.string.touch_to_fill_sheet_subtitle_submission,
                                 TEST_URL_FORMATTED)));
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
@@ -343,9 +342,8 @@ public class TouchToFillControllerTest {
         assertThat(
                 itemList.get(0).model.get(SUBTITLE),
                 is(
-                        String.format(
-                                mContext.getString(
-                                        R.string.touch_to_fill_sheet_subtitle_submission),
+                        mContext.getString(
+                                R.string.touch_to_fill_sheet_subtitle_submission,
                                 TEST_URL_FORMATTED)));
 
         assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
@@ -429,10 +427,8 @@ public class TouchToFillControllerTest {
         assertThat(
                 itemList.get(0).model.get(SUBTITLE),
                 is(
-                        String.format(
-                                mContext.getString(
-                                        R.string
-                                                .touch_to_fill_sheet_shared_passwords_one_password_subtitle),
+                        mContext.getString(
+                                R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle,
                                 "<b>Sender Name</b>",
                                 TEST_URL_FORMATTED)));
         mImageFetcher.answerWithBitmap();
@@ -507,10 +503,9 @@ public class TouchToFillControllerTest {
         assertThat(
                 itemList.get(0).model.get(SUBTITLE),
                 is(
-                        String.format(
-                                mContext.getString(
-                                        R.string
-                                                .touch_to_fill_sheet_shared_passwords_multiple_passwords_subtitle),
+                        mContext.getString(
+                                R.string
+                                        .touch_to_fill_sheet_shared_passwords_multiple_passwords_subtitle,
                                 TEST_URL_FORMATTED)));
     }
 

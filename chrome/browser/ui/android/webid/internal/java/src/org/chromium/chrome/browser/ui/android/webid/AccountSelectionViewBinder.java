@@ -222,8 +222,7 @@ class AccountSelectionViewBinder {
             } else {
                 consentTextId = R.string.account_selection_data_sharing_consent;
             }
-            String consentText =
-                    String.format(context.getString(consentTextId), properties.mIdpForDisplay);
+            String consentText = context.getString(consentTextId, properties.mIdpForDisplay);
 
             List<SpanApplier.SpanInfo> spans = new ArrayList<>();
             if (privacyPolicySpan != null) {

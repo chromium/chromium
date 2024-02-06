@@ -388,9 +388,8 @@ public class AutofillPaymentMethodsFragmentTest {
         String summary = cardPreference.getSummary().toString();
         assertThat(summary)
                 .contains(
-                        String.format(
-                                activity.getString(
-                                        R.string.autofill_settings_page_summary_separated_by_pipe),
+                        activity.getString(
+                                R.string.autofill_settings_page_summary_separated_by_pipe,
                                 String.format("05/%s", AutofillTestHelper.twoDigitNextYear()),
                                 activity.getString(
                                         R.string.autofill_settings_page_cvc_saved_label)));

@@ -247,11 +247,10 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         ChromeImageViewPreference header = new ChromeImageViewPreference(getStyledContext());
         String titleText = mObjectInfos.get(0).getName();
         String dialogMsg =
-                String.format(
-                        getView()
-                                .getContext()
-                                .getString(R.string.chosen_object_website_reset_confirmation_for),
-                        titleText);
+                getView()
+                        .getContext()
+                        .getString(
+                                R.string.chosen_object_website_reset_confirmation_for, titleText);
 
         header.setTitle(titleText);
         header.setImageView(

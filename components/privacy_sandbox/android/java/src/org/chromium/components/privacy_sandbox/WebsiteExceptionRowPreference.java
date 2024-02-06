@@ -70,9 +70,8 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
         }
         setImageView(
                 R.drawable.ic_delete_white_24dp,
-                String.format(
-                        getContext().getString(R.string.tracking_protection_delete_site_label),
-                        site.getTitle()),
+                getContext()
+                        .getString(R.string.tracking_protection_delete_site_label, site.getTitle()),
                 (View view) -> {
                     deleteException();
                 });

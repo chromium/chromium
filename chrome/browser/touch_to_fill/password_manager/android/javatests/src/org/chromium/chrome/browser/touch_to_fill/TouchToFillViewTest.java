@@ -199,12 +199,11 @@ public class TouchToFillViewTest {
                                                                                             .touch_to_fill_sheet_uniform_title))
                                                             .with(
                                                                     SUBTITLE,
-                                                                    String.format(
-                                                                            getActivity()
-                                                                                    .getString(
-                                                                                            R.string
-                                                                                                    .touch_to_fill_sheet_subtitle_submission),
-                                                                            "www.example.org"))
+                                                                    getActivity()
+                                                                            .getString(
+                                                                                    R.string
+                                                                                            .touch_to_fill_sheet_subtitle_submission,
+                                                                                    "www.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -242,12 +241,11 @@ public class TouchToFillViewTest {
                                                                                             .touch_to_fill_sheet_uniform_title))
                                                             .with(
                                                                     SUBTITLE,
-                                                                    String.format(
-                                                                            getActivity()
-                                                                                    .getString(
-                                                                                            R.string
-                                                                                                    .touch_to_fill_sheet_subtitle_submission),
-                                                                            "www.example.org"))
+                                                                    getActivity()
+                                                                            .getString(
+                                                                                    R.string
+                                                                                            .touch_to_fill_sheet_subtitle_submission,
+                                                                                    "www.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -309,12 +307,11 @@ public class TouchToFillViewTest {
                                                                     HeaderProperties.ALL_KEYS)
                                                             .with(
                                                                     SUBTITLE,
-                                                                    String.format(
-                                                                            getActivity()
-                                                                                    .getString(
-                                                                                            R.string
-                                                                                                    .touch_to_fill_sheet_subtitle_not_secure),
-                                                                            "m.example.org"))
+                                                                    getActivity()
+                                                                            .getString(
+                                                                                    R.string
+                                                                                            .touch_to_fill_sheet_subtitle_not_secure,
+                                                                                    "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -344,12 +341,11 @@ public class TouchToFillViewTest {
                                                                     HeaderProperties.ALL_KEYS)
                                                             .with(
                                                                     SUBTITLE,
-                                                                    String.format(
-                                                                            getActivity()
-                                                                                    .getString(
-                                                                                            R.string
-                                                                                                    .touch_to_fill_sheet_subtitle_submission),
-                                                                            "m.example.org"))
+                                                                    getActivity()
+                                                                            .getString(
+                                                                                    R.string
+                                                                                            .touch_to_fill_sheet_subtitle_submission,
+                                                                                    "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -379,12 +375,11 @@ public class TouchToFillViewTest {
                                                                     HeaderProperties.ALL_KEYS)
                                                             .with(
                                                                     SUBTITLE,
-                                                                    String.format(
-                                                                            getActivity()
-                                                                                    .getString(
-                                                                                            R.string
-                                                                                                    .touch_to_fill_sheet_subtitle_insecure_submission),
-                                                                            "m.example.org"))
+                                                                    getActivity()
+                                                                            .getString(
+                                                                                    R.string
+                                                                                            .touch_to_fill_sheet_subtitle_insecure_submission,
+                                                                                    "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider

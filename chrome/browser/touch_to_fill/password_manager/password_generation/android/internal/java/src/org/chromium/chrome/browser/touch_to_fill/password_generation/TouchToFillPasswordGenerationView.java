@@ -45,10 +45,8 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
                 accountEmail.isEmpty()
                         ? mContext.getString(
                                 R.string.password_generation_bottom_sheet_subtitle_no_account)
-                        : String.format(
-                                mContext.getString(
-                                        R.string.password_generation_bottom_sheet_subtitle),
-                                accountEmail);
+                        : mContext.getString(
+                                R.string.password_generation_bottom_sheet_subtitle, accountEmail);
         sheetSubtitleView.setText(sheetSubtitle);
     }
 
@@ -56,10 +54,8 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         mPasswordView.setTypeface(Typeface.MONOSPACE);
         mPasswordView.setText(generatedPassword);
         mPasswordView.setContentDescription(
-                String.format(
-                        mContext.getString(
-                                R.string
-                                        .password_generation_bottom_sheet_use_password_button_content),
+                mContext.getString(
+                        R.string.password_generation_bottom_sheet_use_password_button_content,
                         generatedPassword));
     }
 
