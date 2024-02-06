@@ -447,7 +447,7 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithCustomSettings) {
   }
 }
 
-TEST_F(UsesSplitStoresAndUPMForLocalTest, Syncing) {
+TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingCompletedInitialMigration) {
   {
     base::test::ScopedFeatureList disable_local_upm;
     disable_local_upm.InitAndDisableFeature(
@@ -458,6 +458,9 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, Syncing) {
     SignInAndEnableSync();
     ASSERT_TRUE(
         SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    pref_service()->SetInteger(
+        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
+        1);
     ASSERT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
     DestroyProfile();
   }
@@ -477,6 +480,61 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, Syncing) {
     account_password_store()->GetAllLogins(account_store_observer.GetWeakPtr());
     EXPECT_EQ(profile_store_observer.WaitForResults().size(), 0u);
     EXPECT_EQ(account_store_observer.WaitForResults().size(), 1u);
+    DestroyProfile();
+  }
+}
+
+TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingButUnenrolled) {
+  // Set that initial migration is complete but user got unenrolled.
+  {
+    CreateProfile();
+    pref_service()->SetInteger(
+        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
+        1);
+    pref_service()->SetBoolean(
+        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+        true);
+    SignInAndEnableSync();
+    ASSERT_TRUE(
+        SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    DestroyProfile();
+  }
+  {
+    base::test::ScopedFeatureList enable_local_upm(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    CreateProfile();
+    ASSERT_TRUE(
+        SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
+    DestroyProfile();
+  }
+}
+
+TEST_F(UsesSplitStoresAndUPMForLocalTest,
+       SyncingButDidNotFinishInitialMigration) {
+  // Set that initial migration was not complete.
+  {
+    CreateProfile();
+    pref_service()->SetInteger(
+        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
+        0);
+    base::test::ScopedFeatureList enable_local_upm(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    SignInAndEnableSync();
+    ASSERT_TRUE(
+        SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    DestroyProfile();
+  }
+  {
+    base::test::ScopedFeatureList enable_local_upm(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    CreateProfile();
+    ASSERT_TRUE(
+        SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
     DestroyProfile();
   }
 }

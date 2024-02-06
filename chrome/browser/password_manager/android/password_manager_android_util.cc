@@ -21,6 +21,7 @@
 #include "components/sync/base/pref_names.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
+using password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 namespace password_manager_android_util {
@@ -86,6 +87,13 @@ LocalUpmUserType GetLocalUpmUserType(PrefService* pref_service,
     case browser_sync::SyncToSigninMigrationDataTypeDecision::
         kDontMigrateTypeNotActive:
     case browser_sync::SyncToSigninMigrationDataTypeDecision::kMigrate:
+      // Unhealthy UPM users (unenrolled or didn't complete initial migration)
+      // can't be part of the experiment to prevent any potential data loss.
+      if (password_manager_upm_eviction::IsCurrentUserEvicted(pref_service) ||
+          pref_service->GetInteger(
+              kCurrentMigrationVersionToGoogleMobileServices) == 0) {
+        return LocalUpmUserType::kNotEligible;
+      }
       return LocalUpmUserType::kSyncing;
     case browser_sync::SyncToSigninMigrationDataTypeDecision::
         kDontMigrateTypeDisabled:
