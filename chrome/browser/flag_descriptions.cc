@@ -7019,6 +7019,10 @@ const char kPrintManagementSetupAssistanceName[] =
 const char kPrintManagementSetupAssistanceDescription[] =
     "Enable improved printer setup experience for the Print Management App.";
 
+const char kPrintPreviewCrosAppName[] = "Enable ChromeOS print preview";
+const char kPrintPreviewCrosAppDescription[] =
+    "Enables ChromeOS print preview app.";
+
 const char kProductivityLauncherName[] =
     "Productivity experiment: App Launcher";
 const char kProductivityLauncherDescription[] =

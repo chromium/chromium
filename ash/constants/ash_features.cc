@@ -2266,6 +2266,13 @@ BASE_FEATURE(kPrintManagementJelly,
              "PrintManagementJelly",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, ChromeOS print preview app is available. Enabling does not
+// replace the existing Chrome print preview UI, and will require an additional
+// flag and pref configured to facilitate. See b/323421684 for more information.
+BASE_FEATURE(kPrintPreviewCrosApp,
+             "PrintPreviewCrosApp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, improved messaging for printer setup displayed in print
 // management app.
 BASE_FEATURE(kPrintManagementSetupAssistance,
@@ -4139,6 +4146,10 @@ bool IsPrinterSettingsPrinterStatusEnabled() {
 
 bool IsPrinterSettingsRevampEnabled() {
   return base::FeatureList::IsEnabled(kPrinterSettingsRevamp);
+}
+
+bool IsPrinterPreviewCrosAppEnabled() {
+  return base::FeatureList::IsEnabled(kPrintPreviewCrosApp);
 }
 
 bool IsPrintPreviewDiscoveredPrintersEnabled() {

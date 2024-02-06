@@ -22926,6 +22926,7 @@ from previous Chrome versions.
   <int value="1038906720" label="SharedHighlightingManager:disabled"/>
   <int value="1041376342" label="EnableTouchpadsInDiagnosticsApp:enabled"/>
   <int value="1042202617" label="RemoteCopyReceiver:enabled"/>
+  <int value="1042684294" label="PrintPreviewCrosApp:enabled"/>
   <int value="1043291220" label="OverviewSwipeToClose:disabled"/>
   <int value="1043334401" label="disable-slimming-paint-invalidation"/>
   <int value="1043511715" label="CategoricalSearch:enabled"/>
@@ -25325,6 +25326,7 @@ from previous Chrome versions.
   <int value="2134480727" label="MediaSessionAccelerators:disabled"/>
   <int value="2135378598" label="TimedHtmlParserBudget:enabled"/>
   <int value="2135408204" label="OverscrollHistoryNavigation:disabled"/>
+  <int value="2135540885" label="PrintPreviewCrosApp:disabled"/>
   <int value="2137113620"
       label="ProcessSharingWithStrictSiteInstances:enabled"/>
   <int value="2137294324" label="zero-copy-video-capture"/>
