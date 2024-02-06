@@ -14,5 +14,6 @@ buildflag_header("buildflags") {
     "ENTERPRISE_CONTENT_ANALYSIS=$enterprise_content_analysis",
     "ENTERPRISE_DATA_CONTROLS=$enterprise_data_controls",
     "ENTERPRISE_CLIENT_CERTIFICATES=$enterprise_client_certificates",
+    "ENTERPRISE_WATERMARK=$enterprise_watermark",
   ]
 }
