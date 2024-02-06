@@ -106,14 +106,14 @@ class SingleClientWalletCredentialSyncTest : public SyncTest {
   void WaitForNumberOfCards(size_t expected_count,
                             autofill::PersonalDataManager* pdm) {
     while (pdm->GetCreditCards().size() != expected_count ||
-           pdm->HasPendingQueriesForTesting()) {
+           pdm->HasPendingPaymentQueriesForTesting()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }
 
   void WaitForNoPaymentsCustomerData(autofill::PersonalDataManager* pdm) {
     while (pdm->GetPaymentsCustomerData() != nullptr ||
-           pdm->HasPendingQueriesForTesting()) {
+           pdm->HasPendingPaymentQueriesForTesting()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }

@@ -552,9 +552,8 @@ class PersonalDataManager : public KeyedService,
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();
 
-  // Returns if there are any pending queries to the web database.
-  bool HasPendingQueriesForTesting() {
-    return HasPendingAddressQueries() || HasPendingPaymentQueries();
+  bool HasPendingPaymentQueriesForTesting() const {
+    return HasPendingPaymentQueries();
   }
 
   // This function assumes |credit_card| contains the full PAN. Returns |true|

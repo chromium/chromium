@@ -190,7 +190,7 @@ class SingleClientWalletSyncTest : public SyncTest {
   void WaitForNumberOfCards(size_t expected_count,
                             autofill::PersonalDataManager* pdm) {
     while (pdm->GetCreditCards().size() != expected_count ||
-           pdm->HasPendingQueriesForTesting()) {
+           pdm->HasPendingPaymentQueriesForTesting()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }
@@ -199,14 +199,14 @@ class SingleClientWalletSyncTest : public SyncTest {
                                    autofill::PersonalDataManager* pdm) {
     while (pdm->GetPaymentsCustomerData() == nullptr ||
            pdm->GetPaymentsCustomerData()->customer_id != customer_id ||
-           pdm->HasPendingQueriesForTesting()) {
+           pdm->HasPendingPaymentQueriesForTesting()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }
 
   void WaitForNoPaymentsCustomerData(autofill::PersonalDataManager* pdm) {
     while (pdm->GetPaymentsCustomerData() != nullptr ||
-           pdm->HasPendingQueriesForTesting()) {
+           pdm->HasPendingPaymentQueriesForTesting()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   // changes from sync in the DB propagate into pdm. As we don't expect anything
   // to change, we have no better specific condition to wait for.
   pdm->Refresh();
-  while (pdm->HasPendingQueriesForTesting()) {
+  while (pdm->HasPendingPaymentQueriesForTesting()) {
     WaitForOnPersonalDataChanged(pdm);
   }
 
