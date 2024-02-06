@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -16,9 +17,12 @@
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/ambient_badge_manager.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
+#include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
@@ -37,14 +41,12 @@ class TestAmbientBadgeManager : public AmbientBadgeManager {
  public:
   explicit TestAmbientBadgeManager(
       content::WebContents* web_contents,
-      base::WeakPtr<AppBannerManagerAndroid> app_banner_manager,
       segmentation_platform::SegmentationPlatformService*
           segmentation_platform_service,
       PrefService* prefs)
-      : AmbientBadgeManager(web_contents,
-                            app_banner_manager,
+      : AmbientBadgeManager(*web_contents,
                             segmentation_platform_service,
-                            prefs) {}
+                            *prefs) {}
 
   TestAmbientBadgeManager(const TestAmbientBadgeManager&) = delete;
   TestAmbientBadgeManager& operator=(const TestAmbientBadgeManager&) = delete;
@@ -73,13 +75,17 @@ class TestAmbientBadgeManager : public AmbientBadgeManager {
 class TestAppBannerManager : public AppBannerManagerAndroid {
  public:
   explicit TestAppBannerManager(content::WebContents* web_contents)
-      : AppBannerManagerAndroid(web_contents) {}
+      : AppBannerManagerAndroid(
+            web_contents,
+            std::make_unique<ChromeAppBannerManagerAndroid>(*web_contents)) {}
 
   explicit TestAppBannerManager(
       content::WebContents* web_contents,
       segmentation_platform::SegmentationPlatformService*
           segmentation_platform_service)
-      : AppBannerManagerAndroid(web_contents),
+      : AppBannerManagerAndroid(
+            web_contents,
+            std::make_unique<ChromeAppBannerManagerAndroid>(*web_contents)),
         mock_segmentation_(segmentation_platform_service) {}
 
   TestAppBannerManager(const TestAppBannerManager&) = delete;
@@ -106,17 +112,34 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
 
   void MaybeShowAmbientBadge() override {
     ambient_badge_test_ = std::make_unique<TestAmbientBadgeManager>(
-        web_contents(), GetAndroidWeakPtr(), mock_segmentation_,
-        profile()->GetPrefs());
+        web_contents(), mock_segmentation_, profile()->GetPrefs());
 
     ambient_badge_test_->WaitForState(target_badge_state_,
                                       std::move(on_badge_done_));
+
+    InstallBannerConfig config = GetCurrentInstallBannerConfig();
+    std::unique_ptr<AddToHomescreenParams> a2hs_params =
+        AppBannerManagerAndroid::CreateAddToHomescreenParams(
+            config, native_java_app_data_for_testing(),
+            InstallableMetrics::GetInstallSource(
+                &GetWebContents(), InstallTrigger::AMBIENT_BADGE));
+
     ambient_badge_test_->MaybeShow(
         validated_url_, GetAppName(), GetAppIdentifier(),
-        CreateAddToHomescreenParams(InstallableMetrics::GetInstallSource(
-            web_contents(), InstallTrigger::AMBIENT_BADGE)),
+        std::move(a2hs_params),
+        // TODO(b/323192242): See if these callbacks can be merged.
         base::BindOnce(&AppBannerManagerAndroid::ShowBannerFromBadge,
-                       AppBannerManagerAndroid::GetAndroidWeakPtr()));
+                       GetAndroidWeakPtr()),
+        // Create the params, then pass them to MaybeShow.
+        base::BindOnce(&AppBannerManagerAndroid::CreateAddToHomescreenParams,
+                       config, native_java_app_data_for_testing())
+            .Then(base::BindOnce(
+                &PwaBottomSheetController::MaybeShow, web_contents(),
+                GetAppName(), primary_icon_, has_maskable_primary_icon_,
+                manifest().start_url, screenshots_,
+                manifest().description.value_or(u""), /*expand_sheet=*/false,
+                base::BindRepeating(&TestAppBannerManager::OnInstallEvent,
+                                    GetAndroidWeakPtr()))));
   }
 
  private:

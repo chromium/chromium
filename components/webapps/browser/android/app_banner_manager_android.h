@@ -13,19 +13,29 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
-#include "components/webapps/browser/android/ambient_badge_manager.h"
 #include "components/webapps/browser/android/ambient_badge_metrics.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/pwa_install_path_tracker.h"
+#include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
 class SkBitmap;
+class PrefService;
+
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}
 
 namespace webapps {
 
+class AmbientBadgeManager;
 struct AddToHomescreenParams;
+struct InstallBannerConfig;
 
 // Extends the AppBannerManager to support native Android apps. This class owns
 // a Java-side AppBannerManager which interfaces with the Java runtime to fetch
@@ -49,12 +59,48 @@ struct AddToHomescreenParams;
 //
 // TODO(crbug.com/1147268): remove remaining Chrome-specific functionality and
 // move to //components/webapps.
-class AppBannerManagerAndroid : public AppBannerManager {
+class AppBannerManagerAndroid
+    : public AppBannerManager,
+      public content::WebContentsUserData<AppBannerManagerAndroid> {
  public:
-  explicit AppBannerManagerAndroid(content::WebContents* web_contents);
+  class ChromeDelegate {
+   public:
+    virtual ~ChromeDelegate() = default;
+
+    // Called when the current page completed the installable web app check and
+    // there were no errors. Note: This does not mean that the site is
+    // installable.
+    virtual void OnInstallableCheckedNoErrors(
+        const ManifestId& manifest_id) const = 0;
+
+    // Shows the in-product help if possible. Returns if the caller should avoid
+    // showing the ambient badge because the IPH overrides it.
+    virtual bool MaybeShowInProductHelpShouldAvoidAmbientBadge(
+        const GURL& validated_url) = 0;
+
+    virtual segmentation_platform::SegmentationPlatformService*
+    GetSegmentationPlatformService() = 0;
+
+    virtual PrefService* GetPrefService() = 0;
+
+    // Called when an install event occurs, allowing specializations to record
+    // additional metrics.
+    virtual void RecordExtraMetricsForInstallEvent(
+        AddToHomescreenInstaller::Event event,
+        const AddToHomescreenParams& a2hs_params) = 0;
+  };
+
+  static void CreateForWebContents(content::WebContents* web_contents,
+                                   std::unique_ptr<ChromeDelegate> delegate);
+  using content::WebContentsUserData<AppBannerManagerAndroid>::FromWebContents;
+
   AppBannerManagerAndroid(const AppBannerManagerAndroid&) = delete;
   AppBannerManagerAndroid& operator=(const AppBannerManagerAndroid&) = delete;
   ~AppBannerManagerAndroid() override;
+
+  // TODO(b/323192242): Remove this in favor of an optional getter in
+  // AppBannerManager later in the refactor.
+  InstallBannerConfig GetCurrentInstallBannerConfig();
 
   // Returns a reference to the Java-side AppBannerManager owned by this object.
   const base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager() const;
@@ -100,6 +146,13 @@ class AppBannerManagerAndroid : public AppBannerManager {
                                             const AddToHomescreenParams&)>
                    a2hs_event_callback);
 
+  // Tracks the route taken to an install of a PWA (whether the bottom sheet
+  // was shown or the infobar/install) and what triggered it (install source).
+  void TrackInstallPath(bool bottom_sheet, WebappInstallSource install_source);
+
+  // Tracks that the IPH has been shown.
+  void TrackIphWasShown();
+
   // Returns the appropriate app name based on whether we have a native/web app.
   std::u16string GetAppName() const override;
 
@@ -115,11 +168,25 @@ class AppBannerManagerAndroid : public AppBannerManager {
                                          InstallableCallback callback);
 
  protected:
+  friend class content::WebContentsUserData<AppBannerManagerAndroid>;
+
+  // Creates the AddToHomescreenParams for a given install source and
+  // configuration.
+  // TODO(b/320681613): Wrap this configuration in a struct.
+  static std::unique_ptr<AddToHomescreenParams> CreateAddToHomescreenParams(
+      const InstallBannerConfig& config,
+      const base::android::ScopedJavaGlobalRef<jobject>& native_java_app_data,
+      WebappInstallSource install_source);
+
+  AppBannerManagerAndroid(content::WebContents* web_contents,
+                          std::unique_ptr<ChromeDelegate> delegate);
+
   // AppBannerManager overrides.
   std::string GetAppIdentifier() override;
   std::string GetBannerType() override;
   void PerformInstallableChecks() override;
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
+  void OnDidPerformInstallableWebAppCheck(const InstallableData& data) override;
   void PerformInstallableWebAppCheck() override;
   void ResetCurrentPageData() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
@@ -129,20 +196,11 @@ class AppBannerManagerAndroid : public AppBannerManager {
       const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
+  void MaybeShowAmbientBadge() override;
   void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
                              std::string result_label) override;
 
   void CheckEngagementForAmbientBadge();
-
-  // Called when an install event occurs, allowing specializations to record
-  // additional metrics.
-  virtual void RecordExtraMetricsForInstallEvent(
-      AddToHomescreenInstaller::Event event,
-      const AddToHomescreenParams& a2hs_params);
-
-  // Creates the AddToHomescreenParams for a given install source.
-  std::unique_ptr<AddToHomescreenParams> CreateAddToHomescreenParams(
-      webapps::WebappInstallSource install_source);
 
   // Use as a callback to notify |this| after an install event such as a dialog
   // being cancelled or an app being installed has occurred.
@@ -151,12 +209,20 @@ class AppBannerManagerAndroid : public AppBannerManager {
 
   base::WeakPtr<AppBannerManagerAndroid> GetAndroidWeakPtr();
 
-  // Java-side object containing data about a native app.
-  base::android::ScopedJavaGlobalRef<jobject> native_app_data_;
+  // TODO(b/323192242): Remove.
+  const base::android::ScopedJavaGlobalRef<jobject>&
+  native_java_app_data_for_testing() const {
+    return native_java_app_data_;
+  }
 
-  std::unique_ptr<AmbientBadgeManager> ambient_badge_manager_;
+  // TODO(b/323192242): Remove.
+  const std::string& native_app_package_for_testing() const {
+    return native_app_package_;
+  }
 
  private:
+  friend class content::WebContentsUserData<AppBannerManagerAndroid>;
+
   // Creates the Java-side AppBannerManager.
   void CreateJavaBannerManager(content::WebContents* web_contents);
 
@@ -187,8 +253,13 @@ class AppBannerManagerAndroid : public AppBannerManager {
   // showing where not deemed adequate.
   bool MaybeShowInProductHelp() const;
 
+  std::unique_ptr<ChromeDelegate> delegate_;
+
   // The Java-side AppBannerManager.
   base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
+
+  // Java-side object containing data about a native app.
+  base::android::ScopedJavaGlobalRef<jobject> native_java_app_data_;
 
   // App package name for a native app banner.
   std::string native_app_package_;
@@ -196,7 +267,15 @@ class AppBannerManagerAndroid : public AppBannerManager {
   // Title to display in the banner for native app.
   std::u16string native_app_title_;
 
+  std::unique_ptr<AmbientBadgeManager> ambient_badge_manager_;
+
+  // Keeps track of the path the user took through the UI, before deciding to
+  // install.
+  PwaInstallPathTracker install_path_tracker_;
+
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace webapps

@@ -68,10 +68,10 @@ bool PwaBottomSheetController::MaybeShow(
     const std::vector<Screenshot>& screenshots,
     const std::u16string& description,
     bool expand_sheet,
-    std::unique_ptr<AddToHomescreenParams> a2hs_params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>
-        a2hs_event_callback) {
+        a2hs_event_callback,
+    std::unique_ptr<AddToHomescreenParams> a2hs_params) {
   if (!CanShowBottomSheet(web_contents, screenshots))
     return false;
 

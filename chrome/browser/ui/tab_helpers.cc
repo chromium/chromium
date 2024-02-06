@@ -180,6 +180,7 @@
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
@@ -540,7 +541,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   {
     // Remove after fixing https://crbug/905919
     TRACE_EVENT0("browser", "AppBannerManagerAndroid::CreateForWebContents");
-    webapps::ChromeAppBannerManagerAndroid::CreateForWebContents(web_contents);
+    webapps::AppBannerManagerAndroid::CreateForWebContents(
+        web_contents, std::make_unique<webapps::ChromeAppBannerManagerAndroid>(
+                          *web_contents));
   }
   ContextMenuHelper::CreateForWebContents(web_contents);
   FastCheckoutTabHelper::CreateForWebContents(web_contents);
