@@ -55,7 +55,8 @@ enum class SignInStatus {
 
 class BookmarkMediatorUnitTest
     : public BookmarkIOSUnitTestSupport,
-      public testing::WithParamInterface<std::tuple<int, bool, SignInStatus>> {
+      public testing::WithParamInterface<
+          std::tuple<int, bool, SignInStatus, bool>> {
  public:
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
@@ -74,9 +75,11 @@ class BookmarkMediatorUnitTest
 
   // Number of bookmark saved.
   int GetBookmarkCountParam() { return std::get<0>(GetParam()); }
-  // Weather the bookmarks are saved in the default folder or not.
+  // Wether the bookmarks are saved in the default folder or not.
   bool GetFolderWasSelectedByUserParam() { return std::get<1>(GetParam()); }
   SignInStatus GetSignInStatusParam() { return std::get<2>(GetParam()); }
+  // Wether to display the number of bookmarks when it’s not 1.
+  bool GetDisplayTheNumberOfBookmarksParam() { return std::get<3>(GetParam()); }
 
  protected:
   // Signs in using `fakeIdentity1`.
@@ -109,16 +112,20 @@ class BookmarkMediatorUnitTest
   }
 
   // Returns `IDS_IOS_BOOKMARKS_BULK_SAVED` string with `count` value.
-  NSString* GetSavedToDeviceText(int count) {
-    return base::SysUTF16ToNSString(
-        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, count));
+  NSString* GetSavedToDeviceText(int count, bool show_count) {
+    return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+        (show_count) ? IDS_IOS_BOOKMARKS_BULK_SAVED : IDS_IOS_BOOKMARKS_SAVED,
+        count));
   }
 
   // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER` string with `count` and
   // `folder_name` value.
-  NSString* GetSavedToFolderText(int count, NSString* folder_name) {
-    std::u16string pattern =
-        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
+  NSString* GetSavedToFolderText(int count,
+                                 NSString* folder_name,
+                                 bool show_count) {
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        (show_count) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER
+                     : IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
     std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
         pattern, "count", count, "title",
         base::SysNSStringToUTF16(folder_name));
@@ -127,9 +134,10 @@ class BookmarkMediatorUnitTest
 
   // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT` string with `count` and
   // `email` value.
-  NSString* GetSavedToAccountText(int count, NSString* email) {
-    std::u16string pattern =
-        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT);
+  NSString* GetSavedToAccountText(int count, NSString* email, bool show_count) {
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        (show_count) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT
+                     : IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT);
     std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
         pattern, "count", count, "email", base::SysNSStringToUTF16(email));
     return base::SysUTF16ToNSString(message);
@@ -139,9 +147,11 @@ class BookmarkMediatorUnitTest
   // `folder_name` and `email` value.
   NSString* GetSavedToFolderToAccountText(int count,
                                           NSString* folder_name,
-                                          NSString* email) {
+                                          NSString* email,
+                                          bool show_count) {
     std::u16string pattern = l10n_util::GetStringUTF16(
-        IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER);
+        (show_count) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT_FOLDER
+                     : IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER);
     std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
         pattern, "count", count, "title", base::SysNSStringToUTF16(folder_name),
         "email", base::SysNSStringToUTF16(email));
@@ -150,9 +160,12 @@ class BookmarkMediatorUnitTest
 
   // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE` string with `count`,
   // `folder_name` and `email` value.
-  NSString* GetSavedLocallyOnlyText(int count, NSString* folder_name) {
-    std::u16string pattern =
-        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE);
+  NSString* GetSavedLocallyOnlyText(int count,
+                                    NSString* folder_name,
+                                    bool show_count) {
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        (show_count) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER_TO_DEVICE
+                     : IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE);
     std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
         pattern, "count", count, "title",
         base::SysNSStringToUTF16(folder_name));
@@ -180,7 +193,9 @@ INSTANTIATE_TEST_SUITE_P(
                         SignInStatus::kSignedInOnlyWithLocalOrSyncableStorage,
                         SignInStatus::kSignedInNoBookmarkSyncing,
                         SignInStatus::kSignedInOnlyWithAccountStorage,
-                        SignInStatus::KSignedInAndSync)));
+                        SignInStatus::KSignedInAndSync),
+        // Whether or not the count should be displayed.
+        testing::Bool()));
 
 // Tests the snackbar message with all the different combinaisons with:
 // * One or two saved bookmarks
@@ -193,6 +208,7 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
   NSString* expected_snackbar_message = nil;
   bookmarks::StorageType bookmark_storage_type =
       bookmarks::StorageType::kLocalOrSyncable;
+  bool show_count = GetDisplayTheNumberOfBookmarksParam();
   switch (signed_in_status) {
     case SignInStatus::kSignedInNoBookmarkSyncing:
       SignInOnlyAndDisableBookmark();
@@ -200,8 +216,8 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
     case SignInStatus::kSignOut:
       expected_snackbar_message =
           (folder_was_selected_by_user)
-              ? GetSavedToFolderText(bookmark_count, kFolderName)
-              : GetSavedToDeviceText(bookmark_count);
+              ? GetSavedToFolderText(bookmark_count, kFolderName, show_count)
+              : GetSavedToDeviceText(bookmark_count, show_count);
       break;
     case SignInStatus::kSignedInOnlyWithLocalOrSyncableStorage:
       if (!folder_was_selected_by_user) {
@@ -211,15 +227,15 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
         return;
       }
       expected_snackbar_message =
-          GetSavedLocallyOnlyText(bookmark_count, kFolderName);
+          GetSavedLocallyOnlyText(bookmark_count, kFolderName, show_count);
       SignInOnly();
       break;
     case SignInStatus::kSignedInOnlyWithAccountStorage:
       expected_snackbar_message =
           (folder_was_selected_by_user)
               ? GetSavedToFolderToAccountText(bookmark_count, kFolderName,
-                                              kEmail)
-              : GetSavedToAccountText(bookmark_count, kEmail);
+                                              kEmail, show_count)
+              : GetSavedToAccountText(bookmark_count, kEmail, show_count);
       SignInOnly();
       bookmark_storage_type = bookmarks::StorageType::kAccount;
       break;
@@ -227,15 +243,15 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
       expected_snackbar_message =
           (folder_was_selected_by_user)
               ? GetSavedToFolderToAccountText(bookmark_count, kFolderName,
-                                              kEmail)
-              : GetSavedToAccountText(bookmark_count, kEmail);
+                                              kEmail, show_count)
+              : GetSavedToAccountText(bookmark_count, kEmail, show_count);
       SignInAndSync();
       break;
   }
   NSString* const snackbar_message =
       bookmark_utils_ios::messageForAddingBookmarksInFolder(
           kFolderName, folder_was_selected_by_user, bookmark_storage_type,
-          bookmark_count,
+          show_count, bookmark_count,
           AuthenticationServiceFactory::GetForBrowserState(
               chrome_browser_state_.get())
               ->GetWeakPtr(),

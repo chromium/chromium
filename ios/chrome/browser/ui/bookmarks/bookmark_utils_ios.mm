@@ -293,6 +293,7 @@ NSString* messageForAddingBookmarksInFolder(
     NSString* folderTitle,
     bool chosenByUser,
     bookmarks::StorageType storageType,
+    bool showCount,
     int count,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
@@ -309,13 +310,15 @@ NSString* messageForAddingBookmarksInFolder(
       // Also mentions the folder in which the bookmark is saved.
       std::u16string title = base::SysNSStringToUTF16(folderTitle);
       std::u16string pattern = l10n_util::GetStringUTF16(
-          IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER);
+          (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT_FOLDER
+                      : IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER);
       return base::SysUTF16ToNSString(
           base::i18n::MessageFormatter::FormatWithNamedArgs(
               pattern, "count", count, "title", title, "email", email));
     } else {
-      std::u16string pattern =
-          l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT);
+      std::u16string pattern = l10n_util::GetStringUTF16(
+          (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT
+                      : IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT);
       return base::SysUTF16ToNSString(
           base::i18n::MessageFormatter::FormatWithNamedArgs(
               pattern, "count", count, "email", email));
@@ -332,7 +335,8 @@ NSString* messageForAddingBookmarksInFolder(
       CHECK(chosenByUser);
       std::u16string title = base::SysNSStringToUTF16(folderTitle);
       std::u16string pattern = l10n_util::GetStringUTF16(
-          IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE);
+          (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER_TO_DEVICE
+                      : IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE);
       std::u16string message =
           base::i18n::MessageFormatter::FormatWithNamedArgs(
               pattern, "count", count, "title", title);
@@ -344,14 +348,16 @@ NSString* messageForAddingBookmarksInFolder(
   // The user is signed-out.
   if (chosenByUser) {
     std::u16string title = base::SysNSStringToUTF16(folderTitle);
-    std::u16string pattern =
-        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER
+                    : IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
     return base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             pattern, "count", count, "title", title));
   } else {
-    return base::SysUTF16ToNSString(
-        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, count));
+    return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+        (showCount) ? IDS_IOS_BOOKMARKS_BULK_SAVED : IDS_IOS_BOOKMARKS_SAVED,
+        count));
   }
 }
 
@@ -391,7 +397,7 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     text = messageForAddingBookmarksInFolder(
         title, /*chosenByUser =*/true,
         GetBookmarkModelType(folder, local_or_syncable_model, account_model),
-        /*count=*/1, authenticationService, syncService);
+        /*showCount=*/false, /*count=*/1, authenticationService, syncService);
   }
   return CreateUndoToastWithWrapper(
       wrapper, text, "MobileBookmarkManagerUpdatedBookmarkUndone");
@@ -641,8 +647,8 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
       destination_folder, local_model, account_model);
   NSString* text = messageForAddingBookmarksInFolder(
       TitleForBookmarkNode(destination_folder),
-      /*chosenByUser=*/true, storageType, count, authenticationService,
-      syncService);
+      /*chosenByUser=*/true, storageType, /*showCount=*/false, count,
+      authenticationService, syncService);
   return CreateUndoToastWithWrapper(wrapper, text,
                                     "MobileBookmarkManagerMoveToFolderUndone");
 }

@@ -123,7 +123,7 @@ using bookmarks::BookmarkNode;
       _accountBookmarkModel.get());
   NSString* text = bookmark_utils_ios::messageForAddingBookmarksInFolder(
       folderTitle, !IsLastUsedBookmarkFolderSet(_prefs), storageType,
-      /*count=*/1, _authenticationService, _syncService);
+      /*showCount=*/false, /*count=*/1, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.action = action;
@@ -186,9 +186,12 @@ using bookmarks::BookmarkNode;
   bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
       defaultFolder, _localOrSyncableBookmarkModel.get(),
       _accountBookmarkModel.get());
-  NSString* result = [self
-      messageForBulkAddingBookmarksWithStorageType:storageType
-                        successfullyAddedBookmarks:successfullyAddedBookmarks];
+  NSString* folderTitle =
+      bookmark_utils_ios::TitleForBookmarkNode(defaultFolder);
+  NSString* result = bookmark_utils_ios::messageForAddingBookmarksInFolder(
+      folderTitle, !IsLastUsedBookmarkFolderSet(_prefs), storageType,
+      /*showCount=*/true, successfullyAddedBookmarks, _authenticationService,
+      _syncService);
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:result];
@@ -216,8 +219,8 @@ using bookmarks::BookmarkNode;
   bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
       folder, _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
   NSString* text = bookmark_utils_ios::messageForAddingBookmarksInFolder(
-      folderTitle, /*choosenByUser=*/YES, storageType, URLs.count,
-      _authenticationService, _syncService);
+      folderTitle, /*choosenByUser=*/YES, storageType, /*showCount=*/false,
+      URLs.count, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
