@@ -91,7 +91,8 @@ struct IndexedRule {
   std::vector<api::declarative_net_request::HeaderInfo> response_headers;
 
   // List of response headers this rule doesn't apply to.
-  std::vector<std::string> excluded_response_headers;
+  std::vector<api::declarative_net_request::HeaderInfo>
+      excluded_response_headers;
 };
 
 // Compute the rule priority for indexing, by combining the priority from

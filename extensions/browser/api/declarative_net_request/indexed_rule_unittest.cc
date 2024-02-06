@@ -1092,16 +1092,24 @@ class IndexedResponseHeaderRuleTest : public IndexedRuleTest {
 // conditions.
 TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
   struct RawHeaderInfo {
+    explicit RawHeaderInfo(std::string header) : header(std::move(header)) {}
+    RawHeaderInfo(std::string header,
+                  std::optional<std::vector<std::string>> values,
+                  std::optional<std::vector<std::string>> excluded_values)
+        : header(std::move(header)),
+          values(std::move(values)),
+          excluded_values(std::move(excluded_values)) {}
+
     std::string header;
     std::optional<std::vector<std::string>> values;
     std::optional<std::vector<std::string>> excluded_values;
   };
 
+  using HeaderValues = std::vector<std::string>;
   using HeaderInfoList = std::vector<RawHeaderInfo>;
-  using ExcludedHeaderList = std::vector<std::string>;
   struct {
     std::optional<HeaderInfoList> response_headers;
-    std::optional<ExcludedHeaderList> excluded_response_headers;
+    std::optional<HeaderInfoList> excluded_response_headers;
     ParseResult expected_result;
   } cases[] = {
       // No response headers included or excluded; should parse successfully.
@@ -1109,17 +1117,16 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
 
       // only header1 specified, matching on name only should parse
       // successfully.
-      {HeaderInfoList({{"header1", std::nullopt, std::nullopt}}), std::nullopt,
+      {HeaderInfoList({RawHeaderInfo("header1")}), std::nullopt,
        ParseResult::SUCCESS},
 
       // Valid included and excluded response headers with values and excluded
       // values should parse successfully.
       {HeaderInfoList(
-           {{"header1", std::vector<std::string>({"value-1", "value-2"}),
-             std::nullopt},
-            {"header1", std::nullopt,
-             std::vector<std::string>({"excluded-value"})}}),
-       ExcludedHeaderList({"excluded-header"}), ParseResult::SUCCESS},
+           {{"header1", HeaderValues({"value-1", "value-2"}), std::nullopt},
+            {"header1", std::nullopt, HeaderValues({"excluded-value"})}}),
+       HeaderInfoList({RawHeaderInfo("excluded-header")}),
+       ParseResult::SUCCESS},
 
       // An empty matching response header list should trigger an error.
       {HeaderInfoList(), std::nullopt,
@@ -1127,7 +1134,7 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
 
       // An empty matching excluded response header list should trigger an
       // error.
-      {std::nullopt, ExcludedHeaderList(),
+      {std::nullopt, HeaderInfoList(),
        ParseResult::ERROR_EMPTY_EXCLUDED_RESPONSE_HEADER_MATCHING_LIST},
 
       // Test that a rule with an empty or invalid response header name will
@@ -1135,31 +1142,39 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
       {HeaderInfoList({{"", std::nullopt, std::nullopt}}), std::nullopt,
        ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME},
 
-      {std::nullopt, ExcludedHeaderList({"<<invalid_header>>"}),
+      {std::nullopt, HeaderInfoList({RawHeaderInfo("<<invalid_header>>")}),
        ParseResult::ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME},
+
+      // Test that a rule with an empty or invalid response header value will
+      // return an error.
+      {HeaderInfoList({{"header", HeaderValues({""}), std::nullopt}}),
+       std::nullopt, ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE},
 
       // Test that a rule with an empty response header value will return an
       // error.
-      {HeaderInfoList(
-           {{"header", std::vector<std::string>({""}), std::nullopt}}),
-       std::nullopt, ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE},
+      {std::nullopt,
+       HeaderInfoList({{"invalid-header-value",
+                        HeaderValues({"value\nwith\nnewline"}), std::nullopt}}),
+       ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE},
 
       // Test that a rule cannot specify the same header in `response_headers`
       // and `excluded_response_headers` if that header is to be matched based
-      // on name only.
-      {HeaderInfoList({{"repeated-header", std::nullopt, std::nullopt}}),
-       ExcludedHeaderList({"repeated-header"}),
+      // on name only in `excluded_response_headers`.
+      {HeaderInfoList({{"repeated-header", HeaderValues({"specific-value"}),
+                        std::nullopt}}),
+       HeaderInfoList({RawHeaderInfo("repeated-header")}),
        ParseResult::ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED},
 
       // Test that a rule CAN specify the same header in `response_headers` and
       // `excluded_response_headers` if that header is matched on name AND value
-      // in `response_headers`. In practice, the below rule will match a request
-      // if it either has no `repeated-header` or its `repeated-header` contains
-      // `specific-value`.
-      {HeaderInfoList(
-           {{"repeated-header", std::vector<std::string>({"specific-value"}),
-             std::nullopt}}),
-       ExcludedHeaderList({"repeated-header"}), ParseResult::SUCCESS},
+      // in `excluded_response_headers`. In practice, the below rule will match
+      // a request if its `excluded_response_headers` condition does not match
+      // and its `response_headers` condition matches.
+      {HeaderInfoList({{"repeated-header", HeaderValues({"specific-value"}),
+                        std::nullopt}}),
+       HeaderInfoList({{"repeated-header", HeaderValues({"excluded-value"}),
+                        std::nullopt}}),
+       ParseResult::SUCCESS},
   };
 
   auto get_header_info_matcher = [](const RawHeaderInfo& info) {
@@ -1184,12 +1199,15 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
       }
     }
 
-    ExcludedHeaderList expected_excluded_response_headers;
+    std::vector<testing::Matcher<dnr_api::HeaderInfo>>
+        expected_excluded_response_headers;
     if (cases[i].excluded_response_headers) {
       rule.condition.excluded_response_headers.emplace();
       for (const auto& header : *cases[i].excluded_response_headers) {
-        rule.condition.excluded_response_headers->push_back(header);
-        expected_excluded_response_headers.push_back(header);
+        rule.condition.excluded_response_headers->push_back(CreateHeaderInfo(
+            header.header, header.values, header.excluded_values));
+        expected_excluded_response_headers.push_back(
+            get_header_info_matcher(header));
       }
     }
 

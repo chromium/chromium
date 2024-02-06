@@ -63,7 +63,7 @@ struct TestRuleCondition : public DictionarySource {
   std::optional<std::vector<int>> excluded_tab_ids;
   std::optional<std::string> domain_type;
   std::optional<std::vector<TestHeaderCondition>> response_headers;
-  std::optional<std::vector<std::string>> excluded_response_headers;
+  std::optional<std::vector<TestHeaderCondition>> excluded_response_headers;
 
   base::Value::Dict ToValue() const override;
 };

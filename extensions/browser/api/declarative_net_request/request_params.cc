@@ -62,13 +62,12 @@ content::GlobalRenderFrameHostId GetFrameRoutingId(
   return host->GetGlobalId();
 }
 
-// Returns if the request's `response_headers` matches the `headers` condition.
-// This returns true at the end if at least one response header matches a
-// HeaderCondition. A header matches a condition if:
+// Returns true if the request's response headers matches at least one condition
+// in `header_conditions`. A header matches a condition if:
 // - the header exists AND
 // - contains a value in condition->values() if specified AND
 // - does not contain any values in condition->excluded_values() if specified.
-bool MatchesHeaders(
+bool MatchesHeaderConditions(
     const net::HttpResponseHeaders& response_headers,
     const flatbuffers::Vector<flatbuffers::Offset<flat::HeaderCondition>>&
         header_conditions) {
@@ -108,19 +107,6 @@ bool MatchesHeaders(
   }
 
   return false;
-}
-
-// Returns if `response_headers` contains any headers from `excluded_headers`.
-bool MatchesExcludedHeaders(
-    const net::HttpResponseHeaders& response_headers,
-    const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>&
-        excluded_headers) {
-  return base::ranges::any_of(
-      excluded_headers,
-      [&response_headers](const flatbuffers::String* excluded_header) {
-        return response_headers.HasHeader(
-            CreateString<base::StringPiece>(*excluded_header));
-      });
 }
 
 bool DoEmbedderConditionsMatch(
@@ -165,17 +151,20 @@ bool DoEmbedderConditionsMatch(
   }
 
   if (response_headers) {
+    // Do not match the rule if any conditions in `excluded_response_headers()`
+    // match.
     if (embedder_conditions->excluded_response_headers() &&
-        MatchesExcludedHeaders(
+        MatchesHeaderConditions(
             *response_headers,
             *embedder_conditions->excluded_response_headers())) {
       return false;
     }
 
+    // Do not match the rule if no conditions in `response_headers()` match.
     if (embedder_conditions->response_headers() &&
         embedder_conditions->response_headers()->size() &&
-        !MatchesHeaders(*response_headers,
-                        *embedder_conditions->response_headers())) {
+        !MatchesHeaderConditions(*response_headers,
+                                 *embedder_conditions->response_headers())) {
       return false;
     }
   }

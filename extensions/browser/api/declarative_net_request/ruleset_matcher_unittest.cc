@@ -1660,37 +1660,34 @@ TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
       {TestHeaderCondition("key1", {}, {}),
        TestHeaderCondition("key2", {"value1", "value2"}, {"excludedValue"})});
 
-  // `rule_1` will fail to match if:
-  //   - the excludedKey header is present, or:
-  //   - the key2 header has excludedValue
-  // if neither of the above causes a match failure, the rule will match if:
+  // `rule_1` will match if:
   //   - the key1 header is present, or:
-  //   - the key2 header is present and has either value1 or value2
+  //   - the key2 header is present and has either value1 or value2, but not
+  //     excludedValue
+  // `rule_1` will fail to match if:
+  //   - the excludedKey header is present
   TestRule rule_1 = CreateGenericRule(kMinValidID);
   rule_1.action->type = std::string("block");
   rule_1.condition->url_filter = std::string("google.com");
   rule_1.condition->response_headers = std::move(header_condition);
   rule_1.condition->excluded_response_headers =
-      std::vector<std::string>({"excludedKey"});
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("excludedKey", {}, {})});
 
-  // `rule_2` and `rule_3` aim to create a condition where requests from
-  // example.com which do not contain the "key3: value3" header-value pair are
-  // collapsed.
+  // `rule_2` will fail to match if:
+  //   - the key3 header is present and has excludedValue, or:
+  //   - the key4 header is present and does NOT have allowlistedValue
   TestRule rule_2 = CreateGenericRule(kMinValidID + 1);
   rule_2.action->type = std::string("block");
   rule_2.condition->url_filter = std::string("example.com");
-  rule_2.condition->response_headers = std::vector<TestHeaderCondition>(
-      {TestHeaderCondition("key3", {}, {"value3"})});
-
-  TestRule rule_3 = CreateGenericRule(kMinValidID + 2);
-  rule_3.action->type = std::string("block");
-  rule_3.condition->url_filter = std::string("example.com");
-  rule_3.condition->excluded_response_headers =
-      std::vector<std::string>({"key3"});
+  rule_2.condition->excluded_response_headers =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("key3", {"excludedValue"}, {}),
+           TestHeaderCondition("key4", {}, {"allowlistedValue"})});
 
   std::unique_ptr<RulesetMatcher> matcher;
-  ASSERT_TRUE(CreateVerifiedMatcher({rule_1, rule_2, rule_3},
-                                    CreateTemporarySource(), &matcher));
+  ASSERT_TRUE(CreateVerifiedMatcher({rule_1, rule_2}, CreateTemporarySource(),
+                                    &matcher));
   ASSERT_TRUE(matcher);
 
   struct {
@@ -1745,12 +1742,21 @@ TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
        CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
                                      kMinValidID + 1)},
 
-      {"http://example.com", "HTTP/1.0 200 OK\r\nkey3: value3\r\n",
+      {"http://example.com", "HTTP/1.0 200 OK\r\nkey3: excludedValue\r\n",
        std::nullopt},
 
-      {"http://example.com", "HTTP/1.0 200 OK\r\nkey4: key3doesntexist\r\n",
+      {"http://example.com", "HTTP/1.0 200 OK\r\notherkey: key3doesntexist\r\n",
        CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
-                                     kMinValidID + 2)},
+                                     kMinValidID + 1)},
+
+      // For the next 2 test cases, the request with key4 matches iff key4
+      // contains the allowlisted value.
+      {"http://example.com", "HTTP/1.0 200 OK\r\nkey4: randomValue\r\n",
+       std::nullopt},
+
+      {"http://example.com", "HTTP/1.0 200 OK\r\nkey4: allowlistedValue\r\n",
+       CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
+                                     kMinValidID + 1)},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
