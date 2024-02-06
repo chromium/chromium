@@ -482,15 +482,10 @@ public final class TopicsFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (var topic : PrivacySandboxBridge.getFirstLevelTopics()) {
-                        String iconName =
-                                String.format(
-                                        "topic_taxonomy_%s_id_%s",
-                                        topic.getTaxonomyVersion(), topic.getTopicId());
-                        int iconId =
-                                activity.getResources()
-                                        .getIdentifier(
-                                                iconName, "drawable", activity.getPackageName());
-                        assertTrue("Topic drawable icon not found: " + iconName, iconId != 0);
+                        int iconId = TopicsUtils.getIconResourceIdForTopic(activity, topic);
+                        assertTrue(
+                                "Topic drawable icon not found for: " + topic.getName(),
+                                iconId != 0);
                     }
                 });
     }
