@@ -49,6 +49,10 @@ class ExperimentBuilder {
         forcing_flag,
         override_ui_string.data(),
         override_ui_string.size(),
+        hardware_classes.data(),
+        hardware_classes.size(),
+        exclude_hardware_classes.data(),
+        exclude_hardware_classes.size(),
     };
   }
 
@@ -62,6 +66,8 @@ class ExperimentBuilder {
   base::span<const char*> disable_features = {};
   const char* forcing_flag = nullptr;
   base::span<const OverrideUIString> override_ui_string = {};
+  base::span<const char*> hardware_classes = {};
+  base::span<const char*> exclude_hardware_classes = {};
 };
 
 class TestOverrideStringCallback {
@@ -893,4 +899,145 @@ TEST_F(FieldTrialUtilTest, TestEscapeValue) {
   // Make sure the EscapeValue function is the inverse of base::UnescapeValue.
   EXPECT_EQ(str, base::UnescapeValue(escaped_str));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+TEST_F(FieldTrialUtilTest,
+       AssociateParamsFromFieldTrialConfigWithHardwareClassMatch) {
+  std::string hardware_class = ClientFilterableState::GetHardwareClass();
+  std::string unmatched_hardware_class = hardware_class + "foo";
+  const char* classes[] = {
+      hardware_class.c_str(),
+      unmatched_hardware_class.c_str(),
+  };
+
+  Study::Platform platform = Study::PLATFORM_CHROMEOS;
+  ExperimentBuilder experiment_builder;
+  experiment_builder.name = "TestGroup";
+  experiment_builder.platforms = base::make_span(&platform, 1u);
+  experiment_builder.hardware_classes = classes;
+  FieldTrialTestingExperiment experiment = experiment_builder.Build();
+
+  FieldTrialTestingStudy study = {
+      /*name=*/"TestTrial",
+      /*experiments=*/&experiment,
+      /*experiments_size=*/1,
+  };
+
+  FieldTrialTestingConfig config = {
+      /*studies=*/&study,
+      /*studies_size=*/1,
+  };
+
+  base::FeatureList feature_list;
+  AssociateParamsFromFieldTrialConfig(
+      config, override_callback_.callback(), platform,
+      variation_service_client_.GetCurrentFormFactor(), &feature_list);
+
+  EXPECT_EQ("TestGroup", base::FieldTrialList::FindFullName("TestTrial"));
+}
+
+TEST_F(FieldTrialUtilTest,
+       AssociateParamsFromFieldTrialConfigWithHardwareClassMismatch) {
+  std::string hardware_class = ClientFilterableState::GetHardwareClass();
+  std::string unmatched_hardware_class = hardware_class + "foo";
+  const char* classes[] = {
+      unmatched_hardware_class.c_str(),
+  };
+
+  Study::Platform platform = Study::PLATFORM_CHROMEOS;
+  ExperimentBuilder experiment_builder;
+  experiment_builder.name = "TestGroup";
+  experiment_builder.platforms = base::make_span(&platform, 1u);
+  experiment_builder.hardware_classes = classes;
+  FieldTrialTestingExperiment experiment = experiment_builder.Build();
+
+  FieldTrialTestingStudy study = {
+      /*name=*/"TestTrial",
+      /*experiments=*/&experiment,
+      /*experiments_size=*/1,
+  };
+
+  FieldTrialTestingConfig config = {
+      /*studies=*/&study,
+      /*studies_size=*/1,
+  };
+
+  base::FeatureList feature_list;
+  AssociateParamsFromFieldTrialConfig(
+      config, override_callback_.callback(), platform,
+      variation_service_client_.GetCurrentFormFactor(), &feature_list);
+
+  EXPECT_EQ("", base::FieldTrialList::FindFullName("TestTrial"));
+}
+
+TEST_F(FieldTrialUtilTest,
+       AssociateParamsFromFieldTrialConfigWithExcludHardwareClassMatch) {
+  std::string hardware_class = ClientFilterableState::GetHardwareClass();
+  std::string unmatched_hardware_class = hardware_class + "foo";
+  const char* classes[] = {
+      hardware_class.c_str(),
+      unmatched_hardware_class.c_str(),
+  };
+
+  Study::Platform platform = Study::PLATFORM_CHROMEOS;
+  ExperimentBuilder experiment_builder;
+  experiment_builder.name = "TestGroup";
+  experiment_builder.platforms = base::make_span(&platform, 1u);
+  experiment_builder.exclude_hardware_classes = classes;
+  FieldTrialTestingExperiment experiment = experiment_builder.Build();
+
+  FieldTrialTestingStudy study = {
+      /*name=*/"TestTrial",
+      /*experiments=*/&experiment,
+      /*experiments_size=*/1,
+  };
+
+  FieldTrialTestingConfig config = {
+      /*studies=*/&study,
+      /*studies_size=*/1,
+  };
+
+  base::FeatureList feature_list;
+  AssociateParamsFromFieldTrialConfig(
+      config, override_callback_.callback(), platform,
+      variation_service_client_.GetCurrentFormFactor(), &feature_list);
+
+  EXPECT_EQ("", base::FieldTrialList::FindFullName("TestTrial"));
+}
+
+TEST_F(FieldTrialUtilTest,
+       AssociateParamsFromFieldTrialConfigWithExcludHardwareClassMismatch) {
+  std::string hardware_class = ClientFilterableState::GetHardwareClass();
+  std::string unmatched_hardware_class = hardware_class + "foo";
+  const char* classes[] = {
+      unmatched_hardware_class.c_str(),
+  };
+
+  Study::Platform platform = Study::PLATFORM_CHROMEOS;
+  ExperimentBuilder experiment_builder;
+  experiment_builder.name = "TestGroup";
+  experiment_builder.platforms = base::make_span(&platform, 1u);
+  experiment_builder.exclude_hardware_classes = classes;
+  FieldTrialTestingExperiment experiment = experiment_builder.Build();
+
+  FieldTrialTestingStudy study = {
+      /*name=*/"TestTrial",
+      /*experiments=*/&experiment,
+      /*experiments_size=*/1,
+  };
+
+  FieldTrialTestingConfig config = {
+      /*studies=*/&study,
+      /*studies_size=*/1,
+  };
+
+  base::FeatureList feature_list;
+  AssociateParamsFromFieldTrialConfig(
+      config, override_callback_.callback(), platform,
+      variation_service_client_.GetCurrentFormFactor(), &feature_list);
+
+  EXPECT_EQ("TestGroup", base::FieldTrialList::FindFullName("TestTrial"));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+
 }  // namespace variations

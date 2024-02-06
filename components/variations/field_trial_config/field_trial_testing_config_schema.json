@@ -82,6 +82,16 @@
                     {"field": "value", "type": "string"}
                   ]
                 }
+              },
+              {
+                "field": "hardware_classes",
+                "type": "array",
+                "contents": { "type": "string"}
+              },
+              {
+                "field": "exclude_hardware_classes",
+                "type": "array",
+                "contents": { "type": "string"}
               }
             ]
           }

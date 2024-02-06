@@ -367,10 +367,7 @@ VariationsFieldTrialCreatorBase::GetClientFilterableStateForVersion(
   state->form_factor = GetCurrentFormFactor();
   state->cpu_architecture = GetCurrentCpuArchitecture();
   state->platform = GetPlatform();
-  // TODO(crbug/1111131): Expand to other platforms.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
-  state->hardware_class = base::SysInfo::HardwareModelName();
-#endif
+  state->hardware_class = ClientFilterableState::GetHardwareClass();
 #if BUILDFLAG(IS_ANDROID)
   // This is set on Android only currently, because the IsLowEndDevice() API
   // on other platforms has no intrinsic meaning outside of a field trial that

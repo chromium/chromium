@@ -22,6 +22,7 @@
 #include "base/system/sys_info.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
+#include "components/variations/study_filtering.h"
 #include "components/variations/variations_seed_processor.h"
 
 namespace variations {
@@ -138,6 +139,18 @@ void AssociateParamsFromExperiment(
   ApplyUIStringOverrides(experiment, callback);
 }
 
+Study::Filter CreateFilter(const FieldTrialTestingExperiment& experiment) {
+  Study::Filter filter;
+  for (size_t j = 0; j < experiment.hardware_classes_size; ++j) {
+    filter.add_hardware_class(experiment.hardware_classes[j]);
+  }
+  for (size_t j = 0; j < experiment.exclude_hardware_classes_size; ++j) {
+    filter.add_exclude_hardware_class(
+        experiment.exclude_hardware_classes[j]);
+  }
+  return filter;
+}
+
 // Choose an experiment to associate. The rules are:
 // - Out of the experiments which match this platform:
 //   - If there is a forcing flag for any experiment, choose the first such
@@ -159,13 +172,19 @@ void ChooseExperiment(
     Study::FormFactor current_form_factor,
     base::FeatureList* feature_list) {
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
+  std::string hardware_class = ClientFilterableState::GetHardwareClass();
   const FieldTrialTestingExperiment* chosen_experiment = nullptr;
   for (size_t i = 0; i < study.experiments_size; ++i) {
     const FieldTrialTestingExperiment* experiment = study.experiments + i;
     if (HasPlatform(*experiment, platform)) {
+      Study::Filter filter = CreateFilter(*experiment);
+      // TODO(b/323589616): These Has*() functions can be replaced by their
+      // equivalent internal::CheckStudy* functions once we add the
+      // corresponding fields to |CreateFilter|.
       if (!chosen_experiment && !HasDeviceLevelMismatch(*experiment) &&
           HasFormFactor(*experiment, current_form_factor) &&
-          HasMinOSVersion(*experiment)) {
+          HasMinOSVersion(*experiment) &&
+          internal::CheckStudyHardwareClass(filter, hardware_class)) {
         chosen_experiment = experiment;
       }
 
