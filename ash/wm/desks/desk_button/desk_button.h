@@ -51,7 +51,6 @@ class ASH_EXPORT DeskButton : public views::Button {
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void StateChanged(ButtonState old_state) override;
-  View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
 
   // Initializes the view. Must be called before any meaningful UIs can be laid

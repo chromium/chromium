@@ -194,14 +194,6 @@ void DeskButton::StateChanged(ButtonState old_state) {
   UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !GetHovered());
 }
 
-views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
-  // We override this function so that the tooltip manager ignores disabled desk
-  // switch buttons when creating tooltips.
-  views::View* tooltip_handler = Button::GetTooltipHandlerForPoint(point);
-  return tooltip_handler && tooltip_handler->GetEnabled() ? tooltip_handler
-                                                          : this;
-}
-
 void DeskButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
   desk_button_container_->desk_button_widget()->MaybeFocusOut(reverse);
 }
