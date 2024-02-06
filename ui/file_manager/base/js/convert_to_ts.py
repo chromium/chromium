@@ -652,11 +652,11 @@ def process_js_files(files):
             register_testcase(js_path)
 
         # Process the JS file content and save as JS file.
-        # ts_content = process_js_file(js_path)
-        # replace_file(js_path, ts_content)
+        ts_content = process_js_file(js_path)
+        replace_file(js_path, ts_content)
 
         # Rename to TS.
-        # run_git_mv(str(js_path))
+        run_git_mv(str(js_path))
 
 
 def main():
