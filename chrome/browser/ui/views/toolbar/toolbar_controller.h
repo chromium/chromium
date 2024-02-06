@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/actions/action_id.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 
 class Browser;
@@ -30,6 +31,11 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
     // Returns true if the corresponding element is hidden.
     virtual bool IsOverflowed(const actions::ActionId& id) = 0;
+
+    virtual views::View* GetContainerView() = 0;
+
+    // Return true if any buttons should overflow given available size.
+    virtual bool ShouldAnyButtonsOverflow(gfx::Size available_size) const = 0;
 
    protected:
     virtual ~PinnedActionsDelegate() = default;
@@ -181,7 +187,10 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   // Returns true if layout manager of `toolbar_container_view_` hides any
   // toolbar elements.
-  bool ShouldShowOverflowButton() const;
+  bool ShouldShowOverflowButton(gfx::Size size) const;
+
+  // Return true if any buttons overflow.
+  bool InOverflowMode() const;
 
   views::View* overflow_button() { return overflow_button_; }
 
@@ -212,8 +221,11 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // Returns currently hidden elements.
   std::vector<const ResponsiveElementInfo*> GetOverflowedElements();
 
-  // Check if element has overflowed.
-  bool IsOverflowed(const ResponsiveElementInfo& element) const;
+  // Check if element has overflowed. Check the visibility in proposed_layout if
+  // provided.
+  bool IsOverflowed(
+      const ResponsiveElementInfo& element,
+      const views::ProposedLayout* proposed_layout = nullptr) const;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;

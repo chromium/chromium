@@ -119,6 +119,7 @@
 #include "ui/views/cascading_property.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -815,10 +816,14 @@ void ToolbarView::Layout() {
     }
   }
 
-  // Use two-pass layout solution to avoid overflow button being interfere with
+  // Use two-pass solution to avoid overflow button being interfere with
   // toolbar elements space allocation. The button itself should just be an
   // indicator of overflow not the cause. (See crbug.com/1484294)
-  // In the first pass turn off overflow button right before each layout.
+  // In the first pass hide overflow button and calculate other buttons'
+  // visibility to determine if overflow button should show. Do NOT explicit
+  // call Layout() in the first pass to prevent an animation conflicts with the
+  // 2nd pass kicks off (crbug.com/1517065) 2nd pass layout will account for the
+  // visibility of the overflow button determined by the 1st pass.
   // TODO(pengchaocai): Explore possible optimizations.
   if (toolbar_controller_) {
     // TODO(crbug.com/1499021) Move this logic into LayoutManager.
@@ -827,12 +832,11 @@ void ToolbarView::Layout() {
         toolbar_controller_->overflow_button()->GetVisible();
     manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
                                      true);
-    AccessiblePaneView::Layout();
-    if (toolbar_controller_->ShouldShowOverflowButton()) {
+
+    if (toolbar_controller_->ShouldShowOverflowButton(size())) {
       // This is the second pass layout that shows overflow button if necessary.
       manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
                                        false);
-      AccessiblePaneView::Layout();
       if (!was_overflow_button_visible) {
         base::RecordAction(
             base::UserMetricsAction("ResponsiveToolbar.OverflowButtonShown"));
@@ -843,11 +847,11 @@ void ToolbarView::Layout() {
             base::UserMetricsAction("ResponsiveToolbar.OverflowButtonHidden"));
       }
     }
-  } else {
-    // Call super implementation to ensure layout manager and child layouts
-    // happen.
-    AccessiblePaneView::Layout();
   }
+
+  // Call super implementation to ensure layout manager and child layouts
+  // happen.
+  AccessiblePaneView::Layout();
 }
 
 void ToolbarView::OnThemeChanged() {
