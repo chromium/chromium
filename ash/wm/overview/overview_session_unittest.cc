@@ -8268,8 +8268,18 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
 // Verify that if the split view divider is dragged all the way to the edge, the
 // window being dragged gets returned to the overview list, if overview mode is
 // still active.
+// TODO(crbug.com/324024580): Re-enable this test. Causes build failures on
+// MSAN/ASAN on CrOS.
+#if BUILDFLAG(IS_CHROMEOS) && \
+    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
+#define MAYBE_DividerDraggedToEdgeReturnsWindowToOverviewList \
+  DISABLED_DividerDraggedToEdgeReturnsWindowToOverviewList
+#else
+#define MAYBE_DividerDraggedToEdgeReturnsWindowToOverviewList \
+  DividerDraggedToEdgeReturnsWindowToOverviewList
+#endif
 TEST_F(SplitViewOverviewSessionTest,
-       DividerDraggedToEdgeReturnsWindowToOverviewList) {
+       MAYBE_DividerDraggedToEdgeReturnsWindowToOverviewList) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
@@ -8314,9 +8324,19 @@ TEST_F(SplitViewOverviewSessionTest,
 // all the way to the opposite edge, then the split view window is reinserted
 // into the overview grid at the correct position according to MRU order, and
 // the stacking order is also correct.
+// TODO(crbug.com/324024580): Re-enable this test. Causes build failures on
+// MSAN/ASAN on CrOS.
+#if BUILDFLAG(IS_CHROMEOS) && \
+    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
+#define MAYBE_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded \
+  DISABLED_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded
+#else
+#define MAYBE_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded \
+  SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded
+#endif
 TEST_F(
     SplitViewOverviewSessionTest,
-    SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded) {
+    MAYBE_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
@@ -10526,8 +10546,18 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
 // Verify that when in overview mode, the selector items unsnappable indicator
 // shows up when expected.
+// TODO(crbug.com/324024580): Re-enable this test. Causes build failures on
+// MSAN/ASAN on CrOS.
+#if BUILDFLAG(IS_CHROMEOS) && \
+    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
+#define MAYBE_OverviewUnsnappableIndicatorVisibility \
+  DISABLED_OverviewUnsnappableIndicatorVisibility
+#else
+#define MAYBE_OverviewUnsnappableIndicatorVisibility \
+  OverviewUnsnappableIndicatorVisibility
+#endif
 TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
-       OverviewUnsnappableIndicatorVisibility) {
+       MAYBE_OverviewUnsnappableIndicatorVisibility) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
