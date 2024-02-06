@@ -45,7 +45,6 @@ group("closure_compile") {
     ":keyboard_utils",
     ":keyboard_utils_oobe",
     ":long_touch_detector",
-    ":notification_card",
     ":oobe_a11y_option",
     ":oobe_carousel",
     ":oobe_cr_lottie",
@@ -101,11 +100,6 @@ js_library("long_touch_detector") {
   extra_deps = [ ":copy_js" ]
 }
 
-js_library("notification_card") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/notification_card.js" ]
-  deps = []
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("oobe_a11y_option") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_a11y_option.js" ]
@@ -240,7 +234,6 @@ html_to_js("web_components_local") {
   js_files = [
     "api_keys_notice.js",
     "hd_iron_icon.js",
-    "notification_card.js",
     "oobe_a11y_option.js",
     "oobe_carousel.js",
     "oobe_cr_lottie.js",
