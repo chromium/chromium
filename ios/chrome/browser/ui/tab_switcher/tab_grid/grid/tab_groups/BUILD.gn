@@ -38,6 +38,8 @@ source_set("tab_groups_ui") {
   sources = [
     "create_tab_group_view_controller.h",
     "create_tab_group_view_controller.mm",
+    "tab_group_snapshots_view.h",
+    "tab_group_snapshots_view.mm",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
     "tab_groups_commands.h",

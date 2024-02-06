@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_snapshots_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -38,7 +39,6 @@ constexpr CGFloat kSnapshotViewRatio = 0.83;
 constexpr CGFloat kSnapshotViewMaxHeight = 190;
 constexpr CGFloat kSnapshotViewCornerRadius = 18;
 constexpr CGFloat kSnapshotViewVerticalMargin = 25;
-constexpr CGFloat kOutsideSnapshotCornerRadius = 16;
 constexpr CGFloat kSingleSnapshotRatio = 0.75;
 }  // namespace
 
@@ -494,14 +494,9 @@ constexpr CGFloat kSingleSnapshotRatio = 0.75;
   snapshotsBackground.opaque = NO;
 
   // TODO(crbug.com/1501837): Manage more than one snapshot and favicons.
-  // TODO(crbug.com/1501837): Manage favicons.
-  UIImage* snapshotImg = _snapshots.firstObject;
-  TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
-  snapshotView.image = snapshotImg;
-  snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-  snapshotView.layer.cornerRadius = kOutsideSnapshotCornerRadius;
-  snapshotView.contentMode = UIViewContentModeScaleAspectFill;
-  snapshotView.clipsToBounds = YES;
+  UIView* snapshotView = [[TabGroupSnapshotsView alloc]
+      initWithSnapshot:[self imageFromObject:_snapshots.firstObject]
+               favicon:[self imageFromObject:_favicons.firstObject]];
 
   [snapshotsBackground addSubview:snapshotView];
 
@@ -538,6 +533,16 @@ constexpr CGFloat kSingleSnapshotRatio = 0.75;
             favicons:(NSArray<UIImage*>*)favicons {
   _snapshots = snapshots;
   _favicons = favicons;
+}
+
+#pragma mark - Private Helpers
+
+// Returns the picture is it is a picture and nil if not.
+- (UIImage*)imageFromObject:(id)object {
+  if ([object isKindOfClass:[NSNull class]]) {
+    return nil;
+  }
+  return object;
 }
 
 @end
