@@ -1854,7 +1854,16 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
   scoped_refptr<Image> image;
   gfx::SizeF default_object_size(Width(), Height());
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  if (!image_source->IsVideoElement()) {
+  if (image_source->IsVideoElement()) {
+    if (!static_cast<HTMLVideoElement*>(image_source)
+             ->HasAvailableVideoFrame()) {
+      return;
+    }
+  } else if (image_source->IsVideoFrame()) {
+    if (!static_cast<VideoFrame*>(image_source)->frame()) {
+      return;
+    }
+  } else {
     image = image_source->GetSourceImageForCanvas(
         FlushReason::kDrawImage, &source_image_status, default_object_size);
     if (source_image_status == kUndecodableSourceImageStatus) {
@@ -1870,9 +1879,6 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
       return;
     }
     if (!image || !image->width() || !image->height())
-      return;
-  } else {
-    if (!static_cast<HTMLVideoElement*>(image_source)->HasAvailableVideoFrame())
       return;
   }
 
