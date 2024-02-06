@@ -2088,6 +2088,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".FromDiscoverTabNotification"
         summary="From Discover Tab notification."/>
     <variant name=".FromFileManager" summary="From FileManager."/>
+    <variant name=".FromFirstRun" summary="From first run."/>
     <variant name=".FromFullRestore" summary="From full restore."/>
     <variant name=".FromInstalledNotification"
         summary="From installed notification."/>

@@ -295,6 +295,7 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
     case LaunchSource::kFromFullRestore:
     case LaunchSource::kFromSmartTextContextMenu:
     case LaunchSource::kFromDiscoverTabNotification:
+    case LaunchSource::kFromFirstRun:
       return extensions::AppLaunchSource::kSourceChromeInternal;
     case LaunchSource::kFromInstalledNotification:
       return extensions::AppLaunchSource::kSourceInstalledNotification;

@@ -478,6 +478,7 @@ enum LaunchSource {
   [MinVersion=10] kFromUrlHandler,               // Url handler.
   [MinVersion=11] kFromSysTrayCalendar,          // System Tray Calendar.
   [MinVersion=12] kFromInstaller,                // Installation UI.
+  [MinVersion=13] kFromFirstRun,                 // First Run.
 };
 
 [Stable, Extensible]

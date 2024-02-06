@@ -15008,6 +15008,7 @@ Called by update_permissions_policy_enum.py.-->
       label="Profile menu of installable chrome://password-manager WebUI)"/>
   <int value="36" label="Launch from system tray Calendar"/>
   <int value="37" label="Installer"/>
+  <int value="38" label="First run"/>
 </enum>
 
 <enum name="LcppHintStatus">
