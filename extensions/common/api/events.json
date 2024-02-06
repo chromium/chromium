@@ -326,6 +326,12 @@
                 {"type": "array", "items": {"type": "integer"}, "description": "A pair of integers identiying the start and end (both inclusive) of a port range."}
               ]
             }
+          },
+          "cidrBlocks": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Matches if the host part of the URL is an IP address and is contained in any of the CIDR blocks specified in the array.",
+            "optional": true
           }
         }
       }

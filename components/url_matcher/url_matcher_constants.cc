@@ -29,6 +29,7 @@ const char kURLEqualsKey[] = "urlEquals";
 const char kURLMatchesKey[] = "urlMatches";
 const char kURLPrefixKey[] = "urlPrefix";
 const char kURLSuffixKey[] = "urlSuffix";
+const char kCidrBlocksKey[] = "cidrBlocks";
 
 }  // namespace url_matcher_constants
 }  // namespace url_matcher

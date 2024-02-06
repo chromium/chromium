@@ -14,8 +14,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
+#include "base/types/expected.h"
 #include "components/url_matcher/regex_set_matcher.h"
 #include "components/url_matcher/url_matcher_export.h"
+#include "net/base/ip_address.h"
 
 class GURL;
 
@@ -321,6 +323,29 @@ class URL_MATCHER_EXPORT URLMatcherPortFilter {
   std::vector<Range> ranges_;
 };
 
+// This class represents a filter for CIDR blocks to be hooked up into a
+// URLMatcherConditionSet.
+class URL_MATCHER_EXPORT URLMatcherCidrBlockFilter {
+ public:
+  // IP range in CIDR notation.
+  using CidrBlock = std::pair<net::IPAddress, size_t>;
+  explicit URLMatcherCidrBlockFilter(const std::vector<CidrBlock>& cidr_blocks);
+
+  URLMatcherCidrBlockFilter(const URLMatcherCidrBlockFilter&) = delete;
+  URLMatcherCidrBlockFilter& operator=(const URLMatcherCidrBlockFilter&) =
+      delete;
+
+  ~URLMatcherCidrBlockFilter();
+  bool IsMatch(const GURL& url) const;
+
+  // Creates a CIDR block.
+  static base::expected<URLMatcherCidrBlockFilter::CidrBlock, std::string>
+  CreateCidrBlock(const std::string& entry);
+
+ private:
+  std::vector<CidrBlock> cidr_blocks_;
+};
+
 // This class represents a set of conditions that all need to match on a
 // given URL in order to be considered a match.
 class URL_MATCHER_EXPORT URLMatcherConditionSet
@@ -334,13 +359,17 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
   URLMatcherConditionSet(base::MatcherStringPattern::ID id,
                          const Conditions& conditions);
 
-  // Matches if all conditions in |conditions|, |scheme_filter| and
-  // |port_filter| are fulfilled. |scheme_filter| and |port_filter| may be NULL,
-  // in which case, no restrictions are imposed on the scheme/port of a URL.
-  URLMatcherConditionSet(base::MatcherStringPattern::ID id,
-                         const Conditions& conditions,
-                         std::unique_ptr<URLMatcherSchemeFilter> scheme_filter,
-                         std::unique_ptr<URLMatcherPortFilter> port_filter);
+  // Matches if all conditions in |conditions|, |scheme_filter|,
+  // |port_filter| and |cidr_block_filter| are fulfilled.
+  // |scheme_filter|, |port_filter| and |cidr_block_filter| may be NULL,
+  // in which case, no restrictions are imposed on the scheme/port/cidr block of
+  // a URL.
+  URLMatcherConditionSet(
+      base::MatcherStringPattern::ID id,
+      const Conditions& conditions,
+      std::unique_ptr<URLMatcherSchemeFilter> scheme_filter,
+      std::unique_ptr<URLMatcherPortFilter> port_filter,
+      std::unique_ptr<URLMatcherCidrBlockFilter> cidr_block_filter);
 
   // Matches if all conditions in |conditions|, |query_conditions|,
   // |scheme_filter| and |port_filter| are fulfilled. |scheme_filter| and
@@ -376,6 +405,7 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
   QueryConditions query_conditions_;
   std::unique_ptr<URLMatcherSchemeFilter> scheme_filter_;
   std::unique_ptr<URLMatcherPortFilter> port_filter_;
+  std::unique_ptr<URLMatcherCidrBlockFilter> cidr_block_filter_;
 };
 
 // This class allows matching one URL against a large set of

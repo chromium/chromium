@@ -34,6 +34,7 @@ URL_MATCHER_EXPORT extern const char kURLEqualsKey[];
 URL_MATCHER_EXPORT extern const char kURLMatchesKey[];
 URL_MATCHER_EXPORT extern const char kURLPrefixKey[];
 URL_MATCHER_EXPORT extern const char kURLSuffixKey[];
+URL_MATCHER_EXPORT extern const char kCidrBlocksKey[];
 
 }  // namespace url_matcher_constants
 }  // namespace url_matcher
