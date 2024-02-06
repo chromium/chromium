@@ -17,7 +17,6 @@ cast_source_set("service") {
   public_deps = [
     "//media/mojo/mojom",
     "//media/mojo/services",
-    "//services/service_manager/public/cpp",
   ]
 
   deps = [

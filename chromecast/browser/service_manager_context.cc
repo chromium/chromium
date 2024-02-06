@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/deferred_sequenced_task_runner.h"
@@ -98,38 +99,6 @@ void DestroyConnectorOnIOThread() {
   g_io_thread_connector.Get().reset();
 }
 
-// A ServiceProcessHost implementation which delegates to Content-managed
-// processes, either via a new UtilityProcessHost to launch new service
-// processes, or the existing GpuProcessHost to run service instances in the GPU
-// process.
-class ContentChildServiceProcessHost
-    : public service_manager::ServiceProcessHost {
- public:
-  ContentChildServiceProcessHost() = default;
-
-  ContentChildServiceProcessHost(const ContentChildServiceProcessHost&) =
-      delete;
-  ContentChildServiceProcessHost& operator=(
-      const ContentChildServiceProcessHost&) = delete;
-
-  ~ContentChildServiceProcessHost() override = default;
-
-  // service_manager::ServiceProcessHost:
-  mojo::PendingRemote<service_manager::mojom::Service> Launch(
-      const service_manager::Identity& identity,
-      sandbox::mojom::Sandbox sandbox_type,
-      const std::u16string& display_name,
-      LaunchCallback callback) override {
-    // Start a new process for this service.
-    mojo::PendingRemote<service_manager::mojom::Service> remote;
-    content::LaunchUtilityProcessServiceDeprecated(
-        identity.name(), display_name, sandbox_type,
-        remote.InitWithNewPipeAndPassReceiver().PassPipe(),
-        std::move(callback));
-    return remote;
-  }
-};
-
 // A ServiceProcessHost implementation which uses the Service Manager's builtin
 // service executable launcher. Not yet intended for use in production Chrome,
 // hence availability is gated behind a flag.
@@ -198,7 +167,9 @@ class BrowserServiceManagerDelegate
   std::unique_ptr<service_manager::ServiceProcessHost>
   CreateProcessHostForBuiltinServiceInstance(
       const service_manager::Identity& identity) override {
-    return std::make_unique<ContentChildServiceProcessHost>();
+    // Cast only uses the default kInProcessBuiltin mode. This function should
+    // only be called for kOutOfProcessBuiltin mode.
+    NOTREACHED_NORETURN();
   }
 
   std::unique_ptr<service_manager::ServiceProcessHost>
