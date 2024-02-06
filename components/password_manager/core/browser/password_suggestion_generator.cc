@@ -123,8 +123,7 @@ void MaybeAppendManagePasswordsEntry(
   bool has_no_fillable_suggestions = base::ranges::none_of(
       *suggestions,
       [](autofill::PopupItemId id) {
-        return id == autofill::PopupItemId::kUsernameEntry ||
-               id == autofill::PopupItemId::kPasswordEntry ||
+        return id == autofill::PopupItemId::kPasswordEntry ||
                id == autofill::PopupItemId::kAccountStorageUsernameEntry ||
                id == autofill::PopupItemId::kAccountStoragePasswordEntry ||
                id == autofill::PopupItemId::kGeneratePasswordEntry ||
@@ -202,9 +201,7 @@ void AppendSuggestionIfMatching(
               ? autofill::PopupItemId::kAccountStoragePasswordEntry
               : autofill::PopupItemId::kAccountStorageUsernameEntry;
     } else {
-      suggestion.popup_item_id = is_password_field
-                                     ? autofill::PopupItemId::kPasswordEntry
-                                     : autofill::PopupItemId::kUsernameEntry;
+      suggestion.popup_item_id = autofill::PopupItemId::kPasswordEntry;
     }
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.

@@ -439,7 +439,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("John")
                         .setSubLabel("****")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.USERNAME_ENTRY)
+                        .setPopupItemId(PopupItemId.PASSWORD_ENTRY)
                         .setFeatureForIPH("")
                         .build();
         AutofillSuggestion passwordSuggestion2 =

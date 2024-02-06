@@ -160,7 +160,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
       return false;
@@ -407,7 +406,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
@@ -701,7 +699,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
@@ -771,7 +768,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kShowAccountCards:

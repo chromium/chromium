@@ -159,7 +159,6 @@ class KeyboardAccessoryMediator
             case PopupItemId.PASSWORD_ENTRY:
             case PopupItemId.DATALIST_ENTRY:
             case PopupItemId.SCAN_CREDIT_CARD:
-            case PopupItemId.USERNAME_ENTRY:
             case PopupItemId.ACCOUNT_STORAGE_PASSWORD_ENTRY:
             case PopupItemId.ACCOUNT_STORAGE_USERNAME_ENTRY:
                 return true;
@@ -337,8 +336,7 @@ class KeyboardAccessoryMediator
     }
 
     private static boolean containsPasswordInfo(AutofillSuggestion suggestion) {
-        return suggestion.getPopupItemId() == PopupItemId.USERNAME_ENTRY
-                || suggestion.getPopupItemId() == PopupItemId.PASSWORD_ENTRY;
+        return suggestion.getPopupItemId() == PopupItemId.PASSWORD_ENTRY;
     }
 
     private static boolean containsCreditCardInfo(AutofillSuggestion suggestion) {

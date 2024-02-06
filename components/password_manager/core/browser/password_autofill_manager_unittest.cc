@@ -482,9 +482,7 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
     ASSERT_GE(open_args.suggestions.size(), 1u);
     EXPECT_THAT(
         open_args.suggestions,
-        SuggestionVectorIdsAre(is_suggestion_on_password_field
-                                   ? autofill::PopupItemId::kPasswordEntry
-                                   : autofill::PopupItemId::kUsernameEntry,
+        SuggestionVectorIdsAre(autofill::PopupItemId::kPasswordEntry,
 #if !BUILDFLAG(IS_ANDROID)
                                autofill::PopupItemId::kSeparator,
 #endif
@@ -502,10 +500,7 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
 
     password_autofill_manager_->DidAcceptSuggestion(
         autofill::test::CreateAutofillSuggestion(
-            is_suggestion_on_password_field
-                ? autofill::PopupItemId::kPasswordEntry
-                : autofill::PopupItemId::kUsernameEntry,
-            test_username_),
+            autofill::PopupItemId::kPasswordEntry, test_username_),
         SuggestionPosition{.row = 1});
 
     histograms.ExpectUniqueSample(
@@ -563,9 +558,7 @@ TEST_F(PasswordAutofillManagerTest,
     ASSERT_GE(open_args.suggestions.size(), 2u);
     EXPECT_THAT(open_args.suggestions,
                 SuggestionVectorIdsAre(
-                    is_suggestion_on_password_field
-                        ? autofill::PopupItemId::kPasswordEntry
-                        : autofill::PopupItemId::kUsernameEntry,
+                    autofill::PopupItemId::kPasswordEntry,
                     is_suggestion_on_password_field
                         ? autofill::PopupItemId::kAccountStoragePasswordEntry
                         : autofill::PopupItemId::kAccountStorageUsernameEntry,
@@ -1564,9 +1557,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
     ASSERT_GE(open_args.suggestions.size(), 1u);
     EXPECT_THAT(
         open_args.suggestions,
-        SuggestionVectorIdsAre(is_suggestion_on_password_field
-                                   ? autofill::PopupItemId::kPasswordEntry
-                                   : autofill::PopupItemId::kUsernameEntry,
+        SuggestionVectorIdsAre(autofill::PopupItemId::kPasswordEntry,
 #if !BUILDFLAG(IS_ANDROID)
                                autofill::PopupItemId::kSeparator,
 #endif
@@ -1627,9 +1618,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
     ASSERT_GE(open_args.suggestions.size(), 1u);
     EXPECT_THAT(
         open_args.suggestions,
-        SuggestionVectorIdsAre(is_suggestion_on_password_field
-                                   ? autofill::PopupItemId::kPasswordEntry
-                                   : autofill::PopupItemId::kUsernameEntry,
+        SuggestionVectorIdsAre(autofill::PopupItemId::kPasswordEntry,
 #if !BUILDFLAG(IS_ANDROID)
                                autofill::PopupItemId::kSeparator,
 #endif
@@ -1698,9 +1687,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
     ASSERT_GE(open_args.suggestions.size(), 1u);
     EXPECT_THAT(
         open_args.suggestions,
-        SuggestionVectorIdsAre(is_suggestion_on_password_field
-                                   ? autofill::PopupItemId::kPasswordEntry
-                                   : autofill::PopupItemId::kUsernameEntry,
+        SuggestionVectorIdsAre(autofill::PopupItemId::kPasswordEntry,
 #if !BUILDFLAG(IS_ANDROID)
                                autofill::PopupItemId::kSeparator,
 #endif
@@ -2045,7 +2032,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   ASSERT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::PopupItemId::kWebauthnCredential,
-                  autofill::PopupItemId::kUsernameEntry,
+                  autofill::PopupItemId::kPasswordEntry,
 #if !BUILDFLAG(IS_ANDROID)
                   autofill::PopupItemId::kWebauthnSignInWithAnotherDevice,
                   autofill::PopupItemId::kSeparator,
@@ -2120,7 +2107,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
       element_bounds);
   ASSERT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
-                  autofill::PopupItemId::kUsernameEntry,
+                  autofill::PopupItemId::kPasswordEntry,
                   autofill::PopupItemId::kWebauthnSignInWithAnotherDevice,
                   autofill::PopupItemId::kSeparator,
                   autofill::PopupItemId::kAllSavedPasswordsEntry));
@@ -2158,7 +2145,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
       element_bounds);
   ASSERT_THAT(
       open_args.suggestions,
-      SuggestionVectorIdsAre(autofill::PopupItemId::kUsernameEntry,
+      SuggestionVectorIdsAre(autofill::PopupItemId::kPasswordEntry,
                              autofill::PopupItemId::kSeparator,
                              autofill::PopupItemId::kAllSavedPasswordsEntry));
 }

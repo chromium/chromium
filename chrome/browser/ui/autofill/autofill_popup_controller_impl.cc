@@ -494,8 +494,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
       suggestion, AutofillPopupDelegate::SuggestionPosition{
                       .row = index, .sub_popup_level = GetPopupLevel()});
 #if BUILDFLAG(IS_ANDROID)
-  if ((suggestion.popup_item_id == PopupItemId::kPasswordEntry ||
-       suggestion.popup_item_id == PopupItemId::kUsernameEntry) &&
+  if ((suggestion.popup_item_id == PopupItemId::kPasswordEntry) &&
       base::FeatureList::IsEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {

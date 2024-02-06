@@ -1200,7 +1200,7 @@ TEST_F(AutofillPopupControllerImplTest,
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kUsernameEntry});
+  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
 
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);

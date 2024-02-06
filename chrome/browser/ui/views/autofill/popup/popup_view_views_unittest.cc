@@ -81,7 +81,6 @@ const std::vector<PopupItemId> kClickablePopupItemIds{
     PopupItemId::kAutofillOptions,
     PopupItemId::kDatalistEntry,
     PopupItemId::kScanCreditCard,
-    PopupItemId::kUsernameEntry,
     PopupItemId::kAllSavedPasswordsEntry,
     PopupItemId::kPasswordAccountStorageOptIn,
     PopupItemId::kPasswordAccountStorageReSignin,
@@ -868,7 +867,7 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
   suggestion.labels = {{Suggestion::Text(u"example.com")}};
   suggestion.voice_over = voice_over_value;
   suggestion.additional_label = u"\u2022\u2022\u2022\u2022";
-  suggestion.popup_item_id = PopupItemId::kUsernameEntry;
+  suggestion.popup_item_id = PopupItemId::kPasswordEntry;
 
   // Create autofill menu.
   controller().set_suggestions({suggestion});

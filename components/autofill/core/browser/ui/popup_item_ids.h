@@ -50,7 +50,6 @@ enum class PopupItemId : int {
 
   // Password suggestions.
   kPasswordEntry,
-  kUsernameEntry,
   kAllSavedPasswordsEntry,
   kGeneratePasswordEntry,
   kShowAccountCards,
@@ -105,7 +104,7 @@ inline constexpr auto kItemsTriggeringFieldFilling = DenseSet<PopupItemId>(
      PopupItemId::kCreditCardEntry, PopupItemId::kDatalistEntry,
      PopupItemId::kFillEverythingFromAddressProfile,
      PopupItemId::kMerchantPromoCodeEntry, PopupItemId::kPasswordEntry,
-     PopupItemId::kUsernameEntry, PopupItemId::kVirtualCreditCardEntry});
+     PopupItemId::kVirtualCreditCardEntry});
 
 }  // namespace autofill
 
