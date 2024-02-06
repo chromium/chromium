@@ -305,6 +305,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // still return an invalid process with a null handle.
   virtual bool IsInitializedAndNotDead() = 0;
 
+  /// Returns true iff the decision has been made to delete `this`.
+  ///
+  /// If this returns true, then no new child processes will be associated
+  /// with `this`.
+  virtual bool IsDeletingSoon() = 0;
+
   // Returns the renderer channel.
   virtual IPC::ChannelProxy* GetChannel() = 0;
 

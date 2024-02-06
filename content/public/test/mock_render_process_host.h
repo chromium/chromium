@@ -116,6 +116,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   int GetID() const override;
   base::SafeRef<RenderProcessHost> GetSafeRef() const override;
   bool IsInitializedAndNotDead() override;
+  bool IsDeletingSoon() override;
   void SetBlocked(bool blocked) override;
   bool IsBlocked() override;
   base::CallbackListSubscription RegisterBlockStateChangedCallback(

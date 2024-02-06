@@ -3862,6 +3862,10 @@ bool RenderProcessHostImpl::IsInitializedAndNotDead() {
   return is_initialized_ && !is_dead_;
 }
 
+bool RenderProcessHostImpl::IsDeletingSoon() {
+  return deleting_soon_;
+}
+
 void RenderProcessHostImpl::SetBlocked(bool blocked) {
   if (blocked == is_blocked_)
     return;
