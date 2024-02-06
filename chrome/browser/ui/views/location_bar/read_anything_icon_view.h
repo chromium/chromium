@@ -28,12 +28,11 @@ class ReadAnythingIconView : public PageActionIconView,
 
  protected:
   // PageActionIconView:
-  void UpdateImpl() override {}
+  void UpdateImpl() override;
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override {}
   void ExecuteCommand(ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  bool ShouldShowLabel() const override;
 
   // ReadAnythingCoordinator::Observer:
   void Activate(bool active) override;
@@ -41,6 +40,15 @@ class ReadAnythingIconView : public PageActionIconView,
   void OnCoordinatorDestroyed() override;
 
  private:
+  // Whether this view should be visible, so that the next time UpdateImpl() is
+  // called, the view visibility is set to this value.
+  bool should_be_visible_ = false;
+
+  // The number of times the label was shown. On construction, caches the value
+  // `prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount`. When the
+  // value changes, updates the pref.
+  int label_shown_count_;
+
   const raw_ptr<Browser> browser_;
   raw_ptr<ReadAnythingCoordinator> coordinator_;
   base::ScopedObservation<ReadAnythingCoordinator,

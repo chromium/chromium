@@ -52,6 +52,11 @@ class ReadAnythingIconViewTest : public InProcessBrowserTest {
     GetReadAnythingCoordinator()->ActivePageNotDistillableForTesting();
   }
 
+  int GetLabelShownCountFromPref() const {
+    return browser()->profile()->GetPrefs()->GetInteger(
+        prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount);
+  }
+
  private:
   ReadAnythingCoordinator* GetReadAnythingCoordinator() {
     return ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
@@ -100,17 +105,22 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, IconShownIfDistillable) {
   EXPECT_FALSE(icon->GetVisible());
 }
 
-// The label only shows the first 3 times that the icon is shown.
+// The label only shows the first kReadAnythingOmniboxIconLabelShownCountMax
+// times that the icon is shown.
 IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, ShowLabel3Times) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount, 0);
-
   PageActionIconView* icon = GetReadAnythingOmniboxIcon();
-  for (int i = 0; i < 3; i++) {
-    EXPECT_TRUE(icon->ShouldShowLabel());
+  for (int i = 0; i < kReadAnythingOmniboxIconLabelShownCountMax; i++) {
+    EXPECT_EQ(i, GetLabelShownCountFromPref());
     SetActivePageDistillable();
+    EXPECT_TRUE(icon->ShouldShowLabel());
+    EXPECT_TRUE(icon->is_animating_label());
+    icon->ResetSlideAnimationForTesting();
   }
+  EXPECT_EQ(3, GetLabelShownCountFromPref());
+  SetActivePageDistillable();
   EXPECT_FALSE(icon->ShouldShowLabel());
+  EXPECT_FALSE(icon->is_animating_label());
+  EXPECT_EQ(3, GetLabelShownCountFromPref());
 }
 
 }  // namespace
