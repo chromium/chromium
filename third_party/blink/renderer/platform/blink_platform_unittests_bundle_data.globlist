@@ -17,6 +17,8 @@
 ../../web_tests/external/wpt/fonts/**/*.woff
 -../../web_tests/external/wpt/fonts/CSSTest/**
 ../../web_tests/images/resources/**
+../../web_tests/images/bmp-suite/**/*.bmp
+../../web_tests/images/bmp-suite/**/*.png
 ../../web_tests/third_party/**/*.ttf
 ../../web_tests/third_party/**/*.otf
 # pop(ignore-relative)

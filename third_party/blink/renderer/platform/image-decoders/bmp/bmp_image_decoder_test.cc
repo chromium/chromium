@@ -154,7 +154,30 @@ TEST(BMPImageDecoderTest, VerifyBMPSuite) {
       // "good" category, the test description states "not sure that the gamma
       // and chromaticity values in this file are sensible, because I can’t find
       // any detailed documentation of them" so a slight deviation seems fine.
-      // {"good/pal8v4", "pal8"},
+      // {"good", "pal8v4", "pal8"},
+
+      // Bad images do not have a reference; we just need to verify that we can
+      // parse them without crashing.
+      {"bad", "badbitcount", nullptr},
+      {"bad", "badbitssize", nullptr},
+      {"bad", "baddens1", nullptr},
+      {"bad", "baddens2", nullptr},
+      {"bad", "badfilesize", nullptr},
+      {"bad", "badheadersize", nullptr},
+      {"bad", "badpalettesize", nullptr},
+      {"bad", "badplanes", nullptr},
+      {"bad", "badrle", nullptr},
+      {"bad", "badrle4", nullptr},
+      {"bad", "badrle4bis", nullptr},
+      {"bad", "badrle4ter", nullptr},
+      {"bad", "badrlebis", nullptr},
+      {"bad", "badrleter", nullptr},
+      {"bad", "badwidth", nullptr},
+      {"bad", "pal8badindex", nullptr},
+      {"bad", "reallybig", nullptr},
+      {"bad", "rgb16-880", nullptr},
+      {"bad", "rletopdown", nullptr},
+      {"bad", "shortfile", nullptr},
   };
 
   for (const BMPSuiteEntry& entry : kBMPSuiteEntries) {
@@ -168,6 +191,13 @@ TEST(BMPImageDecoderTest, VerifyBMPSuite) {
     std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
     decoder->SetData(data.get(), /*all_data_received=*/true);
     ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    if (!entry.png) {
+      // If there is no reference image, decoding the image without a crash is
+      // considered a success.
+      continue;
+    }
+
+    // Verify that the BMP decoded successfully.
     ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     ASSERT_FALSE(decoder->Failed());
 
