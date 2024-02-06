@@ -864,20 +864,6 @@ public class BookmarkUtils {
         return true;
     }
 
-    /**
-     * Given a {@link BookmarkId}, returns the parent bookmark that should be used when going up.
-     * All bookmarks will skip over mobile bookmarks and other bookmarks.
-     *
-     * @param bookmarkModel The {@link BookmarkModel}.
-     * @param bookmarkId The {@link BookmarkId} to get the parent for.
-     */
-    public static BookmarkId getParentFolderForViewing(
-            BookmarkModel bookmarkModel, BookmarkId bookmarkId) {
-        BookmarkItem item = bookmarkModel.getBookmarkById(bookmarkId);
-        BookmarkId parent = item.getParentId();
-        return parent;
-    }
-
     /** Returns whether the given folder should display images. */
     public static boolean shouldShowImagesForFolder(
             BookmarkModel bookmarkModel, BookmarkId folder) {

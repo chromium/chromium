@@ -438,7 +438,7 @@ class BookmarkToolbarMediator
             mEndSearchRunnable.run();
             return;
         }
-        mBookmarkDelegate.openFolder(
-                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, mCurrentFolder));
+
+        mBookmarkDelegate.openFolder(mBookmarkModel.getBookmarkById(mCurrentFolder).getParentId());
     }
 }
