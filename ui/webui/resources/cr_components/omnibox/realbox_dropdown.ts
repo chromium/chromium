@@ -12,7 +12,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface, RenderType, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {getTemplate} from './realbox_dropdown.html.js';
 import {RealboxMatchElement} from './realbox_match.js';
@@ -306,10 +306,9 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   private classForGroupRenderType_(groupId: number) {
-    return this.result?.suggestionGroupsMap[groupId] ?
-        renderTypeToClass(
-            this.result?.suggestionGroupsMap[groupId].renderType) :
-        '';
+    return renderTypeToClass(
+        this.result?.suggestionGroupsMap[groupId]?.renderType ??
+        RenderType.kDefaultVertical);
   }
 
   private computeHasSecondarySide_(): boolean {
