@@ -1092,6 +1092,14 @@ void SyncServiceImpl::OnActionableProtocolError(
             "Sync.PassphraseTypeUponNotMyBirthdayOrEncryptionObsolete",
             crypto_.GetPassphraseType().value_or(
                 PassphraseType::kImplicitPassphrase));
+        // Account passphrase pref should be cleared when sync is reset from the
+        // dashboard because then the cached passphrase wouldn't be useful
+        // anymore.
+        if (GetSyncAccountStateForPrefs() ==
+            SyncPrefs::SyncAccountState::kSignedInNotSyncing) {
+          sync_prefs_.ClearEncryptionBootstrapTokenForAccount(
+              signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
+        }
       }
 
       // Security domain state might be reset, reset local state as well.

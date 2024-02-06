@@ -599,6 +599,18 @@ void SyncPrefs::SetEncryptionBootstrapTokenForAccount(
   }
 }
 
+void SyncPrefs::ClearEncryptionBootstrapTokenForAccount(
+    const signin::GaiaIdHash& gaia_id_hash) {
+  CHECK(gaia_id_hash.IsValid());
+  {
+    ScopedDictPrefUpdate update_account_passphrase_dict(
+        pref_service_,
+        prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+    base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
+    all_accounts.Remove(gaia_id_hash.ToBase64());
+  }
+}
+
 // static
 const char* SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType type) {
   return GetPrefNameForType(type);

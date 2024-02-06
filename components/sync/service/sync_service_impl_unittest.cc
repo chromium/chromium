@@ -1365,6 +1365,70 @@ TEST_F(SyncServiceImplTest,
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
+  const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
+
+  SignInWithoutSyncConsent();
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  base::RunLoop().RunUntilIdle();
+
+  // This call represents the initial passphrase type coming in from the server.
+  service()->PassphraseTypeChanged(kPassphraseType);
+  ASSERT_EQ(kPassphraseType, service()->GetUserSettings()->GetPassphraseType());
+
+  // Set the passphrase.
+  SyncPrefs sync_prefs(prefs());
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia);
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
+  ASSERT_EQ("token",
+            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+
+  // Clear sync from the dashboard.
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  client_cmd.error_type = NOT_MY_BIRTHDAY;
+  service()->OnActionableProtocolError(client_cmd);
+
+  // The passphrase for account pref cleared when sync is cleared from
+  // dashboard.
+  EXPECT_TRUE(
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
+}
+
+TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
+  const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
+
+  SignInWithoutSyncConsent();
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  base::RunLoop().RunUntilIdle();
+
+  // This call represents the initial passphrase type coming in from the server.
+  service()->PassphraseTypeChanged(kPassphraseType);
+  ASSERT_EQ(kPassphraseType, service()->GetUserSettings()->GetPassphraseType());
+
+  // Set the passphrase.
+  SyncPrefs sync_prefs(prefs());
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia);
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
+  ASSERT_EQ("token",
+            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  client_cmd.error_type = ENCRYPTION_OBSOLETE;
+  service()->OnActionableProtocolError(client_cmd);
+
+  // The passphrase for account pref should be cleared.
+  EXPECT_TRUE(
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
+}
+
 // Verify a that local sync mode isn't impacted by sync being disabled.
 TEST_F(SyncServiceImplTest, LocalBackendUnimpactedByPolicy) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));

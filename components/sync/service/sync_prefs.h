@@ -222,6 +222,8 @@ class SyncPrefs {
   void SetEncryptionBootstrapTokenForAccount(
       const std::string& token,
       const signin::GaiaIdHash& gaia_id_hash);
+  void ClearEncryptionBootstrapTokenForAccount(
+      const signin::GaiaIdHash& gaia_id_hash);
 
   // Muting mechanism for passphrase prompts, used on Android.
   int GetPassphrasePromptMutedProductVersion() const;
