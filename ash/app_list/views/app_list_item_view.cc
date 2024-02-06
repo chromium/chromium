@@ -1837,7 +1837,7 @@ void AppListItemView::AnimateInFromPromiseApp(
   // Set up the app list item view so it appears as a promise icon - add a
   // progress ring (in completed state), scale the icon down, and hide the title
   // and the new install indicator.
-  forced_progress_indicator_value_ = 0.999999f;
+  forced_progress_indicator_value_ = ProgressIndicator::kForcedShow;
   UpdateProgressIndicatorState();
 
   prefer_fallback_icon_ = true;

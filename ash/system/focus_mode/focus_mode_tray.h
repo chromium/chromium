@@ -124,6 +124,10 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // An object that draws and updates the progress ring.
   std::unique_ptr<ProgressIndicator> progress_indicator_;
 
+  // True to show the progress ring after the pulse animation of
+  // `progress_indicator_`.
+  bool show_progress_ring_after_animation_ = false;
+
   base::WeakPtrFactory<FocusModeTray> weak_ptr_factory_{this};
 };
 

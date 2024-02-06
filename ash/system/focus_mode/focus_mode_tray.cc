@@ -151,12 +151,37 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
   progress_indicator_ =
       ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
           [](FocusModeTray* view) -> std::optional<float> {
+            if (!view->GetVisible() || view->is_active()) {
+              return 0.0f;
+            }
+            if (view->show_progress_ring_after_animation_) {
+              return ProgressIndicator::kForcedShow;
+            }
+
             auto* controller = FocusModeController::Get();
-            if (view->is_active() || !controller->in_focus_session()) {
-              // `kProgressComplete` causes the layer to not be painted, hiding
-              // the progress indicator.
+
+            // `kProgressComplete` is only returned by an ending moment, so that
+            // we can know when the pulse animation is done.
+            if (controller->in_ending_moment()) {
+              bool is_animating = false;
+              if (auto* progress_ring_animation =
+                      view->progress_indicator_->animation_registry()
+                          ->GetProgressRingAnimationForKey(
+                              view->progress_indicator_->animation_key())) {
+                is_animating = progress_ring_animation->IsAnimating();
+              }
+
+              // After the pulse animation, the ring isn't shown when the value
+              // is left at `kProgressComplete`, so we need to set it manually
+              // to `kForcedShow` to show the ring.
+              if (!is_animating && (view->progress_indicator_->progress() ==
+                                    ProgressIndicator::kProgressComplete)) {
+                view->show_progress_ring_after_animation_ = true;
+                return ProgressIndicator::kForcedShow;
+              }
               return ProgressIndicator::kProgressComplete;
             }
+
             return controller->current_session()
                 ->GetSnapshot(base::Time::Now())
                 .progress;
@@ -165,7 +190,7 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
   progress_indicator_->SetInnerIconVisible(false);
   progress_indicator_->SetInnerRingVisible(false);
   progress_indicator_->SetOuterRingStrokeWidth(kProgressIndicatorThickness);
-  progress_indicator_->SetColorId(cros_tokens::kCrosSysPrimary);
+  progress_indicator_->SetColorId(cros_tokens::kCrosRefPrimary70);
 
   tray_container()->layer()->Add(
       progress_indicator_->CreateLayer(base::BindRepeating(
@@ -333,6 +358,7 @@ void FocusModeTray::OnThemeChanged() {
 
 void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
   UpdateProgressRing();
+  show_progress_ring_after_animation_ = false;
 
   auto current_session = FocusModeController::Get()->current_session();
   if (!current_session) {
