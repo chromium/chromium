@@ -319,8 +319,6 @@ target(link_target_type, "gles2_sources") {
       "abstract_texture.h",
       "passthrough_abstract_texture_impl.cc",
       "passthrough_abstract_texture_impl.h",
-      "validating_abstract_texture_impl.cc",
-      "validating_abstract_texture_impl.h",
     ]
   } else {
     sources += [
