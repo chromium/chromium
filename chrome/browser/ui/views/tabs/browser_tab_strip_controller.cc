@@ -137,11 +137,7 @@ class BrowserTabStripController::TabContextMenuContents
         tab_);
   }
 
-  bool IsCommandIdAlerted(int command_id) const override {
-    return command_id == TabStripModel::CommandAddToNewGroup &&
-           controller_->GetBrowser()->window()->IsFeaturePromoActive(
-               feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
-  }
+  bool IsCommandIdAlerted(int command_id) const override { return false; }
 
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override {

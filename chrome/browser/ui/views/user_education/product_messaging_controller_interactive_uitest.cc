@@ -24,7 +24,7 @@ class ProductMessagingControllerUiTest : public InteractiveBrowserTest {
  public:
   ProductMessagingControllerUiTest() {
     feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDesktopTabGroupsNewGroupFeature});
+        {feature_engagement::kIPHTabSearchFeature});
   }
 
   ~ProductMessagingControllerUiTest() override = default;
@@ -53,14 +53,13 @@ class ProductMessagingControllerUiTest : public InteractiveBrowserTest {
   auto CheckShowPromo(user_education::FeaturePromoResult expected_result) {
     std::ostringstream oss;
     oss << "CheckShowPromo(" << expected_result << ")";
-    return std::move(
-        CheckResult(
-            [this]() {
-              return browser()->window()->MaybeShowFeaturePromo(
-                  feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
-            },
-            expected_result)
-            .SetDescription(oss.str().c_str()));
+    return std::move(CheckResult(
+                         [this]() {
+                           return browser()->window()->MaybeShowFeaturePromo(
+                               feature_engagement::kIPHTabSearchFeature);
+                         },
+                         expected_result)
+                         .SetDescription(oss.str().c_str()));
   }
 
   auto EnsureHandle() {

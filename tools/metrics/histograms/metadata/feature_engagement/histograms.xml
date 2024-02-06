@@ -138,8 +138,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
   <variant name="IPH_DesktopPWAsLinkCapturingLaunch"
       summary="PWA launch due to link capturing being enabled"/>
-  <variant name="IPH_DesktopTabGroupsNewGroup"
-      summary="creating a new tab group"/>
   <variant name="IPH_DownloadEsbPromo" summary="download ESB promo"/>
   <variant name="IPH_DownloadHome" summary="download home"/>
   <variant name="IPH_DownloadInfobarDownloadContinuing"

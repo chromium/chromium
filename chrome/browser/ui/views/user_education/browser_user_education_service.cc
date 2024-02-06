@@ -126,8 +126,6 @@ bool HasTabGroups(const BrowserView* browser_view) {
 
 }  // namespace
 
-const char kSideSearchTutorialId[] = "Side Search Tutorial";
-
 user_education::HelpBubbleDelegate* GetHelpBubbleDelegate() {
   static base::NoDestructor<BrowserHelpBubbleDelegate> delegate;
   return delegate.get();
@@ -216,15 +214,6 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(Metadata(
                         89, "phillis@chromium.org",
                         "User navigates to a page with a promotable PWA."))));
-
-  // kIPHDesktopTabGroupsNewGroupFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForTutorialPromo(
-                    feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
-                    kTabStripRegionElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO,
-                    kTabGroupTutorialId)
-                    .SetBubbleArrow(HelpBubbleArrow::kNone)
-                    .SetBubbleIcon(kLightbulbOutlineIcon)));
 
   // kIPHDesktopCustomizeChromeFeature:
   registry.RegisterFeature(std::move(
@@ -692,8 +681,7 @@ void MaybeRegisterChromeFeaturePromos(
               // These are not required features; they are just an example to
               // ensure that the tester page formats this data correctly.
               FeaturePromoSpecification::Metadata::FeatureSet{
-                  &feature_engagement::kIPHWebUiHelpBubbleTestFeature,
-                  &feature_engagement::kIPHDesktopTabGroupsNewGroupFeature})));
+                  &feature_engagement::kIPHWebUiHelpBubbleTestFeature})));
 
   // kIPHBatterySaverModeFeature:
   registry.RegisterFeature(std::move(
@@ -847,21 +835,6 @@ void MaybeRegisterChromeTutorials(
   // future.
   if (tutorial_registry.IsTutorialRegistered(kTabGroupTutorialId)) {
     return;
-  }
-
-  {  // Menu item bubble test.
-    TutorialDescription test_description;
-    test_description.steps = {
-        BubbleStep(kToolbarAppMenuButtonElementId)
-            .SetBubbleBodyText(IDS_OK)
-            .SetBubbleArrow(HelpBubbleArrow::kTopRight),
-        BubbleStep(AppMenuModel::kDownloadsMenuItem)
-            .SetBubbleBodyText(IDS_OK)
-            .SetBubbleArrow(HelpBubbleArrow::kRightCenter),
-        HiddenStep::WaitForHidden(AppMenuModel::kDownloadsMenuItem),
-        BubbleStep(kTopContainerElementId).SetBubbleBodyText(IDS_OK)};
-    tutorial_registry.AddTutorial("Menu item bubble test tutorial",
-                                  std::move(test_description));
   }
 
   // Tab Group tutorial.

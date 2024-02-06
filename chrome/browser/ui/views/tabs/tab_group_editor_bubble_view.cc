@@ -566,14 +566,6 @@ void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
 }
 
 void TabGroupEditorBubbleView::OnBubbleClose() {
-  // If we're doing the "create a tab group" tutorial, note whether the user
-  // actually entered a tab name.
-  if (browser_->window()->IsFeaturePromoActive(
-          feature_engagement::kIPHDesktopTabGroupsNewGroupFeature)) {
-    UMA_HISTOGRAM_BOOLEAN("Tutorial.TabGroup.EditedTitle",
-                          !title_field_->GetText().empty());
-  }
-
   if (title_at_opening_ != title_field_->GetText()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_NameChanged"));

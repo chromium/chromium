@@ -607,8 +607,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ExtensionHasNoAnimationLoop) {
 class ToolbarControllerIphUiTest : public ToolbarControllerUiTest {
  public:
   ToolbarControllerIphUiTest() {
-    iph_feature_list_.InitForDemo(
-        feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+    iph_feature_list_.InitForDemo(feature_engagement::kIPHTabSearchFeature);
   }
   ~ToolbarControllerIphUiTest() override = default;
 
@@ -619,7 +618,7 @@ class ToolbarControllerIphUiTest : public ToolbarControllerUiTest {
     return CheckResult(
         [this]() {
           return browser()->window()->MaybeShowFeaturePromo(
-              feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+              feature_engagement::kIPHTabSearchFeature);
         },
         expected_result, desc.str());
   }
