@@ -105,7 +105,10 @@ found in the LICENSE file.
     <dimen name="tab_cleanup_promo_card_icon_start_3">60dp</dimen>
 
     <!-- Dimens for TabGroupParity features -->
+    <dimen name="color_picker_color_item_size">24dp</dimen>
+    <dimen name="color_picker_color_item_horizontal_padding">8dp</dimen>
+    <dimen name="color_picker_color_item_vertical_padding">12dp</dimen>
+    <dimen name="color_picker_inner_layer_inset">5dp</dimen>
     <dimen name="color_picker_selection_layer_inset">2dp</dimen>
-    <dimen name="color_picker_inner_layer_inset">4dp</dimen>
     <dimen name="tab_group_creation_dialog_horizontal_margin">24dp</dimen>
 </resources>
