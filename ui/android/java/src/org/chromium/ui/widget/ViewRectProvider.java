@@ -180,4 +180,8 @@ public class ViewRectProvider extends RectProvider
 
         notifyRectChanged();
     }
+
+    public View getViewForTesting() {
+        return mView;
+    }
 }
