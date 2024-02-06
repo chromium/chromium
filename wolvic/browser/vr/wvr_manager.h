@@ -120,6 +120,9 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   device::mojom::XRFrameDataProvider::GetFrameDataCallback
       get_frame_data_callback_;
 
+  gfx::Transform floor_transform_;
+  uint32_t stage_parameters_id_ = 0;
+
   // Communicate with the renderer.
   mojo::Receiver<device::mojom::XRPresentationProvider> presentation_receiver_{
       this};

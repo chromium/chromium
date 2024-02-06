@@ -44,6 +44,12 @@ device::mojom::VRPosePtr PoseToVRPosePtr(const mozilla::gfx::VRPose* p) {
   return pose;
 }
 
+gfx::Transform GetFloorTransform(const float matrix[16]) {
+  gfx::Transform transform;
+  WvrMatToTransform(matrix, &transform);
+  return transform.GetCheckedInverse();
+}
+
 device::mojom::XRHandedness ToXRHandness(mozilla::gfx::ControllerHand hand) {
   using mozilla::gfx::ControllerHand;
   switch (hand) {
@@ -667,6 +673,15 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
   frame_data->mojo_from_viewer = PoseToVRPosePtr(pose);
 
   frame_data->time_delta = now - base::TimeTicks();
+
+  gfx::Transform transform = GetFloorTransform(system_state.displayState.sittingToStandingTransform);
+  if (floor_transform_ != transform) {
+    frame_data->stage_parameters_id = ++stage_parameters_id_;
+    floor_transform_ = transform;
+  }
+
+  frame_data->stage_parameters = device::mojom::VRStageParameters::New();
+  frame_data->stage_parameters->mojo_from_floor = floor_transform_;
 
   std::move(get_frame_data_callback_).Run(std::move(frame_data));
 }
