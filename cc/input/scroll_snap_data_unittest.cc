@@ -681,8 +681,7 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementHorizontal) {
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForTargetElement(origin);
 
-  SnapPositionData result =
-      container.FindSnapPosition(*strategy, ElementId(20));
+  SnapPositionData result = container.FindSnapPosition(*strategy);
   EXPECT_EQ(Type::kAligned, result.type);
   EXPECT_EQ(0, result.position.x());
   EXPECT_TRUE(container.SetTargetSnapAreaElementIds(result.target_element_ids));
@@ -692,7 +691,7 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementHorizontal) {
   focused_area.rect = gfx::RectF(100, 0, 100, 100);
   container.UpdateSnapAreaForTesting(ElementId(20), focused_area);
 
-  result = container.FindSnapPosition(*strategy, ElementId(20));
+  result = container.FindSnapPosition(*strategy);
   EXPECT_EQ(Type::kAligned, result.type);
   EXPECT_EQ(100, result.position.x());
 }
@@ -715,8 +714,7 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementVertical) {
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForTargetElement(origin);
 
-  SnapPositionData result =
-      container.FindSnapPosition(*strategy, ElementId(20));
+  SnapPositionData result = container.FindSnapPosition(*strategy);
   EXPECT_EQ(Type::kAligned, result.type);
   EXPECT_EQ(0, result.position.y());
   EXPECT_TRUE(container.SetTargetSnapAreaElementIds(result.target_element_ids));
@@ -726,7 +724,7 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementVertical) {
   focused_area.rect = gfx::RectF(0, 100, 100, 100);
   container.UpdateSnapAreaForTesting(ElementId(20), focused_area);
 
-  result = container.FindSnapPosition(*strategy, ElementId(20));
+  result = container.FindSnapPosition(*strategy);
   EXPECT_EQ(Type::kAligned, result.type);
   EXPECT_EQ(100, result.position.y());
 }
@@ -749,8 +747,7 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementBoth) {
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForTargetElement(origin);
 
-  SnapPositionData result =
-      container.FindSnapPosition(*strategy, ElementId(20));
+  SnapPositionData result = container.FindSnapPosition(*strategy);
   EXPECT_EQ(Type::kAligned, result.type);
   EXPECT_EQ(0, result.position.x());
   EXPECT_EQ(0, result.position.y());
@@ -761,7 +758,7 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementBoth) {
   focused_area.rect = gfx::RectF(200, 100, 100, 100);
   container.UpdateSnapAreaForTesting(ElementId(20), focused_area);
 
-  result = container.FindSnapPosition(*strategy, ElementId(20));
+  result = container.FindSnapPosition(*strategy);
   EXPECT_EQ(Type::kAligned, result.type);
   EXPECT_EQ(200, result.position.x());
   EXPECT_EQ(100, result.position.y());

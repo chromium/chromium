@@ -304,8 +304,7 @@ class CC_EXPORT SnapContainerData {
       double snapport_height_adjustment);
 
   SnapPositionData FindSnapPosition(
-      const SnapSelectionStrategy& strategy,
-      const ElementId& active_element_id = ElementId()) const;
+      const SnapSelectionStrategy& strategy) const;
 
   const TargetSnapAreaElementIds& GetTargetSnapAreaElementIds() const;
   // Returns true if the target snap area element ids were changed.
@@ -352,7 +351,6 @@ class CC_EXPORT SnapContainerData {
       SearchAxis axis,
       const SnapSelectionStrategy& strategy,
       const SnapSearchResult& cross_axis_snap_result,
-      const ElementId& active_element_id,
       bool should_consider_covering = true,
       std::optional<gfx::RangeF> active_element_range = std::nullopt) const;
 
@@ -363,8 +361,7 @@ class CC_EXPORT SnapContainerData {
   std::optional<SnapSearchResult> FindClosestValidArea(
       SearchAxis axis,
       const SnapSelectionStrategy& strategy,
-      const SnapSearchResult& cross_axis_snap_result,
-      const ElementId& active_element_id) const;
+      const SnapSearchResult& cross_axis_snap_result) const;
 
   bool FindSnapPositionForMutualSnap(const SnapSelectionStrategy& strategy,
                                      gfx::PointF* snap_position) const;
