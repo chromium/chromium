@@ -165,6 +165,10 @@ source_set("unit_tests") {
       "mirror_landing_account_reconcilor_delegate_unittest.cc",
     ]
   }
+
+  if (enable_dice_support) {
+    sources += [ "dice_account_reconcilor_delegate_unittest.cc" ]
+  }
 }
 
 if (is_android) {

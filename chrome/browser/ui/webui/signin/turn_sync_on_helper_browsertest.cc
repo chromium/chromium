@@ -379,8 +379,15 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
 
   // For the scenario in https://crbug.com/1404961, the reconcilor has to be
   // triggered by the account removal.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   ASSERT_EQ(reconcilor->GetState(),
             signin_metrics::AccountReconcilorState::kRunning);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Dice platforms with `switches::kUnoDesktop` enabled and empty primary
+  // account, updating cookies is disabled. Therefore running the reconcilor
+  // doesn't require any network requests and might have been completed by now.
+  // The reconcilor will not remove the account from cookies but revoking
+  // refresh tokens should be sufficient to invalidate cookies.
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

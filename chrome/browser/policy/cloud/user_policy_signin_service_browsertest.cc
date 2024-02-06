@@ -235,10 +235,13 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest,
 
     embedded_test_server_.StartAcceptingConnections();
 
-    account_info_ =
-        signin::MakeAccountAvailable(identity_manager(), kTestEmail);
-    signin::SetRefreshTokenForAccount(
-        identity_manager(), account_info_.account_id, kTestRefreshToken);
+    account_info_ = MakeAccountAvailable(
+        identity_manager(), signin::AccountAvailabilityOptionsBuilder()
+                                .AsPrimary(signin::ConsentLevel::kSignin)
+                                .WithRefreshToken(kTestRefreshToken)
+                                .Build(kTestEmail));
+    // signin::SetRefreshTokenForAccount(
+    //     identity_manager(), account_info_.account_id, kTestRefreshToken);
     SetupFakeGaiaResponses();
   }
 
@@ -457,9 +460,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, ConcurrentSignin) {
   CreateTurnSyncOnHelper();
   WaitForPolicyHanging();
 
-  // User is not signed in, policy is not applied.
-  EXPECT_EQ(std::nullopt,
-            signin::GetPrimaryAccountConsentLevel(identity_manager()));
+  // Policy hanging, policy is not applied.
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
       /*has_sync_account=*/false));

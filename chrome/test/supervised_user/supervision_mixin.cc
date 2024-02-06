@@ -158,10 +158,10 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
     // PRE_ tests intentionally leave accounts that are picked up by subsequent
     // test runs.
     AccountInfo account_info =
-        GetIdentityTestEnvironment()->MakeAccountAvailable(email_);
+        GetIdentityTestEnvironment()->MakePrimaryAccountAvailable(
+            email_, consent_level_);
     CHECK(!account_info.account_id.empty());
 
-    GetIdentityTestEnvironment()->SetPrimaryAccount(email_, consent_level_);
     WaitForPrimaryAccount(GetIdentityTestEnvironment()->identity_manager(),
                           consent_level_, account_info.account_id);
   } else {
