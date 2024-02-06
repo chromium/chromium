@@ -443,13 +443,14 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.BuyingOptionsClicked"
-    enum="PriceInsightsPriceBucket" expires_after="2024-01-03">
+    enum="PriceInsightsPriceBucket" expires_after="2024-08-06">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the current price bucket of the product when the user clicks
-    &quot;Buying Options&quot; in the price insights side panel.
+    &quot;Buying Options&quot; in the price insights side panel. This histogram
+    was expired from 2024-01-03 to 2024-02-06.
   </summary>
 </histogram>
 
