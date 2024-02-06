@@ -15,12 +15,14 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "printing/print_job_constants.h"
 
 using content::WebContents;
@@ -42,6 +44,51 @@ bool IsShowingWebContentsModalDialog(WebContents* tab) {
       WebContentsModalDialogManager::FromWebContents(tab);
   return web_contents_modal_dialog_manager->IsDialogActive();
 }
+
+// A fake that just ignores `BadMessageReceived()` calls.
+class FakePrintPreviewHandler : public PrintPreviewHandler {
+ public:
+  FakePrintPreviewHandler() = default;
+  FakePrintPreviewHandler(const FakePrintPreviewHandler&) = delete;
+  FakePrintPreviewHandler& operator=(const FakePrintPreviewHandler&) = delete;
+  ~FakePrintPreviewHandler() override = default;
+
+  // PrintPreviewHandler:
+  void BadMessageReceived() override {}
+};
+
+// A fake that uses `FakePrintPreviewHandler` instead of the real one.
+class FakePrintPreviewUI : public PrintPreviewUI {
+ public:
+  explicit FakePrintPreviewUI(content::WebUI* web_ui)
+      : PrintPreviewUI(web_ui, std::make_unique<FakePrintPreviewHandler>()) {}
+  FakePrintPreviewUI(const FakePrintPreviewUI&) = delete;
+  FakePrintPreviewUI& operator=(const FakePrintPreviewUI&) = delete;
+  ~FakePrintPreviewUI() override = default;
+};
+
+// Hands out `FakePrintPreviewUI` instances instead of real ones.
+class TestPrintPreviewUIConfig : public content::WebUIConfig {
+ public:
+  TestPrintPreviewUIConfig()
+      : content::WebUIConfig(content::kChromeUIScheme,
+                             chrome::kChromeUIPrintHost) {}
+  TestPrintPreviewUIConfig(const TestPrintPreviewUIConfig&) = delete;
+  TestPrintPreviewUIConfig& operator=(const TestPrintPreviewUIConfig&) = delete;
+  ~TestPrintPreviewUIConfig() override = default;
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
+    return true;
+  }
+  bool ShouldHandleURL(const GURL& url) override { return url.path() == "/"; }
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override {
+    return std::make_unique<FakePrintPreviewUI>(web_ui);
+  }
+};
 
 }  // namespace
 
@@ -98,6 +145,10 @@ class PrintPreviewUIUnitTest : public PrintPreviewTest {
     preview_ui->SetPreviewUIId();
     return preview_ui;
   }
+
+ private:
+  content::ScopedWebUIConfigRegistration webui_registration_{
+      std::make_unique<TestPrintPreviewUIConfig>()};
 };
 
 // Create/Get a preview tab for initiator.
