@@ -122,8 +122,9 @@ void SignInternal(
 
 class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
  public:
-  UserVerifyingSigningKeyWin(ComPtr<IKeyCredential> credential)
-      : credential_(std::move(credential)) {}
+  UserVerifyingSigningKeyWin(std::string key_name,
+                             ComPtr<IKeyCredential> credential)
+      : key_name_(std::move(key_name)), credential_(std::move(credential)) {}
   ~UserVerifyingSigningKeyWin() override = default;
 
   void Sign(base::span<const uint8_t> data,
@@ -166,6 +167,10 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
     CHECK(SUCCEEDED(hr)) << "Failed to access public key buffer data, hr = "
                          << logging::SystemErrorCodeToString(hr);
     return std::vector<uint8_t>(pub_key_data, pub_key_data + pub_key_length);
+  }
+
+  const UserVerifyingKeyLabel& GetKeyLabel() const override {
+    return key_name_;
   }
 
  private:
@@ -223,6 +228,7 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
     std::move(signing_callback_).Run(std::nullopt);
   }
 
+  std::string key_name_;
   ComPtr<IKeyCredential> credential_;
 
   base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
@@ -320,7 +326,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
   ~UserVerifyingKeyProviderWin() override = default;
 
   void GenerateUserVerifyingSigningKey(
-      UserVerifyingKeyReference key_reference,
+      UserVerifyingKeyLabel key_label,
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
@@ -335,7 +341,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
       return;
     }
 
-    auto key_name = base::win::ScopedHString::Create(key_reference);
+    auto key_name = base::win::ScopedHString::Create(key_label);
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
@@ -347,7 +353,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
             caller_task_runner,
             base::BindOnce(
                 &UserVerifyingKeyProviderWin::OnKeyCreationCompletionSuccess,
-                weak_factory_.GetWeakPtr()));
+                weak_factory_.GetWeakPtr(), std::move(key_label)));
     auto error_callback = WrapRepeatingCallbackForCallingThread<HRESULT>(
         caller_task_runner,
         base::BindRepeating(
@@ -361,11 +367,11 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
   }
 
   void GetUserVerifyingSigningKey(
-      UserVerifyingKeyReference key_reference,
+      UserVerifyingKeyLabel key_label,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) override {
     CHECK(!key_creation_callback_);
-    auto key_name = base::win::ScopedHString::Create(key_reference);
+    auto key_name = base::win::ScopedHString::Create(key_label);
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
@@ -377,7 +383,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
             caller_task_runner,
             base::BindOnce(
                 &UserVerifyingKeyProviderWin::OnKeyCreationCompletionSuccess,
-                weak_factory_.GetWeakPtr()));
+                weak_factory_.GetWeakPtr(), std::move(key_label)));
     auto error_callback = WrapRepeatingCallbackForCallingThread<HRESULT>(
         caller_task_runner,
         base::BindRepeating(
@@ -391,6 +397,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
 
  private:
   void OnKeyCreationCompletionSuccess(
+      std::string key_name,
       ComPtr<IKeyCredentialRetrievalResult> key_result) {
     // This SHOULD only be called once but conservatively we ignore additional
     // calls to reduce assumptions of good behaviour by the platform APIs.
@@ -422,8 +429,8 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
       std::move(key_creation_callback_).Run(nullptr);
       return;
     }
-    auto key =
-        std::make_unique<UserVerifyingSigningKeyWin>(std::move(credential));
+    auto key = std::make_unique<UserVerifyingSigningKeyWin>(
+        std::move(key_name), std::move(credential));
     std::move(key_creation_callback_).Run(std::move(key));
   }
 

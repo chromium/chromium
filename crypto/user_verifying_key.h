@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <optional>
-#include <string_view>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -21,9 +21,9 @@ namespace crypto {
 // The type of the identifiers for user-verifying keys depends on the
 // underlying platform API.
 #if BUILDFLAG(IS_WIN)
-typedef std::string_view UserVerifyingKeyReference;
+typedef std::string UserVerifyingKeyLabel;
 #else
-typedef int UserVerifyingKeyReference;  // Unused.
+typedef int UserVerifyingKeyLabel;  // Unused.
 #endif
 
 // UserVerifyingSigningKey is a hardware-backed key that triggers a user
@@ -48,6 +48,9 @@ class CRYPTO_EXPORT UserVerifyingSigningKey {
 
   // Provides the SPKI public key.
   virtual std::vector<uint8_t> GetPublicKey() const = 0;
+
+  // Get a reference to the label used to create or retrieve this key.
+  virtual const UserVerifyingKeyLabel& GetKeyLabel() const = 0;
 };
 
 // UserVerifyingKeyProvider creates |UserVerifyingSigningKey|s.
@@ -68,7 +71,7 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
   //
   // This is currently only supported on Windows.
   virtual void GenerateUserVerifyingSigningKey(
-      UserVerifyingKeyReference key_reference,
+      UserVerifyingKeyLabel key_label,
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
@@ -81,7 +84,7 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
   //
   // This is currently only supported on Windows.
   virtual void GetUserVerifyingSigningKey(
-      UserVerifyingKeyReference key_name,
+      UserVerifyingKeyLabel key_label,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) = 0;
 };
