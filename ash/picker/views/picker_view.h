@@ -113,7 +113,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void OnClickOutsideWidget();
 
   void AddSearchFieldView();
-  void AddContentsView();
+  void AddContentsView(PickerLayoutType layout_type);
 
   std::optional<PickerCategory> selected_category_;
 

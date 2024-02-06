@@ -6,6 +6,8 @@
 #define ASH_PICKER_VIEWS_PICKER_CONTENTS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/picker/views/picker_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -17,7 +19,7 @@ class ASH_EXPORT PickerContentsView : public views::View {
   METADATA_HEADER(PickerContentsView);
 
   // Creates an empty view with no pages.
-  explicit PickerContentsView();
+  explicit PickerContentsView(PickerView::PickerLayoutType layout_type);
   PickerContentsView(const PickerContentsView&) = delete;
   PickerContentsView& operator=(const PickerContentsView&) = delete;
   ~PickerContentsView() override;

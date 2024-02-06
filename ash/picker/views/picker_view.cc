@@ -160,10 +160,10 @@ PickerView::PickerView(PickerViewDelegate* delegate,
     case PickerLayoutType::kResultsBelowSearchField:
       AddSearchFieldView();
       AddChildView(CreateSeparator());
-      AddContentsView();
+      AddContentsView(layout_type);
       break;
     case PickerLayoutType::kResultsAboveSearchField:
-      AddContentsView();
+      AddContentsView(layout_type);
       AddChildView(CreateSeparator());
       AddSearchFieldView();
       break;
@@ -305,8 +305,9 @@ void PickerView::AddSearchFieldView() {
       &session_metrics_));
 }
 
-void PickerView::AddContentsView() {
-  contents_view_ = AddChildView(std::make_unique<PickerContentsView>());
+void PickerView::AddContentsView(PickerLayoutType layout_type) {
+  contents_view_ =
+      AddChildView(std::make_unique<PickerContentsView>(layout_type));
   contents_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
