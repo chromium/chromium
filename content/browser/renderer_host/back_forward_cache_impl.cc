@@ -490,8 +490,7 @@ BlockListedFeatures BackForwardCacheImpl::GetAllowedFeatures(
     }
     result.PutAll(non_sticky);
   }
-  if (IsUnloadAllowed() ||
-      base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
+  if (IsUnloadAllowed()) {
     result.Put(WebSchedulerTrackedFeature::kUnloadHandler);
   }
   // When not under "Cache-Control: no-store" context, the features listed in
@@ -517,8 +516,7 @@ BlockListedFeatures BackForwardCacheImpl::GetDisallowedFeatures(
     // Remove all non-sticky features from |result|.
     result = Intersection(result, blink::scheduler::StickyFeatures());
   }
-  if (IsUnloadAllowed() ||
-      base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
+  if (IsUnloadAllowed()) {
     result.Remove(WebSchedulerTrackedFeature::kUnloadHandler);
   }
   // When under "Cache-Control: no-store" context, the features listed in
