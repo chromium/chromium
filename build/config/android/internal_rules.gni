@@ -2137,6 +2137,8 @@ if (enable_java_templates) {
   #     Use resource IDs provided by another APK target when compiling resources
   #     (via. "aapt2 link --stable-ids")
   #
+  #   override_target_sdk: (optional)
+  #     Update the manifest to target this SDK
   #
   # Output variables:
   #   arsc_output: Path to output .ap_ file (optional).
@@ -2163,6 +2165,11 @@ if (enable_java_templates) {
     _final_srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
 
     _script = "//build/android/gyp/compile_resources.py"
+
+    _target_sdk_version = invoker.target_sdk_version
+    if(defined(invoker.override_target_sdk)) {
+      _target_sdk_version = invoker.override_target_sdk
+    }
 
     _inputs = [
       invoker.build_config,
@@ -2208,7 +2215,7 @@ if (enable_java_templates) {
       "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
       "--extra-res-packages=@FileArg($_rebased_build_config:deps_info:extra_package_names)",
       "--min-sdk-version=${invoker.min_sdk_version}",
-      "--target-sdk-version=${invoker.target_sdk_version}",
+      "--target-sdk-version=${_target_sdk_version}",
       "--webp-cache-dir=obj/android-webp-cache",
     ]
 

@@ -1187,6 +1187,7 @@ if (enable_java_templates && is_android) {
       arsc_output = _resource_arsc_output
       min_sdk_version = default_min_sdk_version
       target_sdk_version = android_sdk_version
+      forward_variables_from(invoker, ["override_target_sdk"])
     }
 
     # apkbuilder step needed only to add android assets to the .ap_ file.
@@ -2376,6 +2377,7 @@ if (enable_java_templates && is_android) {
             "shared_resources",
             "shared_resources_allowlist_locales",
             "uses_split",
+            "override_target_sdk"
           ])
       android_manifest = _android_manifest
       android_manifest_dep = ":$_merge_manifest_target"
@@ -3406,6 +3408,7 @@ if (enable_java_templates && is_android) {
             "max_sdk_version",
             "min_sdk_version",
             "mergeable_android_manifests",
+            "override_target_sdk",
             "module_name",
             "native_lib_placeholders",
             "package_id",

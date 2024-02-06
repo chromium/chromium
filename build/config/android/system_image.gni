@@ -54,6 +54,11 @@ template("system_image_stub_apk") {
     }
   }
 
+  _target_sdk_version = default_android_sdk_version
+  if (defined(invoker.override_target_sdk)) {
+    _target_sdk_version = invoker.override_target_sdk
+  }
+
   action_with_pydeps(_resource_apk_target_name) {
     script = "//build/android/gyp/compile_resources.py"
     inputs = [
@@ -65,7 +70,7 @@ template("system_image_stub_apk") {
       "--aapt2-path",
       rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
       "--min-sdk-version=$default_min_sdk_version",
-      "--target-sdk-version=$default_android_sdk_version",
+      "--target-sdk-version=$_target_sdk_version",
       "--android-manifest",
       rebase_path(_manifest_path, root_build_dir),
       "--arsc-path",
@@ -150,6 +155,7 @@ template("system_image_apks") {
                              [
                                "static_library_name",
                                "static_library_version",
+                               "override_target_sdk"
                              ])
       package_info_from_target = invoker.apk_or_bundle_target
       stub_output = invoker.stub_output
