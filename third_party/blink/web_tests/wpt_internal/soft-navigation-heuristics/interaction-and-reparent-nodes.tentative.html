@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</head>
+<body>
+  <main id=main>
+    <div>
+      <a id=link>Click here</a>
+    </div>
+  </main>
+  <script>
+    promise_test(() => {
+      return new Promise(resolve => {
+        let new_window;
+        let new_node = document.createElement("p");
+        // Trigger a user interaction that doesn't result in a soft navigation, but
+        // does paint.
+        const link = document.getElementById("link");
+        link.addEventListener("click", () => {
+          new_node.innerText = "This is a new node added by a user interaction";
+          main.appendChild(new_node);
+          main.removeChild(new_node);
+          // Create a new window; we'll move new_node to it after the event.
+          new_window = window.open("about:blank", "_blank", "popup");
+          setTimeout(() => {
+            // Move the new node to the popup, causing it to be painted there.
+            new_window.document.body.appendChild(new_node);
+            requestAnimationFrame(() => { setTimeout(resolve, 1) });
+          }, 1);
+        });
+        if (test_driver) {
+          test_driver.click(link);
+        }
+      });
+    }, "Ensure that a user interaction which creates new nodes, and then " +
+       "moves them to a new document for painting does not result in a crash.");
+  </script>
+</body>
+</html>
+
+
+
