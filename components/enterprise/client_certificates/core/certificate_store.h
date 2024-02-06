@@ -68,8 +68,22 @@ class CertificateStore : public KeyedService {
 
   // Will store the given `certificate` in the database under `identity_name`.
   // Will call `callback` with std::nullopt if successful, or an error if not.
+  // This API can be used to update an expired certificate without changing
+  // the existing private key.
   virtual void CommitCertificate(
       const std::string& identity_name,
+      scoped_refptr<net::X509Certificate> certificate,
+      base::OnceCallback<void(std::optional<StoreError>)> callback) = 0;
+
+  // Will move the private key with name `temporary_identity_name` and move
+  // it into `final_identity_name` alongside the given `certificate`.
+  // Will overwrite any pre-existing identity stored under
+  // `final_identity_name`. Will call `callback` with std::nullopt if
+  // successful, or an error if not. This API can be used as the last step in
+  // committing an updated identity when the private key needed to be rotated.
+  virtual void CommitIdentity(
+      const std::string& temporary_identity_name,
+      const std::string& final_identity_name,
       scoped_refptr<net::X509Certificate> certificate,
       base::OnceCallback<void(std::optional<StoreError>)> callback) = 0;
 

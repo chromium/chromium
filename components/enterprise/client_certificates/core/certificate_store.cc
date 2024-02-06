@@ -71,6 +71,14 @@ void OnCertificateCommitted(
   std::move(callback).Run(std::nullopt);
 }
 
+void SetCertificate(client_certificates_pb::ClientIdentity& proto_identity,
+                    net::X509Certificate& certificate) {
+  base::Pickle pickle;
+  certificate.Persist(&pickle);
+  *proto_identity.mutable_certificate() =
+      std::string(pickle.data_as_char(), pickle.size());
+}
+
 }  // namespace
 
 class CertificateStoreImpl : public CertificateStore {
@@ -88,6 +96,11 @@ class CertificateStoreImpl : public CertificateStore {
           callback) override;
   void CommitCertificate(
       const std::string& identity_name,
+      scoped_refptr<net::X509Certificate> certificate,
+      base::OnceCallback<void(std::optional<StoreError>)> callback) override;
+  void CommitIdentity(
+      const std::string& temporary_identity_name,
+      const std::string& final_identity_name,
       scoped_refptr<net::X509Certificate> certificate,
       base::OnceCallback<void(std::optional<StoreError>)> callback) override;
   void GetIdentity(
@@ -139,6 +152,13 @@ class CertificateStoreImpl : public CertificateStore {
           proto_identity);
   void CommitCertificateInner(
       const std::string& identity_name,
+      scoped_refptr<net::X509Certificate> certificate,
+      base::OnceCallback<void(std::optional<StoreError>)> callback,
+      StoreErrorOr<std::unique_ptr<client_certificates_pb::ClientIdentity>>
+          proto_identity);
+  void CommitIdentityInner(
+      const std::string& temporary_identity_name,
+      const std::string& final_identity_name,
       scoped_refptr<net::X509Certificate> certificate,
       base::OnceCallback<void(std::optional<StoreError>)> callback,
       StoreErrorOr<std::unique_ptr<client_certificates_pb::ClientIdentity>>
@@ -244,6 +264,19 @@ void CertificateStoreImpl::CommitCertificate(
       base::BindOnce(&CertificateStoreImpl::CommitCertificateInner,
                      weak_factory_.GetWeakPtr(), identity_name,
                      std::move(certificate), std::move(callback)));
+}
+
+void CertificateStoreImpl::CommitIdentity(
+    const std::string& temporary_identity_name,
+    const std::string& final_identity_name,
+    scoped_refptr<net::X509Certificate> certificate,
+    base::OnceCallback<void(std::optional<StoreError>)> callback) {
+  WaitForInitializationAndGetIdentityProto(
+      temporary_identity_name,
+      base::BindOnce(&CertificateStoreImpl::CommitIdentityInner,
+                     weak_factory_.GetWeakPtr(), temporary_identity_name,
+                     final_identity_name, std::move(certificate),
+                     std::move(callback)));
 }
 
 void CertificateStoreImpl::GetIdentity(
@@ -412,16 +445,55 @@ void CertificateStoreImpl::CommitCertificateInner(
   }
 
   // Add cert to proto_identity, and save it to DB.
-  base::Pickle pickle;
-  certificate->Persist(&pickle);
-  *local_proto_identity->mutable_certificate() =
-      std::string(pickle.data_as_char(), pickle.size());
+  SetCertificate(*local_proto_identity, *certificate);
 
   auto entries_to_save = std::make_unique<leveldb_proto::ProtoDatabase<
       client_certificates_pb::ClientIdentity>::KeyEntryVector>();
   entries_to_save->push_back({identity_name, *local_proto_identity});
 
   auto entries_to_remove = std::make_unique<std::vector<std::string>>();
+
+  database_->UpdateEntries(
+      std::move(entries_to_save), std::move(entries_to_remove),
+      base::BindOnce(OnCertificateCommitted, std::move(callback)));
+}
+
+void CertificateStoreImpl::CommitIdentityInner(
+    const std::string& temporary_identity_name,
+    const std::string& final_identity_name,
+    scoped_refptr<net::X509Certificate> certificate,
+    base::OnceCallback<void(std::optional<StoreError>)> callback,
+    StoreErrorOr<std::unique_ptr<client_certificates_pb::ClientIdentity>>
+        proto_identity) {
+  if (!proto_identity.has_value()) {
+    std::move(callback).Run(proto_identity.error());
+    return;
+  }
+
+  if (!certificate) {
+    std::move(callback).Run(StoreError::kInvalidCertificateInput);
+    return;
+  }
+
+  if (final_identity_name.empty()) {
+    std::move(callback).Run(StoreError::kInvalidFinalIdentityName);
+    return;
+  }
+
+  auto& local_proto_identity = proto_identity.value();
+  if (!local_proto_identity) {
+    std::move(callback).Run(StoreError::kIdentityNotFound);
+    return;
+  }
+
+  SetCertificate(*local_proto_identity, *certificate);
+
+  auto entries_to_save = std::make_unique<leveldb_proto::ProtoDatabase<
+      client_certificates_pb::ClientIdentity>::KeyEntryVector>();
+  entries_to_save->push_back({final_identity_name, *local_proto_identity});
+
+  auto entries_to_remove = std::make_unique<std::vector<std::string>>();
+  entries_to_remove->push_back(temporary_identity_name);
 
   database_->UpdateEntries(
       std::move(entries_to_save), std::move(entries_to_remove),

@@ -32,6 +32,13 @@ class MockCertificateStore : public CertificateStore {
                scoped_refptr<net::X509Certificate>,
                base::OnceCallback<void(std::optional<StoreError>)>),
               (override));
+  MOCK_METHOD(void,
+              CommitIdentity,
+              (const std::string&,
+               const std::string&,
+               scoped_refptr<net::X509Certificate>,
+               base::OnceCallback<void(std::optional<StoreError>)>),
+              (override));
   MOCK_METHOD(
       void,
       GetIdentity,
