@@ -95,25 +95,62 @@ void ConnectorDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
 #endif  // BUILDFLAG(IS_POSIX)
 
 // static
-std::unique_ptr<ConnectorDataPipeGetter> ConnectorDataPipeGetter::Create(
-    const std::string& boundary,
-    const std::string& metadata,
-    base::File file) {
-  if (!file.IsValid())
+std::unique_ptr<ConnectorDataPipeGetter>
+ConnectorDataPipeGetter::CreateMultipartPipeGetter(const std::string& boundary,
+                                                   const std::string& metadata,
+                                                   base::File file) {
+  if (!file.IsValid()) {
     return nullptr;
+  }
 
   auto mm_file = std::make_unique<InternalMemoryMappedFile>();
-  if (!mm_file->Initialize(std::move(file)))
+  if (!mm_file->Initialize(std::move(file))) {
     return nullptr;
+  }
 
   return std::make_unique<ConnectorDataPipeGetter>(boundary, metadata,
                                                    std::move(mm_file));
 }
 
 // static
-std::unique_ptr<ConnectorDataPipeGetter> ConnectorDataPipeGetter::Create(
+std::unique_ptr<ConnectorDataPipeGetter>
+ConnectorDataPipeGetter::CreateMultipartPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
+    base::ReadOnlySharedMemoryRegion page) {
+  if (!page.IsValid()) {
+    return nullptr;
+  }
+
+  base::ReadOnlySharedMemoryMapping mapping = page.Map();
+  if (!mapping.IsValid()) {
+    return nullptr;
+  }
+
+  return std::make_unique<ConnectorDataPipeGetter>(boundary, metadata,
+                                                   std::move(mapping));
+}
+
+// static
+std::unique_ptr<ConnectorDataPipeGetter>
+ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File file) {
+  if (!file.IsValid()) {
+    return nullptr;
+  }
+
+  auto mm_file = std::make_unique<InternalMemoryMappedFile>();
+  if (!mm_file->Initialize(std::move(file))) {
+    return nullptr;
+  }
+
+  return std::make_unique<ConnectorDataPipeGetter>(/*boundary*/ std::string(),
+                                                   /*metadata*/ std::string(),
+                                                   std::move(mm_file));
+}
+
+// static
+std::unique_ptr<ConnectorDataPipeGetter>
+ConnectorDataPipeGetter::CreateResumablePipeGetter(
     base::ReadOnlySharedMemoryRegion page) {
   if (!page.IsValid())
     return nullptr;
@@ -122,7 +159,8 @@ std::unique_ptr<ConnectorDataPipeGetter> ConnectorDataPipeGetter::Create(
   if (!mapping.IsValid())
     return nullptr;
 
-  return std::make_unique<ConnectorDataPipeGetter>(boundary, metadata,
+  return std::make_unique<ConnectorDataPipeGetter>(/*boundary*/ std::string(),
+                                                   /*metadata*/ std::string(),
                                                    std::move(mapping));
 }
 
@@ -153,13 +191,9 @@ ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     std::unique_ptr<InternalMemoryMappedFile> file,
     base::ReadOnlySharedMemoryMapping page)
     : file_(std::move(file)), page_(std::move(page)) {
-  // TODO(b/321956932): Move the string concatenation of metadata_ and
-  // last_boundary_ into a helper function.
-  metadata_ = base::StrCat({"--", boundary, "\r\n", kDataContentType,
-                            "\r\n\r\n", metadata, "\r\n--", boundary, "\r\n",
-                            kDataContentType, "\r\n\r\n"});
-
-  last_boundary_ = base::StrCat({"\r\n--", boundary, "--\r\n"});
+  if (!boundary.empty() && !metadata.empty()) {
+    PrepareMultipartRequestFormat(boundary, metadata);
+  }
 }
 
 ConnectorDataPipeGetter::~ConnectorDataPipeGetter() = default;
@@ -204,12 +238,11 @@ void ConnectorDataPipeGetter::MojoReadyCallback(
 }
 
 void ConnectorDataPipeGetter::Write() {
-  // TODO(b/321956932): Extract metadata & last boundary writing logics into a
-  // separate method.
   int64_t metadata_end = metadata_.size();
-  if (0 <= write_position_ && write_position_ < metadata_end) {
-    if (!WriteString(metadata_, write_position_))
+  if (IsWritePositionInRange(0, metadata_end)) {
+    if (!WriteMultipartRequestFormat(metadata_, write_position_)) {
       return;
+    }
   }
 
   int64_t data_end = metadata_end;
@@ -220,7 +253,7 @@ void ConnectorDataPipeGetter::Write() {
     data_end += page_.size();
   }
 
-  if (metadata_end <= write_position_ && write_position_ < data_end) {
+  if (IsWritePositionInRange(metadata_end, data_end)) {
     if (is_file_data_pipe() && !WriteFileData())
       return;
     if (is_page_data_pipe() && !WritePageData())
@@ -229,10 +262,11 @@ void ConnectorDataPipeGetter::Write() {
 
   int64_t last_boundary_end = data_end + last_boundary_.size();
   DCHECK_EQ(last_boundary_end, FullSize());
-  if (data_end <= write_position_ && write_position_ < last_boundary_end) {
+  if (IsWritePositionInRange(data_end, last_boundary_end)) {
     int64_t offset = write_position_ - data_end;
-    if (!WriteString(last_boundary_, offset))
+    if (!WriteMultipartRequestFormat(last_boundary_, offset)) {
       return;
+    }
   }
 
   if (write_position_ == FullSize()) {
@@ -240,8 +274,19 @@ void ConnectorDataPipeGetter::Write() {
   }
 }
 
-bool ConnectorDataPipeGetter::WriteString(const std::string& str,
-                                          int64_t offset) {
+inline void ConnectorDataPipeGetter::PrepareMultipartRequestFormat(
+    const std::string& boundary,
+    const std::string& metadata) {
+  metadata_ = base::StrCat({"--", boundary, "\r\n", kDataContentType,
+                            "\r\n\r\n", metadata, "\r\n--", boundary, "\r\n",
+                            kDataContentType, "\r\n\r\n"});
+
+  last_boundary_ = base::StrCat({"\r\n--", boundary, "--\r\n"});
+}
+
+bool ConnectorDataPipeGetter::WriteMultipartRequestFormat(
+    const std::string& str,
+    int64_t offset) {
   CHECK_GE(offset, 0);
   CHECK_LT(offset, static_cast<int64_t>(str.size()));
 
@@ -291,6 +336,11 @@ bool ConnectorDataPipeGetter::Write(const char* data,
     write_position_ += write_size;
     DCHECK_LE(offset, full_size);
   }
+}
+
+bool ConnectorDataPipeGetter::IsWritePositionInRange(int64_t range_start,
+                                                     int64_t range_end) {
+  return (range_start <= write_position_ && write_position_ < range_end);
 }
 
 int64_t ConnectorDataPipeGetter::FullSize() {
