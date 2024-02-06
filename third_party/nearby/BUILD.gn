@@ -493,6 +493,17 @@ source_set("flags") {
 }
 
 # src/internal/interop
+source_set("authentication_transport_interface") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [ "src/internal/interop/authentication_transport.h" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 source_set("interop_device") {
   public_configs = [
     ":nearby_include_config",
@@ -503,7 +514,7 @@ source_set("interop_device") {
     "src/internal/interop/device_provider.h",
   ]
   public_deps = [
-    ":platform_api_types",
+    ":authentication_transport_interface",
     ":platform_base_connection_info",
     "//third_party/abseil-cpp:absl",
   ]
@@ -876,20 +887,28 @@ source_set("presence") {
   ]
   sources = [
     "src/presence/presence_client_impl.cc",
+    "src/presence/presence_device_provider.cc",
     "src/presence/presence_service_impl.cc",
   ]
-
   public = [
     "src/presence/presence_client.h",
     "src/presence/presence_client_impl.h",
+    "src/presence/presence_device_provider.h",
     "src/presence/presence_service.h",
     "src/presence/presence_service_impl.h",
   ]
   public_deps = [
+    ":authentication_transport_interface",
+    ":connections_local_credential_proto",
     ":connections_metadata_proto",
     ":interop_device",
+    ":platform_api_types",
+    ":platform_base",
+    ":platform_base_logging",
     ":platform_public_types",
+    ":presence_frame_proto",
     ":presence_internal",
+    ":presence_mediums",
     ":presence_types",
     "//third_party/abseil-cpp:absl",
   ]
