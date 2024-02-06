@@ -1,8 +1,6 @@
 // The Shared Storage API.
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
 
-typedef (USVString or FencedFrameConfig) SharedStorageResponse;
-
 [
   RuntimeEnabled=SharedStorageAPI,
   Exposed=(Window, SharedStorageWorklet)

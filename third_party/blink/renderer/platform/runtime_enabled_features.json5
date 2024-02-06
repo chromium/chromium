@@ -3498,6 +3498,11 @@
       public: true,
     },
     {
+      name: "SharedStorageAPIM123",
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "SharedWorker",
       public: true,
       // Android does not yet support SharedWorker. crbug.com/154571

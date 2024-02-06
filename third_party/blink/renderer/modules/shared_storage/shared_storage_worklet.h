@@ -33,13 +33,17 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   ScriptPromise addModule(ScriptState*,
                           const String& module_url,
                           ExceptionState&);
-
-  ScriptPromise SelectURL(ScriptState*,
+  ScriptPromise selectURL(ScriptState*,
+                          const String& name,
+                          HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+                          ExceptionState&);
+  ScriptPromise selectURL(ScriptState*,
                           const String& name,
                           HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
                           const SharedStorageRunOperationMethodOptions* options,
                           ExceptionState&);
-  ScriptPromise Run(ScriptState*,
+  ScriptPromise run(ScriptState*, const String& name, ExceptionState&);
+  ScriptPromise run(ScriptState*,
                     const String& name,
                     const SharedStorageRunOperationMethodOptions* options,
                     ExceptionState&);

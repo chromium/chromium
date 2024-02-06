@@ -180,7 +180,33 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise SharedStorageWorklet::SelectURL(
+// This C++ overload is called by JavaScript:
+// sharedStorage.selectURL('foo', [{url: "bar.com"}]);
+//
+// It returns a JavaScript promise that resolves to an urn::uuid.
+ScriptPromise SharedStorageWorklet::selectURL(
+    ScriptState* script_state,
+    const String& name,
+    HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+    ExceptionState& exception_state) {
+  return selectURL(script_state, name, urls,
+                   SharedStorageRunOperationMethodOptions::Create(),
+                   exception_state);
+}
+
+// This C++ overload is called by JavaScript:
+// 1. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0}});
+// 2. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0},
+// resolveToConfig: true});
+//
+// It returns a JavaScript promise:
+// 1. that resolves to an urn::uuid, when `resolveToConfig` is false or
+// unspecified.
+// 2. that resolves to a fenced frame config, when `resolveToConfig` is true.
+//
+// This function implements the other overload, with `resolveToConfig`
+// defaulting to false.
+ScriptPromise SharedStorageWorklet::selectURL(
     ScriptState* script_state,
     const String& name,
     HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
@@ -435,7 +461,14 @@ ScriptPromise SharedStorageWorklet::SelectURL(
   return promise;
 }
 
-ScriptPromise SharedStorageWorklet::Run(
+ScriptPromise SharedStorageWorklet::run(ScriptState* script_state,
+                                        const String& name,
+                                        ExceptionState& exception_state) {
+  return run(script_state, name,
+             SharedStorageRunOperationMethodOptions::Create(), exception_state);
+}
+
+ScriptPromise SharedStorageWorklet::run(
     ScriptState* script_state,
     const String& name,
     const SharedStorageRunOperationMethodOptions* options,

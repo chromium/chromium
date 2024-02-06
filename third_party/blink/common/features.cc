@@ -1990,6 +1990,10 @@ BASE_FEATURE(kSharedStorageAPIM118,
              "SharedStorageAPIM118",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSharedStorageAPIM123,
+             "SharedStorageAPIM123",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSimulateClickOnAXFocus,
              "SimulateClickOnAXFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -711,10 +711,6 @@ ScriptValue SharedStorage::context(ScriptState* script_state,
                      V8String(script_state->GetIsolate(), embedder_context));
 }
 
-// This C++ overload is called by JavaScript:
-// sharedStorage.selectURL('foo', [{url: "bar.com"}]);
-//
-// It returns a JavaScript promise that resolves to an urn::uuid.
 ScriptPromise SharedStorage::selectURL(
     ScriptState* script_state,
     const String& name,
@@ -725,18 +721,6 @@ ScriptPromise SharedStorage::selectURL(
                    exception_state);
 }
 
-// This C++ overload is called by JavaScript:
-// 1. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0}});
-// 2. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0},
-// resolveToConfig: true});
-//
-// It returns a JavaScript promise:
-// 1. that resolves to an urn::uuid, when `resolveToConfig` is false or
-// unspecified.
-// 2. that resolves to a fenced frame config, when `resolveToConfig` is true.
-//
-// This function implements the other overload, with `resolveToConfig`
-// defaulting to false.
 ScriptPromise SharedStorage::selectURL(
     ScriptState* script_state,
     const String& name,
@@ -747,7 +731,7 @@ ScriptPromise SharedStorage::selectURL(
       worklet(script_state, exception_state);
   CHECK(shared_storage_worklet);
 
-  return shared_storage_worklet->SelectURL(script_state, name, urls, options,
+  return shared_storage_worklet->selectURL(script_state, name, urls, options,
                                            exception_state);
 }
 
@@ -767,7 +751,7 @@ ScriptPromise SharedStorage::run(
       worklet(script_state, exception_state);
   CHECK(shared_storage_worklet);
 
-  return shared_storage_worklet->Run(script_state, name, options,
+  return shared_storage_worklet->run(script_state, name, options,
                                      exception_state);
 }
 

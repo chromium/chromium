@@ -1308,6 +1308,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // shipped.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM118);
 
+// Additional Shared Storage API features shipped in M123.
+// TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
+// shipped.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM123);
+
 // TODO(accessibility): This flag is set to accommodate JAWS on Windows so they
 // can adjust to us not simulating click events on a focus action. It is in the
 // process of being removed completely and is currently disabled by default on
