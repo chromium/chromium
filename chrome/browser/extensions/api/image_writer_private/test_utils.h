@@ -37,7 +37,7 @@ class ImageWriterFakeImageBurnerClient;
 const char kDummyExtensionId[] = "DummyExtension";
 
 // Default file size to use in tests.  Currently 32kB.
-const int kTestFileSize = 32 * 1024;
+const size_t kTestFileSize = 32 * 1024;
 // Pattern to use in the image file.
 const uint8_t kImagePattern = 0x55;  // 01010101
 // Pattern to use in the device file.
