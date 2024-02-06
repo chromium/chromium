@@ -1,0 +1,6 @@
+include_rules = [
+  "+ui/base",
+  "+ui/chromeos",
+  "+ui/gfx",
+  "+ui/views",
+]

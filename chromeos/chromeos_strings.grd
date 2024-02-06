@@ -373,6 +373,11 @@
         Experiment
       </message>
 
+      <!-- Mahi -->
+      <message name="IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature." translateable="false">
+        Experimental feature
+      </message>
+
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu." meaning="Splits the associated window into half snapped state.">
         Split

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -52,6 +53,8 @@ MahiMenuView::MahiMenuView() {
   // TODO(b/318733118): Finish building the menu UI.
   // TODO(b/319264190): Replace the strings here with real strings.
   AddChildView(std::make_unique<views::Label>(u"Mahi Menu"));
+
+  AddChildView(std::make_unique<chromeos::mahi::ExperimentBadge>());
 
   auto* button = AddChildView(std::make_unique<views::LabelButton>(
       /*callback=*/base::BindRepeating(&MahiMenuView::OnSummaryButtonPressed,

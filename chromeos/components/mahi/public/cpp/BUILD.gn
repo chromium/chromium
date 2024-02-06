@@ -12,7 +12,16 @@ component("cpp") {
     "fake_mahi_manager.h",
     "mahi_manager.cc",
     "mahi_manager.h",
+    "views/experiment_badge.cc",
+    "views/experiment_badge.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/strings:strings_grit",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/gfx",
+    "//ui/views",
+  ]
 }

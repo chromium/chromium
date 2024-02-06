@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -69,16 +70,26 @@ MahiPanelView::MahiPanelView() {
 
   auto header_row = std::make_unique<views::FlexLayoutView>();
   header_row->SetOrientation(views::LayoutOrientation::kHorizontal);
-  header_row->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+
+  auto header_left_container = std::make_unique<views::FlexLayoutView>();
+  header_left_container->SetOrientation(views::LayoutOrientation::kHorizontal);
+  header_left_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  header_left_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  header_left_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kUnbounded)));
 
   // TODO(b/319264190): Replace the string used here with the correct string ID.
   auto header_label = std::make_unique<views::Label>(u"Mahi Panel");
   header_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  header_label->SetProperty(views::kFlexBehaviorKey,
-                            views::FlexSpecification(views::FlexSpecification(
-                                views::MinimumFlexSizeRule::kPreferred,
-                                views::MaximumFlexSizeRule::kUnbounded)));
-  header_row->AddChildView(std::move(header_label));
+  header_left_container->AddChildView(std::move(header_label));
+
+  header_left_container->AddChildView(
+      std::make_unique<chromeos::mahi::ExperimentBadge>());
+
+  header_row->AddChildView(std::move(header_left_container));
 
   // TODO(b/319264190): Replace the string IDs used here with the correct IDs.
   auto close_button = std::make_unique<IconButton>(
