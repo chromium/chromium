@@ -11,7 +11,7 @@
 namespace views::test {
 
 InkDropHostTestApi::InkDropHostTestApi(InkDropHost* ink_drop_host)
-    : ink_drop_host_(ink_drop_host) {}
+    : ink_drop_host_(*ink_drop_host) {}
 
 InkDropHostTestApi::~InkDropHostTestApi() = default;
 
