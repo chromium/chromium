@@ -333,6 +333,12 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
              "TearOffWebAppTabOpensWebAppWindow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !defined(ANDROID)
+BASE_FEATURE(kToolbarPinning,
+             "ToolbarPinning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kToolbarUseHardwareBitmapDraw,
              "ToolbarUseHardwareBitmapDraw",
              base::FEATURE_DISABLED_BY_DEFAULT);
