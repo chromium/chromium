@@ -11,27 +11,6 @@ declare_args() {
   enable_qr_print = false
 }
 
-# Separate target to:
-# - Limit `visibility` (stricter than dir-level `DEPS` would allow)
-# - Allow `//chrome/services/qr_code_generator_service/public/cpp` to check the
-#   feature state without depending directly on `:qr_code_generator`
-#
-# TODO(https://crbug.com/1431991): Remove the `qr_code_generator_features`
-# target once the Rusty QR Code Generator project is completed.
-source_set("qr_code_generator_features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  deps = [ "//base" ]
-  visibility = [
-    ":qr_code_generator",
-    ":unit_tests",
-    "//chrome/services/qrcode_generator",
-    "//chrome/services/qrcode_generator/public/cpp:cpp",
-  ]
-}
-
 source_set("qr_code_generator") {
   sources = [
     "dino_image.h",
@@ -39,7 +18,6 @@ source_set("qr_code_generator") {
     "qr_code_generator.h",
   ]
   deps = [
-    ":qr_code_generator_features",
     ":qr_code_generator_ffi_glue",
     "//base",
   ]
@@ -60,7 +38,6 @@ source_set("unit_tests") {
   sources = [ "qr_code_generator_unittest.cc" ]
   deps = [
     ":qr_code_generator",
-    ":qr_code_generator_features",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",

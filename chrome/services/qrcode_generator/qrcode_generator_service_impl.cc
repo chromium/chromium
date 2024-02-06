@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/qr_code_generator/dino_image.h"
-#include "components/qr_code_generator/features.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/canvas.h"
@@ -33,13 +32,7 @@ static const int kDinoTileSizePixels = 4;
 // Size of a QR locator, in modules.
 static const int kLocatorSizeModules = 7;
 
-QRCodeGeneratorServiceImpl::QRCodeGeneratorServiceImpl() : receiver_(this) {
-  InitializeDinoBitmap();
-}
-
-QRCodeGeneratorServiceImpl::QRCodeGeneratorServiceImpl(
-    mojo::PendingReceiver<mojom::QRCodeGeneratorService> receiver)
-    : receiver_(this, std::move(receiver)) {
+QRCodeGeneratorServiceImpl::QRCodeGeneratorServiceImpl() {
   InitializeDinoBitmap();
 }
 
@@ -270,7 +263,7 @@ SkBitmap QRCodeGeneratorServiceImpl::RenderBitmap(
 
 void QRCodeGeneratorServiceImpl::GenerateQRCode(
     mojom::GenerateQRCodeRequestPtr request,
-    GenerateQRCodeCallback callback) {
+    ResponseCallback callback) {
   mojom::GenerateQRCodeResponsePtr response =
       mojom::GenerateQRCodeResponse::New();
 
@@ -278,17 +271,6 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
     std::move(callback).Run(std::move(response));
     return;
-  }
-
-  if (!qr_code_generator::IsRustyQrCodeGeneratorFeatureEnabled()) {
-    // TODO(lukasza): Remove the `kLengthMax` check once the old, C++
-    // implementation of QR Code Generation is removed from Chromium.
-    constexpr size_t kLengthMax = 288;
-    if (request->data.length() > kLengthMax) {
-      response->error_code = mojom::QRCodeGeneratorError::INPUT_TOO_LONG;
-      std::move(callback).Run(std::move(response));
-      return;
-    }
   }
 
   std::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data;

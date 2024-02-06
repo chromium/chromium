@@ -279,10 +279,14 @@ void QRCodeGeneratorBubble::Init() {
   textfield_url_ = AddChildView(std::move(textfield_url));
 
   // Lower error message.
-  // User-facing limit rounded down to 250 characters for readability.
+  // User-facing limit rounded down to 2000 characters for readability
+  // (QR code version 40 with M-level error correction can encode binary
+  // inputs of up to 2331 bytes, and digit-only inputs of up to 5596 bytes).
+  // See https://www.qrcode.com/en/about/version.html.
+  const int kMaxInputLength = 2000;
   auto bottom_error_label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16Int(
-          IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG, 250),
+          IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG, kMaxInputLength),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   bottom_error_label->SetVisible(false);

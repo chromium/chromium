@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace qrcode_generator {
 
@@ -41,8 +40,7 @@ class QRImageGenerator {
   void ForwardResponse(ResponseCallback original_callback,
                        mojom::GenerateQRCodeResponsePtr response);
 
-  mojo::Remote<mojom::QRCodeGeneratorService> mojo_service_;
-  base::WeakPtrFactory<QRImageGenerator> weak_ptr_factory_;
+  base::WeakPtrFactory<QRImageGenerator> weak_ptr_factory_{this};
 };
 
 }  // namespace qrcode_generator

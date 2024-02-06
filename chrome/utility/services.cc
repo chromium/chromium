@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
-#include "chrome/services/qrcode_generator/qrcode_generator_service_impl.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -158,13 +157,6 @@ auto RunLanguageDetectionService(
     mojo::PendingReceiver<language_detection::mojom::LanguageDetectionService>
         receiver) {
   return std::make_unique<language_detection::LanguageDetectionServiceImpl>(
-      std::move(receiver));
-}
-
-auto RunQRCodeGeneratorService(
-    mojo::PendingReceiver<qrcode_generator::mojom::QRCodeGeneratorService>
-        receiver) {
-  return std::make_unique<qrcode_generator::QRCodeGeneratorServiceImpl>(
       std::move(receiver));
 }
 
@@ -443,7 +435,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunFilePatcher);
   services.Add(RunUnzipper);
   services.Add(RunLanguageDetectionService);
-  services.Add(RunQRCodeGeneratorService);
   services.Add(RunWebAppOriginAssociationParser);
   services.Add(RunCSVPasswordParser);
 

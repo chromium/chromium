@@ -17,24 +17,22 @@ namespace qrcode_generator {
 // This handler accepts a potentially untrusted URL string and generates
 // a QR code for it.
 // It is intended to operate in an out-of-browser-process service.
-class QRCodeGeneratorServiceImpl : public mojom::QRCodeGeneratorService {
+class QRCodeGeneratorServiceImpl {
  public:
-  explicit QRCodeGeneratorServiceImpl(
-      mojo::PendingReceiver<mojom::QRCodeGeneratorService> receiver);
-
   QRCodeGeneratorServiceImpl(const QRCodeGeneratorServiceImpl&) = delete;
   QRCodeGeneratorServiceImpl& operator=(const QRCodeGeneratorServiceImpl&) =
       delete;
 
-  ~QRCodeGeneratorServiceImpl() override;
+  ~QRCodeGeneratorServiceImpl();
 
  private:
   friend class QRImageGenerator;
   QRCodeGeneratorServiceImpl();
 
-  // chrome::mojom::QRCodeGeneratorService override.
+  using ResponseCallback =
+      base::OnceCallback<void(mojom::GenerateQRCodeResponsePtr)>;
   void GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
-                      GenerateQRCodeCallback callback) override;
+                      ResponseCallback callback);
 
   // Renders dino data into a 1x bitmap, |dino_bitmap_|, owned by the class.
   // This is simpler and faster than repainting it from static source data
@@ -78,8 +76,6 @@ class QRCodeGeneratorServiceImpl : public mojom::QRCodeGeneratorService {
   SkBitmap RenderBitmap(base::span<const uint8_t> data,
                         const gfx::Size data_size,
                         const mojom::GenerateQRCodeRequest& request);
-
-  mojo::Receiver<mojom::QRCodeGeneratorService> receiver_;
 
   SkBitmap dino_bitmap_;
 };
