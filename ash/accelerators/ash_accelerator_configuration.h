@@ -112,9 +112,7 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
     return accelerators_;
   }
 
-  void SetUsePositionalLookup(bool use_positional_lookup) {
-    accelerator_to_id_.set_use_positional_lookup(use_positional_lookup);
-  }
+  void SetUsePositionalLookup(bool use_positional_lookup);
 
   // Returns a nullptr if `action` is not a deprecated action, otherwise
   // returns the deprecated data.
