@@ -11076,6 +11076,7 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/webui/ash/settings/integration_tests/open_keyboard_subpage_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/open_touchpad_subpage_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/privacy_hub_interactive_uitest.cc",
+          "../browser/ui/webui/ash/settings/integration_tests/swap_primary_mouse_button_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/trackpoint_enabled_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/pages/device/integration_tests/audio_page_interactive_uitest.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/add_accelerator_disruptive_interactive_uitest.cc",
