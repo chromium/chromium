@@ -27,6 +27,10 @@ specific_include_rules = {
   'fast_pair_.*': [
     "+ash/quick_pair",
   ],
+  'keyboard_six_pack_keys_interactive_uitest\.cc': [
+    '+ash/shell.h',
+    '+device/udev_linux/fake_udev_loader.h',
+  ],
   'power_section\.(cc|h)' : [
     '+ash/shell.h',
     '+ash/system/power',
