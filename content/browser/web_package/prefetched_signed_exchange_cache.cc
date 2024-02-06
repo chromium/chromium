@@ -570,7 +570,7 @@ class PrefetchedNavigationLoaderInterceptor
       std::move(fallback_callback)
           .Run(true /* reset_subresource_loader_params */,
                // TODO(crbug.com/1441384) test workerStart in SXG scenarios
-               head_update_params);
+               std::move(head_update_params));
       return;
     }
     state_ = State::kInnerResponseRequested;

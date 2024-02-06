@@ -605,6 +605,7 @@ void NavigationURLLoaderImpl::Restart() {
     url_loader_.reset();
   }
   received_response_ = false;
+  head_update_params_ = ResponseHeadUpdateParams();
   MaybeStartLoader(/*next_interceptor_index=*/0,
                    /*interceptor_result=*/std::nullopt);
 }
@@ -691,15 +692,11 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
 
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
     bool reset_subresource_loader_params,
-    const ResponseHeadUpdateParams& head_update_params) {
+    ResponseHeadUpdateParams head_update_params) {
   if (reset_subresource_loader_params)
     subresource_loader_params_.reset();
 
-  intercepting_worker_start_time_ =
-      head_update_params.load_timing_info.service_worker_start_time;
-  intercepting_worker_ready_time_ =
-      head_update_params.load_timing_info.service_worker_ready_time;
-  intercepting_worker_router_info_ = head_update_params.router_info.Clone();
+  head_update_params_ = std::move(head_update_params);
 
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       PrepareForNonInterceptedRequest();
@@ -853,14 +850,16 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
   response_body_ = std::move(response_body);
   received_response_ = true;
 
-  if (!intercepting_worker_start_time_.is_null()) {
+  if (!head_update_params_.load_timing_info.service_worker_start_time
+           .is_null()) {
     head->load_timing.service_worker_start_time =
-        intercepting_worker_start_time_;
+        head_update_params_.load_timing_info.service_worker_start_time;
     head->load_timing.service_worker_ready_time =
-        intercepting_worker_ready_time_;
+        head_update_params_.load_timing_info.service_worker_ready_time;
   }
-  if (!intercepting_worker_router_info_.is_null()) {
-    head->service_worker_router_info = intercepting_worker_router_info_.Clone();
+  if (!head_update_params_.router_info.is_null()) {
+    head->service_worker_router_info =
+        std::move(head_update_params_.router_info);
   }
 
   // If the default loader (network) was used to handle the URL load request

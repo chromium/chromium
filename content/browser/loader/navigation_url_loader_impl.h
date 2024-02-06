@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_url_loader.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
@@ -144,7 +145,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // and signed exchange (SXG) fallback redirect.
   void FallbackToNonInterceptedRequest(
       bool reset_subresource_loader_params,
-      const ResponseHeadUpdateParams& head_update_params);
+      ResponseHeadUpdateParams head_update_params);
 
   scoped_refptr<network::SharedURLLoaderFactory>
   PrepareForNonInterceptedRequest();
@@ -336,11 +337,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   const ukm::SourceId ukm_source_id_;
 
   // If this navigation was intercepted by a worker but the worker didn't handle
-  // it, we still expose the worker timing as part of the response.
-  base::TimeTicks intercepting_worker_start_time_;
-  base::TimeTicks intercepting_worker_ready_time_;
-
-  network::mojom::ServiceWorkerRouterInfoPtr intercepting_worker_router_info_;
+  // it, we still expose some parameters like the worker timing as part of the
+  // response.
+  ResponseHeadUpdateParams head_update_params_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };

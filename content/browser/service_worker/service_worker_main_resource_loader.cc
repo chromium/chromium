@@ -336,7 +336,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                     head_update_params.router_info = std::move(router_info);
                     std::move(fallback_callback)
                         .Run(false /* reset_subresource_loader_params */,
-                             head_update_params);
+                             std::move(head_update_params));
                     if (active_worker->running_status() !=
                             blink::EmbeddedWorkerStatus::kRunning &&
                         base::FeatureList::IsEnabled(
@@ -895,7 +895,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       ResponseHeadUpdateParams head_update_params;
       head_update_params.load_timing_info = response_head_->load_timing;
       std::move(fallback_callback_)
-          .Run(false /* reset_subresource_loader_params */, head_update_params);
+          .Run(false /* reset_subresource_loader_params */,
+               std::move(head_update_params));
     }
     return;
   }

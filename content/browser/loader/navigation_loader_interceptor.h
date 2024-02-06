@@ -78,7 +78,7 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   using LoaderCallback = base::OnceCallback<void(std::optional<Result>)>;
   using FallbackCallback =
       base::OnceCallback<void(bool /* reset_subresource_loader_params */,
-                              const ResponseHeadUpdateParams&)>;
+                              ResponseHeadUpdateParams)>;
 
   // Asks this interceptor to handle this resource load request.
   // The interceptor must always invoke `callback`.
