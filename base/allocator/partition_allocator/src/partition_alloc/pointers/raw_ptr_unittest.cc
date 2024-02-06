@@ -1318,22 +1318,6 @@ TEST_F(RawPtrTest, OperatorsUseGetForComparison) {
 
 // This test checks how the std library handles collections like
 // std::vector<raw_ptr<T>>.
-//
-// When this test is written, reallocating std::vector's storage (e.g.
-// when growing the vector) requires calling raw_ptr's destructor on the
-// old storage (after std::move-ing the data to the new storage).  In
-// the future we hope that TRIVIAL_ABI (or [trivially_relocatable]]
-// proposed by P1144 [1]) will allow memcpy-ing the elements into the
-// new storage (without invoking destructors and move constructors
-// and/or move assignment operators).  At that point, the assert in the
-// test should be modified to capture the new, better behavior.
-//
-// In the meantime, this test serves as a basic correctness test that
-// ensures that raw_ptr<T> stored in a std::vector passes basic smoke
-// tests.
-//
-// [1]
-// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1144r5.html#wording-attribute
 TEST_F(RawPtrTest, TrivialRelocability) {
   std::vector<CountingRawPtr<int>> vector;
   int x = 123;
@@ -1350,28 +1334,7 @@ TEST_F(RawPtrTest, TrivialRelocability) {
     }
     number_of_capacity_changes++;
   } while (number_of_capacity_changes < 10);
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                           \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
-    BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
-  // TODO(lukasza): In the future (once C++ language and std library
-  // support custom trivially relocatable objects) this #if branch can
-  // be removed (keeping only the right long-term expectation from the
-  // #else branch).
-  EXPECT_NE(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
-#else
-  // This is the right long-term expectation.
-  //
-  // (This EXPECT_EQ assertion is slightly misleading when NoOpImpl is used,
-  // because, unless zeroing is requested, it forces raw_ptr<> to use a default
-  // destructor that doesn't go through RawPtrCountingImpl::ReleaseWrappedPtr,
-  // so we can't really depend on `g_release_wrapped_ptr_cnt`. Nevertheless, the
-  // spirit of the EXPECT_EQ is correct + the assertion should be true in the
-  // long-term.)
   EXPECT_EQ(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) ||
-        // BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
-
   // Basic smoke test that raw_ptr elements in a vector work okay.
   for (const auto& elem : vector) {
     EXPECT_EQ(elem.get(), &x);
