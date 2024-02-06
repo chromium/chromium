@@ -72,7 +72,7 @@ const char kTrustedScoringSignalsResponse[] = R"(
 // Creates a seller script with scoreAd() returning the specified expression.
 // Allows using scoreAd() arguments, arbitrary values, incorrect types, etc.
 std::string CreateScoreAdScript(const std::string& raw_return_value,
-                                const std::string& extra_code = "") {
+                                const std::string& extra_code = std::string()) {
   constexpr char kSellAdScript[] = R"(
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
         browserSignals, directFromSellerSignals) {
@@ -95,8 +95,9 @@ std::string CreateBasicSellAdScript() {
 // line above the return value. Intended for sendReportTo() calls. In practice,
 // these scripts will always include a scoreAd() method, but few tests check
 // both methods.
-std::string CreateReportToScript(const std::string& raw_return_value,
-                                 const std::string& extra_code) {
+std::string CreateReportToScript(
+    const std::string& raw_return_value,
+    const std::string& extra_code = std::string()) {
   constexpr char kBasicSellerScript[] = R"(
     function reportResult(auctionConfig, browserSignals,
         directFromSellerSignals) {
@@ -1535,6 +1536,63 @@ TEST_F(SellerWorkletTest, ScoreAdRenderUrl) {
       R"(browserSignals.renderURL === "https://bar.test/" ? 3 : 0)", 0);
 }
 
+// Check that accessing `renderUrl` of browserSignals displays a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// removed.
+TEST_F(SellerWorkletTest, ScoreAdRenderUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
+      CreateScoreAdScript("browserSignals.renderUrl ? 1 : 0"));
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  RunScoreAdExpectingResultOnWorklet(worklet_impl, 1);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"browserSignals.renderUrl is deprecated. Please use "
+      "browserSignals.renderURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
+      /*line_number=*/4);
+}
+
+// Check that accessing `renderURL` of browserSignals does not display a
+// warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+TEST_F(SellerWorkletTest, ScoreAdRenderUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
+      CreateScoreAdScript("browserSignals.renderURL ? 1 : 0"));
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  RunScoreAdExpectingResultOnWorklet(worklet_impl, 1);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
   browser_signal_ad_components_.clear();
   RunScoreAdWithReturnValueExpectingResult(
@@ -2758,6 +2816,77 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.renderURL", "sendReportTo(browserSignals.renderURL)",
       R"("https://foo/")", browser_signal_render_url_);
+}
+
+// Check that accessing `renderUrl` of browserSignals displays a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// removed.
+TEST_F(SellerWorkletTest, ReportResultRenderUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateReportToScript("browserSignals.renderUrl"));
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      worklet_impl, /*expected_signals_for_winner=*/
+      base::StringPrintf("\"%s\"", browser_signal_render_url_.spec().c_str()),
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"browserSignals.renderUrl is deprecated. Please use "
+      "browserSignals.renderURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
+      /*line_number=*/10);
+}
+
+// Check that accessing `renderURL` of browserSignals does not display a
+// warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+TEST_F(SellerWorkletTest, ReportResultRenderUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateReportToScript("browserSignals.renderURL"));
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      worklet_impl, /*expected_signals_for_winner=*/
+      base::StringPrintf("\"%s\"", browser_signal_render_url_.spec().c_str()),
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
 }
 
 TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {

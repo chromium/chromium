@@ -113,7 +113,7 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
 
 InterestGroupLazyFiller::InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
                                                  AuctionV8Logger* v8_logger)
-    : LazyFiller(v8_helper), v8_logger_(v8_logger) {}
+    : PersistedLazyFiller(v8_helper), v8_logger_(v8_logger) {}
 
 void InterestGroupLazyFiller::ReInitialize(
     const GURL* bidding_logic_url,
@@ -474,7 +474,7 @@ void InterestGroupLazyFiller::HandleDeprecatedAdsRenderUrl(
 
 BiddingBrowserSignalsLazyFiller::BiddingBrowserSignalsLazyFiller(
     AuctionV8Helper* v8_helper)
-    : LazyFiller(v8_helper) {}
+    : PersistedLazyFiller(v8_helper) {}
 
 void BiddingBrowserSignalsLazyFiller::ReInitialize(
     mojom::BiddingBrowserSignals* bidder_browser_signals,

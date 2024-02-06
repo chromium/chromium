@@ -25,7 +25,7 @@ namespace auction_worklet {
 
 class AuctionV8Logger;
 
-class CONTENT_EXPORT InterestGroupLazyFiller : public LazyFiller {
+class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
  public:
   // `v8_helper` and `v8_logger` must outlive `this`.
   InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
@@ -143,7 +143,8 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public LazyFiller {
 // version after API users migrate.
 enum class PrevWinsType { kSeconds, kMilliseconds };
 
-class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller : public LazyFiller {
+class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller
+    : public PersistedLazyFiller {
  public:
   explicit BiddingBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper);
 
