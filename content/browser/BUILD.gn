@@ -571,6 +571,8 @@ source_set("browser") {
     "background_sync/periodic_background_sync_service_impl.h",
     "bad_message.cc",
     "bad_message.h",
+    "binder_wrappers/ad_auction_service_impl_wrapper.cc",
+    "binder_wrappers/ad_auction_service_impl_wrapper.h",
     "blob_storage/blob_internals_url_loader.cc",
     "blob_storage/blob_internals_url_loader.h",
     "blob_storage/blob_registry_wrapper.cc",

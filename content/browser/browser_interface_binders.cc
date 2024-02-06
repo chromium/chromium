@@ -19,6 +19,7 @@
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/binder_wrappers/ad_auction_service_impl_wrapper.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
@@ -33,7 +34,6 @@
 #include "content/browser/image_capture/image_capture_impl.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom.h"
 #include "content/browser/indexed_db/indexed_db_internals_ui.h"
-#include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/keyboard_lock/keyboard_lock_service_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/media/media_web_contents_observer.h"
@@ -1168,8 +1168,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::KeyboardLockService>(
       base::BindRepeating(&KeyboardLockServiceImpl::CreateMojoService));
   if (base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
-    map->Add<blink::mojom::AdAuctionService>(
-        base::BindRepeating(&AdAuctionServiceImpl::CreateMojoService));
+    AdAuctionServiceImplCreateMojoService(*map);
   }
   map->Add<blink::mojom::MediaSessionService>(
       base::BindRepeating(&MediaSessionServiceImpl::Create));
