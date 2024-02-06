@@ -134,7 +134,11 @@ TabResumptionPageHandler::TabResumptionPageHandler(
               /*Default value for visibility threshold*/ 0.5))),
       categories_blocklist_(GetTabResumptionCategories(
           ntp_features::kNtpTabResumptionModuleCategoriesBlocklistParam,
-          {kCategoryBlockList.begin(), kCategoryBlockListCount})) {
+          {kCategoryBlockList.begin(), kCategoryBlockListCount})),
+      time_limit_(base::GetFieldTrialParamByFeatureAsInt(
+          ntp_features::kNtpTabResumptionModuleTimeLimit,
+          ntp_features::kNtpTabResumptionModuleTimeLimitParam,
+          /*Default value for time limit*/ 24)) {
   DCHECK(profile_);
   DCHECK(web_contents_);
 }
@@ -147,8 +151,10 @@ void TabResumptionPageHandler::OnQueryURLsComplete(
     std::vector<history::QueryURLResult> results) {
   history::VisitVector visit_rows;
   for (auto result : results) {
-    for (auto visit : result.visits) {
-      visit_rows.push_back(visit);
+    if ((base::Time::Now() - result.row.last_visit()).InHours() < time_limit_) {
+      for (auto visit : result.visits) {
+        visit_rows.push_back(visit);
+      }
     }
   }
   auto* history_service = HistoryServiceFactory::GetForProfile(

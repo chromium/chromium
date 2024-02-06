@@ -78,6 +78,9 @@ class TabResumptionPageHandler
   // If `categories_blocklist`is empty, the returned tabs will not be filtered.
   base::flat_set<std::string> categories_blocklist_;
 
+  // Amount of hours in the past that tabs are able to be shown.
+  const int time_limit_;
+
   base::WeakPtrFactory<TabResumptionPageHandler> weak_ptr_factory_{this};
 };
 

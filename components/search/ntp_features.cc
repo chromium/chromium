@@ -392,12 +392,18 @@ BASE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering,
              "HistoryClustersModuleEnableContentClustering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the Tab Resumption module will be shown.
 BASE_FEATURE(kNtpTabResumptionModule,
              "NtpTabResumptionModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNtpTabResumptionModuleCategories,
              "NtpTabResumptionModuleCategories",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Dummy feature to set how recent tabs must be to be shown.
+BASE_FEATURE(kNtpTabResumptionModuleTimeLimit,
+             "NtpTabResumptionModuleTimeLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kNtpModuleIgnoredCriteriaThreshold[] =
@@ -475,6 +481,8 @@ const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
     "NtpTabResumptionModuleCategoriesBlocklistParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
+const char kNtpTabResumptionModuleTimeLimitParam[] =
+    "NtpTabResumptionModuleTimeLimitParam";
 const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =
     "NtpTabResumptionModuleVisibilityThresholdDataParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
