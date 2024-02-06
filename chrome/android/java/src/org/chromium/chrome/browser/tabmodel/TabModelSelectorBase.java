@@ -33,7 +33,7 @@ public abstract class TabModelSelectorBase
 
     private static TabModelSelectorObserver sObserverForTesting;
 
-    private List<TabModel> mTabModels = new ArrayList<>();
+    private final List<TabModel> mTabModels = new ArrayList<>();
     private IncognitoTabModel mIncognitoTabModel;
 
     /**
@@ -270,7 +270,9 @@ public abstract class TabModelSelectorBase
                         + " Is destroyed "
                         + tab.isDestroyed()
                         + " Is detached "
-                        + tab.isDetached();
+                        + tab.isDetached()
+                        + " Model-size: "
+                        + getModels().size();
         return false;
     }
 
