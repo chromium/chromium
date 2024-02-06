@@ -21,6 +21,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -41,6 +43,7 @@
 #include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 namespace {
@@ -49,6 +52,35 @@ constexpr char kManifestPath[] = "/manifest.webmanifest";
 
 using InstallResult = base::expected<InstallIsolatedWebAppCommandSuccess,
                                      InstallIsolatedWebAppCommandError>;
+
+void FakeInstallPageState(Profile* profile,
+                          const IsolatedWebAppUrlInfo& url_info,
+                          blink::mojom::ManifestPtr blink_manifest) {
+  auto* fake_web_app_provider = FakeWebAppProvider::Get(profile);
+  CHECK(fake_web_app_provider) << "WebAppProvider isn't faked";
+  auto& fake_web_contents_manager = static_cast<FakeWebContentsManager&>(
+      fake_web_app_provider->web_contents_manager());
+
+  GURL base_url = url_info.origin().GetURL();
+  for (const blink::Manifest::ImageResource& icon : blink_manifest->icons) {
+    FakeWebContentsManager::FakeIconState& icon_state =
+        fake_web_contents_manager.GetOrCreateIconState(icon.src);
+    // For now we use a placeholder square icon rather than reading the icons
+    // from the app.
+    icon_state.bitmaps = {CreateSquareIcon(256, SK_ColorWHITE)};
+  }
+
+  GURL install_url =
+      base_url.Resolve("/.well-known/_generated_install_page.html");
+  FakeWebContentsManager::FakePageState& install_page_state =
+      fake_web_contents_manager.GetOrCreatePageState(install_url);
+  install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  install_page_state.error_code =
+      webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+  install_page_state.manifest_url = base_url.Resolve(kManifestPath);
+  install_page_state.valid_manifest_for_web_app = true;
+  install_page_state.opt_manifest = std::move(blink_manifest);
+}
 
 base::expected<IsolatedWebAppUrlInfo, std::string> Install(
     Profile* profile,
@@ -74,9 +106,12 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
 }  // namespace
 
 ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
+    const ManifestBuilder& manifest_builder,
     const web_package::SignedWebBundleId& web_bundle_id,
     base::ScopedTempFile&& bundle_file)
-    : web_bundle_id_(web_bundle_id), bundle_file_(std::move(bundle_file)) {}
+    : manifest_builder_(manifest_builder),
+      web_bundle_id_(web_bundle_id),
+      bundle_file_(std::move(bundle_file)) {}
 
 ScopedBundledIsolatedWebApp::~ScopedBundledIsolatedWebApp() = default;
 
@@ -87,19 +122,45 @@ void ScopedBundledIsolatedWebApp::TrustSigningKey() {
 base::expected<IsolatedWebAppUrlInfo, std::string>
 ScopedBundledIsolatedWebApp::Install(Profile* profile) {
   return ::web_app::Install(profile, web_bundle_id_,
-                            DevModeBundle{.path = path()});
+                            InstalledBundle{.path = path()});
+}
+
+void ScopedBundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
+  ::web_app::FakeInstallPageState(
+      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
 }
 
 ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
+    const ManifestBuilder& manifest_builder,
     std::unique_ptr<net::EmbeddedTestServer> proxy_server)
-    : proxy_server_(std::move(proxy_server)) {}
+    : manifest_builder_(manifest_builder),
+      proxy_server_(std::move(proxy_server)) {}
 
 ScopedProxyIsolatedWebApp::~ScopedProxyIsolatedWebApp() = default;
 
+void ScopedProxyIsolatedWebApp::FakeInstallPageState(
+    Profile* profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
+  ::web_app::FakeInstallPageState(
+      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
+}
+
 base::expected<IsolatedWebAppUrlInfo, std::string>
 ScopedProxyIsolatedWebApp::Install(Profile* profile) {
+  return Install(profile,
+                 web_package::SignedWebBundleId::CreateRandomForDevelopment());
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+ScopedProxyIsolatedWebApp::Install(
+    Profile* profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
   return ::web_app::Install(
-      profile, web_package::SignedWebBundleId::CreateRandomForDevelopment(),
+      profile, web_bundle_id,
       DevModeProxy{.proxy_url = proxy_server_->GetOrigin()});
 }
 
@@ -180,18 +241,21 @@ std::string ManifestBuilder::ToJson() const {
   return base::WriteJsonWithOptions(json, base::OPTIONS_PRETTY_PRINT).value();
 }
 
-blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest() const {
+blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
+    const url::Origin& app_origin) const {
+  GURL base_url = app_origin.GetURL();
   auto manifest = blink::mojom::Manifest::New();
   manifest->name = base::UTF8ToUTF16(name_);
   manifest->version = base::UTF8ToUTF16(version_);
-  manifest->id = GURL("/");
-  manifest->scope = GURL("/");
-  manifest->start_url = GURL(start_url_);
+  manifest->id = base_url;
+  manifest->scope = base_url;
+  manifest->start_url = base_url.Resolve(start_url_);
   manifest->display = blink::mojom::DisplayMode::kStandalone;
 
   for (const auto& icon_path : icon_paths_) {
     blink::Manifest::ImageResource icon;
-    icon.src = GURL(icon_path);
+    icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+    icon.src = base_url.Resolve(icon_path);
     icon.type = u"image/png";
     icon.sizes.push_back(gfx::Size(256, 256));
     manifest->icons.push_back(icon);
@@ -260,8 +324,9 @@ std::string IsolatedWebAppBuilder::Resource::body() const {
                      body_);
 }
 
-IsolatedWebAppBuilder::IsolatedWebAppBuilder(const ManifestBuilder& manifest)
-    : manifest_(manifest) {
+IsolatedWebAppBuilder::IsolatedWebAppBuilder(
+    const ManifestBuilder& manifest_builder)
+    : manifest_builder_(manifest_builder) {
   AddHtml("/", "Test html");
   AddImageAsPng("/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
 }
@@ -356,11 +421,12 @@ std::unique_ptr<ScopedProxyIsolatedWebApp>
 IsolatedWebAppBuilder::BuildAndStartProxyServer() {
   Validate();
   net::EmbeddedTestServer::HandleRequestCallback handler = base::BindRepeating(
-      &IsolatedWebAppBuilder::HandleRequest, manifest_, resources_);
+      &IsolatedWebAppBuilder::HandleRequest, manifest_builder_, resources_);
   auto server = std::make_unique<net::EmbeddedTestServer>();
   server->RegisterRequestHandler(handler);
   CHECK(server->Start());
-  return std::make_unique<ScopedProxyIsolatedWebApp>(std::move(server));
+  return std::make_unique<ScopedProxyIsolatedWebApp>(manifest_builder_,
+                                                     std::move(server));
 }
 
 std::unique_ptr<ScopedBundledIsolatedWebApp>
@@ -374,8 +440,8 @@ std::unique_ptr<ScopedBundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
   CHECK(temp_file.Create());
   web_package::SignedWebBundleId web_bundle_id =
       BuildBundle(key_pair, temp_file.path());
-  return std::make_unique<ScopedBundledIsolatedWebApp>(web_bundle_id,
-                                                       std::move(temp_file));
+  return std::make_unique<ScopedBundledIsolatedWebApp>(
+      manifest_builder_, web_bundle_id, std::move(temp_file));
 }
 
 web_package::SignedWebBundleId IsolatedWebAppBuilder::BuildBundle(
@@ -403,7 +469,7 @@ web_package::SignedWebBundleId IsolatedWebAppBuilder::BuildBundle(
   builder.AddExchange(
       kManifestPath,
       {{":status", "200"}, {"content-type", "application/manifest+json"}},
-      manifest_.ToJson());
+      manifest_builder_.ToJson());
 
   auto web_bundle_id =
       web_package::SignedWebBundleId::CreateForEd25519PublicKey(
@@ -416,11 +482,11 @@ web_package::SignedWebBundleId IsolatedWebAppBuilder::BuildBundle(
 }
 
 void IsolatedWebAppBuilder::Validate() {
-  CHECK(resources_.find(manifest_.start_url()) != resources_.end())
-      << "Resource at 'start_url' (" << manifest_.start_url()
+  CHECK(resources_.find(manifest_builder_.start_url()) != resources_.end())
+      << "Resource at 'start_url' (" << manifest_builder_.start_url()
       << ") does not exist";
 
-  for (const auto& icon_path : manifest_.icon_paths()) {
+  for (const auto& icon_path : manifest_builder_.icon_paths()) {
     CHECK(resources_.find(icon_path) != resources_.end())
         << "Icon at '" << icon_path << "' does not exist";
   }
@@ -429,7 +495,7 @@ void IsolatedWebAppBuilder::Validate() {
 // static
 std::unique_ptr<net::test_server::HttpResponse>
 IsolatedWebAppBuilder::HandleRequest(
-    const ManifestBuilder& manifest,
+    const ManifestBuilder& manifest_builder,
     const std::map<std::string, Resource>& resources,
     const net::test_server::HttpRequest& request) {
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -437,7 +503,7 @@ IsolatedWebAppBuilder::HandleRequest(
   if (path == kManifestPath) {
     response->set_code(net::HTTP_OK);
     response->set_content_type("application/manifest+json");
-    response->set_content(manifest.ToJson());
+    response->set_content(manifest_builder.ToJson());
   } else if (const auto resource = resources.find(path);
              resource != resources.end()) {
     response->set_code(net::HTTP_OK);
