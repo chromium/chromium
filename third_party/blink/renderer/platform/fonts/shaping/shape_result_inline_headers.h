@@ -48,25 +48,9 @@ namespace blink {
 
 class SimpleFontData;
 
-struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
-  USING_FAST_MALLOC(RunInfo);
-
+struct ShapeResult::RunInfo final
+    : public GarbageCollected<ShapeResult::RunInfo> {
  public:
-  static scoped_refptr<RunInfo> Create(const SimpleFontData* font,
-                                       hb_direction_t dir,
-                                       CanvasRotationInVertical canvas_rotation,
-                                       hb_script_t script,
-                                       unsigned start_index,
-                                       unsigned num_glyphs,
-                                       unsigned num_characters) {
-    return base::AdoptRef(new RunInfo(font, dir, canvas_rotation, script,
-                                      start_index, num_glyphs, num_characters));
-  }
-
-  static scoped_refptr<RunInfo> Create(const RunInfo& other) {
-    return base::AdoptRef(new RunInfo(other));
-  }
-
   RunInfo(const SimpleFontData* font,
           hb_direction_t dir,
           CanvasRotationInVertical canvas_rotation,
@@ -94,6 +78,8 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
         script_(other.script_),
         direction_(other.direction_),
         canvas_rotation_(other.canvas_rotation_) {}
+
+  void Trace(Visitor*) const {}
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
   bool IsLtr() const { return HB_DIRECTION_IS_FORWARD(direction_); }
@@ -134,7 +120,7 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
 
   // Creates a new RunInfo instance representing a subset of the current run.
   // Returns |nullptr| if there are no glyphs in the specified range.
-  scoped_refptr<RunInfo> CreateSubRun(unsigned start, unsigned end) {
+  RunInfo* CreateSubRun(unsigned start, unsigned end) {
     DCHECK(end > start);
     unsigned number_of_characters = std::min(end - start, num_characters_);
     auto glyphs = FindGlyphDataRange(start, end);
@@ -143,9 +129,9 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
     if (UNLIKELY(!number_of_glyphs))
       return nullptr;
 
-    auto run =
-        Create(font_data_.get(), direction_, canvas_rotation_, script_,
-               start_index_ + start, number_of_glyphs, number_of_characters);
+    auto* run = MakeGarbageCollected<RunInfo>(
+        font_data_.get(), direction_, canvas_rotation_, script_,
+        start_index_ + start, number_of_glyphs, number_of_characters);
 
     run->glyph_data_.CopyFromRange(glyphs);
 
@@ -163,14 +149,14 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
 
   // Returns new |RunInfo| if |this| and |other| are merged. Otherwise returns
   // null.
-  scoped_refptr<RunInfo> MergeIfPossible(const RunInfo& other) const {
+  RunInfo* MergeIfPossible(const RunInfo& other) const {
     if (!CanMerge(other))
       return nullptr;
     DCHECK_LT(start_index_, other.start_index_);
-    auto run =
-        Create(font_data_.get(), direction_, canvas_rotation_, script_,
-               start_index_, glyph_data_.size() + other.glyph_data_.size(),
-               num_characters_ + other.num_characters_);
+    auto* run = MakeGarbageCollected<RunInfo>(
+        font_data_.get(), direction_, canvas_rotation_, script_, start_index_,
+        glyph_data_.size() + other.glyph_data_.size(),
+        num_characters_ + other.num_characters_);
     // Note: We populate |graphemes_| on demand, e.g. hit testing.
     const int index_adjust = other.start_index_ - start_index_;
     if (UNLIKELY(IsRtl())) {

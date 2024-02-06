@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_stretch_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -49,7 +50,6 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -149,7 +149,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
               TextDirection);
   ShapeResult(const ShapeResult&);
 
-  void Trace(Visitor* visitor) const { visitor->Trace(deprecated_ink_bounds_); }
+  void Trace(Visitor*) const;
 
   static ShapeResult* CreateEmpty(const ShapeResult& other) {
     return MakeGarbageCollected<ShapeResult>(other.primary_font_, 0, 0,
@@ -474,12 +474,12 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // Inserts as many glyphs as possible as a RunInfo, and sets
   // |next_start_glyph| to the start index of the remaining glyphs to be
   // inserted.
-  void InsertRun(scoped_refptr<ShapeResult::RunInfo>,
+  void InsertRun(ShapeResult::RunInfo*,
                  unsigned start_glyph,
                  unsigned num_glyphs,
                  unsigned* next_start_glyph,
                  hb_buffer_t*);
-  void InsertRun(scoped_refptr<ShapeResult::RunInfo>);
+  void InsertRun(ShapeResult::RunInfo*);
   void ReorderRtlRuns(unsigned run_size_before);
 
   template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
@@ -488,7 +488,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
                            gfx::RectF* ink_bounds) const;
 
   // Common signatures with ShapeResultView, to templatize algorithms.
-  const Vector<scoped_refptr<RunInfo>>& RunsOrParts() const { return runs_; }
+  const HeapVector<Member<RunInfo>>& RunsOrParts() const { return runs_; }
   unsigned StartIndexOffsetForRun() const { return 0; }
 
   // The total width. This is the sum of `RunInfo::width_`.
@@ -501,7 +501,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
   Member<DeprecatedInkBounds> deprecated_ink_bounds_ = nullptr;
 
-  Vector<scoped_refptr<RunInfo>> runs_;
+  HeapVector<Member<RunInfo>> runs_;
 
   // Stores x-positions for quick mapping between offsets and x-positions.
   // Unlike the RunInfo and GlyphData, which operates in glyph order, this
@@ -509,7 +509,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // advance for each character. Allowing constant time mapping from character
   // index to x-position and O(log n) time, using binary search, from
   // x-position to character index.
-  mutable Vector<ShapeResultCharacterData> character_position_;
+  mutable HeapVector<ShapeResultCharacterData> character_position_;
   scoped_refptr<const SimpleFontData> primary_font_;
 
   unsigned start_index_;
