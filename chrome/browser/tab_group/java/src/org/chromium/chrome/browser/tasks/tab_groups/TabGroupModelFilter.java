@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,77 +34,6 @@ import java.util.Set;
  * also a {@link TabList} that contains the last shown {@link Tab} from every group.
  */
 public class TabGroupModelFilter extends TabModelFilter {
-    /**
-     * This class is a representation of a group of tabs. It knows the last selected tab within the
-     * group.
-     */
-    private class TabGroup {
-        private static final int INVALID_GROUP_ID = -1;
-        private final Set<Integer> mTabIds;
-        private int mLastShownTabId;
-        private int mGroupId;
-
-        TabGroup(int groupId) {
-            mTabIds = new LinkedHashSet<>();
-            mLastShownTabId = Tab.INVALID_TAB_ID;
-            mGroupId = groupId;
-        }
-
-        void addTab(int tabId) {
-            mTabIds.add(tabId);
-            if (mLastShownTabId == Tab.INVALID_TAB_ID) setLastShownTabId(tabId);
-            if (size() > 1) reorderGroup(mGroupId);
-        }
-
-        void removeTab(int tabId) {
-            assert mTabIds.contains(tabId);
-            if (mLastShownTabId == tabId) {
-                int nextIdToShow = nextTabIdToShow(tabId);
-                if (nextIdToShow != Tab.INVALID_TAB_ID) setLastShownTabId(nextIdToShow);
-            }
-            mTabIds.remove(tabId);
-        }
-
-        void moveToEndInGroup(int tabId) {
-            if (!mTabIds.contains(tabId)) return;
-            mTabIds.remove(tabId);
-            mTabIds.add(tabId);
-        }
-
-        boolean contains(int tabId) {
-            return mTabIds.contains(tabId);
-        }
-
-        int size() {
-            return mTabIds.size();
-        }
-
-        List<Integer> getTabIdList() {
-            return Collections.unmodifiableList(new ArrayList<>(mTabIds));
-        }
-
-        int getLastShownTabId() {
-            return mLastShownTabId;
-        }
-
-        void setLastShownTabId(int tabId) {
-            assert mTabIds.contains(tabId);
-            mLastShownTabId = tabId;
-        }
-
-        int nextTabIdToShow(int tabId) {
-            if (mTabIds.size() == 1 || !mTabIds.contains(tabId)) return Tab.INVALID_TAB_ID;
-            List<Integer> ids = getTabIdList();
-            int position = ids.indexOf(tabId);
-            if (position == 0) return ids.get(position + 1);
-            return ids.get(position - 1);
-        }
-
-        int getTabIdForIndex(int index) {
-            return getTabIdList().get(index);
-        }
-    }
-
     private ObserverList<TabGroupModelFilterObserver> mGroupFilterObserver = new ObserverList<>();
     private Map<Integer, Integer> mGroupIdToGroupIndexMap = new HashMap<>();
     private Map<Integer, TabGroup> mGroupIdToGroupMap = new HashMap<>();
@@ -347,14 +275,11 @@ public class TabGroupModelFilter extends TabModelFilter {
         int targetIndex;
         if (trailing) {
             Tab lastTabInSourceGroup =
-                    TabModelUtils.getTabById(
-                            tabModel,
-                            sourceTabGroup.getTabIdForIndex(
-                                    sourceTabGroup.getTabIdList().size() - 1));
+                    TabModelUtils.getTabById(tabModel, sourceTabGroup.getTabIdOfLastTab());
             targetIndex = tabModel.indexOf(lastTabInSourceGroup);
         } else {
             Tab firstTabInSourceGroup =
-                    TabModelUtils.getTabById(tabModel, sourceTabGroup.getTabIdForIndex(0));
+                    TabModelUtils.getTabById(tabModel, sourceTabGroup.getTabIdOfFirstTab());
             targetIndex = tabModel.indexOf(firstTabInSourceGroup);
         }
         assert targetIndex != TabModel.INVALID_TAB_INDEX;
@@ -570,7 +495,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         int groupId = getRootId(tab);
         if (mGroupIdToGroupMap.containsKey(groupId)) {
             boolean wasGroupSizeOfOne = mGroupIdToGroupMap.get(groupId).size() == 1;
-            mGroupIdToGroupMap.get(groupId).addTab(tab.getId());
+            mGroupIdToGroupMap.get(groupId).addTab(tab.getId(), getTabModel());
 
             if (wasGroupSizeOfOne) {
                 mActualGroupCount++;
@@ -588,7 +513,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             }
         } else {
             TabGroup tabGroup = new TabGroup(getRootId(tab));
-            tabGroup.addTab(tab.getId());
+            tabGroup.addTab(tab.getId(), getTabModel());
             mGroupIdToGroupMap.put(groupId, tabGroup);
             if (mIsResetting || getTabModel().indexOf(tab) == getTabModel().getCount() - 1) {
                 // During a reset tabs are iterated over in TabModel order so it is safe to assume
@@ -666,9 +591,17 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     protected void reorder() {
-        reorderGroup(TabGroup.INVALID_GROUP_ID);
-
+        mGroupIdToGroupIndexMap.clear();
         TabModel tabModel = getTabModel();
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab tab = tabModel.getTabAt(i);
+            int groupId = getRootId(tab);
+            if (!mGroupIdToGroupIndexMap.containsKey(groupId)) {
+                mGroupIdToGroupIndexMap.put(groupId, mGroupIdToGroupIndexMap.size());
+            }
+            mGroupIdToGroupMap.get(groupId).moveToEndInGroup(tab.getId());
+        }
+
         if (tabModel.index() == TabModel.INVALID_TAB_INDEX) {
             mCurrentGroupIndex = TabModel.INVALID_TAB_INDEX;
         } else {
@@ -676,25 +609,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
 
         assert mGroupIdToGroupIndexMap.size() == mGroupIdToGroupMap.size();
-    }
-
-    private void reorderGroup(int groupId) {
-        boolean reorderAllGroups = groupId == TabGroup.INVALID_GROUP_ID;
-        if (reorderAllGroups) {
-            mGroupIdToGroupIndexMap.clear();
-        }
-
-        TabModel tabModel = getTabModel();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAt(i);
-            if (reorderAllGroups) {
-                groupId = getRootId(tab);
-                if (!mGroupIdToGroupIndexMap.containsKey(groupId)) {
-                    mGroupIdToGroupIndexMap.put(groupId, mGroupIdToGroupIndexMap.size());
-                }
-            }
-            mGroupIdToGroupMap.get(groupId).moveToEndInGroup(tab.getId());
-        }
     }
 
     @Override
@@ -864,7 +778,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         boolean isMergeTabToGroup = isMergeTabToGroup(tab);
         boolean isMoveTabOutOfGroup = isMoveTabOutOfGroup(tab) || mIsUndoing;
         int groupIdBeforeMove = getGroupIdBeforeMove(tab, isMergeTabToGroup || isMoveTabOutOfGroup);
-        assert groupIdBeforeMove != TabGroup.INVALID_GROUP_ID;
+        assert groupIdBeforeMove != TabGroup.INVALID_ROOT_ID;
         TabGroup groupBeforeMove = mGroupIdToGroupMap.get(groupIdBeforeMove);
 
         if (isMoveTabOutOfGroup) {
@@ -932,7 +846,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             }
         }
 
-        return TabGroup.INVALID_GROUP_ID;
+        return TabGroup.INVALID_ROOT_ID;
     }
 
     private boolean isMoveWithinGroup(

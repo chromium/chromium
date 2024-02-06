@@ -8,6 +8,7 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroup.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterObserver.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
