@@ -10,6 +10,8 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -59,7 +61,10 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 
 TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
                                          Profile* profile)
-    : button_(button),
+    : optimization_guide::SettingsEnabledObserver(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      button_(button),
       profile_(profile),
       webui_bubble_manager_(button,
                             profile,
@@ -75,6 +80,12 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
     if (tab_organization_service) {
       tab_organization_service->AddObserver(this);
     }
+  }
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (optimization_guide_keyed_service) {
+    optimization_guide_keyed_service->AddModelExecutionSettingsEnabledObserver(
+        this);
   }
   auto menu_button_controller = std::make_unique<views::MenuButtonController>(
       button,
@@ -92,6 +103,12 @@ TabSearchBubbleHost::~TabSearchBubbleHost() {
     if (tab_organization_service) {
       tab_organization_service->RemoveObserver(this);
     }
+  }
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+  if (optimization_guide_keyed_service) {
+    optimization_guide_keyed_service
+        ->RemoveModelExecutionSettingsEnabledObserver(this);
   }
 }
 
@@ -144,6 +161,21 @@ void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
   if (browser == GetBrowser()) {
     const int tab_organization_tab_index = 1;
     ShowTabSearchBubble(false, tab_organization_tab_index);
+  }
+}
+
+void TabSearchBubbleHost::OnChangeInFeatureCurrentlyEnabledState(
+    bool is_now_enabled) {
+  auto* const tab_organization_service =
+      TabOrganizationServiceFactory::GetForProfile(profile_);
+  if (!tab_organization_service) {
+    return;
+  }
+
+  if (is_now_enabled) {
+    tab_organization_service->AddObserver(this);
+  } else {
+    tab_organization_service->RemoveObserver(this);
   }
 }
 
