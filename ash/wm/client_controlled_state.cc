@@ -111,9 +111,9 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
                                                   const WMEvent* event) {
   if (!delegate_)
     return;
+  aura::Window* const window = window_state->window();
   // Client is responsible for adjusting bounds after workspace bounds change.
   if (window_state->IsSnapped()) {
-    const aura::Window* window = window_state->window();
     // If `SplitViewController` is aware of `window` (e.g. in tablet), let the
     // controller handle the workspace event.
     if (SplitViewController::Get(window)->IsWindowInSplitView(window)) {
@@ -127,12 +127,17 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
     delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
                                    bounds, window_state->GetDisplay().id());
   } else if (window_state->IsFloated()) {
+    if (!window->parent()) {
+      // If the window is now reparenting to another container (or being
+      // destroyed), no need to adjust floated bounds. The next workspace event
+      // (`WM_EVENT_ADDED_TO_WORKSPACE`) is coming soon anyway.
+      return;
+    }
     const gfx::Rect bounds =
         display::Screen::GetScreen()->InTabletMode()
-            ? FloatController::GetFloatWindowTabletBounds(
-                  window_state->window())
+            ? FloatController::GetFloatWindowTabletBounds(window)
             : FloatController::GetFloatWindowClamshellBounds(
-                  window_state->window(),
+                  window,
                   // TODO(b/292579250): Add a mechanism to float as close to the
                   // previous bounds in the event of a workspace event. For now,
                   // use the default float location.
@@ -143,12 +148,11 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
     // Explicitly handle the primary change because it can change the display id
     // with no bounds change.
     if (event->AsDisplayMetricsChangedWMEvent()->primary_changed()) {
-      const gfx::Rect bounds = window_state->window()->bounds();
+      const gfx::Rect bounds = window->bounds();
       delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
                                      bounds, window_state->GetDisplay().id());
     }
   } else if (event->type() == WM_EVENT_ADDED_TO_WORKSPACE) {
-    aura::Window* window = window_state->window();
     gfx::Rect bounds = window->bounds();
     AdjustBoundsForMinimumWindowVisibility(window->GetRootWindow()->bounds(),
                                            &bounds);
