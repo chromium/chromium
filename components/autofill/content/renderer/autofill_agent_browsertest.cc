@@ -727,6 +727,69 @@ TEST_F(AutofillAgentTest, FormlessOnNavigationAfterSomeInputsRemoved) {
   autofill_agent().OnProbablyFormSubmitted();
 }
 
+// Test that in the scenario that:
+// - The user autofills a form which dynamically removes -
+//   during autofill - `AutofillAgent::last_queried_element_` from the DOM
+//   hierarchy.
+// THAT
+// - Inferred form submission as a result of the page removing the <form> from
+//   the DOM hierarchy does not send fields which were removed from the DOM
+//   hierarchy at autofill time.
+TEST_F(AutofillAgentTest,
+       OnInferredFormSubmissionAfterAutofillRemovesLastQueriedElement) {
+  LoadHTML(R"(
+    <form id="form">
+      <input id="input1">
+      <input id="input2" onchange="document.getElementById('input1').remove();">
+    </form>
+  )");
+
+  blink::WebFormElement form_element =
+      GetWebElementById("form").DynamicTo<blink::WebFormElement>();
+  ASSERT_FALSE(form_element.IsNull());
+  std::optional<FormData> form_data =
+      form_util::ExtractFormData(GetMainFrame()->GetDocument(), form_element,
+                                 autofill_agent().field_data_manager(),
+                                 {form_util::ExtractOption::kValue});
+  ASSERT_TRUE(form_data.has_value());
+
+  blink::WebVector<blink::WebFormControlElement> field_elements =
+      form_element.GetFormControlElements();
+
+  for (const blink::WebFormControlElement& field_element : field_elements) {
+    ASSERT_EQ(field_element.GetAutofillState(),
+              blink::WebAutofillState::kNotFilled);
+  }
+
+  for (FormFieldData& field : form_data->fields) {
+    field.value = field.id_attribute + u" autofilled";
+    field.is_autofilled = true;
+  }
+
+  // Update `AutofillAgent::last_queried_element_`.
+  static_cast<content::RenderFrameObserver*>(&autofill_agent())
+      ->FocusedElementChanged(field_elements[0]);
+
+  autofill_agent().ApplyFormAction(mojom::ActionType::kFill,
+                                   mojom::ActionPersistence::kFill,
+                                   FormData::FillData(*form_data));
+
+  for (const blink::WebFormControlElement& field_element : field_elements) {
+    ASSERT_EQ(field_element.GetAutofillState(),
+              blink::WebAutofillState::kAutofilled);
+  }
+
+  EXPECT_CALL(autofill_driver(),
+              FormSubmitted(AllOf(FieldsAre("id", &FormFieldData::id_attribute,
+                                            {u"input2"}),
+                                  FieldsAre("value", &FormFieldData::value,
+                                            {u"input2 autofilled"})),
+                            _, _));
+  ExecuteJavaScriptForTests(R"(document.getElementById('form').remove();)");
+  autofill_agent().OnInferredFormSubmission(
+      mojom::SubmissionSource::XHR_SUCCEEDED);
+}
+
 }  // namespace
 
 }  // namespace autofill
