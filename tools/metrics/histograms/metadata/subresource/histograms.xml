@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.MainFrameLoad.RulesetIsAvailableAnyActivationLevel"
-    enum="BooleanAvailable" expires_after="2024-02-11">
+    enum="BooleanAvailable" expires_after="2025-02-11">
   <owner>alexmt@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
