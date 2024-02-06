@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Size;
@@ -124,7 +126,7 @@ public class StripTabDragShadowViewUnitTest {
 
     @Test
     public void testSetTab() {
-        mStripTabDragShadowView.setTab(mMockTab);
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
 
         assertEquals(
                 "Should have set Tab on drag start.",
@@ -135,7 +137,7 @@ public class StripTabDragShadowViewUnitTest {
 
     @Test
     public void testClear() {
-        mStripTabDragShadowView.setTab(mMockTab);
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
 
         mStripTabDragShadowView.clear();
 
@@ -147,7 +149,7 @@ public class StripTabDragShadowViewUnitTest {
 
     @Test
     public void testUpdate_LayoutSize() {
-        mStripTabDragShadowView.setTab(mMockTab);
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
 
         int expectedWidth = StripTabDragShadowView.WIDTH_DP;
         int expectedHeight =
@@ -159,8 +161,28 @@ public class StripTabDragShadowViewUnitTest {
     }
 
     @Test
+    public void testUpdate_LayoutSize_Expand() {
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
+        assertNull(
+                "Should not be animating.", mStripTabDragShadowView.getRunningAnimatorForTesting());
+
+        mStripTabDragShadowView.expand();
+
+        Resources resources = mActivity.getResources();
+        int expectedWidth = 0;
+        int expectedHeight =
+                resources.getDimensionPixelSize(R.dimen.tab_grid_card_header_height)
+                        + (2 * resources.getDimensionPixelSize(R.dimen.tab_grid_card_margin));
+        LayoutParams layoutParams = mStripTabDragShadowView.getLayoutParams();
+        assertEquals("Unexpected view width.", expectedWidth, layoutParams.width);
+        assertEquals("Unexpected view height.", expectedHeight, layoutParams.height);
+        assertNotNull(
+                "Should be animating.", mStripTabDragShadowView.getRunningAnimatorForTesting());
+    }
+
+    @Test
     public void testUpdate_ThumbnailRequestSuccess() {
-        mStripTabDragShadowView.setTab(mMockTab);
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
 
         verify(mMockTabContentManager)
                 .getTabThumbnailWithCallback(
@@ -179,7 +201,7 @@ public class StripTabDragShadowViewUnitTest {
 
     @Test
     public void testUpdate_ThumbnailRequestFailure() {
-        mStripTabDragShadowView.setTab(mMockTab);
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
         verify(mMockTabContentManager)
                 .getTabThumbnailWithCallback(
                         eq(TAB_ID),
@@ -201,7 +223,7 @@ public class StripTabDragShadowViewUnitTest {
         when(mMockLayerTitleCache.getOriginalFavicon(any(Tab.class)))
                 .thenReturn(mMockOriginalFaviconBitmap);
 
-        mStripTabDragShadowView.setTab(mMockTab);
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
 
         assertEquals(
                 "Should be using original favicon.",
@@ -214,7 +236,7 @@ public class StripTabDragShadowViewUnitTest {
         when(mMockLayerTitleCache.getOriginalFavicon(any(Tab.class)))
                 .thenReturn(mMockOriginalFaviconBitmap);
 
-        mStripTabDragShadowView.setTab(mMockTab);
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
         verify(mMockLayerTitleCache)
                 .fetchFaviconWithCallback(eq(mMockTab), mGetFaviconCallbackCaptor.capture());
         mGetFaviconCallbackCaptor
@@ -232,7 +254,7 @@ public class StripTabDragShadowViewUnitTest {
         boolean incognito = true;
         when(mMockTab.isIncognito()).thenReturn(incognito);
 
-        mStripTabDragShadowView.setTab(mMockTab);
+        mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
 
         @ColorRes
         int expectedBackgroundColor =

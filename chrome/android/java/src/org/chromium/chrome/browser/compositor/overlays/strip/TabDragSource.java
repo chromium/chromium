@@ -63,6 +63,7 @@ import java.util.Set;
  */
 public class TabDragSource implements View.OnDragListener {
     private static final String TAG = "TabDragSource";
+
     private final WindowAndroid mWindowAndroid;
     private MultiInstanceManager mMultiInstanceManager;
     private DragAndDropDelegate mDragAndDropDelegate;
@@ -149,13 +150,15 @@ public class TabDragSource implements View.OnDragListener {
      * @param startPoint Position of the drag start point in view coordinates.
      * @param tabPositionX Horizontal position of the dragged tab in view coordinates. Used to
      *     calculate the relative position of the touch point in the tab strip.
+     * @param tabWidthDp Width of the source strip tab container in dp.
      * @return true if the drag action was initiated successfully.
      */
     public boolean startTabDragAction(
             @NonNull View dragSourceView,
             @NonNull Tab tabBeingDragged,
             @NonNull PointF startPoint,
-            float tabPositionX) {
+            float tabPositionX,
+            float tabWidthDp) {
         // Return false when FF is disabled or another drag in progress.
         if (!TabUiFeatureUtilities.isTabDragEnabled() || DragDropGlobalState.hasValue()) {
             return false;
@@ -182,7 +185,7 @@ public class TabDragSource implements View.OnDragListener {
         // Build shared state with all info.
         ChromeDropDataAndroid dropData =
                 new ChromeDropDataAndroid.Builder().withTab(tabBeingDragged).build();
-        updateShadowView(tabBeingDragged, dragSourceView);
+        updateShadowView(tabBeingDragged, dragSourceView, (int) (tabWidthDp / mPxToDp));
         DragShadowBuilder builder =
                 createDragShadowBuilder(dragSourceView, startPoint, tabPositionX);
         sDragTrackerToken =
@@ -206,7 +209,8 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     @VisibleForTesting
-    void updateShadowView(@NonNull Tab tabBeingDragged, @NonNull View dragSourceView) {
+    void updateShadowView(
+            @NonNull Tab tabBeingDragged, @NonNull View dragSourceView, int tabWidthPx) {
         // Shadow view is unused for drag as window.
         if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) return;
         if (mShadowView == null) {
@@ -231,7 +235,7 @@ public class TabDragSource implements View.OnDragListener {
                         }
                     });
         }
-        mShadowView.setTab(tabBeingDragged);
+        mShadowView.prepareForDrag(tabBeingDragged, tabWidthPx);
     }
 
     @Override
@@ -454,8 +458,16 @@ public class TabDragSource implements View.OnDragListener {
         if (!isDragSource()) {
             mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         }
-        // Show drag shadow when drag exits strip.
-        showDragShadow(true);
+        if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
+            showDragShadow(true);
+        } else if (isDragSource()) {
+            TabDragShadowBuilder builder =
+                    (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
+            if (builder != null) {
+                builder.mShowDragShadow = true;
+                mShadowView.expand();
+            }
+        }
         mStripLayoutHelperSupplier
                 .get()
                 .clearForTabDrop(LayoutManagerImpl.time(), isDragSource(), isDraggedTabIncognito());
@@ -543,7 +555,6 @@ public class TabDragSource implements View.OnDragListener {
         }
 
         public void update(boolean show) {
-            if (show == mShowDragShadow) return;
             mShowDragShadow = show;
             mDragSourceView.updateDragShadow(this);
         }

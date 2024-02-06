@@ -3698,7 +3698,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                             mToolbarContainerView,
                             tabBeingDragged,
                             dragStartPointF,
-                            clickedTab.getDrawX());
+                            clickedTab.getDrawX(),
+                            clickedTab.getWidth());
             if (dragStarted) {
                 mActiveClickedTab = clickedTab;
                 mLastOffsetX = 0.f;
@@ -3763,20 +3764,21 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         StripLayoutTab draggedTab = getSelectedStripTab();
         assert draggedTab != null;
 
+        // Store reorder state, then exit reorder mode.
         mLastOffsetX = draggedTab.getOffsetX();
         onUpOrCancel(time);
         finishAnimationsAndPushTabUpdates();
 
-        runTabRemovalAnimation(
-                draggedTab,
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        draggedTab.setIsDraggedOffStrip(true);
-                        draggedTab.setDrawX(draggedTab.getIdealX());
-                        resizeStripOnTabClose();
-                    }
-                });
+        // Immediately hide the dragged tab container, as if it were being translated off like a
+        // closed tab.
+        draggedTab.setIsDraggedOffStrip(true);
+        draggedTab.setDrawX(draggedTab.getIdealX());
+        draggedTab.setDrawY(mHeight);
+        draggedTab.setOffsetY(mHeight);
+        mMultiStepTabCloseAnimRunning = true;
+
+        // Resize the tab strip accordingly.
+        resizeStripOnTabClose();
     }
 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {

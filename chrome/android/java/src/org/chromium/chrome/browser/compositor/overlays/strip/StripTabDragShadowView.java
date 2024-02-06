@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.FloatProperty;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +36,26 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.url.GURL;
 
 public class StripTabDragShadowView extends FrameLayout {
+    private static final FloatProperty<StripTabDragShadowView> PROGRESS =
+            new FloatProperty<>("progress") {
+                @Override
+                public void setValue(StripTabDragShadowView object, float v) {
+                    object.setProgress(v);
+                }
+
+                @Override
+                public Float get(StripTabDragShadowView object) {
+                    return object.getProgress();
+                }
+            };
+
     // Constants
     @VisibleForTesting protected static final int WIDTH_DP = 264;
+    private static final long ANIM_EXPAND_MS = 200L;
 
     // Children Views
     private View mCardView;
@@ -46,7 +65,12 @@ public class StripTabDragShadowView extends FrameLayout {
 
     // Internal State
     private Boolean mIncognito;
+    private int mTabWidthPx;
+    private int mTabHeightPx;
     private int mWidthPx;
+    private int mHeightPx;
+    private float mProgress;
+    private Animator mRunningAnimator;
 
     // External Dependencies
     private BrowserControlsStateProvider mBrowserControlStateProvider;
@@ -68,7 +92,11 @@ public class StripTabDragShadowView extends FrameLayout {
     public StripTabDragShadowView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mWidthPx = (int) (context.getResources().getDisplayMetrics().density * WIDTH_DP);
+        Resources resources = context.getResources();
+        mWidthPx = (int) (resources.getDisplayMetrics().density * WIDTH_DP);
+        mTabHeightPx =
+                resources.getDimensionPixelSize(R.dimen.tab_grid_card_header_height)
+                        + (2 * resources.getDimensionPixelSize(R.dimen.tab_grid_card_margin));
     }
 
     @Override
@@ -127,10 +155,12 @@ public class StripTabDragShadowView extends FrameLayout {
      * Set state on tab drag start.
      *
      * @param tab The {@link Tab} being dragged.
+     * @param tabWidthPx Width of the source strip tab container in px.
      */
-    public void setTab(Tab tab) {
+    public void prepareForDrag(Tab tab, int tabWidthPx) {
         mTab = tab;
         mTab.addObserver(mFaviconUpdateTabObserver);
+        mTabWidthPx = tabWidthPx;
 
         update();
     }
@@ -141,22 +171,33 @@ public class StripTabDragShadowView extends FrameLayout {
         mTab = null;
     }
 
+    /** Run the expand animation. */
+    public void expand() {
+        if (mRunningAnimator != null && mRunningAnimator.isRunning()) mRunningAnimator.end();
+
+        setProgress(0.f);
+        mRunningAnimator = ObjectAnimator.ofFloat(this, PROGRESS, 1.f);
+        mRunningAnimator.setInterpolator(Interpolators.EMPHASIZED);
+        mRunningAnimator.setDuration(ANIM_EXPAND_MS);
+        mRunningAnimator.start();
+    }
+
     private void update() {
         // TODO(https://crbug.com/1499119): Unify the shared code for creating the GTS-style card.
         // Set to final size. Even though the size will be animated, we need to initially set to the
         // final size, so that we allocate the appropriate amount of space when
         // #onProvideShadowMetrics is called on drag start.
-        int heightPx =
+        mHeightPx =
                 TabUtils.deriveGridCardHeight(mWidthPx, getContext(), mBrowserControlStateProvider);
 
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         layoutParams.width = mWidthPx;
-        layoutParams.height = heightPx;
+        layoutParams.height = mHeightPx;
         setLayoutParams(layoutParams);
-        this.layout(0, 0, mWidthPx, heightPx);
+        this.layout(0, 0, mWidthPx, mHeightPx);
 
         // Request the thumbnail.
-        Size cardSize = new Size(mWidthPx, heightPx);
+        Size cardSize = new Size(mWidthPx, mHeightPx);
         Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, getContext());
         mTabContentManagerSupplier
                 .get()
@@ -227,7 +268,31 @@ public class StripTabDragShadowView extends FrameLayout {
         }
     }
 
+    private void setProgress(float progress) {
+        assert progress >= 0.f && progress <= 1.f : "Invalid animation progress value.";
+        mProgress = progress;
+
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        layoutParams.width = (int) lerp(mTabWidthPx, mWidthPx, progress);
+        layoutParams.height = (int) lerp(mTabHeightPx, mHeightPx, progress);
+        setLayoutParams(layoutParams);
+        post(() -> mShadowUpdateHost.requestUpdate());
+    }
+
+    private float getProgress() {
+        return mProgress;
+    }
+
+    /** Linear interpolate from start value to stop value by amount [0..1] */
+    private float lerp(float start, float stop, float amount) {
+        return start + ((stop - start) * amount);
+    }
+
     protected Tab getTabForTesting() {
         return mTab;
+    }
+
+    protected Animator getRunningAnimatorForTesting() {
+        return mRunningAnimator;
     }
 }
