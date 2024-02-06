@@ -8288,8 +8288,8 @@
   },
   {
     "name": "video-conference",
-    "owners": [ "shafron@chromium.org", "newcomer@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org" ],
-    "expiry_milestone": 120
+    "owners": [ "newcomer@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org", "chromeos-camera-eng@google.com" ],
+    "expiry_milestone": 129
   },
   {
     "name": "view-transition-on-navigation",
