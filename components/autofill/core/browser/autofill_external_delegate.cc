@@ -133,7 +133,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kVirtualCreditCardEntry:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kAutofillOptions:
@@ -407,7 +406,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kGeneratePasswordEntry:
@@ -700,7 +698,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kGeneratePasswordEntry:
@@ -774,7 +771,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case PopupItemId::kPasswordAccountStorageOptIn:
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kCompose:

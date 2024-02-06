@@ -235,7 +235,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kIbanEntry:
       return FillDataType::kSingleFieldFormFillerIban;
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAddressEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kAutofillOptions:

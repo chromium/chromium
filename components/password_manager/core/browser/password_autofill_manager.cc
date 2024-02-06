@@ -568,7 +568,6 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
   // fetch the actual password. See crbug.com/178358 for more context.
 
   bool item_uses_account_store =
-      popup_item_id == autofill::PopupItemId::kAccountStorageUsernameEntry ||
       popup_item_id == autofill::PopupItemId::kAccountStoragePasswordEntry;
 
   // Look for any suitable matches to current field text.

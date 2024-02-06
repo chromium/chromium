@@ -554,7 +554,6 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kDeleteAddressProfile:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAddressEntry:
     case PopupItemId::kAddressFieldByFieldFilling:
     case PopupItemId::kAutocompleteEntry:
@@ -597,7 +596,6 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kCreditCardEntry:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kAutofillOptions:

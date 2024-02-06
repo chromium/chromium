@@ -327,7 +327,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
       NOTREACHED_NORETURN();
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,

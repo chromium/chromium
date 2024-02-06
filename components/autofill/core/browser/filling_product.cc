@@ -66,7 +66,6 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kPasswordAccountStorageOptIn:
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kWebauthnCredential:

@@ -124,7 +124,6 @@ void MaybeAppendManagePasswordsEntry(
       *suggestions,
       [](autofill::PopupItemId id) {
         return id == autofill::PopupItemId::kPasswordEntry ||
-               id == autofill::PopupItemId::kAccountStorageUsernameEntry ||
                id == autofill::PopupItemId::kAccountStoragePasswordEntry ||
                id == autofill::PopupItemId::kGeneratePasswordEntry ||
                id == autofill::PopupItemId::kWebauthnCredential;
@@ -195,14 +194,9 @@ void AppendSuggestionIfMatching(
       *suggestion.voice_over += u", ";
       *suggestion.voice_over += suggestion.labels[0][0].value;
     }
-    if (from_account_store) {
-      suggestion.popup_item_id =
-          is_password_field
-              ? autofill::PopupItemId::kAccountStoragePasswordEntry
-              : autofill::PopupItemId::kAccountStorageUsernameEntry;
-    } else {
-      suggestion.popup_item_id = autofill::PopupItemId::kPasswordEntry;
-    }
+    suggestion.popup_item_id =
+        from_account_store ? autofill::PopupItemId::kAccountStoragePasswordEntry
+                           : autofill::PopupItemId::kPasswordEntry;
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = autofill::Suggestion::Icon::kGlobe;

@@ -559,9 +559,7 @@ TEST_F(PasswordAutofillManagerTest,
     EXPECT_THAT(open_args.suggestions,
                 SuggestionVectorIdsAre(
                     autofill::PopupItemId::kPasswordEntry,
-                    is_suggestion_on_password_field
-                        ? autofill::PopupItemId::kAccountStoragePasswordEntry
-                        : autofill::PopupItemId::kAccountStorageUsernameEntry,
+                    autofill::PopupItemId::kAccountStoragePasswordEntry,
 #if !BUILDFLAG(IS_ANDROID)
                     autofill::PopupItemId::kSeparator,
 #endif
@@ -581,9 +579,7 @@ TEST_F(PasswordAutofillManagerTest,
 
     password_autofill_manager_->DidAcceptSuggestion(
         autofill::test::CreateAutofillSuggestion(
-            is_suggestion_on_password_field
-                ? autofill::PopupItemId::kAccountStoragePasswordEntry
-                : autofill::PopupItemId::kAccountStorageUsernameEntry,
+            autofill::PopupItemId::kAccountStoragePasswordEntry,
             test_username_),
         SuggestionPosition{.row = 0});
   }
