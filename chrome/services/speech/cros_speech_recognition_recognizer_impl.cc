@@ -8,7 +8,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "chrome/services/speech/soda/cros_soda_client.h"
+#include "components/soda/constants.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_sample_types.h"
@@ -104,6 +106,27 @@ void CrosSpeechRecognitionRecognizerImpl::
     config->library_dlc_path = binary_path_.value();
     config->recognition_mode =
         GetSodaSpeechRecognitionMode(options_->recognition_mode);
+    if (options_->recognition_mode ==
+            media::mojom::SpeechRecognitionMode::kCaption &&
+        base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+      auto live_caption_languages = speech::GetLiveCaptionEnabledLanguages();
+      auto multi_lang_config =
+          chromeos::machine_learning::mojom::SodaMultilangConfig::New();
+
+      for (const auto& config_path : config_paths()) {
+        if (config_path.first == primary_language_name()) {
+          continue;
+        } else if (!base::Contains(live_caption_languages, config_path.first)) {
+          VLOG(1) << "Skipping multilang on captions of " << config_path.first
+                  << " as it is not listed as a live caption language.";
+          continue;
+        }
+        multi_lang_config->locale_to_language_pack_map[config_path.first] =
+            config_path.second.value();
+      }
+      config->multi_lang_config = std::move(multi_lang_config);
+    }
+
     config->enable_formatting =
         options_->enable_formatting
             ? chromeos::machine_learning::mojom::OptionalBool::kTrue
