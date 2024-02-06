@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -78,7 +77,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
         initWithStyle:incognito ? ToolbarStyle::kIncognito
                                 : ToolbarStyle::kNormal];
 
-    UIView* containerView = [[OmniboxPopupContainerView alloc] init];
+    UIView* containerView = [[UIView alloc] init];
     [containerView addSubview:viewController.view];
     _popupContainerView = containerView;
 
