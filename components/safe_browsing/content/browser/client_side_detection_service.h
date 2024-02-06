@@ -33,6 +33,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "net/base/ip_address.h"
@@ -80,6 +81,8 @@ class ClientSideDetectionService
     GetURLLoaderFactory() = 0;
     virtual scoped_refptr<network::SharedURLLoaderFactory>
     GetSafeBrowsingURLLoaderFactory() = 0;
+    virtual bool ShouldSendModelToBrowserContext(
+        content::BrowserContext* context) = 0;
   };
 
   ClientSideDetectionService(

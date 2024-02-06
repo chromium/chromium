@@ -220,7 +220,11 @@ void ClientSideDetectionService::SendModelToRenderers() {
   for (content::RenderProcessHost::iterator it(
            content::RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
-    SetPhishingModel(it.GetCurrentValue(), /*new_renderer_process_host=*/false);
+    if (delegate_->ShouldSendModelToBrowserContext(
+            it.GetCurrentValue()->GetBrowserContext())) {
+      SetPhishingModel(it.GetCurrentValue(),
+                       /*new_renderer_process_host=*/false);
+    }
   }
   if (client_side_phishing_model_) {
     trigger_model_version_ =
@@ -507,7 +511,9 @@ void ClientSideDetectionService::SetURLLoaderFactoryForTesting(
 
 void ClientSideDetectionService::OnRenderProcessHostCreated(
     content::RenderProcessHost* rph) {
-  SetPhishingModel(rph, /*new_renderer_process_host=*/true);
+  if (delegate_->ShouldSendModelToBrowserContext(rph->GetBrowserContext())) {
+    SetPhishingModel(rph, /*new_renderer_process_host=*/true);
+  }
 }
 
 void ClientSideDetectionService::SetPhishingModel(
