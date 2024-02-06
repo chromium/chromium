@@ -44,6 +44,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server.h"
+#include "components/sync/test/fake_server_http_post_provider.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -480,6 +481,24 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingCompletedInitialMigration) {
     account_password_store()->GetAllLogins(account_store_observer.GetWeakPtr());
     EXPECT_EQ(profile_store_observer.WaitForResults().size(), 0u);
     EXPECT_EQ(account_store_observer.WaitForResults().size(), 1u);
+    DestroyProfile();
+  }
+
+  {
+    // Disabling the flag again should move the data back to the "profile"
+    // database. To rule out that data is just being redownloaded from the
+    // fake server, disable network.
+    base::test::ScopedFeatureList disable_local_upm;
+    disable_local_upm.InitAndDisableFeature(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    fake_server::FakeServerHttpPostProvider::DisableNetwork();
+    CreateProfile();
+    EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
+    password_manager::PasswordStoreResultsObserver profile_store_observer;
+    profile_password_store()->GetAllLogins(profile_store_observer.GetWeakPtr());
+    EXPECT_EQ(profile_store_observer.WaitForResults().size(), 1u);
+    EXPECT_FALSE(account_password_store());
     DestroyProfile();
   }
 }
