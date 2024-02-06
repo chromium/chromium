@@ -1073,6 +1073,7 @@ source_set("unit_tests") {
     "form_autofill_history_unittest.cc",
     "form_data_importer_unittest.cc",
     "form_data_importer_utils_unittest.cc",
+    "form_filler_unittest.cc",
     "form_forest_unittest.cc",
     "form_parsing/address_field_parser_unittest.cc",
     "form_parsing/credit_card_field_parser_unittest.cc",
