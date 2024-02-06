@@ -121,7 +121,6 @@
       'cros_board': 'jacuzzi',
       'use_lkgm': True,
       'bucket': 'chromiumos-image-archive',
-      'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
       'public_builder_bucket': 'testplatform-public',
     },
@@ -131,7 +130,6 @@
     'skylab': {
       'cros_board': 'jacuzzi',
       'use_lkgm': True,
-      'dut_pool': 'chrome',
     },
   },
   'CROS_JACUZZI_RELEASE_LKGM': {
@@ -139,7 +137,6 @@
     'skylab': {
       'cros_board': 'jacuzzi',
       'use_lkgm': True,
-      'dut_pool': 'chrome',
     },
   },
   'CROS_OCTOPUS_PUBLIC_LKGM': {
@@ -148,7 +145,6 @@
       'cros_board': 'octopus',
       'use_lkgm': True,
       'bucket': 'chromiumos-image-archive',
-      'dut_pool': 'chromium',
     },
   },
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
@@ -157,7 +153,6 @@
       'cros_board': 'octopus',
       'cros_model': 'casta',
       'use_lkgm': True,
-      'dut_pool': 'chrome',
     },
   },
   'CROS_PUFF_RELEASE_BETA': {
@@ -197,7 +192,6 @@
     'skylab': {
       'cros_board': 'strongbad',
       'use_lkgm': True,
-      'dut_pool': 'chrome',
     },
   },
   'CROS_TROGDOR_PUBLIC_LKGM': {
@@ -206,7 +200,6 @@
       'cros_board': 'trogdor',
       'cros_img': 'trogdor-public/R123-15763.0.0',
       'bucket': 'chromiumos-image-archive',
-      'dut_pool': 'chromium',
     },
   },
   'CROS_TROGDOR_RELEASE_ASH_LKGM': {
@@ -214,7 +207,6 @@
     'skylab': {
       'cros_board': 'trogdor',
       'use_lkgm': True,
-      'dut_pool': 'chrome',
     },
   },
   'CROS_VOLTEER_PUBLIC_LKGM': {
@@ -246,7 +238,6 @@
     'skylab': {
       'cros_board': 'volteer',
       'use_lkgm': True,
-      'dut_pool': 'chrome',
     },
   },
   'DISABLE_FIELD_TRIAL_CONFIG': {
