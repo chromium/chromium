@@ -60,9 +60,6 @@ class UserPerformanceTuningManager {
     // Raised when the count of janky intervals reaches X.
     // Can be used by the UI to show a promo
     virtual void OnJankThresholdReached() {}
-
-    // Raised when memory metrics for a discarded page becomes available to read
-    virtual void OnMemoryMetricsRefreshed() {}
   };
 
   class PreDiscardResourceUsage
@@ -142,7 +139,6 @@ class UserPerformanceTuningManager {
 
     void NotifyTabCountThresholdReached() override;
     void NotifyMemoryThresholdReached() override;
-    void NotifyMemoryMetricsRefreshed(ProxyAndPmfKbVector) override;
   };
 
   explicit UserPerformanceTuningManager(

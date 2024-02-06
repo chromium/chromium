@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
+#include "components/performance_manager/public/features.h"
+#include "content/public/browser/navigation_handle.h"
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabResourceUsageTabHelper);
 
 TabResourceUsageTabHelper::~TabResourceUsageTabHelper() = default;
@@ -18,6 +22,17 @@ void TabResourceUsageTabHelper::PrimaryPageChanged(content::Page&) {
   // Reset memory usage count when we navigate to another site since the
   // memory usage reported will be outdated.
   resource_usage_->set_memory_usage_in_bytes(0);
+}
+
+void TabResourceUsageTabHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (performance_manager::features::kMemoryUsageInHovercardsUpdateTrigger
+              .Get() == performance_manager::features::
+                            MemoryUsageInHovercardsUpdateTrigger::kNavigation &&
+      navigation_handle->IsInPrimaryMainFrame() &&
+      !navigation_handle->IsSameDocument()) {
+    TabResourceUsageCollector::Get()->ImmediatelyRefreshMetrics(web_contents());
+  }
 }
 
 uint64_t TabResourceUsageTabHelper::GetMemoryUsageInBytes() {

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -514,7 +515,8 @@ class TabHoverCardFadeFooterInteractiveUiTest
 
   auto ForceRefreshMemoryMetrics() {
     return Steps(FlushEvents(), Do(base::BindLambdaForTesting([=]() {
-                   ForceRefreshMemoryMetricsAndWait();
+                   TabResourceUsageRefreshWaiter waiter;
+                   waiter.Wait();
                  })));
   }
 };
@@ -621,7 +623,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
   tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
   GetTabStrip(browser())
       ->hover_card_controller_for_testing()
-      ->OnMemoryMetricsRefreshed();
+      ->OnTabResourceMetricsRefreshed();
   EXPECT_EQ(l10n_util::FormatString(
                 l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE),
                 {ui::FormatBytes(bytes_used)}, nullptr),

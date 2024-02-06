@@ -6,21 +6,28 @@
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_METRICS_REFRESH_WAITER_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/ui/performance_controls/test_support/resource_usage_collector_observer.h"
 
-class MemoryMetricsRefreshWaiter : public performance_manager::user_tuning::
-                                       UserPerformanceTuningManager::Observer {
+// Requests and waits for memory usage data to update so tabs can report memory
+// savings through discard
+class MemoryMetricsRefreshWaiter {
  public:
-  MemoryMetricsRefreshWaiter();
-  ~MemoryMetricsRefreshWaiter() override;
-
-  void OnMemoryMetricsRefreshed() override;
+  MemoryMetricsRefreshWaiter() = default;
+  ~MemoryMetricsRefreshWaiter() = default;
 
   // Forces and waits for the memory metrics to refresh
   void Wait();
+};
 
- private:
-  base::OnceClosure quit_closure_;
+// Requests and waits for memory usage data to updates resource usage data for
+// active tabs
+class TabResourceUsageRefreshWaiter : public ResourceUsageCollectorObserver {
+ public:
+  TabResourceUsageRefreshWaiter();
+  ~TabResourceUsageRefreshWaiter() override;
+
+  // Forces and waits for the memory metrics to refresh
+  void Wait();
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_METRICS_REFRESH_WAITER_H_

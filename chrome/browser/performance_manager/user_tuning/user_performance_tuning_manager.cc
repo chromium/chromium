@@ -180,34 +180,6 @@ void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
       }));
 }
 
-void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
-    NotifyMemoryMetricsRefreshed(ProxyAndPmfKbVector proxies_and_pmf) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](ProxyAndPmfKbVector web_contents_memory_usage) {
-            if (base::FeatureList::IsEnabled(
-                    performance_manager::features::kMemoryUsageInHovercards)) {
-              for (const auto& [contents_proxy, pmf] :
-                   web_contents_memory_usage) {
-                content::WebContents* web_contents = contents_proxy.Get();
-                if (web_contents) {
-                  TabResourceUsageTabHelper* const helper =
-                      TabResourceUsageTabHelper::FromWebContents(web_contents);
-                  if (helper) {
-                    helper->SetMemoryUsageInBytes(pmf * 1024);
-                  }
-                }
-              }
-            }
-            // Hitting this CHECK would mean this task is running after
-            // PostMainMessageLoopRun, which shouldn't happen.
-            CHECK(g_user_performance_tuning_manager);
-            GetInstance()->NotifyMemoryMetricsRefreshed();
-          },
-          std::move(proxies_and_pmf)));
-}
-
 UserPerformanceTuningManager::UserPerformanceTuningManager(
     PrefService* local_state,
     std::unique_ptr<UserPerformanceTuningNotifier> notifier,
@@ -289,12 +261,6 @@ void UserPerformanceTuningManager::NotifyTabCountThresholdReached() {
 void UserPerformanceTuningManager::NotifyMemoryThresholdReached() {
   for (auto& obs : observers_) {
     obs.OnMemoryThresholdReached();
-  }
-}
-
-void UserPerformanceTuningManager::NotifyMemoryMetricsRefreshed() {
-  for (auto& obs : observers_) {
-    obs.OnMemoryMetricsRefreshed();
   }
 }
 
