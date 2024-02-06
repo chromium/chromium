@@ -273,4 +273,62 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewFailureCancelsPendingActions) {
   EXPECT_TRUE(PrintPreviewUI::ShouldCancelRequest(preview_ui->id_, kRequestId));
 }
 
+TEST_F(PrintPreviewUIUnitTest, GetPageToNupConvertIndexWithNoPagesToRender) {
+  PrintPreviewUI* preview_ui = StartPrintPreview();
+  ASSERT_TRUE(preview_ui);
+
+  // There are no pages to render, so all calls fail.
+  EXPECT_EQ(kInvalidPageIndex, preview_ui->GetPageToNupConvertIndex(0));
+  EXPECT_EQ(kInvalidPageIndex, preview_ui->GetPageToNupConvertIndex(1));
+}
+
+TEST_F(PrintPreviewUIUnitTest,
+       GetPageToNupConvertIndexWithPartialPagesToRender) {
+  PrintPreviewUI* preview_ui = StartPrintPreview();
+  ASSERT_TRUE(preview_ui);
+
+  auto params = mojom::DidStartPreviewParams::New();
+  params->page_count = 3;
+  params->pages_to_render = {1, 2};
+  params->pages_per_sheet = 2;
+  params->page_size = gfx::SizeF(100, 200);
+  preview_ui->DidStartPreview(std::move(params), /*request_id=*/0);
+
+  // There is no page at index 0 to render, so this call fails.
+  EXPECT_EQ(kInvalidPageIndex, preview_ui->GetPageToNupConvertIndex(0));
+
+  // The page at index 1 in the original document should be the first page
+  // (index 0) in the N-up document, prior to the actual N-up conversion.
+  // Similarly, the page at index 2 in the original document should be the
+  // second page (index 1) in the N-up document, prior to the actual N-up
+  // conversion.
+  // The actual N-up conversion will put both pages onto 1 sheet, for a 2-up
+  // conversion, but that is outside the scope of this test case.
+  // TODO(crbug.com/41496759): Fix the return values.
+  EXPECT_EQ(1u, preview_ui->GetPageToNupConvertIndex(1));
+  EXPECT_EQ(2u, preview_ui->GetPageToNupConvertIndex(2));
+
+  // There is no page at index 3 to render, so this call fails.
+  EXPECT_EQ(kInvalidPageIndex, preview_ui->GetPageToNupConvertIndex(3));
+}
+
+TEST_F(PrintPreviewUIUnitTest, GetPageToNupConvertIndexWithAllPagesToRender) {
+  PrintPreviewUI* preview_ui = StartPrintPreview();
+  ASSERT_TRUE(preview_ui);
+
+  auto params = mojom::DidStartPreviewParams::New();
+  params->page_count = 3;
+  params->pages_to_render = {0, 1, 2};
+  params->pages_per_sheet = 2;
+  params->page_size = gfx::SizeF(100, 200);
+  preview_ui->DidStartPreview(std::move(params), /*request_id=*/0);
+
+  // Since all 3 pages are being rendered, the mapping is an identity transform.
+  EXPECT_EQ(0u, preview_ui->GetPageToNupConvertIndex(0));
+  EXPECT_EQ(1u, preview_ui->GetPageToNupConvertIndex(1));
+  EXPECT_EQ(2u, preview_ui->GetPageToNupConvertIndex(2));
+  // There is no page at index 3 to render, so this call fails.
+  EXPECT_EQ(kInvalidPageIndex, preview_ui->GetPageToNupConvertIndex(3));
+}
+
 }  // namespace printing
