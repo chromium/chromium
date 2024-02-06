@@ -46,10 +46,11 @@ public class PageInfoIPHController {
     /**
      * Called when a permission prompt was shown.
      *
+     * @param profile The {@link Profile} associated with the permission dialog.
      * @param iphTimeout The timeout after which the IPH bubble should disappear if it was shown.
      */
-    public void onPermissionDialogShown(int iphTimeout) {
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+    public void onPermissionDialogShown(Profile profile, int iphTimeout) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.PERMISSION_REQUEST_SHOWN);
 
         mUserEducationHelper.requestShowIPH(

@@ -702,7 +702,8 @@ public class StatusMediator
     }
 
     private void startIPH() {
-        mPageInfoIPHController.onPermissionDialogShown(getIPHTimeout());
+        if (!mProfileSupplier.hasValue()) return;
+        mPageInfoIPHController.onPermissionDialogShown(mProfileSupplier.get(), getIPHTimeout());
     }
 
     void setStoreIconController() {
