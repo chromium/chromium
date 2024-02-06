@@ -771,8 +771,9 @@ bool FindExactlyOneInnerImageInMaxDepthThree(WebAXObject obj,
 void RenderAccessibilityImpl::AddImageAnnotations(
     const WebDocument& document,
     std::vector<ui::AXNodeData*>& nodes) {
-  if (accessibility_mode_.has_mode(ui::AXMode::kPDF))
+  if (accessibility_mode_.has_mode(ui::AXMode::kPDFPrinting)) {
     return;
+  }
   for (auto* node : nodes) {
     WebAXObject src = WebAXObject::FromWebDocumentByID(document, node->id);
 

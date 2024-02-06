@@ -1350,15 +1350,16 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeColorAttributes(node_data);  // Blends using all nodes' values.
 
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
-      accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+      accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     SerializeLangAttribute(node_data);  // Propagates using all nodes' values.
   }
 
   // Always try to serialize child tree ids.
   SerializeChildTreeID(node_data);
 
-  if (!accessibility_mode.has_mode(ui::AXMode::kPDF))
+  if (!accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     SerializeBoundingBoxAttributes(*node_data);
+  }
 
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable
@@ -1383,7 +1384,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   SerializeUnignoredAttributes(node_data, accessibility_mode);
 
-  if (accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+  if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
     // Return early. None of the following attributes are needed for PDFs.
     return;
@@ -2219,7 +2220,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   }
 
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
-      accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+      accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     // The DOMNodeID from Blink. Currently only populated when using
     // the accessibility tree for PDF exporting. Warning, this is totally
     // unrelated to the accessibility node ID, or the ID attribute for an
@@ -2240,7 +2241,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     SerializeTableAttributes(node_data);
   }
 
-  if (accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+  if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     // Return early. None of the following attributes are needed for PDFs.
     return;
   }

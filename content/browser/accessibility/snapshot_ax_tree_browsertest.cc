@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
                      base::Unretained(&waiter)),
-      ui::AXMode::kPDF,
+      ui::AXMode::kPDFPrinting,
       /* max_nodes= */ 0,
       /* timeout= */ {});
   waiter.Wait();

@@ -78,8 +78,8 @@ class AX_BASE_EXPORT AXMode {
   static constexpr uint32_t kLabelImages = 1 << 6;
 
   // The accessibility tree will contain enough information to export
-  // an accessible PDF.
-  static constexpr uint32_t kPDF = 1 << 7;
+  // an accessible PDF when printing to PDF.
+  static constexpr uint32_t kPDFPrinting = 1 << 7;
 
   // The PDF renderer process will run OCR to extract text from an inaccessible
   // PDF and add it to the accessibility tree.

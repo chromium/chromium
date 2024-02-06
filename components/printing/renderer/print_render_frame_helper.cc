@@ -1680,7 +1680,8 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
   // the scope of printing, because text drawing commands are only annotated
   // with a DOMNodeId if accessibility is enabled.
   if (delegate_->ShouldGenerateTaggedPDF())
-    snapshotter_ = render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDF);
+    snapshotter_ =
+        render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDFPrinting);
 
   mojom::PageSizeMarginsPtr default_page_layout =
       ComputePageLayoutForCss(print_preview_context_.prepared_frame(), 0,
@@ -2223,7 +2224,8 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   std::unique_ptr<content::AXTreeSnapshotter> snapshotter;
   ui::AXTreeUpdate accessibility_tree;
   if (generate_tagged_pdf) {
-    snapshotter = render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDF);
+    snapshotter =
+        render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDFPrinting);
     snapshotter->Snapshot(
         /*max_node_count=*/0,
         /*timeout=*/{},

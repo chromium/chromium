@@ -28,7 +28,7 @@ ui::AXMode::ModeFlagHistogramValue ModeFlagsToEnum(uint32_t mode_flags) {
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA;
     case ui::AXMode::kLabelImages:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES;
-    case ui::AXMode::kPDF:
+    case ui::AXMode::kPDFPrinting:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF;
     case ui::AXMode::kPDFOcr:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF_OCR;
@@ -69,7 +69,7 @@ void MetricsProviderCommon::RecordA11yFlags() {
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTML);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kLabelImages);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDF);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFPrinting);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFOcr);
   }
 }
